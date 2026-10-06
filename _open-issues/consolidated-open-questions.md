@@ -1,8 +1,171 @@
-# Open Questions tổng hợp — Qikfiliate QA context · Teeinblue QA context
+# Open Questions tổng hợp — Qikify Volume Discounts QA context · Qikfiliate QA context · Teeinblue QA context
 
 File này được SINH TỰ ĐỘNG bởi `scripts/generate-manifest.mjs` từ toàn bộ `open-questions.md` theo object (§5a của contract) — KHÔNG sửa tay ở đây. Cần thêm/sửa/resolve 1 open question thì sửa ở file object-level tương ứng rồi chạy lại script; sửa trực tiếp ở đây sẽ bị ghi đè mất ở lần chạy sau.
 
-Tổng: 682 open question đang mở trên 22 object.
+Tổng: 791 open question đang mở trên 30 object.
+
+## ai-offer-creation (`knowledge/products/qik-volume/ai-offer-creation/open-questions.md`) — 6 mục
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-ai-offer-creation-001]** (feature: ai-offer-creation) ai_prompt_limit nâng lên một giá trị rất lớn — hành vi upper bound chưa xác nhận
+- **[OQ-ai-offer-creation-002]** (feature: ai-offer-creation) Merchant role có bị chặn sửa ai_prompt_limit qua Admin Config không — chưa xác nhận
+- **[OQ-ai-offer-creation-003]** (feature: ai-offer-creation) Truy cập chưa đăng nhập vào AI Offer Creation entry point — chưa xác nhận
+- **[OQ-ai-offer-creation-004]** (feature: ai-offer-creation) ai_prompt_limit đã nâng có persist qua reload/session mới không — chưa xác nhận
+- **[OQ-ai-offer-creation-005]** (feature: ai-offer-creation) Giá trị default thật của ai_prompt_limit trong production — claim hedged, chưa xác nhận
+- **[OQ-ai-offer-creation-006]** (feature: ai-offer-creation) ai_offer_event_id qua flow preview→edit→save — cơ chế 'fragile', chưa xác nhận là defect
+
+## analytics (`knowledge/products/qik-volume/analytics/open-questions.md`) — 8 mục
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-analytics-001]** (feature: analytics) Chart endpoint backfill ngày trống bằng 0 trong range đã chọn — CHƯA XÁC NHẬN
+- **[OQ-analytics-002]** (feature: analytics) Add-to-cart trên 1 widget có log nhầm add_to_cart cho widget khác chưa từng tương tác? — CHƯA XÁC NHẬN (nguy cơ over-count)
+- **[OQ-analytics-003]** (feature: analytics) Ngữ nghĩa param 'filter' (test/currency/...) trên endpoint Analytics — CHƯA XÁC NHẬN
+- **[OQ-analytics-004]** (feature: analytics) Dữ liệu lịch sử Views/ATC/Orders của 1 offer đã bị xoá còn query được không? — CHƯA XÁC NHẬN
+- **[OQ-analytics-005]** (feature: analytics) ATC count trên Onboarding Dashboard (QVD-115) và 'Add to cart clicks' trên Analytics có cùng nguồn dữ liệu? — CHƯA XÁC NHẬN
+- **[OQ-analytics-006]** (feature: analytics) Role/permission tier cho việc truy cập trang Analytics — CHƯA XÁC NHẬN
+- **[OQ-analytics-007]** (feature: analytics) Metric 'Order with offers' render giá trị khi có order hợp lệ trong range — CHƯA XÁC NHẬN (có thể là bug 0-state)
+- **[OQ-analytics-008]** Doc set nguồn cho object analytics trải cả merchant (Portal dashboard) và buyer (storefront add-to-cart event tracking feeding backend) surface, không có 1 role duy nhất khai báo ở mức doc-set/object (bootstrap context.role=null, theo thiết kế; covers_surfaces=["portal","api"] ở mức doc-source). Cần xác nhận đây có phải invariant đúng hay chỉ là gap của bộ tài liệu nguồn.
+
+## ask-for-review (`knowledge/products/qik-volume/ask-for-review/open-questions.md`) — 6 mục
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-ask-for-review-001]** (feature: ask-for-review) [NEEDS_CONFIRMATION] Offer AI bi discard (khong luu) co chac khong trigger overlay (khong false-positive)
+- **[OQ-ask-for-review-002]** (feature: ask-for-review) [NEEDS_CONFIRMATION] Dismiss (X) khong chon star co ghi reviewAction='dismissed' + reviewRating=null khong
+- **[OQ-ask-for-review-003]** (feature: ask-for-review) [NEEDS_CONFIRMATION] Submit feedback rong tren nhanh 1-4 star co duoc chap nhan khong
+- **[OQ-ask-for-review-004]** (feature: ask-for-review) [NEEDS_CONFIRMATION] UI co cho doi lai star da chon truoc khi dong overlay khong, va last-rating-wins co ap dung dung khong
+- **[OQ-ask-for-review-005]** (feature: ask-for-review) [NEEDS_CONFIRMATION] Overlay hien cho moi merchant staff co quyen tao offer, hay chi owner/admin
+- **[OQ-ask-for-review-006]** (feature: ask-for-review) [NEEDS_CONFIRMATION] Offer tao thu cong roi sua bang AI assistant co bi gan nguoc (retroactive) isAiGenerated khong
+
+## discount-offers (`knowledge/products/qik-volume/discount-offers/open-questions.md`) — 48 mục
+
+### Conflict — 2 statement mâu thuẫn nhau
+
+- **[OQ-discount-offers-001]** (feature: quantity-break) [DCONF-001] [CONFLICT - phía A] Banner: automatic discount hoạt động dù app block bị tắt
+    - Phía A: Theo tài liệu "Quantity Break" §Shared cross-variant rules, màn hình tạo offer có banner cảnh báo (ghi nhận live 2026-09-03): 'Automatic discounts work even if the app block is disabled. For testing, we recommend using Discount code to prevent customers from receiving unintended discounts.' Đây là 1 phía của xung đột DCONF-001 — xem conflicts[] — mâu thuẫn với hành vi hiện tại được ghi ở §Shared rules sau fix QVD-167 (phía B).
+    - Phía B: Theo tài liệu "Quantity Break" §Shared cross-variant rules + §Edge Cases, hiện tại (sau fix QVD-167), discount Function của Quantity Break check theme-embed status và skip áp dụng discount nếu app block không được enable trong theme editor, ngay cả khi cart content khớp 1 tier hợp lệ; regression test của gating này đã được verified: với app/embed bị disable, 1 cart vốn đủ điều kiện 1 tier sẽ không được auto-discount. Đây là phía B của xung đột DCONF-001 — xem conflicts[] — mâu thuẫn với banner cảnh báo ở phía A vẫn còn hiển thị trên UI tạo offer.
+- **[OQ-discount-offers-002]** (feature: multibuy-mix-match-combo) [CONF-DOC04-001] Business Rules > Appearance & style (QVD-107)
+    - Phía A: Theo tài liệu "Multibuy – Mix & Match Combo" §`Business Rules > Appearance & style (QVD-107)`, nêu rằng live-observed default của Badge border radius slider trong Appearance & style là 6px — khác với 10px mà QVD-132 document; tài liệu nêu rõ discrepancy này chưa được giải quyết.
+    - Phía B: Theo tài liệu "Multibuy – Mix & Match Combo" §`Business Rules > Multibuy discount badge (QVD-132)`, (ticket QVD-132, chưa được QA xác nhận lại ở mục này) nêu rằng Badge border radius slider default là 10px.
+- **[OQ-discount-offers-003]** (feature: multibuy-mix-match-combo) [CONF-DOC04-002] Business Rules > Appearance & style (QVD-107)
+    - Phía A: Theo tài liệu "Multibuy – Mix & Match Combo" §`Business Rules > Appearance & style (QVD-107)`, nêu rằng live example quan sát được cho Badge text trong Appearance & style là "MULTIBUY" (chữ hoa) — khác với default "Multi buy" mà QVD-132 document; tài liệu nêu rõ chưa xác nhận giá trị nào là true out-of-the-box default so với giá trị đã bị merchant chỉnh.
+    - Phía B: Theo tài liệu "Multibuy – Mix & Match Combo" §`Business Rules > Multibuy discount badge (QVD-132)`, (ticket QVD-132, chưa được QA xác nhận lại ở mục này) nêu rằng Badge text default là "Multi buy"; để trống thì ẩn badge; recommend khoảng 20-25 ký tự.
+- **[OQ-discount-offers-004]** (feature: wholesale-pricing-offer) [DCONF-001] Storefront — drawer doesn't exist (structural correction)
+    - Phía A: Tài liệu §Storefront nêu rằng, trái với spec, hành vi live trên store test-vl-1 (product 'Clay Plant Pot', offer 'Offer 17') render toàn bộ variant-composition UI trực tiếp inline trên PDP — không có preview card, không có link 'Select now', không slide-in panel, không backdrop. Lưu ý: (Table layout) lại mô tả nội dung render 'inside the Variant Selection Drawer' — xem DCONF-001, hai mô tả này chưa được hoà giải trong tài liệu.
+    - Phía B: Tài liệu §Table layout nêu rằng cùng table này cũng render bên trong Variant Selection Drawer, compact hơn (giảm font size/padding) để fit chiều rộng drawer; hành vi active-row highlight giống hệt và vẫn update live theo stepper. Lưu ý: điều này nhắc tới 'Variant Selection Drawer' như một UI đang tồn tại, trong khi ở §Storefront nêu rằng rendering thực tế trên test-vl-1 là inline, không có drawer — xem DCONF-001, chưa được hoà giải.
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-discount-offers-005]** (feature: quantity-break) [Cần xác nhận] Phân cấp quyền staff sub-role khi cấu hình Quantity Break
+- **[OQ-discount-offers-006]** (feature: quantity-break) [Cần xác nhận] Giá quantity-break có tự recompute khi subscription discount đổi/mất giữa session
+- **[OQ-discount-offers-007]** (feature: quantity-break) [Cần xác nhận] Tier/trigger/gift/subscription/display settings reload đúng sau khi refresh trang Portal
+- **[OQ-discount-offers-008]** (feature: quantity-break) [Cần xác nhận] Biến quyết định offer nào thắng khi ≥2 offer type overlap trên cùng cart
+- **[OQ-discount-offers-009]** (feature: quantity-break) [Cần xác nhận — KHÔNG dùng 1 phía làm oracle] DCONF-001: automatic discount có áp dụng khi app block/theme embed bị tắt hay không
+- **[OQ-discount-offers-010]** (feature: quantity-break) [Cần xác nhận] Portal preview pricing khớp storefront live rendering — chỉ 1 sample, chưa đủ để tổng quát hoá
+- **[OQ-discount-offers-011]** (feature: quantity-break) [Cần xác nhận] True default của field 'Position' (Above vs Below volume tiers)
+- **[OQ-discount-offers-012]** (feature: quantity-break) [Cần xác nhận] Sự tồn tại của group 'Content' trong Display settings
+- **[OQ-discount-offers-013]** (feature: quantity-break) [Cần xác nhận] Hành vi accordion (collapse-by-default) của Display settings
+- **[OQ-discount-offers-014]** (feature: quantity-break) [Cần xác nhận] 2 field điều kiện của Variant display xuất hiện khi checkbox cha ON
+- **[OQ-discount-offers-015]** (feature: quantity-break) [Cần xác nhận] 'Enable countdown timer' và quan hệ với QVD-147
+- **[OQ-discount-offers-016]** (feature: quantity-break) [Cần xác nhận] UI hiển thị khi 1 tier có nhiều gift PRODUCT KHÁC NHAU
+- **[OQ-discount-offers-017]** (feature: quantity-break) [Cần xác nhận] Checkbox 'Allow customers to choose different variants for each item' có nối với config Variant Swatches hay không
+- **[OQ-discount-offers-018]** (feature: quantity-break) [Cần xác nhận] Toggle hiện/ẩn selector riêng của widget đồng bộ động với theme
+- **[OQ-discount-offers-019]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Pooling across different products có áp dụng cho trigger Collection/Specific products không?
+- **[OQ-discount-offers-020]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Customer product selection behavior: radio Popup (default) vs Redirect
+- **[OQ-discount-offers-021]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Popup mode detail (variant picker slide-up, overlay, no-variant instant add)
+- **[OQ-discount-offers-022]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Badge border radius true default: 6px (live-observed) hay 10px (ticket QVD-132)?
+- **[OQ-discount-offers-023]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Badge text true default: "MULTIBUY" (live example) hay "Multi buy" (ticket QVD-132)?
+- **[OQ-discount-offers-024]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Discount combination checkboxes (Order/Product/Shipping), default off
+- **[OQ-discount-offers-025]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Offer scheduling: start date required/not-past, end date optional toggle
+- **[OQ-discount-offers-026]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Internal name auto-default "Offer #N", merchant-only
+- **[OQ-discount-offers-027]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Offer title default template {{quantity_tier}} for {{total_price}}
+- **[OQ-discount-offers-028]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Discount method default automatic; limit 25/code → contact support
+- **[OQ-discount-offers-029]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — "Silent" mode (discount tự áp dụng, widget UI ẩn qua custom CSS)
+- **[OQ-discount-offers-030]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Offer nào thắng khi Multibuy overlap trigger với Quantity Break (2-way)?
+- **[OQ-discount-offers-031]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Offer nào thắng khi cả 3 offer type (Multibuy, Quantity Break, Wholesale Pricing) cùng trigger và ≥2 discount đang active (3-way)?
+- **[OQ-discount-offers-032]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Có permission/role boundary chi tiết hơn (sub-role, plan/feature-flag) kiểm soát quyền cấu hình Multibuy không?
+- **[OQ-discount-offers-033]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Hành vi khi checkbox "Allow to apply multiplier discounts per order" bị UNCHECK
+- **[OQ-discount-offers-034]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Tie-break rule khi nhiều unit cùng giá 'cheapest' trong remainder calculation
+- **[OQ-discount-offers-035]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Discount-combination checkboxes là component UI chung hay per-offer-type riêng?
+- **[OQ-discount-offers-036]** (feature: multibuy-mix-match-combo) NEEDS_CONFIRMATION — Hành vi/placement thật của "Enable countdown timer" trên storefront
+- **[OQ-discount-offers-037]** (feature: wholesale-pricing-offer) Variant Selection UI pattern thật trên storefront — inline-on-PDP hay slide-in Drawer (DCONF-001)
+- **[OQ-discount-offers-038]** (feature: wholesale-pricing-offer) Để Max của tier cuối trống — display label vs discount math thật
+- **[OQ-discount-offers-039]** (feature: wholesale-pricing-offer) UI stepper/badge khi variant type cuối có số lượng value lớn (20+)
+- **[OQ-discount-offers-040]** (feature: wholesale-pricing-offer) Offer chỉ có 1 variant type (không multi-variant) — rule 'variant type cuối đặc cách' có còn áp dụng hợp lý
+- **[OQ-discount-offers-041]** (feature: wholesale-pricing-offer) Chuyển Layout (card <-> table) có áp dụng live trên storefront không cần reload
+- **[OQ-discount-offers-042]** (feature: wholesale-pricing-offer) Một chỉnh sửa tier HỢP LỆ (không gap) có persist sau khi reload Portal
+- **[OQ-discount-offers-043]** (feature: wholesale-pricing-offer) [NEEDS_CONFIRMATION] Offer nào thắng khi Wholesale overlap Quantity Break/Multibuy — biến quyết định CHƯA xác định
+- **[OQ-discount-offers-044]** (feature: wholesale-pricing-offer) [NEEDS_CONFIRMATION] Campaign scheduling thực sự gate offer availability cho Wholesale (chưa re-verify riêng)
+- **[OQ-discount-offers-045]** Khi 2-3 offer type (Quantity Break / Multibuy – Mix & Match Combo / Wholesale Pricing Offer) cùng qualify trên 1 cart (trigger overlap), đúng 1 discount thắng -- xác nhận không bao giờ cả hai, không bao giờ chia -- nhưng biến quyết định offer nào thắng chưa được xác định. Kết quả live-test bị flip giữa 2 lần test trên cùng 1 cặp offer (store test-vl-1, 2026-09-03); test 3-way (2026-09-09) không đủ sạch để trả lời vì Wholesale Tier 1 = 0% ở mức quantity test đó, nên không có 2 discount active cùng lúc thật. Cần PO/Dev xác nhận rule độ ưu tiên (discount rank/order trong Shopify admin? function evaluate sau? thứ tự add-to-cart?) trước khi viết được test case regression xác định cho trigger-overlap.
+- **[OQ-discount-offers-046]** Doc set nguồn cho object discount-offers trải cả merchant (Portal) và buyer (storefront) surface, không có 1 role duy nhất khai báo ở mức doc-set/object (bootstrap context.role=null, theo thiết kế). Từng claim riêng lẻ có role_stated rõ (merchant cho Portal settings, buyer cho storefront widget) nhưng ở mức object không có 1 role tổng quát -- cần xác nhận đây có phải invariant đúng (object luôn đa-role) hay chỉ là gap của bộ tài liệu nguồn.
+- **[OQ-discount-offers-047]** (feature: quantity-break) Card "Appstle℠ Subscriptions App" dưới info banner của Volume discount for subscription (Quantity Break) được tài liệu nguồn tự diễn giải (hedged, chưa xác nhận) thành "app Quantity Break không tự có hạ tầng subscription riêng mà phụ thuộc vào 1 app subscription riêng" — cách diễn đạt chung của app có thể tương thích app subscription khác ngoài Appstle. Cần PO/Dev xác nhận app Quantity Break có phụ thuộc cứng vào một app subscription ngoài hay không, và nếu có thì giới hạn ở app nào (KB-074, INFERRED/LOW, tách riêng khỏi KB-043 vì mang nội dung hedged mà KB-043 không có).
+
+### Open issue — gap khác (unknown area, scope chưa rõ, chưa explore được)
+
+- **[OQ-discount-offers-048]** Quy ước confirmation_source.type cho toàn bộ product qik-volume (áp dụng cho 329 item CONFIRMED_EXPECTED trên cả 8 object, không riêng discount-offers): bộ tài liệu nguồn "qa-volume-kb" là KB do chính QA tự biên soạn từ live-test qua Playwright MCP trên store test-vl-1 -- KHÔNG phải tài liệu dev-gen từ source code, KHÔNG phải spec/PRD chính thức, và KHÔNG phải một hệ thống test case có track (không có test-case ID/PASS/build record). Claim không gắn 1 ngày live-test cụ thể (narrative chung) được gán type="spec_doc", và claim gắn 1 ngày live-test cụ thể được gán type="test_case" -- một pragmatic nearest-fit trong 4 giá trị enum cố định của §3, không giá trị nào khớp chữ nghĩa 100%. Hệ quả cần biết: theo §12.5, 192 item "spec_doc" (claim không gắn ngày, nguồn yếu hơn) KHÔNG có blocker (a) chặn một dev_doc tương lai ghi đè chúng, trong khi 137 item "test_case" (claim gắn ngày live-verify) CÓ. Đây là lựa chọn chấp nhận được cho lần bootstrap đầu (không có lựa chọn nào khớp 100% trong 4 giá trị enum cố định) nhưng cần ghi lại tường minh, không âm thầm hấp thụ. Revisit nếu/khi có Testlane test-case backfill chính thức hoặc spec_doc thật cho product này.
+
+## onboarding-dashboard (`knowledge/products/qik-volume/onboarding-dashboard/open-questions.md`) — 4 mục
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-onboarding-dashboard-001]** (feature: onboarding-dashboard) Onboarding header rendering for unusually long/special-character/emoji store names
+- **[OQ-onboarding-dashboard-002]** (feature: onboarding-dashboard) Staff permission level required to view Home or perform onboarding/dashboard actions
+- **[OQ-onboarding-dashboard-003]** (feature: onboarding-dashboard) Dashboard ATC click stat identity vs. the standalone Analytics feature's metric
+- **[OQ-onboarding-dashboard-004]** (feature: onboarding-dashboard) Backend persistence (or absence thereof) behind the onboarding<->dashboard switch and Setup Guide progress
+
+## translate-offers (`knowledge/products/qik-volume/translate-offers/open-questions.md`) — 11 mục
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-translate-offers-001]** (feature: translate-offers) [HEDGED — chưa xác nhận] SDK detect đúng active language và load/hiển thị bản dịch tương ứng
+- **[OQ-translate-offers-002]** (feature: translate-offers) [HEDGED — chưa xác nhận] SDK fallback về default language khi thiếu bản dịch cho active language
+- **[OQ-translate-offers-003]** (feature: translate-offers) [HEDGED — chưa xác nhận] Variant hết hàng hiện lỗi inline đã dịch, chặn proceed
+- **[OQ-translate-offers-004]** (feature: translate-offers) [HEDGED — chưa xác nhận] Tier quantity không đủ hàng làm disable Add to cart kèm lỗi đã dịch
+- **[OQ-translate-offers-005]** (feature: translate-offers) [GAP] Lưu modal dịch offer khi để trống một số field — hành vi validation chưa xác nhận
+- **[OQ-translate-offers-006]** (feature: translate-offers) [GAP] Bản dịch của 1 offer sau khi offer đó bị xoá — cleanup hay orphaned?
+- **[OQ-translate-offers-007]** (feature: translate-offers) [GAP] Thêm ngôn ngữ MỚI — Default content có carry-over/pre-fill hay luôn trống hoàn toàn?
+- **[OQ-translate-offers-008]** (feature: translate-offers) [GAP] Sửa nội dung gốc của offer sau khi bản dịch đã tồn tại — bản dịch giữ nguyên (có thể stale) hay bị invalidate?
+- **[OQ-translate-offers-009]** (feature: translate-offers) [GAP] Offer tạo bởi AI Offer Creation có tự động nhận translation entry hay phải tạo thủ công
+- **[OQ-translate-offers-010]** (feature: translate-offers) [GAP, HEDGED] Label 'item'/error message stock-related có global hay khác nhau theo từng offer type
+- **[OQ-translate-offers-011]** Doc set nguồn cho object translate-offers trải cả merchant (Portal Translations page) và buyer (storefront widget content) surface, không có 1 role duy nhất khai báo ở mức doc-set/object (bootstrap context.role=null, theo thiết kế). Cần xác nhận đây có phải invariant đúng hay chỉ là gap của bộ tài liệu nguồn.
+
+## translate-portal (`knowledge/products/qik-volume/translate-portal/open-questions.md`) — 13 mục
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-translate-portal-001]** (feature: translate-portal) Audit: Jira QVD-159 Sprint 23 goal (7/8 ngôn ngữ) vs enum 9 ngôn ngữ hiện tại — discrepancy chưa resolve
+- **[OQ-translate-portal-002]** (feature: translate-portal) Hành vi khi bản dịch của một ngôn ngữ fail load (lỗi network/API) — chưa có oracle
+- **[OQ-translate-portal-003]** (feature: translate-portal) Português (Brasil) vs Português (Portugal) — nội dung chuỗi dịch có khác nhau thực tế không
+- **[OQ-translate-portal-004]** (feature: translate-portal) Route /apps/staging-bk-volume có per-installation hay chung cho mọi merchant — chưa xác nhận
+- **[OQ-translate-portal-005]** (feature: translate-portal) Các role/staff khác nhau dưới một merchant account có cùng quyền dùng language switcher không — chưa xác nhận
+- **[OQ-translate-portal-006]** (feature: translate-portal) Lựa chọn ngôn ngữ Portal có persist qua reload/session, và theo scope nào — chưa xác nhận
+- **[OQ-translate-portal-007]** (feature: translate-portal) Ngôn ngữ đã chọn ở Dashboard có áp dụng trên các trang Portal khác không — chưa xác nhận
+- **[OQ-translate-portal-008]** (feature: translate-portal) Browser tab title dịch 'Dashboard'→'Bảng điều khiển' khi chuyển Tiếng Việt
+- **[OQ-translate-portal-009]** (feature: translate-portal) Left-nav dịch sang các chuỗi Tiếng Việt cụ thể đã tài liệu hoá
+- **[OQ-translate-portal-010]** (feature: translate-portal) Greeting dịch 'Hi [name]!'→'Xin chào [name]!' khi chuyển Tiếng Việt
+- **[OQ-translate-portal-011]** (feature: translate-portal) Column header bảng offers dịch sang các chuỗi Tiếng Việt cụ thể đã tài liệu hoá
+- **[OQ-translate-portal-012]** (feature: translate-portal) Cell values bảng offers dịch cụ thể, 'Multibuy' giữ nguyên không dịch
+- **[OQ-translate-portal-013]** (feature: translate-portal) Nhãn dropdown ngôn ngữ tự dịch 'Language:'→'Ngôn ngữ:'
+
+## variant-swatches (`knowledge/products/qik-volume/variant-swatches/open-questions.md`) — 13 mục
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-variant-swatches-001]** (feature: variant-swatches) Variant image dropdown tooltip text — unconfirmed
+- **[OQ-variant-swatches-002]** (feature: variant-swatches) Portal role/permission restriction for Variant swatches page — undocumented
+- **[OQ-variant-swatches-003]** (feature: variant-swatches) Variant option table pagination behavior beyond 20 rows — not exercised
+- **[OQ-variant-swatches-004]** (feature: variant-swatches) HEX field format validation on save — undocumented
+- **[OQ-variant-swatches-005]** (feature: variant-swatches) Image upload format/size limits for Custom image dropdown — undocumented
+- **[OQ-variant-swatches-006]** (feature: variant-swatches) Direct navigation to Setting Variant Option URL for a nonexistent/unsynced option name — undocumented
+- **[OQ-variant-swatches-007]** (feature: variant-swatches) Re-sync behavior once variant table is already populated — undocumented
+- **[OQ-variant-swatches-008]** (feature: variant-swatches) Storefront reflects a swatch-type config change immediately, or requires resync/republish — undocumented
+- **[OQ-variant-swatches-009]** (feature: variant-swatches) Post-fix: Quantity Break's "Hide theme variant picker" handoff to this feature's swatch widget — undocumented, blocked on KB-022 fix
+- **[OQ-variant-swatches-010]** (feature: variant-swatches) Quantity Break's per-item inline dropdowns — do they apply this feature's swatch config? Undocumented
+- **[OQ-variant-swatches-011]** (feature: variant-swatches) Auto-source swatch types (Variant color/image dropdown) rendering with genuine native Shopify data — inconclusive
+- **[OQ-variant-swatches-012]** (feature: variant-swatches) Swatch config scope — global per option name across all products, or per-product override exists? Inferred, not tested
+- **[OQ-variant-swatches-013]** Doc set nguồn cho object variant-swatches trải cả merchant (Portal settings) và buyer (storefront swatch display) surface, không có 1 role duy nhất khai báo ở mức doc-set/object (bootstrap context.role=null, theo thiết kế). Cần xác nhận đây có phải invariant đúng hay chỉ là gap của bộ tài liệu nguồn.
 
 ## admin-console (`knowledge/products/qikfiliate/admin-console/open-questions.md`) — 15 mục
 
