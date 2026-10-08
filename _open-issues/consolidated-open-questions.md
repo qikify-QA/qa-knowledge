@@ -1,8 +1,270 @@
-# Open Questions tổng hợp — Qikify Volume Discounts QA context · Qikfiliate QA context · Teeinblue QA context
+# Open Questions tổng hợp — ImagenHub QA context · Qikify Volume Discounts QA context · Qikfiliate QA context · Teeinblue QA context
 
 File này được SINH TỰ ĐỘNG bởi `scripts/generate-manifest.mjs` từ toàn bộ `open-questions.md` theo object (§5a của contract) — KHÔNG sửa tay ở đây. Cần thêm/sửa/resolve 1 open question thì sửa ở file object-level tương ứng rồi chạy lại script; sửa trực tiếp ở đây sẽ bị ghi đè mất ở lần chạy sau.
 
-Tổng: 791 open question đang mở trên 30 object.
+Tổng: 982 open question đang mở trên 37 object.
+
+## bulk-tools (`knowledge/products/imagenhub/bulk-tools/open-questions.md`) — 20 mục
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-bulk-tools-001]** Bulk tools (Batch, Design): role nào trong organization (Owner/Admin/Editor/Viewer) được truy cập và chạy Batch/Design? Tài liệu Batch và Design không nêu role của tài khoản khảo sát hay ràng buộc quyền; dấu hiệu duy nhất là nút Run in Batch trên trang chi tiết template bị disable với role Viewer (thuộc object Templates).
+- **[OQ-bulk-tools-002]** (feature: batch-edit) Batch: giới hạn 250 ảnh và cơ chế xử lý 5 ảnh/lần mới chỉ là quan sát UI. Chưa thử thêm quá 250 ảnh (UI chặn, báo lỗi, cắt bớt hay server từ chối?) và chưa có lần chạy nào quá 5 ảnh. Cần xác nhận giới hạn và hành vi khi vượt.
+- **[OQ-bulk-tools-003]** (feature: batch-edit) Batch: số credit thực tế bị trừ sau Process có khớp cost ước tính trong confirm dialog không, và có hiện trong Task History / số dư Subscription không? Mới chỉ thấy ước tính trước khi chạy.
+- **[OQ-bulk-tools-004]** (feature: batch-edit) Batch: chưa có tài liệu cho nhánh lỗi và các hành vi phụ — ảnh lỗi giữa batch (ảnh khác có chạy tiếp không, có tính credit, có retry), định dạng/kích thước ảnh được chấp nhận, kết quả có được lưu lại sau khi rời trang không, confirm dialog có nút huỷ không; fallback trong Batch chưa được chạy test (bị chặn bởi Q25). Tính năng Beta, không có trong docs chính thức ImagenHub.
+- **[OQ-bulk-tools-005]** (feature: design-print-file) Design: giới hạn upload 250 ảnh và text "Up to 5 run at once" mới chỉ là quan sát UI; chưa thử vượt 250 ảnh, chưa chạy quá 1 ảnh. Cũng chưa rõ step nào là "cần thiết" để nút Process bật, và hành vi khi thiếu model ở một step (đặc biệt Step 2/3 không có mặc định).
+- **[OQ-bulk-tools-006]** (feature: design-print-file) Design: số credit thực tế bị trừ sau toàn bộ pipeline (15 credits/image + từng finishing step bao nhiêu) có khớp ước tính và có hiện trong Task History / số dư Subscription không? Hiện chỉ có ước tính trước khi chạy và diễn giải của người viết.
+- **[OQ-bulk-tools-008]** (feature: design-print-file) Design: dropdown Step 2 (Upscaler) và Step 3 (Background remover) hiện cùng một danh sách đầy đủ mọi model image-editor, không lọc theo chức năng step, và không cảnh báo khi chọn nhầm. Việc không lọc có phải chủ đích thiết kế không?
+- **[OQ-bulk-tools-010]** (feature: batch-edit) Batch: khi chưa chọn template hoặc chưa có ảnh, nút "Process N images" bị disable hay vẫn bấm được, và hệ thống báo gì?
+- **[OQ-bulk-tools-011]** (feature: design-print-file) Design: toggle "Custom instructions" ở Step 1 làm gì, và nội dung người dùng nhập có được đưa vào prompt của bước Generate không?
+- **[OQ-bulk-tools-012]** (feature: design-print-file) Design: step nào là bắt buộc để nút Process được bật? Có thể bỏ trống Step 2 (Upscale) hoặc Step 3 (cắt nền) để bỏ qua bước đó không?
+- **[OQ-bulk-tools-013]** (feature: design-print-file) Design: giới hạn 250 ảnh có phải giới hạn thật không, và khi thêm ảnh thứ 251 thì hệ thống làm gì?
+- **[OQ-bulk-tools-014]** (feature: design-print-file) Design: chỉ báo tiến độ khi chạy (chip Generate → Upscale → Remove background → Resize và text "N of M processed") có phải hành vi ổn định không, và hiển thị thế nào khi chạy nhiều ảnh?
+- **[OQ-bulk-tools-015]** (feature: design-print-file) Design: các step Upscale và cắt nền có luôn chạy đúng model người dùng chọn trong dropdown không? Mới có một lần chạy mẫu.
+- **[OQ-bulk-tools-016]** (feature: design-print-file) Design: khi một bước của pipeline thất bại thì UI hiển thị gì, các bước sau có chạy tiếp không, và credit của các bước đã/chưa chạy được tính thế nào?
+
+### Open issue — gap khác (unknown area, scope chưa rõ, chưa explore được)
+
+- **[OQ-bulk-tools-007]** (feature: design-print-file) Design: mission Redesign chưa từng được chạy — chưa biết prompt, pipeline, chi phí và output khác Clone thế nào.
+- **[OQ-bulk-tools-009]** (feature: design-print-file) Design: chưa có tài liệu cho nhánh lỗi khi một bước pipeline thất bại, định dạng/kích thước thực tế của file output so với preset, toggle Custom instructions làm gì, danh sách preset Step 4 đầy đủ và ràng buộc Custom size, và Design có được expose qua API/MCP không. Tính năng Beta, không có trong docs chính thức ImagenHub.
+- **[OQ-bulk-tools-017]** (feature: batch-edit) Tiêu chí chính xác để một template xuất hiện trong combobox "Choose a template" là gì?
+- **[OQ-bulk-tools-018]** (feature: batch-edit) Role nào trong Organization được dùng Batch?
+- **[OQ-bulk-tools-019]** (feature: design-print-file) Design có được expose qua API/MCP hay chỉ có trên portal?
+- **[OQ-bulk-tools-020]** (feature: design-print-file) Role nào trong Organization được dùng Design?
+
+## developer-settings (`knowledge/products/imagenhub/developer-settings/open-questions.md`) — 32 mục
+
+### Conflict — 2 statement mâu thuẫn nhau
+
+- **[OQ-developer-settings-005]** (feature: provider-keys-byok) Đơn vị sở hữu/duy nhất của provider key (BYOK) chưa thống nhất trong docs chính thức: §BYOK ghi "1 key/user/provider" trong khi §Organization ghi Organization sở hữu mọi thứ (template, media, credit, key). Cần xác nhận provider key thuộc user hay organization, và quy tắc "ghi đè key cũ" áp theo user hay theo org.
+    - Phía A: Theo docs chính thức §BYOK: mỗi user chỉ có 1 key cho mỗi provider; key mới ghi đè key cũ.
+    - Phía B: Theo docs chính thức §Organization: Organization là đơn vị sở hữu mọi thứ, gồm template, media, credit, key.
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-developer-settings-001]** Role cho object Developer settings chưa được xác định: tài liệu chỉ nói quyền quản lý API keys thuộc Owner/Admin (Editor/Viewer không có quyền) trong ma trận quyền của Organization; quyền theo role cho Provider Keys (BYOK), Webhooks, Alerts và AI Assistant (MCP) không được mô tả. Cần xác nhận role nào được xem/tạo/xoá/sửa ở từng trang.
+- **[OQ-developer-settings-002]** Rotate signing secret chưa được test (bị chặn để tránh phá xác minh chữ ký hiện tại) và docs chỉ ghi header `webhook-signature` "có thể" chứa nhiều chữ ký khi đang rotate. Cần xác nhận: rotate làm gì trên portal, khoảng thời gian chữ ký cũ còn hợp lệ, và định dạng nhiều chữ ký.
+- **[OQ-developer-settings-003]** (feature: api-keys) Thiếu tài liệu chi tiết trang API Keys và Provider Keys (được link nhưng không có trên Testlane): chưa có mô tả form tạo key (field, validation), cột hiển thị/mask, luồng xoá/revoke (có confirm không), hành vi khi key chạm Credit Limit hoặc hết Expiration, danh sách provider BYOK hỗ trợ và ý nghĩa trạng thái "healthy". Không suy diễn UI; cần bổ sung tài liệu hoặc khảo sát lại.
+- **[OQ-developer-settings-004]** (feature: provider-keys-byok) Mâu thuẫn trong ghi chép khảo sát staging: tài liệu ghi "đã verify tạo/xoá thật cả 2" (API Keys và Provider Keys) nhưng bảng hành động chưa test lại có "Submit Provider Key thật — không có key thật để test". Cần xác nhận thao tác tạo provider key và quan sát "ghi đè, không tạo dòng mới" đã được thực hiện với key hợp lệ hay với key giả, và hệ thống có validate key với provider lúc lưu không.
+- **[OQ-developer-settings-006]** (feature: provider-keys-byok) Docs chính thức §Rate Limits & Credits ghi với BYOK "credit ImagenHub vẫn có thể trừ tuỳ plan" nhưng không nêu plan nào; quan sát staging thấy task dùng BYOK hiển thị "Your key" và không trừ credit. Cần PO xác nhận plan nào BYOK vẫn trừ credit và mức trừ (topic billing, không tự resolve). Kèm câu hỏi: khi Fail-Safe chuyển sang key hệ thống thì có trừ credit ImagenHub không.
+- **[OQ-developer-settings-008]** (feature: task-webhooks) Payload task callback trong docs chỉ là mẫu: cần danh sách đầy đủ giá trị `type` (ngoài task.succeeded/task.failed), kiểu dữ liệu và giá trị hợp lệ của từng field trong `data` (status, post_processing_status, output, cấu trúc error).
+- **[OQ-developer-settings-009]** (feature: mcp-server) Endpoint MCP lệch giữa môi trường: docs chính thức ghi production là `https://api.imagenhub.ai/mcp/imagenhub`, còn trên staging (khảo sát 2026-08-30) là `https://staging-api.imagenhub.ai/mcp` (không có hậu tố). Hai phạm vi khác nhau nên không coi là conflict; cần xác nhận path staging ngắn hơn là chủ đích và path production hiện hành vẫn đúng như docs.
+- **[OQ-developer-settings-011]** Mục "API Reference — endpoint map đầy đủ" của docs chính thức không liệt kê nhóm /auth/* (login, refresh, OAuth) lẫn /provider-keys và các endpoint management dùng JWT (tạo template, quản lý API key/account) dù các mục Authentication và BYOK có nhắc tới. Danh sách endpoint đầy đủ (kể cả nhóm dùng JWT) là gì, và các endpoint đó có theo cùng envelope {data, meta} và bảng lỗi chuẩn không?
+- **[OQ-developer-settings-013]** (feature: api-keys) Khi API key chạm Credit Limit đã đặt lúc tạo, request tiếp theo bị xử lý thế nào (mã HTTP, type lỗi, có trừ credit không)? Tài liệu chỉ nói Credit Limit là tuỳ chọn khi tạo key.
+- **[OQ-developer-settings-014]** (feature: api-keys) Khi API key đã quá Expiration, request dùng key đó nhận kết quả gì (mã HTTP, type lỗi) và portal hiển thị key đó thế nào?
+- **[OQ-developer-settings-015]** (feature: api-keys) Sau khi xoá API key, request dùng key đó nhận kết quả gì và hiệu lực từ lúc nào; có thao tác thu hồi tạm khác với xoá không; xoá có hộp xác nhận không?
+- **[OQ-developer-settings-016]** (feature: api-keys) Role nào (Owner, Admin, Editor, Viewer) được xem, tạo, sửa, xoá ở trang API Keys? Tài liệu nhóm trang Dev không gán role cho các thao tác này. Ma trận quyền ở phần phân quyền tổ chức ghi Owner/Admin quản lý API keys, Editor/Viewer không có quyền; cần xác nhận đây là quy tắc áp cho trang này.
+- **[OQ-developer-settings-017]** (feature: api-keys) Khi API key của org A đọc task của org B, hệ thống trả 403 `forbidden` hay 404 `not_found`? Danh sách task có được lọc tuyệt đối theo org của key không?
+- **[OQ-developer-settings-018]** (feature: provider-keys-byok) Sau khi xoá mềm provider key: key còn hiển thị trong danh sách không, có khôi phục được không, và generation kế tiếp có chuyển sang key hệ thống + trừ credit ImagenHub không?
+- **[OQ-developer-settings-019]** (feature: provider-keys-byok) Field nào của `POST /provider-keys` là bắt buộc, lỗi validate trả mã gì, và hệ thống có kiểm tra key với provider lúc lưu không?
+- **[OQ-developer-settings-020]** (feature: provider-keys-byok) Role nào (Owner, Admin, Editor, Viewer) được xem, tạo, sửa, xoá ở trang Provider Keys (BYOK)? Tài liệu nhóm trang Dev không gán role cho các thao tác này. Ngoài ra, khi JWT của org A thao tác lên provider key của org B thì hệ thống trả gì?
+- **[OQ-developer-settings-021]** (feature: task-webhooks) Sau khi hết 6 lần gửi mà vẫn không delivered, delivery được ghi nhận thế nào, người dùng thấy gì và có gửi lại thủ công được không?
+- **[OQ-developer-settings-022]** (feature: task-webhooks) Trang Webhooks validate default webhook URL thế nào (bắt buộc https, định dạng, độ dài)?
+- **[OQ-developer-settings-023]** (feature: task-webhooks) Role nào (Owner, Admin, Editor, Viewer) được xem, tạo, sửa, xoá ở trang Webhooks? Tài liệu nhóm trang Dev không gán role cho các thao tác này. Đặc biệt: role nào được xem signing secret?
+- **[OQ-developer-settings-024]** (feature: account-alerts) Khi tạo channel thứ 11, thêm header thứ 11, hoặc khai custom header trùng tên header hệ thống, portal từ chối với thông báo gì hay âm thầm bỏ qua?
+- **[OQ-developer-settings-025]** (feature: account-alerts) Lịch retry 6 lần, chỉ 2xx mới tính delivered, timeout 10 giây và at-least-once mô tả ở phần giao nhận webhook có áp cho channel HTTP của account alert không, hay chỉ cho task callback?
+- **[OQ-developer-settings-026]** (feature: account-alerts) Message card Lark 'chỉnh sửa được' nghĩa là người dùng chỉnh mẫu ở đâu, trong giới hạn nào?
+- **[OQ-developer-settings-027]** (feature: account-alerts) Role nào (Owner, Admin, Editor, Viewer) được xem, tạo, sửa, xoá ở trang Alerts? Tài liệu nhóm trang Dev không gán role cho các thao tác này.
+- **[OQ-developer-settings-028]** (feature: mcp-server) Khi API key sai, hết hạn hoặc account hết credit, tool MCP trả lỗi thế nào; `get-task` trả gì khi task thất bại?
+- **[OQ-developer-settings-029]** (feature: mcp-server) Tham số đầu vào, field bắt buộc và cấu trúc kết quả của từng tool MCP là gì?
+- **[OQ-developer-settings-030]** (feature: mcp-server) Role nào (Owner, Admin, Editor, Viewer) được xem, tạo, sửa, xoá ở trang AI Assistant (MCP)? Tài liệu nhóm trang Dev không gán role cho các thao tác này. Ngoài ra, tool MCP dùng API key của org A đọc task của org B thì trả gì?
+
+### Open issue — gap khác (unknown area, scope chưa rõ, chưa explore được)
+
+- **[OQ-developer-settings-007]** (feature: task-webhooks) Thiếu tài liệu chi tiết trang Webhooks và Alerts (được link nhưng không có trên Testlane): chưa có mô tả form/field channel, chọn event, signing secret, delivery board, luồng tạo/xoá channel; chưa rõ "channel" tạo/xoá trên staging thuộc trang Webhooks hay Alerts; docs cũng không nói rõ các quy tắc ở §Delivery (retry 6 lần, timeout 10 giây, chỉ 2xx, at-least-once) có áp cho alert channel loại HTTP hay chỉ cho task callback. Không suy diễn UI.
+- **[OQ-developer-settings-010]** (feature: mcp-server) Thiếu tài liệu chi tiết trang AI Assistant (MCP) (được link nhưng không có trên Testlane): chưa biết tên/nội dung 3 tab, cách portal hiển thị cấu hình kết nối và endpoint, cách chọn API key cho MCP client. Không suy diễn UI.
+- **[OQ-developer-settings-012]** Tài liệu không nêu: method HTTP của route OAuth callback /auth/{provider}/callback, các provider OAuth được hỗ trợ, thời hạn của JWT/refresh token và response khi refresh token hết hạn. Không có expected result để test các nhánh này.
+- **[OQ-developer-settings-031]** (feature: task-webhooks) Rotate signing secret trên portal làm gì, chữ ký cũ còn hợp lệ bao lâu, định dạng nhiều chữ ký ra sao?
+- **[OQ-developer-settings-032]** (feature: account-alerts) Trang Alerts trên portal có những gì: form tạo channel HTTP/Lark, nhập custom header, tick event, nút Test, sửa và xoá channel?
+
+## models (`knowledge/products/imagenhub/models/open-questions.md`) — 18 mục
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-models-001]** Role cho object Models: bootstrap không cố định role; docs chính thức chỉ nêu GET /models, /model-providers public và GET /providers cần API key, còn mọi quan sát portal (catalog, Playground, Run, Save as Template) chỉ làm trên một tài khoản của org test. Role nào trong Organization (Owner/Admin/Editor/Viewer) được xem catalog, chạy model trong Playground (tốn credit) và lưu/cập nhật template từ trang model?
+- **[OQ-models-002]** (feature: model-catalog) Trên staging (khảo sát 2026-08-30) catalog có 37 model (13 Image To Image + 24 Text To Image) nhưng số đếm cạnh 14 owner cộng lại là 61. Tài liệu giải thích số đếm owner là 'tổng biến thể trên cả 2 type + bản main/edit', nhưng bản base và bản /edit vốn đã là 2 entry riêng trong 37. Số đếm cạnh owner được định nghĩa thế nào và giá trị nào là kỳ vọng đúng?
+- **[OQ-models-003]** (feature: model-catalog) Model Remove background on color được ghi là 'mới cập nhật 2026-08' kèm banner thông báo trên portal. Bản cập nhật này đã thay đổi gì cụ thể, và banner/thay đổi đó còn là trạng thái hiện tại không?
+- **[OQ-models-005]** (feature: model-playground) IGH-233: Dev xác nhận replicate trả size 9:16 riêng (1152×2048 khi chọn 1024x2048) cho GPT-image-2.5 /edit là expected. Xác nhận đó có bao gồm việc UI không hiện cảnh báo nào khi chọn provider replicate không, hay UI nên cảnh báo size output khác size đã chọn?
+- **[OQ-models-006]** (feature: model-playground) Field size của GPT-image-2.5 sunburst/flare /edit: danh sách đầy đủ 31 giá trị là gì, và đợt IGH-233 thêm 5 size portrait (26 → 31) có còn đúng ở bản hiện tại không?
+- **[OQ-models-008]** (feature: model-playground) Đổi provider trong Playground có làm đổi các field schema không, và cùng một model có giá khác nhau theo provider không? Tài liệu chỉ nói 'có thể' (cả docs chính thức lẫn ghi chú staging), chưa nêu cặp model/provider cụ thể nào.
+- **[OQ-models-011]** (feature: model-catalog) GET /models/{id} (chi tiết một model, gồm input schema và provider kèm cost) có phải endpoint public như GET /models và GET /model-providers không, hay cần API key/JWT? Docs chính thức không nêu.
+- **[OQ-models-012]** (feature: model-catalog) Cost ước tính hiển thị cho một model trên portal được tính từ provider nào khi model có nhiều provider ở giá khác nhau (provider rẻ nhất, provider mặc định, hay provider Auto chọn)? Và cùng một model có thật sự có nhiều provider khác giá không — docs chỉ nói "có thể".
+- **[OQ-models-013]** (feature: model-playground) Khi chuyển giữa chế độ Form và JSON trong Playground, giá trị đã nhập có được giữ và đồng bộ hai chiều không? Tài liệu chỉ ghi nhận sự tồn tại của toggle.
+- **[OQ-models-014]** (feature: model-playground) Cost thực tế bị trừ khi Run trong Playground có luôn bằng số credit ước tính hiển thị trên nút Run không? Mới có 3 lần chạy mẫu đều completed.
+
+### Open issue — gap khác (unknown area, scope chưa rõ, chưa explore được)
+
+- **[OQ-models-004]** (feature: model-playground) Lỗi UX đã biết trên staging (2026-08-30, model google/nano-banana-2-lite): khi Run bị chặn vì Seed bắt buộc còn trống, portal chỉ hiện dòng chữ nhỏ 'Seed is required.' dưới field, không có toast/alert, không cuộn/focus tới field lỗi. Có ticket theo dõi không, và hành vi mong muốn là gì? Checklist dùng làm regression watch, không làm expected result.
+- **[OQ-models-007]** (feature: model-playground) Aspect Ratio 'Auto': trên staging model google/nano-banana-2-lite có picker mặc định Auto, gpt-image-1.5/edit có Auto, còn GPT-image-2.5 sunburst/flare /edit không có auto trong enum size (nên không tạo được template ratio = Auto cho 2 model này), trong khi docs chính thức nói Auto được thêm vào cuối dropdown size của model. Model nào có/không có Auto, và GPT-image-2.5 /edit có dự kiến bật Auto không?
+- **[OQ-models-009]** (feature: model-playground) Provider 'Auto' trong Playground chọn provider theo logic nào (thứ tự ưu tiên, giá, BYOK)? Tài liệu chỉ ghi 'để hệ thống tự chọn'.
+- **[OQ-models-010]** (feature: model-playground) Chưa có ghi nhận nào cho nhánh Run lỗi trong Playground (status error): khu Result/Logs hiển thị gì, có bị trừ credit không. Bảng giá credit theo size/quality của GPT-image-2.5 /edit cũng chỉ có một điểm đo (1024x2048 low = 2 credit).
+- **[OQ-models-015]** (feature: model-catalog) Role nào trong Organization được xem catalog trên portal?
+- **[OQ-models-016]** (feature: model-playground) Role nào được chạy model, Save as Template và Update template từ Playground?
+- **[OQ-models-017]** (feature: model-playground) Hành vi của biến {{...}} trong Playground được mô tả ở đâu?
+- **[OQ-models-018]** (feature: model-playground) Khi bấm Run, Playground gọi API/endpoint nào, request gửi đi có body gì và response trả về có cấu trúc ra sao (phần hiển thị ở Result/JSON)?
+
+## organization-billing (`knowledge/products/imagenhub/organization-billing/open-questions.md`) — 44 mục
+
+### Conflict — 2 statement mâu thuẫn nhau
+
+- **[OQ-organization-billing-010]** Docs chính thức nói Organization sở hữu mọi tài nguyên và Account không sở hữu gì, nhưng mục Templates nói template Private gắn với user_id (chỉ người tạo thấy/dùng) và mục BYOK nói 1 provider key cho mỗi user mỗi provider. Đơn vị sở hữu/hiển thị là user hay organization?
+    - Phía A: Organization sở hữu mọi thứ (template, media, credit, key); Account là login cá nhân, không sở hữu gì.
+    - Phía B: Template Private gắn user_id, chỉ người tạo thấy/dùng; BYOK 1 key/user/provider.
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-organization-billing-001]** Role cho object Organization & Billing: bootstrap để role=null và tài liệu khảo sát staging không nêu tài khoản khảo sát (org test "HUB 1") có role gì (Owner/Admin/Editor/Viewer). Mọi quan sát UI ở Organization/Subscription/Dashboard phụ thuộc role — cần xác nhận role của tài khoản khảo sát và role mặc định dùng cho checklist object này.
+- **[OQ-organization-billing-006]** (feature: roles-permissions) Ma trận quyền trong docs chính thức chỉ có 4 area (Templates, Generations, API keys, Billing) — không nêu role nào được Invite member, Resend lời mời, Change role, Remove member, đổi tên org. Cần PO/Dev xác nhận quyền quản lý thành viên theo từng role (Owner/Admin/Editor/Viewer).
+- **[OQ-organization-billing-008]** (feature: credits-and-rate-limits) Cần PO/Dev xác nhận: (1) mức 'max $30/tháng' của Overage limit là trần cố định của sản phẩm hay giá trị đang cấu hình cho org test; (2) thứ tự trừ credit giữa Bonus credits, credit của plan (2,000/tháng) và Overage; (3) giá Pro $19/tháng và 2,000 credit/tháng có phải giá chính thức; (4) credit tracking có cập nhật real-time (hiện chỉ là kết luận của người khảo sát).
+- **[OQ-organization-billing-009]** (feature: credits-and-rate-limits) Docs chính thức không nêu con số giới hạn request/phút và /ngày của free tier, chu kỳ reset credit (ý nghĩa của resets_at), và plan nào khi dùng BYOK vẫn bị trừ credit ImagenHub. Không có expected value để kiểm boundary rate limit/402.
+- **[OQ-organization-billing-011]** Docs chính thức nói list endpoint trả meta phân trang theo trang (current_page, last_page, per_page, total), nhưng GET /analytics/requests được mô tả phân trang cursor-based (?limit=, ?cursor=). Endpoint đó có phải ngoại lệ không, và có trả meta theo trang không?
+- **[OQ-organization-billing-013]** (feature: organization-members) Tên org có ràng buộc gì khi đổi tên (bắt buộc nhập, độ dài tối đa, ký tự cho phép, có cho trùng tên với org khác không) và hệ thống báo lỗi thế nào?
+- **[OQ-organization-billing-014]** (feature: organization-members) Owner (đặc biệt là Owner duy nhất) có được Leave organization không? Có chuyển quyền Owner sang thành viên khác được không? Nếu Owner duy nhất rời thì org ra sao?
+- **[OQ-organization-billing-015]** (feature: organization-members) Khi chưa đăng nhập mà mở trang Organization, portal phải chuyển sang trang đăng nhập hay hiển thị gì? Có đảm bảo không lộ dữ liệu org không?
+- **[OQ-organization-billing-016]** (feature: organization-members) Change role và Remove member hoạt động thế nào: ai được thực hiện, có xác nhận không, thành viên bị xoá mất quyền truy cập ngay không, tài nguyên do họ tạo còn lại không?
+- **[OQ-organization-billing-017]** (feature: organization-members) Người được mời chấp nhận lời mời thế nào (cần có tài khoản trước hay sign up qua link)? Sau khi chấp nhận họ vào org với đúng role đã chọn khi mời không? Nếu họ đã là Owner của org riêng tạo lúc sign up thì sao?
+- **[OQ-organization-billing-018]** (feature: organization-members) Tab Activity ghi những loại sự kiện nào (đổi tên org, mời/resend, đổi role, xoá member, rời org...)? Mỗi dòng có hiển thị người thực hiện và thời điểm không?
+- **[OQ-organization-billing-019]** (feature: organization-members) Tên hiển thị của thành viên trong tab Members phải lấy từ đâu (họ tên, email, ...)? Với thành viên có định danh Shopify, roster phải hiển thị gì thay cho chuỗi gid://shopify/...? Lỗi lộ Shopify GID trong tên member trên staging có đang được theo dõi để sửa không?
+- **[OQ-organization-billing-020]** (feature: roles-permissions) Quyền "View" của Viewer ở khu vực Generations gồm những gì — Viewer có được chạy generation mới (tốn credit của org) không, hay chỉ xem lịch sử?
+- **[OQ-organization-billing-021]** (feature: roles-permissions) Quyền của Owner/Admin/Editor/Viewer ở Webhooks, Alerts, Provider Keys (BYOK) và AI Assistant (MCP) là gì?
+- **[OQ-organization-billing-022]** (feature: roles-permissions) Một org có thể có nhiều Owner không? Owner có bị đổi role hay bị xoá khỏi org không, và hệ thống có chặn trường hợp org không còn Owner nào không?
+- **[OQ-organization-billing-023]** (feature: roles-permissions) Đổi role có hiệu lực ngay với phiên đang đăng nhập của thành viên đó, hay chỉ sau khi tải lại trang/đăng nhập lại?
+- **[OQ-organization-billing-024]** (feature: credits-and-rate-limits) Request không thành công (lỗi đầu vào 422, lỗi provider, task fail) có bị trừ credit không? Nếu có thì trừ bao nhiêu?
+- **[OQ-organization-billing-025]** (feature: credits-and-rate-limits) Giới hạn request theo phút và theo ngày của free tier là bao nhiêu? Mỗi request trừ 1 lượt hay khác nhau theo endpoint (ví dụ GET /ping có tính không)? Lượt hồi theo cửa sổ trượt hay đầu mỗi phút/ngày?
+- **[OQ-organization-billing-026]** (feature: credits-and-rate-limits) Credit reset theo chu kỳ nào (theo tháng của plan, theo ngày đăng ký...)? resets_at được tính thế nào và sau thời điểm đó balance trở về bao nhiêu?
+- **[OQ-organization-billing-027]** (feature: credits-and-rate-limits) X-Credits-Used / X-Credits-Remaining trả "unlimited" trong điều kiện nào (plan nào, key nào, có dùng BYOK không)?
+- **[OQ-organization-billing-028]** (feature: credits-and-rate-limits) Credits remaining trên Dashboard là balance của org hay của từng key? Có phải khớp với key.credits_remaining của GET /ping không (khi org có nhiều key với credit_limit riêng)?
+- **[OQ-organization-billing-029]** (feature: credits-and-rate-limits) Khi ImagenHub chặn request vì hết credit, phía Teeinblue (portal và storefront) hiển thị gì cho merchant/khách?
+- **[OQ-organization-billing-030]** (feature: usage-analytics) Các endpoint analytics xử lý tham số không hợp lệ thế nào (status/sort_by/timeframe ngoài danh sách, thiếu model_id ở metrics): trả lỗi validation 422 hay bỏ qua tham số?
+- **[OQ-organization-billing-031]** (feature: usage-analytics) Giá trị mặc định và tối đa của limit, cùng khoảng start/end tối đa của GET /analytics/requests là bao nhiêu?
+- **[OQ-organization-billing-032]** (feature: usage-analytics) Nhóm endpoint analytics xác thực bằng API key hay JWT, role nào được gọi? Dữ liệu trả về tính cho toàn org hay chỉ cho API key đang gọi? Gọi không có credential có bị 401 không?
+- **[OQ-organization-billing-033]** (feature: usage-analytics) Field cost trong analytics tính bằng credit hay tiền? Có phải bằng đúng số credit bị trừ cho request đó không? Summary của GET /analytics/usage có bằng tổng các bucket không?
+
+### Open issue — gap khác (unknown area, scope chưa rõ, chưa explore được)
+
+- **[OQ-organization-billing-002]** Known defect: trang Feature Requests (/feature-requests) luôn trả lỗi 500 trên staging (khảo sát 2026-08-31). Dùng làm regression watch, không làm expected result; chưa biết repro, mức nghiêm trọng, mã ticket, và chức năng của trang khi hoạt động.
+- **[OQ-organization-billing-003]** Thiếu tài liệu chi tiết 'known-bugs' được link từ Portal sitemap (không có trên Testlane project context): không có repro/severity cho lỗi Feature Requests 500 và quirk tên member lộ Shopify GID, không biết danh sách known bug đầy đủ của portal. Không suy diễn nội dung.
+- **[OQ-organization-billing-004]** (feature: organization-members) Thiếu tài liệu chi tiết 'organization' được link từ Portal sitemap (không có trên Testlane project context): không có mô tả field đổi tên org, danh sách member, nội dung audit log Activity, chi tiết quirk Shopify GID. Các hành động đổi tên org / Leave organization / gửi invite thật / Change role / Remove member chưa từng được test. Không suy diễn nội dung.
+- **[OQ-organization-billing-005]** (feature: organization-members) Known defect: danh sách member trên staging để lộ Shopify GID trong tên member (khảo sát 2026-08-30). Dùng làm regression watch, không làm expected result; chưa có vị trí hiển thị, repro, mức nghiêm trọng.
+- **[OQ-organization-billing-007]** (feature: credits-and-rate-limits) Thiếu tài liệu chi tiết 'subscription-pricing' được link từ Portal sitemap (không có trên Testlane project context): không có danh sách plan ngoài Pro, nội dung 6 gói Buy credits, cách bật/đặt Overage limit, Manage billing (Stripe portal), Downgrade Pro → Free. Các hành động này chưa từng được test. Giá/credit hiện có chỉ là snapshot staging. Không suy diễn nội dung.
+- **[OQ-organization-billing-012]** Tài liệu tổng hợp known bug của portal được link chéo nhưng không có trong bộ tài liệu. Danh sách defect toàn portal, repro và mức nghiêm trọng (ví dụ trang Feature Requests lỗi 500) chưa có nguồn.
+- **[OQ-organization-billing-034]** (feature: organization-members) Khi link mời quá 7 ngày, người được mời thấy gì, lời mời hiển thị trạng thái gì, và có thu hồi lời mời được không?
+- **[OQ-organization-billing-035]** (feature: organization-members) Khi một thành viên rời org, template nào không phục hồi được: template do người đó tạo hay template của org?
+- **[OQ-organization-billing-036]** (feature: organization-members) Lỗi lộ Shopify GID trong tên member xuất hiện ở đâu, tái hiện thế nào, mức nghiêm trọng ra sao?
+- **[OQ-organization-billing-037]** (feature: roles-permissions) Credit balance hiển thị cho Viewer ở đâu (Dashboard, trang Subscription hay nơi khác)?
+- **[OQ-organization-billing-038]** (feature: roles-permissions) Tài khoản dùng để khảo sát staging trong org test "HUB 1" có role gì?
+- **[OQ-organization-billing-039]** (feature: credits-and-rate-limits) 6 gói Buy credits gồm những gói nào, luồng mua thật, Manage billing và Downgrade Pro sang Free hoạt động thế nào?
+- **[OQ-organization-billing-040]** (feature: credits-and-rate-limits) Credit tracking trên portal có thật sự cập nhật real-time không?
+- **[OQ-organization-billing-041]** (feature: usage-analytics) Response schema chi tiết của log request, field summary và bucket là gì?
+- **[OQ-organization-billing-042]** (feature: usage-analytics) Phân biệt user_error và error dựa trên tiêu chí nào?
+- **[OQ-organization-billing-043]** (feature: usage-analytics) Bucket thời gian tính theo múi giờ nào, và timeframe mặc định của /analytics/usage và /analytics/metrics là gì?
+- **[OQ-organization-billing-044]** (feature: usage-analytics) Portal có trang Analytics nào dùng các endpoint này không?
+
+## tasks (`knowledge/products/imagenhub/tasks/open-questions.md`) — 26 mục
+
+### Conflict — 2 statement mâu thuẫn nhau
+
+- **[OQ-tasks-008]** (feature: task-detail-inspection) Nhãn badge Post-processing khi bước post-processing lỗi mâu thuẫn trong cùng tài liệu Task History, cùng phạm vi staging: phần mô tả danh sách/header ghi Success/Error, phần mô tả task có bước lỗi ghi 'Failed'. Cần xác nhận nhãn thực tế ở danh sách và ở header trang chi tiết.
+    - Phía A: Badge Post-processing (cột danh sách và header trang chi tiết) mang nhãn Success/Error.
+    - Phía B: Task có bước post-processing lỗi hiện 'Status: Success' nhưng 'Post-processing: Failed'.
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-tasks-003]** (feature: task-status-and-output) IGH-261 (đang ở preview, chưa lên staging) đổi ảnh output full-size, avatar template và ảnh input sang URL công khai cố định, không hết hạn — trái với docs chính thức 'output là URL ký, hết hạn 1 giờ'. Cần dev/PO xác nhận thay đổi này có chủ đích không, link có mở được khi chưa đăng nhập không, và docs chính thức có được cập nhật theo không. Đây là lệch phạm vi (docs/prod vs staging vs preview), không tự resolve; topic signed-url-expiry không supersede tự động.
+- **[OQ-tasks-005]** (feature: task-history-list) Object tasks: tài liệu không nêu role nào (Owner/Admin/Editor/Viewer của Organization, hay caller API) được gọi POST /process, xem Task History và trang chi tiết task, và có thấy task của thành viên khác trong org không. Mọi item của object hiện mang role 'unspecified' (riêng vài item API ghi 'api-caller').
+- **[OQ-tasks-006]** (feature: task-history-list) Task History còn các vùng chưa khảo sát: filter Model/Provider khi chọn và áp dụng có lọc đúng không và param URL là gì; kết hợp nhiều filter (AND/OR); search khớp theo cách nào; số task mỗi trang, thứ tự mặc định, task cũ hơn 30 ngày có truy cập được không; phân trang có thực sự cursor-based không.
+- **[OQ-tasks-009]** (feature: task-detail-inspection) Nút Restore (cấp task và cấp từng bước trong Processing chain) làm gì: dùng lại ảnh làm input mới hay chạy lại từ bước đó; có tạo task mới hoặc trừ credit không? Tài liệu tự khai chưa bấm thử vì sợ side-effect.
+- **[OQ-tasks-010]** (feature: task-detail-inspection) Cột Code của bảng processing chain phản ánh tầng nào: task Error vẫn hiện Code 200 (người viết suy luận lỗi nằm trong body của provider), trong khi bước post-processing lỗi hiện Code 401. Cần xác nhận ngữ nghĩa cột Code trước khi dùng làm oracle.
+- **[OQ-tasks-012]** Trên staging (2026-08-31), console ghi lỗi 401 ở /api/auth/me khi mở /tasks và /mcp. Request này là gì, có xuất hiện trên mọi trang portal không, và có ảnh hưởng chức năng nào không? Dùng làm điểm theo dõi hồi quy, không phải expected result; được ghi nhận là lỗi đã biết (quirk console), cần Dev xác nhận ảnh hưởng chức năng.
+- **[OQ-tasks-014]** (feature: generate-request) Khi field provider chỉ định một provider không hỗ trợ model, POST /process trả lỗi gì (422?) hay tự route sang provider hợp lệ?
+- **[OQ-tasks-015]** (feature: generate-request) POST /process với template_id không tồn tại hoặc template đã xoá trả 404 not_found hay 403 forbidden (docs chỉ nêu 403 cho template không truy cập được)?
+- **[OQ-tasks-016]** (feature: generate-request) Response của POST /process trả những field nào (id task, trạng thái ban đầu, output khi xử lý đồng bộ?) và caller lấy id task ở field nào?
+- **[OQ-tasks-017]** (feature: task-status-and-output) Khi task ở status error, GET /tasks/{id} trả lỗi ở field nào (tên, cấu trúc, mã lỗi), output là mảng rỗng hay null?
+- **[OQ-tasks-018]** (feature: task-status-and-output) Đọc task của organization khác qua GET /tasks/{id} và /stream trả 403 hay 404, và có chắc chắn không lộ output/input không?
+- **[OQ-tasks-019]** (feature: task-history-list) Search của Task History khớp theo trường nào (model slug, tên hiển thị model, tên template, provider?), khớp một phần hay toàn bộ, có phân biệt hoa/thường không, và danh sách rỗng hiển thị gì?
+- **[OQ-tasks-020]** (feature: task-history-list) Mở lại hoặc reload URL có query param filter của Task History có khôi phục đúng filter và danh sách đã lọc không?
+- **[OQ-tasks-021]** (feature: task-history-list) Task History hiển thị task của toàn organization cho mọi thành viên, hay mỗi người chỉ thấy task của mình? Có khác nhau theo role không?
+- **[OQ-tasks-022]** (feature: task-detail-inspection) Mở trang chi tiết task của organization khác bằng URL trực tiếp thì portal hiển thị gì (404, thông báo không có quyền, chuyển hướng), và có chắc chắn không lộ input, output, log không?
+
+### Open issue — gap khác (unknown area, scope chưa rõ, chưa explore được)
+
+- **[OQ-tasks-001]** (feature: generate-request) Tài liệu không nêu danh sách đầy đủ field body của POST /process, field nào bắt buộc, và tên field để truyền giá trị biến template khi gọi với template_id; payload mẫu chỉ là ví dụ nên không viết được case validation 422 cụ thể.
+- **[OQ-tasks-002]** (feature: generate-request) Tài liệu chi tiết về endpoint staging ("staging-api-endpoints") được tham chiếu nhưng không có trong bộ tài liệu; trong đó có ghi chú 'gọi thẳng /api/process từ browser bị bypass billing' mà không mô tả nội dung. Cần bổ sung tài liệu hoặc xác nhận hành vi billing của /api/process trên staging.
+- **[OQ-tasks-004]** (feature: task-status-and-output) Chưa kiểm signed URL output thực sự hết hạn sau 1 giờ trên staging (tài liệu chỉ đọc tham số X-Amz-Expires=3600), và chưa biết nút Download ở trang chi tiết task dùng URL nào; docs chính thức cũng không nói hạn của URL thumbnail.
+- **[OQ-tasks-007]** (feature: task-history-list) Chưa biết task tạo trực tiếp qua POST /process bằng API key (không qua portal) có xuất hiện trong Task History không; phần verify chỉ liệt kê task từ Model Playground, Template Run, Batch và Design.
+- **[OQ-tasks-011]** (feature: task-detail-inspection) Chưa biết task Error ở bước Generate (ví dụ bị content policy chặn) có bị tính credit không; tài liệu chỉ mô tả refund cho bước post-processing lỗi.
+- **[OQ-tasks-013]** Tài liệu về endpoint API của staging được link chéo nhưng không có trong bộ tài liệu. Base URL và danh sách endpoint trên staging (và mọi khác biệt so với production) chưa được mô tả; docs chính thức chỉ nêu base URL production.
+- **[OQ-tasks-023]** (feature: task-status-and-output) Docs chính thức quy định hạn URL thumbnail thế nào?
+- **[OQ-tasks-024]** (feature: task-history-list) Khi bước generate dùng BYOK, số credit post-processing thực bị trừ có khớp Est. Cost không?
+- **[OQ-tasks-025]** (feature: task-detail-inspection) Trang chi tiết thực tế hiển thị việc A fail và chuyển sang B (IGH-226) ra sao?
+- **[OQ-tasks-026]** (feature: task-detail-inspection) Danh sách đầy đủ giá trị Status của từng bước trong chain?
+
+## teeinblue-integration (`knowledge/products/imagenhub/teeinblue-integration/open-questions.md`) — 5 mục
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-teeinblue-integration-001]** (feature: teeinblue-ai-effect-setup) Nhãn UI chính xác phía Teeinblue để gắn template ImagenHub vào Photo Upload Layer: docs chính thức ImagenHub gọi bằng hai tên khác nhau — mục "Gen AI Effect" → chọn "[ImagenHub] AI Effect" (Bước setup đầy đủ) và mục "ImagenHub Template" (Image effects) trong personalization settings của layer (Dùng với Teeinblue). Đây là cùng một chỗ gọi hai kiểu, hai bước lồng nhau, hay hai phiên bản UI? Nhãn nào là hiện hành?
+- **[OQ-teeinblue-integration-002]** (feature: teeinblue-ai-effect-setup) Role thực hiện các bước tích hợp Teeinblue (dán API key vào Teeinblue Portal, gắn template vào Photo Upload Layer) không được docs nêu: có phải merchant/admin của store Teeinblue không, và phía ImagenHub cần role nào trong Organization để tạo API key và template dùng cho tích hợp?
+- **[OQ-teeinblue-integration-003]** (feature: teeinblue-ai-effect-setup) Docs không mô tả hành vi phía Teeinblue khi ImagenHub lỗi: task ImagenHub fail, hết credit, API key sai/hết hạn/bị thu hồi, hoặc template đã gắn bị xoá — khách upload ảnh nhận được gì trên storefront và merchant thấy gì. Chưa có expected cho luồng lỗi của tích hợp.
+
+### Open issue — gap khác (unknown area, scope chưa rõ, chưa explore được)
+
+- **[OQ-teeinblue-integration-004]** (feature: teeinblue-ai-effect-setup) Fail-Safe Redundancy trong tích hợp Teeinblue: khi key BYOK hết token và request chạy qua mạng ImagenHub, có trừ credit ImagenHub không, có giới hạn theo plan không, và merchant có được báo không? Docs không nêu (chủ đề tính phí, không tự suy).
+- **[OQ-teeinblue-integration-005]** (feature: teeinblue-ai-effect-setup) Chi tiết từng trang của mục Teeinblue trong docs chính thức (tổng quan, api-keys, model-access, templates, integration) là gì?
+
+## templates (`knowledge/products/imagenhub/templates/open-questions.md`) — 46 mục
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-templates-001]** Role của object templates chưa được chỉ định (bootstrap để role trống). Tài liệu trải trên nhiều role: Owner/Admin/Editor/Viewer của Organization (ma trận quyền trong docs chính thức: Templates — Owner/Admin/Editor "Manage", Viewer "View") và caller API. Quan sát thực tế chỉ có Viewer (TC-IGH-204) và Admin của org Free plan; Editor và Owner chưa có quan sát nào trên trang Templates/Fallback. Cần chốt role mặc định cho checklist của object và expected cho Editor/Owner.
+- **[OQ-templates-002]** (feature: template-library) Nút hành động trên mỗi card public template trong modal Import (Browse Public Templates) chưa được bấm thử; người viết chỉ phỏng đoán là "Clone vào org mình". Hành vi import/clone public template chưa được mô tả.
+- **[OQ-templates-003]** (feature: template-library) Category có phải dữ liệu tổ chức của org (xoá/đổi tên được, ai có quyền) hay cố định? Tài liệu chỉ ghi nhận định của người viết sau khi thấy category trong test data biến mất.
+- **[OQ-templates-004]** (feature: template-authoring) 2 icon action đầu tiên trên mỗi row/card template chưa xác định chức năng (không mở gì khi hover; người viết phỏng đoán Duplicate/Edit-quick).
+- **[OQ-templates-007]** (feature: template-authoring) Trường Prompt của form New Template có bắt buộc không? Tài liệu chỉ ghi nhãn "Prompt*" mà không chú thích bắt buộc như Name; không suy required.
+- **[OQ-templates-008]** (feature: template-post-processing) Cơ chế khi 1 step post-processing lỗi (task vẫn Success, Post-processing Failed, chain dừng, trả ảnh thành công gần nhất, step lỗi được hoàn credit) chỉ được khái quát từ 1 task quan sát trên staging (2026-08-31); chưa có spec nào phát biểu. Cần PO/Dev xác nhận đây là hành vi thiết kế, và xác nhận nguyên nhân lỗi 401 (key bị revoke hay hết hạn).
+- **[OQ-templates-009]** (feature: template-post-processing) Docs chính thức nói task.succeeded "vẫn có thể" mang post_processing_status báo hậu xử lý lỗi; chưa rõ điều kiện và giá trị cụ thể của field này.
+- **[OQ-templates-010]** (feature: template-variables) Backend /process có PHẢI validate/reject request có biến {{...}} chưa điền không? Hiện chỉ có quan sát: UI portal chặn Run (Form mode) nhưng API /process không validate, gửi nguyên literal {{...}} cho provider, task Success và vẫn tính đủ phí. Hai quan sát ở hai tầng khác nhau, không phải mâu thuẫn cùng phạm vi; không kết luận là bug.
+- **[OQ-templates-011]** (feature: template-variables) Form mode không có ô điền giá trị biến — có chủ ý (biến dành cho caller API) hay là gap UX? Tài liệu tự nêu chưa rõ và đề xuất báo team ImagenHub.
+- **[OQ-templates-013]** (feature: template-run-history) Run history của template có NÊN hiển thị run Error không? PO chưa chốt (TC-IGH-252, task Testlane IGH-012); case cần fixture "template có run Error" đang blocked. Lưu ý: mô tả lightbox (khảo sát 2026-08-30) liệt kê badge Success/Error, còn khảo sát 2026-10-01 thấy Run history chỉ hiện run Success.
+- **[OQ-templates-014]** (feature: template-run-history) IGH-261 (đã có trên preview, chưa lên staging): đổi ảnh lightbox, avatar template, ảnh input sang URL công khai cố định không chữ ký, tức link ảnh output xem được vĩnh viễn — trái quy tắc "URL ký hết hạn 1 giờ" của docs chính thức. Có chủ đích không? Chưa test mở link khi chưa đăng nhập. Item quy tắc docs sống ở tasks/task-status-and-output.
+- **[OQ-templates-016]** (feature: fallback-template) Fallback IGH-226: số lần thử lại / timeout của template A trước khi chuyển sang B — PO/Dev chưa trả lời (tài liệu dặn không suy đoán).
+- **[OQ-templates-017]** (feature: fallback-template) Fallback IGH-226: khi B chạy thì post_processing của template nào được áp dụng (của A hay của B)? Chưa có câu trả lời.
+- **[OQ-templates-018]** (feature: fallback-template) Fallback IGH-226: A và B có dùng chung bộ {{variables}} không? Nếu B có biến khác, prompt của B có thể còn literal {{...}}. Chưa có câu trả lời.
+- **[OQ-templates-019]** (feature: fallback-template) Fallback IGH-226: "4 loại lỗi đã chốt" khiến A chuyển sang B là những lỗi nào? Tài liệu không liệt kê; không viết được case kích hoạt đúng/sai điều kiện.
+- **[OQ-templates-020]** (feature: fallback-template) Q25: cách ép template A fail để test chưa có câu trả lời, nên các rule cần A fail (A fail → tự chạy B, chỉ 1 cấp, cost/header khi B chạy, phạm vi /process và Batch, webhook task.failed, task detail ghi lý do) chưa được verify trên staging.
+- **[OQ-templates-022]** (feature: fallback-template) Nguyên nhân BUG-128/129: người viết giả thuyết là lỗi tầng hiển thị (client lấy nhầm field/endpoint để kiểm tra template fallback còn tồn tại), không phải dữ liệu chuẩn bị bị hỏng. Cần Dev xác nhận để biết dữ liệu fallback đã lưu có đúng và có được dùng khi chạy hay không.
+- **[OQ-templates-027]** (feature: fallback-template) Test case nào (TC-IGH-xxx, build nào) chứng minh từng ý "đúng spec" của fallback trong đợt chạy staging 2026-09-17 (A success chỉ 1 bước Generate; chỉ trừ credit A; Run/ước tính chỉ hiện giá A; template không fallback y hệt trước release; org hết credit bị từ chối, không tạo task; Admin org Free plan gắn được fallback)? BUG-128/129 ứng với TC nào và severity nào (tài liệu ghi gộp High/Medium cho TC-IGH-181/183)? TC-IGH-184/196 viết cho API /process + header X-Credits-Used nhưng chạy qua nút Run trên UI — cần chạy lại đúng kênh API.
+- **[OQ-templates-028]** (feature: dynamic-upload-ratio) Docs chính thức mô tả Auto chung cho template, nhưng trên staging (2026-09-23) GPT-image-2.5 sunburst/edit và flare/edit không có Auto (gpt-image-1.5/edit thì có; nano-banana-2-lite có picker mặc định Auto). Khác phạm vi model, không phải mâu thuẫn cùng phạm vi. Cần danh sách model nào có/không có Auto, model nào raw-dimension, và xác nhận dòng GPT-image-2.5 /edit có dự kiến bật Auto không (hiện chỉ là nhận định của người viết).
+- **[OQ-templates-029]** (feature: dynamic-upload-ratio) Docs chính thức nói nghĩa cũ của "auto" ("để provider tự chọn") đã bị retire, thay bằng "khớp shape ảnh gửi vào". Còn đúng ở bản hiện tại không, và có caller nào còn dùng nghĩa cũ?
+- **[OQ-templates-030]** (feature: template-library) GET /templates và GET /templates/{id} khi không kèm credential: phải trả 401 unauthenticated, hay được phép trả danh sách template public?
+- **[OQ-templates-031]** (feature: template-library) Trên trang danh sách template, mỗi role (Owner/Admin/Editor/Viewer) được thấy và dùng những control nào (New Template, New Category, Import, Delete)?
+- **[OQ-templates-032]** (feature: template-authoring) Role Owner/Admin/Editor được tạo, sửa, xoá template và Save as Template / Update từ playground không? Có khác biệt nào giữa các role này?
+- **[OQ-templates-033]** (feature: dynamic-upload-ratio) Khi ảnh input cách đều hai ratio khả dụng, Auto snap về ratio nào (luật phá hoà)?
+
+### Open issue — gap khác (unknown area, scope chưa rõ, chưa explore được)
+
+- **[OQ-templates-005]** (feature: template-authoring) Lỗi đã biết trên staging (2026-09-10): nhấn Escape khi dropdown Category đang mở đóng luôn modal New Template và mất dữ liệu đã điền. Dùng làm regression watch, không phải expected result; chưa có mã bug.
+- **[OQ-templates-006]** (feature: template-authoring) Lỗi đã biết trên staging (2026-08-30): sau khi xoá template, số đếm phân trang không tự cập nhật tới khi reload. Dùng làm regression watch; chưa có mã bug.
+- **[OQ-templates-012]** (feature: template-variables) Tên field và cách truyền giá trị biến template khi gọi /process với template_id không được tài liệu nào mô tả (docs chính thức không nhắc variables) — chưa viết được case API cho biến.
+- **[OQ-templates-015]** (feature: template-run-history) Tiêu chí hiệu năng của trang chi tiết template chưa chốt với PO (đo "thao tác → ảnh hiện" hay "thời gian tải từng ảnh"); các số đo hiện có chỉ là 1 lần đo.
+- **[OQ-templates-021]** (feature: fallback-template) BUG-128 / BUG-129 (High/Medium, TC-IGH-181/183, 2026-09-17): panel Fallback template luôn báo "The fallback template was deleted..." dù đã lưu đúng, không hiện tên và giá fallback — che rule "hiện giá template fallback". Dùng làm regression watch; giả thuyết nguyên nhân (tầng hiển thị) chưa xác nhận; mapping BUG-128/129 ↔ severity ↔ TC chưa rõ.
+- **[OQ-templates-023]** (feature: fallback-template) BUG-130 (Medium, TC-IGH-205, 2026-09-17): dialog Delete Template khi xoá template đang làm fallback hoàn toàn generic, vi phạm rule "xoá template đang làm fallback → có cảnh báo". Dùng làm regression watch.
+- **[OQ-templates-024]** (feature: fallback-template) Câu "gọi thẳng fetch tới /api/process từ browser bị bypass billing" dẫn sang tài liệu staging API endpoints không có trong bộ tài liệu — ý nghĩa cụ thể (bỏ qua tính phí hay bỏ qua kiểm tra) chưa được mô tả; có thể là rủi ro billing.
+- **[OQ-templates-025]** (feature: fallback-template) Hành vi header X-Credits-Used / X-Credits-Remaining khi fallback chạy chưa được kiểm qua API: TC-IGH-184/196 viết theo API /process nhưng đợt test dùng nút Run trên UI + Task History làm bằng chứng thay thế.
+- **[OQ-templates-026]** (feature: fallback-template) TC-IGH-204 blocked một phần: org role Viewer duy nhất chỉ có 1 template không gắn fallback, nên kịch bản Viewer xem template "có biến + có fallback" chưa verify được.
+- **[OQ-templates-034]** (feature: template-library) Shape response và meta phân trang của GET /templates là gì?
+- **[OQ-templates-035]** (feature: template-authoring) Có API công khai để tạo/sửa/xoá template không, contract là gì?
+- **[OQ-templates-036]** (feature: template-authoring) Nhánh tạo template bằng import từ preset hoạt động thế nào?
+- **[OQ-templates-037]** (feature: template-authoring) Size mặc định của GPT Image 1 Mini khi tạo template là gì?
+- **[OQ-templates-038]** (feature: template-authoring) Xoá template thì task và Run history cũ của template đó ra sao; có khôi phục được không?
+- **[OQ-templates-039]** (feature: template-authoring) TC-IGH-075 chạy trên build nào?
+- **[OQ-templates-040]** (feature: template-post-processing) Có giới hạn số step, và step bị lỗi có được thử lại không?
+- **[OQ-templates-041]** (feature: template-post-processing) Cơ chế provider key riêng và webhook/cảnh báo chi tiết ra sao?
+- **[OQ-templates-042]** (feature: template-variables) Tài liệu QA về Models nhắc tới một mục "Quirk: variables" không tồn tại trong tài liệu đó — hành vi Form/JSON với biến trên trang model có khác trang template không?
+- **[OQ-templates-043]** (feature: template-run-history) Run in Batch từ trang template hoạt động thế nào?
+- **[OQ-templates-044]** (feature: template-run-history) Tài liệu QA về Templates được ghi chú IGH-261 trỏ tới một tài liệu khác không có trong bộ tài liệu.
+- **[OQ-templates-045]** (feature: fallback-template) Docs chính thức có mô tả fallback không?
+- **[OQ-templates-046]** (feature: dynamic-upload-ratio) Width/height ảnh input được truyền bằng field nào trong request?
 
 ## ai-offer-creation (`knowledge/products/qik-volume/ai-offer-creation/open-questions.md`) — 6 mục
 
