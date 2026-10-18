@@ -1,6 +1,6 @@
 # Open Questions — automation-growth
 
-Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh từ bootstrap DOC_BOOTSTRAP đầu tiên của Mysbox (nguồn: bộ Product KB v1 do dev viết từ source code, 2026-10-16). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
+Tổng: 103 mục (CONFLICT 12 · OPEN_ISSUE 36 · NEEDS_CONFIRMATION 55). Sinh từ bootstrap DOC_BOOTSTRAP đầu tiên của Mysbox (nguồn: bộ Product KB v1 do dev viết từ source code, 2026-10-16); REFRESH trên staging 2026-10-17 thêm mục mới, ghi `staging_observation` (OBSERVED_CURRENT, không resolve NEEDS_CONFIRMATION/CONFLICT) và gỡ OPEN_ISSUE đã được quan sát trả lời (xem CHANGELOG). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
 
 ## OQ-automation-growth-001 — NEEDS_CONFIRMATION
 
@@ -95,7 +95,13 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
   ],
   "check_ids": [
     "recent-pulls-feed:CHK-019"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-automation-growth-005 / CONF-automation-growth-04: 2026-10-17: Feed rỗng nên không có danh sách field entry; chỉ thấy cơ chế addFeed lưu feed.entries theo variant id.",
+  "staging_observation_kb_ids": [
+    "recent-pulls-feed#KB-083",
+    "recent-pulls-feed#KB-084"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -116,7 +122,12 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
   ],
   "check_ids": [
     "recent-pulls-feed:CHK-016"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-automation-growth-006 / CONF-automation-growth-05: 2026-10-17: Style Settings → Recent pulls (công tắc tắt) không có \"visible from\" hay \"publish test orders\"; chưa biết khi bật có hiện không, và ai đổi được visible-from (back-office) không quan sát.",
+  "staging_observation_kb_ids": [
+    "recent-pulls-feed#KB-082"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -158,7 +169,12 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
   ],
   "check_ids": [
     "share-unboxing:CHK-014"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-automation-growth-008 / CONF-automation-growth-08: 2026-10-17: Style Settings staging có thẻ Share unboxing (màu, ẩn nút kênh) nhưng không có công tắc bật/tắt share và không có mục \"Share\" khác. Khớp phía KB-011; back-office không quan sát; conflict không tự đóng.",
+  "staging_observation_kb_ids": [
+    "share-unboxing#KB-149"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -485,7 +501,12 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
     "recent-pulls-feed#KB-038",
     "recent-pulls-feed#KB-060",
     "recent-pulls-feed#KB-074"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-automation-growth-027: 2026-10-17: Không có nút Resync phía merchant ở Style Settings → Recent pulls (công tắc tắt); admin panel NOT_COVERED.",
+  "staging_observation_kb_ids": [
+    "recent-pulls-feed#KB-082"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -500,7 +521,12 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
   "kb_ids": [
     "recent-pulls-feed#KB-005",
     "recent-pulls-feed#KB-009"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-automation-growth-028: 2026-10-17: Món trúng của đơn test là món 25%; feed tắt → không trả lời được lọc món.",
+  "staging_observation_kb_ids": [
+    "recent-pulls-feed#KB-084"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -696,7 +722,10 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
   "kb_ids": [
     "shopify-flow-triggers#KB-031",
     "shopify-flow-triggers#KB-032"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-automation-growth-040: 2026-10-17: Validation không quan sát (classifier). Không có item.",
+  "staging_observation_kb_ids": [],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -815,7 +844,12 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
   "kb_ids": [
     "_object-level#KB-004",
     "_object-level#KB-005"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-automation-growth-048: 2026-10-17: Shop Free: công tắc Flow không khoá/không badge; Pricing không nhắc Flow. Không bật nên giới hạn phía server chưa biết.",
+  "staging_observation_kb_ids": [
+    "_object-level.automation-growth#KB-006"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1002,7 +1036,12 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
     "recent-pulls-feed#KB-056",
     "recent-pulls-feed#KB-058",
     "recent-pulls-feed#KB-059"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-automation-growth-054: 2026-10-17: Staging build hiện tại không có tuỳ chọn \"publish test orders\" trên Style Settings; \"Show recent pulls\" tắt. Lộ trình production và hành vi production không quan sát.",
+  "staging_observation_kb_ids": [
+    "recent-pulls-feed#KB-082"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1033,7 +1072,12 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
   "kb_ids": [
     "recent-pulls-feed#KB-017",
     "recent-pulls-feed#KB-040"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-automation-growth-056: 2026-10-17: Trang box physical: block mount nhưng không hiện gì, giống box digital khi feed tắt; hành vi khi feed bật chưa quan sát.",
+  "staging_observation_kb_ids": [
+    "recent-pulls-feed#KB-085"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1049,7 +1093,12 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
     "recent-pulls-feed:CHK-006",
     "recent-pulls-feed:CHK-023",
     "recent-pulls-feed:CHK-025"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-automation-growth-057: 2026-10-17: Không có request riêng tới backend cho feed (dữ liệu chỉ qua Liquid inline); không có PII trong mysboxStore/_Mysbox. Field của entry thật chưa quan sát (feed rỗng). CHK-023/025 NOT_COVERED.",
+  "staging_observation_kb_ids": [
+    "recent-pulls-feed#KB-083"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1063,7 +1112,12 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
   "summary": "Trên nhánh staging, Mysbox ghi lịch sử mọi lượt reveal digital bất kể feed bật hay tắt, và có tuỳ chọn \"publish test orders\" (mặc định tắt) để đưa đơn test vào feed. Khi nào hai thay đổi này lên production, và hành vi có giữ như mô tả không?",
   "check_ids": [
     "recent-pulls-feed:CHK-018"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-automation-growth-058: 2026-10-17: Như OQ-automation-growth-054: không có tuỳ chọn \"publish test orders\" trên Style Settings staging.",
+  "staging_observation_kb_ids": [
+    "recent-pulls-feed#KB-082"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1435,7 +1489,13 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
   "summary": "Giá trị mặc định của phần tuỳ chỉnh share (bốn nút kênh đều hiện, màu popup và nút \"Save image\" theo theme, màu CTA trong ảnh là gì) và danh sách đầy đủ 11 đoạn chữ của share unboxing (mặc định tiếng Anh) là gì?",
   "check_ids": [
     "share-unboxing:CHK-015"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-automation-growth-074: 2026-10-17: Ghi được giá trị mặc định trên form (popup #ffffff/#1a1a1a/#2563eb, 4 nút kênh hiện, CTA #1a1a1a/#ffffff); translations/share-unboxing?locale=default trả data null nên 11 đoạn chữ mặc định chưa đọc được.",
+  "staging_observation_kb_ids": [
+    "share-unboxing#KB-150",
+    "share-unboxing#KB-151"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1636,7 +1696,10 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
     "shopify-flow-triggers#KB-063",
     "shopify-flow-triggers#KB-064",
     "shopify-flow-triggers#KB-065"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-automation-growth-087: 2026-10-17: Như OQ-040.",
+  "staging_observation_kb_ids": [],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1650,7 +1713,10 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
   "summary": "Giờ thông báo của trigger \"Order unboxing soon\" được tính theo công thức nào (tài liệu chỉ có ví dụ số)? Khi \"Trigger before\" lớn hơn hoặc bằng thời gian auto-unbox thì hệ thống chặn lưu, bỏ qua không nhắc hay nhắc ngay? Khoảng giá trị hợp lệ của \"Auto-unbox after\" và \"Trigger before\" là gì (tối thiểu, tối đa, có cho 0 hay để trống)?",
   "check_ids": [
     "shopify-flow-triggers:CHK-016"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-automation-growth-088: 2026-10-17: Như OQ-040; công thức giờ bắn NOT_OBSERVED.",
+  "staging_observation_kb_ids": [],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1710,7 +1776,12 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
   "summary": "Gói Mysbox (Free hoặc gói trả phí) có giới hạn quyền dùng trigger Shopify Flow không? Tài liệu chỉ nói không tìm thấy giới hạn, chưa khẳng định là không có.",
   "check_ids": [
     "shopify-flow-triggers:CHK-026"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-automation-growth-092: 2026-10-17: Như OQ-automation-growth-048.",
+  "staging_observation_kb_ids": [
+    "_object-level.automation-growth#KB-006"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1828,6 +1899,93 @@ Tổng: 99 mục (CONFLICT 12 · OPEN_ISSUE 34 · NEEDS_CONFIRMATION 53). Sinh t
   "summary": "Các check P1 (tiền / billing / bốc thăm / refund / store credit / permission / xoá dữ liệu) của feature này có oracle STRONG nhưng chỉ dựa trên tài liệu dev (dev_doc). Theo luật oracle, chúng giữ NEEDS_CONFIRMATION cho tới khi có test_case PASS (hoặc PO/Dev xác nhận trực tiếp) cho đúng hành vi. Danh sách check ở check_ids.",
   "check_ids": [
     "system-emails-and-notifications:CHK-024"
+  ]
+}
+```
+
+## OQ-automation-growth-100 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-automation-growth-100",
+  "type": "OPEN_ISSUE",
+  "feature_id": "recent-pulls-feed",
+  "summary": "Trên staging, khi \"Show recent pulls\" tắt, trang Style Settings → Recent pulls chỉ có công tắc; tài liệu liệt kê thêm Item image shape, Hide item name/chance/price, Image size, Maximum items shown ở màn này. Các thiết lập đó chỉ hiện khi bật công tắc hay không có trên màn hình? Cần quan sát lại với công tắc bật (cần operator cho phép sửa Style Settings rồi khôi phục).",
+  "kb_ids": [
+    "recent-pulls-feed#KB-082",
+    "recent-pulls-feed#KB-006",
+    "recent-pulls-feed#KB-045",
+    "recent-pulls-feed#KB-046",
+    "recent-pulls-feed#KB-047",
+    "recent-pulls-feed#KB-048",
+    "recent-pulls-feed#KB-049",
+    "recent-pulls-feed#KB-051"
+  ],
+  "related_oq_ids": [
+    "OQ-automation-growth-006",
+    "OQ-automation-growth-054"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-automation-growth-101 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-automation-growth-101",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "recent-pulls-feed",
+  "summary": "Staging (công tắc tắt): block recent pulls vẫn mount nhưng rỗng, và lượt mở của đơn test không vào feed. Khi bật \"Show recent pulls\", feed có được nạp bằng lời gọi addFeed inline (Liquid) như cấu trúc này không, và box Sealed box có bao giờ hiện entry không?",
+  "kb_ids": [
+    "recent-pulls-feed#KB-083",
+    "recent-pulls-feed#KB-084",
+    "recent-pulls-feed#KB-085"
+  ],
+  "check_ids": [
+    "recent-pulls-feed:CHK-031"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-automation-growth-102 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-automation-growth-102",
+  "type": "OPEN_ISSUE",
+  "feature_id": "share-unboxing",
+  "summary": "Khách vãng lai (vào trang reveal bằng magic link) thấy nút \"Share unboxing\" sau khi mở box — bấm thì tạo được link/ảnh, bị chặn (thông báo gì), hay nút lẽ ra phải ẩn với guest? — Tài liệu nói chỉ khách đã đăng nhập chia sẻ được (KB-016/KB-017) nhưng staging hiện nút cho guest; không có expected result cho nhánh guest bấm Share.",
+  "kb_ids": [
+    "share-unboxing#KB-152",
+    "share-unboxing#KB-016",
+    "share-unboxing#KB-017"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-automation-growth-103 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-automation-growth-103",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": null,
+  "summary": "Quan sát staging mới chạm vùng rủi ro cao (quyền truy cập / tiền / billing): Shopify Flow trên shop gói Free: công tắc không khoá, Pricing không nhắc Flow. Item là OBSERVED_CURRENT; cần PO xác nhận đây là hành vi dự kiến trước khi dùng làm expected result.",
+  "kb_ids": [
+    "_object-level.automation-growth#KB-006"
+  ],
+  "tags": [
+    "staging-observed",
+    "risk-flag"
   ]
 }
 ```

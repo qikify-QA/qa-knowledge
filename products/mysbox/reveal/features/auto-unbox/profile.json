@@ -55,6 +55,18 @@
         "auto-unbox#KB-059",
         "auto-unbox#KB-060"
       ]
+    },
+    {
+      "role": "merchant (staging, quan sát)",
+      "permission_observed": "OBSERVED_CURRENT staging/gói Free: chỉ xem pane Auto-Unbox (checkbox không tick), không đổi setting.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "auto-unbox#KB-065"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-17: lần 2 xem pane (đầu pass 1, cuối pass 2), checkbox vẫn không tick; tick bị công cụ từ chối.",
+      "refresh_kb_refs": [
+        "auto-unbox#KB-068"
+      ]
     }
   ],
   "entry_points": [
@@ -65,7 +77,12 @@
         "auto-unbox#KB-008",
         "auto-unbox#KB-009",
         "auto-unbox#KB-013"
-      ]
+      ],
+      "observed_kb_refs": [
+        "auto-unbox#KB-065",
+        "auto-unbox#KB-068"
+      ],
+      "refresh_note": "Staging: đường dẫn quan sát là General Settings → menu \"Instantly opening box\" → \"Auto-Unbox\" (KB-065)."
     },
     {
       "path": "Job quét auto-unbox (lịch 00:00 / 08:00 / 16:00 giờ máy chủ)",
@@ -110,6 +127,11 @@
         "auto-unbox#KB-012",
         "auto-unbox#KB-011",
         "auto-unbox#KB-051"
+      ],
+      "observed_kb_refs": [
+        "auto-unbox#KB-065",
+        "auto-unbox#KB-067",
+        "auto-unbox#KB-068"
       ]
     },
     {
@@ -119,6 +141,10 @@
         "auto-unbox#KB-017",
         "auto-unbox#KB-018",
         "auto-unbox#KB-011"
+      ],
+      "observed_kb_refs": [
+        "auto-unbox#KB-066",
+        "auto-unbox#KB-068"
       ]
     },
     {
@@ -164,7 +190,12 @@
         "auto-unbox#KB-005",
         "auto-unbox#KB-037",
         "auto-unbox#KB-048"
-      ]
+      ],
+      "observed_kb_refs": [
+        "auto-unbox#KB-066",
+        "auto-unbox#KB-068"
+      ],
+      "refresh_note": "Staging (auto-unbox tắt): không có đếm ngược \"Auto-open in\" — chỉ nhánh 'không có giờ auto-unbox'. Quan sát staging 2026-10-17: thêm 3 đơn, vẫn chỉ nhánh này."
     },
     {
       "name": "Mở bù đơn bị bỏ sót bằng lệnh vận hành",
@@ -245,6 +276,18 @@
         "auto-unbox#KB-021",
         "auto-unbox#KB-022"
       ]
+    },
+    {
+      "from": "đơn mới (shop đang tắt auto-unbox)",
+      "to": "đơn có unboxing_at null, không đếm ngược",
+      "trigger": "Đơn được tạo / paid",
+      "condition": "OBSERVED_CURRENT staging, 3 đơn",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "auto-unbox#KB-066",
+        "auto-unbox#KB-068"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-17: thêm #1009–#1011 (tổng 6 đơn qua hai đợt quan sát)."
     }
   ],
   "confirmed_rules": [
@@ -258,6 +301,11 @@
       "rule": "Merchant cấu hình tại General settings > tab \"Auto-Unbox\" gồm Enable auto-unbox, Auto-unbox after N hour, Enable auto-unbox trigger, Trigger before N hour.",
       "kb_refs": [
         "auto-unbox#KB-008"
+      ],
+      "refresh_note": "Staging: khi checkbox tắt, pane không hiện ô \"Auto-unbox after\" hay trigger (KB-065) — rule base không đổi. Quan sát staging 2026-10-17: lần 2 cùng quan sát (KB-068).",
+      "refresh_kb_refs": [
+        "auto-unbox#KB-065",
+        "auto-unbox#KB-068"
       ]
     },
     {
@@ -394,6 +442,49 @@
       "kb_refs": [
         "auto-unbox#KB-064"
       ]
+    },
+    {
+      "behavior": "General Settings (auto-unbox đang tắt): menu \"Instantly opening box\" → \"Auto-Unbox\", \"Buyback limit time\"; \"Sealed box\" → \"Order setting\"; \"Integration\" → \"Koin Store Credit & Rewards\", \"Shopify Flow\"; pane Auto-Unbox có checkbox \"Enable auto-unbox\" không tick kèm \"Automatically unbox all items in confirmed orders after a specified delay.\"; không có ô \"Auto-unbox after\" hay trigger khi checkbox tắt — 2 lần.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "MEDIUM",
+      "note": "Khớp base KB-008/KB-010 (corroboration); các field phụ hiện có điều kiện.",
+      "kb_refs": [
+        "auto-unbox#KB-065"
+      ]
+    },
+    {
+      "behavior": "Đơn tạo khi store tắt auto-unbox (#1006, #1007, #1008): unboxing_at null trong GET /api/orders, /api/orders/{id} và /apps/mysbox/api/orders/{id}; trang khách không hiện đếm ngược \"Auto-open in\".",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 3,
+      "confidence": "MEDIUM",
+      "note": "Khớp base KB-011/KB-017. Chạm CONF-reveal-03 nhưng không phân biệt mốc tạo đơn vs paid — không phân xử.",
+      "kb_refs": [
+        "auto-unbox#KB-066"
+      ]
+    },
+    {
+      "behavior": "GET <MYS_API_BASE>/api/users/config trả 200 {\"data\": null} ở mọi lần mở General Settings / đổi pane (pass 1: 5 lần; pass 2: 2 lần); JSON nhúng trong document /general-settings chỉ có khoá shop/plan/capacity — nguồn giá trị setting đang hiển thị không xác định.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "auto-unbox#KB-067"
+      ]
+    },
+    {
+      "behavior": "Pane \"Auto-Unbox\" (đầu pass 1, cuối pass 2): checkbox \"Enable auto-unbox\" không tick, helper \"Automatically unbox all items in confirmed orders after a specified delay.\", không có ô khác khi tắt; mỗi lần đổi pane gọi GET /api/users/config 200 {\"data\": null}; #1009–#1011 đều unboxing_at null ở API merchant và app proxy, trang khách không có \"Auto-open in\". Tick checkbox bị permission classifier của công cụ từ chối (không phải quyền của app).",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "MEDIUM",
+      "note": "Corroborate KB-008/009/065/066/067; ô phụ thuộc và validation chưa quan sát.",
+      "kb_refs": [
+        "auto-unbox#KB-068"
+      ]
     }
   ],
   "observed_validations": [],
@@ -422,6 +513,14 @@
           "auto-unbox#KB-012",
           "auto-unbox#KB-015"
         ]
+      },
+      {
+        "surface": "General Settings → \"Instantly opening box\" → \"Auto-Unbox\" (checkbox, field phụ ẩn khi tắt) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "auto-unbox#KB-065",
+          "auto-unbox#KB-068"
+        ]
       }
     ],
     "storefront": [
@@ -432,6 +531,14 @@
           "auto-unbox#KB-039",
           "auto-unbox#KB-005"
         ]
+      },
+      {
+        "surface": "Chi tiết đơn của khách không có \"Auto-open in\" khi auto-unbox tắt — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "auto-unbox#KB-066",
+          "auto-unbox#KB-068"
+        ]
       }
     ],
     "api": [
@@ -439,6 +546,35 @@
         "surface": "Shopify Flow trigger \"Order unboxing soon\" (payload chưa có trong KB)",
         "kb_refs": [
           "auto-unbox#KB-014"
+        ]
+      },
+      {
+        "surface": "GET /api/users/config (General Settings; trả {\"data\": null})",
+        "method": "GET",
+        "route": "/api/users/config",
+        "host": "<MYS_API_BASE>",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "auto-unbox#KB-067",
+          "auto-unbox#KB-065",
+          "auto-unbox#KB-068"
+        ]
+      },
+      {
+        "surface": "Operation thứ hai được gọi khi tải General Settings (route không nêu trong statement KB)",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "auto-unbox#KB-065"
+        ]
+      },
+      {
+        "surface": "GET /api/orders, GET /api/orders/{id} (merchant) và GET /apps/mysbox/api/orders/{shopify_order_id} (khách) — field unboxing_at",
+        "method": "GET",
+        "route": "/api/orders · /api/orders/{shopify_order_id} · /apps/mysbox/api/orders/{shopify_order_id}",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "auto-unbox#KB-066",
+          "auto-unbox#KB-068"
         ]
       }
     ],
@@ -450,6 +586,14 @@
           "auto-unbox#KB-026",
           "auto-unbox#KB-036",
           "auto-unbox#KB-030"
+        ]
+      },
+      {
+        "surface": "Đơn: unboxing_at null khi auto-unbox tắt — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "auto-unbox#KB-066",
+          "auto-unbox#KB-068"
         ]
       }
     ],
@@ -553,6 +697,14 @@
         "auto-unbox#KB-005",
         "auto-unbox#KB-037"
       ]
+    },
+    {
+      "risk": "GET /api/users/config trả data null — check đọc giá trị setting auto-unbox qua API không có nguồn rõ.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "auto-unbox#KB-067",
+        "auto-unbox#KB-068"
+      ]
     }
   ],
   "limitations": [
@@ -572,10 +724,21 @@
         "auto-unbox#KB-034",
         "auto-unbox#KB-049"
       ]
+    },
+    {
+      "limitation": "Quan sát staging chỉ đọc setting (auto-unbox tắt), không chờ job — mọi hành vi job/trigger chưa có bằng chứng runtime.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "auto-unbox#KB-065",
+        "auto-unbox#KB-066",
+        "auto-unbox#KB-068"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-17: bật tạm auto-unbox theo test_design bị công cụ từ chối — vẫn chưa có bằng chứng runtime."
     }
   ],
   "freshness": {
-    "observed_at": null
+    "observed_at": "2026-10-17",
+    "base_observed_at": "2026-10-16"
   },
   "unknown_areas": [
     {
@@ -588,7 +751,12 @@
         "auto-unbox#KB-052",
         "auto-unbox#KB-057"
       ],
-      "oq_id": "OQ-reveal-003"
+      "oq_id": "OQ-reveal-003",
+      "refresh_note": "Staging: auto-unbox tắt, unboxing_at null — không phân biệt được (KB-066); quan sát staging 2026-10-16 được ghi bổ sung vào OQ-reveal-003. Quan sát staging 2026-10-17: vẫn tắt (bật bị từ chối), 3 đơn mới unboxing_at null (KB-068).",
+      "refresh_kb_refs": [
+        "auto-unbox#KB-066",
+        "auto-unbox#KB-068"
+      ]
     },
     {
       "question": "Ngưỡng thật khiến đơn có resell window dài không bao giờ được auto-unbox là 7 ngày cộng hay trừ độ trễ auto-unbox, và hạn resell tính từ mốc nào?",
@@ -646,7 +814,11 @@
         "auto-unbox#KB-015",
         "auto-unbox#KB-003"
       ],
-      "oq_id": "OQ-reveal-006"
+      "oq_id": "OQ-reveal-006",
+      "refresh_note": "Quan sát staging 2026-10-17: tick \"Enable auto-unbox\" bị permission classifier của công cụ từ chối — không có input min/max/step hay lỗi nào để ghi (KB-068).",
+      "refresh_kb_refs": [
+        "auto-unbox#KB-068"
+      ]
     },
     {
       "question": "Khi Trigger before ≥ Auto-unbox after (giờ trigger rơi trước lúc tạo đơn) thì trigger có bắn không?",
@@ -665,7 +837,12 @@
         "auto-unbox#KB-014",
         "auto-unbox#KB-022"
       ],
-      "oq_id": "OQ-reveal-007"
+      "oq_id": "OQ-reveal-007",
+      "refresh_note": "Staging: khi Enable auto-unbox tắt, ô trigger không hiển thị (KB-065) — chưa biết bật trigger độc lập được không. Quan sát staging 2026-10-17: lần 2 cùng quan sát (KB-068).",
+      "refresh_kb_refs": [
+        "auto-unbox#KB-065",
+        "auto-unbox#KB-068"
+      ]
     },
     {
       "question": "Tắt Enable auto-unbox sau khi đơn đã được ghi giờ auto-unbox thì đơn đó còn bị auto-unbox không?",
@@ -711,7 +888,11 @@
         "auto-unbox#KB-038",
         "auto-unbox#KB-039"
       ],
-      "oq_id": "OQ-reveal-012"
+      "oq_id": "OQ-reveal-012",
+      "refresh_note": "Quan sát staging 2026-10-17: auto-unbox giữ tắt suốt đợt quan sát (bật bị từ chối); các đơn có unboxing_at null và trang khách không có \"Auto-open in\" (KB-068).",
+      "refresh_kb_refs": [
+        "auto-unbox#KB-068"
+      ]
     },
     {
       "question": "Auto-unbox có chạy khi shop tắt app, hết capacity hoặc plan bị đóng băng không?",
@@ -738,10 +919,22 @@
         "auto-unbox#KB-064"
       ],
       "oq_id": "OQ-reveal-005"
+    },
+    {
+      "question": "Giá trị setting auto-unbox (và các setting General Settings khác) được đọc từ đâu khi GET /api/users/config trả {\"data\": null}?",
+      "why_it_matters": "Không có nguồn API để viết check đọc/ghi setting (KB-067).",
+      "kb_refs": [
+        "auto-unbox#KB-067"
+      ],
+      "oq_id": "OQ-reveal-056",
+      "refresh_note": "Quan sát staging 2026-10-17: đọc setting qua JSON nhúng trong document app (user.config null) + GET /api/users/config 200 {\"data\": null} mỗi lần đổi pane; request lưu và đọc lại sau reload không làm (KB-068).",
+      "refresh_kb_refs": [
+        "auto-unbox#KB-068"
+      ]
     }
   ],
   "last_updated": {
-    "date": "2026-10-16",
+    "date": "2026-10-17",
     "ccr_ref": "bootstrap"
   },
   "coverage_matrix": [
@@ -824,21 +1017,99 @@
       "state": "chạy tay lệnh mở bù",
       "environment": "documented",
       "covered": true
+    },
+    {
+      "feature_id": "FEAT-03-auto-unbox",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "pane Auto-Unbox, auto-unbox tắt (chỉ đọc)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "auto-unbox#KB-065",
+        "auto-unbox#KB-067",
+        "auto-unbox#KB-068"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-auto-unbox",
+      "layer": "api",
+      "role": "merchant + guest buyer",
+      "state": "đơn tạo khi auto-unbox tắt (unboxing_at null)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "auto-unbox#KB-066",
+        "auto-unbox#KB-068"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-auto-unbox",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "bật Enable auto-unbox / đổi Auto-unbox after / trigger",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: chỉ đọc theo chỉ thị. Quan sát staging 2026-10-17: bật tạm theo test_design bị permission classifier của công cụ từ chối."
+    },
+    {
+      "feature_id": "FEAT-03-auto-unbox",
+      "layer": "code",
+      "role": "system",
+      "state": "job auto-unbox 00:00/08:00/16:00, trigger Flow, ngưỡng 7 ngày",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: job server theo lịch, không chờ."
+    },
+    {
+      "feature_id": "FEAT-03-auto-unbox",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "đếm ngược Auto-open in / banner nhắc / sau giờ hẹn",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: không có đơn có giờ auto-unbox."
+    },
+    {
+      "feature_id": "FEAT-03-auto-unbox",
+      "layer": "db",
+      "role": "system",
+      "state": "unboxing_at",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: db surface tắt (chỉ qua API)."
+    },
+    {
+      "feature_id": "FEAT-03-auto-unbox",
+      "layer": "code",
+      "role": "engineer",
+      "state": "lệnh mở bù",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: ngoài surface."
     }
   ],
   "profile_conflicts": [
     {
       "conflict_group": "CONF-reveal-01",
+      "status": "UNRESOLVED",
       "topic": "Điều kiện 'resell window đã hết' có bắt buộc cho đường auto-unbox / Flow khi thêm quà vào đơn hay không",
       "side_a": "Auto-unbox / Flow: quà được thêm ngay lập tức, không xét window.",
       "side_b": "Khối điều kiện chung: cần resell window đã hết (hoặc box không bật buyback) — item phía B thuộc shard prizes-added-to-order.",
       "resolution": "UNRESOLVED",
       "kb_refs": [
         "auto-unbox#KB-049"
+      ],
+      "observation_notes": [
+        {
+          "kb_ref": "prizes-added-to-order#KB-077",
+          "note": "Quan sát chỉ ở nhánh no-buyback khách tự mở (shard prizes-added-to-order); nhánh auto-unbox không quan sát. Không phân xử."
+        }
       ]
     },
     {
       "conflict_group": "CONF-reveal-02",
+      "status": "UNRESOLVED",
       "topic": "Ngưỡng resell window khiến đơn không bao giờ được auto-unbox",
       "side_a": "Điều kiện quét: giờ auto-unbox nằm trong 7 ngày gần nhất (ngụ ý 7 ngày cộng độ trễ).",
       "side_b": "Câu suy luận chưa chạy thử: resell window dài hơn 7 ngày trừ độ trễ thì không tự mở được.",
@@ -850,6 +1121,7 @@
     },
     {
       "conflict_group": "CONF-reveal-03",
+      "status": "UNRESOLVED",
       "topic": "Mốc tính giờ auto-unbox",
       "side_a": "Giờ auto-unbox = giờ tạo đơn + Auto-unbox after.",
       "side_b": "Giờ mở = giờ đơn paid + Auto-unbox after.",
@@ -857,6 +1129,16 @@
       "kb_refs": [
         "auto-unbox#KB-004",
         "auto-unbox#KB-050"
+      ],
+      "observation_notes": [
+        {
+          "kb_ref": "auto-unbox#KB-066",
+          "note": "Quan sát staging 2026-10-16: auto-unbox tắt suốt đợt quan sát, unboxing_at null — không phân biệt được mốc tạo đơn và paid. Không dùng làm rule; ghi bổ sung vào OQ-reveal-003."
+        },
+        {
+          "kb_ref": "auto-unbox#KB-068",
+          "note": "Quan sát staging 2026-10-17: vẫn tắt (bật bị công cụ từ chối), 3 đơn mới unboxing_at null — không phân biệt được."
+        }
       ]
     }
   ],

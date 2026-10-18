@@ -1,6 +1,7 @@
 {
   "feature_id": "FEAT-03-usage-fee-pricing",
   "feature_key": "usage-fee-pricing",
+  "object_id": "plans-billing",
   "name": "Cách tính phí box vượt capacity (count-based và value-tiered)",
   "user_goal": "Merchant trên plan trả phí bị tính đúng phí cho mỗi box bán vượt quota của chu kỳ theo cách tính của plan (theo số lượng hoặc theo giá trị dòng hàng với Min Fee / phần trăm), với cách tính chép vào subscription lúc đăng ký, mức phí cố định lúc bán box, box miễn phí (trong quota, trial, plan Free, đơn test bị loại) không bao giờ bị tính ngược, và tổng phí nằm trong giới hạn Capped Amount của Shopify.",
   "user_goal_kb_refs": [
@@ -21,7 +22,11 @@
         "usage-fee-pricing#KB-001",
         "usage-fee-pricing#KB-039",
         "_product-level#KB-PL-002"
-      ]
+      ],
+      "observed_kb_refs": [
+        "usage-fee-pricing#KB-060"
+      ],
+      "refresh_note": "Staging gói Free: xem thẻ plan và khối \"Estimate your app charge\" (không đổi giá trị)."
     },
     {
       "role": "system",
@@ -59,7 +64,11 @@
       "precondition": "Merchant đăng nhập app",
       "kb_refs": [
         "usage-fee-pricing#KB-039"
-      ]
+      ],
+      "observed_kb_refs": [
+        "usage-fee-pricing#KB-060"
+      ],
+      "refresh_note": "Staging: khối \"Estimate your app charge\" (Average price of each box, Total monthly box volume, Recommended plan, Estimated monthly cost)."
     },
     {
       "path": "Admin panel > Shop > Edit > Plan (Exclude test order)",
@@ -78,7 +87,11 @@
         "usage-fee-pricing#KB-002",
         "usage-fee-pricing#KB-003",
         "usage-fee-pricing#KB-019"
-      ]
+      ],
+      "observed_kb_refs": [
+        "usage-fee-pricing#KB-060"
+      ],
+      "refresh_note": "Staging: plan Free có các trường phí null."
     },
     {
       "name": "Miễn phí và không tính ngược",
@@ -111,7 +124,11 @@
         "usage-fee-pricing#KB-021",
         "usage-fee-pricing#KB-022",
         "usage-fee-pricing#KB-023"
-      ]
+      ],
+      "observed_kb_refs": [
+        "usage-fee-pricing#KB-060"
+      ],
+      "refresh_note": "Staging: không plan nào dùng count-based (usage_fee_type / usage_fee_value null)."
     },
     {
       "name": "Tính phí theo giá trị (value-tiered)",
@@ -126,7 +143,11 @@
         "usage-fee-pricing#KB-030",
         "usage-fee-pricing#KB-031",
         "usage-fee-pricing#KB-032"
-      ]
+      ],
+      "observed_kb_refs": [
+        "usage-fee-pricing#KB-060"
+      ],
+      "refresh_note": "Staging: Nitro/Booster/Prime box_value_fee_percentage 2.00, box_value_min_fee_usd 0.25, box_value_threshold_usd 12.50; thẻ ghi \"2% of box sales (min $0.25 each)\"."
     },
     {
       "name": "Cố định cách tính và mức phí",
@@ -145,7 +166,11 @@
       "kb_refs": [
         "usage-fee-pricing#KB-034",
         "usage-fee-pricing#KB-035"
-      ]
+      ],
+      "observed_kb_refs": [
+        "usage-fee-pricing#KB-060"
+      ],
+      "refresh_note": "Staging: capped_amount 10000 cho cả ba plan trả phí, null cho Free."
     },
     {
       "name": "Phản ứng khi plan Paid cấu hình phí sai",
@@ -159,7 +184,11 @@
       "description": "Màn Pricing của merchant app có phần ước tính phí.",
       "kb_refs": [
         "usage-fee-pricing#KB-039"
-      ]
+      ],
+      "observed_kb_refs": [
+        "usage-fee-pricing#KB-060"
+      ],
+      "refresh_note": "Staging: mặc định 10 USD × 2000 box → \"Recommended plan for your store: Booster\", \"Estimated monthly cost (including extra fee): $489.90\" (1 mẫu, không suy công thức)."
     }
   ],
   "state_transitions": [
@@ -221,6 +250,9 @@
       "rule": "Plan Free không có phí vượt quota; phí usage không được tính trên plan Free.",
       "kb_refs": [
         "usage-fee-pricing#KB-003"
+      ],
+      "refresh_kb_refs": [
+        "usage-fee-pricing#KB-060"
       ]
     },
     {
@@ -229,7 +261,11 @@
         "usage-fee-pricing#KB-004",
         "usage-fee-pricing#KB-005",
         "usage-fee-pricing#KB-006"
-      ]
+      ],
+      "refresh_kb_refs": [
+        "usage-fee-pricing#KB-060"
+      ],
+      "refresh_note": "Staging: ba plan trả phí cấu hình value-tiered, trường count-based null."
     },
     {
       "rule": "Admin sửa phí của một plan không đổi phí của shop đã đăng ký plan đó trước đó.",
@@ -289,7 +325,11 @@
       "rule": "Value-tiered có ba tham số plan: Box Value Threshold (USD), Box Value Min Fee, Box Value Fee Percentage.",
       "kb_refs": [
         "usage-fee-pricing#KB-024"
-      ]
+      ],
+      "refresh_kb_refs": [
+        "usage-fee-pricing#KB-060"
+      ],
+      "refresh_note": "Staging corroborate: box_value_threshold_usd, box_value_min_fee_usd, box_value_fee_percentage trong dữ liệu plan."
     },
     {
       "rule": "Value-tiered: mỗi đơn vị box được xét riêng theo doanh thu USD sau giảm giá của dòng đơn hàng chứa nó; mỗi dòng hàng xét riêng; mỗi đơn vị có mức phí riêng.",
@@ -344,10 +384,25 @@
       "rule": "Màn Pricing của merchant app có phần ước tính phí.",
       "kb_refs": [
         "usage-fee-pricing#KB-039"
+      ],
+      "refresh_kb_refs": [
+        "usage-fee-pricing#KB-060"
+      ],
+      "refresh_note": "Staging corroborate: khối \"Estimate your app charge\"."
+    }
+  ],
+  "observed_behavior": [
+    {
+      "behavior": "Pricing staging: Nitro/Booster/Prime ghi \"2% of box sales (min $0.25 each) from the 101st / 501st / 401st box sales\"; dữ liệu plan box_value_fee_percentage \"2.00\", box_value_min_fee_usd \"0.25\", box_value_threshold_usd \"12.50\", usage_fee_type/usage_fee_value null, capped_amount 10000; Free có trường phí null; \"Estimate your app charge\" mặc định (10 USD, 2000 boxes) → \"Recommended plan for your store: Booster\", \"Estimated monthly cost (including extra fee): $489.90\".",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "usage-fee-pricing#KB-060"
       ]
     }
   ],
-  "observed_behavior": [],
   "observed_validations": [],
   "permissions": [
     {
@@ -372,6 +427,17 @@
         "kb_refs": [
           "usage-fee-pricing#KB-039",
           "usage-fee-pricing#KB-043"
+        ],
+        "observed_kb_refs": [
+          "usage-fee-pricing#KB-060"
+        ],
+        "refresh_note": "Staging chỉ thấy dạng value-tiered \"2% of box sales (min $0.25 each)\"."
+      },
+      {
+        "item": "Pricing: khối \"Estimate your app charge\" (Average price of each box, Total monthly box volume, Recommended plan, Estimated monthly cost) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "usage-fee-pricing#KB-060"
         ]
       }
     ],
@@ -390,6 +456,13 @@
         "item": "Capped Amount gửi sang Shopify khi tạo subscription",
         "kb_refs": [
           "usage-fee-pricing#KB-035"
+        ]
+      },
+      {
+        "item": "Dữ liệu plan nhúng trong document Pricing (box_value_*, usage_fee_*, capped_amount) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "usage-fee-pricing#KB-060"
         ]
       }
     ],
@@ -410,6 +483,9 @@
           "usage-fee-pricing#KB-021",
           "usage-fee-pricing#KB-024",
           "usage-fee-pricing#KB-034"
+        ],
+        "observed_kb_refs": [
+          "usage-fee-pricing#KB-060"
         ]
       }
     ],
@@ -461,6 +537,15 @@
         "usage-fee-pricing#KB-025",
         "usage-fee-pricing#KB-028"
       ]
+    },
+    {
+      "risk": "Ngưỡng box tính phí của Prime trên thẻ (401st) khác terms (1501st) — merchant có thể bị tính phí sớm/muộn hơn cam kết.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "usage-fee-pricing#KB-060",
+        "plan-capacity-and-cycle#KB-083",
+        "plan-capacity-and-cycle#KB-084"
+      ]
     }
   ],
   "limitations": [
@@ -488,10 +573,18 @@
         "usage-fee-pricing#KB-058",
         "usage-fee-pricing#KB-059"
       ]
+    },
+    {
+      "limitation": "Cấu hình phí staging (2% / $0.25 / $12.50 / cap 10000) chỉ là dữ liệu staging, không phải production; chỉ một con số ước tính, không suy công thức.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "usage-fee-pricing#KB-060"
+      ]
     }
   ],
   "freshness": {
-    "observed_at": null
+    "observed_at": "2026-10-17",
+    "base_observed_at": null
   },
   "unknown_areas": [
     {
@@ -532,7 +625,11 @@
         "usage-fee-pricing#KB-042",
         "usage-fee-pricing#KB-044"
       ],
-      "oq_id": "OQ-plans-billing-127"
+      "oq_id": "OQ-plans-billing-127",
+      "refresh_note": "Staging (không phải production): plan trả phí dùng 2% (min $0.25, threshold $12.50), usage_fee_type/value null. Production chưa quan sát — không gỡ.",
+      "refresh_kb_refs": [
+        "usage-fee-pricing#KB-060"
+      ]
     },
     {
       "question": "Phí value-tiered (giá trị × phần trăm / 100) được làm tròn thế nào (cent, nửa cent)?",
@@ -557,7 +654,11 @@
         "usage-fee-pricing#KB-005",
         "usage-fee-pricing#KB-024"
       ],
-      "oq_id": "OQ-plans-billing-080"
+      "oq_id": "OQ-plans-billing-080",
+      "refresh_note": "Staging: trường usage_fee_type tồn tại (null) cạnh box_value_* — gợi ý có field chọn cách tính, nhưng không có plan nào đặt cả hai; không trả lời câu hỏi.",
+      "refresh_kb_refs": [
+        "usage-fee-pricing#KB-060"
+      ]
     },
     {
       "question": "Form admin có chặn lưu plan Paid thiếu cả ngưỡng lẫn phí mỗi box (hoặc phí = 0) không; job retry bao nhiêu lần và đơn cuối cùng ở trạng thái gì; giới hạn hợp lệ của phần trăm và Min Fee?",
@@ -576,7 +677,12 @@
         "usage-fee-pricing#KB-037",
         "usage-fee-pricing#KB-038"
       ],
-      "oq_id": "OQ-plans-billing-081"
+      "oq_id": "OQ-plans-billing-081",
+      "refresh_note": "Staging: exclude_test_order true; đơn Bogus có banner \"Test order\" ở Shopify; 1 đơn test không tăng used. Phí usage của đơn test không quan sát (shop Free).",
+      "refresh_kb_refs": [
+        "plan-capacity-and-cycle#KB-085",
+        "plan-capacity-and-cycle#KB-088"
+      ]
     },
     {
       "question": "Điều kiện gán cờ \"miễn phí\" cho dòng Usage ngoài trial / plan Free (trong hạn mức, promote code) là gì?",
@@ -594,7 +700,12 @@
         "usage-fee-pricing#KB-034",
         "usage-fee-pricing#KB-035"
       ],
-      "oq_id": "OQ-plans-billing-083"
+      "oq_id": "OQ-plans-billing-083",
+      "refresh_note": "Staging: Nitro/Booster/Prime capped_amount 10000, Free null; không có plan năm. Production chưa quan sát.",
+      "refresh_kb_refs": [
+        "usage-fee-pricing#KB-060",
+        "plan-capacity-and-cycle#KB-082"
+      ]
     },
     {
       "question": "Số liệu ví dụ hoá đơn theo số lượng mâu thuẫn (Total sold in cycle 145 so với các đơn liệt kê cộng 135 và tổng phí tương đương 35 box vượt) — số nào đúng?",
@@ -606,10 +717,19 @@
         "plan-capacity-and-cycle#KB-050"
       ],
       "oq_id": "OQ-plans-billing-008"
+    },
+    {
+      "question": "Công cụ \"Estimate your app charge\" tính \"Estimated monthly cost\" và \"Recommended plan\" theo công thức nào (giá plan + phí value-tiered với ngưỡng/min fee)?",
+      "why_it_matters": "Có một mẫu staging ($489.90 với 10 USD × 2000) nhưng không suy được công thức; không có oracle cho công cụ ước tính.",
+      "kb_refs": [
+        "usage-fee-pricing#KB-060",
+        "usage-fee-pricing#KB-039"
+      ],
+      "oq_id": "OQ-plans-billing-142"
     }
   ],
   "last_updated": {
-    "date": "2026-10-16",
+    "date": "2026-10-17",
     "ccr_ref": "bootstrap"
   },
   "coverage_matrix": [
@@ -692,6 +812,26 @@
       "state": "plan-changed-after-sale",
       "environment": "documented",
       "covered": false
+    },
+    {
+      "feature_id": "FEAT-03-usage-fee-pricing",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "Pricing chỉ đọc (cấu hình phí plan + ước tính mặc định)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "usage-fee-pricing#KB-060"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-usage-fee-pricing",
+      "layer": "backend",
+      "role": "system",
+      "state": "dòng usage phát sinh (plan-paid)",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: shop Free, cấm plan_change."
     }
   ],
   "profile_conflicts": [

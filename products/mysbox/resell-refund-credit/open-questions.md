@@ -1,6 +1,6 @@
 # Open Questions — resell-refund-credit
 
-Tổng: 95 mục (CONFLICT 4 · OPEN_ISSUE 57 · NEEDS_CONFIRMATION 34). Sinh từ bootstrap DOC_BOOTSTRAP đầu tiên của Mysbox (nguồn: bộ Product KB v1 do dev viết từ source code, 2026-10-16). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
+Tổng: 102 mục (CONFLICT 4 · OPEN_ISSUE 59 · NEEDS_CONFIRMATION 39). Sinh từ bootstrap DOC_BOOTSTRAP đầu tiên của Mysbox (nguồn: bộ Product KB v1 do dev viết từ source code, 2026-10-16); REFRESH trên staging 2026-10-17 thêm mục mới, ghi `staging_observation` (OBSERVED_CURRENT, không resolve NEEDS_CONFIRMATION/CONFLICT). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
 
 ## OQ-resell-refund-credit-001 — NEEDS_CONFIRMATION
 
@@ -190,7 +190,12 @@ Tổng: 95 mục (CONFLICT 4 · OPEN_ISSUE 57 · NEEDS_CONFIRMATION 34). Sinh t�
   "summary": "Block \"Buy box by store credit\" chặn Add to cart / Buy now trong điều kiện nào (luôn luôn, chỉ khi tích \"Pay with store credit\", hay khi số dư không đủ)? — Expected result cho luồng mua thường vs mua bằng store credit.",
   "kb_ids": [
     "buy-box-with-store-credit#KB-015"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-resell-refund-credit-011: 2026-10-17: Khách vãng lai + box không bật store credit: block mount nhưng không hiện gì và không chặn Add to cart (thêm vào giỏ bình thường). Nhánh khách đăng nhập / box store credit chưa phủ.",
+  "staging_observation_kb_ids": [
+    "buy-box-with-store-credit#KB-069"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -794,7 +799,12 @@ Tổng: 95 mục (CONFLICT 4 · OPEN_ISSUE 57 · NEEDS_CONFIRMATION 34). Sinh t�
   "summary": "Những nguyên nhân nào làm đơn chuyển Completed (ngoài merchant/auto-unbox mở hết box)? — Tài liệu chỉ nói 'thường', không khẳng định danh sách đầy đủ.",
   "kb_ids": [
     "resell-setup-and-eligibility#KB-071"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-resell-refund-credit-052: 2026-10-17: Chỉ phủ nguyên nhân \"khách mở hết\" trên box không buyback: không có trạng thái Completed hiển thị/trả về; dấu hiệu quan sát được là total_opened = total_items, prize vào đơn qua order edit ~6s sau.",
+  "staging_observation_kb_ids": [
+    "resell-setup-and-eligibility#KB-079"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -853,7 +863,12 @@ Tổng: 95 mục (CONFLICT 4 · OPEN_ISSUE 57 · NEEDS_CONFIRMATION 34). Sinh t�
   "kb_ids": [
     "resell-setup-and-eligibility#KB-011",
     "resell-setup-and-eligibility#KB-019"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-resell-refund-credit-056: 2026-10-17: Catalog staging: Nitro, Booster, Prime có \"Buy back function\", Free không; không có plan Early-bird. Buyback có mở thật trên các plan đó không chưa thử (cấm đổi plan).",
+  "staging_observation_kb_ids": [
+    "resell-setup-and-eligibility#KB-078"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -1482,6 +1497,138 @@ Tổng: 95 mục (CONFLICT 4 · OPEN_ISSUE 57 · NEEDS_CONFIRMATION 34). Sinh t�
   "summary": "Nếu khách mở box sau khi cửa sổ resell đã hết thì có resell được không, và sau khi cửa sổ hết quà được thêm vào đơn Shopify vào lúc nào (job nào, độ trễ bao lâu)?",
   "check_ids": [
     "resell-setup-and-eligibility:CHK-032"
+  ]
+}
+```
+
+## OQ-resell-refund-credit-096 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-resell-refund-credit-096",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "buy-box-with-store-credit",
+  "summary": "Staging (1 mẫu, khách vãng lai, box không bật store credit): block store credit không render và không chặn Add to cart. Block chặn Add to cart / Buy now trong điều kiện nào (box chỉ bán bằng store credit, khách đăng nhập)?",
+  "kb_ids": [
+    "buy-box-with-store-credit#KB-069"
+  ],
+  "check_ids": [
+    "buy-box-with-store-credit:CHK-031"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-resell-refund-credit-097 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-resell-refund-credit-097",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "resell-setup-and-eligibility",
+  "summary": "Staging: catalog gói không có Early-bird nhưng thông điệp khoá buyback vẫn nhắc \"Free and Early-bird plan\". Early-bird còn là gói hiện hành (chỉ ẩn khỏi Pricing) hay đã bỏ, và buyback có mở thật trên Nitro/Booster/Prime không?",
+  "kb_ids": [
+    "resell-setup-and-eligibility#KB-078"
+  ],
+  "check_ids": [
+    "resell-setup-and-eligibility:CHK-033"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-resell-refund-credit-098 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-resell-refund-credit-098",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "resell-setup-and-eligibility",
+  "summary": "Staging (1 đơn, box không buyback): mở hết box làm app edit đơn thêm dòng prize 100% sau vài giây, không có trạng thái Completed hiển thị. Trạng thái COMPLETED của đơn được lưu ở đâu và các nguyên nhân khác (hết cửa sổ resell, auto-unbox, refund, cancel) có cùng hành vi thêm quà không?",
+  "kb_ids": [
+    "resell-setup-and-eligibility#KB-079"
+  ],
+  "check_ids": [
+    "resell-setup-and-eligibility:CHK-034"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-resell-refund-credit-099 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-resell-refund-credit-099",
+  "type": "OPEN_ISSUE",
+  "feature_id": "buy-box-with-store-credit",
+  "summary": "Thuộc tính mysbox-data-embed=true gắn vào form product của theme dùng để làm gì (nhận diện form cho block store credit / widget)? — Thấy trên staging (KB-069) nhưng không có KB mô tả vai trò; ảnh hưởng tương thích theme và điều kiện chặn Add to cart.",
+  "kb_ids": [
+    "buy-box-with-store-credit#KB-069"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-resell-refund-credit-100 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-resell-refund-credit-100",
+  "type": "OPEN_ISSUE",
+  "feature_id": "resell-setup-and-eligibility",
+  "summary": "Nếu \"Completed\" không phải trạng thái hiển thị/trả về (staging), các tài liệu nhắc 'đơn chuyển Completed' dùng trường/khái niệm nào để kiểm (total_opened = total_items, trạng thái nội bộ, hay fulfillment)? — KB-079: không có field status hay nhãn Completed ở app, API khách lẫn Shopify; check theo KB-071 không có điểm bám.",
+  "kb_ids": [
+    "resell-setup-and-eligibility#KB-079",
+    "resell-setup-and-eligibility#KB-071"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-resell-refund-credit-101 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-resell-refund-credit-101",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "buy-box-with-store-credit",
+  "summary": "Quan sát staging mới chạm vùng rủi ro cao (quyền truy cập / tiền / billing): Block Buy box by store credit với khách vãng lai trên box không bật store credit. Item là OBSERVED_CURRENT; cần PO xác nhận đây là hành vi dự kiến trước khi dùng làm expected result.",
+  "kb_ids": [
+    "buy-box-with-store-credit#KB-069"
+  ],
+  "tags": [
+    "staging-observed",
+    "risk-flag"
+  ]
+}
+```
+
+## OQ-resell-refund-credit-102 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-resell-refund-credit-102",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "resell-setup-and-eligibility",
+  "summary": "Quan sát staging mới chạm vùng rủi ro cao (quyền truy cập / tiền / billing): Buy back function theo plan trên staging; Trạng thái đơn sau khi khách mở hết box (box không buyback). Item là OBSERVED_CURRENT; cần PO xác nhận đây là hành vi dự kiến trước khi dùng làm expected result.",
+  "kb_ids": [
+    "resell-setup-and-eligibility#KB-078",
+    "resell-setup-and-eligibility#KB-079"
+  ],
+  "tags": [
+    "staging-observed",
+    "risk-flag"
   ]
 }
 ```

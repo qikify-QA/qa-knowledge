@@ -2,7 +2,7 @@
   "feature_id": "FEAT-04-inventory-and-sold-out",
   "feature_key": "inventory-and-sold-out",
   "object_id": "box",
-  "checklist_version": "1",
+  "checklist_version": "3",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -38,7 +38,9 @@
         "inventory-and-sold-out#KB-004",
         "inventory-and-sold-out#KB-037",
         "inventory-and-sold-out#KB-074",
-        "_object-level.box#KB-009"
+        "_object-level.box#KB-009",
+        "inventory-and-sold-out#KB-081",
+        "inventory-and-sold-out#KB-090"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -121,7 +123,9 @@
       "related_kb_ids": [
         "inventory-and-sold-out#KB-031",
         "inventory-and-sold-out#KB-032",
-        "inventory-and-sold-out#KB-074"
+        "inventory-and-sold-out#KB-074",
+        "inventory-and-sold-out#KB-082",
+        "inventory-and-sold-out#KB-090"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -837,7 +841,8 @@
       "open_question_draft": "Cần một test case đã chạy PASS (hoặc PO/Dev xác nhận nguyên văn) cho hành vi: sửa item/số lượng/chance, đổi variant/loại box/cờ tracked, đổi picking mode/tier mode/deactivate-draft on empty/refill đều dựng lại tồn kho; và cho biết khi dựng lại, trạng thái đã bốc và tồn kho đã trừ của các đơn chưa mở được xử lý thế nào.",
       "related_kb_ids": [
         "inventory-and-sold-out#KB-023",
-        "inventory-and-sold-out#KB-074"
+        "inventory-and-sold-out#KB-074",
+        "inventory-and-sold-out#KB-083"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -877,7 +882,9 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Cần một test case đã chạy PASS (hoặc PO/Dev xác nhận nguyên văn) cho hành vi: đổi animation, buyback %, store credit, hiển thị chance/tồn kho, category, publish/unpublish hoặc trạng thái đồng bộ không dựng lại tồn kho và không làm mất trạng thái đã bốc.",
       "related_kb_ids": [
-        "inventory-and-sold-out#KB-074"
+        "inventory-and-sold-out#KB-074",
+        "inventory-and-sold-out#KB-083",
+        "inventory-and-sold-out#KB-084"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -917,7 +924,8 @@
       "open_question_draft": null,
       "related_kb_ids": [
         "inventory-and-sold-out#KB-022",
-        "inventory-and-sold-out#KB-075"
+        "inventory-and-sold-out#KB-075",
+        "inventory-and-sold-out#KB-085"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -953,7 +961,8 @@
       "open_question_draft": null,
       "related_kb_ids": [
         "inventory-and-sold-out#KB-021",
-        "inventory-and-sold-out#KB-070"
+        "inventory-and-sold-out#KB-070",
+        "inventory-and-sold-out#KB-086"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -984,7 +993,6 @@
           "inventory-and-sold-out#KB-062",
           "inventory-and-sold-out#KB-063",
           "inventory-and-sold-out#KB-064",
-          "inventory-and-sold-out#KB-065",
           "inventory-and-sold-out#KB-001"
         ],
         "oracle_strength": "STRONG"
@@ -992,7 +1000,8 @@
       "status": "READY",
       "open_question_draft": null,
       "related_kb_ids": [
-        "inventory-and-sold-out#KB-070"
+        "inventory-and-sold-out#KB-070",
+        "inventory-and-sold-out#KB-065"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -1170,7 +1179,8 @@
       "open_question_draft": null,
       "related_kb_ids": [
         "_object-level.box#KB-012",
-        "_object-level.box#KB-016"
+        "_object-level.box#KB-016",
+        "inventory-and-sold-out#KB-089"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -1444,6 +1454,163 @@
       "priority": "P1",
       "automation_suitability": "NOT_SUITABLE",
       "oq_id": "OQ-box-036"
+    },
+    {
+      "check_id": "CHK-039",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "Theo dõi: tồn kho Shopify của variant quà về 0/-1 sau khi quà box digital được trúng/thêm vào đơn",
+      "applicability": {
+        "role": "guest buyer / merchant",
+        "state": "box digital tracked no-buyback, đơn test đã mở box",
+        "environment": "staging",
+        "surface_or_device": "trang reveal /apps/mysbox/ (network) + form box portal + Shopify admin"
+      },
+      "precondition": "Ghi lại inventory_quantity Shopify và trạng thái tracked của variant quà TRƯỚC khi mua (Shopify admin hoặc /apps/mysbox/api/shopify/product-variants).",
+      "steps": [
+        "Mua 1 box digital qua Bogus gateway, mở box.",
+        "Trên trang reveal ghi response /apps/mysbox/api/shopify/product-variants cho món trúng (inventory_quantity, inventory_item.tracked).",
+        "Trên Shopify admin xem tồn kho variant quà; trong form box xem nhãn tồn kho của item prize.",
+        "So sánh với giá trị trước khi mua."
+      ],
+      "observation_point": "inventory_quantity và tracked của variant quà trước/sau; nhãn \"Inventory not tracked\" trên item prize trong form box.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Sau khi quà box digital được thêm vào đơn, inventory_quantity Shopify của variant quà về 0/-1 (variant không track). Đây là hiệu ứng order edit của Shopify hay Mysbox có trừ tồn kho Shopify với box digital (tài liệu nói không trừ)? Nhãn \"Inventory not tracked\" trên item prize của box tracked có nghĩa là gì?",
+      "related_kb_ids": [
+        "inventory-and-sold-out#KB-089",
+        "inventory-and-sold-out#KB-088",
+        "inventory-and-sold-out#KB-072",
+        "inventory-and-sold-out#KB-002",
+        "inventory-and-sold-out#KB-092"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "có thể lệch KB-072 (box digital không trừ tồn kho Shopify)"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-box-093"
+    },
+    {
+      "check_id": "CHK-040",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Cột Chance trên form box tracked sau khi bán",
+      "applicability": {
+        "role": "merchant",
+        "state": "box Single và Bundle digital tracked đã bán ít nhất 1 hộp",
+        "environment": "staging",
+        "surface_or_device": "portal (form box)"
+      },
+      "precondition": "Box Single tracked (vd Original 2/3) và box Bundle tracked (mỗi set 2/1) đã có đơn trúng; ghi Remaining từng item.",
+      "steps": [
+        "Mở form box Single sau đơn; đọc cột Chance và Remaining từng item.",
+        "Mở form box Bundle sau đơn; đọc cột Chance của item Remaining 0 và item còn lại trong cùng set."
+      ],
+      "observation_point": "Cột Chance và Remaining của item trên form box.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Ở cả box Single và Bundle, item có Remaining 0 hiện \"0%\", item còn hàng giữ chance gốc (vd Single 40.00% / 40.00% / 0% với Remaining 1/1/0; Bundle mỗi set 66.67% / 0% với Remaining 1/0), cột không chuẩn hoá về 100%; khi Remaining chưa về 0 cột vẫn hiện chance gốc (vd 40.00%/60.00%); settings.chance trong API và widget storefront vẫn giữ chance gốc.",
+      "oracle": {
+        "kb_ids": [
+          "inventory-and-sold-out#KB-087",
+          "inventory-and-sold-out#KB-091"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Sau khi bán, cột Chance trên form box tracked giữ chance gốc (Single) nhưng hiện 0% cho item hết (Bundle) mà không chuẩn hoá phần còn lại về 100%. Cột này nên hiển thị chance gốc hay chance hiện hành, và cách hiển thị không nhất quán giữa Single/Bundle có chủ ý không?",
+      "related_kb_ids": [
+        "inventory-and-sold-out#KB-061",
+        "inventory-and-sold-out#KB-021",
+        "box-type-and-prize-setup#KB-061"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-box-113"
+    },
+    {
+      "check_id": "CHK-041",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "Theo dõi conflict: box Bundle tracked có dùng được \"Show remaining stock\" không",
+      "applicability": {
+        "role": "merchant / customer",
+        "state": "form box Bundle tracked",
+        "environment": "staging",
+        "surface_or_device": "portal (form box) + storefront (widget)"
+      },
+      "precondition": "Variant mystery bật \"Track quantity\"; form box Bundle mới với các set đã có item.",
+      "steps": [
+        "Ở mục \"Chance display\" của form Bundle tracked, ghi radio \"Show remaining stock\" có hiện và bật không.",
+        "Chọn \"Show remaining stock\", bấm Save; ghi kết quả/thông báo và settings.show_item_stock trong response.",
+        "Nếu lưu được: mở trang product trên storefront, ghi widget hiển thị tồn kho thế nào."
+      ],
+      "observation_point": "Radio \"Show remaining stock\" trên form Bundle; kết quả Save; widget storefront.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Tài liệu nói \"Show remaining stock\" chỉ dùng được cho box Single tracked hoặc Group pool, nhưng trên staging form Bundle tracked vẫn hiện radio này và không disable (chưa thử lưu). Box Bundle tracked có được dùng \"Show remaining stock\" không; nếu không thì chặn ở đâu (form, lúc lưu, server) và storefront hiển thị gì?",
+      "related_kb_ids": [
+        "inventory-and-sold-out#KB-065",
+        "inventory-and-sold-out#KB-094",
+        "inventory-and-sold-out#KB-069",
+        "inventory-and-sold-out#KB-093"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-box-117"
+    },
+    {
+      "check_id": "CHK-042",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Box Sealed tracked: tồn kho box giảm ngay sau đơn dù không có bước mở; item về 0 vẫn còn trong inventory.bundles",
+      "applicability": {
+        "role": "merchant",
+        "state": "box Single Sealed (physical) tracked sau đơn test",
+        "environment": "staging",
+        "surface_or_device": "portal (form box) + network (<MYS_API_BASE>)"
+      },
+      "precondition": "Box QA- Single \"Sealed box\" tracked Active; ghi \"N boxes in stock\", Remaining và inventory.bundles (GET /api/boxes/{id}) trước đơn.",
+      "steps": [
+        "Đặt đơn test mua 3 box Sealed (Bogus gateway).",
+        "Không mở box (box sealed không có bước mở); sau khi đơn xử lý xong, mở lại form box.",
+        "Ghi \"N boxes in stock\", Remaining từng item và inventory.bundles, current_version_id."
+      ],
+      "observation_point": "\"N boxes in stock\", Remaining, inventory.bundles, current_version_id trước/sau đơn.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Tồn kho box giảm đúng số box đã bán (vd 4 → 1 sau 3 box) mà không cần bước mở; Remaining giảm ở đúng item trúng; item về 0 vẫn nằm trong inventory.bundles với giá trị 0; current_version_id không đổi.",
+      "oracle": {
+        "kb_ids": [
+          "inventory-and-sold-out#KB-090"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging: box Sealed tracked trừ tồn kho box ngay sau đơn (4 → 1 sau 3 box, không có bước mở). Với box digital tracked, tồn kho box bị trừ lúc đơn paid hay lúc khách mở box? (Mẫu box digital chỉ đo sau khi đã mở hết.)",
+      "related_kb_ids": [
+        "inventory-and-sold-out#KB-001",
+        "inventory-and-sold-out#KB-009",
+        "inventory-and-sold-out#KB-081",
+        "physical-sealed-box-fulfilment#KB-071"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-06"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-box-125"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1459,7 +1626,9 @@
         "CHK-005",
         "CHK-019",
         "CHK-020",
-        "CHK-031"
+        "CHK-031",
+        "CHK-039",
+        "CHK-042"
       ]
     },
     {
@@ -1526,7 +1695,9 @@
         "CHK-026",
         "CHK-027",
         "CHK-028",
-        "CHK-030"
+        "CHK-030",
+        "CHK-040",
+        "CHK-041"
       ]
     },
     {
@@ -1607,7 +1778,8 @@
         "CHK-003",
         "CHK-004",
         "CHK-005",
-        "CHK-006"
+        "CHK-006",
+        "CHK-042"
       ]
     },
     {
@@ -1621,12 +1793,35 @@
         "CHK-022",
         "CHK-023"
       ]
+    },
+    {
+      "feature_id": "FEAT-04-inventory-and-sold-out",
+      "type": "risk",
+      "risk_id": "RISK-08",
+      "source": "qa-checklist-builder (REFRESH staging)",
+      "risk": "Tồn kho Shopify của variant quà box digital có thể bị trừ trái tài liệu",
+      "check_ids": [
+        "CHK-031",
+        "CHK-039"
+      ],
+      "gap": "Chưa có giá trị trước đơn để so; chờ xác nhận."
+    },
+    {
+      "feature_id": "FEAT-04-inventory-and-sold-out",
+      "type": "conflict",
+      "conflict_group": "CONF-box-11",
+      "risk": "Show remaining stock trên box Bundle tracked (tài liệu vs staging)",
+      "check_ids": [
+        "CHK-041",
+        "CHK-026"
+      ],
+      "gap": "CHK-041 oracle NONE; CHK-026 giữ STRONG sau khi rút KB-065."
     }
   ],
   "excluded_dimensions": [
     {
       "dimension": "PERMISSION",
-      "reason": "Tài liệu không mô tả kiểm soát quyền cho tồn kho/sold-out (role khác, chưa đăng nhập, cross-tenant). Ranh giới merchant ↔ admin panel chỉ là surface cấu hình (phủ ở CHK-034); câu hỏi ai bật cờ show_item_availability đã gom vào open question của CHK-028."
+      "reason": "Tài liệu không mô tả kiểm soát quyền cho tồn kho/sold-out (role khác, chưa đăng nhập, cross-tenant). Ranh giới merchant ↔ admin panel chỉ là surface cấu hình (phủ ở CHK-034); câu hỏi ai bật cờ show_item_availability đã gom vào open question của CHK-028. Lần quan sát staging của REFRESH này không có quan sát quyền nào mới."
     }
   ],
   "last_updated": {

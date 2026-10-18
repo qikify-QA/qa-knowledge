@@ -2,7 +2,7 @@
   "feature_id": "FEAT-02-webhook-ingestion",
   "feature_key": "webhook-ingestion",
   "object_id": "integrations",
-  "checklist_version": "1",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -38,7 +38,8 @@
       "related_kb_ids": [
         "webhook-ingestion#KB-001",
         "webhook-ingestion#KB-010",
-        "webhook-ingestion#KB-018"
+        "webhook-ingestion#KB-018",
+        "webhook-ingestion#KB-043"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -685,7 +686,7 @@
       "applicability": {
         "role": "system (Shopify)",
         "state": "đơn test (thanh toán bằng cổng test) có box",
-        "environment": "documented",
+        "environment": "staging",
         "surface_or_device": "endpoint webhook; Horizon; dữ liệu đơn trong Mysbox"
       },
       "precondition": "Shop test cài app, có box đang bán, bật cổng thanh toán test.",
@@ -695,15 +696,19 @@
         "Kiểm trong Mysbox: đơn có yêu cầu mở box, kết quả rút thăm, ghi usage hay không."
       ],
       "observation_point": "Horizon; dữ liệu đơn/box/usage của đơn test trong Mysbox.",
-      "expected_result": "",
+      "expected_result": "(baseline staging, một đơn, cờ Exclude Test Order của shop đang bật; lệch = cần điều tra) Đơn test thanh toán qua Bogus Gateway được xử lý như đơn thật: Mysbox tạo bản ghi đơn có opening request, bốc thăm xong, block trang cảm ơn hiện link mở box và khách mở được; Manage orders liệt kê đơn (\"1/1 boxes opened\" sau khi mở); đơn Shopify có thêm dòng quà giá 0 và timeline ghi app đã sửa đơn; bộ đếm Box sales limit không tăng. Ghi usage billing chưa có baseline — ghi lại.",
       "oracle": {
-        "kb_ids": [],
-        "oracle_strength": "NONE"
+        "kb_ids": [
+          "webhook-ingestion#KB-043",
+          "webhook-ingestion#KB-045"
+        ],
+        "oracle_strength": "BASELINE"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Webhook cho đơn test có được xử lý như đơn thật không (tạo yêu cầu mở box, rút thăm, ghi usage)?",
       "related_kb_ids": [
-        "webhook-ingestion#KB-041"
+        "webhook-ingestion#KB-041",
+        "webhook-ingestion#KB-044"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -893,6 +898,15 @@
       ],
       "coverage": "COVERED",
       "note": "Cách tái tạo job thất bại trên môi trường test chưa có."
+    },
+    {
+      "feature_id": "FEAT-02-webhook-ingestion",
+      "item": "capability: Xử lý webhook cho đơn test",
+      "check_ids": [
+        "CHK-018"
+      ],
+      "coverage": "PARTIAL",
+      "note": "Baseline staging một đơn (KB-043, KB-045); ghi usage chưa quan sát."
     },
     {
       "feature_id": "FEAT-02-webhook-ingestion",

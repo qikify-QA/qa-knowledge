@@ -2,7 +2,7 @@
   "feature_id": "FEAT-03-box-versioning",
   "feature_key": "box-versioning",
   "object_id": "box",
-  "checklist_version": "1",
+  "checklist_version": "3",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -37,7 +37,8 @@
         "admin-box-management#KB-004",
         "admin-box-management#KB-009",
         "admin-box-management#KB-012",
-        "box-versioning#KB-007"
+        "box-versioning#KB-007",
+        "box-versioning#KB-044"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -76,7 +77,9 @@
       "related_kb_ids": [
         "admin-box-management#KB-012",
         "admin-box-management#KB-013",
-        "box-versioning#KB-032"
+        "box-versioning#KB-032",
+        "box-versioning#KB-045",
+        "box-versioning#KB-051"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -154,7 +157,8 @@
       "related_kb_ids": [
         "box-versioning#KB-002",
         "box-versioning#KB-043",
-        "admin-box-management#KB-010"
+        "admin-box-management#KB-010",
+        "box-versioning#KB-045"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -190,7 +194,8 @@
       "open_question_draft": null,
       "related_kb_ids": [
         "box-create-and-publish#KB-027",
-        "_object-level.box#KB-018"
+        "_object-level.box#KB-018",
+        "box-versioning#KB-046"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -217,8 +222,6 @@
       "expected_result": "",
       "oracle": {
         "kb_ids": [
-          "box-versioning#KB-001",
-          "box-versioning#KB-002",
           "box-versioning#KB-003"
         ],
         "oracle_strength": "NONE"
@@ -226,7 +229,10 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Box version được tạo ở mọi lần lưu box, hay chỉ khi lưu mà có ít nhất một thay đổi cấu hình (variant link, loại box, category, item, cài đặt, cờ tracked)? Lưu box mà không đổi gì thì có sinh version mới không?",
       "related_kb_ids": [
-        "box-versioning#KB-043"
+        "box-versioning#KB-043",
+        "box-versioning#KB-001",
+        "box-versioning#KB-002",
+        "box-versioning#KB-045"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -385,7 +391,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Cần một test case đã chạy PASS xác nhận: đơn mua sau khi box được sửa được bốc thăm theo version mới nhất của box.",
       "related_kb_ids": [
-        "admin-box-management#KB-012"
+        "admin-box-management#KB-012",
+        "box-versioning#KB-048"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -458,16 +465,16 @@
       "observation_point": "Version gắn với đơn; prize của đơn.",
       "expected_result": "",
       "oracle": {
-        "kb_ids": [
-          "box-versioning#KB-004",
-          "box-versioning#KB-005"
-        ],
+        "kb_ids": [],
         "oracle_strength": "NONE"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Đơn hàng được gắn với box version tại thời điểm khách thanh toán hay tại thời điểm server bốc thăm? Nếu merchant sửa box giữa hai mốc này thì đơn dùng version nào?",
       "related_kb_ids": [
-        "box-versioning#KB-010"
+        "box-versioning#KB-010",
+        "box-versioning#KB-004",
+        "box-versioning#KB-005",
+        "box-versioning#KB-047"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -587,7 +594,9 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Cần một test case đã chạy PASS xác nhận: màn hình merchant chỉ làm việc trên cấu hình sống của box và không có cách nào sửa một version đã có; merchant có xem được lịch sử version hay rollback không?",
       "related_kb_ids": [
-        "box-versioning#KB-008"
+        "box-versioning#KB-008",
+        "box-versioning#KB-049",
+        "box-versioning#KB-055"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -675,6 +684,202 @@
       "priority": "P1",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-box-068"
+    },
+    {
+      "check_id": "CHK-018",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Save box Draft có thay đổi gọi PUT /api/boxes/{id} và nhận current_version_id mới",
+      "applicability": {
+        "role": "merchant",
+        "state": "box Single digital Draft, form có thay đổi",
+        "environment": "staging",
+        "surface_or_device": "portal (app merchant) + network (<MYS_API_BASE>)"
+      },
+      "precondition": "Box QA- ở Draft; ghi current_version_id hiện tại từ GET /api/boxes/{id}; mở network capture.",
+      "steps": [
+        "Đổi animation, bấm Save; ghi response PUT /api/boxes/{id}.",
+        "Đổi quantity của prize, bấm Save; ghi response.",
+        "Quan sát nút Save khi form không có thay đổi."
+      ],
+      "observation_point": "current_version_id trong response PUT so với trước; trạng thái nút Save.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Mỗi lần Save có thay đổi, PUT <MYS_API_BASE>/api/boxes/{id} trả 200 với box object có current_version_id mới (khác lần trước) và published_at null; nút Save disabled khi form không có thay đổi.",
+      "oracle": {
+        "kb_ids": [
+          "box-versioning#KB-051",
+          "box-versioning#KB-045"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging thấy mỗi lần Save có thay đổi (animation, quantity) đều sinh current_version_id mới qua PUT /api/boxes/{id} (mỗi loại 1 mẫu). Đây có phải hành vi mong đợi cho mọi loại thay đổi không, và có cách nào lưu box mà không có thay đổi (API trực tiếp) để phân xử CONF-box-01?",
+      "related_kb_ids": [
+        "box-versioning#KB-024",
+        "box-versioning#KB-027",
+        "box-create-and-publish#KB-082",
+        "box-versioning#KB-001",
+        "box-versioning#KB-002"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-box-110"
+    },
+    {
+      "check_id": "CHK-019",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Đơn có box mang box_version_id ở API merchant, trang khách và link Unbox",
+      "applicability": {
+        "role": "merchant + guest buyer",
+        "state": "đơn test đã paid có box",
+        "environment": "staging",
+        "surface_or_device": "portal (Manage orders) + trang khách /apps/mysbox/ + network"
+      },
+      "precondition": "Có đơn test (Bogus gateway) mua box QA-; ghi current_version_id của box lúc mua.",
+      "steps": [
+        "Trong app merchant mở chi tiết đơn ở Manage orders; ghi boxes[] của GET /api/orders/{id}.",
+        "Mở trang khách của đơn; ghi boxes[] của /apps/mysbox/api/orders/{id}.",
+        "Trên trang cảm ơn đọc đường dẫn link Unbox."
+      ],
+      "observation_point": "Field box_version_id trong boxes[] và đường dẫn link Unbox.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Mỗi phần tử boxes[] của đơn ở cả API merchant và API trang khách mang box_version_id bằng version hiện hành của box lúc đơn được xử lý; link Unbox có dạng /apps/mysbox/orders/{id}/{box_version_id}/{n}/open.",
+      "oracle": {
+        "kb_ids": [
+          "box-versioning#KB-047"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "box-versioning#KB-010",
+        "box-versioning#KB-048",
+        "box-versioning#KB-004",
+        "box-versioning#KB-005"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-box-111"
+    },
+    {
+      "check_id": "CHK-020",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "GET /api/box-versions/by-ids trả cấu hình bản chụp của version",
+      "applicability": {
+        "role": "merchant",
+        "state": "đơn có box đã paid",
+        "environment": "staging",
+        "surface_or_device": "portal (Manage orders) + network (<MYS_API_BASE>)"
+      },
+      "precondition": "Có đơn có box; mở network capture.",
+      "steps": [
+        "Mở chi tiết đơn trong app merchant.",
+        "Ghi request GET /api/box-versions/by-ids?ids=<box_version_id> và response."
+      ],
+      "observation_point": "Response của GET /api/box-versions/by-ids.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Trả 200 với data[] gồm id, variant_linked_id, type, settings (animation, bundles_animation, buyback_enabled, randomization_method …) và bundles[].items[] có variant_linked_id, position, settings.chance/title/image/price; không có quantity.",
+      "oracle": {
+        "kb_ids": [
+          "box-versioning#KB-050"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "box-versioning#KB-006",
+        "box-versioning#KB-047"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-box-112"
+    },
+    {
+      "check_id": "CHK-021",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "current_version_id có ngay khi tạo box và không đổi qua publish / unpublish",
+      "applicability": {
+        "role": "merchant",
+        "state": "box mới → Active → Draft (Single digital, Bundle, Single Sealed)",
+        "environment": "staging",
+        "surface_or_device": "portal (app merchant) + network (<MYS_API_BASE>)"
+      },
+      "precondition": "Mở network capture; form box mới điền hợp lệ.",
+      "steps": [
+        "Bấm Save; ghi current_version_id và sync_status trong response POST /api/boxes.",
+        "Ghi current_version_id trong response POST /api/boxes/{id}/publish (tự gọi sau Save) và GET /api/boxes/{id}.",
+        "Bấm \"Deactivate box\"; ghi current_version_id trong response POST /api/boxes/{id}/unpublish.",
+        "So sánh các giá trị."
+      ],
+      "observation_point": "current_version_id và sync_status trong các response box.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) current_version_id đã có trong response POST /api/boxes và giữ nguyên qua /publish, các GET và /unpublish; sync_status là \"completed\" ở mọi response box (box Single/Bundle, không phải chế độ group).",
+      "oracle": {
+        "kb_ids": [
+          "box-versioning#KB-052"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging (3 box): current_version_id có ngay khi POST /api/boxes và không đổi qua publish/unpublish — khớp tài liệu (KB-023, KB-029). Cần xác nhận thêm với box chế độ group (sync_status đổi) và với Save sửa box (PUT) trong cùng chuỗi.",
+      "related_kb_ids": [
+        "box-versioning#KB-023",
+        "box-versioning#KB-029",
+        "box-versioning#KB-044",
+        "box-versioning#KB-046"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-box-123"
+    },
+    {
+      "check_id": "CHK-022",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "Đơn chỉ có box sealed: box-versions/by-ids gọi với ids rỗng và nhận 422",
+      "applicability": {
+        "role": "merchant + guest buyer",
+        "state": "đơn test chỉ gồm box Sealed (physical)",
+        "environment": "staging",
+        "surface_or_device": "portal (Manage orders) + trang khách /apps/mysbox/ + network"
+      },
+      "precondition": "Có đơn test chỉ gồm box Sealed và một đơn có box digital; mở network capture.",
+      "steps": [
+        "Mở chi tiết đơn có box digital (merchant và trang khách); ghi request box-versions/by-ids và tham số ids.",
+        "Mở chi tiết đơn chỉ có box Sealed; ghi request box-versions/by-ids, tham số ids và response.",
+        "Quan sát trang hiển thị gì khi response lỗi."
+      ],
+      "observation_point": "Tham số ids và status/response của box-versions/by-ids; UI trang chi tiết đơn.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Với đơn có box digital, trang merchant gọi GET <MYS_API_BASE>/api/box-versions/by-ids?ids=<version của đơn> và trang khách gọi /apps/mysbox/api/box-versions/by-ids theo version của đơn (200). Với đơn chỉ có box Sealed, request gửi ids= rỗng và nhận 422 {\"message\": \"The ids field is required.\"}.",
+      "oracle": {
+        "kb_ids": [
+          "box-versioning#KB-054"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Trên staging, mở chi tiết đơn chỉ có box Sealed làm frontend gọi box-versions/by-ids với ids rỗng và nhận 422 \"The ids field is required.\". Đây là lỗi (frontend không nên gọi khi không có version digital) hay chủ ý, và trang chi tiết đơn phải hiển thị gì cho đơn chỉ có box Sealed?",
+      "related_kb_ids": [
+        "box-versioning#KB-050",
+        "box-versioning#KB-047",
+        "physical-sealed-box-fulfilment#KB-074"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "trang chi tiết đơn chỉ có box sealed có thể lỗi"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-box-124"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -688,10 +893,12 @@
         "CHK-004",
         "CHK-005",
         "CHK-006",
-        "CHK-014"
+        "CHK-014",
+        "CHK-018",
+        "CHK-021"
       ],
       "covered": true,
-      "note": "Trường hợp lưu không đổi gì đang conflict (CHK-006 oracle NONE)."
+      "note": "Trường hợp lưu không đổi gì đang conflict (CHK-006 oracle NONE); staging: Save disabled khi form không đổi."
     },
     {
       "feature_id": "FEAT-03-box-versioning",
@@ -701,7 +908,10 @@
         "CHK-008",
         "CHK-009",
         "CHK-010",
-        "CHK-012"
+        "CHK-012",
+        "CHK-019",
+        "CHK-020",
+        "CHK-022"
       ],
       "covered": true,
       "note": "Thời điểm gắn version đang conflict (CHK-012 oracle NONE)."
@@ -759,9 +969,15 @@
     {
       "feature_id": "FEAT-03-box-versioning",
       "item": "layer: api / db",
-      "check_ids": [],
-      "covered": false,
-      "note": "Chỉ có thực thể mức nghiệp vụ (current_version_id, opening request); quan sát qua admin panel."
+      "check_ids": [
+        "CHK-018",
+        "CHK-019",
+        "CHK-020",
+        "CHK-021",
+        "CHK-022"
+      ],
+      "covered": true,
+      "note": "api: quan sát staging (BASELINE); db: không có surface."
     }
   ],
   "excluded_dimensions": [],

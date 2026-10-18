@@ -53,6 +53,28 @@
         "picking-modes#KB-003",
         "picking-modes#KB-004"
       ]
+    },
+    {
+      "role": "merchant (staging, quan sát)",
+      "permission_observed": "OBSERVED_CURRENT staging/gói Free: chỉ thấy checkbox \"Unique in an order\" (Single chế độ single item và Bundle); không có lựa chọn picking mode nào khác trong form.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "picking-modes#KB-051",
+        "picking-modes#KB-052"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-17: tạo box bật Unique (Single, Bundle) và tắt (Sealed); mở đơn Bundle bằng nút Unbox ở Manage orders.",
+      "refresh_kb_refs": [
+        "picking-modes#KB-053",
+        "picking-modes#KB-055"
+      ]
+    },
+    {
+      "role": "guest buyer (staging, quan sát)",
+      "permission_observed": "OBSERVED_CURRENT staging: mở đơn 3 box Single bật Unique trên trang khách (Unbox lẻ + Multi-unbox), nhận 3 item khác nhau.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "picking-modes#KB-054"
+      ]
     }
   ],
   "entry_points": [
@@ -63,6 +85,10 @@
         "picking-modes#KB-024",
         "picking-modes#KB-025",
         "_object-level.box#KB-017"
+      ],
+      "observed_kb_refs": [
+        "picking-modes#KB-051",
+        "picking-modes#KB-053"
       ]
     },
     {
@@ -98,6 +124,14 @@
         "picking-modes#KB-003",
         "picking-modes#KB-004"
       ]
+    },
+    {
+      "path": "Form Bundle → \"Browse\" ở set 2 → dialog \"Select products\" (item đã dùng ở set 1 không bị disable) (quan sát staging)",
+      "precondition": "OBSERVED_CURRENT, 1 mẫu: form Bundle chưa lưu, box tồn kho 1.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "picking-modes#KB-056"
+      ]
     }
   ],
   "capabilities": [
@@ -113,7 +147,12 @@
         "picking-modes#KB-021",
         "picking-modes#KB-022",
         "picking-modes#KB-029"
-      ]
+      ],
+      "observed_kb_refs": [
+        "picking-modes#KB-052",
+        "picking-modes#KB-053"
+      ],
+      "refresh_note": "settings.picking_mode null ở mọi box/version quan sát — không chứng minh tên mode mặc định. Quan sát staging 2026-10-17: null ⇔ \"Unique in an order\" tắt (box 1027/version 3025)."
     },
     {
       "name": "Không lặp item trong một đơn (Unique in an order)",
@@ -125,7 +164,14 @@
         "picking-modes#KB-027",
         "picking-modes#KB-028",
         "picking-modes#KB-031"
-      ]
+      ],
+      "observed_kb_refs": [
+        "picking-modes#KB-051",
+        "picking-modes#KB-053",
+        "picking-modes#KB-054",
+        "picking-modes#KB-055"
+      ],
+      "refresh_note": "KB-051 chỉ là quan sát trực tiếp trên form chưa lưu, không gắn thao tác có ghi lại; hành vi bốc khi bật không thử. Quan sát staging 2026-10-17: bật Unique → settings.picking_mode \"unique\"; Single 3 box ra 3 item khác nhau, Bundle 2 box mỗi set ra 2 item khác nhau (mỗi cấu hình 1 mẫu, có tính xác suất)."
     },
     {
       "name": "Group draw — bốc có hoàn lại",
@@ -178,7 +224,12 @@
         "picking-modes#KB-013",
         "picking-modes#KB-014",
         "picking-modes#KB-015"
-      ]
+      ],
+      "observed_kb_refs": [
+        "picking-modes#KB-052",
+        "picking-modes#KB-056"
+      ],
+      "refresh_note": "Staging: form Bundle không có lựa chọn \"Unique across pools\" (observed-absent, KB-052) — kênh API theo KB-003 không thử. Quan sát staging 2026-10-17: form Bundle không chặn cùng item ở 2 set khi tồn kho 1 (KB-056); không lưu nên chưa thấy kết quả bốc."
     }
   ],
   "state_transitions": [
@@ -237,6 +288,26 @@
       "kb_refs": [
         "picking-modes#KB-049",
         "picking-modes#KB-050"
+      ]
+    },
+    {
+      "from": "Form Single chế độ single item (có \"Item picking settings\" / \"Unique in an order\")",
+      "to": "Chế độ \"Random by group(s)\" (mục biến mất)",
+      "trigger": "Merchant chuyển Randomization method",
+      "condition": "OBSERVED_CURRENT staging; chuyển về single item thì mục hiện lại",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "picking-modes#KB-051"
+      ]
+    },
+    {
+      "from": "B1 Single tracked 2/2/1, Unique bật, 3 hộp chưa mở",
+      "to": "3 hộp mở ra 3 item khác nhau; Remaining 1/1/0",
+      "trigger": "Guest buyer mở hết đơn #1009 (Unbox lẻ + Multi-unbox)",
+      "condition": "OBSERVED_CURRENT staging, 1 mẫu; nhánh đặt lại khi hết item unique không chạm",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "picking-modes#KB-054"
       ]
     }
   ],
@@ -393,7 +464,73 @@
       ]
     }
   ],
-  "observed_behavior": [],
+  "observed_behavior": [
+    {
+      "behavior": "Advanced Settings trên form Single (chế độ single item) và Bundle mới có \"Item picking settings\" với checkbox \"Unique in an order\" + \"Ensure that each item selected within an order is unique and not duplicated.\" (không tick trên form mới); chuyển Single sang \"Random by group(s)\" thì mục biến mất, chuyển về thì hiện lại.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 4,
+      "confidence": "MEDIUM",
+      "note": "Khớp base KB-024/KB-025 và _object-level.box#KB-017.",
+      "kb_refs": [
+        "picking-modes#KB-051"
+      ]
+    },
+    {
+      "behavior": "Form Single (single item và group) và Bundle không có lựa chọn picking mode nào ngoài \"Unique in an order\" (Bundle không có \"Unique across pools\", không có ô pick_count); mọi box/box version quan sát staging 2026-10-16 (1022, 1023, 1024; version 3018–3022) có settings.picking_mode null.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 4,
+      "confidence": "MEDIUM",
+      "note": "Observed-absent; null không chứng minh mode là \"simple\"/\"binned\" (KB-017) — không suy.",
+      "kb_refs": [
+        "picking-modes#KB-052"
+      ]
+    },
+    {
+      "behavior": "Box bật \"Unique in an order\" (1025 Single, 1026 Bundle) có settings.picking_mode \"unique\" trong POST/publish/GET/unpublish /api/boxes và box version 3023, 3024; box tắt (1027) có picking_mode null (version 3025). Giá trị từ lần tạo box; không có bật/tắt rồi Save (PUT).",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 3,
+      "confidence": "MEDIUM",
+      "note": "Corroborate KB-024/KB-025/KB-051/KB-052; chỉ một giá trị khác null — không suy enum.",
+      "kb_refs": [
+        "picking-modes#KB-053"
+      ]
+    },
+    {
+      "behavior": "Đơn #1009 (3 box B1 Single tracked 2/2/1, Unique bật) mở hết: 3 hộp nhận 3 item khác nhau, mỗi hộp 1 item; Remaining 2/2/1 → 1/1/0.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "note": "1 mẫu, có tính xác suất — không tổng quát hoá; corroborate KB-025/KB-026/KB-028.",
+      "kb_refs": [
+        "picking-modes#KB-054"
+      ]
+    },
+    {
+      "behavior": "Đơn #1010 (2 box B2 Bundle tracked 3 set, mỗi set 2 item khác nhau, không có item chung giữa set, Unique bật) mở bằng nút Unbox ở Manage orders: mỗi hộp đúng 3 item (1/set), trong từng set hai hộp nhận hai item khác nhau.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "note": "Không phân biệt được unique theo set hay theo hộp vì các set không có item chung.",
+      "kb_refs": [
+        "picking-modes#KB-055"
+      ]
+    },
+    {
+      "behavior": "Chọn cùng item (quantity 1) cho Prize #1 và Prize #2 trên form Bundle với box tồn kho 1: dialog \"Select products\" của set 2 không disable/đánh dấu item đã dùng, hai set \"All set!\" 100.00%, Save bật, không cảnh báo; không lưu.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "picking-modes#KB-056"
+      ]
+    }
+  ],
   "observed_validations": [],
   "limitations": [
     {
@@ -426,6 +563,22 @@
       "kb_refs": [
         "picking-modes#KB-030",
         "picking-modes#KB-033"
+      ]
+    },
+    {
+      "statement": "Đợt quan sát staging 2026-10-16 chỉ có 4 lần bốc — không đủ để quan sát hay suy thuật toán bốc; mọi quan sát của feature này là form/option.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "picking-modes#KB-051",
+        "picking-modes#KB-052"
+      ]
+    },
+    {
+      "statement": "Đợt staging 2026-10-17 có 2 đơn bật Unique (5 hộp) — kết quả 'không trùng' có thể do ngẫu nhiên; không dùng làm bằng chứng thuật toán.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "picking-modes#KB-054",
+        "picking-modes#KB-055"
       ]
     }
   ],
@@ -489,6 +642,28 @@
           "picking-modes#KB-040",
           "picking-modes#KB-042"
         ]
+      },
+      {
+        "element": "Advanced Settings › \"Item picking settings\" › \"Unique in an order\" (Single single-item + Bundle; ẩn ở chế độ group) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "picking-modes#KB-051",
+          "picking-modes#KB-053"
+        ]
+      },
+      {
+        "element": "Dialog \"Select products\" ở set Bundle (không đánh dấu item đã dùng ở set khác) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "picking-modes#KB-056"
+        ]
+      },
+      {
+        "element": "Manage orders → nút \"Unbox\" (mở đơn Bundle bật Unique) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "picking-modes#KB-055"
+        ]
       }
     ],
     "admin_panel": [
@@ -500,12 +675,76 @@
         ]
       }
     ],
-    "storefront": [],
+    "storefront": [
+      {
+        "element": "Trang khách: Unbox lẻ + Multi-unbox đơn 3 box bật Unique (3 item khác nhau) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "picking-modes#KB-054"
+        ]
+      }
+    ],
     "api": [
       {
         "element": "Kênh đặt Unique across pools qua API (staging-only, route chưa tài liệu hoá)",
         "kb_refs": [
           "picking-modes#KB-003"
+        ]
+      },
+      {
+        "element": "GET /api/boxes/{box_id} — settings.picking_mode (null mọi sample)",
+        "method": "GET",
+        "route": "/api/boxes/{box_id}",
+        "host": "<MYS_API_BASE>",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "picking-modes#KB-052",
+          "_object-level.box#KB-020",
+          "picking-modes#KB-053",
+          "_object-level.box#KB-022"
+        ],
+        "refresh_note": "Quan sát staging 2026-10-17: \"unique\" khi bật Unique, null khi tắt (POST/publish/GET/unpublish)."
+      },
+      {
+        "element": "GET /api/box-versions/by-ids — settings.picking_mode của version (null)",
+        "method": "GET",
+        "route": "/api/box-versions/by-ids?ids=<box_version_id>",
+        "host": "<MYS_API_BASE>",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "picking-modes#KB-052",
+          "picking-modes#KB-053"
+        ],
+        "refresh_note": "Quan sát staging 2026-10-17: version 3023/3024 \"unique\", 3025 null."
+      },
+      {
+        "element": "box-versions/{id} trên trang khách (app proxy) — settings.picking_mode (null)",
+        "method": "GET",
+        "route": "box-versions/{id} (app proxy)",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "picking-modes#KB-052",
+          "picking-modes#KB-053"
+        ]
+      },
+      {
+        "element": "POST /apps/mysbox/api/unopened-boxes/open (+ /orders/{id}/unopened-boxes/open) — winning_bundles của đơn Unique",
+        "method": "POST",
+        "route": "/apps/mysbox/api/unopened-boxes/open · /apps/mysbox/api/orders/{id}/unopened-boxes/open",
+        "host": "<MYS_STORE_DOMAIN> app proxy",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "picking-modes#KB-054"
+        ]
+      },
+      {
+        "element": "POST /api/orders/{id}/boxes/open (merchant Unbox) + GET /api/orders/{id} — winning_bundles đơn Bundle Unique",
+        "method": "POST",
+        "route": "/api/orders/{shopify_order_id}/boxes/open · GET /api/orders/{shopify_order_id}",
+        "host": "<MYS_API_BASE>",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "picking-modes#KB-055"
         ]
       }
     ],
@@ -521,6 +760,20 @@
         "kb_refs": [
           "picking-modes#KB-035",
           "picking-modes#KB-050"
+        ]
+      },
+      {
+        "element": "box/box version settings.picking_mode = null (1022, 1023, 1024; 3018–3022) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "picking-modes#KB-052"
+        ]
+      },
+      {
+        "element": "box/box version settings.picking_mode = \"unique\" khi bật Unique (1025, 1026; 3023, 3024), null khi tắt (1027; 3025) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "picking-modes#KB-053"
         ]
       }
     ],
@@ -567,6 +820,14 @@
       "kb_refs": [
         "picking-modes#KB-016"
       ]
+    },
+    {
+      "feature_key": "box-versioning",
+      "reason": "Quan sát staging: settings.picking_mode nằm trong box version (\"unique\"/null)",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "picking-modes#KB-053"
+      ]
     }
   ],
   "risks": [
@@ -593,10 +854,18 @@
       "kb_refs": [
         "picking-modes#KB-001"
       ]
+    },
+    {
+      "risk": "Form Bundle cho đặt cùng item ở nhiều set dù tồn kho item 1 mà không cảnh báo — nếu Save chấp nhận, một hộp có thể cần 2 đơn vị của item chỉ còn 1.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "picking-modes#KB-056"
+      ]
     }
   ],
   "freshness": {
-    "observed_at": null
+    "observed_at": "2026-10-17",
+    "base_observed_at": "2026-10-16"
   },
   "unknown_areas": [
     {
@@ -607,7 +876,11 @@
         "picking-modes#KB-003",
         "picking-modes#KB-004"
       ],
-      "oq_id": "OQ-box-074"
+      "oq_id": "OQ-box-074",
+      "refresh_note": "Staging: form Bundle không có lựa chọn này (KB-052); kênh API không thử.",
+      "refresh_kb_refs": [
+        "picking-modes#KB-052"
+      ]
     },
     {
       "question": "Khi \"Unique across pools\" để một hộp rỗng (mọi phương án không chia được): khách thấy gì, đơn/opening ra sao, tồn kho và usage fee có bị tính không?",
@@ -623,7 +896,11 @@
       "kb_refs": [
         "picking-modes#KB-023"
       ],
-      "oq_id": "OQ-box-047"
+      "oq_id": "OQ-box-047",
+      "refresh_note": "Quan sát staging 2026-10-17: form Bundle không chặn cùng item ở 2 set khi tồn kho box 1 (không cảnh báo, Save bật); cấu hình này không được lưu nên chưa có đơn để xem A+A hay lỗi.",
+      "refresh_kb_refs": [
+        "picking-modes#KB-056"
+      ]
     },
     {
       "question": "Với Bundle nhiều set, \"Unique in an order\" tính unique theo từng set hay trên toàn hộp/toàn đơn?",
@@ -631,7 +908,11 @@
       "kb_refs": [
         "picking-modes#KB-026"
       ],
-      "oq_id": "OQ-box-048"
+      "oq_id": "OQ-box-048",
+      "refresh_note": "Quan sát staging 2026-10-17: Bundle 3 set bật Unique, đơn 2 box — trong từng set hai hộp nhận item khác nhau, mỗi hộp 1 item/set; các set không có item chung và đơn chỉ 2 box nên chưa phân biệt unique theo set hay theo hộp.",
+      "refresh_kb_refs": [
+        "picking-modes#KB-055"
+      ]
     },
     {
       "question": "\"Unique in an order\" có áp dụng khi một đơn chứa nhiều hộp thuộc các variant/box khác nhau không?",
@@ -674,7 +955,12 @@
       "kb_refs": [
         "picking-modes#KB-016"
       ],
-      "oq_id": "OQ-box-051"
+      "oq_id": "OQ-box-051",
+      "refresh_note": "Staging: box version object có field settings.picking_mode (null) (KB-052) — gợi ý mode nằm trong version nhưng chưa xác nhận. Quan sát staging 2026-10-17: version 3023/3024 mang \"unique\", 3025 null — mode có trong version lúc tạo; bật/tắt rồi Save và so version mới/cũ chưa làm.",
+      "refresh_kb_refs": [
+        "picking-modes#KB-052",
+        "picking-modes#KB-053"
+      ]
     },
     {
       "question": "Đổi qua lại giữa Single và Bundle, hoặc giữa draw và pool, có reset danh sách item không?",
@@ -683,7 +969,11 @@
         "picking-modes#KB-034",
         "picking-modes#KB-036"
       ],
-      "oq_id": "OQ-box-052"
+      "oq_id": "OQ-box-052",
+      "refresh_note": "Quan sát staging 2026-10-17: single ↔ group reset item cả hai chiều; form không có control đổi Single ↔ Bundle (theo box-type-and-prize-setup#KB-065). Phần draw ↔ pool chưa trả lời được (không có trên form gói Free).",
+      "refresh_kb_refs": [
+        "box-type-and-prize-setup#KB-065"
+      ]
     },
     {
       "question": "Picking Mode Draw/BasePool và Tier Mode Shared/Independent trong admin panel ánh xạ thế nào với các lựa chọn của merchant trong portal?",
@@ -695,10 +985,32 @@
         "picking-modes#KB-040"
       ],
       "oq_id": "OQ-box-050"
+    },
+    {
+      "question": "settings.picking_mode = null nghĩa là gì (mode mặc định simple/binned, hay chưa cấu hình), và giá trị enum khi bật \"Unique in an order\" là gì?",
+      "why_it_matters": "Không suy được mode từ null; cần để viết check API/data cho picking mode.",
+      "kb_refs": [
+        "picking-modes#KB-052",
+        "picking-modes#KB-017"
+      ],
+      "oq_id": "OQ-box-101",
+      "refresh_note": "Quan sát staging 2026-10-17: bật Unique → \"unique\"; tắt → null (3 box, từ lần tạo). Phần enum khi bật đã thấy; null tương ứng Unique tắt nhưng chưa phân biệt được 'mode mặc định simple/binned' với 'chưa cấu hình', và chỉ thấy một giá trị khác null — giữ mở cho Dev.",
+      "refresh_kb_refs": [
+        "picking-modes#KB-053"
+      ]
+    },
+    {
+      "question": "Lưu box Bundle có cùng một item ở nhiều set khi tồn kho item chỉ đủ cho một (vd quantity 1) có bị chặn ở bước Save/server không, và thông báo gì?",
+      "why_it_matters": "Form không cảnh báo (KB-056); nếu Save chấp nhận, kết quả bốc có thể đòi nhiều đơn vị hơn tồn kho — cần expected cho check validation.",
+      "kb_refs": [
+        "picking-modes#KB-056",
+        "picking-modes#KB-023"
+      ],
+      "oq_id": "OQ-box-133"
     }
   ],
   "last_updated": {
-    "date": "2026-10-16",
+    "date": "2026-10-17",
     "ccr_ref": "bootstrap"
   },
   "coverage_matrix": [
@@ -749,6 +1061,91 @@
       "state": "kết quả bốc",
       "environment": "documented",
       "covered": false
+    },
+    {
+      "feature_id": "FEAT-05-picking-modes",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "form Single/Bundle (option Unique in an order)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "picking-modes#KB-051",
+        "picking-modes#KB-052",
+        "picking-modes#KB-056"
+      ]
+    },
+    {
+      "feature_id": "FEAT-05-picking-modes",
+      "layer": "api",
+      "role": "merchant",
+      "state": "settings.picking_mode",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "picking-modes#KB-052",
+        "picking-modes#KB-053"
+      ]
+    },
+    {
+      "feature_id": "FEAT-05-picking-modes",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "kết quả bốc đơn 3 box Single bật Unique",
+      "environment": "staging",
+      "covered": true,
+      "note": "1 mẫu.",
+      "kb_refs": [
+        "picking-modes#KB-054"
+      ]
+    },
+    {
+      "feature_id": "FEAT-05-picking-modes",
+      "layer": "api",
+      "role": "merchant",
+      "state": "kết quả bốc đơn 2 box Bundle bật Unique (merchant Unbox)",
+      "environment": "staging",
+      "covered": true,
+      "note": "1 mẫu.",
+      "kb_refs": [
+        "picking-modes#KB-055"
+      ]
+    },
+    {
+      "feature_id": "FEAT-05-picking-modes",
+      "layer": "code",
+      "role": "system",
+      "state": "thuật toán bốc (default/unique/draw/pool)",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: 4 lần bốc, không bật Unique, không có box TIER; code surface tắt. Quan sát staging 2026-10-17: thêm 5 hộp bật Unique — vẫn không đủ để suy thuật toán; không có box TIER."
+    },
+    {
+      "feature_id": "FEAT-05-picking-modes",
+      "layer": "admin_panel",
+      "role": "admin",
+      "state": "Configure Tier Settings",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: admin panel tắt."
+    },
+    {
+      "feature_id": "FEAT-05-picking-modes",
+      "layer": "db",
+      "role": "system",
+      "state": "hàng đợi pool / con trỏ",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: db surface tắt."
+    },
+    {
+      "feature_id": "FEAT-05-picking-modes",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "kết quả bốc nhiều hộp",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: không đủ đơn để quan sát trùng/không trùng ở mode mặc định; Bundle {A,B} lặp, đơn trộn variant không dựng."
     }
   ],
   "profile_conflicts": [],
@@ -784,7 +1181,18 @@
       "to": "purchase-and-prize-draw",
       "type": "used_by",
       "kb_refs": [
-        "picking-modes#KB-016"
+        "picking-modes#KB-016",
+        "picking-modes#KB-054",
+        "picking-modes#KB-055"
+      ]
+    },
+    {
+      "from": "picking-modes",
+      "to": "box-versioning",
+      "type": "related",
+      "note": "Quan sát staging (OBSERVED_CURRENT): picking_mode nằm trong box version.",
+      "kb_refs": [
+        "picking-modes#KB-053"
       ]
     }
   ]

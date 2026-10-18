@@ -1,6 +1,6 @@
 # Open Questions — storefront-widget
 
-Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh từ bootstrap DOC_BOOTSTRAP đầu tiên của Mysbox (nguồn: bộ Product KB v1 do dev viết từ source code, 2026-10-16). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
+Tổng: 67 mục (CONFLICT 7 · OPEN_ISSUE 27 · NEEDS_CONFIRMATION 33). Sinh từ bootstrap DOC_BOOTSTRAP đầu tiên của Mysbox (nguồn: bộ Product KB v1 do dev viết từ source code, 2026-10-16); REFRESH trên staging 2026-10-17 thêm mục mới, ghi `staging_observation` (OBSERVED_CURRENT, không resolve NEEDS_CONFIRMATION/CONFLICT). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
 
 ## OQ-storefront-widget-001 — NEEDS_CONFIRMATION
 
@@ -27,7 +27,12 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   "kb_ids": [
     "storefront-data-sync#KB-041",
     "storefront-data-sync#KB-044"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-002 / CONF-storefront-widget-02: 2026-10-17: Một đơn Bogus: tồn kho trên widget đổi trong ≤ 23 giây sau paid (mẫu đầu +23s đã đổi), không đổi thêm tới +5 phút. Không trả lời được \"ngưỡng bình thường\" là 1 phút hay vài phút — đó là câu hỏi về expected.",
+  "staging_observation_kb_ids": [
+    "storefront-data-sync#KB-048"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -49,7 +54,12 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   ],
   "check_ids": [
     "storefront-data-sync:CHK-019"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-003 / CONF-storefront-widget-03: 2026-10-17: Độ trễ quan sát ≤ 23 giây (dưới 1 phút); mốc dưới trong 23 giây đầu không đo được; một đơn.",
+  "staging_observation_kb_ids": [
+    "storefront-data-sync#KB-048"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -70,7 +80,12 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   ],
   "check_ids": [
     "storefront-data-sync:CHK-020"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-004 / CONF-storefront-widget-04: 2026-10-17: Trên staging số tồn kho widget lấy từ metafield mysbox.box in ra trong Liquid (pools/quantity); Storefront API không có quantityAvailable và getProducts trả metafield null.",
+  "staging_observation_kb_ids": [
+    "storefront-data-sync#KB-049"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -91,7 +106,14 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   ],
   "check_ids": [
     "widget-translations:CHK-018"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-005 / CONF-storefront-widget-01: 2026-10-17: Không có custom script: khách thấy \"3/3 left\"; itemStockText không đặt nên bundle rơi về item_stock_left \"{remaining-items}/{total-items} left\" (cùng chuỗi với bảng Content & Translation); không thấy cú pháp {quantity}/{total}.",
+  "staging_observation_kb_ids": [
+    "widget-translations#KB-038",
+    "widget-custom-code#KB-024",
+    "widget-custom-code#KB-025"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -143,7 +165,15 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
     "storefront-data-sync#KB-011",
     "storefront-data-sync#KB-015",
     "storefront-data-sync#KB-022"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-008: 2026-10-17: Variant chỉ có metafield mysbox.box: ghi khi publish, pools cập nhật sau đơn, giữ với published_at null khi Deactivate, không ghi lại khi Save lúc Draft. Danh sách đầy đủ thời điểm ghi vẫn cần Dev.",
+  "staging_observation_kb_ids": [
+    "storefront-data-sync#KB-047",
+    "storefront-data-sync#KB-048",
+    "storefront-data-sync#KB-051",
+    "storefront-data-sync#KB-052"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -159,7 +189,12 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
     "storefront-data-sync#KB-003",
     "storefront-data-sync#KB-025",
     "storefront-data-sync#KB-042"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-009: 2026-10-17: Deactivate (POST /unpublish) KHÔNG xoá metafield mysbox.box; ~1 phút sau metafield còn, chỉ published_at = null; widget không render. Trường hợp xoá box không thử (cấm).",
+  "staging_observation_kb_ids": [
+    "storefront-data-sync#KB-051"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -188,7 +223,12 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   "kb_ids": [
     "storefront-data-sync#KB-007",
     "storefront-data-sync#KB-023"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-011: 2026-10-17: Token Storefront API nằm ở window._Mysbox.storefrontToken và được gửi qua header X-Shopify-Storefront-Access-Token; cách cấp/quản lý token và hành vi khi lỗi không quan sát được.",
+  "staging_observation_kb_ids": [
+    "storefront-data-sync#KB-050"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -264,7 +304,13 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   "kb_ids": [
     "widget-custom-code#KB-007",
     "widget-custom-code#KB-011"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-016: 2026-10-17: window.Mysbox và window.MysboxCustomOptions đều undefined (không có object mặc định); bundle widget rơi về itemStockText → item_stock_left, remainText → remain_text, currencyPrecision 100. Mặc định của MysboxCustomOptions (bundle trang khách) chưa kiểm.",
+  "staging_observation_kb_ids": [
+    "widget-custom-code#KB-024",
+    "widget-custom-code#KB-025"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -298,7 +344,13 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   "kb_ids": [
     "widget-theme-embed-setup#KB-026",
     "widget-theme-embed-setup#KB-027"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-018: 2026-10-17: Đã ghi mặc định mọi tuỳ chọn Item list (Image size 200 min 20 không max/step, Maximum groups 2 min 1...) và cách client kẹp giá trị ngoài biên; không có \"Box item is shown as\" (mở CONF-storefront-widget-05). Validate phía server khi Save không thử; mỗi giá trị biên một lần.",
+  "staging_observation_kb_ids": [
+    "widget-theme-embed-setup#KB-046",
+    "widget-theme-embed-setup#KB-047"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -312,7 +364,14 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   "summary": "Hành vi trên production và staging chưa được xác minh — toàn bộ profile dựng từ tài liệu. — Mọi rule là expected theo tài liệu dev; chưa có quan sát runtime để đối chiếu.",
   "kb_ids": [
     "widget-theme-embed-setup#KB-003"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-019: 2026-10-17: Staging: embed Active, 5 block Installed, widget mount với watermark trên trang product. Production chưa xác minh.",
+  "staging_observation_kb_ids": [
+    "widget-theme-embed-setup#KB-044",
+    "widget-theme-embed-setup#KB-045",
+    "widget-theme-embed-setup#KB-048"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -348,7 +407,12 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   "kb_ids": [
     "widget-translations#KB-001",
     "widget-translations#KB-002"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-021: 2026-10-17: Banner gói Free nguyên văn đã ghi; trang vẫn hiện form, không có nút Save khi chưa sửa nên chưa có phản hồi lưu (mở CONF-storefront-widget-06).",
+  "staging_observation_kb_ids": [
+    "widget-translations#KB-035"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -364,7 +428,14 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
     "widget-translations#KB-008",
     "widget-translations#KB-010",
     "widget-translations#KB-013"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-022: 2026-10-17: Có đủ 16 chuỗi mặc định nhóm general-settings và chuỗi mặc định Product page từ bundle; các nhóm unboxing/buyback-widget/order/share-unboxing trả data null qua API nên chuỗi mặc định của chúng chưa thấy. | 2026-10-17: Bổ sung ngoài outcome: \"Auto-open in: {time}\" (ví dụ ở KB-008) không có trong 16 key general-settings; 6 tab dịch còn lại chưa mở.",
+  "staging_observation_kb_ids": [
+    "widget-translations#KB-036",
+    "widget-translations#KB-037",
+    "widget-translations#KB-038"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -392,7 +463,12 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   "summary": "Danh sách đầy đủ metafield bản dịch của shop (tài liệu liệt kê 3 key rồi \"...\"). — Không kiểm được đủ phạm vi dịch nếu không biết hết key.",
   "kb_ids": [
     "widget-translations#KB-029"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-024: 2026-10-17: Nguồn dịch thấy phía client: _Mysbox.mysboxTranslation / mysboxProductPageTranslation / mysboxUnboxingTranslation và 5 endpoint /apps/mysbox/api/translations/*; tên metafield shop không thấy phía client.",
+  "staging_observation_kb_ids": [
+    "widget-translations#KB-037"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -425,7 +501,13 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
     "storefront-data-sync:CHK-008",
     "storefront-data-sync:CHK-013",
     "storefront-data-sync:CHK-024"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-026: 2026-10-17: CHK-007: widget ở chế độ tồn kho không hiện giá item; CHK-024: khách vãng lai đọc được config shop + bản dịch trong HTML trang. CHK-004/008/013 không quan sát. Không thay authority.",
+  "staging_observation_kb_ids": [
+    "storefront-data-sync#KB-053",
+    "_object-level.storefront-widget#KB-006"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -457,7 +539,13 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   "summary": "Khi merchant sửa chance trong Mysbox mà chưa publish lại, widget có tiếp tục hiện chance cũ cho tới khi metafield được ghi lại không; sửa box có tự kích hoạt ghi lại metafield hay chỉ khi publish?",
   "check_ids": [
     "storefront-data-sync:CHK-021"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-028: 2026-10-17: Save khi Draft tạo version mới, không tự publish, metafield vẫn giữ chance cũ (v3026) sau ~47s; chance trên widget không quan sát được vì widget ẩn khi Draft; publish lại không thử.",
+  "staging_observation_kb_ids": [
+    "storefront-data-sync#KB-052",
+    "storefront-data-sync#KB-053"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -473,7 +561,12 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
     "widget-custom-code:CHK-001",
     "widget-custom-code:CHK-002",
     "widget-custom-code:CHK-003"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-029: 2026-10-17: CHK-001: staging không có ô nhập CSS/JS tự do cho merchant. CHK-002/003 cần admin panel — không quan sát.",
+  "staging_observation_kb_ids": [
+    "widget-custom-code#KB-026"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -504,7 +597,13 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   ],
   "check_ids": [
     "widget-custom-code:CHK-009"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-031: 2026-10-17: Dòng box hiện \"Remaining boxes: x/y\" bên phải tiêu đề \"Box items\" (box Single, tracked, show_item_stock true); không thấy chữ \"Remain\" (mở CONF-storefront-widget-07). Mặc định các tuỳ chọn khác chỉ thấy một phần.",
+  "staging_observation_kb_ids": [
+    "widget-custom-code#KB-025",
+    "widget-custom-code#KB-024"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -552,7 +651,13 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   ],
   "check_ids": [
     "widget-theme-embed-setup:CHK-017"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-034: 2026-10-17: Gói Free hiện \"Powered by Mysbox\"; merchant không có control ẩn. Ai bật hide_watermark vẫn cần PO.",
+  "staging_observation_kb_ids": [
+    "widget-theme-embed-setup#KB-048",
+    "widget-theme-embed-setup#KB-049"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -570,7 +675,12 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   ],
   "check_ids": [
     "widget-theme-embed-setup:CHK-022"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-035: 2026-10-17: Nhãn trên staging: trang \"Setup instructions\" (route /instructions) và nút \"Add block to theme editor\" — khớp KB-004. Không thay authority cho production.",
+  "staging_observation_kb_ids": [
+    "widget-theme-embed-setup#KB-045"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -588,7 +698,12 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   ],
   "check_ids": [
     "widget-theme-embed-setup:CHK-023"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-036: 2026-10-17: Tên nguyên văn hai block checkout và request lấy trạng thái (Admin GraphQL App Bridge đọc file theme + checkoutProfiles) đã ghi; chỉ thấy \"Active\"/\"Installed\", logic phía server/client suy trạng thái không quan sát.",
+  "staging_observation_kb_ids": [
+    "widget-theme-embed-setup#KB-044"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -633,7 +748,13 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
     "widget-translations:CHK-013",
     "widget-translations:CHK-014",
     "widget-translations:CHK-017"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-storefront-widget-039: 2026-10-17: CHK-013: banner Free ghi nguyên văn, chưa thử lưu; CHK-014: widget hiện chuỗi mặc định. CHK-017 cần admin panel.",
+  "staging_observation_kb_ids": [
+    "widget-translations#KB-035",
+    "widget-translations#KB-038"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -647,6 +768,549 @@ Tổng: 40 mục (CONFLICT 4 · OPEN_ISSUE 20 · NEEDS_CONFIRMATION 16). Sinh t�
   "summary": "Nhóm dịch \"Share unboxing\" (chữ ở popup chia sẻ) hiện chỉ có trên nhánh build-staging: khi nào lên production, và trên production trang Content & Translation có hiển thị nhóm này không?",
   "check_ids": [
     "widget-translations:CHK-019"
+  ]
+}
+```
+
+## OQ-storefront-widget-041 — CONFLICT
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-041",
+  "type": "CONFLICT",
+  "feature_id": "widget-custom-code",
+  "summary": "Giá trị mặc định của remainText: tài liệu ghi \"Remain\"; staging (không có window.Mysbox) hiện \"Remaining boxes: 6/6\" do bundle rơi về remain_text \"Remaining boxes: {remaining-items}/{total-items}\". \"Remain\" là giá trị cũ, giá trị ở surface khác, hay tài liệu sai?",
+  "side_a": "Base KB-009 (CE, dev_doc): remainText của window.Mysbox mặc định \"Remain\".",
+  "side_b": "Quan sát staging KB-025: không đặt remainText thì dòng box hiện \"Remaining boxes: {remaining-items}/{total-items}\".",
+  "conflict_group": "CONF-storefront-widget-07",
+  "kb_ids": [
+    "widget-custom-code#KB-009",
+    "widget-custom-code#KB-025"
+  ],
+  "related_oq_ids": [
+    "OQ-storefront-widget-031"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-042 — CONFLICT
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-042",
+  "type": "CONFLICT",
+  "feature_id": "widget-theme-embed-setup",
+  "summary": "Tài liệu nói Style Settings có tuỳ chọn \"Box item is shown as\" (List / Carousel); trên staging, Item list (Single, Bundle, cả Random by items và Random by groups) và các trang Style Settings đã mở đều không có tuỳ chọn này. Tuỳ chọn đã bị bỏ, nằm ở chỗ khác (setting block trong theme editor?) hay chưa lên staging?",
+  "side_a": "Base KB-027 (CE, dev_doc): tuỳ chọn \"Box item is shown as\" có hai giá trị List / Carousel.",
+  "side_b": "Quan sát staging KB-047: không có tuỳ chọn này ở Item list và các trang Style Settings đã duyệt.",
+  "conflict_group": "CONF-storefront-widget-05",
+  "kb_ids": [
+    "widget-theme-embed-setup#KB-027",
+    "widget-theme-embed-setup#KB-047"
+  ],
+  "related_oq_ids": [
+    "OQ-storefront-widget-018"
+  ],
+  "tags": [
+    "staging-observed"
+  ],
+  "check_ids": [
+    "widget-theme-embed-setup:CHK-028"
+  ]
+}
+```
+
+## OQ-storefront-widget-043 — CONFLICT
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-043",
+  "type": "CONFLICT",
+  "feature_id": "widget-translations",
+  "summary": "Merchant gói Free mở Content & Translation: tài liệu nói chỉ thấy banner; staging hiện banner kèm toàn bộ form (8 tab, input không bị khoá). Expected cho gói Free là chỉ banner hay banner + form chỉ đọc/không lưu được?",
+  "side_a": "Base KB-002 (CE, dev_doc): merchant gói Free mở trang chỉ thấy banner.",
+  "side_b": "Quan sát staging KB-035: banner \"Translations are not available in the Free plan\" + form đầy đủ, 16 textbox tab General không disabled, không có Save khi chưa sửa.",
+  "conflict_group": "CONF-storefront-widget-06",
+  "kb_ids": [
+    "widget-translations#KB-002",
+    "widget-translations#KB-035"
+  ],
+  "related_oq_ids": [
+    "OQ-storefront-widget-021",
+    "OQ-storefront-widget-039"
+  ],
+  "tags": [
+    "staging-observed"
+  ],
+  "check_ids": [
+    "widget-translations:CHK-023"
+  ]
+}
+```
+
+## OQ-storefront-widget-044 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-044",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "storefront-data-sync",
+  "summary": "Staging (1 đơn): tồn kho trên widget cập nhật ≤ 23 giây sau khi đơn paid, chỉ pool của item trúng giảm, chance trong metafield không tính lại. Đây có phải hành vi mong đợi (chance hiển thị không tính lại theo tồn kho còn lại), và độ trễ tối đa chấp nhận được là bao nhiêu?",
+  "kb_ids": [
+    "storefront-data-sync#KB-048",
+    "storefront-data-sync#KB-053"
+  ],
+  "check_ids": [
+    "storefront-data-sync:CHK-025"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-045 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-045",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "storefront-data-sync",
+  "summary": "Staging (một box, 4 lần đọc): variant chỉ có metafield mysbox.box với shape như đã ghi. Đây có phải contract ổn định của metafield (key nào bắt buộc), và Mysbox còn ghi metafield ở những thời điểm nào khác?",
+  "kb_ids": [
+    "storefront-data-sync#KB-047"
+  ],
+  "check_ids": [
+    "storefront-data-sync:CHK-026"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-046 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-046",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "storefront-data-sync",
+  "summary": "Staging: token Storefront API nằm công khai trong trang (window._Mysbox.storefrontToken) và được widget gửi qua header. Token này được cấp/xoay vòng thế nào, phạm vi quyền của nó là gì, và widget xử lý ra sao khi lời gọi Storefront API lỗi?",
+  "kb_ids": [
+    "storefront-data-sync#KB-050"
+  ],
+  "check_ids": [
+    "storefront-data-sync:CHK-027"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-047 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-047",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "storefront-data-sync",
+  "summary": "Staging (1 lần): sau Deactivate, widget ẩn nhưng nút Add to cart / Buy it now của biến thể box vẫn hiện và metafield vẫn còn với published_at null. Khách có mua được biến thể box đang Draft không, và đó có phải hành vi mong đợi?",
+  "kb_ids": [
+    "storefront-data-sync#KB-051"
+  ],
+  "check_ids": [
+    "storefront-data-sync:CHK-028"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-048 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-048",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "storefront-data-sync",
+  "summary": "Staging: Save box ở Draft tạo version mới nhưng không ghi lại metafield variant. Khi Activate lại, metafield có được ghi theo version mới nhất không, và với box đang Active thì Save có ghi lại metafield ngay không?",
+  "kb_ids": [
+    "storefront-data-sync#KB-052"
+  ],
+  "check_ids": [
+    "storefront-data-sync:CHK-029"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-049 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-049",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "storefront-data-sync",
+  "summary": "Staging: ở chế độ \"Show remaining stock\", thẻ item chỉ hiện \"x/y left\" và không có Chance. Hai chế độ hiển thị (tồn kho / chance) có loại trừ nhau theo thiết kế không, và chế độ \"Show original chance\" hiển thị gì trên storefront?",
+  "kb_ids": [
+    "storefront-data-sync#KB-053"
+  ],
+  "check_ids": [
+    "storefront-data-sync:CHK-030"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-050 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-050",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "widget-custom-code",
+  "summary": "Staging (shop không có custom code): window.Mysbox và window.MysboxCustomOptions không tồn tại và bundle widget không tham chiếu MysboxCustomOptions/custom_style/custom_script. custom_script được chèn vào trang theo cơ chế nào (khối riêng của theme extension?) và trang khách có đọc MysboxCustomOptions không?",
+  "kb_ids": [
+    "widget-custom-code#KB-024"
+  ],
+  "check_ids": [
+    "widget-custom-code:CHK-014"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-051 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-051",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "widget-theme-embed-setup",
+  "summary": "Staging (1 mẫu, mọi block đã cài): Dashboard chỉ hiện \"Active\" / \"Installed\" và lấy trạng thái bằng Admin GraphQL đọc file theme MAIN + checkoutProfiles. Khi embed tắt hoặc block chưa đặt thì thẻ và bảng hiển thị giá trị gì, và đọc theme MAIN có đúng là cách phát hiện chính thức không?",
+  "kb_ids": [
+    "widget-theme-embed-setup#KB-044"
+  ],
+  "check_ids": [
+    "widget-theme-embed-setup:CHK-029"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-052 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-052",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "widget-theme-embed-setup",
+  "summary": "Staging (1 mẫu, setup đã hoàn tất): các nút của setup guide disabled khi bước đã xong. Khi bước chưa xong, setup guide hiển thị gì và mỗi nút mở đâu? Nhãn \"Setup instructions\" / \"Add block to theme editor\" thấy trên staging có phải nhãn chính thức không?",
+  "kb_ids": [
+    "widget-theme-embed-setup#KB-045"
+  ],
+  "check_ids": [
+    "widget-theme-embed-setup:CHK-030"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-053 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-053",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "widget-theme-embed-setup",
+  "summary": "Staging (1 mẫu): mặc định Item list là Square thumbnail, Hide item name/chance OFF, Hide item price ON, Image size 200, Show tier chance ON, Show random items in each group ON, Show item name and price OFF, Maximum number of groups shown 2. Đây có phải bộ mặc định chính thức không (tài liệu chỉ nêu Hide item price mặc định bật và 2 nhóm)?",
+  "kb_ids": [
+    "widget-theme-embed-setup#KB-046"
+  ],
+  "check_ids": [
+    "widget-theme-embed-setup:CHK-031"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-054 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-054",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "widget-theme-embed-setup",
+  "summary": "Item list nhận Image size 99999 và Maximum groups 2.5 mà không báo lỗi (staging, chưa lưu, mỗi giá trị 1 lần). Giới hạn đúng của hai ô là gì, server có từ chối khi Save giá trị ngoài biên không, và widget storefront hiển thị ra sao nếu lưu được?",
+  "kb_ids": [
+    "widget-theme-embed-setup#KB-046"
+  ],
+  "check_ids": [
+    "widget-theme-embed-setup:CHK-032"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-055 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-055",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "widget-theme-embed-setup",
+  "summary": "Staging gói Free: link \"Powered by Mysbox\" mở apps.shopify.com/mystery-box-builder ở tab mới. Đích link và việc watermark luôn hiện ở gói Free có phải hành vi chính thức không, và gói nào thì watermark bị ẩn?",
+  "kb_ids": [
+    "widget-theme-embed-setup#KB-048"
+  ],
+  "check_ids": [
+    "widget-theme-embed-setup:CHK-033"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-056 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-056",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "widget-theme-embed-setup",
+  "summary": "Staging gói Free: merchant không có control ẩn watermark và không thấy cờ watermark trong dữ liệu merchant. Ai bật cờ hide_watermark (nhân viên Mysbox ở admin panel, hay tự động theo gói trả phí)?",
+  "kb_ids": [
+    "widget-theme-embed-setup#KB-049"
+  ],
+  "check_ids": [
+    "widget-theme-embed-setup:CHK-034"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-057 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-057",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "widget-theme-embed-setup",
+  "summary": "Staging (1 mẫu): nội dung widget render ở light DOM, shadow root của custom element mở và rỗng. Đây có phải cấu trúc ổn định mà automation có thể dựa vào không?",
+  "kb_ids": [
+    "widget-theme-embed-setup#KB-050"
+  ],
+  "check_ids": [
+    "widget-theme-embed-setup:CHK-035"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-058 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-058",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "widget-theme-embed-setup",
+  "summary": "Staging (1 mẫu): mặc định của Animation (tab Carousel), Recent pulls (Show recent pulls OFF) và Share unboxing (Sharing popup) như đã ghi. Đây có phải mặc định chính thức không, và tab Drawing / Card flip / Gacha, \"Sharing image\" có tuỳ chọn / mặc định gì?",
+  "kb_ids": [
+    "widget-theme-embed-setup#KB-051",
+    "_object-level.storefront-widget#KB-005"
+  ],
+  "check_ids": [
+    "widget-theme-embed-setup:CHK-036"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-059 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-059",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "widget-translations",
+  "summary": "Staging: nhóm general-settings có 16 chuỗi mặc định (box_items có dấu cách cuối \"Box items \") và không có \"Auto-open in: {time}\". Đây có phải bộ chuỗi mặc định chính thức không, dấu cách cuối có chủ ý không, và \"Auto-open in: {time}\" thuộc nhóm nào?",
+  "kb_ids": [
+    "widget-translations#KB-036"
+  ],
+  "check_ids": [
+    "widget-translations:CHK-024"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-060 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-060",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "widget-translations",
+  "summary": "Staging (shop chưa có bản dịch, shopLocale en): mọi request bản dịch gửi locale=default. Khi shop có ngôn ngữ phụ và bản dịch, client gửi locale nào, và metafield shop nào là nguồn của các API này?",
+  "kb_ids": [
+    "widget-translations#KB-037"
+  ],
+  "check_ids": [
+    "widget-translations:CHK-025"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-061 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-061",
+  "type": "OPEN_ISSUE",
+  "feature_id": "storefront-data-sync",
+  "summary": "Activate lại box đã sửa khi Draft có ghi metafield mysbox.box version mới (quantity/chance mới) không, và widget hiện chance nào sau đó? — Save khi Draft không ghi lại metafield (KB-052); nếu Activate cũng không ghi thì widget hiện chance/tồn kho cũ.",
+  "kb_ids": [
+    "storefront-data-sync#KB-052",
+    "storefront-data-sync#KB-037"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-062 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-062",
+  "type": "OPEN_ISSUE",
+  "feature_id": "storefront-data-sync",
+  "summary": "Khi box Draft (metafield published_at null) khách vẫn bấm Add to cart / Buy it now trên variant box được — đơn đó được xử lý thế nào? — Widget ẩn nhưng nút mua vẫn hiện (KB-051); chưa có expected result cho đơn mua box Draft.",
+  "kb_ids": [
+    "storefront-data-sync#KB-051"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-063 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-063",
+  "type": "OPEN_ISSUE",
+  "feature_id": "storefront-data-sync",
+  "summary": "Vì sao getProducts (Storefront API) trả metafield mysbox.box = null trong khi Liquid in được metafield đó — widget có phụ thuộc vào trường này không? — Có thể là quyền đọc metafield của token Storefront; ảnh hưởng nguồn dữ liệu dự phòng của widget.",
+  "kb_ids": [
+    "storefront-data-sync#KB-049"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-064 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-064",
+  "type": "OPEN_ISSUE",
+  "feature_id": "widget-custom-code",
+  "summary": "Mục \"Advanced Settings\" của form box có chứa ô nhập code/tuỳ chọn nâng cao nào không? — Là màn duy nhất chưa mở khi kiểm 'merchant không có ô CSS/JS'.",
+  "kb_ids": [
+    "widget-custom-code#KB-026"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-065 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-065",
+  "type": "OPEN_ISSUE",
+  "feature_id": "widget-theme-embed-setup",
+  "summary": "Save Style Settings với giá trị ngoài biên (Image size 99999, Maximum groups 2.5) thì server chấp nhận hay từ chối, và widget storefront hiển thị ra sao? — Client không báo lỗi (KB-046); chưa biết có validate phía server.",
+  "kb_ids": [
+    "widget-theme-embed-setup#KB-046"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-066 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-066",
+  "type": "OPEN_ISSUE",
+  "feature_id": "widget-theme-embed-setup",
+  "summary": "Tab Drawing / Card flip / Gacha của Animation và tab \"Sharing image\" của Share unboxing có tuỳ chọn / mặc định gì? — Chưa mở trên staging; thiếu baseline Style Settings.",
+  "kb_ids": [
+    "widget-theme-embed-setup#KB-051",
+    "_object-level.storefront-widget#KB-005"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-storefront-widget-067 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-storefront-widget-067",
+  "type": "OPEN_ISSUE",
+  "feature_id": "widget-translations",
+  "summary": "Widget/trang khách luôn gửi locale=default dù shopLocale là \"en\" — ở shop có ngôn ngữ phụ, locale gửi đi có theo ngôn ngữ storefront của khách không? — Quyết định bản dịch theo ngôn ngữ có tới được khách (KB-024).",
+  "kb_ids": [
+    "widget-translations#KB-037",
+    "widget-translations#KB-024"
+  ],
+  "tags": [
+    "staging-observed"
   ]
 }
 ```

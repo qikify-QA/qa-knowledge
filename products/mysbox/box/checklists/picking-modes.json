@@ -2,7 +2,7 @@
   "feature_id": "FEAT-05-picking-modes",
   "feature_key": "picking-modes",
   "object_id": "box",
-  "checklist_version": "1",
+  "checklist_version": "3",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -34,7 +34,9 @@
       "open_question_draft": null,
       "related_kb_ids": [
         "picking-modes#KB-024",
-        "picking-modes#KB-019"
+        "picking-modes#KB-019",
+        "picking-modes#KB-051",
+        "picking-modes#KB-052"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -149,7 +151,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Cần một test case đã chạy PASS (hoặc PO/Dev xác nhận nguyên văn) cho hành vi: ở mode Mặc định, box Bundle tung độc lập từng set và khách nhận một item từ mỗi set (cả tracked và untracked).",
       "related_kb_ids": [
-        "inventory-and-sold-out#KB-010"
+        "inventory-and-sold-out#KB-010",
+        "picking-modes#KB-055"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -192,7 +195,9 @@
       "related_kb_ids": [
         "picking-modes#KB-030",
         "picking-modes#KB-031",
-        "_object-level.box#KB-017"
+        "_object-level.box#KB-017",
+        "picking-modes#KB-054",
+        "picking-modes#KB-055"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -304,7 +309,8 @@
       "status": "READY",
       "open_question_draft": null,
       "related_kb_ids": [
-        "picking-modes#KB-024"
+        "picking-modes#KB-024",
+        "picking-modes#KB-051"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -522,7 +528,8 @@
       "status": "READY",
       "open_question_draft": null,
       "related_kb_ids": [
-        "picking-modes#KB-046"
+        "picking-modes#KB-046",
+        "picking-modes#KB-052"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -703,7 +710,8 @@
       "open_question_draft": "Ở mode Mặc định, một hộp Bundle có thể nhận cùng một item từ các set khác nhau không (ví dụ A ở set 1 và A ở set 2)?",
       "related_kb_ids": [
         "picking-modes#KB-023",
-        "picking-modes#KB-022"
+        "picking-modes#KB-022",
+        "picking-modes#KB-056"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -878,10 +886,12 @@
         "Mua 1 hộp với box mới chưa được Mysbox team đặt mode, ghi lại item."
       ],
       "observation_point": "Có/không có chỗ bật mode trong portal; mode đang dùng của box mới.",
-      "expected_result": "",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Form box Bundle (và Single) không có lựa chọn \"Unique across pools\" hay ô pick_count — chỉ có \"Unique in an order\"; box mới lưu ra có settings.picking_mode null. Kênh API đặt mode chưa có baseline.",
       "oracle": {
-        "kb_ids": [],
-        "oracle_strength": "NONE"
+        "kb_ids": [
+          "picking-modes#KB-052"
+        ],
+        "oracle_strength": "BASELINE"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Kênh đặt \"Unique across pools\" cho một box là gì (route, method, field, vai trò được gọi)? Có đúng merchant không có màn hình bật mode này trong portal và box mới mặc định không dùng mode này không, kể cả khi lên production?",
@@ -896,8 +906,87 @@
         "RISK-04"
       ],
       "priority": "P2",
-      "automation_suitability": "UNKNOWN",
+      "automation_suitability": "SUITABLE",
       "oq_id": "OQ-box-086"
+    },
+    {
+      "check_id": "CHK-025",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Ô Unique in an order lưu thành settings.picking_mode \"unique\"; tắt thì picking_mode null (box và box version)",
+      "applicability": {
+        "role": "merchant",
+        "state": "box Single/Bundle mới lưu với Unique bật và tắt",
+        "environment": "staging",
+        "surface_or_device": "portal (Advanced Settings) + network (<MYS_API_BASE>)"
+      },
+      "precondition": "Mở network capture; hai form box mới hợp lệ (một bật, một tắt ô \"Ensure that each item selected within an order is unique and not duplicated.\").",
+      "steps": [
+        "Lưu box bật Unique; ghi settings.picking_mode trong response POST /api/boxes, /publish, GET và trong GET /api/box-versions/by-ids của version box.",
+        "Lưu box tắt Unique; ghi các giá trị tương tự."
+      ],
+      "observation_point": "settings.picking_mode trong response box và box version.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Box bật Unique có settings.picking_mode \"unique\" ở mọi response box (POST, publish, GET, unpublish) và trong box version; box tắt Unique có picking_mode null.",
+      "oracle": {
+        "kb_ids": [
+          "picking-modes#KB-053"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging: ô \"Unique in an order\" lưu thành settings.picking_mode \"unique\", tắt thì null (quan sát lúc tạo box, chưa thử bật/tắt rồi Save). Bật/tắt ô này trên box đã có rồi lưu có sinh version mới với picking_mode tương ứng không?",
+      "related_kb_ids": [
+        "picking-modes#KB-016",
+        "picking-modes#KB-024",
+        "picking-modes#KB-052",
+        "box-versioning#KB-054"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-06"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-box-126"
+    },
+    {
+      "check_id": "CHK-026",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Form Bundle không chặn chọn cùng một item cho hai set khi tồn kho box 1",
+      "applicability": {
+        "role": "merchant",
+        "state": "form box Bundle tracked mới, product box tồn kho 1",
+        "environment": "staging",
+        "surface_or_device": "portal (form box)"
+      },
+      "precondition": "Product box tracked tồn kho 1; form Bundle mới đang mở.",
+      "steps": [
+        "Ở Prize #1 bấm \"Browse\", chọn item A, nhập quantity 1.",
+        "Ở Prize #2 bấm \"Browse\"; quan sát item A có bị disable/đánh dấu đã dùng không; chọn A, quantity 1.",
+        "Quan sát bộ đếm của hai set, nút Save và cảnh báo (nếu có)."
+      ],
+      "observation_point": "Dialog \"Select products\" của set 2; bộ đếm set; nút Save; cảnh báo.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Dialog của set 2 không disable hay đánh dấu item đã dùng ở set 1; cả hai set hiện \"All set!\" 100.00%, nút Save bật và không có cảnh báo. Kết quả khi lưu và khi bốc (A+A) chưa có baseline — xem CHK-019.",
+      "oracle": {
+        "kb_ids": [
+          "picking-modes#KB-056"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Form Bundle cho chọn cùng một item ở hai set khi tồn kho box chỉ 1 (staging, không chặn, không cảnh báo). Cấu hình này có hợp lệ không; nếu lưu được thì hộp nhận A+A hay lỗi lúc bốc?",
+      "related_kb_ids": [
+        "picking-modes#KB-023",
+        "picking-modes#KB-022"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-05"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-box-127"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -910,7 +999,8 @@
         "CHK-002",
         "CHK-003",
         "CHK-004",
-        "CHK-019"
+        "CHK-019",
+        "CHK-026"
       ]
     },
     {
@@ -922,7 +1012,8 @@
         "CHK-006",
         "CHK-007",
         "CHK-008",
-        "CHK-009"
+        "CHK-009",
+        "CHK-025"
       ]
     },
     {
@@ -1029,7 +1120,8 @@
         "CHK-011",
         "CHK-013",
         "CHK-015",
-        "CHK-019"
+        "CHK-019",
+        "CHK-026"
       ]
     },
     {
@@ -1039,14 +1131,15 @@
       "source": "qa-checklist-builder (P1 bốc thăm)",
       "risk": "Đổi picking mode trên box đã bán làm thay đổi kết quả đơn cũ",
       "check_ids": [
-        "CHK-018"
+        "CHK-018",
+        "CHK-025"
       ]
     }
   ],
   "excluded_dimensions": [
     {
       "dimension": "REGRESSION",
-      "reason": "Run không có base đã publish để so sánh, và shard không có item KNOWN_DEFECT nào cần watch."
+      "reason": "Shard REFRESH không có hành vi khác base (KB-053..KB-056 đều corroborate hoặc là quan sát mới không trái tài liệu) và không có item KNOWN_DEFECT nào cần watch."
     }
   ],
   "last_updated": {

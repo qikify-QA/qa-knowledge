@@ -2,7 +2,7 @@
   "feature_id": "FEAT-01-resell-setup-and-eligibility",
   "feature_key": "resell-setup-and-eligibility",
   "object_id": "resell-refund-credit",
-  "checklist_version": "1",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -942,7 +942,8 @@
         "resell-setup-and-eligibility#KB-071",
         "resell-setup-and-eligibility#KB-072",
         "resell-setup-and-eligibility#KB-073",
-        "resell-setup-and-eligibility#KB-065"
+        "resell-setup-and-eligibility#KB-065",
+        "resell-setup-and-eligibility#KB-079"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -1025,7 +1026,8 @@
         "resell-setup-and-eligibility#KB-011",
         "resell-setup-and-eligibility#KB-019",
         "resell-setup-and-eligibility#KB-042",
-        "resell-setup-and-eligibility#KB-043"
+        "resell-setup-and-eligibility#KB-043",
+        "resell-setup-and-eligibility#KB-078"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -1309,6 +1311,83 @@
       "priority": "P1",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-resell-refund-credit-095"
+    },
+    {
+      "check_id": "CHK-033",
+      "dimension": "PERMISSION",
+      "layer": "portal",
+      "title": "Pricing: chỉ các gói trả phí có \"Buy back function\"; gói Free khoá checkbox buyback và \"Buyback limit time\"",
+      "applicability": {
+        "role": "merchant",
+        "state": "shop gói Free",
+        "environment": "staging",
+        "surface_or_device": "portal merchant — Pricing, form Box settings, General Settings"
+      },
+      "precondition": "Đăng nhập portal bằng merchant shop gói Free; có một box digital.",
+      "steps": [
+        "Mở Pricing; ghi các thẻ gói và gói nào có dòng \"Buy back function\"; kiểm có thẻ Early-bird không.",
+        "Mở form Box settings của box digital; ghi trạng thái checkbox \"Enable buyback for this box\" và thông điệp đi kèm.",
+        "Mở General Settings; ghi trạng thái \"Buyback limit time\" và thông điệp đi kèm."
+      ],
+      "observation_point": "Thẻ gói trên Pricing; checkbox buyback; ô Buyback limit time.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Thẻ Free không có dòng \"Buy back function\", còn Nitro, Booster, Prime có; không có thẻ hay gói Early-bird trong catalog. Ở shop Free, checkbox \"Enable buyback for this box\" bị disabled và \"Buyback limit time\" bị khoá, cùng thông điệp \"Upgrade subscription plan to use this feature. It is not available on Free and Early-bird plan.\"",
+      "oracle": {
+        "kb_ids": [
+          "resell-setup-and-eligibility#KB-078"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging: catalog gói không có Early-bird nhưng thông điệp khoá buyback vẫn nhắc \"Free and Early-bird plan\". Early-bird còn là gói hiện hành (chỉ ẩn khỏi Pricing) hay đã bỏ, và buyback có mở thật trên Nitro/Booster/Prime không?",
+      "related_kb_ids": [
+        "resell-setup-and-eligibility#KB-011",
+        "resell-setup-and-eligibility#KB-019"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "P1 permission: buyback theo gói"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-resell-refund-credit-097"
+    },
+    {
+      "check_id": "CHK-034",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Khách mở hết box của đơn (box không buyback): quà vào đơn bằng order edit, không có trạng thái Completed hiển thị",
+      "applicability": {
+        "role": "guest buyer (magic link) + merchant",
+        "state": "đơn test 1 box không bật buyback, khách mở hết",
+        "environment": "staging",
+        "surface_or_device": "trang khách /apps/mysbox/ + portal Manage orders + Shopify admin (timeline đơn) + network"
+      },
+      "precondition": "Đơn test paid gồm 1 box không bật buyback; khách mở trang khách từ link của trang cảm ơn; mở network capture.",
+      "steps": [
+        "Khách bấm Multi-unbox mở hết box; ghi request POST /apps/mysbox/api/orders/{id}/unopened-boxes/open và response.",
+        "Trong Shopify admin, xem timeline và dòng hàng của đơn sau vài giây.",
+        "Trong portal Manage orders, xem dòng đơn (trạng thái, số box đã mở, Refund, nút Unbox).",
+        "Đọc API đơn ở portal và ở trang khách: total_opened, total_items, unboxing_at, resell_expires_at, refund."
+      ],
+      "observation_point": "Response mở box; timeline và dòng hàng đơn Shopify; Manage orders; API đơn.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) POST unopened-boxes/open trả 200 (total_opened 1). Khoảng vài giây sau, timeline Shopify ghi app đã edit đơn (thêm \"1 × <prize> - Discount (100%) | Reason: MYSBOX\"), đơn có thêm dòng prize giá 0 với \"MYSBOX: -100%\" và người mua nhận email order edited. Manage orders hiện \"Unfulfilled\" | \"1/1 boxes opened\" | Refund \"-\", nút Unbox disabled. API merchant và API trang khách có total_opened = total_items = 1, unboxing_at null, resell_expires_at null, refund 0. Không chỗ nào hiện trạng thái \"Complete\"/\"Completed\"; đơn Shopify vẫn Paid / Unfulfilled, không closed, không archived.",
+      "oracle": {
+        "kb_ids": [
+          "resell-setup-and-eligibility#KB-079"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging (1 đơn, box không buyback): mở hết box làm app edit đơn thêm dòng prize 100% sau vài giây, không có trạng thái Completed hiển thị. Trạng thái COMPLETED của đơn được lưu ở đâu và các nguyên nhân khác (hết cửa sổ resell, auto-unbox, refund, cancel) có cùng hành vi thêm quà không?",
+      "related_kb_ids": [
+        "resell-setup-and-eligibility#KB-071",
+        "resell-setup-and-eligibility#KB-072"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-resell-refund-credit-098"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1339,7 +1418,8 @@
       "check_ids": [
         "CHK-025",
         "CHK-030",
-        "CHK-031"
+        "CHK-031",
+        "CHK-033"
       ]
     },
     {
@@ -1397,7 +1477,8 @@
         "CHK-022",
         "CHK-023",
         "CHK-024",
-        "CHK-032"
+        "CHK-032",
+        "CHK-034"
       ]
     },
     {

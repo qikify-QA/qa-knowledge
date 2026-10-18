@@ -1,6 +1,7 @@
 {
   "feature_id": "FEAT-01-plan-capacity-and-cycle",
   "feature_key": "plan-capacity-and-cycle",
+  "object_id": "plans-billing",
   "name": "Plan, capacity box miễn phí theo chu kỳ 30 ngày và trial",
   "user_goal": "Mỗi shop có một plan (Free, trả phí, trial, Early-bird) với hạn mức box miễn phí theo chu kỳ 30 ngày neo vào ngày cài app lần đầu; hệ thống đếm đúng số box đã dùng (Used khác Total sold in cycle), cho merchant và admin thấy mức dùng hạn mức, và box bán trong trial không bị tính phí usage.",
   "user_goal_kb_refs": [
@@ -23,7 +24,13 @@
         "plan-capacity-and-cycle#KB-072",
         "plan-capacity-and-cycle#KB-044",
         "_product-level#KB-PL-002"
-      ]
+      ],
+      "observed_kb_refs": [
+        "plan-capacity-and-cycle#KB-082",
+        "plan-capacity-and-cycle#KB-086",
+        "plan-capacity-and-cycle#KB-088"
+      ],
+      "refresh_note": "Staging gói Free: xem Pricing (chỉ đọc) và thẻ Box sales limit \"0 / 10\"; không có control Exclude Test Order."
     },
     {
       "role": "system",
@@ -34,6 +41,9 @@
         "plan-capacity-and-cycle#KB-019",
         "plan-capacity-and-cycle#KB-060",
         "plan-capacity-and-cycle#KB-078"
+      ],
+      "observed_kb_refs": [
+        "plan-capacity-and-cycle#KB-085"
       ]
     },
     {
@@ -66,7 +76,11 @@
         "plan-capacity-and-cycle#KB-010",
         "plan-capacity-and-cycle#KB-020",
         "plan-capacity-and-cycle#KB-065"
-      ]
+      ],
+      "observed_kb_refs": [
+        "plan-capacity-and-cycle#KB-086"
+      ],
+      "refresh_note": "Staging: thẻ nằm trên Dashboard."
     },
     {
       "path": "Webhook đơn đã thanh toán từ Shopify (\"orders/paid\") — điểm hệ thống ghi usage",
@@ -84,6 +98,15 @@
         "plan-capacity-and-cycle#KB-077",
         "plan-capacity-and-cycle#KB-023"
       ]
+    },
+    {
+      "path": "Portal merchant → Pricing (catalog plan; staging chỉ đọc)",
+      "precondition": "Merchant đăng nhập app.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-082",
+        "plan-capacity-and-cycle#KB-083"
+      ]
     }
   ],
   "capabilities": [
@@ -97,7 +120,11 @@
         "plan-capacity-and-cycle#KB-062",
         "plan-capacity-and-cycle#KB-063",
         "_object-level.plans-billing#KB-005"
-      ]
+      ],
+      "observed_kb_refs": [
+        "plan-capacity-and-cycle#KB-082"
+      ],
+      "refresh_note": "Staging: plan Free id 1, price 0, box_selling_capacity 10, on_install true."
     },
     {
       "name": "Chu kỳ quota 30 ngày neo ngày cài đầu, đặt lại kiểu lười",
@@ -109,7 +136,12 @@
         "plan-capacity-and-cycle#KB-018",
         "plan-capacity-and-cycle#KB-019",
         "plan-capacity-and-cycle#KB-070"
-      ]
+      ],
+      "observed_kb_refs": [
+        "plan-capacity-and-cycle#KB-086",
+        "plan-capacity-and-cycle#KB-087"
+      ],
+      "refresh_note": "Staging: UI không hiện ngày chu kỳ; chỉ một trường capacity_expires_at (ISO UTC) — giá trị khác storefront (CONF-plans-billing-21)."
     },
     {
       "name": "Đếm box đã dùng vào quota",
@@ -138,7 +170,12 @@
         "plan-capacity-and-cycle#KB-033",
         "plan-capacity-and-cycle#KB-067",
         "plan-capacity-and-cycle#KB-076"
-      ]
+      ],
+      "observed_kb_refs": [
+        "plan-capacity-and-cycle#KB-085",
+        "plan-capacity-and-cycle#KB-088"
+      ],
+      "refresh_note": "Staging: exclude_test_order true, merchant không thấy control; 1 đơn Bogus test không tăng used (KB-085, UNRESOLVED CONF-20); app không gắn nhãn test cho đơn."
     },
     {
       "name": "Merchant theo dõi mức dùng hạn mức",
@@ -152,7 +189,11 @@
         "plan-capacity-and-cycle#KB-022",
         "plan-capacity-and-cycle#KB-065",
         "plan-capacity-and-cycle#KB-066"
-      ]
+      ],
+      "observed_kb_refs": [
+        "plan-capacity-and-cycle#KB-086"
+      ],
+      "refresh_note": "Staging Free: \"0 / 10\", progress 0%, chữ \"You're in Free plan with the limit of 10 box sales...\"; nhánh 80%/100%/Paid không quan sát."
     },
     {
       "name": "Admin xem và điều chỉnh capacity của shop",
@@ -176,7 +217,12 @@
         "plan-capacity-and-cycle#KB-044",
         "plan-capacity-and-cycle#KB-045",
         "plan-capacity-and-cycle#KB-072"
-      ]
+      ],
+      "observed_kb_refs": [
+        "plan-capacity-and-cycle#KB-082",
+        "plan-upgrade-downgrade-cancel#KB-114"
+      ],
+      "refresh_note": "Staging: cả 4 plan trial_days 0, không có badge trial — nhánh trial không kiểm được trên staging."
     },
     {
       "name": "Nhận biết loại plan của shop và quyền lợi đi kèm",
@@ -190,7 +236,14 @@
         "plan-capacity-and-cycle#KB-075",
         "plan-capacity-and-cycle#KB-081",
         "_object-level.plans-billing#KB-019"
-      ]
+      ],
+      "observed_kb_refs": [
+        "plan-capacity-and-cycle#KB-082",
+        "plan-capacity-and-cycle#KB-083",
+        "plan-capacity-and-cycle#KB-084",
+        "plan-capacity-and-cycle#KB-089"
+      ],
+      "refresh_note": "Staging catalog: Free $0/10, Nitro $24.9/100, Booster $114.9/500, Prime $299.9 (400 vs 1500 — CONF-22); không có Early-bird; shop là development store (partner_test)."
     }
   ],
   "state_transitions": [
@@ -276,6 +329,16 @@
       "kb_refs": [
         "plan-capacity-and-cycle#KB-070"
       ]
+    },
+    {
+      "from": "used 0/10 (box_sold_in_cycle 0)",
+      "to": "used 0/10 (box_sold_in_cycle 0) — không đổi",
+      "trigger": "1 đơn test Bogus paid (banner Shopify \"Test order\")",
+      "condition": "OBSERVED_CURRENT staging, exclude_test_order true, 1 đơn; preview order không thử. Không tổng quát hoá (CONF-plans-billing-20).",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-085"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -305,6 +368,9 @@
         "plan-capacity-and-cycle#KB-002",
         "plan-capacity-and-cycle#KB-011",
         "_object-level.plans-billing#KB-005"
+      ],
+      "refresh_kb_refs": [
+        "plan-capacity-and-cycle#KB-082"
       ]
     },
     {
@@ -319,6 +385,11 @@
       "kb_refs": [
         "plan-capacity-and-cycle#KB-012",
         "plan-capacity-and-cycle#KB-015"
+      ],
+      "refresh_kb_refs": [
+        "plan-capacity-and-cycle#KB-082",
+        "plan-capacity-and-cycle#KB-083",
+        "plan-capacity-and-cycle#KB-084"
       ]
     },
     {
@@ -384,14 +455,22 @@
       "kb_refs": [
         "plan-capacity-and-cycle#KB-030",
         "plan-capacity-and-cycle#KB-076"
-      ]
+      ],
+      "refresh_kb_refs": [
+        "plan-capacity-and-cycle#KB-088"
+      ],
+      "refresh_note": "Staging: exclude_test_order true trong dữ liệu nhúng."
     },
     {
       "rule": "Chỉ admin tắt được \"Exclude Test Order\"; khi cờ tắt, đơn test được ghi như đơn thật và trừ hạn mức box của chu kỳ.",
       "kb_refs": [
         "plan-capacity-and-cycle#KB-031",
         "plan-capacity-and-cycle#KB-067"
-      ]
+      ],
+      "refresh_kb_refs": [
+        "plan-capacity-and-cycle#KB-088"
+      ],
+      "refresh_note": "Staging corroborate: merchant không có control."
     },
     {
       "rule": "Preview order là đơn test gắn tag mysbox-preview-order, sinh từ tính năng xem trước box.",
@@ -405,6 +484,9 @@
         "plan-capacity-and-cycle#KB-010",
         "plan-capacity-and-cycle#KB-065",
         "plan-capacity-and-cycle#KB-066"
+      ],
+      "refresh_kb_refs": [
+        "plan-capacity-and-cycle#KB-086"
       ]
     },
     {
@@ -483,10 +565,103 @@
       "kb_refs": [
         "plan-capacity-and-cycle#KB-081",
         "_object-level.plans-billing#KB-019"
+      ],
+      "refresh_kb_refs": [
+        "plan-capacity-and-cycle#KB-089"
+      ],
+      "refresh_note": "Staging: shop là development store (partner_development true, plan_name partner_test); Nitro/Booster test true."
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Pricing staging (chỉ đọc): 4 thẻ, không tab Monthly/Annually, không Early-bird, không badge trial — Free \"$0\" (\"Selected\" disabled, \"Free 10 boxes sales/month\"), Nitro \"$24.9\" (100 box, \"2% of box sales (min $0.25 each) from the 101st box sales\", Buy back function, Analytics, Translations), Booster \"$114.9\" (500 box, từ box 501), Prime; plan nhúng trong window.mysboxEmbeddedData.plans (Free id 1 capacity 10 on_install true; Nitro id 9 capacity 100; Booster id 10 capacity 500; trial_days 0, interval 1 cho cả 4; Nitro/Booster test true, capped_amount 10000).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-082"
+      ]
+    },
+    {
+      "statement": "Thẻ Prime \"$299.9\" hiện \"Free 400 boxes sales/month\" / \"from the 401st box sales\", khớp box_selling_capacity 400 (id 11).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-plans-billing-22",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-083"
+      ]
+    },
+    {
+      "statement": "Cùng object plan Prime có description/terms \"Free 1500 boxes sales/month\" và feature \"from the 1501st box sales\" — khác box_selling_capacity 400 trên UI.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-plans-billing-22",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-084"
+      ]
+    },
+    {
+      "statement": "1 đơn Bogus test trên shop exclude_test_order true: \"Box sales limit\" vẫn \"0 / 10\" trước và ~20 phút sau paid; box_sold_in_cycle 0, box_capacity_used 0, over_capacity false.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-plans-billing-20",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-085"
+      ]
+    },
+    {
+      "statement": "Thẻ \"Box sales limit\" \"0 / 10\", progress \"0%\", chữ \"You're in Free plan with the limit of 10 box sales. Once you reached the limit, mystery boxes will be disabled. Please upgrade your plan to extend the limitation.\"; không hiện ngày chu kỳ; dữ liệu nhúng chỉ có capacity_expires_at (ISO UTC \"Z\"); timezone shop America/New_York; không có request API riêng cho hạn mức.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 3,
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-086"
+      ]
+    },
+    {
+      "statement": "Dữ liệu nhúng merchant app: capacity_expires_at = \"2026-10-23T04:58:05.000000Z\" ở 2 lần đọc cách nhau ~40 phút (khác giá trị trên storefront).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "LOW",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-plans-billing-21",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-087"
+      ]
+    },
+    {
+      "statement": "Không có control \"Exclude Test Order\" ở General Settings, Dashboard, Pricing; exclude_test_order true; Manage orders và GET /api/orders không có nhãn/field test cho 7 đơn Bogus test; Shopify admin có banner \"Test order\" trên đơn test.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-088"
+      ]
+    },
+    {
+      "statement": "Shopify Settings > Plan: \"Basic\" + nhãn \"Development store\"; dữ liệu nhúng partner_development true, plan_name \"partner_test\", plan_display_name \"Developer Preview\", currency \"VND\", subscription_plan_name \"Free\", plan_id 1.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-089"
       ]
     }
   ],
-  "observed_behavior": [],
   "observed_validations": [],
   "permissions": [
     {
@@ -494,6 +669,9 @@
       "role": "admin-staff",
       "kb_refs": [
         "plan-capacity-and-cycle#KB-031"
+      ],
+      "observed_kb_refs": [
+        "plan-capacity-and-cycle#KB-088"
       ]
     },
     {
@@ -513,6 +691,9 @@
           "plan-capacity-and-cycle#KB-020",
           "plan-capacity-and-cycle#KB-021",
           "plan-capacity-and-cycle#KB-022"
+        ],
+        "observed_kb_refs": [
+          "plan-capacity-and-cycle#KB-086"
         ]
       },
       {
@@ -520,6 +701,21 @@
         "kb_refs": [
           "plan-capacity-and-cycle#KB-072",
           "plan-capacity-and-cycle#KB-074"
+        ]
+      },
+      {
+        "item": "Pricing: 4 thẻ plan Free / Nitro / Booster / Prime — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "plan-capacity-and-cycle#KB-082",
+          "plan-capacity-and-cycle#KB-083"
+        ]
+      },
+      {
+        "item": "Manage orders (không nhãn test) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "plan-capacity-and-cycle#KB-088"
         ]
       }
     ],
@@ -541,6 +737,16 @@
       }
     ],
     "storefront": [],
+    "shopify_admin": [
+      {
+        "item": "Settings > Plan (Development store); trang đơn banner \"Test order\" — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "plan-capacity-and-cycle#KB-089",
+          "plan-capacity-and-cycle#KB-088"
+        ]
+      }
+    ],
     "api": [
       {
         "item": "Webhook Shopify orders/paid — thời điểm ghi usage vào quota",
@@ -553,6 +759,27 @@
         "kb_refs": [
           "plan-capacity-and-cycle#KB-014"
         ]
+      },
+      {
+        "item": "Dữ liệu nhúng window.mysboxEmbeddedData (plans, user: box_selling_capacity, box_capacity_used, box_sold_in_cycle, capacity_expires_at, exclude_test_order) trong document portal — không có API danh sách plan / hạn mức riêng — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "plan-capacity-and-cycle#KB-082",
+          "plan-capacity-and-cycle#KB-084",
+          "plan-capacity-and-cycle#KB-086",
+          "plan-capacity-and-cycle#KB-087",
+          "plan-capacity-and-cycle#KB-088"
+        ]
+      },
+      {
+        "item": "GET /api/orders (item không có field test/status/tag) — staging",
+        "method": "GET",
+        "route": "/api/orders",
+        "host": "<MYS_API_BASE>",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "plan-capacity-and-cycle#KB-088"
+        ]
       }
     ],
     "data": [
@@ -563,6 +790,10 @@
           "plan-capacity-and-cycle#KB-062",
           "plan-capacity-and-cycle#KB-063",
           "plan-capacity-and-cycle#KB-064"
+        ],
+        "observed_kb_refs": [
+          "plan-capacity-and-cycle#KB-086",
+          "plan-capacity-and-cycle#KB-087"
         ]
       },
       {
@@ -570,6 +801,9 @@
         "kb_refs": [
           "plan-capacity-and-cycle#KB-071",
           "plan-capacity-and-cycle#KB-075"
+        ],
+        "observed_kb_refs": [
+          "plan-capacity-and-cycle#KB-089"
         ]
       }
     ],
@@ -606,6 +840,15 @@
         "plan-capacity-and-cycle#KB-078",
         "plan-capacity-and-cycle#KB-045"
       ]
+    },
+    {
+      "depends_on": "capacity-limit-enforcement",
+      "reason": "capacity_expires_at merchant vs storefront lệch nhau (CONF-plans-billing-21).",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-087",
+        "capacity-limit-enforcement#KB-046"
+      ]
     }
   ],
   "risks": [
@@ -627,6 +870,26 @@
       "kb_refs": [
         "plan-capacity-and-cycle#KB-003",
         "plan-capacity-and-cycle#KB-064"
+      ],
+      "observed_kb_refs": [
+        "plan-capacity-and-cycle#KB-082"
+      ],
+      "refresh_note": "Staging: Free = 10 (UI + dữ liệu) — chỉ staging, không phải oracle production."
+    },
+    {
+      "risk": "Plan Prime trên staging hiển thị 400 box nhưng terms gửi kèm có thể ghi 1500 — merchant có thể bị cam kết sai hạn mức.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-083",
+        "plan-capacity-and-cycle#KB-084"
+      ]
+    },
+    {
+      "risk": "capacity_expires_at trên storefront (2025-07-30, đã qua) khác merchant (2026-10-23) — nếu storefront dùng cờ này để ẩn widget khi hết hạn thì có thể ẩn sai.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-087",
+        "capacity-limit-enforcement#KB-046"
       ]
     }
   ],
@@ -653,10 +916,18 @@
         "plan-capacity-and-cycle#KB-054",
         "plan-capacity-and-cycle#KB-055"
       ]
+    },
+    {
+      "limitation": "Catalog staging (Free/Nitro/Booster/Prime) là dữ liệu staging, không phải catalog production; staging không có plan trial hay plan năm.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-082"
+      ]
     }
   ],
   "freshness": {
-    "observed_at": null
+    "observed_at": "2026-10-17",
+    "base_observed_at": null
   },
   "unknown_areas": [
     {
@@ -668,7 +939,13 @@
         "plan-capacity-and-cycle#KB-064",
         "plan-capacity-and-cycle#KB-015"
       ],
-      "oq_id": "OQ-plans-billing-103"
+      "oq_id": "OQ-plans-billing-103",
+      "refresh_note": "Staging: Free 10, Nitro $24.9/100, Booster $114.9/500, Prime $299.9 (400 vs 1500). Production chưa quan sát — không gỡ.",
+      "refresh_kb_refs": [
+        "plan-capacity-and-cycle#KB-082",
+        "plan-capacity-and-cycle#KB-083",
+        "plan-capacity-and-cycle#KB-084"
+      ]
     },
     {
       "question": "Box bán trong thời gian trial có trừ quota (capacity) hay chỉ tăng sold in cycle?",
@@ -696,7 +973,12 @@
         "plan-capacity-and-cycle#KB-016",
         "plan-capacity-and-cycle#KB-019"
       ],
-      "oq_id": "OQ-plans-billing-043"
+      "oq_id": "OQ-plans-billing-043",
+      "refresh_note": "Staging: chỉ một mốc capacity_expires_at (ISO UTC \"Z\", 04:58:05) và timezone shop America/New_York; UI không hiện ngày; không chờ qua ranh giới — không gỡ.",
+      "refresh_kb_refs": [
+        "plan-capacity-and-cycle#KB-086",
+        "plan-capacity-and-cycle#KB-087"
+      ]
     },
     {
       "question": "Ngưỡng 80% được làm tròn thế nào khi quota không chia hết và so sánh là lớn-hơn-hoặc-bằng hay lớn-hơn; màu thanh tiến độ ở từng mốc?",
@@ -721,7 +1003,11 @@
         "plan-capacity-and-cycle#KB-030",
         "plan-capacity-and-cycle#KB-031"
       ],
-      "oq_id": "OQ-plans-billing-046"
+      "oq_id": "OQ-plans-billing-046",
+      "refresh_note": "Staging: merchant không thấy control (exclude_test_order true trong dữ liệu); app không gắn nhãn test cho đơn Bogus. Màn chứa control (admin panel) và tiêu chí nhận biết đơn test chưa quan sát — chưa trả lời đầy đủ, không gỡ.",
+      "refresh_kb_refs": [
+        "plan-capacity-and-cycle#KB-088"
+      ]
     },
     {
       "question": "Khi cờ \"Exclude Test Order\" ở trạng thái mặc định (bật), đơn test của Shopify — kể cả preview order (tag mysbox-preview-order) — có trừ quota/capacity của shop hay không? Một phía tài liệu nói mặc định đơn test bị loại khỏi hạn mức (và khỏi billing, analytics), và preview order được xử lý như đơn test nên không tính vào quota khi cờ bật; phía kia (feature capacity-limit-enforcement) nói đơn test / preview vẫn tính vào capacity, cờ chỉ gắn với việc không tính phí usage.",
@@ -733,7 +1019,11 @@
         "plan-capacity-and-cycle#KB-030",
         "plan-capacity-and-cycle#KB-032"
       ],
-      "oq_id": "OQ-plans-billing-010"
+      "oq_id": "OQ-plans-billing-010",
+      "refresh_note": "Staging, exclude_test_order true: 1 đơn Bogus test không tăng Box sales limit (0/10 → 0/10) — KB-085 UNRESOLVED, nghiêng phía KB-007. Preview order không thử. OQ type CONFLICT — không gỡ.",
+      "refresh_kb_refs": [
+        "plan-capacity-and-cycle#KB-085"
+      ]
     },
     {
       "question": "Used / Box Capacity Used vượt nhẹ quota đúng bằng phần của đơn gây vượt, và thẻ dừng ở giá trị nào theo quy tắc nào?",
@@ -779,7 +1069,13 @@
         "plan-capacity-and-cycle#KB-052",
         "plan-capacity-and-cycle#KB-057"
       ],
-      "oq_id": "OQ-plans-billing-009"
+      "oq_id": "OQ-plans-billing-009",
+      "refresh_note": "Staging không có plan Growth; catalog thật của staging đã có (KB-082) nhưng không phân xử ví dụ tài liệu; Prime tự mâu thuẫn (CONF-22). OQ type CONFLICT — không gỡ.",
+      "refresh_kb_refs": [
+        "plan-capacity-and-cycle#KB-082",
+        "plan-capacity-and-cycle#KB-083",
+        "plan-capacity-and-cycle#KB-084"
+      ]
     },
     {
       "question": "Early-bird: điều kiện để shop là Founding member, \"giữ nguyên\" nghĩa là gì, 50 box tính theo chu kỳ hay tổng?",
@@ -788,7 +1084,11 @@
         "plan-capacity-and-cycle#KB-061",
         "plan-capacity-and-cycle#KB-074"
       ],
-      "oq_id": "OQ-plans-billing-047"
+      "oq_id": "OQ-plans-billing-047",
+      "refresh_note": "Catalog staging không có plan Early-bird.",
+      "refresh_kb_refs": [
+        "plan-capacity-and-cycle#KB-082"
+      ]
     },
     {
       "question": "Badge \"7 - days free trial\" là số cố định hay lấy từ số ngày trial của plan?",
@@ -796,11 +1096,42 @@
       "kb_refs": [
         "plan-capacity-and-cycle#KB-043"
       ],
-      "oq_id": "OQ-plans-billing-048"
+      "oq_id": "OQ-plans-billing-048",
+      "refresh_note": "Staging: không thẻ nào có badge, cả 4 plan trial_days 0 — loại trừ được 'badge cố định hiện mọi thẻ' nhưng không phân biệt cố định vs theo số ngày khi trial > 0. Không gỡ.",
+      "refresh_kb_refs": [
+        "plan-upgrade-downgrade-cancel#KB-114",
+        "plan-capacity-and-cycle#KB-082"
+      ]
+    },
+    {
+      "question": "capacity_expires_at của shop: giá trị merchant app (2026-10-23) hay giá trị config storefront (2025-07-30) là nguồn đúng; storefront có đang giữ metafield capabilities cũ không?",
+      "why_it_matters": "CONF-plans-billing-21 mới; ảnh hưởng điều kiện ẩn widget theo hết hạn và mốc chu kỳ.",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-087",
+        "capacity-limit-enforcement#KB-046"
+      ],
+      "oq_id": "OQ-plans-billing-132",
+      "relates_to_existing_oq": [
+        "OQ-plans-billing-026",
+        "OQ-plans-billing-043",
+        "OQ-storefront-widget-007"
+      ]
+    },
+    {
+      "question": "Quota plan Prime trên staging là 400 (box_selling_capacity, UI) hay 1500 (description/terms); terms nào được gửi Shopify khi merchant chọn Prime?",
+      "why_it_matters": "CONF-plans-billing-22 mới; dữ liệu plan tự mâu thuẫn.",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-083",
+        "plan-capacity-and-cycle#KB-084"
+      ],
+      "oq_id": "OQ-plans-billing-133",
+      "relates_to_existing_oq": [
+        "OQ-plans-billing-009"
+      ]
     }
   ],
   "last_updated": {
-    "date": "2026-10-16",
+    "date": "2026-10-17",
     "ccr_ref": "bootstrap"
   },
   "coverage_matrix": [
@@ -883,6 +1214,70 @@
       "state": "any",
       "environment": "documented",
       "covered": false
+    },
+    {
+      "feature_id": "FEAT-01-plan-capacity-and-cycle",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "plan-free, used 0/10, Pricing chỉ đọc",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-082",
+        "plan-capacity-and-cycle#KB-083",
+        "plan-capacity-and-cycle#KB-084",
+        "plan-capacity-and-cycle#KB-086"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-plan-capacity-and-cycle",
+      "layer": "backend",
+      "role": "system",
+      "state": "đơn test Bogus, exclude_test_order true",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-085",
+        "plan-capacity-and-cycle#KB-088"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-plan-capacity-and-cycle",
+      "layer": "shopify_admin",
+      "role": "merchant",
+      "state": "development store",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-089"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-plan-capacity-and-cycle",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "plan-paid / trial / early-bird / 80% / 100%",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: cấm plan_change; staging không có plan trial/Early-bird; used 0."
+    },
+    {
+      "feature_id": "FEAT-01-plan-capacity-and-cycle",
+      "layer": "backend",
+      "role": "system",
+      "state": "đơn thật / preview order / cycle-boundary / reinstalled",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: chỉ Bogus test, không chờ qua chu kỳ, cấm uninstall."
+    },
+    {
+      "feature_id": "FEAT-01-plan-capacity-and-cycle",
+      "layer": "admin_panel",
+      "role": "admin-staff",
+      "state": "any",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED theo config."
     }
   ],
   "profile_conflicts": [
@@ -895,7 +1290,13 @@
         "capacity-limit-enforcement#KB-029"
       ],
       "resolution": "UNRESOLVED",
-      "oq_draft_id": null
+      "oq_draft_id": null,
+      "observation_notes": [
+        {
+          "kb_ref": "plan-capacity-and-cycle#KB-085",
+          "note": "Staging 1 đơn Bogus test, exclude_test_order true: used 0/10 → 0/10 — nghiêng phía KB-007. Một mẫu; preview order chưa thử. Không phân xử."
+        }
+      ]
     },
     {
       "conflict_group": "CONF-plans-billing-07",
@@ -919,7 +1320,35 @@
       "kb_refs": [
         "plan-capacity-and-cycle#KB-052",
         "plan-capacity-and-cycle#KB-057"
+      ],
+      "observation_notes": [
+        {
+          "kb_ref": "plan-capacity-and-cycle#KB-082",
+          "note": "Staging không có plan Growth; catalog staging không phân xử ví dụ tài liệu."
+        }
       ]
+    },
+    {
+      "conflict_group": "CONF-plans-billing-21",
+      "status": "UNRESOLVED",
+      "summary": "capacity_expires_at của shop staging: merchant app 2026-10-23T04:58:05Z (KB-087, 2 lần đọc) vs config storefront _Mysbox.capabilities 2025-07-30T04:58:05Z (capacity-limit-enforcement#KB-046). Quan sát vs quan sát, cùng ngày; không chọn bên.",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-087",
+        "capacity-limit-enforcement#KB-046"
+      ],
+      "resolution": "UNRESOLVED",
+      "oq_draft_id": null
+    },
+    {
+      "conflict_group": "CONF-plans-billing-22",
+      "status": "UNRESOLVED",
+      "summary": "Plan Prime staging tự mâu thuẫn: box_selling_capacity 400 (UI \"Free 400 boxes sales/month\", KB-083) vs description/terms \"Free 1500 boxes sales/month\" (KB-084).",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-083",
+        "plan-capacity-and-cycle#KB-084"
+      ],
+      "resolution": "UNRESOLVED",
+      "oq_draft_id": null
     }
   ],
   "profile_relationships": [
@@ -960,6 +1389,17 @@
       "kb_refs": [
         "plan-capacity-and-cycle#KB-078",
         "plan-capacity-and-cycle#KB-045"
+      ]
+    },
+    {
+      "from": "plan-capacity-and-cycle",
+      "to": "capacity-limit-enforcement",
+      "relation": "conflict_shared",
+      "note": "CONF-plans-billing-21 (capacity_expires_at).",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "plan-capacity-and-cycle#KB-087",
+        "capacity-limit-enforcement#KB-046"
       ]
     }
   ]

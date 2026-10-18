@@ -1,6 +1,6 @@
 # Open Questions — order-draw
 
-Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh từ bootstrap DOC_BOOTSTRAP đầu tiên của Mysbox (nguồn: bộ Product KB v1 do dev viết từ source code, 2026-10-16). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
+Tổng: 79 mục (CONFLICT 6 · OPEN_ISSUE 33 · NEEDS_CONFIRMATION 40). Version 1 sinh từ bootstrap DOC_BOOTSTRAP (bộ Product KB v1 do dev viết từ source code, 2026-10-16); version 2 thêm mục từ REFRESH trên staging 2026-10-16 (quan sát OBSERVED_CURRENT); REFRESH trên staging 2026-10-17 thêm mục mới, ghi `staging_observation` (OBSERVED_CURRENT, không resolve NEEDS_CONFIRMATION/CONFLICT) và gỡ OPEN_ISSUE đã được quan sát trả lời (xem CHANGELOG). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level.<object>#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
 
 ## OQ-order-draw-001 — NEEDS_CONFIRMATION
 
@@ -30,7 +30,16 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   ],
   "check_ids": [
     "physical-sealed-box-fulfilment:CHK-024"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-002 / CONF-order-draw-03: Pane 'Order prize information' (2 lần) chỉ có 'Metafield format' + ví dụ, không có công tắc trừ kho/tag/note — khớp phía KB-020 (các công tắc là setting ẩn, không trên màn hình) ở phần 'không có trên màn hình'; việc chúng có tồn tại ở back-office không quan sát được. | 2026-10-17: Form Create box (Single, Sealed) và mọi pane General Settings không có công tắc trừ kho / tag / note cho box physical; pane Sealed box chỉ có \"Metafield format\". Phần back-office vẫn không quan sát được.",
+  "staging_observation_kb_ids": [
+    "physical-sealed-box-fulfilment#KB-065",
+    "physical-sealed-box-fulfilment#KB-019",
+    "physical-sealed-box-fulfilment#KB-020",
+    "physical-sealed-box-fulfilment#KB-067",
+    "physical-sealed-box-fulfilment#KB-068"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -53,7 +62,17 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   ],
   "check_ids": [
     "prizes-added-to-order:CHK-027"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-003 / CONF-order-draw-01: 3 đơn: mỗi đơn đúng 1 'edited this order' + 1 'sent an order edited email' cùng mốc (kể cả đơn 2 box) — khớp phía KB-027 về số lần gửi. Việc email tới hộp thư, cờ orderUpdateEmailDisabled và cài đặt thông báo store (KB-028/029/030) không quan sát được. | 2026-10-17: Timeline #1009, #1010 mỗi đơn đúng 1 \"sent an order edited email\" kèm lần sửa đơn.",
+  "staging_observation_kb_ids": [
+    "prizes-added-to-order#KB-078",
+    "prizes-added-to-order#KB-027",
+    "prizes-added-to-order#KB-028",
+    "prizes-added-to-order#KB-029",
+    "prizes-added-to-order#KB-030",
+    "prizes-added-to-order#KB-081"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -71,7 +90,14 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   "kb_ids": [
     "auto-unbox#KB-049",
     "prizes-added-to-order#KB-017"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-004 / CONF-reveal-01: Nhánh box không bật buyback, khách tự mở: quà vào đơn ~5–7s sau box cuối, mở một phần không thêm quà — khớp điều kiện '(hoặc box không bật buyback)' của KB-017. Nhánh auto-unbox/Flow (KB-049) và nhánh box có buyback không quan sát (auto-unbox tắt, buyback khoá trên Free).",
+  "staging_observation_kb_ids": [
+    "prizes-added-to-order#KB-077",
+    "prizes-added-to-order#KB-017",
+    "auto-unbox#KB-049"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -92,7 +118,13 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   ],
   "check_ids": [
     "prizes-added-to-order:CHK-010"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-005 / CONF-order-draw-02: 2026-10-17: Merchant Unbox → quà vào đơn ngay, nhưng box no-buyback nên không phân biệt hai phía.",
+  "staging_observation_kb_ids": [
+    "prizes-added-to-order#KB-081",
+    "reveal-journey#KB-118"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -113,7 +145,15 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   ],
   "check_ids": [
     "purchase-and-prize-draw:CHK-020"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-006 / CONF-order-draw-04: 1 box Bundle 2 set (#1008) → 1 winning_bundle chứa 2 winning_items, mỗi set 1 món, không có kết quả cộng thêm — khớp cách diễn đạt KB-020; không thấy món bổ sung như cách đọc KB-021. Một mẫu. | 2026-10-17: Bundle 3 set, đơn 2 box: winning_bundles có 2 phần tử, mỗi phần tử 3 winning_items (1 món/set, không có món thêm). Mở bằng nút Unbox của merchant thay vì trang khách.",
+  "staging_observation_kb_ids": [
+    "purchase-and-prize-draw#KB-063",
+    "purchase-and-prize-draw#KB-020",
+    "purchase-and-prize-draw#KB-021",
+    "purchase-and-prize-draw#KB-070"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -200,7 +240,13 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   "kb_ids": [
     "physical-sealed-box-fulfilment#KB-044",
     "physical-sealed-box-fulfilment#KB-045"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-011: 2026-10-17: Đơn 2 box sealed cùng prize: \"Mysbox prizes\" = [{ \"sku\": \"123\", \"quantity\": 2 }] và \"Mysbox prize ids\" = { \"<variant>\": 2 } — gộp thành 1 phần tử; đơn không có note, tag hay dòng quà.",
+  "staging_observation_kb_ids": [
+    "physical-sealed-box-fulfilment#KB-069",
+    "physical-sealed-box-fulfilment#KB-070"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -258,20 +304,6 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   "summary": "Box physical có tính usage/phí, có tham gia auto-unbox hay Shopify Flow trigger như box digital không; đơn trộn physical + digital được auto-unbox thế nào? — Bảng so sánh không có dòng billing/usage và Flow trigger cho box physical.",
   "kb_ids": [
     "physical-sealed-box-fulfilment#KB-014"
-  ]
-}
-```
-
-## OQ-order-draw-016 — OPEN_ISSUE
-
-```json
-{
-  "oq_id": "OQ-order-draw-016",
-  "type": "OPEN_ISSUE",
-  "feature_id": "physical-sealed-box-fulfilment",
-  "summary": "Lựa chọn Physical ở bước tạo box tương ứng chính thức với thẻ \"Sealed box\" (và Digital với \"Instantly opening box\") không? — Tài liệu đặt hai cặp tên cạnh nhau nhưng không phát biểu ánh xạ.",
-  "kb_ids": [
-    "physical-sealed-box-fulfilment#KB-001"
   ]
 }
 ```
@@ -354,21 +386,6 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
 }
 ```
 
-## OQ-order-draw-022 — OPEN_ISSUE
-
-```json
-{
-  "oq_id": "OQ-order-draw-022",
-  "type": "OPEN_ISSUE",
-  "feature_id": "prizes-added-to-order",
-  "summary": "Chuỗi \"MYSBOX\" nằm ở đâu trên dòng quà (mô tả discount, title, tag, property)? — Tester không biết kiểm field nào của line item quà.",
-  "kb_ids": [
-    "prizes-added-to-order#KB-018",
-    "prizes-added-to-order#KB-019"
-  ]
-}
-```
-
 ## OQ-order-draw-023 — OPEN_ISSUE
 
 ```json
@@ -405,7 +422,12 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   "summary": "Độ dài và mốc bắt đầu của cửa sổ resell; khoá do resell đang chạy kéo dài bao lâu và đơn được xét lại khi nào sau khi mở khoá? — Quyết định thời điểm quà vào đơn; điều kiện khoá không có tiêu chí kết thúc để test.",
   "kb_ids": [
     "prizes-added-to-order#KB-003"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-025: 2026-10-17: \"Buyback limit time\": \"Duration for customers to resell from order is created\", 24 \"hours\", spinbutton disabled với \"Upgrade subscription plan to use this feature. It is not available on Free and Early-bird plan.\"",
+  "staging_observation_kb_ids": [
+    "prizes-added-to-order#KB-083"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -465,7 +487,12 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
     "purchase-and-prize-draw#KB-013",
     "purchase-and-prize-draw#KB-051",
     "purchase-and-prize-draw#KB-052"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-029: 2026-10-17: Sau 3 đơn test Bogus (không dùng Preview) \"Box sales limit\" vẫn \"0 / 10\", box_sold_in_cycle 0, box_capacity_used 0, exclude_test_order true; General Settings không có toggle \"Exclude test order\".",
+  "staging_observation_kb_ids": [
+    "purchase-and-prize-draw#KB-071"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -508,7 +535,12 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   "summary": "Box Tier \"dừng khi hết\" cấu hình thế nào và khác gì box Tier không dừng? — Cần để dựng tình huống đơn nhận ít quà hơn số box.",
   "kb_ids": [
     "purchase-and-prize-draw#KB-044"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-032: 2026-10-17: Form \"Random by group(s)\" chỉ có \"Group name\", \"Chance %\", Browse item, xoá nhóm, \"Add tier\", bộ đếm \"n/100\"; không có tuỳ chọn hay helper nào về \"dừng khi hết\".",
+  "staging_observation_kb_ids": [
+    "box-type-and-prize-setup#KB-067"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -519,7 +551,14 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   "oq_id": "OQ-order-draw-033",
   "type": "OPEN_ISSUE",
   "feature_id": "purchase-and-prize-draw",
-  "summary": "Tồn kho box giảm tại thời điểm nào (lúc paid, lúc bốc hay lúc mở) và giảm bao nhiêu mỗi đơn? — Kiểm tồn kho sau mua cần mốc thời gian và lượng giảm."
+  "summary": "Tồn kho box giảm tại thời điểm nào (lúc paid, lúc bốc hay lúc mở) và giảm bao nhiêu mỗi đơn? — Kiểm tồn kho sau mua cần mốc thời gian và lượng giảm.",
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-033: 2026-10-17: Variant box: Available giảm, Committed tăng theo đơn paid (B1 3/2/5, B2 2/1/3, B3 3/1/4); prize tracked của box sealed bị trừ ngay lúc bốc; prize digital untracked nên không đo được giảm kho Shopify; không có mốc riêng giữa paid và mở.",
+  "staging_observation_kb_ids": [
+    "purchase-and-prize-draw#KB-072",
+    "physical-sealed-box-fulfilment#KB-071",
+    "inventory-and-sold-out#KB-090"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -559,7 +598,14 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   "kb_ids": [
     "_object-level#KB-002",
     "_object-level#KB-021"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-036: 2026-10-17: Danh sách GET /api/orders?…&status=all|unopened|opened và chi tiết GET /api/orders/{id} có các field liệt kê; không có field trạng thái/resell/sync riêng; tab \"Unopened\" gồm đơn mở một phần. Phần role xem Orders vẫn cần PO.",
+  "staging_observation_kb_ids": [
+    "_object-level.order-draw#KB-030",
+    "_object-level.order-draw#KB-031",
+    "_object-level.order-draw#KB-032"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -584,7 +630,13 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   "summary": "Tài liệu Overview và Mua box và random quà đều viết QUEUED \"có thể\" kéo dài suốt thời gian mở box và cửa sổ resell. Cần xác nhận đây là hành vi chắc chắn (đơn mở hết vẫn QUEUED đến khi cửa sổ resell hết) hay chỉ trong một số trường hợp.",
   "kb_ids": [
     "_object-level#KB-011"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-038: 2026-10-17: Tiến độ chỉ thấy qua total_opened (#1010 1/3 → 3/3; #1009 0 → 3); không có field QUEUED/COMPLETED ở API merchant hay app proxy; unboxing_at, resell_expires_at null. Nhánh resell không quan sát (Free).",
+  "staging_observation_kb_ids": [
+    "_object-level.order-draw#KB-032",
+    "reveal-journey#KB-117"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -600,7 +652,13 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
     "physical-sealed-box-fulfilment#KB-008",
     "physical-sealed-box-fulfilment#KB-041",
     "physical-sealed-box-fulfilment#KB-056"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-039: 2026-10-17: Box sealed không có nút Unbox ở đâu: trang cảm ơn đơn hỗn hợp chỉ có Unbox cho box digital, đơn toàn sealed không render khối Mysbox; trang khách #1011 \"0 / 0 unboxed\".",
+  "staging_observation_kb_ids": [
+    "physical-sealed-box-fulfilment#KB-073",
+    "physical-sealed-box-fulfilment#KB-074"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -615,7 +673,12 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   "check_ids": [
     "physical-sealed-box-fulfilment:CHK-001",
     "physical-sealed-box-fulfilment:CHK-011"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-040: 2026-10-17: Đơn box sealed: GET /api/orders/{id} có winning_bundles ngay sau paid, total_opened = total_items, Manage orders \"2/2 boxes opened\" và \"Unbox\" disabled. Retry (CHK-011) không quan sát.",
+  "staging_observation_kb_ids": [
+    "physical-sealed-box-fulfilment#KB-072"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -675,7 +738,12 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   "summary": "Cấu hình tắt email thông báo sửa đơn có chỗ nào trong portal để merchant sửa không, hay chỉ nhân viên Mysbox đổi trong back-office; tác giả tài liệu ghi là chưa thấy và chưa kiểm chứng.",
   "kb_ids": [
     "prizes-added-to-order#KB-031"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-044: 2026-10-17: Không có toggle tắt email sửa đơn ở mọi pane General Settings và form box.",
+  "staging_observation_kb_ids": [
+    "prizes-added-to-order#KB-082"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -689,7 +757,13 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   "summary": "Shopify có tính lại phí ship hoặc thuế khi app thêm dòng quà giá 0 vào đơn không; tài liệu ghi là chưa xác nhận.",
   "kb_ids": [
     "prizes-added-to-order#KB-040"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-045: 2026-10-17: Subtotal/thuế/total trước và sau khi quà vào đơn không đổi (#1010 ₫420,000 / ₫0 / ₫42,000 / ₫462,000; #1009 ₫300,000 / ₫0 / ₫30,000 / ₫330,000); ship Free ở mọi đơn nên chưa kiểm tác động lên phí ship.",
+  "staging_observation_kb_ids": [
+    "prizes-added-to-order#KB-080",
+    "purchase-and-prize-draw#KB-073"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -750,7 +824,13 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
     "prizes-added-to-order:CHK-016",
     "prizes-added-to-order:CHK-017",
     "prizes-added-to-order:CHK-018"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-048: 2026-10-17: Dòng quà \"Sale price ₫0\" / \"Original price\", \"MYSBOX: -100%\", Unfulfilled; tổng đơn không đổi; #1009 (Unbox lẻ + Multi-unbox) có đúng 1 sự kiện sửa đơn sau box cuối; box sealed không thành dòng quà. Nhánh buyback/job/Flow không quan sát.",
+  "staging_observation_kb_ids": [
+    "prizes-added-to-order#KB-079",
+    "prizes-added-to-order#KB-081"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -764,7 +844,12 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   "summary": "Khi app thêm dòng quà giá 0 vào đơn, Shopify có tính lại phí ship hoặc thuế của đơn không?",
   "check_ids": [
     "prizes-added-to-order:CHK-028"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-049: 2026-10-17: Thuế và tổng không đổi sau khi thêm dòng quà ₫0; shipping ₫0 nên không so được phí ship.",
+  "staging_observation_kb_ids": [
+    "prizes-added-to-order#KB-080"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -793,7 +878,14 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   "kb_ids": [
     "purchase-and-prize-draw#KB-039",
     "purchase-and-prize-draw#KB-041"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-051: 2026-10-17: Nguyên nhân \"box physical\" tái hiện: không có nút Unbox ở trang cảm ơn/trang khách; đơn toàn sealed vẫn có trong Manage orders (\"2/2 boxes opened\") và trong \"Your orders\" (0/0). Trường hợp mua box đã Deactivate không thử.",
+  "staging_observation_kb_ids": [
+    "physical-sealed-box-fulfilment#KB-073",
+    "physical-sealed-box-fulfilment#KB-074",
+    "physical-sealed-box-fulfilment#KB-072"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -808,7 +900,13 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   "kb_ids": [
     "purchase-and-prize-draw#KB-006",
     "purchase-and-prize-draw#KB-007"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-052: 2026-10-17: \"Please wait while we fetch your box data\" → \"Unbox your mystery box now!\" trong ≤ ~9.4s (#1009) và ≤ ~7s (#1010), kéo theo /customer 404 rồi 200; chưa bao giờ quá 30s nên không thấy text khi quá hạn.",
+  "staging_observation_kb_ids": [
+    "reveal-journey#KB-107",
+    "reveal-journey#KB-108"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -852,7 +950,13 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
     "purchase-and-prize-draw:CHK-016",
     "purchase-and-prize-draw:CHK-017",
     "purchase-and-prize-draw:CHK-026"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-054: 2026-10-17: Trước khi mở, box digital có winning_bundles [] ở cả API merchant và app proxy (box sealed có ngay), nên không chứng minh được kết quả có từ lúc paid; tồn kho quà giảm theo item trúng. Sửa box rồi đối chiếu đơn cũ không làm.",
+  "staging_observation_kb_ids": [
+    "purchase-and-prize-draw#KB-069",
+    "inventory-and-sold-out#KB-090"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -866,6 +970,513 @@ Tổng: 55 mục (CONFLICT 6 · OPEN_ISSUE 29 · NEEDS_CONFIRMATION 20). Sinh t�
   "summary": "Đơn đã thanh toán khi box còn Active nhưng merchant deactivate box trước khi bước bốc thăm chạy thì bị bỏ qua hay vẫn được bốc theo phiên bản lúc mua? Nếu bị bỏ qua, đơn đó được xử lý lại bằng cách nào?",
   "check_ids": [
     "purchase-and-prize-draw:CHK-008"
+  ]
+}
+```
+
+## OQ-order-draw-056 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-056",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": null,
+  "summary": "Item mới quan sát trên staging (OBSERVED_CURRENT) chạm tiền/permission/token, được gắn cờ rủi ro khi diff: cần owner (PO) xác nhận hành vi quan sát là ý định sản phẩm trước khi dùng làm kỳ vọng. Item vẫn publish dạng OBSERVED_CURRENT; không phải xác nhận hành vi production.",
+  "owner_role": "PO",
+  "kb_ids": [
+    "prizes-added-to-order#KB-076",
+    "purchase-and-prize-draw#KB-066"
+  ]
+}
+```
+
+## OQ-order-draw-057 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-057",
+  "type": "OPEN_ISSUE",
+  "feature_id": "physical-sealed-box-fulfilment",
+  "summary": "Giá trị \"Metafield format\" lưu ở đâu khi GET /api/users/config trả {\"data\":null}; \"Variant SKU\" là mặc định hay giá trị đã chọn của shop? — Không tách được mặc định với giá trị hiện tại (KB-065 vs KB-047); không viết được check API cho setting.",
+  "kb_ids": [
+    "physical-sealed-box-fulfilment#KB-065",
+    "physical-sealed-box-fulfilment#KB-047"
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-057: 2026-10-17: Pane Order setting đọc qua GET /api/users/config 200 {\"data\": null}, hiển thị \"Variant SKU\"; đổi Metafield format + Save không làm (không thử thao tác ghi settings sau khi bị chặn).",
+  "staging_observation_kb_ids": [
+    "auto-unbox#KB-068",
+    "physical-sealed-box-fulfilment#KB-068"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
+}
+```
+
+## OQ-order-draw-058 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-058",
+  "type": "OPEN_ISSUE",
+  "feature_id": "purchase-and-prize-draw",
+  "summary": "Bảng Manage orders chờ getOrderStatus tới ~20–25s mới render là thiết kế hay lỗi hiệu năng; có ngưỡng chấp nhận không? — Không có expected cho thời gian hiển thị danh sách đơn (KB-025); ảnh hưởng check UI và timeout automation.",
+  "kb_ids": [
+    "_object-level.order-draw#KB-025"
+  ],
+  "check_ids": [
+    "purchase-and-prize-draw:CHK-032"
+  ]
+}
+```
+
+## OQ-order-draw-059 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-059",
+  "type": "OPEN_ISSUE",
+  "feature_id": "purchase-and-prize-draw",
+  "summary": "Cột Date của Manage orders hiển thị theo giờ máy người xem (+7h so với UTC) hay theo timezone của shop? — Quan sát thấy lệch +7h so với created_at UTC (KB-024); cần expected để viết check ngày giờ.",
+  "kb_ids": [
+    "_object-level.order-draw#KB-024"
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-059: 2026-10-17: Shop iana_timezone \"America/New_York\"; cột Date = created_at UTC + 7h (giờ máy +0700), vd 16:35:36Z → \"10/16/2026 23:35:36\". Chưa emulate timezone khác.",
+  "staging_observation_kb_ids": [
+    "_object-level.order-draw#KB-033"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
+}
+```
+
+## OQ-order-draw-060 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-060",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "physical-sealed-box-fulfilment",
+  "summary": "Check physical-sealed-box-fulfilment:CHK-027 \"General Settings › Sealed box › Order setting: pane Order prize information chỉ có Metafield format\" có oracle BASELINE (chỉ dựa trên quan sát staging OBSERVED_CURRENT — lệch là cần điều tra, chưa phải bug). Cần PO/Dev xác nhận hành vi mong đợi.",
+  "kb_ids": [
+    "physical-sealed-box-fulfilment#KB-065"
+  ],
+  "check_ids": [
+    "physical-sealed-box-fulfilment:CHK-027"
+  ]
+}
+```
+
+## OQ-order-draw-061 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-061",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "prizes-added-to-order",
+  "summary": "Check prizes-added-to-order:CHK-029 \"Trang đơn của khách hiện dòng quà với giảm giá MYSBOX và TOTAL SAVINGS sau khi quà vào đơn\" có oracle BASELINE (chỉ dựa trên quan sát staging OBSERVED_CURRENT — lệch là cần điều tra, chưa phải bug). Cần PO/Dev xác nhận hành vi mong đợi.",
+  "kb_ids": [
+    "prizes-added-to-order#KB-076"
+  ],
+  "check_ids": [
+    "prizes-added-to-order:CHK-029"
+  ]
+}
+```
+
+## OQ-order-draw-062 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-062",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "purchase-and-prize-draw",
+  "summary": "Staging thấy đơn test Bogus không tính vào Box sales limit (exclude_test_order true) nhưng vẫn bốc thật và trừ tồn kho quà. Đây có phải hành vi mong đợi trên mọi gói không, cờ exclude_test_order được bật ở đâu, và đơn test có ghi usage/phí không?",
+  "kb_ids": [
+    "purchase-and-prize-draw#KB-066",
+    "purchase-and-prize-draw#KB-065"
+  ],
+  "check_ids": [
+    "purchase-and-prize-draw:CHK-028"
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-062: 2026-10-17: 3 đơn test Bogus mới: không tính vào Box sales limit (0/10) nhưng vẫn bốc thật, trừ inventory.bundles và trừ tồn kho Shopify của prize tracked (box sealed).",
+  "staging_observation_kb_ids": [
+    "purchase-and-prize-draw#KB-071",
+    "inventory-and-sold-out#KB-090",
+    "physical-sealed-box-fulfilment#KB-071"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
+}
+```
+
+## OQ-order-draw-063 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-063",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "purchase-and-prize-draw",
+  "summary": "Check purchase-and-prize-draw:CHK-029 \"Manage orders: tab All / Unopened / Opened gọi GET /api/orders với status tương ứng\" có oracle BASELINE (chỉ dựa trên quan sát staging OBSERVED_CURRENT — lệch là cần điều tra, chưa phải bug). Cần PO/Dev xác nhận hành vi mong đợi.",
+  "kb_ids": [
+    "_object-level.order-draw#KB-028",
+    "_object-level.order-draw#KB-024"
+  ],
+  "check_ids": [
+    "purchase-and-prize-draw:CHK-029"
+  ]
+}
+```
+
+## OQ-order-draw-064 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-064",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "purchase-and-prize-draw",
+  "summary": "Search ở Manage orders chỉ tìm theo tên đơn hay cả email/tên khách? Escape xoá luôn ô search khi đóng popover sort có phải hành vi chủ ý không?",
+  "kb_ids": [
+    "_object-level.order-draw#KB-026"
+  ],
+  "check_ids": [
+    "purchase-and-prize-draw:CHK-030"
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-order-draw-064: 2026-10-17: Tìm \"QA Test\" và email buyer → \"No Orders found\" (GET /api/orders?q=… 200); tìm \"1007\" → #1007.",
+  "staging_observation_kb_ids": [
+    "_object-level.order-draw#KB-034"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
+}
+```
+
+## OQ-order-draw-065 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-065",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "purchase-and-prize-draw",
+  "summary": "Check purchase-and-prize-draw:CHK-031 \"Chi tiết đơn: GET /api/orders/{shopify_order_id} trả boxes[] với opening request, box_version_id và winning_bundles\" có oracle BASELINE (chỉ dựa trên quan sát staging OBSERVED_CURRENT — lệch là cần điều tra, chưa phải bug). Cần PO/Dev xác nhận hành vi mong đợi.",
+  "kb_ids": [
+    "_object-level.order-draw#KB-029"
+  ],
+  "check_ids": [
+    "purchase-and-prize-draw:CHK-031"
+  ]
+}
+```
+
+## OQ-order-draw-066 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-066",
+  "type": "OPEN_ISSUE",
+  "feature_id": "physical-sealed-box-fulfilment",
+  "summary": "Đơn chỉ có box sealed vẫn hiện trong \"Your orders\" của khách dạng \"0 / 0 unboxed\" và trang \"View details\" chỉ render \"Unbox your mystery boxes 0 / 0 unboxed\" (không header đơn), gọi box-versions/by-ids?ids= rỗng nhận 422 và log lỗi console. Đây là hành vi chủ ý (hiện đơn rỗng) hay lỗi hiển thị? Run không có thẩm quyền phán là lỗi; item không đặt status.",
+  "kb_ids": [
+    "physical-sealed-box-fulfilment#KB-074",
+    "physical-sealed-box-fulfilment#KB-073",
+    "physical-sealed-box-fulfilment#KB-005"
+  ],
+  "related_oq_ids": [
+    "OQ-reveal-045"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-order-draw-067 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-067",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "physical-sealed-box-fulfilment",
+  "summary": "Đơn chỉ có box sealed vẫn hiện ở \"Your orders\" của khách với \"0 / 0 unboxed\" và trang chi tiết gần như rỗng kèm lỗi 422 (box-versions/by-ids với ids rỗng). Đơn chỉ có box sealed có nên xuất hiện ở trang khách không, và nếu có thì phải hiển thị gì?",
+  "kb_ids": [
+    "physical-sealed-box-fulfilment#KB-074"
+  ],
+  "check_ids": [
+    "physical-sealed-box-fulfilment:CHK-028"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-order-draw-068 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-068",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "physical-sealed-box-fulfilment",
+  "summary": "Staging: box Sealed vẫn lưu settings.animation (\"carousel\") dù form ẩn Animation Settings, và Buy back function bị ẩn. Giá trị animation lưu kèm box sealed có được dùng ở đâu không, và box sealed có bao giờ được bật buyback không?",
+  "kb_ids": [
+    "physical-sealed-box-fulfilment#KB-067",
+    "physical-sealed-box-fulfilment#KB-066"
+  ],
+  "check_ids": [
+    "physical-sealed-box-fulfilment:CHK-029"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-order-draw-069 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-069",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "physical-sealed-box-fulfilment",
+  "summary": "Staging: box sealed được tính vào \"boxes opened\" ngay sau paid ở phía merchant (khớp tài liệu tự đánh dấu đã mở). Có cần phân biệt box sealed với box digital đã mở trong cột Mystery box status không?",
+  "kb_ids": [
+    "physical-sealed-box-fulfilment#KB-072"
+  ],
+  "check_ids": [
+    "physical-sealed-box-fulfilment:CHK-030"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-order-draw-070 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-070",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "physical-sealed-box-fulfilment",
+  "summary": "Staging: metafield quà của đơn box sealed gộp các box trúng cùng variant thành một phần tử với quantity cộng dồn. Đây có phải định dạng mong đợi cho kho (thay vì một phần tử mỗi box) không?",
+  "kb_ids": [
+    "physical-sealed-box-fulfilment#KB-069"
+  ],
+  "check_ids": [
+    "physical-sealed-box-fulfilment:CHK-031"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-order-draw-071 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-071",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "prizes-added-to-order",
+  "summary": "Staging: cửa sổ resell (\"Buyback limit time\") mặc định 24 giờ và được mô tả là tính \"from order is created\". Cửa sổ resell — mốc mà quà chờ trước khi vào đơn — bắt đầu từ lúc tạo đơn hay lúc khách mở box, và giá trị cho phép trên gói trả phí là bao nhiêu?",
+  "kb_ids": [
+    "prizes-added-to-order#KB-083"
+  ],
+  "check_ids": [
+    "prizes-added-to-order:CHK-030"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-order-draw-072 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-072",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "prizes-added-to-order",
+  "summary": "Staging: app sửa đơn một lần (một email \"order edited\") cho cả đơn sau box cuối, kể cả khi mở bằng nhiều cách; đơn chỉ có box sealed không bị sửa. Đây có phải hành vi mong đợi trên mọi đường mở (Flow, auto-unbox, job sync sau cửa sổ resell) không?",
+  "kb_ids": [
+    "prizes-added-to-order#KB-081"
+  ],
+  "check_ids": [
+    "prizes-added-to-order:CHK-031"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-order-draw-073 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-073",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "purchase-and-prize-draw",
+  "summary": "Staging: chi tiết đơn của merchant không hiện quà của box digital chưa mở nhưng hiện ngay quà của box Sealed, và gộp các box Sealed trúng cùng món thành một dòng. Merchant có nên thấy quà đã chốt của box digital trước khi khách mở không, và cách gộp dòng này có chủ ý không?",
+  "kb_ids": [
+    "purchase-and-prize-draw#KB-068"
+  ],
+  "check_ids": [
+    "purchase-and-prize-draw:CHK-033"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-order-draw-074 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-074",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "purchase-and-prize-draw",
+  "summary": "Staging: đơn mua box chuyển tồn kho variant box từ Available sang Committed (On hand chưa đổi vì chưa fulfil). Đây là hành vi chuẩn của Shopify (Mysbox không tác động tồn kho variant box) phải không, và khi quà được thêm vào đơn / đơn fulfil thì tồn kho variant box thay đổi thế nào?",
+  "kb_ids": [
+    "purchase-and-prize-draw#KB-072"
+  ],
+  "check_ids": [
+    "purchase-and-prize-draw:CHK-034"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-order-draw-075 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-075",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "purchase-and-prize-draw",
+  "summary": "Staging: box vào giỏ không mang line property/attribute nào của Mysbox và requires_shipping true kể cả với box digital. Đây có phải thiết kế không (Mysbox nhận diện box chỉ qua variant đã link), và box digital có nên requires_shipping không?",
+  "kb_ids": [
+    "purchase-and-prize-draw#KB-073"
+  ],
+  "check_ids": [
+    "purchase-and-prize-draw:CHK-035"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-order-draw-076 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-076",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "purchase-and-prize-draw",
+  "summary": "Cột Date ở Manage orders hiển thị theo giờ máy người xem (staging: +0700) thay vì timezone của shop (America/New_York). Hành vi mong đợi là theo timezone nào?",
+  "kb_ids": [
+    "_object-level.order-draw#KB-033"
+  ],
+  "check_ids": [
+    "purchase-and-prize-draw:CHK-036"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-order-draw-077 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-077",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "purchase-and-prize-draw",
+  "summary": "Staging: kết quả của box digital chưa mở không trả qua API merchant lẫn app proxy (winning_bundles []). Đây có phải cơ chế chủ ý để khách không đọc trước được quà không, và còn endpoint nào (staging-api, admin) lộ kết quả trước khi mở không?",
+  "kb_ids": [
+    "purchase-and-prize-draw#KB-069"
+  ],
+  "check_ids": [
+    "purchase-and-prize-draw:CHK-037"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-order-draw-078 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-078",
+  "type": "OPEN_ISSUE",
+  "feature_id": "physical-sealed-box-fulfilment",
+  "summary": "Đơn chỉ có box sealed hiện trong \"Your orders\" của khách dạng \"0 / 0 unboxed\" và trang \"View details\" lỗi 422 (box-versions/by-ids ids rỗng) — đây là hành vi chủ ý hay lỗi hiển thị? — Khách thấy đơn rỗng/lỗi; cần owner xác nhận trước khi viết check (regression watch hay expected). Không tự escalate — hỏi operator.",
+  "kb_ids": [
+    "physical-sealed-box-fulfilment#KB-074",
+    "physical-sealed-box-fulfilment#KB-073",
+    "physical-sealed-box-fulfilment#KB-005"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-order-draw-079 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-079",
+  "type": "OPEN_ISSUE",
+  "feature_id": "purchase-and-prize-draw",
+  "summary": "Kết quả bốc của box digital có thực sự được chốt ngay lúc paid không, khi cả API merchant lẫn app proxy trả winning_bundles [] cho box digital chưa mở (trong khi box sealed cùng đơn có ngay)? — KB-001 (CE) nói chốt lúc paid nhưng không surface nào quan sát được kết quả trước khi mở (KB-069); cần Dev xác nhận API có ẩn kết quả chủ ý không để viết check 'không đổi quà khi reload/mở lại'.",
+  "kb_ids": [
+    "purchase-and-prize-draw#KB-069",
+    "purchase-and-prize-draw#KB-001"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-order-draw-080 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-080",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "prizes-added-to-order",
+  "summary": "Quan sát staging mới chạm vùng rủi ro cao (quyền truy cập / tiền / billing): Dòng quà MYSBOX -100%: vị trí chuỗi MYSBOX trên admin và trang khách; Tổng đơn không đổi sau khi thêm dòng quà (ship Free nên chưa kiểm ship). Item là OBSERVED_CURRENT; cần PO xác nhận đây là hành vi dự kiến trước khi dùng làm expected result.",
+  "kb_ids": [
+    "prizes-added-to-order#KB-079",
+    "prizes-added-to-order#KB-080"
+  ],
+  "tags": [
+    "staging-observed",
+    "risk-flag"
+  ]
+}
+```
+
+## OQ-order-draw-081 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-081",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "purchase-and-prize-draw",
+  "summary": "Quan sát staging mới chạm vùng rủi ro cao (quyền truy cập / tiền / billing): Box sales limit không đổi sau 3 đơn test Bogus; không có toggle Exclude test order; Giỏ và checkout box: line thường, không có dữ liệu Mysbox; tổng trước khi quà vào đơn. Item là OBSERVED_CURRENT; cần PO xác nhận đây là hành vi dự kiến trước khi dùng làm expected result.",
+  "kb_ids": [
+    "purchase-and-prize-draw#KB-071",
+    "purchase-and-prize-draw#KB-073"
+  ],
+  "tags": [
+    "staging-observed",
+    "risk-flag"
   ]
 }
 ```

@@ -1,6 +1,6 @@
 # Open Questions — admin-panel
 
-Tổng: 95 mục (CONFLICT 2 · OPEN_ISSUE 59 · NEEDS_CONFIRMATION 34). Sinh từ bootstrap DOC_BOOTSTRAP đầu tiên của Mysbox (nguồn: bộ Product KB v1 do dev viết từ source code, 2026-10-16). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
+Tổng: 99 mục (CONFLICT 2 · OPEN_ISSUE 60 · NEEDS_CONFIRMATION 37). Sinh từ bootstrap DOC_BOOTSTRAP đầu tiên của Mysbox (nguồn: bộ Product KB v1 do dev viết từ source code, 2026-10-16); REFRESH trên staging 2026-10-17 thêm mục mới, ghi `staging_observation` (OBSERVED_CURRENT, không resolve NEEDS_CONFIRMATION/CONFLICT). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
 
 ## OQ-admin-panel-001 — NEEDS_CONFIRMATION
 
@@ -902,7 +902,13 @@ Tổng: 95 mục (CONFLICT 2 · OPEN_ISSUE 59 · NEEDS_CONFIRMATION 34). Sinh t�
   "summary": "Với từng nguyên nhân trang khách lỗi (chưa đăng nhập + link thiếu danh tính, shop tắt, đơn của khách khác, cache cũ), trang trả 404, trang trắng hay đẩy sang đăng nhập? — Expected result của từng case truy cập trang khách không xác định được.",
   "kb_ids": [
     "portal-release-version-control#KB-011"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-admin-panel-061: 2026-10-17: Chỉ case khách chưa đăng nhập mở /apps/mysbox/orders không parameters: redirect sang đăng nhập customer account Shopify (không 404/trắng). Request API 401 là do explorer tự dựng. Các case còn lại NOT_OBSERVED.",
+  "staging_observation_kb_ids": [
+    "portal-release-version-control#KB-012",
+    "portal-release-version-control#KB-013"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -1412,7 +1418,12 @@ Tổng: 95 mục (CONFLICT 2 · OPEN_ISSUE 59 · NEEDS_CONFIRMATION 34). Sinh t�
   ],
   "check_ids": [
     "portal-release-version-control:CHK-004"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-admin-panel-092: 2026-10-17: Asset trang khách staging là mysbox-proxy.js/css tên cố định trên staging-proxy.mysbox.io, không ?v=/version trong HTML; không đối chiếu được với giá trị Customer Portal Resource (admin panel NOT_COVERED). Host ngoài expected_api_base.",
+  "staging_observation_kb_ids": [
+    "portal-release-version-control#KB-014"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1454,6 +1465,80 @@ Tổng: 95 mục (CONFLICT 2 · OPEN_ISSUE 59 · NEEDS_CONFIRMATION 34). Sinh t�
   "summary": "Các check P1 (tiền / billing / bốc thăm / refund / store credit / permission / xoá dữ liệu) của feature này có oracle STRONG nhưng chỉ dựa trên tài liệu dev (dev_doc). Theo luật oracle, chúng giữ NEEDS_CONFIRMATION cho tới khi có test_case PASS (hoặc PO/Dev xác nhận trực tiếp) cho đúng hành vi. Danh sách check ở check_ids.",
   "check_ids": [
     "portal-release-version-control:CHK-008"
+  ]
+}
+```
+
+## OQ-admin-panel-096 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-admin-panel-096",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "portal-release-version-control",
+  "summary": "Staging (1 lần, trang danh sách đơn): khách không có danh tính bị chuyển sang trang đăng nhập Shopify. Trang chi tiết đơn /apps/mysbox/orders/<id> không có parameters hoặc có parameters thiếu thông tin thì phản hồi thế nào, và đây có phải hành vi mong đợi cho mọi trang khách không?",
+  "kb_ids": [
+    "portal-release-version-control#KB-012"
+  ],
+  "check_ids": [
+    "portal-release-version-control:CHK-009"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-admin-panel-097 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-admin-panel-097",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "portal-release-version-control",
+  "summary": "Host phục vụ asset trang khách trên staging (nằm ngoài expected_api_base) có phải host hợp lệ của staging không, và production dùng host nào? Trên môi trường có version, Customer Portal Resource đổi phần nào của tham chiếu asset (tên file hay tham số), và thời gian cache mong đợi của asset trang khách là bao lâu?",
+  "kb_ids": [],
+  "check_ids": [
+    "portal-release-version-control:CHK-010"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-admin-panel-098 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-admin-panel-098",
+  "type": "OPEN_ISSUE",
+  "feature_id": "portal-release-version-control",
+  "summary": "Host staging-proxy.mysbox.io phục vụ asset trang khách có phải host hợp lệ của staging (ngoài expected_api_base) không, và production dùng host nào? — KB-014 tag host_not_in_expected_api_base; ảnh hưởng việc dùng quan sát này cho check môi trường.",
+  "kb_ids": [
+    "portal-release-version-control#KB-014"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-admin-panel-099 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-admin-panel-099",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "portal-release-version-control",
+  "summary": "Quan sát staging mới chạm vùng rủi ro cao (quyền truy cập / tiền / billing): Trang khách /apps/mysbox/orders khi không có danh tính; API đơn của trang khách trả 401 khi thiếu danh tính (request tự dựng, không phải app gọi). Item là OBSERVED_CURRENT; cần PO xác nhận đây là hành vi dự kiến trước khi dùng làm expected result.",
+  "kb_ids": [
+    "portal-release-version-control#KB-012",
+    "portal-release-version-control#KB-013"
+  ],
+  "tags": [
+    "staging-observed",
+    "risk-flag"
   ]
 }
 ```

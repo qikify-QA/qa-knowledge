@@ -2,7 +2,7 @@
   "feature_id": "FEAT-01-plan-capacity-and-cycle",
   "feature_key": "plan-capacity-and-cycle",
   "object_id": "plans-billing",
-  "checklist_version": "1",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -270,7 +270,9 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Cần test case đã chạy PASS xác nhận chỉ admin tắt được \"Exclude test order\" và cờ bật mặc định; merchant có nhìn thấy trạng thái cờ này ở đâu không?",
-      "related_kb_ids": [],
+      "related_kb_ids": [
+        "plan-capacity-and-cycle#KB-088"
+      ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
         "Đơn test làm sai bộ đếm hạn mức"
@@ -310,7 +312,8 @@
       "related_kb_ids": [
         "plan-capacity-and-cycle#KB-030",
         "plan-capacity-and-cycle#KB-032",
-        "plan-capacity-and-cycle#KB-068"
+        "plan-capacity-and-cycle#KB-068",
+        "plan-capacity-and-cycle#KB-085"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -349,7 +352,9 @@
       },
       "status": "READY",
       "open_question_draft": null,
-      "related_kb_ids": [],
+      "related_kb_ids": [
+        "plan-capacity-and-cycle#KB-086"
+      ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
       "priority": "P2",
@@ -878,7 +883,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Cần test case đã chạy PASS xác nhận development store và store Plus Trial nhận subscription thử, không bị thu tiền thật và bị loại khỏi báo cáo thật; khi dev store chuyển thành store thật thì subscription xử lý thế nào?",
       "related_kb_ids": [
-        "daily-usage-charge-and-charge-status#KB-070"
+        "daily-usage-charge-and-charge-status#KB-070",
+        "plan-capacity-and-cycle#KB-089"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -887,6 +893,211 @@
       "priority": "P1",
       "automation_suitability": "NOT_SUITABLE",
       "oq_id": "OQ-plans-billing-105"
+    },
+    {
+      "check_id": "CHK-024",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Pricing staging: thẻ Free, Nitro, Booster với giá, hạn mức và dòng tính năng; không có tab năm, Early-bird hay badge trial",
+      "applicability": {
+        "role": "merchant",
+        "state": "shop gói Free",
+        "environment": "staging",
+        "surface_or_device": "portal merchant → Pricing (chỉ đọc) + dữ liệu plan nhúng"
+      },
+      "precondition": "Đăng nhập portal bằng merchant shop gói Free; không bấm \"Choose this plan\".",
+      "steps": [
+        "Mở Pricing; ghi các thẻ plan, giá, nút và từng dòng tính năng.",
+        "Kiểm có tab Monthly/Annually, thẻ Early-bird hay badge trial không.",
+        "Đọc danh sách plan trong dữ liệu nhúng của trang (window.mysboxEmbeddedData.plans): id, slug, price, box_selling_capacity, trial_days, test, on_install, capped_amount, interval."
+      ],
+      "observation_point": "Thẻ plan trên Pricing; dữ liệu plan nhúng.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Có 4 thẻ plan, không có tab Monthly/Annually, thẻ Early-bird hay badge trial. Free \"$0\" (nút \"Selected\" disabled, \"Available for testing & setup only\", \"Free 10 boxes sales/month\", \"Unboxing animations\", \"Unlimited mystery box creation\"); Nitro \"$24.9\" \"/ month\" (\"Free 100 boxes sales/month\", \"2% of box sales (min $0.25 each) from the 101st box sales\", \"Unboxing animations\", \"Buy back function\", \"Unlimited mystery box creation\", \"Analytics\", \"Translations\"); Booster \"$114.9\" \"/ month\" (\"Free 500 boxes sales/month\", \"2% of box sales (min $0.25 each) from the 501st box sales\" và cùng 5 dòng như Nitro); thẻ thứ tư Prime kiểm ở CHK-027. Dữ liệu nhúng: Free id 1 (price 0, box_selling_capacity 10, trial_days 0, test false, on_install true, capped_amount null); Nitro id 9 (24.9, capacity 100); Booster id 10 (114.9, capacity 500); Nitro/Booster trial_days 0, test true, capped_amount 10000; mọi plan interval 1; không có API danh sách plan riêng.",
+      "oracle": {
+        "kb_ids": [
+          "plan-capacity-and-cycle#KB-082"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Catalog staging (1 lần đọc): Free 10 / Nitro 100 / Booster 500 box mỗi tháng, phí vượt 2% (min $0.25), không có plan năm, không có trial, không có Early-bird. Catalog production có giống không, và Free 10 box có phải hạn mức production?",
+      "related_kb_ids": [
+        "plan-capacity-and-cycle#KB-003",
+        "plan-capacity-and-cycle#KB-015",
+        "plan-capacity-and-cycle#KB-052",
+        "plan-capacity-and-cycle#KB-056",
+        "plan-capacity-and-cycle#KB-057",
+        "plan-capacity-and-cycle#KB-061",
+        "plan-upgrade-downgrade-cancel#KB-005",
+        "plan-upgrade-downgrade-cancel#KB-007",
+        "plan-upgrade-downgrade-cancel#KB-011"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hạn mức Free production chưa xác nhận"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-plans-billing-135"
+    },
+    {
+      "check_id": "CHK-025",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Shop Free: thẻ \"Box sales limit\" hiện used / quota và thông điệp gói Free, không hiển thị ngày chu kỳ",
+      "applicability": {
+        "role": "merchant",
+        "state": "shop gói Free, used 0",
+        "environment": "staging",
+        "surface_or_device": "portal merchant → Dashboard + dữ liệu nhúng"
+      },
+      "precondition": "Shop gói Free chưa bán box nào trong chu kỳ; mở network capture.",
+      "steps": [
+        "Mở Dashboard; đọc thẻ \"Box sales limit\": used / quota, progress, chữ mô tả, có ngày bắt đầu/kết thúc chu kỳ không.",
+        "Đọc window.mysboxEmbeddedData.user: box_selling_capacity và các trường ngày liên quan chu kỳ.",
+        "Kiểm network có request API riêng cho hạn mức không."
+      ],
+      "observation_point": "Thẻ Box sales limit; dữ liệu nhúng user; network.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Thẻ hiện \"0 / 10\", progress \"0%\" và \"You're in Free plan with the limit of 10 box sales. Once you reached the limit, mystery boxes will be disabled. Please upgrade your plan to extend the limitation.\", không hiển thị ngày bắt đầu/kết thúc chu kỳ. Dữ liệu nhúng có box_selling_capacity 10 và chỉ một trường ngày capacity_expires_at (ISO 8601 UTC \"Z\"), không có cycle start/reset date; không có request API riêng cho hạn mức.",
+      "oracle": {
+        "kb_ids": [
+          "plan-capacity-and-cycle#KB-086"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging: merchant không thấy ngày chu kỳ ở đâu; dữ liệu chỉ có capacity_expires_at. capacity_expires_at có phải mốc kết thúc chu kỳ quota không, và merchant nên xem ngày reset ở đâu?",
+      "related_kb_ids": [
+        "plan-capacity-and-cycle#KB-010",
+        "plan-capacity-and-cycle#KB-016",
+        "plan-capacity-and-cycle#KB-019",
+        "plan-capacity-and-cycle#KB-065",
+        "plan-capacity-and-cycle#KB-066"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-plans-billing-136"
+    },
+    {
+      "check_id": "CHK-026",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Đơn test không có nhãn trong merchant app; chỉ Shopify admin hiện banner \"Test order\"",
+      "applicability": {
+        "role": "merchant",
+        "state": "shop có đơn test (Bogus gateway)",
+        "environment": "staging",
+        "surface_or_device": "portal merchant (General Settings, Dashboard, Pricing, Manage orders) + Shopify admin (trang đơn) + network"
+      },
+      "precondition": "Shop có ít nhất một đơn test qua Bogus gateway; mở network capture.",
+      "steps": [
+        "Duyệt General Settings, Dashboard, Pricing; tìm control \"Exclude Test Order\" hoặc tương tự.",
+        "Mở Manage orders; ghi các cột và nhãn của đơn test.",
+        "Ghi response GET <MYS_API_BASE>/api/orders: item có field test/status/tag không.",
+        "Mở trang đơn test trong Shopify admin; ghi banner."
+      ],
+      "observation_point": "Màn cài đặt merchant; Manage orders; API orders; trang đơn Shopify.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Không có control \"Exclude Test Order\" cho merchant (dữ liệu nhúng có exclude_test_order true). Manage orders (cột Order, Date, Fulfillment status, Mystery box status, Refund amount, Action) không có nhãn/cột đánh dấu đơn test; item của GET /api/orders không có field test/status/tag. Trang đơn Shopify admin hiện banner \"Test order\" / \"Your payment gateway was in test mode when this order was created.\"",
+      "oracle": {
+        "kb_ids": [
+          "plan-capacity-and-cycle#KB-088"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging: merchant không phân biệt được đơn test trong Manage orders. App nhận biết đơn test theo tiêu chí nào, và merchant có cần thấy nhãn đơn test không?",
+      "related_kb_ids": [
+        "plan-capacity-and-cycle#KB-030",
+        "plan-capacity-and-cycle#KB-031",
+        "plan-capacity-and-cycle#KB-032",
+        "plan-capacity-and-cycle#KB-076"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Đơn test làm sai bộ đếm hạn mức"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-plans-billing-137"
+    },
+    {
+      "check_id": "CHK-027",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "Theo dõi conflict: quota plan Prime hiển thị 400 nhưng mô tả plan ghi 1500 box/tháng",
+      "applicability": {
+        "role": "merchant",
+        "state": "shop gói Free",
+        "environment": "staging",
+        "surface_or_device": "portal merchant → Pricing + dữ liệu plan nhúng"
+      },
+      "precondition": "Đăng nhập portal; không bấm \"Choose this plan\".",
+      "steps": [
+        "Mở Pricing; ghi giá, hạn mức và dòng phí vượt của thẻ Prime.",
+        "Đọc object plan Prime trong dữ liệu nhúng: box_selling_capacity, description, terms, features.",
+        "So các con số."
+      ],
+      "observation_point": "Thẻ Prime; object plan Prime trong dữ liệu nhúng.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Plan Prime trên staging: thẻ Pricing hiện \"Free 400 boxes sales/month\" theo box_selling_capacity 400, nhưng description/terms/feature của cùng object ghi \"Free 1500 boxes sales/month\" / \"from the 1501st\". Con số đúng là bao nhiêu và trường nào là nguồn khi tính hạn mức và phí vượt?",
+      "related_kb_ids": [
+        "plan-capacity-and-cycle#KB-083",
+        "plan-capacity-and-cycle#KB-084",
+        "plan-capacity-and-cycle#KB-082"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hạn mức / phí vượt plan Prime sai"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-plans-billing-133"
+    },
+    {
+      "check_id": "CHK-028",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "Theo dõi conflict: capacity_expires_at ở merchant app khác giá trị trong cấu hình storefront",
+      "applicability": {
+        "role": "merchant + guest buyer",
+        "state": "shop gói Free",
+        "environment": "staging",
+        "surface_or_device": "portal merchant (dữ liệu nhúng Dashboard) + storefront trang sản phẩm (script cấu hình)"
+      },
+      "precondition": "Shop có box Active; đọc cả hai nguồn trong cùng một ngày.",
+      "steps": [
+        "Mở Dashboard merchant; ghi capacity_expires_at trong dữ liệu nhúng user.",
+        "Mở trang sản phẩm box (không đăng nhập); ghi _Mysbox.capabilities.capacity_expires_at và over_capacity trong script cấu hình.",
+        "So hai giá trị và ghi widget có render không."
+      ],
+      "observation_point": "capacity_expires_at ở hai nguồn; widget.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Cùng shop staging, cùng ngày: dữ liệu merchant app có capacity_expires_at 2026-10-23T04:58:05Z, còn _Mysbox.capabilities trên trang sản phẩm có 2025-07-30T04:58:05Z (over_capacity false, widget vẫn render). Nguồn nào đúng, metafield capabilities có đang cũ không, và storefront dùng giá trị nào để quyết ẩn widget?",
+      "related_kb_ids": [
+        "plan-capacity-and-cycle#KB-087",
+        "capacity-limit-enforcement#KB-046",
+        "plan-capacity-and-cycle#KB-016",
+        "plan-capacity-and-cycle#KB-086"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Cờ capacity storefront cũ có thể ẩn widget sai"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-plans-billing-132"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -895,7 +1106,8 @@
       "item": "Capability: Gán plan Free mặc định và khởi tạo bộ đếm khi cài app",
       "kind": "capability",
       "check_ids": [
-        "CHK-001"
+        "CHK-001",
+        "CHK-025"
       ],
       "coverage": "COVERED"
     },
@@ -931,10 +1143,11 @@
       "check_ids": [
         "CHK-006",
         "CHK-007",
-        "CHK-008"
+        "CHK-008",
+        "CHK-026"
       ],
       "coverage": "PARTIAL",
-      "note": "Hành vi ở cờ mặc định đang mâu thuẫn (CHK-008)."
+      "note": "Hành vi ở cờ mặc định đang mâu thuẫn (CHK-008); staging một đơn test không tăng used (KB-085, UNRESOLVED)."
     },
     {
       "feature_id": "FEAT-01-plan-capacity-and-cycle",
@@ -943,7 +1156,8 @@
       "check_ids": [
         "CHK-009",
         "CHK-010",
-        "CHK-011"
+        "CHK-011",
+        "CHK-025"
       ],
       "coverage": "COVERED"
     },
@@ -968,7 +1182,7 @@
         "CHK-021"
       ],
       "coverage": "PARTIAL",
-      "note": "Trial có trừ quota hay không đang mâu thuẫn (CHK-021)."
+      "note": "Trial có trừ quota hay không đang mâu thuẫn (CHK-021); staging không có plan nào có trial."
     },
     {
       "feature_id": "FEAT-01-plan-capacity-and-cycle",
@@ -977,9 +1191,12 @@
       "check_ids": [
         "CHK-001",
         "CHK-022",
-        "CHK-023"
+        "CHK-023",
+        "CHK-024",
+        "CHK-027"
       ],
-      "coverage": "COVERED"
+      "coverage": "COVERED",
+      "note": "Quota Prime staging đang conflict (CHK-027)."
     },
     {
       "feature_id": "FEAT-01-plan-capacity-and-cycle",
@@ -987,10 +1204,11 @@
       "kind": "risk",
       "check_ids": [
         "CHK-013",
-        "CHK-014"
+        "CHK-014",
+        "CHK-028"
       ],
       "coverage": "PARTIAL",
-      "note": "Múi giờ chưa xác nhận."
+      "note": "Múi giờ chưa xác nhận; capacity_expires_at hai nguồn lệch nhau (CHK-028)."
     },
     {
       "feature_id": "FEAT-01-plan-capacity-and-cycle",
@@ -1007,26 +1225,24 @@
       "kind": "risk",
       "check_ids": [
         "CHK-001",
-        "CHK-010"
+        "CHK-010",
+        "CHK-024"
       ],
       "coverage": "GAP",
-      "note": "Không có oracle cho con số; check dùng quota của shop test."
+      "note": "Không có oracle cho con số production; staging Free = 10 box (baseline CHK-024)."
     },
     {
       "feature_id": "FEAT-01-plan-capacity-and-cycle",
       "item": "Layer storefront",
       "kind": "layer",
-      "check_ids": [],
+      "check_ids": [
+        "CHK-028"
+      ],
       "coverage": "GAP",
-      "note": "Feature không có hành vi storefront riêng (profile coverage_matrix storefront covered=false); ẩn storefront khi chạm trần thuộc capacity-limit-enforcement."
+      "note": "Feature không có hành vi storefront riêng; CHK-028 chỉ đối chiếu capacity_expires_at trong cấu hình storefront. Ẩn storefront khi chạm trần thuộc capacity-limit-enforcement."
     }
   ],
-  "excluded_dimensions": [
-    {
-      "dimension": "REGRESSION",
-      "reason": "Run không có base nên không có hành vi khác base; shard không có item KNOWN_DEFECT."
-    }
-  ],
+  "excluded_dimensions": [],
   "last_updated": {
     "date": "2026-10-16",
     "ccr_ref": "bootstrap"

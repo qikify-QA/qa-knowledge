@@ -35,7 +35,11 @@
         "billing-discount-codes#KB-028",
         "billing-discount-codes#KB-048",
         "billing-discount-codes#KB-050"
-      ]
+      ],
+      "observed_kb_refs": [
+        "billing-discount-codes#KB-067"
+      ],
+      "refresh_note": "Staging gói Free: mở được dialog \"Apply discount code\" từ \"Have a discount code?\" trên Pricing (không submit)."
     },
     {
       "role": "support",
@@ -91,7 +95,11 @@
         "billing-discount-codes#KB-049",
         "billing-discount-codes#KB-050",
         "billing-discount-codes#KB-051"
-      ]
+      ],
+      "observed_kb_refs": [
+        "billing-discount-codes#KB-067"
+      ],
+      "refresh_note": "Staging: \"Have a discount code?\" → \"Enter here\" → dialog \"Apply discount code\" (textbox, Check, Cancel, Apply discount) ở cuối trang Pricing (CONF-plans-billing-04 vẫn UNRESOLVED)."
     },
     {
       "path": "Thao tác \"extend trial\" cho shop đang trial",
@@ -164,7 +172,11 @@
         "billing-discount-codes#KB-054",
         "billing-discount-codes#KB-055",
         "billing-discount-codes#KB-056"
-      ]
+      ],
+      "observed_kb_refs": [
+        "billing-discount-codes#KB-067"
+      ],
+      "refresh_note": "Staging: dialog nhập mã có ghi chú \"Please note that a code can only be applied one time. New code will override the current discount.\"; mở/đóng dialog không gọi backend; không submit."
     },
     {
       "name": "Giảm giá subscription qua Shopify sau khi duyệt",
@@ -195,7 +207,11 @@
       "description": "Plan có thể mang sẵn discount trong các trường của plan (Discount Type / Value / Intervals), dùng khi merchant không nhập mã.",
       "kb_refs": [
         "billing-discount-codes#KB-026"
-      ]
+      ],
+      "observed_kb_refs": [
+        "billing-discount-codes#KB-067"
+      ],
+      "refresh_note": "Staging: cả 4 plan có discount_type / discount_value / discount_intervals null."
     }
   ],
   "state_transitions": [
@@ -237,6 +253,16 @@
       "kb_refs": [
         "billing-discount-codes#KB-024"
       ]
+    },
+    {
+      "from": "Dialog \"Apply discount code\" ô trống (nút \"Apply discount\" disabled)",
+      "to": "(chưa quan sát — không nhập mã)",
+      "trigger": "Merchant gõ mã",
+      "condition": "OBSERVED_CURRENT staging chỉ trạng thái ô trống.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "billing-discount-codes#KB-067"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -267,6 +293,9 @@
       "rule": "Khi chọn plan trả phí, merchant có thể kèm billing discount để được giảm giá hoặc thêm ngày trial.",
       "kb_refs": [
         "billing-discount-codes#KB-004"
+      ],
+      "refresh_kb_refs": [
+        "billing-discount-codes#KB-067"
       ]
     },
     {
@@ -412,7 +441,20 @@
       ]
     }
   ],
-  "observed_behavior": [],
+  "observed_behavior": [
+    {
+      "behavior": "Pricing staging: \"Have a discount code?\" → \"Enter here\" mở dialog \"Apply discount code\" (nhãn + textbox \"Enter discount code\", nút \"Check\", ghi chú \"Please note that a code can only be applied one time. New code will override the current discount.\", \"Cancel\", \"Apply discount\" disabled khi ô trống); mở/đóng dialog không gọi backend Mysbox; URL Pricing không có tham số code; 4 plan có discount_* null. Không thử Check/Apply.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-plans-billing-04",
+      "kb_refs": [
+        "billing-discount-codes#KB-067"
+      ]
+    }
+  ],
   "observed_validations": [],
   "permissions": [
     {
@@ -437,6 +479,9 @@
           "billing-discount-codes#KB-004",
           "billing-discount-codes#KB-050",
           "billing-discount-codes#KB-051"
+        ],
+        "observed_kb_refs": [
+          "billing-discount-codes#KB-067"
         ]
       },
       {
@@ -448,6 +493,13 @@
           "billing-discount-codes#KB-055",
           "billing-discount-codes#KB-056"
         ]
+      },
+      {
+        "item": "Dialog \"Apply discount code\" (Check / Apply discount) cuối trang Pricing — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "billing-discount-codes#KB-067"
+        ]
       }
     ],
     "storefront": [],
@@ -457,6 +509,13 @@
         "kb_refs": [
           "billing-discount-codes#KB-028",
           "billing-discount-codes#KB-031"
+        ]
+      },
+      {
+        "item": "Dữ liệu plan nhúng (discount_type / discount_value / discount_intervals) — staging; mở dialog không gọi API",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "billing-discount-codes#KB-067"
         ]
       }
     ],
@@ -485,6 +544,9 @@
         "item": "Trường discount mang sẵn trong plan",
         "kb_refs": [
           "billing-discount-codes#KB-026"
+        ],
+        "observed_kb_refs": [
+          "billing-discount-codes#KB-067"
         ]
       }
     ],
@@ -542,6 +604,14 @@
         "billing-discount-codes#KB-044",
         "billing-discount-codes#KB-045"
       ]
+    },
+    {
+      "risk": "Ghi chú dialog \"New code will override the current discount.\" — áp mã mới có thể thay mã/discount đang có; quy tắc thay thế chưa có oracle.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "billing-discount-codes#KB-067",
+        "billing-discount-codes#KB-026"
+      ]
     }
   ],
   "limitations": [
@@ -564,10 +634,18 @@
         "billing-discount-codes#KB-045",
         "billing-discount-codes#KB-046"
       ]
+    },
+    {
+      "limitation": "Staging chỉ mở dialog, không submit mã; admin panel NOT_COVERED.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "billing-discount-codes#KB-067"
+      ]
     }
   ],
   "freshness": {
-    "observed_at": null
+    "observed_at": "2026-10-17",
+    "base_observed_at": null
   },
   "unknown_areas": [
     {
@@ -580,7 +658,11 @@
         "billing-discount-codes#KB-051"
       ],
       "conflict_group": "CONF-plans-billing-04",
-      "oq_id": "OQ-plans-billing-003"
+      "oq_id": "OQ-plans-billing-003",
+      "refresh_note": "Staging có ô nhập mã trên Pricing (dialog \"Apply discount code\") — KB-067, UNRESOLVED. Đường đi của mã tới tham số code không quan sát (không submit). OQ type CONFLICT — không gỡ.",
+      "refresh_kb_refs": [
+        "billing-discount-codes#KB-067"
+      ]
     },
     {
       "question": "Mỗi điều kiện từ chối có thông điệp riêng (\"Out of discount code\" chỉ cho hết lượt, \"not active\", \"not been applied yet\" / \"expired\", \"has been used\"), hay \"Out of discount code\" hiển thị cho nhiều điều kiện?",
@@ -639,7 +721,11 @@
       "kb_refs": [
         "billing-discount-codes#KB-026"
       ],
-      "oq_id": "OQ-plans-billing-018"
+      "oq_id": "OQ-plans-billing-018",
+      "refresh_note": "Staging: dialog ghi \"New code will override the current discount.\" (KB-067) — gợi ý thay thế nhưng chưa thử, không phải oracle.",
+      "refresh_kb_refs": [
+        "billing-discount-codes#KB-067"
+      ]
     },
     {
       "question": "Giới hạn hợp lệ của Value (percentage > 100, amount lớn hơn giá plan, âm), Extra trial days, Intervals âm?",
@@ -681,10 +767,20 @@
         "billing-discount-codes#KB-058"
       ],
       "oq_id": "OQ-plans-billing-023"
+    },
+    {
+      "question": "Nút \"Check\" trong dialog \"Apply discount code\" gọi endpoint nào, trả gì cho mã hợp lệ / bị từ chối, và \"Apply discount\" đưa mã vào luồng chọn plan (tham số code) thế nào?",
+      "why_it_matters": "UI nhập mã đã thấy trên staging (KB-067) nhưng hành vi kiểm/áp mã chưa có quan sát hay oracle.",
+      "kb_refs": [
+        "billing-discount-codes#KB-067",
+        "billing-discount-codes#KB-028",
+        "billing-discount-codes#KB-031"
+      ],
+      "oq_id": "OQ-plans-billing-140"
     }
   ],
   "last_updated": {
-    "date": "2026-10-16",
+    "date": "2026-10-17",
     "ccr_ref": "bootstrap"
   },
   "coverage_matrix": [
@@ -759,6 +855,35 @@
       "state": "extend trial (id = 1) trên production",
       "environment": "documented",
       "covered": false
+    },
+    {
+      "feature_id": "FEAT-07-billing-discount-codes",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "dialog Apply discount code, ô trống (không submit)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "billing-discount-codes#KB-067"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-billing-discount-codes",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "Check / Apply mã, thông điệp từ chối",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: policy không submit mã / không đổi plan."
+    },
+    {
+      "feature_id": "FEAT-07-billing-discount-codes",
+      "layer": "admin_panel",
+      "role": "admin",
+      "state": "any",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED theo config."
     }
   ],
   "profile_conflicts": [
@@ -770,7 +895,13 @@
         "billing-discount-codes#KB-050",
         "billing-discount-codes#KB-051"
       ],
-      "resolution": "UNRESOLVED"
+      "resolution": "UNRESOLVED",
+      "observation_notes": [
+        {
+          "kb_ref": "billing-discount-codes#KB-067",
+          "note": "Staging: Pricing có dialog \"Apply discount code\" — nghiêng phía KB-050/KB-051 (có ô nhập), trái KB-049. Item mới mang UNRESOLVED; không phân xử."
+        }
+      ]
     },
     {
       "conflict_group": "CONF-plans-billing-05",

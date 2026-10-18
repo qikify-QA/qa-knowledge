@@ -58,6 +58,14 @@
         "pool-refill#KB-022",
         "pool-refill#KB-021"
       ]
+    },
+    {
+      "role": "merchant (staging, quan sát)",
+      "permission_observed": "OBSERVED_CURRENT staging/gói Free: buyback khoá (\"Upgrade subscription plan to use this feature. It is not available on Free and Early-bird plan.\"), không có mục refill trong form — không thao tác refill được.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "pool-refill#KB-053"
+      ]
     }
   ],
   "entry_points": [
@@ -69,6 +77,10 @@
         "pool-refill#KB-009",
         "pool-refill#KB-014",
         "pool-refill#KB-015"
+      ],
+      "refresh_note": "Staging gói Free: mục này không hiện ở form nào (KB-053, observed-absent/plan-gated).",
+      "refresh_kb_refs": [
+        "pool-refill#KB-053"
       ]
     },
     {
@@ -117,7 +129,11 @@
         "pool-refill#KB-018",
         "pool-refill#KB-023",
         "pool-refill#KB-037"
-      ]
+      ],
+      "observed_kb_refs": [
+        "pool-refill#KB-053"
+      ],
+      "refresh_note": "Observed-absent trên gói Free; không phải bằng chứng capability không tồn tại."
     },
     {
       "name": "AUTO — trả item về pool ngay sau resell",
@@ -396,6 +412,17 @@
       "kb_refs": [
         "pool-refill#KB-017"
       ]
+    },
+    {
+      "behavior": "Shop gói Free: checkbox \"Enable buyback for this box\" và ô \"Buyback limit time\" (24 hours) disabled kèm \"Upgrade subscription plan to use this feature. It is not available on Free and Early-bird plan.\"; không có mục \"When items are resold by customers:\" hay lựa chọn refill AUTO/MANUAL ở form Single (single item, group có/không item), Bundle, General Settings; trang khách luôn nhận resellable/exists = false.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 4,
+      "confidence": "LOW",
+      "note": "Observed-absent, plan-gated — không chứng minh refill không tồn tại. Chạm CONF-box-04/05 nhưng không phân xử (xem profile_conflicts).",
+      "kb_refs": [
+        "pool-refill#KB-053"
+      ]
     }
   ],
   "observed_validations": [],
@@ -423,6 +450,13 @@
         "pool-refill#KB-002",
         "pool-refill#KB-031",
         "pool-refill#KB-051"
+      ]
+    },
+    {
+      "statement": "Shop staging hiện ở gói Free: buyback/resell khoá nên mọi check refill cần shop gói trả phí có box Group pool.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "pool-refill#KB-053"
       ]
     }
   ],
@@ -456,6 +490,14 @@
         "pool-refill#KB-021",
         "pool-refill#KB-022"
       ]
+    },
+    {
+      "permission": "Buyback (điều kiện trước của resell/refill) khoá trên gói Free và Early-bird (quan sát staging)",
+      "role": "merchant",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "pool-refill#KB-053"
+      ]
     }
   ],
   "surface_mapping": {
@@ -473,6 +515,13 @@
         "kb_refs": [
           "pool-refill#KB-017",
           "pool-refill#KB-018"
+        ]
+      },
+      {
+        "element": "\"Enable buyback for this box\" / \"Buyback limit time\" disabled + thông báo upgrade gói — staging gói Free",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "pool-refill#KB-053"
         ]
       }
     ],
@@ -496,6 +545,16 @@
         "kb_refs": [
           "pool-refill#KB-024",
           "pool-refill#KB-022"
+        ]
+      },
+      {
+        "element": "GET /apps/mysbox/api/orders/{shopify_order_id}/resellable/exists → {\"data\": false} (gói Free)",
+        "method": "GET",
+        "route": "/apps/mysbox/api/orders/{shopify_order_id}/resellable/exists",
+        "host": "<MYS_STORE_DOMAIN> app proxy",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "pool-refill#KB-053"
         ]
       }
     ],
@@ -562,6 +621,14 @@
       "kb_refs": [
         "pool-refill#KB-045"
       ]
+    },
+    {
+      "feature_key": "plans-billing (gói)",
+      "reason": "Quan sát staging: buyback khoá trên Free/Early-bird, nên refill phụ thuộc gói",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "pool-refill#KB-053"
+      ]
     }
   ],
   "risks": [
@@ -590,10 +657,18 @@
         "pool-refill#KB-052",
         "pool-refill#KB-020"
       ]
+    },
+    {
+      "risk": "Môi trường test hiện tại (gói Free) không cho kiểm refill — toàn bộ feature thiếu bằng chứng runtime.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "pool-refill#KB-053"
+      ]
     }
   ],
   "freshness": {
-    "observed_at": null
+    "observed_at": "2026-10-16",
+    "base_observed_at": null
   },
   "unknown_areas": [
     {
@@ -619,7 +694,11 @@
         "pool-refill#KB-013",
         "pool-refill#KB-005"
       ],
-      "oq_id": "OQ-box-005"
+      "oq_id": "OQ-box-005",
+      "refresh_note": "Staging gói Free không hiện option nào liên quan (KB-053) — không có evidence cho phía nào; quan sát staging 2026-10-16 được ghi bổ sung vào OQ-box-005.",
+      "refresh_kb_refs": [
+        "pool-refill#KB-053"
+      ]
     },
     {
       "question": "Ở kiểu MANUAL, ai áp dụng bộ đệm: merchant có cách tự áp dụng không, hay chỉ Mysbox team/support qua API?",
@@ -628,7 +707,11 @@
         "pool-refill#KB-021",
         "pool-refill#KB-022"
       ],
-      "oq_id": "OQ-box-006"
+      "oq_id": "OQ-box-006",
+      "refresh_note": "Không thấy thao tác áp dụng bộ đệm trong portal merchant gói Free (KB-053); quan sát staging 2026-10-16 được ghi bổ sung vào OQ-box-006.",
+      "refresh_kb_refs": [
+        "pool-refill#KB-053"
+      ]
     },
     {
       "question": "Khi nào cơ chế khớp theo queue token và bản sửa lượt refill bị mất lên production, và hành vi refill trên staging khi box đổi version giữa lúc bốc và lúc resell là gì?",
@@ -716,6 +799,14 @@
         "pool-refill#KB-047"
       ],
       "oq_id": "OQ-box-087"
+    },
+    {
+      "question": "Mục refill (\"When items are resold by customers:\") hiện ở gói nào / điều kiện nào; shop test nào (gói trả phí, có box Group pool, bật buyback) dùng được để kiểm refill?",
+      "why_it_matters": "Gói Free khoá buyback và không hiện mục refill (KB-053); không có môi trường để lập bằng chứng runtime cho feature.",
+      "kb_refs": [
+        "pool-refill#KB-053"
+      ],
+      "oq_id": "OQ-box-102"
     }
   ],
   "last_updated": {
@@ -770,11 +861,78 @@
       "state": "khớp theo queue token",
       "environment": "staging-only (chưa lên production)",
       "covered": false
+    },
+    {
+      "feature_id": "FEAT-06-pool-refill",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "gói Free (buyback khoá, mục refill vắng)",
+      "environment": "staging",
+      "covered": true,
+      "note": "Chỉ observed-absent.",
+      "kb_refs": [
+        "pool-refill#KB-053"
+      ]
+    },
+    {
+      "feature_id": "FEAT-06-pool-refill",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "box Group pool + refill AUTO/MANUAL",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: resell/buyback/refill khoá trên Free, không có box TIER."
+    },
+    {
+      "feature_id": "FEAT-06-pool-refill",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "resell → refill",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: resellable/exists false."
+    },
+    {
+      "feature_id": "FEAT-06-pool-refill",
+      "layer": "api",
+      "role": "support / admin-staff",
+      "state": "MANUAL, áp dụng bộ đệm",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED."
+    },
+    {
+      "feature_id": "FEAT-06-pool-refill",
+      "layer": "db",
+      "role": "system",
+      "state": "bộ đệm / queue token",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: db surface tắt."
+    },
+    {
+      "feature_id": "FEAT-06-pool-refill",
+      "layer": "code",
+      "role": "system",
+      "state": "job AUTO / backfill",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: code surface tắt; lệnh vận hành ngoài surface."
+    },
+    {
+      "feature_id": "FEAT-06-pool-refill",
+      "layer": "admin_panel",
+      "role": "admin-staff",
+      "state": "any",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: admin panel tắt."
     }
   ],
   "profile_conflicts": [
     {
       "conflict_group": "CONF-box-03",
+      "status": "UNRESOLVED",
       "topic": "Sửa box (vẫn ở pool) giữa lúc mua và lúc resell có làm mất lượt trả item về pool không",
       "side_a_kb_refs": [
         "pool-refill#KB-038",
@@ -791,6 +949,7 @@
     },
     {
       "conflict_group": "CONF-box-04",
+      "status": "UNRESOLVED",
       "topic": "Điều kiện 'tự dừng khi cạn' để refill áp dụng",
       "side_a_kb_refs": [
         "pool-refill#KB-011",
@@ -799,10 +958,17 @@
       "side_b_kb_refs": [
         "pool-refill#KB-013"
       ],
-      "resolution": "UNRESOLVED"
+      "resolution": "UNRESOLVED",
+      "observation_notes": [
+        {
+          "kb_ref": "pool-refill#KB-053",
+          "note": "Quan sát staging 2026-10-16: gói Free không hiện option refill/deactivate/draft-when-empty/pool; không có evidence cho phía nào. Không dùng làm rule; ghi bổ sung vào OQ-box-005."
+        }
+      ]
     },
     {
       "conflict_group": "CONF-box-05",
+      "status": "UNRESOLVED",
       "topic": "Ai áp dụng bộ đệm refill ở kiểu MANUAL",
       "side_a_kb_refs": [
         "pool-refill#KB-021"
@@ -810,10 +976,17 @@
       "side_b_kb_refs": [
         "pool-refill#KB-022"
       ],
-      "resolution": "UNRESOLVED"
+      "resolution": "UNRESOLVED",
+      "observation_notes": [
+        {
+          "kb_ref": "pool-refill#KB-053",
+          "note": "Quan sát staging 2026-10-16: không thấy lựa chọn AUTO/MANUAL hay thao tác áp dụng bộ đệm trong portal gói Free; không có evidence cho phía nào. Không dùng làm rule; ghi bổ sung vào OQ-box-006."
+        }
+      ]
     },
     {
       "conflict_group": "CONF-admin-panel-01",
+      "status": "UNRESOLVED",
       "topic": "Số lệnh vận hành chỉ có trên staging",
       "side_a_kb_refs": [
         "background-jobs-and-queue-monitoring#KB-021"

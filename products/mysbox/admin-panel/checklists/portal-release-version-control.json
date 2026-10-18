@@ -2,7 +2,7 @@
   "feature_id": "FEAT-07-portal-release-version-control",
   "feature_key": "portal-release-version-control",
   "object_id": "admin-panel",
-  "checklist_version": "1",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -149,7 +149,8 @@
       "open_question_draft": "Giá trị Customer Portal Resource gắn với tài nguyên nào của trang khách trên storefront (tên file hay tham số nào thay đổi theo giá trị), để kiểm được trang khách đã tải đúng bản mới sau khi đổi?",
       "related_kb_ids": [
         "portal-release-version-control#KB-002",
-        "portal-release-version-control#KB-003"
+        "portal-release-version-control#KB-003",
+        "portal-release-version-control#KB-014"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -223,7 +224,8 @@
       "open_question_draft": "Khi trang proxy của khách bị cache bản cũ sau release, trang my orders / unbox hiển thị lỗi gì (trang trắng, 404 hay đẩy sang đăng nhập)? Đổi Customer Portal Resource có phải cách khắc phục chuẩn không, hay cần thêm bước xoá cache khác?",
       "related_kb_ids": [
         "portal-release-version-control#KB-011",
-        "portal-release-version-control#KB-009"
+        "portal-release-version-control#KB-009",
+        "portal-release-version-control#KB-014"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -309,6 +311,84 @@
       "priority": "P1",
       "automation_suitability": "SUITABLE",
       "oq_id": "OQ-admin-panel-095"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "PERMISSION",
+      "layer": "storefront",
+      "title": "Trang khách /apps/mysbox/orders mở khi không có danh tính khách: chuyển sang trang đăng nhập tài khoản khách của Shopify",
+      "applicability": {
+        "role": "khách vãng lai (chưa đăng nhập)",
+        "state": "không có session tài khoản khách, URL không có tham số parameters",
+        "environment": "staging",
+        "surface_or_device": "storefront /apps/mysbox/orders (trình duyệt ẩn danh, tab Network)"
+      },
+      "precondition": "Trình duyệt ẩn danh, chưa đăng nhập tài khoản khách của shop test; mở tab Network.",
+      "steps": [
+        "Mở https://<MYS_STORE_DOMAIN>/apps/mysbox/orders (không thêm ?parameters=).",
+        "Ghi request đầu tiên (redirect) và trang cuối cùng hiển thị."
+      ],
+      "observation_point": "Redirect trong Network; nội dung trang hiển thị.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Server redirect sang trang đăng nhập tài khoản khách của Shopify (shopify.com/authentication/<shop_id>/login): tiêu đề \"Sign in\", \"Sign in or create an account\", \"Continue with Shop\", ô \"Email\", nút \"Continue\", \"Privacy policy\"; không có nội dung Mysbox, không 404, không trang trắng.",
+      "oracle": {
+        "kb_ids": [
+          "portal-release-version-control#KB-012"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging (1 lần, trang danh sách đơn): khách không có danh tính bị chuyển sang trang đăng nhập Shopify. Trang chi tiết đơn /apps/mysbox/orders/<id> không có parameters hoặc có parameters thiếu thông tin thì phản hồi thế nào, và đây có phải hành vi mong đợi cho mọi trang khách không?",
+      "related_kb_ids": [
+        "portal-release-version-control#KB-011",
+        "portal-release-version-control#KB-013"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Khách không mở được trang đơn/unbox"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-admin-panel-096"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "Asset trang khách trên staging: tên file, tham số version và cache — chưa có oracle",
+      "applicability": {
+        "role": "khách (magic link đơn test)",
+        "state": "mở trang khách của một đơn test",
+        "environment": "staging",
+        "surface_or_device": "storefront /apps/mysbox/orders/{id}/winner (tab Network, View source)"
+      },
+      "precondition": "Có link trang khách của một đơn test (từ trang cảm ơn); mở tab Network.",
+      "steps": [
+        "Mở trang khách của đơn.",
+        "Trong HTML trang (app proxy), tìm các khối mount của trang khách và tham chiếu tới file JS/CSS của trang khách; ghi host, tên file, có tham số version (?v=) không, và HTML có giá trị version nào không.",
+        "Trong Network, ghi header cache-control, etag, last-modified của file JS trang khách."
+      ],
+      "observation_point": "HTML app proxy; host, tên và header của asset trang khách.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Host phục vụ asset trang khách trên staging (nằm ngoài expected_api_base) có phải host hợp lệ của staging không, và production dùng host nào? Trên môi trường có version, Customer Portal Resource đổi phần nào của tham chiếu asset (tên file hay tham số), và thời gian cache mong đợi của asset trang khách là bao lâu?",
+      "related_kb_ids": [
+        "portal-release-version-control#KB-014",
+        "portal-release-version-control#KB-007",
+        "portal-release-version-control#KB-008",
+        "portal-release-version-control#KB-009",
+        "portal-release-version-control#KB-010"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Kiểm hiệu lực Customer Portal Resource trên staging không đại diện cho production"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-admin-panel-097"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -329,8 +409,10 @@
       "check_ids": [
         "CHK-001",
         "CHK-004",
-        "CHK-007"
-      ]
+        "CHK-007",
+        "CHK-010"
+      ],
+      "note": "CHK-010 chưa có oracle (host asset trang khách chưa xác nhận)."
     },
     {
       "feature_id": "FEAT-07-portal-release-version-control",
@@ -356,12 +438,20 @@
       "check_ids": [
         "CHK-008"
       ]
+    },
+    {
+      "feature_id": "FEAT-07-portal-release-version-control",
+      "capability_or_risk": "Truy cập trang khách khi không có danh tính",
+      "check_ids": [
+        "CHK-009"
+      ],
+      "note": "staging, chỉ trang danh sách đơn"
     }
   ],
   "excluded_dimensions": [
     {
       "dimension": "REGRESSION",
-      "reason": "Không có base đã publish để so và không có item KNOWN_DEFECT trong shard của feature."
+      "reason": "Shard REFRESH chỉ thêm quan sát staging (KB-012..KB-014) không khác base; shard không có item KNOWN_DEFECT."
     }
   ],
   "last_updated": {

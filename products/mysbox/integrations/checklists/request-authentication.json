@@ -2,7 +2,7 @@
   "feature_id": "FEAT-01-request-authentication",
   "feature_key": "request-authentication",
   "object_id": "integrations",
-  "checklist_version": "1",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -39,7 +39,8 @@
       "open_question_draft": "Luồng portal nhúng gửi session token trong mỗi lời gọi API và chỉ cho đi tiếp với shop đã cài app, có quyền hợp lệ đã được xác nhận bằng một test case chạy PASS chưa? Nếu chưa, ai chạy và trên build nào?",
       "related_kb_ids": [
         "request-authentication#KB-001",
-        "request-authentication#KB-002"
+        "request-authentication#KB-002",
+        "request-authentication#KB-016"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -231,7 +232,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Việc Mysbox chỉ dùng shop xác định từ session token (bỏ qua shop/tài nguyên của shop khác trong tham số) đã được xác nhận bằng test case chạy PASS chưa?",
       "related_kb_ids": [
-        "request-authentication#KB-006"
+        "request-authentication#KB-006",
+        "request-authentication#KB-016"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -383,7 +385,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Luồng block trang cảm ơn / trạng thái đơn gọi Mysbox API bằng tên shop (không chữ ký) và chỉ nhận dữ liệu khi đơn tồn tại ở Shopify đã được xác nhận bằng test case chạy PASS chưa?",
       "related_kb_ids": [
-        "request-authentication#KB-001"
+        "request-authentication#KB-001",
+        "request-authentication#KB-018"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -456,7 +459,8 @@
       "open_question_draft": "Khi request từ extension (không ký) mang tên một shop nhưng mã đơn thuộc shop khác, Mysbox có kiểm đơn thuộc đúng shop đó không, và phản hồi thế nào?",
       "related_kb_ids": [
         "request-authentication#KB-013",
-        "request-authentication#KB-014"
+        "request-authentication#KB-014",
+        "request-authentication#KB-018"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -502,6 +506,45 @@
       "priority": "P1",
       "automation_suitability": "SUITABLE",
       "oq_id": "OQ-integrations-003"
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Trang đơn hàng của khách (app proxy /apps/mysbox) gọi API kèm header customer-token và customer-id, không có authorization",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "khách vào trang đơn bằng magic link của một đơn đã thanh toán",
+        "environment": "staging",
+        "surface_or_device": "trang khách /apps/mysbox (app proxy) + DevTools Network"
+      },
+      "precondition": "Có magic link của một đơn test đã thanh toán có box digital; mở DevTools Network trước khi mở link.",
+      "steps": [
+        "Mở magic link; thực hiện thao tác mở box trên trang khách.",
+        "Lọc các request /apps/mysbox/api/*; ghi tên các header (không ghi giá trị), query và status.",
+        "So tham số trên URL trang với tham số gửi trên request API."
+      ],
+      "observation_point": "Header, query và status của các request /apps/mysbox/api/*; URL trang.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Mọi request /apps/mysbox/api/* (box-versions, translations, shopify/product-variants, unopened-boxes/open, orders/{id}, orders/{id}/resellable/exists) mang header \"customer-token\" và \"customer-id\", không có authorization/JWT, query chỉ gồm tham số chức năng, đều trả 200. Tham số \"parameters\" trên URL trang (JSON base64, không ký) không được gửi lại trên request API. Cách server kiểm customer-token và phản hồi khi token sai chưa có baseline — không thử trên staging dùng chung nếu không có shop test riêng.",
+      "oracle": {
+        "kb_ids": [
+          "request-authentication#KB-017"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Trên staging, trang đơn hàng của khách xác thực API bằng header customer-token + customer-id qua app proxy. Server kiểm customer-token thế nào (gắn với đơn hay khách nào, hết hạn khi nào) và trả gì khi token sai, thiếu hoặc thuộc khách khác?",
+      "related_kb_ids": [
+        "request-authentication#KB-001",
+        "request-authentication#KB-002"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Trang khách xác thực bằng customer-token; phản hồi khi token sai chưa biết"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-integrations-031"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -547,7 +590,16 @@
         "CHK-012"
       ],
       "coverage": "PARTIAL",
-      "note": "Cross-tenant (tên shop A + đơn shop B) chưa có oracle → CHK-012 NONE."
+      "note": "Cross-tenant (tên shop A + đơn shop B) chưa có oracle → CHK-012 NONE. Quan sát staging KB-018 không dùng làm oracle (host chưa xác nhận)."
+    },
+    {
+      "feature_id": "FEAT-01-request-authentication",
+      "item": "capability: Xác thực trang đơn hàng của khách (app proxy)",
+      "check_ids": [
+        "CHK-014"
+      ],
+      "coverage": "PARTIAL",
+      "note": "Baseline staging cho header customer-token / customer-id; nhánh token sai chưa quan sát."
     },
     {
       "feature_id": "FEAT-01-request-authentication",
@@ -571,7 +623,7 @@
     },
     {
       "feature_id": "FEAT-01-request-authentication",
-      "item": "gap: Xác thực trang đơn hàng của khách, banner 'Unbox alert', hai endpoint affiliate",
+      "item": "gap: banner 'Unbox alert', hai endpoint affiliate",
       "check_ids": [],
       "coverage": "GAP",
       "note": "Không có kb_id trong shard; không sinh check để tránh oracle bịa. Đã nằm trong unknown_areas của profile."

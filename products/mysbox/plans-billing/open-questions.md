@@ -1,6 +1,6 @@
 # Open Questions — plans-billing
 
-Tổng: 131 mục (CONFLICT 14 · OPEN_ISSUE 68 · NEEDS_CONFIRMATION 49). Sinh từ bootstrap DOC_BOOTSTRAP đầu tiên của Mysbox (nguồn: bộ Product KB v1 do dev viết từ source code, 2026-10-16). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
+Tổng: 146 mục (CONFLICT 16 · OPEN_ISSUE 71 · NEEDS_CONFIRMATION 59). Sinh từ bootstrap DOC_BOOTSTRAP đầu tiên của Mysbox (nguồn: bộ Product KB v1 do dev viết từ source code, 2026-10-16); REFRESH trên staging 2026-10-17 thêm mục mới, ghi `staging_observation` (OBSERVED_CURRENT, không resolve NEEDS_CONFIRMATION/CONFLICT). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
 
 ## OQ-plans-billing-001 — NEEDS_CONFIRMATION
 
@@ -53,7 +53,12 @@ Tổng: 131 mục (CONFLICT 14 · OPEN_ISSUE 68 · NEEDS_CONFIRMATION 49). Sinh 
   ],
   "check_ids": [
     "billing-discount-codes:CHK-021"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-plans-billing-003 / CONF-plans-billing-04: 2026-10-17: Staging có ô nhập mã trên Pricing: \"Have a discount code?\" → dialog \"Apply discount code\" (textbox, Check, Apply discount). Không submit mã nên đường đi của mã tới tham số code không quan sát.",
+  "staging_observation_kb_ids": [
+    "billing-discount-codes#KB-067"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -179,7 +184,14 @@ Tổng: 131 mục (CONFLICT 14 · OPEN_ISSUE 68 · NEEDS_CONFIRMATION 49). Sinh 
   "kb_ids": [
     "plan-capacity-and-cycle#KB-052",
     "plan-capacity-and-cycle#KB-057"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-plans-billing-009 / CONF-plans-billing-08: 2026-10-17: Có catalog thật của staging (Free 10, Nitro $24.9/100, Booster $114.9/500, Prime $299.9); Prime tự mâu thuẫn 400 vs 1500 (mở CONF-plans-billing-22). Không phải catalog production.",
+  "staging_observation_kb_ids": [
+    "plan-capacity-and-cycle#KB-082",
+    "plan-capacity-and-cycle#KB-083",
+    "plan-capacity-and-cycle#KB-084"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -201,7 +213,12 @@ Tổng: 131 mục (CONFLICT 14 · OPEN_ISSUE 68 · NEEDS_CONFIRMATION 49). Sinh 
   ],
   "check_ids": [
     "plan-capacity-and-cycle:CHK-008"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-plans-billing-010 / CONF-plans-billing-20: 2026-10-17: Staging, exclude_test_order true: một đơn Bogus test không làm tăng Box sales limit (0/10 → 0/10, box_sold_in_cycle 0). Một mẫu; preview order không thử.",
+  "staging_observation_kb_ids": [
+    "plan-capacity-and-cycle#KB-085"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -467,7 +484,12 @@ Tổng: 131 mục (CONFLICT 14 · OPEN_ISSUE 68 · NEEDS_CONFIRMATION 49). Sinh 
   "kb_ids": [
     "capacity-limit-enforcement#KB-007",
     "capacity-limit-enforcement#KB-008"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-plans-billing-026: 2026-10-17: Config storefront có subscription Free và capabilities {over_capacity false, capacity_expires_at 2025-07-30}; widget render. Hành vi khi over_capacity true/hết hạn không quan sát; giá trị lệch merchant (CONF-plans-billing-21).",
+  "staging_observation_kb_ids": [
+    "capacity-limit-enforcement#KB-046"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -689,7 +711,12 @@ Tổng: 131 mục (CONFLICT 14 · OPEN_ISSUE 68 · NEEDS_CONFIRMATION 49). Sinh 
   "kb_ids": [
     "daily-usage-charge-and-charge-status#KB-005",
     "daily-usage-charge-and-charge-status#KB-021"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-plans-billing-040: 2026-10-17: Phía client shop Free không có object/request charge hay recurring nào; bản ghi Charge phía server không quan sát được.",
+  "staging_observation_kb_ids": [
+    "daily-usage-charge-and-charge-status#KB-087"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -734,7 +761,13 @@ Tổng: 131 mục (CONFLICT 14 · OPEN_ISSUE 68 · NEEDS_CONFIRMATION 49). Sinh 
   "kb_ids": [
     "plan-capacity-and-cycle#KB-016",
     "plan-capacity-and-cycle#KB-019"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-plans-billing-043: 2026-10-17: Chỉ có một mốc capacity_expires_at (ISO UTC \"Z\") và timezone shop America/New_York; UI không hiện ngày; hành vi quanh ranh giới không chờ được.",
+  "staging_observation_kb_ids": [
+    "plan-capacity-and-cycle#KB-086",
+    "plan-capacity-and-cycle#KB-087"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -777,7 +810,12 @@ Tổng: 131 mục (CONFLICT 14 · OPEN_ISSUE 68 · NEEDS_CONFIRMATION 49). Sinh 
   "kb_ids": [
     "plan-capacity-and-cycle#KB-030",
     "plan-capacity-and-cycle#KB-031"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-plans-billing-046: 2026-10-17: Merchant không thấy control Exclude Test Order ở portal; exclude_test_order true trong dữ liệu; app không gắn nhãn test cho đơn Bogus. Màn chứa control (admin panel) và tiêu chí nhận biết đơn test không quan sát.",
+  "staging_observation_kb_ids": [
+    "plan-capacity-and-cycle#KB-088"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -806,7 +844,12 @@ Tổng: 131 mục (CONFLICT 14 · OPEN_ISSUE 68 · NEEDS_CONFIRMATION 49). Sinh 
   "summary": "Badge \"7 - days free trial\" là số cố định hay lấy từ số ngày trial của plan? — Kiểm hiển thị badge với plan có số ngày trial khác 7.",
   "kb_ids": [
     "plan-capacity-and-cycle#KB-043"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-plans-billing-048: 2026-10-17: Không thẻ nào có badge trial; cả 4 plan trial_days 0. Loại trừ được badge cố định hiện mọi thẻ, nhưng không phân biệt được chữ cố định hay theo số ngày khi trial > 0 (staging không có plan như vậy). | 2026-10-17: Staging không có plan nào trial_days > 0 — không có dữ liệu test cho badge trial trên staging.",
+  "staging_observation_kb_ids": [
+    "plan-upgrade-downgrade-cancel#KB-114"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -1116,7 +1159,12 @@ Tổng: 131 mục (CONFLICT 14 · OPEN_ISSUE 68 · NEEDS_CONFIRMATION 49). Sinh 
   "summary": "Badge \"7 - days free trial\" là số cố định hay lấy từ số ngày trial của plan? — Kiểm hiển thị badge với plan có số ngày trial khác 7.",
   "kb_ids": [
     "plan-upgrade-downgrade-cancel#KB-006"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-plans-billing-068: 2026-10-17: Như OQ-plans-billing-048: không badge, trial_days 0 mọi plan; câu hỏi cố định hay theo plan chưa trả lời được trên staging.",
+  "staging_observation_kb_ids": [
+    "plan-upgrade-downgrade-cancel#KB-114"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -1706,7 +1754,15 @@ Tổng: 131 mục (CONFLICT 14 · OPEN_ISSUE 68 · NEEDS_CONFIRMATION 49). Sinh 
     "plan-capacity-and-cycle:CHK-019",
     "plan-capacity-and-cycle:CHK-020",
     "plan-capacity-and-cycle:CHK-023"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-plans-billing-105: 2026-10-17: CHK-001 Free $0 \"Selected\"; CHK-007 không có control Exclude Test Order; CHK-023 Settings > Plan \"Development store\"; used 0/10 trước và sau 1 đơn test. Các CHK khác không quan sát; không thay authority.",
+  "staging_observation_kb_ids": [
+    "plan-capacity-and-cycle#KB-082",
+    "plan-capacity-and-cycle#KB-085",
+    "plan-capacity-and-cycle#KB-088",
+    "plan-capacity-and-cycle#KB-089"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1809,7 +1865,12 @@ Tổng: 131 mục (CONFLICT 14 · OPEN_ISSUE 68 · NEEDS_CONFIRMATION 49). Sinh 
   "summary": "Badge trial \"7 - days free trial\" trên thẻ plan là chữ cố định hay lấy theo số ngày trial của plan? Plan không có trial thì có hiện badge không?",
   "check_ids": [
     "plan-upgrade-downgrade-cancel:CHK-003"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-plans-billing-112: 2026-10-17: Plan không có trial (cả 4, kể cả Free) không hiện badge; chữ cố định hay theo số ngày trial chưa phân biệt được.",
+  "staging_observation_kb_ids": [
+    "plan-upgrade-downgrade-cancel#KB-114"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1928,7 +1989,12 @@ Tổng: 131 mục (CONFLICT 14 · OPEN_ISSUE 68 · NEEDS_CONFIRMATION 49). Sinh 
   "kb_ids": [
     "promote-codes#KB-075",
     "promote-codes#KB-076"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-plans-billing-119: 2026-10-17: Không thấy UI hay request promote code nào trong portal staging; kênh thực tế (support/giao diện khác) vẫn cần Dev/PO.",
+  "staging_observation_kb_ids": [
+    "promote-codes#KB-077"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -2022,7 +2088,12 @@ Tổng: 131 mục (CONFLICT 14 · OPEN_ISSUE 68 · NEEDS_CONFIRMATION 49). Sinh 
   "summary": "Merchant đổi promote code qua kênh nào: tự nhập trong portal, hay support đổi giúp qua một giao diện khác? Ai là người thực hiện đổi mã và thông điệp từ chối hiển thị cho merchant ở đâu?",
   "check_ids": [
     "promote-codes:CHK-026"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-plans-billing-124: 2026-10-17: Merchant không có chỗ nhập promote code hay thông điệp từ chối trên các màn đã duyệt; ai đổi mã và ở đâu vẫn cần PO.",
+  "staging_observation_kb_ids": [
+    "promote-codes#KB-077"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -2133,6 +2204,313 @@ Tổng: 131 mục (CONFLICT 14 · OPEN_ISSUE 68 · NEEDS_CONFIRMATION 49). Sinh 
   "summary": "Khi một plan có cả phí mỗi box và bộ tham số value-tiered, hệ thống chọn cách tính nào và dựa trên trường hay cờ nào của plan?",
   "check_ids": [
     "usage-fee-pricing:CHK-015"
+  ]
+}
+```
+
+## OQ-plans-billing-132 — CONFLICT
+
+```json
+{
+  "oq_id": "OQ-plans-billing-132",
+  "type": "CONFLICT",
+  "feature_id": "plan-capacity-and-cycle",
+  "summary": "Cùng shop staging, cùng ngày: merchant app trả capacity_expires_at 2026-10-23T04:58:05Z, còn config storefront (_Mysbox.capabilities) có 2025-07-30T04:58:05Z (over_capacity false, widget vẫn render). Giá trị nào là nguồn đúng, storefront có đang giữ metafield capabilities cũ không, và widget dùng capacity_expires_at thế nào?",
+  "side_a": "Quan sát KB-087: dữ liệu nhúng merchant app capacity_expires_at \"2026-10-23T04:58:05.000000Z\" (09:26Z và 10:09Z).",
+  "side_b": "Quan sát KB-046: script#mysbox-config render capabilities.capacity_expires_at \"2025-07-30T04:58:05.000000Z\".",
+  "conflict_group": "CONF-plans-billing-21",
+  "kb_ids": [
+    "plan-capacity-and-cycle#KB-087",
+    "capacity-limit-enforcement#KB-046"
+  ],
+  "related_oq_ids": [
+    "OQ-plans-billing-026",
+    "OQ-plans-billing-043",
+    "OQ-storefront-widget-007"
+  ],
+  "tags": [
+    "staging-observed"
+  ],
+  "check_ids": [
+    "plan-capacity-and-cycle:CHK-028"
+  ]
+}
+```
+
+## OQ-plans-billing-133 — CONFLICT
+
+```json
+{
+  "oq_id": "OQ-plans-billing-133",
+  "type": "CONFLICT",
+  "feature_id": "plan-capacity-and-cycle",
+  "summary": "Plan Prime trên staging tự mâu thuẫn: box_selling_capacity 400 (UI \"Free 400 boxes sales/month\", \"from the 401st\") nhưng description/terms/feature ghi \"Free 1500 boxes sales/month\", \"from the 1501st\". Quota Prime đúng là bao nhiêu và terms nào được gửi Shopify khi merchant chọn Prime?",
+  "side_a": "Quan sát KB-083: Prime capacity 400, UI hiển thị 400/401st.",
+  "side_b": "Quan sát KB-084: Prime description/terms/feature 1500/1501st.",
+  "conflict_group": "CONF-plans-billing-22",
+  "kb_ids": [
+    "plan-capacity-and-cycle#KB-083",
+    "plan-capacity-and-cycle#KB-084"
+  ],
+  "related_oq_ids": [
+    "OQ-plans-billing-009"
+  ],
+  "tags": [
+    "staging-observed"
+  ],
+  "check_ids": [
+    "plan-capacity-and-cycle:CHK-027"
+  ]
+}
+```
+
+## OQ-plans-billing-134 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-plans-billing-134",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "daily-usage-charge-and-charge-status",
+  "summary": "Staging: shop Free không có dữ liệu charge/recurring phía client. Phía server, shop Free có bản ghi Charge/Recurring giá 0 nào không, và merchant có màn hình nào trong app để xem lịch sử charge không?",
+  "kb_ids": [
+    "daily-usage-charge-and-charge-status#KB-087"
+  ],
+  "check_ids": [
+    "daily-usage-charge-and-charge-status:CHK-019"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-plans-billing-135 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-plans-billing-135",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "plan-capacity-and-cycle",
+  "summary": "Catalog staging (1 lần đọc): Free 10 / Nitro 100 / Booster 500 box mỗi tháng, phí vượt 2% (min $0.25), không có plan năm, không có trial, không có Early-bird. Catalog production có giống không, và Free 10 box có phải hạn mức production?",
+  "kb_ids": [
+    "plan-capacity-and-cycle#KB-082"
+  ],
+  "check_ids": [
+    "plan-capacity-and-cycle:CHK-024"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-plans-billing-136 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-plans-billing-136",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "plan-capacity-and-cycle",
+  "summary": "Staging: merchant không thấy ngày chu kỳ ở đâu; dữ liệu chỉ có capacity_expires_at. capacity_expires_at có phải mốc kết thúc chu kỳ quota không, và merchant nên xem ngày reset ở đâu?",
+  "kb_ids": [
+    "plan-capacity-and-cycle#KB-086"
+  ],
+  "check_ids": [
+    "plan-capacity-and-cycle:CHK-025"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-plans-billing-137 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-plans-billing-137",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "plan-capacity-and-cycle",
+  "summary": "Staging: merchant không phân biệt được đơn test trong Manage orders. App nhận biết đơn test theo tiêu chí nào, và merchant có cần thấy nhãn đơn test không?",
+  "kb_ids": [
+    "plan-capacity-and-cycle#KB-088"
+  ],
+  "check_ids": [
+    "plan-capacity-and-cycle:CHK-026"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-plans-billing-138 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-plans-billing-138",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "usage-fee-pricing",
+  "summary": "Staging: mọi plan trả phí tính phí value-tiered 2% (min $0.25, ngưỡng $12.50), không có phí theo box cố định, cap 10000. Cấu hình production có giống không, và ngưỡng $12.50 có khớp mức min $0.25 / 2% như thiết kế không?",
+  "kb_ids": [
+    "usage-fee-pricing#KB-060"
+  ],
+  "check_ids": [
+    "usage-fee-pricing:CHK-017"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-plans-billing-139 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-plans-billing-139",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "usage-fee-pricing",
+  "summary": "Staging (1 lần đọc, giá trị mặc định): công cụ ước tính đề xuất Booster với $489.90/tháng. Công thức ước tính là gì (có dùng đúng phí value-tiered của plan không) để QA kiểm được với giá trị khác mặc định?",
+  "kb_ids": [
+    "usage-fee-pricing#KB-060"
+  ],
+  "check_ids": [
+    "usage-fee-pricing:CHK-018"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-plans-billing-140 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-plans-billing-140",
+  "type": "OPEN_ISSUE",
+  "feature_id": "billing-discount-codes",
+  "summary": "Nút \"Check\" trong dialog \"Apply discount code\" gọi endpoint nào, trả gì cho mã hợp lệ / bị từ chối, và \"Apply discount\" đưa mã vào luồng chọn plan (tham số code) thế nào? — UI nhập mã đã thấy trên staging (KB-067) nhưng hành vi kiểm/áp mã chưa có quan sát hay oracle.",
+  "kb_ids": [
+    "billing-discount-codes#KB-067",
+    "billing-discount-codes#KB-028",
+    "billing-discount-codes#KB-031"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-plans-billing-141 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-plans-billing-141",
+  "type": "OPEN_ISSUE",
+  "feature_id": "capacity-limit-enforcement",
+  "summary": "Widget dùng capacity_expires_at thế nào khi giá trị đã ở quá khứ nhưng over_capacity false (widget vẫn render)? — KB-046: capacity_expires_at 2025-07-30 đã qua mà widget vẫn hiện; điều kiện 'chu kỳ chưa kết thúc' của KB-009 cần cách đọc giá trị này.",
+  "kb_ids": [
+    "capacity-limit-enforcement#KB-046",
+    "capacity-limit-enforcement#KB-009"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-plans-billing-142 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-plans-billing-142",
+  "type": "OPEN_ISSUE",
+  "feature_id": "usage-fee-pricing",
+  "summary": "Công cụ \"Estimate your app charge\" tính \"Estimated monthly cost\" và \"Recommended plan\" theo công thức nào (giá plan + phí value-tiered với ngưỡng/min fee)? — Có một mẫu staging ($489.90 với 10 USD × 2000) nhưng không suy được công thức; không có oracle cho công cụ ước tính.",
+  "kb_ids": [
+    "usage-fee-pricing#KB-060",
+    "usage-fee-pricing#KB-039"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-plans-billing-143 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-plans-billing-143",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "capacity-limit-enforcement",
+  "summary": "Quan sát staging mới chạm vùng rủi ro cao (quyền truy cập / tiền / billing): subscription/capabilities render trên trang product (storefront). Item là OBSERVED_CURRENT; cần PO xác nhận đây là hành vi dự kiến trước khi dùng làm expected result.",
+  "kb_ids": [
+    "capacity-limit-enforcement#KB-046"
+  ],
+  "tags": [
+    "staging-observed",
+    "risk-flag"
+  ]
+}
+```
+
+## OQ-plans-billing-144 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-plans-billing-144",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "plan-capacity-and-cycle",
+  "summary": "Quan sát staging mới chạm vùng rủi ro cao (quyền truy cập / tiền / billing): Catalog plan trên Pricing staging (Free, Nitro, Booster); Thẻ Prime hiển thị 400 box theo box_selling_capacity; Mô tả/terms của plan Prime ghi 1500 box; Thẻ Box sales limit và dữ liệu chu kỳ phía merchant; capacity_expires_at phía merchant app. Item là OBSERVED_CURRENT; cần PO xác nhận đây là hành vi dự kiến trước khi dùng làm expected result.",
+  "kb_ids": [
+    "plan-capacity-and-cycle#KB-082",
+    "plan-capacity-and-cycle#KB-083",
+    "plan-capacity-and-cycle#KB-084",
+    "plan-capacity-and-cycle#KB-086",
+    "plan-capacity-and-cycle#KB-087"
+  ],
+  "tags": [
+    "staging-observed",
+    "risk-flag"
+  ]
+}
+```
+
+## OQ-plans-billing-145 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-plans-billing-145",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "plan-upgrade-downgrade-cancel",
+  "summary": "Quan sát staging mới chạm vùng rủi ro cao (quyền truy cập / tiền / billing): Thẻ plan trên Pricing staging: không badge trial, không tab năm. Item là OBSERVED_CURRENT; cần PO xác nhận đây là hành vi dự kiến trước khi dùng làm expected result.",
+  "kb_ids": [
+    "plan-upgrade-downgrade-cancel#KB-114"
+  ],
+  "tags": [
+    "staging-observed",
+    "risk-flag"
+  ]
+}
+```
+
+## OQ-plans-billing-146 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-plans-billing-146",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "usage-fee-pricing",
+  "summary": "Quan sát staging mới chạm vùng rủi ro cao (quyền truy cập / tiền / billing): Cấu hình phí box vượt của các plan trả phí trên staging và công cụ ước tính. Item là OBSERVED_CURRENT; cần PO xác nhận đây là hành vi dự kiến trước khi dùng làm expected result.",
+  "kb_ids": [
+    "usage-fee-pricing#KB-060"
+  ],
+  "tags": [
+    "staging-observed",
+    "risk-flag"
   ]
 }
 ```

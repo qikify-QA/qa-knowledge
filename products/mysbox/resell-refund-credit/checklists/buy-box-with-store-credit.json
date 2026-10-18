@@ -2,7 +2,7 @@
   "feature_id": "FEAT-05-buy-box-with-store-credit",
   "feature_key": "buy-box-with-store-credit",
   "object_id": "resell-refund-credit",
-  "checklist_version": "1",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -1149,6 +1149,45 @@
       "priority": "P1",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-resell-refund-credit-010"
+    },
+    {
+      "check_id": "CHK-031",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "Khách vãng lai, box không bật store credit: block \"Buy box by store credit\" không hiện gì và không chặn Add to cart",
+      "applicability": {
+        "role": "khách chưa đăng nhập",
+        "state": "box Active không bật store credit; Koin chưa cấu hình; block \"Buy box by store credit\" đã đặt",
+        "environment": "staging",
+        "surface_or_device": "storefront trang sản phẩm + DevTools"
+      },
+      "precondition": "Box Active chưa bật \"Allow purchase with store credit\"; shop chưa cấu hình Koin; block \"Buy box by store credit\" có trên product template; trình duyệt chưa đăng nhập; mở DevTools.",
+      "steps": [
+        "Mở trang sản phẩm của box.",
+        "Kiểm vùng block \"Buy box by store credit\": nội dung hiển thị, kích thước, custom element mysbox-inject-buy-by-store-credit và shadowRoot của nó.",
+        "Kiểm form product của theme có thuộc tính mysbox-data-embed không.",
+        "Bấm Add to cart; ghi request POST /cart/add và response /cart.js (item_count, properties)."
+      ],
+      "observation_point": "Vùng block store credit; form product; request giỏ hàng.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Block mount nhưng không hiện gì (innerText rỗng, kích thước 0x0; custom element có shadowRoot open chứa một div rỗng); form product được gắn mysbox-data-embed=true; nút Add to cart vẫn bật, bấm thì POST /cart/add 200 thêm box × 1 (không có properties[...]) và /cart.js trả item_count 1, properties {}.",
+      "oracle": {
+        "kb_ids": [
+          "buy-box-with-store-credit#KB-069"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging (1 mẫu, khách vãng lai, box không bật store credit): block store credit không render và không chặn Add to cart. Block chặn Add to cart / Buy now trong điều kiện nào (box chỉ bán bằng store credit, khách đăng nhập)?",
+      "related_kb_ids": [
+        "buy-box-with-store-credit#KB-015",
+        "buy-box-with-store-credit#KB-024",
+        "buy-box-with-store-credit#KB-034"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-resell-refund-credit-096"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1175,10 +1214,11 @@
         "CHK-016",
         "CHK-017",
         "CHK-018",
-        "CHK-019"
+        "CHK-019",
+        "CHK-031"
       ],
       "coverage": "PARTIAL",
-      "note": "Khoá/ẩn khi số dư thấp và điều kiện chặn của block chưa có oracle."
+      "note": "Khoá/ẩn khi số dư thấp và điều kiện chặn của block chưa có oracle; staging chỉ thấy nhánh khách vãng lai + box không bật store credit (CHK-031)."
     },
     {
       "feature_id": "FEAT-05-buy-box-with-store-credit",

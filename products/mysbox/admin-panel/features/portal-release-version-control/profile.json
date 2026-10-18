@@ -1,6 +1,7 @@
 {
   "feature_id": "FEAT-07-portal-release-version-control",
   "feature_key": "portal-release-version-control",
+  "object_id": "admin-panel",
   "name": "Embedded Version và Customer Portal Resource — đúng bản portal sau release",
   "user_goal": "Engineer đổi giá trị Embedded Version / Customer Portal Resource trên admin panel để mọi merchant (portal nhúng) và mọi khách (trang khách trên storefront) tải đúng bản portal mới sau release; khi merchant hay khách vẫn thấy bản cũ do cache, đây là đường xử lý.",
   "user_goal_kb_refs": [
@@ -36,7 +37,12 @@
       "kb_refs": [
         "portal-release-version-control#KB-009",
         "portal-release-version-control#KB-011"
-      ]
+      ],
+      "observed_kb_refs": [
+        "portal-release-version-control#KB-012",
+        "portal-release-version-control#KB-014"
+      ],
+      "refresh_note": "Staging: khách vãng lai mở /apps/mysbox/orders không ?parameters= bị redirect sang đăng nhập Shopify; trang khách (magic link) tải asset mysbox-proxy.js/css tên cố định."
     }
   ],
   "entry_points": [
@@ -54,6 +60,15 @@
       "kb_refs": [
         "portal-release-version-control#KB-002",
         "_object-level.admin-panel#KB-013"
+      ]
+    },
+    {
+      "path": "Storefront › /apps/mysbox/orders (không danh tính) và /apps/mysbox/orders/{id}/winner (magic link) — staging",
+      "precondition": "Khách vãng lai; có / không có ?parameters=.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "portal-release-version-control#KB-012",
+        "portal-release-version-control#KB-014"
       ]
     }
   ],
@@ -79,7 +94,11 @@
         "portal-release-version-control#KB-003",
         "portal-release-version-control#KB-009",
         "portal-release-version-control#KB-010"
-      ]
+      ],
+      "observed_kb_refs": [
+        "portal-release-version-control#KB-014"
+      ],
+      "refresh_note": "Staging: trang khách tham chiếu staging-proxy.mysbox.io/assets/mysbox-proxy.js|css tên cố định, không ?v=/version trong HTML; không đối chiếu được với giá trị Customer Portal Resource (admin panel NOT_COVERED)."
     },
     {
       "name": "Xử lý merchant/khách vẫn thấy bản cũ sau release",
@@ -90,7 +109,12 @@
         "portal-release-version-control#KB-002",
         "portal-release-version-control#KB-004",
         "portal-release-version-control#KB-009"
-      ]
+      ],
+      "observed_kb_refs": [
+        "portal-release-version-control#KB-012",
+        "portal-release-version-control#KB-014"
+      ],
+      "refresh_note": "Staging: mysbox-proxy.js cache-control max-age=86400, etag/last-modified; trang danh sách đơn không danh tính → redirect đăng nhập (không 404/trắng). Trường hợp cache cũ không quan sát."
     }
   ],
   "state_transitions": [
@@ -126,6 +150,16 @@
         "portal-release-version-control#KB-002",
         "portal-release-version-control#KB-009",
         "portal-release-version-control#KB-010"
+      ]
+    },
+    {
+      "from": "Khách vãng lai mở /apps/mysbox/orders (không ?parameters=)",
+      "to": "Trang đăng nhập customer account Shopify (\"Sign in\")",
+      "trigger": "Server redirect (opaqueredirect)",
+      "condition": "OBSERVED_CURRENT staging, 1 lần; chỉ trang danh sách đơn.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "portal-release-version-control#KB-012"
       ]
     }
   ],
@@ -170,7 +204,11 @@
       "rule": "Trên staging tên file portal không gắn version nên màn Embedded Version ít tác dụng.",
       "kb_refs": [
         "portal-release-version-control#KB-007"
-      ]
+      ],
+      "refresh_kb_refs": [
+        "portal-release-version-control#KB-014"
+      ],
+      "refresh_note": "Staging (trang khách): asset mysbox-proxy.js/css cũng tên cố định, không version — cùng hướng với rule (rule nói về portal merchant)."
     },
     {
       "rule": "Trên production file portal có dạng mysbox.<version>.js.",
@@ -197,7 +235,42 @@
       ]
     }
   ],
-  "observed_behavior": [],
+  "observed_behavior": [
+    {
+      "behavior": "Khách vãng lai mở https://<MYS_STORE_DOMAIN>/apps/mysbox/orders (không ?parameters=): server redirect (3xx, fetch opaqueredirect) sang shopify.com/authentication/<shop_id>/login — \"Sign in\", \"Sign in or create an account\", \"Continue with Shop\", ô \"Email\", \"Continue\"; không nội dung Mysbox, không 404, không trang trắng.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "portal-release-version-control#KB-012"
+      ]
+    },
+    {
+      "behavior": "Request do explorer TỰ DỰNG GET /apps/mysbox/api/orders?page=1&limit=10 (không ?parameters=, không customer-token) trả 401 {\"message\":\"Unauthenticated.\"}. Không phải request app phát — không dùng làm oracle.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "explorer_constructed": true,
+      "kb_refs": [
+        "portal-release-version-control#KB-013"
+      ]
+    },
+    {
+      "behavior": "Trang khách /apps/mysbox/orders/{id}/winner (magic link): HTML app proxy có div#mysbox-cp-modals, div#mysbox-customer-portal, window._MCP {customerId, token (redact), orderId, isLoggedIn, boxStatus, variantId, path}; tham chiếu staging-proxy.mysbox.io/assets/mysbox-proxy.js (module) và mysbox-proxy.css tên cố định, không ?v=/version; mysbox-proxy.js etag W/\"6ad099fd-67e56\", last-modified 15 Oct 2026 09:16:45 GMT, cache-control max-age=86400; widget bundle cùng trang version theo extension staging-mysbox-388. Host ngoài expected_api_base.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "tags": [
+        "host_not_in_expected_api_base"
+      ],
+      "kb_refs": [
+        "portal-release-version-control#KB-014"
+      ]
+    }
+  ],
   "observed_validations": [],
   "permissions": [
     {
@@ -210,6 +283,14 @@
       "permission": "Merchant và khách không bao giờ thấy admin panel.",
       "kb_refs": [
         "_object-level.admin-panel#KB-003"
+      ]
+    },
+    {
+      "permission": "Trang khách / API đơn của khách đòi danh tính: trang danh sách đơn đẩy sang đăng nhập Shopify; API trả 401 cho request không danh tính (request explorer dựng).",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "portal-release-version-control#KB-012",
+        "portal-release-version-control#KB-013"
       ]
     }
   ],
@@ -248,10 +329,50 @@
           "portal-release-version-control#KB-009",
           "portal-release-version-control#KB-011",
           "_product-level#KB-PL-026"
+        ],
+        "observed_kb_refs": [
+          "portal-release-version-control#KB-012",
+          "portal-release-version-control#KB-014"
+        ]
+      },
+      {
+        "item": "Asset trang khách staging-proxy.mysbox.io/assets/mysbox-proxy.js|css (tên cố định, max-age=86400); window._MCP — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "portal-release-version-control#KB-014"
         ]
       }
     ],
-    "api": [],
+    "api": [
+      {
+        "item": "GET /apps/mysbox/orders (document app proxy; redirect đăng nhập khi không danh tính) — staging",
+        "method": "GET",
+        "route": "/apps/mysbox/orders · /apps/mysbox/orders/{id}/winner",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "portal-release-version-control#KB-012",
+          "portal-release-version-control#KB-014"
+        ]
+      },
+      {
+        "item": "GET staging-proxy.mysbox.io/assets/mysbox-proxy.js — staging (host ngoài expected_api_base)",
+        "method": "GET",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "portal-release-version-control#KB-014"
+        ]
+      },
+      {
+        "item": "GET /apps/mysbox/api/orders (401 cho request explorer dựng, không danh tính) — staging, không phải oracle",
+        "method": "GET",
+        "route": "/apps/mysbox/api/orders",
+        "basis": "OBSERVED_CURRENT",
+        "explorer_constructed": true,
+        "kb_refs": [
+          "portal-release-version-control#KB-013"
+        ]
+      }
+    ],
     "data": [
       {
         "item": "Giá trị Embedded Version / Customer Portal Resource (mặc định: thời điểm tải đầu tiên)",
@@ -270,6 +391,10 @@
       "kb_refs": [
         "portal-release-version-control#KB-009",
         "portal-release-version-control#KB-011"
+      ],
+      "observed_kb_refs": [
+        "portal-release-version-control#KB-012",
+        "portal-release-version-control#KB-014"
       ]
     },
     {
@@ -292,6 +417,14 @@
       "kb_refs": [
         "portal-release-version-control#KB-005"
       ]
+    },
+    {
+      "risk": "Asset trang khách staging tên cố định với max-age=86400 — khách có thể giữ bản cũ tới 24 giờ sau release nếu không có cơ chế version (chưa đối chiếu được với Customer Portal Resource).",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "portal-release-version-control#KB-014",
+        "portal-release-version-control#KB-011"
+      ]
     }
   ],
   "limitations": [
@@ -301,10 +434,20 @@
         "portal-release-version-control#KB-007",
         "portal-release-version-control#KB-008"
       ]
+    },
+    {
+      "limitation": "Admin panel NOT_COVERED: chỉ quan sát gián tiếp từ trang khách/network; host staging-proxy.mysbox.io chờ operator xác nhận; KB-013 là request explorer tự dựng.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "portal-release-version-control#KB-012",
+        "portal-release-version-control#KB-013",
+        "portal-release-version-control#KB-014"
+      ]
     }
   ],
   "freshness": {
-    "observed_at": null
+    "observed_at": "2026-10-17",
+    "base_observed_at": null
   },
   "unknown_areas": [
     {
@@ -331,7 +474,11 @@
         "portal-release-version-control#KB-008",
         "portal-release-version-control#KB-009"
       ],
-      "oq_id": "OQ-admin-panel-092"
+      "oq_id": "OQ-admin-panel-092",
+      "refresh_note": "Staging: asset trang khách là mysbox-proxy.js/css tên cố định trên staging-proxy.mysbox.io, HTML không có ?v=/version; không đối chiếu được với giá trị Customer Portal Resource; production chưa quan sát. OQ type NEEDS_CONFIRMATION — không gỡ.",
+      "refresh_kb_refs": [
+        "portal-release-version-control#KB-014"
+      ]
     },
     {
       "question": "Với từng nguyên nhân trang khách lỗi (chưa đăng nhập + link thiếu danh tính, shop tắt, đơn của khách khác, cache cũ), trang trả 404, trang trắng hay đẩy sang đăng nhập?",
@@ -339,17 +486,33 @@
       "kb_refs": [
         "portal-release-version-control#KB-011"
       ],
-      "oq_id": "OQ-admin-panel-061"
+      "oq_id": "OQ-admin-panel-061",
+      "refresh_note": "Staging chỉ phủ case 'chưa đăng nhập + không ?parameters=' trên trang danh sách đơn: redirect sang đăng nhập customer account Shopify (KB-012). 401 của API là request explorer tự dựng (KB-013, không oracle). Shop tắt, đơn khách khác, cache cũ, /orders/<id> không parameters: NOT_OBSERVED → chưa trả lời đầy đủ, không gỡ.",
+      "refresh_kb_refs": [
+        "portal-release-version-control#KB-012",
+        "portal-release-version-control#KB-013"
+      ]
     },
     {
       "question": "Tài liệu không nêu route/endpoint hay bảng dữ liệu nào cho Embedded Version / Customer Portal Resource.",
       "why_it_matters": "Không kiểm được contract API hay dữ liệu lưu.",
       "kb_refs": [],
       "oq_id": "OQ-admin-panel-062"
+    },
+    {
+      "question": "Host staging-proxy.mysbox.io phục vụ asset trang khách có phải host hợp lệ của staging (ngoài expected_api_base) không, và production dùng host nào?",
+      "why_it_matters": "KB-014 tag host_not_in_expected_api_base; ảnh hưởng việc dùng quan sát này cho check môi trường.",
+      "kb_refs": [
+        "portal-release-version-control#KB-014"
+      ],
+      "oq_id": "OQ-admin-panel-098",
+      "relates_to_existing_oq": [
+        "OQ-reveal-050"
+      ]
     }
   ],
   "last_updated": {
-    "date": "2026-10-16",
+    "date": "2026-10-17",
     "ccr_ref": "bootstrap"
   },
   "coverage_matrix": [
@@ -424,6 +587,46 @@
       "state": "any",
       "environment": "documented",
       "covered": false
+    },
+    {
+      "feature_id": "FEAT-07-portal-release-version-control",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "/apps/mysbox/orders không danh tính (redirect đăng nhập)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "portal-release-version-control#KB-012"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-portal-release-version-control",
+      "layer": "storefront",
+      "role": "guest buyer (magic link)",
+      "state": "asset trang khách (tên, cache header)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "portal-release-version-control#KB-014"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-portal-release-version-control",
+      "layer": "admin_panel",
+      "role": "admin-staff",
+      "state": "any",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED theo config."
+    },
+    {
+      "feature_id": "FEAT-07-portal-release-version-control",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "shop tắt / đơn khách khác / cache cũ / /orders/<id> không parameters",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_OBSERVED (URL tampering cấm)."
     }
   ],
   "profile_conflicts": [],

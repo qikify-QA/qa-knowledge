@@ -2,7 +2,7 @@
   "feature_id": "FEAT-02-prizes-added-to-order",
   "feature_key": "prizes-added-to-order",
   "object_id": "order-draw",
-  "checklist_version": "1",
+  "checklist_version": "3",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -39,7 +39,8 @@
         "prizes-added-to-order#KB-021",
         "prizes-added-to-order#KB-024",
         "prizes-added-to-order#KB-025",
-        "_object-level.order-draw#KB-005"
+        "_object-level.order-draw#KB-005",
+        "prizes-added-to-order#KB-077"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -85,7 +86,10 @@
       "related_kb_ids": [
         "prizes-added-to-order#KB-072",
         "prizes-added-to-order#KB-073",
-        "prizes-added-to-order#KB-040"
+        "prizes-added-to-order#KB-040",
+        "prizes-added-to-order#KB-076",
+        "prizes-added-to-order#KB-079",
+        "prizes-added-to-order#KB-080"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -124,7 +128,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Có test case đã chạy PASS xác nhận rằng Multi-unbox thêm quà vào đơn theo cùng điều kiện như Unbox đơn lẻ (chỉ khi là box cuối và cửa sổ resell đã hết) không?",
       "related_kb_ids": [
-        "prizes-added-to-order#KB-068"
+        "prizes-added-to-order#KB-068",
+        "prizes-added-to-order#KB-077"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -164,7 +169,9 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Có test case đã chạy PASS xác nhận rằng đơn nhiều box mới mở một phần thì chưa có quà nào được thêm vào đơn Shopify và đơn ở lại QUEUED không?",
-      "related_kb_ids": [],
+      "related_kb_ids": [
+        "prizes-added-to-order#KB-077"
+      ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
         "Quà phải vào đơn để merchant fulfil"
@@ -400,7 +407,8 @@
       "open_question_draft": "Khi merchant mở box thủ công (\"Open all boxes\" ở portal hoặc \"Unbox all boxes\" ở trang đơn Shopify admin), quà được thêm vào đơn ngay hay vẫn chờ cửa sổ resell hết như khi khách mở?",
       "related_kb_ids": [
         "prizes-added-to-order#KB-015",
-        "prizes-added-to-order#KB-016"
+        "prizes-added-to-order#KB-016",
+        "prizes-added-to-order#KB-081"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -1008,7 +1016,8 @@
       "open_question_draft": null,
       "related_kb_ids": [
         "prizes-added-to-order#KB-027",
-        "prizes-added-to-order#KB-028"
+        "prizes-added-to-order#KB-028",
+        "prizes-added-to-order#KB-078"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -1045,7 +1054,10 @@
         "prizes-added-to-order#KB-028",
         "prizes-added-to-order#KB-029",
         "prizes-added-to-order#KB-030",
-        "prizes-added-to-order#KB-031"
+        "prizes-added-to-order#KB-031",
+        "prizes-added-to-order#KB-078",
+        "prizes-added-to-order#KB-081",
+        "prizes-added-to-order#KB-082"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -1061,7 +1073,7 @@
       "applicability": {
         "role": "merchant",
         "state": "đơn có phí ship và thuế; quà được thêm vào đơn",
-        "environment": "documented",
+        "environment": "staging",
         "surface_or_device": "Shopify admin — trang đơn (ship, thuế, tổng)"
       },
       "precondition": "Store tính phí ship và thuế; một đơn digital đã bốc; ghi lại phí ship, thuế và tổng đơn.",
@@ -1070,10 +1082,13 @@
         "So sánh phí ship, thuế và tổng đơn trước và sau."
       ],
       "observation_point": "Phí ship, thuế và tổng đơn trên Shopify admin.",
-      "expected_result": "",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Với thuế VAT 10% và ship Standard Free, sau khi thêm dòng quà giá 0 thì Subtotal, Taxes và Total của đơn không đổi. Trường hợp phí ship khác 0 chưa có baseline.",
       "oracle": {
-        "kb_ids": [],
-        "oracle_strength": "NONE"
+        "kb_ids": [
+          "prizes-added-to-order#KB-076",
+          "prizes-added-to-order#KB-080"
+        ],
+        "oracle_strength": "BASELINE"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Khi app thêm dòng quà giá 0 vào đơn, Shopify có tính lại phí ship hoặc thuế của đơn không?",
@@ -1088,6 +1103,125 @@
       "priority": "P2",
       "automation_suitability": "SUITABLE",
       "oq_id": "OQ-order-draw-049"
+    },
+    {
+      "check_id": "CHK-029",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "Trang đơn của khách hiện dòng quà với giảm giá MYSBOX và TOTAL SAVINGS sau khi quà vào đơn",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "đơn box digital no-buyback đã mở hết, quà đã vào đơn Shopify",
+        "environment": "staging",
+        "surface_or_device": "storefront — trang đơn / order status của khách"
+      },
+      "precondition": "Đơn test có box no-buyback; khách đã mở hết box và quà đã vào đơn Shopify.",
+      "steps": [
+        "Khách mở trang order status của đơn.",
+        "Đọc các dòng quà, giá và phần tổng."
+      ],
+      "observation_point": "Dòng quà, nhãn giảm giá, tổng tiền trên trang đơn của khách.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Mỗi quà là một dòng riêng quantity 1 với giá gốc và giá cuối ₫0, nhãn giảm giá dạng \"MYSBOX (-₫<giá gốc>)\"; trang hiện thêm \"TOTAL SAVINGS\"; tổng đơn không đổi.",
+      "oracle": {
+        "kb_ids": [
+          "prizes-added-to-order#KB-076"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "prizes-added-to-order#KB-018",
+        "prizes-added-to-order#KB-019",
+        "prizes-added-to-order#KB-020"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-order-draw-061"
+    },
+    {
+      "check_id": "CHK-030",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "General Settings: Buyback limit time mặc định 24 hours tính từ lúc tạo đơn, khoá trên gói Free / Early-bird",
+      "applicability": {
+        "role": "merchant",
+        "state": "shop gói Free (lượt khác: gói trả phí nếu có)",
+        "environment": "staging",
+        "surface_or_device": "portal (General Settings, form box › Enable buyback)"
+      },
+      "precondition": "Đăng nhập app merchant của shop gói Free.",
+      "steps": [
+        "Mở General Settings → \"Buyback limit time\"; ghi label, giá trị, đơn vị, trạng thái control và dòng ghi chú.",
+        "Mở form box; ghi trạng thái checkbox \"Enable buyback for this box\" và dòng ghi chú."
+      ],
+      "observation_point": "Mục \"Buyback limit time\" và checkbox \"Enable buyback for this box\".",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Label \"Duration for customers to resell from order is created\", spinbutton disabled giá trị \"24\" đơn vị \"hours\" kèm \"Upgrade subscription plan to use this feature. It is not available on Free and Early-bird plan.\"; checkbox \"Enable buyback for this box\" trong form box cũng disabled với cùng dòng nâng gói.",
+      "oracle": {
+        "kb_ids": [
+          "prizes-added-to-order#KB-083"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging: cửa sổ resell (\"Buyback limit time\") mặc định 24 giờ và được mô tả là tính \"from order is created\". Cửa sổ resell — mốc mà quà chờ trước khi vào đơn — bắt đầu từ lúc tạo đơn hay lúc khách mở box, và giá trị cho phép trên gói trả phí là bao nhiêu?",
+      "related_kb_ids": [
+        "prizes-added-to-order#KB-007",
+        "prizes-added-to-order#KB-066",
+        "_object-level.order-draw#KB-011",
+        "_object-level.order-draw#KB-012"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Thêm quà trước khi hết cửa sổ resell có thể sai lệch với resell"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-order-draw-071"
+    },
+    {
+      "check_id": "CHK-031",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Một lần sửa đơn và một email \"order edited\" mỗi đơn sau box cuối; đơn chỉ có box sealed không có sự kiện sửa đơn",
+      "applicability": {
+        "role": "merchant / customer",
+        "state": "box no-buyback; đơn nhiều box digital mở bằng Unbox + Multi-unbox, đơn merchant Unbox, đơn chỉ box Sealed",
+        "environment": "staging",
+        "surface_or_device": "Shopify admin — timeline đơn"
+      },
+      "precondition": "Ba đơn test: (a) 3 box digital, khách mở bằng Unbox ×2 rồi Multi-unbox ×1; (b) đơn có box digital do merchant bấm \"Unbox\" ở Manage orders; (c) đơn chỉ có box Sealed.",
+      "steps": [
+        "Sau khi mở hết box của đơn (a), xem timeline đơn trên Shopify admin; đếm sự kiện \"edited this order\" và \"sent an order edited email\".",
+        "Lặp lại với đơn (b) sau khi merchant Unbox.",
+        "Xem timeline của đơn (c)."
+      ],
+      "observation_point": "Số và thời điểm sự kiện sửa đơn / gửi email trong timeline.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Đơn (a) có đúng 1 cặp \"<app> edited this order.\" + \"<app> sent an order edited email to <buyer>\" khoảng 1–2 phút sau box cuối, không có lần sửa riêng cho từng box; đơn (b) có 1 cặp tương tự ngay sau khi merchant Unbox; đơn (c) không có sự kiện sửa đơn.",
+      "oracle": {
+        "kb_ids": [
+          "prizes-added-to-order#KB-081"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging: app sửa đơn một lần (một email \"order edited\") cho cả đơn sau box cuối, kể cả khi mở bằng nhiều cách; đơn chỉ có box sealed không bị sửa. Đây có phải hành vi mong đợi trên mọi đường mở (Flow, auto-unbox, job sync sau cửa sổ resell) không?",
+      "related_kb_ids": [
+        "prizes-added-to-order#KB-002",
+        "prizes-added-to-order#KB-006",
+        "prizes-added-to-order#KB-026",
+        "prizes-added-to-order#KB-077",
+        "reveal-journey#KB-118"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Quà phải vào đơn để merchant fulfil"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-order-draw-072"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1101,10 +1235,12 @@
         "CHK-005",
         "CHK-006",
         "CHK-011",
-        "CHK-012"
+        "CHK-012",
+        "CHK-030",
+        "CHK-031"
       ],
       "covered": true,
-      "gap": null
+      "gap": "Staging chỉ quan sát nhánh box không buyback (quà vào ~1–2 phút sau box cuối, một lần sửa đơn)."
     },
     {
       "feature_id": "FEAT-02-prizes-added-to-order",
@@ -1123,10 +1259,11 @@
       "risk": "Hình dạng dòng quà và tổng đơn (giảm 100% MYSBOX, giá 0, chưa fulfill, ship/thuế)",
       "check_ids": [
         "CHK-002",
-        "CHK-028"
+        "CHK-028",
+        "CHK-029"
       ],
       "covered": true,
-      "gap": "Ship/thuế (CHK-028) oracle NONE."
+      "gap": "Ship khác 0 (CHK-028) chưa có baseline."
     },
     {
       "feature_id": "FEAT-02-prizes-added-to-order",
@@ -1187,10 +1324,11 @@
         "CHK-024",
         "CHK-025",
         "CHK-026",
-        "CHK-027"
+        "CHK-027",
+        "CHK-031"
       ],
       "covered": true,
-      "gap": "CHK-027 oracle NONE do conflict CONF-order-draw-01."
+      "gap": "CHK-027 oracle NONE do conflict CONF-order-draw-01; staging thấy 1 sự kiện sửa đơn + 1 email order edited mỗi đơn (CHK-031)."
     },
     {
       "feature_id": "FEAT-02-prizes-added-to-order",

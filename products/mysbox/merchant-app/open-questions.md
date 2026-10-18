@@ -1,6 +1,6 @@
 # Open Questions — merchant-app
 
-Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh từ bootstrap DOC_BOOTSTRAP đầu tiên của Mysbox (nguồn: bộ Product KB v1 do dev viết từ source code, 2026-10-16). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
+Tổng: 117 mục (CONFLICT 8 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 58). Sinh từ bootstrap DOC_BOOTSTRAP đầu tiên của Mysbox (nguồn: bộ Product KB v1 do dev viết từ source code, 2026-10-16); REFRESH trên staging 2026-10-17 thêm mục mới, ghi `staging_observation` (OBSERVED_CURRENT, không resolve NEEDS_CONFIRMATION/CONFLICT) và gỡ OPEN_ISSUE đã được quan sát trả lời (xem CHANGELOG). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
 
 ## OQ-merchant-app-001 — NEEDS_CONFIRMATION
 
@@ -72,7 +72,12 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   ],
   "check_ids": [
     "dashboard-and-analytics:CHK-025"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-004 / CONF-merchant-app-04: 2026-10-17: Staging gói Free hiện tiêu đề \"Analytics is not available in the Free plan\" + mô tả \"Upgrade your plan to unlock detailed performance insights and analytics.\" + nút \"Upgrade\"; không có \"paid plan required\". Khớp phía KB-052; conflict không tự đóng — orchestrator quyết.",
+  "staging_observation_kb_ids": [
+    "dashboard-and-analytics#KB-070"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -93,7 +98,12 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   ],
   "check_ids": [
     "general-settings:CHK-011"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-005 / CONF-merchant-app-05: 2026-10-17: Ô Buyback limit time khoá trên gói Free: min=\"1\" và placeholder \"e.g., 0.5, 1, 24\" cùng có trên UI; không nhập/lưu thử được nên validation khi lưu chưa biết.",
+  "staging_observation_kb_ids": [
+    "general-settings#KB-059"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; conflict vẫn mở, chưa resolve."
 }
 ```
 
@@ -237,7 +247,13 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
     "dashboard-and-analytics#KB-041",
     "dashboard-and-analytics#KB-042",
     "dashboard-and-analytics#KB-067"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-013: 2026-10-17: Picker không chặn khoảng >180 ngày hay ngày trước ngày tạo shop, không báo lỗi; gói Free không phát request nên phản hồi server (lỗi/cắt/0) không quan sát.",
+  "staging_observation_kb_ids": [
+    "dashboard-and-analytics#KB-075",
+    "dashboard-and-analytics#KB-073"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -267,7 +283,12 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "kb_ids": [
     "dashboard-and-analytics#KB-008",
     "dashboard-and-analytics#KB-051"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-015: 2026-10-17: Shop gói Free: hai con số Analytics center hiện \"-\" (như bốn thẻ), giữ \"-\" khi đổi khoảng ngày; không có response API tương ứng.",
+  "staging_observation_kb_ids": [
+    "dashboard-and-analytics#KB-072"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -282,7 +303,12 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "kb_ids": [
     "dashboard-and-analytics#KB-038",
     "dashboard-and-analytics#KB-039"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-016: 2026-10-17: Ghi được khoảng hiển thị của từng preset (Last week = CN–T7) và hai múi giờ (trình duyệt UTC+7, shop New York); không có request nên không thấy from/to, và cùng ngày lịch nên không phân biệt múi giờ.",
+  "staging_observation_kb_ids": [
+    "dashboard-and-analytics#KB-074"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -326,7 +352,12 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "summary": "Endpoint nào portal gọi để lấy số liệu Dashboard/Analytics và tham số test:false nằm ở đâu trong request? — Không có route thì không kiểm được contract API của analytics.",
   "kb_ids": [
     "dashboard-and-analytics#KB-043"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-019: 2026-10-17: Trên gói Free không có endpoint số liệu nào được gọi (Dashboard chỉ GET /api/boxes...order_by=published_at); endpoint analytics và vị trí test:false chưa quan sát.",
+  "staging_observation_kb_ids": [
+    "dashboard-and-analytics#KB-073"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -340,7 +371,13 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "summary": "Trạng thái extension trên Dashboard có những giá trị nào ngoài \"Active\"? — Chỉ có \"Active\" trong ví dụ; không suy enum được.",
   "kb_ids": [
     "dashboard-and-analytics#KB-014"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-020: 2026-10-17: Chỉ thấy giá trị hiện tại \"Active\" (Theme extension) và \"Installed\" (5 block); không có response Mysbox chứa enum; giá trị khác chưa quan sát. | 2026-10-17: Giá trị trạng thái extension hiện tại \"Active\" ghi ở install-and-onboarding#KB-064 (bảng App extension status thuộc shard đó); enum đầy đủ không quan sát. | 2026-10-17: Trạng thái hiện tại \"Active\" + 5 block Installed; enum khác không quan sát.",
+  "staging_observation_kb_ids": [
+    "install-and-onboarding#KB-064",
+    "install-and-onboarding#KB-065"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -355,7 +392,12 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "kb_ids": [
     "dashboard-and-analytics#KB-010",
     "dashboard-and-analytics#KB-035"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-021: 2026-10-17: \"Recently created\" lấy order_by=published_at (Draft trước, box đã publish theo published_at giảm dần) — mâu thuẫn KB-010, mở CONF-merchant-app-07. Tie-break trong nhóm Draft không ổn định; Top selling boxes khoá trên Free (NOT_COVERED).",
+  "staging_observation_kb_ids": [
+    "dashboard-and-analytics#KB-076"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -369,7 +411,13 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "summary": "Thao tác Delete trong \"Recently created mystery boxes\" có hộp xác nhận không và hệ quả gì với box đã bán? — Hành động phá huỷ cần expected result.",
   "kb_ids": [
     "dashboard-and-analytics#KB-016"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-022: 2026-10-17: Delete mở hộp \"Delete box\" / \"Are you sure you want to delete this box?\" (Cancel/Delete), không nhắc đơn đã bán; Delete bật cả với box Active. Hệ quả xoá box đã bán chưa quan sát (không xoá).",
+  "staging_observation_kb_ids": [
+    "dashboard-and-analytics#KB-078",
+    "dashboard-and-analytics#KB-077"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -434,7 +482,13 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "kb_ids": [
     "general-settings#KB-032",
     "general-settings#KB-033"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-026: 2026-10-17: Form hiện \"Koin\" trong khi GET users/config trả {data:null} — field vắng, mặc định phía server không lộ qua API. Khách vãng lai không thấy block store credit (không tách được nguyên nhân).",
+  "staging_observation_kb_ids": [
+    "general-settings#KB-061",
+    "general-settings#KB-062"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -449,7 +503,12 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "kb_ids": [
     "general-settings#KB-014",
     "general-settings#KB-019"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-027: 2026-10-17: Chỉ trạng thái ban đầu (checkbox tắt, ô ẩn) — KB-058; validation không quan sát (classifier).",
+  "staging_observation_kb_ids": [
+    "general-settings#KB-058"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -522,7 +581,12 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "kb_ids": [
     "general-settings#KB-040",
     "general-settings#KB-041"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-032: 2026-10-17: Shop gói Free: Gacha hiện xám, không chọn được, không badge/tooltip. Gói khác và giá trị cờ enable_gacha_machine chưa quan sát.",
+  "staging_observation_kb_ids": [
+    "general-settings#KB-065"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -688,7 +752,14 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "kb_ids": [
     "install-and-onboarding#KB-048",
     "install-and-onboarding#KB-053"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-043: 2026-10-17: Trạng thái đọc qua Admin GraphQL (file theme settings_data.json/templates/product.json, checkoutProfiles) và 3 cờ localStorage, không qua backend Mysbox; chỉ thấy trạng thái đã cài — hiển thị khi chưa cài chưa quan sát.",
+  "staging_observation_kb_ids": [
+    "install-and-onboarding#KB-064",
+    "install-and-onboarding#KB-065",
+    "install-and-onboarding#KB-066"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -706,20 +777,6 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
 }
 ```
 
-## OQ-merchant-app-045 — OPEN_ISSUE
-
-```json
-{
-  "oq_id": "OQ-merchant-app-045",
-  "type": "OPEN_ISSUE",
-  "feature_id": "install-and-onboarding",
-  "summary": "Hai block checkout trong bảng App extension status có tên nguyên văn là gì? — Cần tên để kiểm huy hiệu Installed/Not Installed.",
-  "kb_ids": [
-    "install-and-onboarding#KB-054"
-  ]
-}
-```
-
 ## OQ-merchant-app-046 — OPEN_ISSUE
 
 ```json
@@ -730,7 +787,12 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "summary": "Ẩn thẻ Setup guide 30 ngày tính theo shop hay chỉ theo trình duyệt, và có cách hiện lại sớm hơn không? — Biên thời gian và phạm vi ẩn của thẻ.",
   "kb_ids": [
     "install-and-onboarding#KB-052"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-046: 2026-10-17: Không thấy control mở lại thẻ trên Dashboard; thu gọn không lưu gì và localStorage không có key dismiss. Không bấm \"x\" nên nơi lưu/thời hạn ẩn chưa quan sát.",
+  "staging_observation_kb_ids": [
+    "install-and-onboarding#KB-067"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -1061,7 +1123,13 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
     "dashboard-and-analytics:CHK-006",
     "dashboard-and-analytics:CHK-018",
     "dashboard-and-analytics:CHK-028"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-068: 2026-10-17: CHK-018: không có control Exclude Test Order (cờ shop true). CHK-028 một phần: request không mang shop id do client chọn, xác thực Bearer session token. CHK-005/006 (billing) NOT_COVERED. | 2026-10-17: CHK-018: không có control Exclude Test Order (KB-080). CHK-028 một phần: request merchant không mang shop id do client chọn (request-authentication#KB-016, object integrations). CHK-005/006 (billing) NOT_COVERED.",
+  "staging_observation_kb_ids": [
+    "dashboard-and-analytics#KB-080",
+    "request-authentication#KB-016"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1075,7 +1143,13 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "summary": "Server giới hạn khoảng ngày analytics tối đa 180 ngày: khi merchant chọn khoảng dài hơn 180 ngày thì server trả lỗi, tự cắt khoảng, hay trả 0, và màn Analytics hiện thông báo gì?",
   "check_ids": [
     "dashboard-and-analytics:CHK-014"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-069: 2026-10-17: Khoảng ~290 ngày: picker không chặn, không thông báo, không request; phản hồi server chưa quan sát.",
+  "staging_observation_kb_ids": [
+    "dashboard-and-analytics#KB-075",
+    "dashboard-and-analytics#KB-073"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1089,7 +1163,12 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "summary": "Server không cho ngày bắt đầu của khoảng analytics sớm hơn ngày shop cài app: khi merchant chọn ngày sớm hơn thì server báo lỗi, tự dời về ngày cài app, hay trả 0, và màn hình hiện gì?",
   "check_ids": [
     "dashboard-and-analytics:CHK-015"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-070: 2026-10-17: Ngày bắt đầu trước ngày tạo shop: picker không chặn, nhãn \"Jan 01 - Oct 17, 2026\", không request; phản hồi server chưa quan sát.",
+  "staging_observation_kb_ids": [
+    "dashboard-and-analytics#KB-075"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1131,7 +1210,12 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "summary": "Thao tác Delete box trên Dashboard có hộp xác nhận không, và xoá một box đã có đơn bán thì đơn, quà đã bốc và trang mở box của khách bị ảnh hưởng thế nào?",
   "check_ids": [
     "dashboard-and-analytics:CHK-030"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-073: 2026-10-17: Có hộp xác nhận chung (không nhắc đơn); hệ quả xoá box đã có đơn chưa quan sát (không xoá).",
+  "staging_observation_kb_ids": [
+    "dashboard-and-analytics#KB-078"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1148,7 +1232,12 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   ],
   "check_ids": [
     "dashboard-and-analytics:CHK-033"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-074: 2026-10-17: Shop Free không early-bird không thấy hộp Founding member; embedded data không có field early-bird. Điều kiện early-bird chưa quan sát.",
+  "staging_observation_kb_ids": [
+    "dashboard-and-analytics#KB-079"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1162,7 +1251,12 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "summary": "Các khoảng ngày khác \"Today\" (Yesterday, Last week, Last month, Week to date, Month to date, Custom) tính mốc ngày theo múi giờ trình duyệt hay múi giờ shop?",
   "check_ids": [
     "dashboard-and-analytics:CHK-036"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-075: 2026-10-17: Như OQ-merchant-app-016: không có from/to để so; không phân biệt múi giờ.",
+  "staging_observation_kb_ids": [
+    "dashboard-and-analytics#KB-074"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1221,7 +1315,12 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "summary": "Bấm \"Discard\" trên màn General Settings thì form trở về giá trị đã lưu gần nhất (hay giá trị mặc định nếu mục chưa từng lưu), có hộp xác nhận không, và thanh Save/Discard có ẩn đi không?",
   "check_ids": [
     "general-settings:CHK-003"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-079: 2026-10-17: Mục chưa từng lưu: Discard không hỏi xác nhận, form về giá trị đang hiển thị (Variant SKU), thanh ẩn, không request. Mục đã từng lưu chưa quan sát.",
+  "staging_observation_kb_ids": [
+    "general-settings#KB-064"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1250,7 +1349,13 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "check_ids": [
     "general-settings:CHK-015",
     "general-settings:CHK-019"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-081: 2026-10-17: Koin: Store credit app \"Koin\" (None/Koin), key trống; 5 mục không có setting ẩn (gacha, watermark, physical_tag, skip_line_item_sync, Exclude Test Order). Phần lưu Koin (CHK-015) không làm.",
+  "staging_observation_kb_ids": [
+    "general-settings#KB-057",
+    "general-settings#KB-061"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1264,7 +1369,13 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "summary": "Khi shop chưa từng lưu mục Koin, mặc định phía server của \"Store credit app\" là Koin hay None, và khi đó khách có thấy lựa chọn mua box bằng store credit không?",
   "check_ids": [
     "general-settings:CHK-016"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-082: 2026-10-17: API trả data null (không có field); form hiện Koin; khách vãng lai không thấy gì từ block \"Buy box by store credit\". Mặc định server chưa đọc được.",
+  "staging_observation_kb_ids": [
+    "general-settings#KB-061",
+    "general-settings#KB-062"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1306,7 +1417,12 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   "summary": "Khoảng hợp lệ của \"Auto-unbox after\" và \"Trigger before\" là gì (cho phép 0, số thập phân, để trống không, giá trị tối đa, Trigger before có được lớn hơn Auto-unbox after không) và form báo lỗi gì khi nhập sai?",
   "check_ids": [
     "general-settings:CHK-023"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-merchant-app-085: 2026-10-17: Như OQ-merchant-app-027.",
+  "staging_observation_kb_ids": [
+    "general-settings#KB-058"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -1627,6 +1743,256 @@ Tổng: 106 mục (CONFLICT 7 · OPEN_ISSUE 51 · NEEDS_CONFIRMATION 48). Sinh t
   ],
   "check_ids": [
     "shop-uninstall-reinstall-lifecycle:CHK-021"
+  ]
+}
+```
+
+## OQ-merchant-app-107 — CONFLICT
+
+```json
+{
+  "oq_id": "OQ-merchant-app-107",
+  "type": "CONFLICT",
+  "feature_id": "dashboard-and-analytics",
+  "summary": "Tài liệu nói khối \"Recently created mystery boxes\" hiện 5 box mới tạo nhất; trên staging khối gọi /api/boxes?order_by=published_at, box Draft đứng trước và box vừa tạo đang Active không xuất hiện. Expected là sắp theo thời điểm tạo hay theo published_at (và box Active có được hiện không)?",
+  "side_a": "Base KB-010 (CE, dev_doc): khối hiển thị 5 box mới tạo nhất.",
+  "side_b": "Quan sát staging KB-076: order_by=published_at, published_at null trước, box vừa tạo + Active không vào top 5; thứ tự giữa box null không ổn định.",
+  "conflict_group": "CONF-merchant-app-07",
+  "kb_ids": [
+    "dashboard-and-analytics#KB-010",
+    "dashboard-and-analytics#KB-076"
+  ],
+  "related_oq_ids": [
+    "OQ-merchant-app-021"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-merchant-app-108 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-merchant-app-108",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "dashboard-and-analytics",
+  "summary": "Khối \"Recently created mystery boxes\" phải hiện 5 box mới tạo nhất như tài liệu, hay sắp theo published_at như staging (box Draft đứng trước, box vừa tạo đang Active có thể không vào 5 dòng)? Thứ tự giữa các box Draft có cần ổn định không?",
+  "kb_ids": [
+    "dashboard-and-analytics#KB-016",
+    "dashboard-and-analytics#KB-073",
+    "dashboard-and-analytics#KB-077"
+  ],
+  "check_ids": [
+    "dashboard-and-analytics:CHK-029"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-merchant-app-109 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-merchant-app-109",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "dashboard-and-analytics",
+  "summary": "Staging gói Free: hai con số Analytics center hiện \"-\" như bốn thẻ của màn Analytics và portal không gọi API số liệu nào. Đây có phải hành vi mong muốn cho gói Free (chặn ở phía client, không gọi server) không?",
+  "kb_ids": [
+    "dashboard-and-analytics#KB-072",
+    "dashboard-and-analytics#KB-073"
+  ],
+  "check_ids": [
+    "dashboard-and-analytics:CHK-037"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-merchant-app-110 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-merchant-app-110",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "dashboard-and-analytics",
+  "summary": "Trên staging, Last week là Chủ nhật–thứ Bảy và Custom chỉ chọn được bằng cách gõ ngày tay. Tuần bắt đầu từ Chủ nhật có phải quy ước đúng (hay theo locale/cài đặt shop), và Custom bị disable trong combobox có phải thiết kế không?",
+  "kb_ids": [
+    "dashboard-and-analytics#KB-074"
+  ],
+  "check_ids": [
+    "dashboard-and-analytics:CHK-038"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-merchant-app-111 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-merchant-app-111",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "dashboard-and-analytics",
+  "summary": "Trên staging, Deactivate một box đang Active (đang bán) có hiệu lực ngay, không hỏi xác nhận. Đây có phải thiết kế không, hay cần hộp xác nhận vì thao tác ngừng bán box?",
+  "kb_ids": [
+    "dashboard-and-analytics#KB-077"
+  ],
+  "check_ids": [
+    "dashboard-and-analytics:CHK-039"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-merchant-app-112 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-merchant-app-112",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "general-settings",
+  "summary": "Trên staging, shop gói Free thấy công tắc Shopify Flow không bị khoá và trang Pricing không nhắc Flow. Shopify Flow có dùng được ở mọi gói (kể cả Free) không, và bật/lưu công tắc trên gói Free có được chấp nhận không?",
+  "kb_ids": [
+    "general-settings#KB-063",
+    "_object-level.automation-growth#KB-006"
+  ],
+  "check_ids": [
+    "general-settings:CHK-025"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-merchant-app-113 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-merchant-app-113",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "general-settings",
+  "summary": "Trên staging, Gacha bị khoá với shop gói Free mà không có lời giải thích hay gợi ý nâng gói. Đây có phải thiết kế (Gacha chỉ mở khi nhân viên bật enable_gacha_machine hoặc ở gói trả phí) không, và có cần hiện lý do khoá cho merchant không?",
+  "kb_ids": [
+    "general-settings#KB-065"
+  ],
+  "check_ids": [
+    "general-settings:CHK-026"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-merchant-app-114 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-merchant-app-114",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "install-and-onboarding",
+  "summary": "Trên staging, trạng thái App extension status được đọc qua Admin API và cờ localStorage của trình duyệt, không qua backend Mysbox. Trạng thái \"Inactive\" / \"Not Installed\" được suy từ dữ liệu nào, và cờ localStorage có thể làm bảng hiện sai trên trình duyệt khác hoặc sau khi merchant gỡ block không?",
+  "kb_ids": [
+    "install-and-onboarding#KB-064",
+    "install-and-onboarding#KB-065"
+  ],
+  "check_ids": [
+    "install-and-onboarding:CHK-029"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-merchant-app-115 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-merchant-app-115",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "install-and-onboarding",
+  "summary": "Trên staging, thẻ Setup guide đã xong 3/3 vẫn hiện với các nút bị disable, và không thấy cách mở lại thẻ nếu merchant bấm đóng. Thẻ có nên tự ẩn khi đã xong hết không, và sau khi đóng thì merchant hiện lại thẻ bằng cách nào?",
+  "kb_ids": [
+    "install-and-onboarding#KB-066",
+    "install-and-onboarding#KB-067"
+  ],
+  "check_ids": [
+    "install-and-onboarding:CHK-030"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-merchant-app-116 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-merchant-app-116",
+  "type": "OPEN_ISSUE",
+  "feature_id": "general-settings",
+  "summary": "Mục \"Auto-unbox notification\" nằm ở đâu — staging chỉ có 5 mục (Auto-Unbox, Buyback limit time, Order setting, Koin, Shopify Flow), không có mục riêng; nó hiện trong mục Auto-Unbox khi bật \"Enable auto-unbox\", hay không có trên màn hình? — KB-056 nói General Settings có mục Auto-unbox notification; không định vị được thì không viết được check cho mục này.",
+  "kb_ids": [
+    "general-settings#KB-056",
+    "general-settings#KB-057",
+    "general-settings#KB-058"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-merchant-app-117 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-merchant-app-117",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "dashboard-and-analytics",
+  "summary": "Quan sát staging mới chạm vùng rủi ro cao (quyền truy cập / tiền / billing): Màn Analytics gói Free: bốn thẻ hiện \"-\", Top selling boxes \"No box found\"; Analytics center trên Dashboard gói Free: hai con số hiện \"-\"; Gói Free: Dashboard và Analytics không gọi endpoint số liệu nào; Delete box trên Dashboard mở hộp xác nhận chung, không nhắc đơn đã bán. Item là OBSERVED_CURRENT; cần PO xác nhận đây là hành vi dự kiến trước khi dùng làm expected result.",
+  "kb_ids": [
+    "dashboard-and-analytics#KB-071",
+    "dashboard-and-analytics#KB-072",
+    "dashboard-and-analytics#KB-073",
+    "dashboard-and-analytics#KB-078"
+  ],
+  "tags": [
+    "staging-observed",
+    "risk-flag"
+  ]
+}
+```
+
+## OQ-merchant-app-118 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-merchant-app-118",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "general-settings",
+  "summary": "Quan sát staging mới chạm vùng rủi ro cao (quyền truy cập / tiền / billing): Block \"Buy box by store credit\" không render gì với khách vãng lai; Mục Shopify Flow: công tắc tắt, không khoá theo gói; Form box trên shop Free: Gacha hiện xám, không chọn được, không giải thích. Item là OBSERVED_CURRENT; cần PO xác nhận đây là hành vi dự kiến trước khi dùng làm expected result.",
+  "kb_ids": [
+    "general-settings#KB-062",
+    "general-settings#KB-063",
+    "general-settings#KB-065"
+  ],
+  "tags": [
+    "staging-observed",
+    "risk-flag"
   ]
 }
 ```

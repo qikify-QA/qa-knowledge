@@ -2,7 +2,7 @@
   "feature_id": "FEAT-03-general-settings",
   "feature_key": "general-settings",
   "object_id": "merchant-app",
-  "checklist_version": "1",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -40,7 +40,8 @@
       "open_question_draft": null,
       "related_kb_ids": [
         "general-settings#KB-001",
-        "_object-level.merchant-app#KB-007"
+        "_object-level.merchant-app#KB-007",
+        "general-settings#KB-057"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -93,20 +94,22 @@
       "applicability": {
         "role": "merchant",
         "state": "form có thay đổi chưa lưu",
-        "environment": "documented",
+        "environment": "staging",
         "surface_or_device": "portal merchant, màn General Settings"
       },
-      "precondition": "Mở một mục bất kỳ, sửa một trường, chưa lưu.",
+      "precondition": "Mở một mục bất kỳ (vd Order setting chưa từng lưu), sửa một trường (vd đổi \"Metafield format\" từ Variant SKU sang Variant ID), chưa lưu.",
       "steps": [
         "Bấm Discard.",
         "Đọc lại giá trị trường và thanh hành động.",
         "Tải lại trang, đọc lại giá trị."
       ],
       "observation_point": "Giá trị trường; thanh Save/Discard.",
-      "expected_result": "",
+      "expected_result": "(baseline staging, mục chưa từng lưu; lệch = cần điều tra) Khi có thay đổi, thanh \"Unsaved changes\" của Shopify với \"Discard\" / \"Save\" hiện ở đầu trang admin và chưa có request; bấm \"Discard\" không có hộp xác nhận, trường về giá trị đang hiển thị trước khi sửa (vd \"Variant SKU\"), thanh ẩn và không có request tới backend Mysbox. Trường hợp mục đã từng lưu chưa có baseline — ghi lại.",
       "oracle": {
-        "kb_ids": [],
-        "oracle_strength": "NONE"
+        "kb_ids": [
+          "general-settings#KB-064"
+        ],
+        "oracle_strength": "BASELINE"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Bấm \"Discard\" trên màn General Settings thì form trở về giá trị đã lưu gần nhất (hay giá trị mặc định nếu mục chưa từng lưu), có hộp xác nhận không, và thanh Save/Discard có ẩn đi không?",
@@ -116,7 +119,7 @@
       "regression_watch_kb_ids": [],
       "risk_refs": [],
       "priority": "P3",
-      "automation_suitability": "UNKNOWN",
+      "automation_suitability": "SUITABLE",
       "oq_id": "OQ-merchant-app-079"
     },
     {
@@ -193,7 +196,8 @@
       "status": "READY",
       "open_question_draft": null,
       "related_kb_ids": [
-        "general-settings#KB-012"
+        "general-settings#KB-012",
+        "general-settings#KB-058"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -342,7 +346,8 @@
       "status": "READY",
       "open_question_draft": null,
       "related_kb_ids": [
-        "general-settings#KB-025"
+        "general-settings#KB-025",
+        "general-settings#KB-059"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -409,7 +414,8 @@
       "open_question_draft": "Buyback limit time có chấp nhận 0.5 giờ không: tài liệu ghi tối thiểu 1 giờ nhưng ô nhập gợi ý \"e.g., 0.5, 1, 24\". Trường có nhận số thập phân không, giá trị tối đa là bao nhiêu và thông báo lỗi khi nhỏ hơn mức tối thiểu là gì?",
       "related_kb_ids": [
         "general-settings#KB-023",
-        "general-settings#KB-024"
+        "general-settings#KB-024",
+        "general-settings#KB-059"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -481,7 +487,9 @@
       },
       "status": "READY",
       "open_question_draft": null,
-      "related_kb_ids": [],
+      "related_kb_ids": [
+        "general-settings#KB-059"
+      ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
       "priority": "P2",
@@ -519,7 +527,8 @@
       "status": "READY",
       "open_question_draft": null,
       "related_kb_ids": [
-        "general-settings#KB-030"
+        "general-settings#KB-030",
+        "general-settings#KB-060"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -556,7 +565,9 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Đề nghị xác nhận bằng một test case đã chạy PASS: với shop chưa từng lưu, form Koin Store Credit & Rewards hiện \"Store credit app\" là Koin (có lựa chọn None) và \"Koin private API Key\" trống?",
-      "related_kb_ids": [],
+      "related_kb_ids": [
+        "general-settings#KB-061"
+      ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
         "R3"
@@ -573,8 +584,8 @@
       "applicability": {
         "role": "system",
         "state": "mục Koin chưa từng lưu",
-        "environment": "documented",
-        "surface_or_device": "cấu hình shop (back-office) + storefront (nút mua bằng store credit)"
+        "environment": "staging",
+        "surface_or_device": "cấu hình shop (back-office / API cấu hình) + storefront (nút mua bằng store credit)"
       },
       "precondition": "Shop chưa từng lưu mục Koin Store Credit & Rewards.",
       "steps": [
@@ -582,10 +593,13 @@
         "Trên storefront, kiểm có lựa chọn mua box bằng store credit không."
       ],
       "observation_point": "Giá trị Store credit app hiệu lực; lựa chọn store credit trên storefront.",
-      "expected_result": "",
+      "expected_result": "(baseline staging, lệch = cần điều tra) GET /api/users/config trả 200 {\"data\":null} (cấu hình shop chưa có giá trị) trong khi form hiện \"Store credit app\" = \"Koin\"; giá trị hiệu lực phía server không lộ qua API này. Với khách vãng lai, block \"Buy box by store credit\" có trong DOM nhưng render rỗng và không phát request store credit. Điều kiện làm block ẩn (khách chưa đăng nhập, box không bật store credit hay Koin chưa cấu hình) chưa tách được — ghi lại.",
       "oracle": {
-        "kb_ids": [],
-        "oracle_strength": "NONE"
+        "kb_ids": [
+          "general-settings#KB-061",
+          "general-settings#KB-062"
+        ],
+        "oracle_strength": "BASELINE"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Khi shop chưa từng lưu mục Koin, mặc định phía server của \"Store credit app\" là Koin hay None, và khi đó khách có thấy lựa chọn mua box bằng store credit không?",
@@ -666,7 +680,9 @@
       },
       "status": "READY",
       "open_question_draft": null,
-      "related_kb_ids": [],
+      "related_kb_ids": [
+        "general-settings#KB-063"
+      ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
       "priority": "P3",
@@ -699,7 +715,9 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Đề nghị xác nhận bằng một test case đã chạy PASS: các setting ẩn của shop chỉ nhân viên Mysbox đổi được trong back-office, merchant không có cách nào thấy hay đổi chúng từ portal?",
       "related_kb_ids": [
-        "dashboard-and-analytics#KB-046"
+        "dashboard-and-analytics#KB-046",
+        "general-settings#KB-057",
+        "dashboard-and-analytics#KB-080"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -782,7 +800,8 @@
       "status": "READY",
       "open_question_draft": null,
       "related_kb_ids": [
-        "general-settings#KB-040"
+        "general-settings#KB-040",
+        "general-settings#KB-065"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -850,7 +869,8 @@
       "open_question_draft": "Khoảng hợp lệ của \"Auto-unbox after\" và \"Trigger before\" là gì (cho phép 0, số thập phân, để trống không, giá trị tối đa, Trigger before có được lớn hơn Auto-unbox after không) và form báo lỗi gì khi nhập sai?",
       "related_kb_ids": [
         "general-settings#KB-014",
-        "general-settings#KB-019"
+        "general-settings#KB-019",
+        "general-settings#KB-058"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -894,6 +914,81 @@
       "priority": "P1",
       "automation_suitability": "NOT_SUITABLE",
       "oq_id": "OQ-merchant-app-086"
+    },
+    {
+      "check_id": "CHK-025",
+      "dimension": "PERMISSION",
+      "layer": "portal",
+      "title": "Gói Free: mục Shopify Flow không bị khoá theo gói và trang Pricing không nhắc Flow",
+      "applicability": {
+        "role": "merchant",
+        "state": "shop gói Free, mục Shopify Flow chưa từng lưu",
+        "environment": "staging",
+        "surface_or_device": "portal merchant, General Settings (nhóm Integration) + trang Pricing"
+      },
+      "precondition": "Shop gói Free; không bật công tắc trong lúc kiểm.",
+      "steps": [
+        "Mở General Settings → nhóm Integration → \"Shopify Flow\"; ghi tiêu đề, mô tả, link và trạng thái checkbox (disable, badge gói, chữ khoá).",
+        "Mở trang Pricing; tìm chữ \"Flow\" trong mô tả các gói."
+      ],
+      "observation_point": "Mục Shopify Flow; trang Pricing.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Mục có tiêu đề \"Shopify Flow\", checkbox \"Enable Mysbox triggers in Shopify Flow\" không được chọn và không bị disable (không badge gói/khoá, không chữ \"not available in the Free plan\"), mô tả \"Create custom flows using Mysbox triggers.\" và link \"Need support?\"; trang Pricing không nhắc tới Flow ở gói nào.",
+      "oracle": {
+        "kb_ids": [
+          "general-settings#KB-063",
+          "_object-level.automation-growth#KB-006"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Trên staging, shop gói Free thấy công tắc Shopify Flow không bị khoá và trang Pricing không nhắc Flow. Shopify Flow có dùng được ở mọi gói (kể cả Free) không, và bật/lưu công tắc trên gói Free có được chấp nhận không?",
+      "related_kb_ids": [
+        "general-settings#KB-035",
+        "general-settings#KB-036",
+        "general-settings#KB-037"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-merchant-app-112"
+    },
+    {
+      "check_id": "CHK-026",
+      "dimension": "PERMISSION",
+      "layer": "portal",
+      "title": "Gói Free: animation Gacha trên form box hiện xám, không chọn được, không có lời giải thích",
+      "applicability": {
+        "role": "merchant",
+        "state": "shop gói Free, cờ ẩn enable_gacha_machine chưa đổi",
+        "environment": "staging",
+        "surface_or_device": "portal merchant, form Box settings (box Single, chưa lưu)"
+      },
+      "precondition": "Shop gói Free; không lưu box trong lúc kiểm.",
+      "steps": [
+        "Mở Manage boxes → tạo box Single, Box type \"Instantly opening box\" (không lưu).",
+        "Đọc các lựa chọn animation và lựa chọn mặc định; thử chọn Gacha; hover để tìm tooltip/badge.",
+        "Đổi Box type sang \"Sealed box\"; kiểm mục animation."
+      ],
+      "observation_point": "Mục chọn animation của form box.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Mục \"Choose the animation that appears during mystery box unboxing\" có Carousel (chọn mặc định), Drawing, Card flip, Gacha, None; Gacha hiện xám, không chọn được, không có badge, nhãn gói hay tooltip giải thích; chọn \"Sealed box\" thì mục animation biến mất khỏi form.",
+      "oracle": {
+        "kb_ids": [
+          "general-settings#KB-065"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Trên staging, Gacha bị khoá với shop gói Free mà không có lời giải thích hay gợi ý nâng gói. Đây có phải thiết kế (Gacha chỉ mở khi nhân viên bật enable_gacha_machine hoặc ở gói trả phí) không, và có cần hiện lý do khoá cho merchant không?",
+      "related_kb_ids": [
+        "general-settings#KB-040",
+        "general-settings#KB-041"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-merchant-app-113"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -961,7 +1056,8 @@
       "item": "Bật trigger Mysbox trong Shopify Flow",
       "check_ids": [
         "CHK-018",
-        "CHK-002"
+        "CHK-002",
+        "CHK-025"
       ]
     },
     {
@@ -972,7 +1068,8 @@
         "CHK-019",
         "CHK-020",
         "CHK-021",
-        "CHK-022"
+        "CHK-022",
+        "CHK-026"
       ]
     },
     {
@@ -1024,12 +1121,21 @@
       "check_ids": [
         "CHK-012"
       ]
+    },
+    {
+      "feature_id": "FEAT-03-general-settings",
+      "kind": "conflict",
+      "item": "CONF-merchant-app-05: giá trị tối thiểu / số thập phân của Buyback limit time",
+      "check_ids": [
+        "CHK-011"
+      ],
+      "note": "KB-059 (staging) gia nhập conflict, UNRESOLVED; CHK-011 giữ NONE."
     }
   ],
   "excluded_dimensions": [
     {
       "dimension": "REGRESSION",
-      "reason": "Shard không có item KNOWN_DEFECT và run DOC_BOOTSTRAP không có base để so thay đổi."
+      "reason": "Shard không có item KNOWN_DEFECT, và so với base đã publish không item base nào đổi hành vi (chỉ thêm quan sát staging); hai khác biệt staging so với oracle STRONG (CHK-001, CHK-005) chưa được gắn conflict nên chưa có cơ sở sinh check watch."
     }
   ],
   "last_updated": {

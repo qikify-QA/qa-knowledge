@@ -1,6 +1,7 @@
 {
   "feature_id": "FEAT-04-daily-usage-charge-and-charge-status",
   "feature_key": "daily-usage-charge-and-charge-status",
+  "object_id": "plans-billing",
   "name": "Job usage charge hằng ngày và trạng thái Charge",
   "user_goal": "Mysbox gom phí box vượt quota của mỗi shop trả phí thành một Shopify usage charge mỗi ngày (đánh dấu dòng phí đã tính trước khi gọi Shopify, nên lỗi thì thu thiếu chứ không thu dư); Charge recurring/usage mang trạng thái đối chiếu được (Pending / Accepted / Declined / Failed, Active / Cancelled) để admin, support và merchant đối chiếu phí, trong khi màn Charges của admin panel chỉ đọc.",
   "user_goal_kb_refs": [
@@ -32,7 +33,11 @@
         "daily-usage-charge-and-charge-status#KB-030",
         "daily-usage-charge-and-charge-status#KB-031",
         "_product-level#KB-PL-002"
-      ]
+      ],
+      "observed_kb_refs": [
+        "daily-usage-charge-and-charge-status#KB-087"
+      ],
+      "refresh_note": "Staging gói Free: portal không có request/dữ liệu charge hay recurring."
     },
     {
       "role": "admin-staff",
@@ -156,7 +161,11 @@
         "daily-usage-charge-and-charge-status#KB-063",
         "daily-usage-charge-and-charge-status#KB-064",
         "daily-usage-charge-and-charge-status#KB-066"
-      ]
+      ],
+      "observed_kb_refs": [
+        "daily-usage-charge-and-charge-status#KB-087"
+      ],
+      "refresh_note": "Staging gói Free: dữ liệu nhúng không có key charge/recurring; plan Free price 0, capped_amount null, test false. Recurring giá 0 phía server không quan sát."
     },
     {
       "name": "Admin/support đối chiếu charge ở màn Charges chỉ đọc",
@@ -486,6 +495,16 @@
       "kb_refs": [
         "daily-usage-charge-and-charge-status#KB-083"
       ]
+    },
+    {
+      "behavior": "Shop Free staging: Pricing/Dashboard không gọi API charge/subscription/recurring nào; dữ liệu nhúng user có subscription_plan_name \"Free\", plan_id 1, plan.price 0, plan.shopify_paid false, plan.capped_amount null, plan.test false, is_extend_trial true, không có key charge/recurring. Bản ghi Charge phía server không quan sát.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "LOW",
+      "kb_refs": [
+        "daily-usage-charge-and-charge-status#KB-087"
+      ]
     }
   ],
   "observed_validations": [],
@@ -507,7 +526,15 @@
     }
   ],
   "surface_mapping": {
-    "portal": [],
+    "portal": [
+      {
+        "item": "Pricing / Dashboard: không có dữ liệu hay request charge/recurring (shop Free) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "daily-usage-charge-and-charge-status#KB-087"
+        ]
+      }
+    ],
     "admin_panel": [
       {
         "item": "Payment > Charges (tab, cột, chỉ đọc); Shop > tab Charges",
@@ -546,6 +573,13 @@
         "kb_refs": [
           "daily-usage-charge-and-charge-status#KB-056",
           "daily-usage-charge-and-charge-status#KB-044"
+        ]
+      },
+      {
+        "item": "Dữ liệu nhúng window.mysboxEmbeddedData.user / plan (subscription_plan_name, price, capped_amount, test) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "daily-usage-charge-and-charge-status#KB-087"
         ]
       }
     ],
@@ -656,10 +690,18 @@
         "daily-usage-charge-and-charge-status#KB-084",
         "daily-usage-charge-and-charge-status#KB-085"
       ]
+    },
+    {
+      "limitation": "Quan sát staging chỉ thấy phía client của shop Free; job, Charge phía server và admin panel không quan sát.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "daily-usage-charge-and-charge-status#KB-087"
+      ]
     }
   ],
   "freshness": {
-    "observed_at": null
+    "observed_at": "2026-10-17",
+    "base_observed_at": null
   },
   "unknown_areas": [
     {
@@ -797,7 +839,11 @@
         "daily-usage-charge-and-charge-status#KB-021",
         "daily-usage-charge-and-charge-status#KB-005"
       ],
-      "oq_id": "OQ-plans-billing-040"
+      "oq_id": "OQ-plans-billing-040",
+      "refresh_note": "Staging: phía client shop Free không có object/request charge hay recurring (KB-087). Bản ghi Charge phía server không quan sát được (admin panel NOT_COVERED, db tắt) → chưa trả lời câu hỏi, không gỡ.",
+      "refresh_kb_refs": [
+        "daily-usage-charge-and-charge-status#KB-087"
+      ]
     },
     {
       "question": "Màn Payment > Charges có những bộ lọc và màn chi tiết nào (ví dụ lọc theo Declined/Failed)?",
@@ -810,7 +856,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-10-16",
+    "date": "2026-10-17",
     "ccr_ref": "bootstrap"
   },
   "coverage_matrix": [
@@ -909,6 +955,35 @@
       "state": "any",
       "environment": "documented",
       "covered": false
+    },
+    {
+      "feature_id": "FEAT-04-daily-usage-charge-and-charge-status",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "plan-free (phía client: không có charge/recurring)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "daily-usage-charge-and-charge-status#KB-087"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-daily-usage-charge-and-charge-status",
+      "layer": "data",
+      "role": "system",
+      "state": "plan-free (Charge phía server)",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: db tắt, admin panel NOT_COVERED."
+    },
+    {
+      "feature_id": "FEAT-04-daily-usage-charge-and-charge-status",
+      "layer": "code",
+      "role": "system",
+      "state": "job usage / plan-paid",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: shop Free, cấm charge/plan_change."
     }
   ],
   "profile_conflicts": [

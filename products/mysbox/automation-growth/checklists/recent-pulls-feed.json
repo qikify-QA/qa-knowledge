@@ -2,7 +2,7 @@
   "feature_id": "FEAT-04-recent-pulls-feed",
   "feature_key": "recent-pulls-feed",
   "object_id": "automation-growth",
-  "checklist_version": "1",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -37,7 +37,9 @@
       },
       "status": "READY",
       "open_question_draft": null,
-      "related_kb_ids": [],
+      "related_kb_ids": [
+        "recent-pulls-feed#KB-082"
+      ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
       "priority": "P3",
@@ -235,7 +237,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Danh sách đầy đủ các trường của một entry trong feed công khai là gì, và có trường nào (ngoài mã băm, thời điểm mở, variant và pool/tier) có thể dùng để lần ra khách hoặc đơn không?",
       "related_kb_ids": [
-        "recent-pulls-feed#KB-034"
+        "recent-pulls-feed#KB-034",
+        "recent-pulls-feed#KB-083"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -273,7 +276,8 @@
       "status": "READY",
       "open_question_draft": null,
       "related_kb_ids": [
-        "recent-pulls-feed#KB-040"
+        "recent-pulls-feed#KB-040",
+        "recent-pulls-feed#KB-085"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -605,7 +609,8 @@
       "related_kb_ids": [
         "recent-pulls-feed#KB-053",
         "recent-pulls-feed#KB-055",
-        "recent-pulls-feed#KB-056"
+        "recent-pulls-feed#KB-056",
+        "recent-pulls-feed#KB-082"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -645,7 +650,8 @@
       "open_question_draft": null,
       "related_kb_ids": [
         "recent-pulls-feed#KB-063",
-        "_object-level.automation-growth#KB-003"
+        "_object-level.automation-growth#KB-003",
+        "recent-pulls-feed#KB-084"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -680,7 +686,9 @@
         "recent-pulls-feed#KB-022",
         "recent-pulls-feed#KB-058",
         "recent-pulls-feed#KB-059",
-        "_object-level.automation-growth#KB-003"
+        "_object-level.automation-growth#KB-003",
+        "recent-pulls-feed#KB-082",
+        "recent-pulls-feed#KB-084"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -1119,6 +1127,49 @@
       "priority": "P3",
       "automation_suitability": "SUITABLE",
       "oq_id": "OQ-automation-growth-026"
+    },
+    {
+      "check_id": "CHK-031",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "Show recent pulls tắt: block \"Mysbox recent pulls\" có trên trang box (digital và sealed) nhưng không hiện gì và không có request riêng cho feed",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "Show recent pulls tắt; block đã đặt trên template product; box digital và box Sealed box Active",
+        "environment": "staging",
+        "surface_or_device": "storefront trang product + DevTools (DOM, console, network)"
+      },
+      "precondition": "\"Show recent pulls\" đang tắt; theme đã đặt block \"Mysbox recent pulls\"; có một box digital và một box Sealed box đang Active; có cách đặt một đơn test cho box digital.",
+      "steps": [
+        "Mở trang product của box digital khi chưa đăng nhập; kiểm DOM của block, giá trị window.mysboxStore.mysboxRecentPulls, có lời gọi addFeed nào không và chiều cao custom element.",
+        "Lọc network các request tới backend Mysbox / app proxy khi tải trang.",
+        "Lặp lại với trang product của box Sealed box.",
+        "Mở box của một đơn test (box digital), tải lại trang box digital sau khoảng 1–2 phút; kiểm lại."
+      ],
+      "observation_point": "DOM và script của block; window.mysboxStore; network; feed hiển thị.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Block có trong DOM: script inline gán window.mysboxStore.mysboxRecentPulls = {} và định nghĩa addFeed nhưng không có lời gọi addFeed nào; custom element mysbox-inject-list-recent-pulls rỗng, cao 0 — khách không thấy gì; console có log \"Mysbox - RecentPulls - InjectListRecentPulls Mounted\"; không có request riêng nào tới backend Mysbox cho feed; window.mysboxStore và window._Mysbox không chứa tên, email, order id hay số đơn. Trang box Sealed box có cấu trúc giống hệt (widget danh sách món vẫn hiện bình thường). Sau khi mở box của một đơn test, feed vẫn rỗng.",
+      "oracle": {
+        "kb_ids": [
+          "recent-pulls-feed#KB-083",
+          "recent-pulls-feed#KB-084",
+          "recent-pulls-feed#KB-085"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging (công tắc tắt): block recent pulls vẫn mount nhưng rỗng, và lượt mở của đơn test không vào feed. Khi bật \"Show recent pulls\", feed có được nạp bằng lời gọi addFeed inline (Liquid) như cấu trúc này không, và box Sealed box có bao giờ hiện entry không?",
+      "related_kb_ids": [
+        "recent-pulls-feed#KB-001",
+        "recent-pulls-feed#KB-012",
+        "recent-pulls-feed#KB-017",
+        "recent-pulls-feed#KB-038",
+        "recent-pulls-feed#KB-057"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-automation-growth-101"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1130,10 +1181,11 @@
         "CHK-005",
         "CHK-006",
         "CHK-007",
-        "CHK-020"
+        "CHK-020",
+        "CHK-031"
       ],
       "covered": true,
-      "note": "CHK-006 P1 chờ test_case PASS"
+      "note": "CHK-006 P1 chờ test_case PASS; CHK-031 baseline khi công tắc tắt"
     },
     {
       "feature_id": "FEAT-04-recent-pulls-feed",
@@ -1178,7 +1230,7 @@
         "CHK-018"
       ],
       "covered": true,
-      "note": "Màn hình visible-from mâu thuẫn; phần staging-only oracle NONE"
+      "note": "Màn hình visible-from mâu thuẫn (CONF-automation-growth-05, thêm quan sát KB-082 UNRESOLVED); phần staging-only oracle NONE"
     },
     {
       "feature_id": "FEAT-04-recent-pulls-feed",

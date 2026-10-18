@@ -1,6 +1,6 @@
 # Open Questions — integrations
 
-Tổng: 30 mục (CONFLICT 1 · OPEN_ISSUE 18 · NEEDS_CONFIRMATION 11). Sinh từ bootstrap DOC_BOOTSTRAP đầu tiên của Mysbox (nguồn: bộ Product KB v1 do dev viết từ source code, 2026-10-16). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
+Tổng: 34 mục (CONFLICT 1 · OPEN_ISSUE 19 · NEEDS_CONFIRMATION 14). Sinh từ bootstrap DOC_BOOTSTRAP đầu tiên của Mysbox (nguồn: bộ Product KB v1 do dev viết từ source code, 2026-10-16); REFRESH trên staging 2026-10-17 thêm mục mới, ghi `staging_observation` (OBSERVED_CURRENT, không resolve NEEDS_CONFIRMATION/CONFLICT) và gỡ OPEN_ISSUE đã được quan sát trả lời (xem CHANGELOG). Mỗi mục là một khối json; `kb_ids` dạng `<feature_key>#KB-xxx` (hoặc `_object-level#KB-xxx` cho tầng object), `check_ids` dạng `<feature_key>:CHK-xxx`.
 
 ## OQ-integrations-001 — NEEDS_CONFIRMATION
 
@@ -133,7 +133,13 @@ Tổng: 30 mục (CONFLICT 1 · OPEN_ISSUE 18 · NEEDS_CONFIRMATION 11). Sinh t�
   "summary": "Request từ trang đơn hàng của khách được xác thực bằng cơ chế nào? — Đây là một loại client được liệt kê nhưng shard này không có rule xác thực cho nó; có thể thuộc profile khác — cần xác nhận để không bỏ sót coverage.",
   "kb_ids": [
     "request-authentication#KB-001"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-integrations-009: 2026-10-17: Trang khách gửi header customer-token + customer-id qua app proxy (không JWT; ?parameters= không gửi lại lên API); block trang cảm ơn chỉ gửi query shop. Cách server kiểm và chữ ký app proxy không quan sát được từ trình duyệt.",
+  "staging_observation_kb_ids": [
+    "request-authentication#KB-017",
+    "request-authentication#KB-018"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; mục vẫn mở (câu hỏi chưa được trả lời đủ, hoặc cần nguồn thẩm quyền)."
 }
 ```
 
@@ -319,7 +325,13 @@ Tổng: 30 mục (CONFLICT 1 · OPEN_ISSUE 18 · NEEDS_CONFIRMATION 11). Sinh t�
     "request-authentication:CHK-008",
     "request-authentication:CHK-010",
     "request-authentication:CHK-011"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-integrations-021: 2026-10-17: CHK-001 một phần: GET /api/boxes với Bearer hợp lệ → 200. CHK-010: block trang cảm ơn thành công chỉ với tham số shop, response {customer_id, token}. Các nhánh token sai/thiếu, uninstall, multi-shop, Flow: không làm.",
+  "staging_observation_kb_ids": [
+    "request-authentication#KB-016",
+    "request-authentication#KB-018"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -375,7 +387,13 @@ Tổng: 30 mục (CONFLICT 1 · OPEN_ISSUE 18 · NEEDS_CONFIRMATION 11). Sinh t�
   "summary": "Tài liệu nói webhook cho đơn test vẫn được nhận nhưng tự khai chưa xác nhận chi tiết. Cần xác nhận đơn test có được xử lý như đơn thật không (tạo yêu cầu mở box, rút thăm, ghi usage).",
   "kb_ids": [
     "webhook-ingestion#KB-041"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-integrations-025: 2026-10-17: Đơn test Bogus được tạo đơn Mysbox, bốc thăm, mở được (như đơn thật); Box sales limit 0/10 → 0/10 (exclude_test_order true). Ghi usage billing chưa quan sát.",
+  "staging_observation_kb_ids": [
+    "webhook-ingestion#KB-043",
+    "webhook-ingestion#KB-045"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -397,7 +415,12 @@ Tổng: 30 mục (CONFLICT 1 · OPEN_ISSUE 18 · NEEDS_CONFIRMATION 11). Sinh t�
     "webhook-ingestion:CHK-012",
     "webhook-ingestion:CHK-014",
     "webhook-ingestion:CHK-016"
-  ]
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-integrations-026: 2026-10-17: Gián tiếp cho CHK-001: đơn Mysbox ~5 giây sau paid, link Unbox ≤ 9 giây. Các check khác (forge webhook, Horizon, uninstall...) NOT_OBSERVED.",
+  "staging_observation_kb_ids": [
+    "webhook-ingestion#KB-044"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
 }
 ```
 
@@ -456,6 +479,90 @@ Tổng: 30 mục (CONFLICT 1 · OPEN_ISSUE 18 · NEEDS_CONFIRMATION 11). Sinh t�
   "summary": "Webhook cho đơn test có được xử lý như đơn thật không (tạo yêu cầu mở box, rút thăm, ghi usage)?",
   "check_ids": [
     "webhook-ingestion:CHK-018"
+  ],
+  "staging_observation": "Ghi chú quan sát staging cho OQ-integrations-030: 2026-10-17: Như OQ-integrations-025: bốc thăm có, có trong Manage orders, bộ đếm không tăng; billing usage NOT_OBSERVED.",
+  "staging_observation_kb_ids": [
+    "webhook-ingestion#KB-043",
+    "webhook-ingestion#KB-045"
+  ],
+  "status_note": "Quan sát staging chỉ là OBSERVED_CURRENT; vẫn cần PO/Dev xác nhận, chưa resolve."
+}
+```
+
+## OQ-integrations-031 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-integrations-031",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "request-authentication",
+  "summary": "Trên staging, trang đơn hàng của khách xác thực API bằng header customer-token + customer-id qua app proxy. Server kiểm customer-token thế nào (gắn với đơn hay khách nào, hết hạn khi nào) và trả gì khi token sai, thiếu hoặc thuộc khách khác?",
+  "kb_ids": [
+    "request-authentication#KB-017"
+  ],
+  "check_ids": [
+    "request-authentication:CHK-014"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-integrations-032 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-integrations-032",
+  "type": "OPEN_ISSUE",
+  "feature_id": "request-authentication",
+  "summary": "Endpoint customer của block trang cảm ơn (/api/orders/{shopify_order_id}/customer?shop=...) trả customer_id + token chỉ dựa trên order id + tên shop: có kiểm đơn thuộc shop đó và yêu cầu đến từ extension không, gọi với order id của shop khác hoặc order id đoán thì trả gì, và host staging-api có phải backend chính thức của staging không? — Endpoint không xác thực trả token khách; không có oracle cho nhánh negative và host chưa được operator xác nhận.",
+  "kb_ids": [
+    "request-authentication#KB-018",
+    "request-authentication#KB-013",
+    "request-authentication#KB-014"
+  ],
+  "tags": [
+    "staging-observed"
+  ]
+}
+```
+
+## OQ-integrations-033 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-integrations-033",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "request-authentication",
+  "summary": "Quan sát staging mới chạm vùng rủi ro cao (quyền truy cập / tiền / billing): Request của merchant app tới backend: Bearer session token, không có shop id do client chọn; Trang đơn hàng của khách gửi header customer-token + customer-id qua app proxy; Block trang cảm ơn gọi backend chỉ với tham số shop, nhận customer_id + token. Item là OBSERVED_CURRENT; cần PO xác nhận đây là hành vi dự kiến trước khi dùng làm expected result.",
+  "kb_ids": [
+    "request-authentication#KB-016",
+    "request-authentication#KB-017",
+    "request-authentication#KB-018"
+  ],
+  "tags": [
+    "staging-observed",
+    "risk-flag"
+  ]
+}
+```
+
+## OQ-integrations-034 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-integrations-034",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "webhook-ingestion",
+  "summary": "Quan sát staging mới chạm vùng rủi ro cao (quyền truy cập / tiền / billing): Đơn test Bogus được xử lý như đơn thật: có đơn Mysbox, bốc thăm, mở được, quà thêm vào đơn Shopify; Đơn test không làm tăng Box sales limit khi Exclude Test Order bật. Item là OBSERVED_CURRENT; cần PO xác nhận đây là hành vi dự kiến trước khi dùng làm expected result.",
+  "kb_ids": [
+    "webhook-ingestion#KB-043",
+    "webhook-ingestion#KB-045"
+  ],
+  "tags": [
+    "staging-observed",
+    "risk-flag"
   ]
 }
 ```

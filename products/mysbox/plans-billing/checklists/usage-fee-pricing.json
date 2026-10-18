@@ -2,7 +2,7 @@
   "feature_id": "FEAT-03-usage-fee-pricing",
   "feature_key": "usage-fee-pricing",
   "object_id": "plans-billing",
-  "checklist_version": "1",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -630,12 +630,94 @@
       "status": "READY",
       "open_question_draft": null,
       "related_kb_ids": [
-        "usage-fee-pricing#KB-043"
+        "usage-fee-pricing#KB-043",
+        "usage-fee-pricing#KB-060"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
       "priority": "P3",
       "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-017",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Plan trả phí trên staging dùng phí value-tiered 2% (min $0.25, ngưỡng $12.50) và Capped Amount 10000; Free không có tham số phí",
+      "applicability": {
+        "role": "merchant",
+        "state": "shop gói Free, xem Pricing (chỉ đọc)",
+        "environment": "staging",
+        "surface_or_device": "portal merchant → Pricing + dữ liệu plan nhúng"
+      },
+      "precondition": "Đăng nhập portal; không bấm \"Choose this plan\".",
+      "steps": [
+        "Mở Pricing; ghi dòng phí box vượt trên thẻ Nitro và Booster.",
+        "Đọc dữ liệu plan nhúng của trang: box_value_fee_percentage, box_value_min_fee_usd, box_value_threshold_usd, usage_fee_type, usage_fee_value, capped_amount của từng plan."
+      ],
+      "observation_point": "Dòng phí trên thẻ plan; tham số phí trong dữ liệu plan nhúng.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Thẻ Nitro, Booster ghi \"2% of box sales (min $0.25 each) from the 101st / 501st box sales\". Dữ liệu plan nhúng của các plan trả phí (Nitro, Booster, Prime) có box_value_fee_percentage \"2.00\", box_value_min_fee_usd \"0.25\", box_value_threshold_usd \"12.50\", usage_fee_type và usage_fee_value null, capped_amount 10000; plan Free có các trường phí null.",
+      "oracle": {
+        "kb_ids": [
+          "usage-fee-pricing#KB-060"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging: mọi plan trả phí tính phí value-tiered 2% (min $0.25, ngưỡng $12.50), không có phí theo box cố định, cap 10000. Cấu hình production có giống không, và ngưỡng $12.50 có khớp mức min $0.25 / 2% như thiết kế không?",
+      "related_kb_ids": [
+        "usage-fee-pricing#KB-040",
+        "usage-fee-pricing#KB-042",
+        "usage-fee-pricing#KB-043",
+        "usage-fee-pricing#KB-050",
+        "usage-fee-pricing#KB-053",
+        "usage-fee-pricing#KB-024"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Value-tiered phụ thuộc doanh thu USD sau giảm giá"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-plans-billing-138"
+    },
+    {
+      "check_id": "CHK-018",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Công cụ \"Estimate your app charge\" với giá trị mặc định đề xuất plan và hiện chi phí ước tính",
+      "applicability": {
+        "role": "merchant",
+        "state": "shop gói Free, xem Pricing (chỉ đọc)",
+        "environment": "staging",
+        "surface_or_device": "portal merchant → Pricing"
+      },
+      "precondition": "Đăng nhập portal; mở Pricing, không đổi giá trị trong khối ước tính.",
+      "steps": [
+        "Cuộn tới khối \"Estimate your app charge\".",
+        "Ghi giá trị mặc định của \"Average price of each box\" và \"Total monthly box volume\".",
+        "Ghi plan được đề xuất và chi phí ước tính."
+      ],
+      "observation_point": "Khối \"Estimate your app charge\".",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Giá trị mặc định \"Average price of each box\" 10 USD và \"Total monthly box volume\" 2000 boxes; khối hiện \"Recommended plan for your store: Booster\" và \"Estimated monthly cost (including extra fee): $489.90\".",
+      "oracle": {
+        "kb_ids": [
+          "usage-fee-pricing#KB-060"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging (1 lần đọc, giá trị mặc định): công cụ ước tính đề xuất Booster với $489.90/tháng. Công thức ước tính là gì (có dùng đúng phí value-tiered của plan không) để QA kiểm được với giá trị khác mặc định?",
+      "related_kb_ids": [
+        "usage-fee-pricing#KB-039",
+        "usage-fee-pricing#KB-043"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Merchant chọn sai plan do ước tính sai"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-plans-billing-139"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -692,10 +774,11 @@
         "CHK-005",
         "CHK-006",
         "CHK-007",
-        "CHK-014"
+        "CHK-014",
+        "CHK-017"
       ],
       "coverage": "PARTIAL",
-      "note": "Quy đổi tiền tệ và làm tròn chưa có oracle (CHK-014)."
+      "note": "Quy đổi tiền tệ và làm tròn chưa có oracle (CHK-014); staging dùng value-tiered 2% / min $0.25 / ngưỡng $12.50 (CHK-017)."
     },
     {
       "feature_id": "FEAT-03-usage-fee-pricing",
@@ -714,7 +797,8 @@
       "item": "Capability: Capped Amount",
       "kind": "capability",
       "check_ids": [
-        "CHK-012"
+        "CHK-012",
+        "CHK-017"
       ],
       "coverage": "COVERED"
     },
@@ -732,7 +816,8 @@
       "item": "Capability: Merchant ước tính phí",
       "kind": "capability",
       "check_ids": [
-        "CHK-016"
+        "CHK-016",
+        "CHK-018"
       ],
       "coverage": "COVERED"
     },
@@ -766,7 +851,7 @@
     },
     {
       "dimension": "REGRESSION",
-      "reason": "Run không có base; shard không có item KNOWN_DEFECT."
+      "reason": "Shard REFRESH chỉ thêm KB-060 (quan sát cấu hình staging, không khác base); shard không có item KNOWN_DEFECT."
     }
   ],
   "last_updated": {

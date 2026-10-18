@@ -2,7 +2,7 @@
   "feature_id": "FEAT-02-customer-portal-access-magic-link",
   "feature_key": "customer-portal-access-magic-link",
   "object_id": "reveal",
-  "checklist_version": "1",
+  "checklist_version": "3",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -75,7 +75,8 @@
       "open_question_draft": "Xác nhận bằng test case đã chạy PASS: khách guest mở magic link (mã khách + token còn hạn trong ?parameters=) trên trình duyệt chưa đăng nhập vào được trang đơn / reveal của mình.",
       "related_kb_ids": [
         "customer-portal-access-magic-link#KB-003",
-        "customer-portal-access-magic-link#KB-018"
+        "customer-portal-access-magic-link#KB-018",
+        "customer-portal-access-magic-link#KB-029"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -114,7 +115,11 @@
       },
       "status": "READY",
       "open_question_draft": null,
-      "related_kb_ids": [],
+      "related_kb_ids": [
+        "customer-portal-access-magic-link#KB-029",
+        "customer-portal-access-magic-link#KB-031",
+        "customer-portal-access-magic-link#KB-034"
+      ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
         "R-03"
@@ -150,7 +155,10 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Xác nhận bằng test case đã chạy PASS: trang mở bằng magic link gắn mã khách và token vào mọi lời gọi API. Tên tham số và định dạng mã khách trong magic link là gì?",
       "related_kb_ids": [
-        "customer-portal-access-magic-link#KB-013"
+        "customer-portal-access-magic-link#KB-013",
+        "customer-portal-access-magic-link#KB-030",
+        "customer-portal-access-magic-link#KB-036",
+        "customer-portal-access-magic-link#KB-038"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -307,7 +315,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Xác nhận bằng test case đã chạy PASS: magic link bị cắt mất ?parameters= mở trên trình duyệt chưa đăng nhập thì chuyển về /account và không lộ dữ liệu đơn.",
       "related_kb_ids": [
-        "customer-portal-access-magic-link#KB-027"
+        "customer-portal-access-magic-link#KB-027",
+        "customer-portal-access-magic-link#KB-037"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -345,7 +354,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Xác nhận bằng test case đã chạy PASS: request vào trang khách khi không đăng nhập và không có magic link luôn bị chuyển về /account của shop.",
       "related_kb_ids": [
-        "customer-portal-access-magic-link#KB-027"
+        "customer-portal-access-magic-link#KB-027",
+        "customer-portal-access-magic-link#KB-037"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -634,18 +644,21 @@
         "Sửa URL sang chi tiết đơn thứ hai (giữ ?parameters=), ghi lại kết quả."
       ],
       "observation_point": "Danh sách đơn và trang chi tiết đơn thứ hai.",
-      "expected_result": "",
+      "expected_result": "(baseline staging, lệch = cần điều tra) token và customer_id trong ?parameters= giống hệt nhau giữa magic link của các đơn khác nhau của cùng customer (token theo customer, không theo đơn); link điều hướng nội bộ của app chỉ mang token và customer_id; vào bằng magic link của một đơn, \"Your orders\" liệt kê cả các đơn khác của cùng customer. Kết quả mở trực tiếp chi tiết đơn thứ hai bằng ?parameters= của đơn thứ nhất chưa có baseline — ghi lại.",
       "oracle": {
         "kb_ids": [
-          "customer-portal-access-magic-link#KB-020"
+          "customer-portal-access-magic-link#KB-036",
+          "reveal-journey#KB-116"
         ],
-        "oracle_strength": "NONE"
+        "oracle_strength": "BASELINE"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Một magic link cho phép khách guest xem chỉ đơn mà link chỉ tới hay mọi đơn của cùng khách đó?",
       "related_kb_ids": [
         "customer-portal-access-magic-link#KB-001",
-        "customer-portal-access-magic-link#KB-013"
+        "customer-portal-access-magic-link#KB-013",
+        "customer-portal-access-magic-link#KB-032",
+        "customer-portal-access-magic-link#KB-020"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -654,6 +667,196 @@
       "priority": "P1",
       "automation_suitability": "UNKNOWN",
       "oq_id": "OQ-reveal-037"
+    },
+    {
+      "check_id": "CHK-018",
+      "dimension": "PERMISSION",
+      "layer": "storefront",
+      "title": "Theo dõi: ?parameters= của magic link là base64 JSON đọc được (chứa customer_id, token)",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "đơn guest có box digital",
+        "environment": "staging",
+        "surface_or_device": "khối Mysbox trên trang cảm ơn (href của link Unbox / Multi-unbox)"
+      },
+      "precondition": "Đơn guest có box digital; trang cảm ơn đang mở. Không ghi giá trị token vào bằng chứng.",
+      "steps": [
+        "Đọc href của link Unbox và Multi-unbox trên khối Mysbox.",
+        "Giải mã base64 phần ?parameters= chỉ để đọc tên khoá; không dựng lại hay sửa giá trị."
+      ],
+      "observation_point": "Định dạng của ?parameters= và tên các khoá.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "?parameters= của magic link quan sát là base64 JSON đọc được (chứa customer_id, token, order_id…), không thấy ký/mã hoá. Tài liệu nói token \"được mã hoá\" — ý là encoding hay mã hoá thật? Nếu là mã hoá thật thì staging đang lệch; việc token đọc được trong URL có được chấp nhận về bảo mật không?",
+      "related_kb_ids": [
+        "customer-portal-access-magic-link#KB-031",
+        "customer-portal-access-magic-link#KB-011",
+        "customer-portal-access-magic-link#KB-012",
+        "customer-portal-access-magic-link#KB-036"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "R-01 (security-observation: token đọc được trong URL)"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-reveal-046"
+    },
+    {
+      "check_id": "CHK-019",
+      "dimension": "PERMISSION",
+      "layer": "api",
+      "title": "Theo dõi: endpoint backend thứ hai trả customer_id + token magic link của đơn mà không thấy header xác thực",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "trang cảm ơn của đơn có box digital",
+        "environment": "staging",
+        "surface_or_device": "network của trang cảm ơn (host backend thứ hai, chờ operator xác nhận)"
+      },
+      "precondition": "Mở network capture trên trang cảm ơn của đơn test. Không ghi giá trị token vào bằng chứng.",
+      "steps": [
+        "Tải trang cảm ơn; tìm request lấy customer của đơn (GET .../api/orders/{id}/customer?shop=...).",
+        "Ghi host, header gửi đi (có/không header xác thực) và tên field trong response."
+      ],
+      "observation_point": "Host, header request và field response của lời gọi lấy customer của đơn.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Lời gọi lấy customer của đơn trên trang cảm ơn đi thẳng tới host backend thứ hai (khác expected_api_base của config) và trả customer_id + token magic link mà capture không thấy header xác thực. Host này có phải backend hợp lệ của staging không, endpoint được bảo vệ bằng cơ chế nào (origin/referer, rate limit…) và đây có phải hành vi chủ ý?",
+      "related_kb_ids": [
+        "customer-portal-access-magic-link#KB-034",
+        "customer-portal-access-magic-link#KB-018",
+        "customer-portal-access-magic-link#KB-039",
+        "reveal-journey#KB-108"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "R-01 (security-observation: lộ token qua endpoint không xác thực)"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-reveal-048"
+    },
+    {
+      "check_id": "CHK-020",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "Theo dõi: response 404 của backend thứ hai lộ exception kèm class, đường dẫn file server và stack trace",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "trang cảm ơn hỏi customer của đơn trước khi Mysbox có customer",
+        "environment": "staging",
+        "surface_or_device": "network của trang cảm ơn (host backend thứ hai, chờ operator xác nhận)"
+      },
+      "precondition": "Đơn test vừa paid; mở network capture ngay khi trang cảm ơn tải. Không chép nội dung exception vào bằng chứng.",
+      "steps": [
+        "Tải trang cảm ơn ngay sau khi thanh toán.",
+        "Tìm response 404 của lời gọi lấy customer của đơn; ghi có/không body exception, tên class, đường dẫn file, stack trace."
+      ],
+      "observation_point": "Body của response 404.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Response 404 của host backend thứ hai trên staging trả body exception kèm tên class, đường dẫn tuyệt đối file server và stack trace. Debug mode trên staging có chủ ý không, và production có lộ tương tự không?",
+      "related_kb_ids": [
+        "customer-portal-access-magic-link#KB-035"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "security-observation: lộ thông tin server trong response lỗi"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-reveal-049"
+    },
+    {
+      "check_id": "CHK-021",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Trang \"Your orders\" của khách gọi GET /apps/mysbox/api/orders với header customer-id/customer-token và chip lọc",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "customer guest có nhiều đơn có box",
+        "environment": "staging",
+        "surface_or_device": "trang khách /apps/mysbox/ + network"
+      },
+      "precondition": "Customer guest có ít nhất 2 đơn có box (một đơn mở một phần nếu có); vào trang khách bằng link từ trang cảm ơn; mở network capture.",
+      "steps": [
+        "Mở \"Your orders\"; ghi request GET /apps/mysbox/api/orders và header.",
+        "Đổi chip sang Unopened rồi Opened; ghi query và danh sách đơn mỗi lần."
+      ],
+      "observation_point": "Query, header và response của GET /apps/mysbox/api/orders; danh sách đơn hiển thị.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) GET /apps/mysbox/api/orders?order_by=created_at&direction=desc&page=1 với status tuỳ chọn (unopened|opened) và header customer-id + customer-token trả 200 với data[] là đơn của customer; status=unopened gồm cả đơn mới mở một phần.",
+      "oracle": {
+        "kb_ids": [
+          "customer-portal-access-magic-link#KB-033",
+          "customer-portal-access-magic-link#KB-030"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "customer-portal-access-magic-link#KB-012",
+        "customer-portal-access-magic-link#KB-032"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-reveal-059"
+    },
+    {
+      "check_id": "CHK-022",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "?parameters= bị cắt cụt (không còn là JSON hợp lệ): redirect phía server tới trang Sign in của Shopify, không có thông báo Mysbox",
+      "applicability": {
+        "role": "guest buyer (không có session customer)",
+        "state": "magic link bị cắt cụt một phần ?parameters=",
+        "environment": "staging",
+        "surface_or_device": "trình duyệt ẩn danh + network (shop dùng customer account mới)"
+      },
+      "precondition": "Có magic link hợp lệ của đơn guest; mở network capture trong cửa sổ ẩn danh.",
+      "steps": [
+        "Cắt ?parameters= còn khoảng 1/3 độ dài (base64 vẫn giải được nhưng không còn là JSON hợp lệ); mở URL /apps/mysbox/orders với giá trị đó.",
+        "Lặp lại với link Unbox /…/{box_version_id}/1/open bị cắt tương tự.",
+        "Đối chứng: mở link với ?parameters= nguyên vẹn.",
+        "Ghi chuỗi redirect, trang cuối và các lời gọi /apps/mysbox/api/*."
+      ],
+      "observation_point": "Redirect của document, trang đích cuối, thông báo hiển thị, lời gọi API.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Với ?parameters= bị cắt cụt, document bị redirect phía server và trang cuối là \"Sign in\" của Shopify customer account (\"Sign in or create an account\", ô \"Email\", nút \"Continue\"); không có trang hay thông báo Mysbox nào (kể cả \"magic link is not correct\") và không có lời gọi /apps/mysbox/api/*. Đối chứng ?parameters= nguyên vẹn trả 200 trang Mysbox.",
+      "oracle": {
+        "kb_ids": [
+          "customer-portal-access-magic-link#KB-037"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging: magic link có ?parameters= bị cắt cụt (dữ liệu không hợp lệ) bị redirect tới trang Sign in của Shopify thay vì hiện \"magic link is not correct\". Khách guest làm mất một phần link nên thấy gì là đúng (trang Sign in hay thông báo link sai), và hop trung gian có qua /account như tài liệu không?",
+      "related_kb_ids": [
+        "customer-portal-access-magic-link#KB-005",
+        "customer-portal-access-magic-link#KB-015",
+        "customer-portal-access-magic-link#KB-017"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "R-01",
+        "R-03"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-reveal-068"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -665,7 +868,7 @@
         "CHK-013",
         "CHK-015"
       ],
-      "coverage": "covered; P1 chờ test_case PASS"
+      "coverage": "covered; P1 chờ test_case PASS; staging chỉ có buyer guest"
     },
     {
       "feature_id": "FEAT-02-customer-portal-access-magic-link",
@@ -675,15 +878,17 @@
         "CHK-004",
         "CHK-006",
         "CHK-007",
-        "CHK-017"
+        "CHK-017",
+        "CHK-021"
       ],
-      "coverage": "covered; mốc hạn và phạm vi link chưa có oracle"
+      "coverage": "covered; mốc hạn chưa có oracle; phạm vi link có baseline staging (CHK-017)"
     },
     {
       "feature_id": "FEAT-02-customer-portal-access-magic-link",
       "item": "capability: Lấy link mở box từ trang cảm ơn",
       "check_ids": [
-        "CHK-003"
+        "CHK-003",
+        "CHK-019"
       ],
       "coverage": "covered"
     },
@@ -697,7 +902,8 @@
         "CHK-010",
         "CHK-011",
         "CHK-012",
-        "CHK-014"
+        "CHK-014",
+        "CHK-022"
       ],
       "coverage": "covered; mã phản hồi cụ thể chưa có oracle"
     },
@@ -715,9 +921,12 @@
         "CHK-011",
         "CHK-012",
         "CHK-013",
-        "CHK-017"
+        "CHK-017",
+        "CHK-018",
+        "CHK-019",
+        "CHK-022"
       ],
-      "coverage": "covered; P1 chờ test_case PASS"
+      "coverage": "covered; P1 chờ test_case PASS; 2 watch security-observation"
     },
     {
       "feature_id": "FEAT-02-customer-portal-access-magic-link",
@@ -736,9 +945,18 @@
         "CHK-006",
         "CHK-007",
         "CHK-008",
-        "CHK-014"
+        "CHK-014",
+        "CHK-022"
       ],
       "coverage": "covered"
+    },
+    {
+      "feature_id": "FEAT-02-customer-portal-access-magic-link",
+      "item": "security-observation: lộ thông tin server trong response lỗi",
+      "check_ids": [
+        "CHK-020"
+      ],
+      "coverage": "watch"
     }
   ],
   "excluded_dimensions": [],

@@ -2,7 +2,7 @@
   "feature_id": "FEAT-03-widget-custom-code",
   "feature_key": "widget-custom-code",
   "object_id": "storefront-widget",
-  "checklist_version": "1",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -34,7 +34,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Merchant có bao giờ được tự sửa CSS/JS của widget (ví dụ theo gói hoặc khi support bật cho shop) không, và nếu có thì merchant thao tác ở đâu?",
       "related_kb_ids": [
-        "widget-theme-embed-setup#KB-023"
+        "widget-theme-embed-setup#KB-023",
+        "widget-custom-code#KB-026"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -309,7 +310,7 @@
       "check_id": "CHK-009",
       "dimension": "STATE_DATA",
       "layer": "storefront",
-      "title": "Tuỳ chọn remainText mặc định \"Remain\" khi không có custom script",
+      "title": "Chữ mặc định của tuỳ chọn remainText khi không có custom script — đang conflict giữa tài liệu và staging",
       "applicability": {
         "role": "customer",
         "state": "shop không có custom_script",
@@ -322,21 +323,23 @@
         "Tìm chữ \"Remain\" ở vị trí widget hiển thị số còn lại."
       ],
       "observation_point": "Chữ tương ứng remainText trên widget.",
-      "expected_result": "Khi không đặt remainText, widget hiển thị \"Remain\".",
+      "expected_result": "",
       "oracle": {
-        "kb_ids": [
-          "widget-custom-code#KB-009"
-        ],
-        "oracle_strength": "STRONG"
+        "kb_ids": [],
+        "oracle_strength": "NONE"
       },
       "status": "NEEDS_CONFIRMATION",
-      "open_question_draft": "Chữ của tuỳ chọn remainText (mặc định \"Remain\") hiển thị ở vị trí nào trên widget và trong điều kiện nào; các tuỳ chọn khác của window.Mysbox và window.MysboxCustomOptions có giá trị mặc định là gì?",
+      "open_question_draft": "Giá trị mặc định của remainText: tài liệu ghi \"Remain\"; staging (không có window.Mysbox) hiện \"Remaining boxes: 6/6\" do bundle rơi về remain_text \"Remaining boxes: {remaining-items}/{total-items}\". \"Remain\" là giá trị cũ, giá trị ở surface khác, hay tài liệu sai? Chữ này hiển thị ở vị trí nào trên widget và trong điều kiện nào?",
       "related_kb_ids": [
         "widget-custom-code#KB-007",
-        "widget-custom-code#KB-011"
+        "widget-custom-code#KB-011",
+        "widget-custom-code#KB-009",
+        "widget-custom-code#KB-025"
       ],
       "regression_watch_kb_ids": [],
-      "risk_refs": [],
+      "risk_refs": [
+        "Conflict CONF-storefront-widget-07"
+      ],
       "priority": "P3",
       "automation_suitability": "UNKNOWN",
       "oq_id": "OQ-storefront-widget-031"
@@ -486,6 +489,45 @@
       "priority": "P2",
       "automation_suitability": "NOT_SUITABLE",
       "oq_id": "OQ-storefront-widget-013"
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "STATE_DATA",
+      "layer": "code",
+      "title": "Shop không có custom code: window.Mysbox và window.MysboxCustomOptions không tồn tại, cấu hình trang không mang custom_style/custom_script",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "shop không có custom_style/custom_script",
+        "environment": "staging",
+        "surface_or_device": "storefront trang sản phẩm (DevTools Console, View source)"
+      },
+      "precondition": "Shop test chưa từng được lưu custom code; box Active, widget đã mount trên trang sản phẩm.",
+      "steps": [
+        "Mở trang sản phẩm box (không đăng nhập), chờ widget mount.",
+        "Trong Console đọc typeof window.Mysbox, typeof window.MysboxCustomOptions, window.MYSBOX_LOADED và kiểm có window.mysboxStore, window._Mysbox.",
+        "Đọc script#mysbox-config, window._Mysbox, window.mysboxStore; tìm key custom_style / custom_script."
+      ],
+      "observation_point": "Biến window trong Console; nội dung script cấu hình.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) window.Mysbox và window.MysboxCustomOptions đều undefined; window có mysboxStore, _Mysbox và MYSBOX_LOADED = true; script#mysbox-config, _Mysbox (settings 0), mysboxStore không có key custom_style / custom_script; widget vẫn hiển thị bình thường với tuỳ chọn mặc định.",
+      "oracle": {
+        "kb_ids": [
+          "widget-custom-code#KB-024"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging (shop không có custom code): window.Mysbox và window.MysboxCustomOptions không tồn tại và bundle widget không tham chiếu MysboxCustomOptions/custom_style/custom_script. custom_script được chèn vào trang theo cơ chế nào (khối riêng của theme extension?) và trang khách có đọc MysboxCustomOptions không?",
+      "related_kb_ids": [
+        "widget-custom-code#KB-007",
+        "widget-custom-code#KB-011",
+        "widget-custom-code#KB-017",
+        "widget-custom-code#KB-023"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-storefront-widget-050"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -517,9 +559,11 @@
         "CHK-009",
         "CHK-010",
         "CHK-011",
-        "CHK-012"
+        "CHK-012",
+        "CHK-014"
       ],
-      "covered": true
+      "covered": true,
+      "note": "mặc định remainText đang conflict (CHK-009 NONE)"
     },
     {
       "feature_id": "FEAT-03-widget-custom-code",
@@ -545,6 +589,15 @@
       "check_ids": [],
       "covered": false,
       "note": "dựng một lần ở widget-translations CHK-018"
+    },
+    {
+      "feature_id": "FEAT-03-widget-custom-code",
+      "capability_or_risk": "Conflict CONF-storefront-widget-07: mặc định remainText",
+      "check_ids": [
+        "CHK-009"
+      ],
+      "covered": true,
+      "note": "oracle NONE"
     }
   ],
   "excluded_dimensions": [

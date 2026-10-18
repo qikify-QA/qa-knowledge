@@ -2,7 +2,7 @@
   "feature_id": "FEAT-02-widget-translations",
   "feature_key": "widget-translations",
   "object_id": "storefront-widget",
-  "checklist_version": "1",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -436,7 +436,7 @@
       "check_id": "CHK-013",
       "dimension": "PERMISSION",
       "layer": "portal",
-      "title": "Gói Free: trang Content & Translation chỉ hiện banner và không lưu được",
+      "title": "Gói Free: không lưu được thay đổi ở Content & Translation",
       "applicability": {
         "role": "merchant",
         "state": "shop gói Free",
@@ -450,17 +450,19 @@
         "Tải lại trang, kiểm chuỗi đã sửa."
       ],
       "observation_point": "Nội dung trang; kết quả lưu sau khi tải lại.",
-      "expected_result": "Merchant gói Free chỉ thấy banner trên trang và không lưu được thay đổi.",
+      "expected_result": "Merchant gói Free không lưu được thay đổi: sau khi tải lại, chuỗi vẫn là giá trị trước khi sửa. (Việc trang chỉ hiện banner hay hiện banner kèm form đang conflict, kiểm ở CHK-023.)",
       "oracle": {
         "kb_ids": [
-          "widget-translations#KB-001",
-          "widget-translations#KB-002"
+          "widget-translations#KB-001"
         ],
         "oracle_strength": "STRONG"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Ở gói Free, banner trên trang Content & Translation có nội dung gì, và khi merchant cố sửa/lưu thì giao diện phản hồi thế nào (form bị khoá, thông báo nâng gói hay lỗi)?",
-      "related_kb_ids": [],
+      "related_kb_ids": [
+        "widget-translations#KB-002",
+        "widget-translations#KB-035"
+      ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
         "Giới hạn tính năng theo gói trả phí"
@@ -638,7 +640,8 @@
       "open_question_draft": "Chuỗi mặc định hiển thị tồn kho còn lại trên widget là \"{remaining-items}/{total-items} left\" (bảng nhóm Product của Content & Translation) hay \"{quantity}/{total} left\" (mặc định tuỳ chọn itemStockText của window.Mysbox)? Đây là cùng một chuỗi với hai cú pháp placeholder hay hai chuỗi khác nhau, và khách thấy chuỗi nào khi không có custom script?",
       "related_kb_ids": [
         "widget-translations#KB-011",
-        "widget-custom-code#KB-008"
+        "widget-custom-code#KB-008",
+        "widget-translations#KB-038"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -794,6 +797,125 @@
       "priority": "P1",
       "automation_suitability": "NOT_SUITABLE",
       "oq_id": "OQ-storefront-widget-020"
+    },
+    {
+      "check_id": "CHK-023",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "Theo dõi conflict: merchant gói Free mở Content & Translation thấy chỉ banner hay banner kèm form",
+      "applicability": {
+        "role": "merchant",
+        "state": "shop gói Free",
+        "environment": "staging",
+        "surface_or_device": "portal merchant → Content & Translation"
+      },
+      "precondition": "Shop test ở gói Free.",
+      "steps": [
+        "Mở Content & Translation.",
+        "Ghi lại banner (tiêu đề, nội dung, nút).",
+        "Ghi lại phần dưới banner: có form không, các tab, nút \"Default Text\" / \"Translation\", ô nhập có bị khoá (disabled/readonly) không, có nút Save không."
+      ],
+      "observation_point": "Toàn bộ nội dung trang Content & Translation ở gói Free.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Merchant gói Free mở Content & Translation: tài liệu nói chỉ thấy banner; staging hiện banner kèm toàn bộ form (8 tab, input không bị khoá). Expected cho gói Free là chỉ banner hay banner + form chỉ đọc/không lưu được?",
+      "related_kb_ids": [
+        "widget-translations#KB-002",
+        "widget-translations#KB-035",
+        "widget-translations#KB-001"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Giới hạn tính năng theo gói trả phí"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-storefront-widget-043"
+    },
+    {
+      "check_id": "CHK-024",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Nhóm general-settings trả cùng 16 chuỗi mặc định ở portal, trang khách và config trang sản phẩm",
+      "applicability": {
+        "role": "merchant + guest buyer",
+        "state": "shop chưa lưu bản dịch",
+        "environment": "staging",
+        "surface_or_device": "portal Content & Translation + trang khách /apps/mysbox/ + trang sản phẩm + network"
+      },
+      "precondition": "Shop test chưa lưu bản dịch; có đơn test để mở trang khách; mở network capture.",
+      "steps": [
+        "Mở Content & Translation (tab General); ghi response GET <MYS_API_BASE>/api/translations/general-settings?locale=default.",
+        "Mở trang khách của đơn (sau Multi-unbox); ghi response GET /apps/mysbox/api/translations/general-settings?locale=default.",
+        "Mở trang sản phẩm box; đọc _Mysbox.mysboxTranslation.default trong script cấu hình.",
+        "So sánh ba nguồn và 16 textbox của tab General."
+      ],
+      "observation_point": "Response hai API, giá trị _Mysbox.mysboxTranslation.default, textbox tab General.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Cả hai API trả cùng 16 key: box_items \"Box items \" (có dấu cách cuối), unbox_button \"Unbox\", multi_unbox_button \"Multi-unbox\", view_details_button \"View details\", chance_text \"Chance\", order_detail_title \"Unbox your mystery boxes\", unboxed_count_label \"unboxed\", view_box_history_button \"View box history\", add_to_cart \"Add to cart\", quantity \"Quantity\", skip_button \"Skip\", flip_all_card_button \"Flip all card\", common.back \"Back\", common.loading \"Loading\", common.items \"Items\", no_items_found \"No items found\"; giống hệt _Mysbox.mysboxTranslation.default; tab General có 16 textbox tương ứng.",
+      "oracle": {
+        "kb_ids": [
+          "widget-translations#KB-036"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging: nhóm general-settings có 16 chuỗi mặc định (box_items có dấu cách cuối \"Box items \") và không có \"Auto-open in: {time}\". Đây có phải bộ chuỗi mặc định chính thức không, dấu cách cuối có chủ ý không, và \"Auto-open in: {time}\" thuộc nhóm nào?",
+      "related_kb_ids": [
+        "widget-translations#KB-007",
+        "widget-translations#KB-008"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-storefront-widget-059"
+    },
+    {
+      "check_id": "CHK-025",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Portal và trang khách tải bản dịch theo nhóm với locale=default",
+      "applicability": {
+        "role": "merchant + guest buyer",
+        "state": "shop chưa lưu bản dịch, shopLocale en",
+        "environment": "staging",
+        "surface_or_device": "portal Content & Translation + trang khách /apps/mysbox/orders/{id}/winner + trang sản phẩm + network"
+      },
+      "precondition": "Shop test chưa lưu bản dịch; có đơn test mở được trang winner; mở network capture.",
+      "steps": [
+        "Mở trang khách /apps/mysbox/orders/{id}/winner; ghi các request /apps/mysbox/api/translations/* (nhóm, tham số locale, status, data).",
+        "Mở Content & Translation, tab General và Product page; ghi các request /api/translations/*.",
+        "Mở trang sản phẩm box; đọc _Mysbox.mysboxTranslation, mysboxProductPageTranslation, mysboxUnboxingTranslation trong script cấu hình."
+      ],
+      "observation_point": "Request bản dịch (nhóm, locale, response) và biến bản dịch trong config trang sản phẩm.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Trang khách gọi GET /apps/mysbox/api/translations/{general-settings, unboxing, buyback-widget, order, share-unboxing}?locale=default, đều 200; chỉ general-settings có data, 4 nhóm còn lại trả {\"data\":null}. Portal gọi /api/translations/general-settings và /api/translations/product với locale=default (product trả {\"data\":null}). locale gửi đi là \"default\" dù shopLocale là \"en\". Trên trang sản phẩm, _Mysbox.mysboxTranslation có key \"default\", mysboxProductPageTranslation = 0 và mysboxUnboxingTranslation = 0.",
+      "oracle": {
+        "kb_ids": [
+          "widget-translations#KB-037"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging (shop chưa có bản dịch, shopLocale en): mọi request bản dịch gửi locale=default. Khi shop có ngôn ngữ phụ và bản dịch, client gửi locale nào, và metafield shop nào là nguồn của các API này?",
+      "related_kb_ids": [
+        "widget-translations#KB-007",
+        "widget-translations#KB-009",
+        "widget-translations#KB-014",
+        "widget-translations#KB-018",
+        "widget-translations#KB-020",
+        "widget-translations#KB-022",
+        "widget-translations#KB-024",
+        "widget-translations#KB-029"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-storefront-widget-060"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -815,10 +937,11 @@
       "capability_or_risk": "Giới hạn theo gói",
       "check_ids": [
         "CHK-013",
-        "CHK-014"
+        "CHK-014",
+        "CHK-023"
       ],
       "covered": true,
-      "note": "P1, chờ test_case PASS"
+      "note": "P1, chờ test_case PASS; giao diện gói Free đang conflict (CHK-023 NONE)"
     },
     {
       "feature_id": "FEAT-02-widget-translations",
@@ -839,9 +962,12 @@
       "feature_id": "FEAT-02-widget-translations",
       "capability_or_risk": "Bản dịch lưu và publish ra storefront",
       "check_ids": [
-        "CHK-016"
+        "CHK-016",
+        "CHK-024",
+        "CHK-025"
       ],
-      "covered": true
+      "covered": true,
+      "note": "staging chỉ quan sát shop chưa có bản dịch (locale=default)"
     },
     {
       "feature_id": "FEAT-02-widget-translations",
@@ -858,7 +984,7 @@
         "CHK-018"
       ],
       "covered": false,
-      "note": "oracle NONE tới khi giải conflict"
+      "note": "oracle NONE tới khi giải conflict; staging (KB-038) nghiêng về {remaining-items}/{total-items} left"
     },
     {
       "feature_id": "FEAT-02-widget-translations",
@@ -879,12 +1005,21 @@
       ],
       "covered": true,
       "note": "regression watch"
+    },
+    {
+      "feature_id": "FEAT-02-widget-translations",
+      "capability_or_risk": "Conflict CONF-storefront-widget-06: gói Free thấy gì ở Content & Translation",
+      "check_ids": [
+        "CHK-023"
+      ],
+      "covered": true,
+      "note": "oracle NONE; KB-002 đã rút khỏi CHK-013"
     }
   ],
   "excluded_dimensions": [
     {
       "dimension": "BOUNDARY",
-      "reason": "Tài liệu không nêu giới hạn độ dài chuỗi, số ngôn ngữ hay ký tự cho bản dịch; quy tắc ngoặc nhọn được kiểm ở NEGATIVE (CHK-011, CHK-012)."
+      "reason": "Tài liệu không nêu giới hạn độ dài chuỗi, số ngôn ngữ hay ký tự cho bản dịch; quy tắc ngoặc nhọn được kiểm ở NEGATIVE (CHK-011, CHK-012). Quan sát staging không thử giá trị biên nào cho bản dịch."
     }
   ],
   "last_updated": {

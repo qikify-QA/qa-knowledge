@@ -20,7 +20,12 @@
         "storefront-data-sync#KB-009",
         "storefront-data-sync#KB-011",
         "storefront-data-sync#KB-040"
-      ]
+      ],
+      "observed_kb_refs": [
+        "storefront-data-sync#KB-047",
+        "storefront-data-sync#KB-048"
+      ],
+      "refresh_note": "Staging: publish lần đầu ghi metafield variant mysbox.box; sau đơn test pools giảm trong ≤ 23 giây."
     },
     {
       "role": "customer",
@@ -39,6 +44,28 @@
         "storefront-data-sync#KB-022",
         "storefront-data-sync#KB-046"
       ]
+    },
+    {
+      "role": "guest buyer (staging, quan sát)",
+      "permission_observed": "OBSERVED_CURRENT staging: khách vãng lai xem widget box Active, đọc được config shop + token Storefront API trong HTML trang; đặt đơn test Bogus.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "storefront-data-sync#KB-048",
+        "storefront-data-sync#KB-049",
+        "storefront-data-sync#KB-050",
+        "storefront-data-sync#KB-053",
+        "_object-level.storefront-widget#KB-006"
+      ]
+    },
+    {
+      "role": "merchant (staging, quan sát)",
+      "permission_observed": "OBSERVED_CURRENT staging/gói Free: tạo + publish box, Deactivate, sửa và Save khi Draft.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "storefront-data-sync#KB-047",
+        "storefront-data-sync#KB-051",
+        "storefront-data-sync#KB-052"
+      ]
     }
   ],
   "entry_points": [
@@ -50,7 +77,13 @@
         "storefront-data-sync#KB-025",
         "storefront-data-sync#KB-026",
         "storefront-data-sync#KB-027"
-      ]
+      ],
+      "observed_kb_refs": [
+        "storefront-data-sync#KB-047",
+        "storefront-data-sync#KB-049",
+        "storefront-data-sync#KB-051"
+      ],
+      "refresh_note": "Staging: metafield nhúng vào window.mysboxStore.mysboxProductPageData.variantMetafields; sau Deactivate metafield vẫn in (published_at null) nhưng widget không render."
     },
     {
       "path": "Checkout → trang cảm ơn / trạng thái đơn (block \"Unbox your mystery box now!\")",
@@ -75,6 +108,16 @@
         "storefront-data-sync#KB-032",
         "storefront-data-sync#KB-033"
       ]
+    },
+    {
+      "path": "Portal: form box → Save lần đầu (publish) / Deactivate box / Save khi Draft — staging",
+      "precondition": "Merchant đăng nhập app; box do run tạo.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "storefront-data-sync#KB-047",
+        "storefront-data-sync#KB-051",
+        "storefront-data-sync#KB-052"
+      ]
     }
   ],
   "capabilities": [
@@ -94,7 +137,14 @@
         "storefront-data-sync#KB-022",
         "storefront-data-sync#KB-040",
         "_object-level.storefront-widget#KB-004"
-      ]
+      ],
+      "observed_kb_refs": [
+        "storefront-data-sync#KB-047",
+        "storefront-data-sync#KB-051",
+        "storefront-data-sync#KB-052",
+        "_object-level.storefront-widget#KB-006"
+      ],
+      "refresh_note": "Staging: variant chỉ có đúng một metafield mysbox.box (4 lần đọc); Deactivate giữ metafield với published_at null; Save khi Draft tạo version mới nhưng không ghi lại metafield (~47s)."
     },
     {
       "name": "Widget trang sản phẩm hiển thị box, món, giá",
@@ -109,7 +159,13 @@
         "storefront-data-sync#KB-023",
         "storefront-data-sync#KB-024",
         "storefront-data-sync#KB-045"
-      ]
+      ],
+      "observed_kb_refs": [
+        "storefront-data-sync#KB-049",
+        "storefront-data-sync#KB-050",
+        "storefront-data-sync#KB-053"
+      ],
+      "refresh_note": "Staging: 2 request Storefront GraphQL (getVariants, getProducts) bằng token window._Mysbox.storefrontToken; chế độ tồn kho không hiện Chance và giá item."
     },
     {
       "name": "Điều kiện ẩn/hiện widget từ dữ liệu đã publish",
@@ -120,7 +176,11 @@
         "storefront-data-sync#KB-027",
         "storefront-data-sync#KB-042",
         "storefront-data-sync#KB-043"
-      ]
+      ],
+      "observed_kb_refs": [
+        "storefront-data-sync#KB-051"
+      ],
+      "refresh_note": "Staging: sau Deactivate widget không render dù metafield còn (published_at null); Add to cart vẫn hiện."
     },
     {
       "name": "Block checkout và tài khoản khách đọc dữ liệu",
@@ -158,7 +218,12 @@
         "storefront-data-sync#KB-041",
         "storefront-data-sync#KB-044",
         "storefront-data-sync#KB-046"
-      ]
+      ],
+      "observed_kb_refs": [
+        "storefront-data-sync#KB-048",
+        "storefront-data-sync#KB-052"
+      ],
+      "refresh_note": "Staging, 1 đơn: tồn kho trên widget đổi trong ≤ 23 giây sau paid; không phân xử CONF-02/-03. Save khi Draft không ghi lại metafield."
     }
   ],
   "state_transitions": [
@@ -181,6 +246,9 @@
         "storefront-data-sync#KB-025",
         "storefront-data-sync#KB-026",
         "storefront-data-sync#KB-027"
+      ],
+      "observed_kb_refs": [
+        "storefront-data-sync#KB-047"
       ]
     },
     {
@@ -204,6 +272,37 @@
         "storefront-data-sync#KB-043",
         "storefront-data-sync#KB-046"
       ]
+    },
+    {
+      "from": "Box Active, pools metafield = tồn kho trước đơn",
+      "to": "pools giảm 1 ở item trúng; quantity/chance/version giữ nguyên; widget hiện số mới",
+      "trigger": "Đơn test paid (Bogus)",
+      "condition": "OBSERVED_CURRENT staging, 1 đơn; độ trễ ≤ 23 giây.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "storefront-data-sync#KB-048",
+        "storefront-data-sync#KB-053"
+      ]
+    },
+    {
+      "from": "Box Active (metafield published_at có giá trị, widget render)",
+      "to": "Box Draft (metafield giữ, published_at null, widget không render)",
+      "trigger": "Deactivate box (POST /unpublish), không có hộp thoại xác nhận",
+      "condition": "OBSERVED_CURRENT staging, 1 lần.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "storefront-data-sync#KB-051"
+      ]
+    },
+    {
+      "from": "Box Draft, version N",
+      "to": "Box Draft, version N+1 (metafield vẫn version cũ)",
+      "trigger": "Save hợp lệ khi Draft (PUT /api/boxes/{id})",
+      "condition": "OBSERVED_CURRENT staging, 2 lần; không có POST /publish.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "storefront-data-sync#KB-052"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -218,7 +317,11 @@
       "rule": "App chỉ thêm dữ liệu vào variant mystery (không sửa gì khác); metafield biến thể mysbox.box chứa cấu hình box và widget đọc từ đó.",
       "kb_refs": [
         "storefront-data-sync#KB-003"
-      ]
+      ],
+      "refresh_kb_refs": [
+        "storefront-data-sync#KB-047"
+      ],
+      "refresh_note": "Staging corroborate: variant chỉ có metafield mysbox.box (KB-047)."
     },
     {
       "rule": "Khối hiển thị tồn kho trên storefront được cập nhật nền sau mỗi lần bốc, bị giới hạn ở vài lần ghi Shopify mỗi giây mỗi shop.",
@@ -279,7 +382,11 @@
       "rule": "Metafield mysbox.box chứa ảnh chụp box: loại, trạng thái publish, bundles/món, chance, tồn kho/pool và cài đặt (store credit, hiển thị tồn kho...).",
       "kb_refs": [
         "storefront-data-sync#KB-015"
-      ]
+      ],
+      "refresh_kb_refs": [
+        "storefront-data-sync#KB-047"
+      ],
+      "refresh_note": "Staging corroborate: shape JSON quan sát được ghi ở KB-047."
     },
     {
       "rule": "Widget lấy cài đặt giao diện từ metafield shop mysbox.config (kết quả Style Settings: ẩn tên/chance/giá, hình dạng ảnh, Show recent pulls...).",
@@ -325,7 +432,11 @@
         "storefront-data-sync#KB-025",
         "storefront-data-sync#KB-026",
         "storefront-data-sync#KB-027"
-      ]
+      ],
+      "refresh_kb_refs": [
+        "storefront-data-sync#KB-051"
+      ],
+      "refresh_note": "Staging corroborate: box Draft → widget không render (KB-051)."
     },
     {
       "rule": "Block trang cảm ơn / trạng thái đơn đọc mysbox.box của từng dòng hàng, cùng bản dịch, gói và capabilities.",
@@ -401,21 +512,112 @@
       "kb_refs": [
         "storefront-data-sync#KB-036"
       ]
+    },
+    {
+      "statement": "Save lần đầu box mới gọi POST /api/boxes 201 rồi POST /api/boxes/{id}/publish 200; variant chỉ có một metafield \"mysbox.box\" (id, type, settings, bundles[].items, tracked_inventory, current_version_id, published_at, inventory.pools...), cùng shape được nhúng vào window.mysboxStore.mysboxProductPageData.variantMetafields — 4 lần đọc.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 4,
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "storefront-data-sync#KB-047"
+      ]
+    },
+    {
+      "statement": "Một đơn Bogus test: widget từ \"Remaining boxes: 6/6\" sang \"5/6\" và \"2/2 left\" sang \"1/2 left\"; metafield pools đã giảm ở mẫu HTML đầu tiên +23 giây sau paid; không đổi thêm tới +5 phút (kể cả sau Multi-unbox). Độ trễ ≤ 23 giây.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "storefront-data-sync#KB-048"
+      ]
+    },
+    {
+      "statement": "Số tồn kho widget = inventory.pools / quantity của metafield render trong Liquid; Storefront API (getVariants/getProducts) không có quantityAvailable, getProducts trả metafield null; trang product không gọi API Mysbox hay /apps/mysbox/*.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-storefront-widget-04",
+      "kb_refs": [
+        "storefront-data-sync#KB-049"
+      ]
+    },
+    {
+      "statement": "Token Storefront API có sẵn ở window._Mysbox.storefrontToken (32 ký tự, giá trị không ghi) và được gửi qua header X-Shopify-Storefront-Access-Token tới /api/2026-04/graphql.json cùng domain storefront (200).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "storefront-data-sync#KB-050"
+      ]
+    },
+    {
+      "statement": "Deactivate box: không có hộp thoại xác nhận, POST /unpublish 200, badge Draft; metafield mysbox.box còn (~1 phút) với published_at null; Liquid vẫn in metafield nhưng widget không render, Add to cart/Buy it now vẫn hiện.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "storefront-data-sync#KB-051"
+      ]
+    },
+    {
+      "statement": "Box Draft: Chance trong form tự tính lại theo Remaining khi gõ; Save hợp lệ gọi PUT /api/boxes/{id} 200 và tạo current_version_id mới (3026 → 3027 → 3028), không POST /publish, box vẫn Draft; metafield ~47 giây sau vẫn version 3026.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "LOW",
+      "kb_refs": [
+        "storefront-data-sync#KB-052"
+      ]
+    },
+    {
+      "statement": "Box bật \"Show remaining stock\" + Style Settings mặc định: thẻ item chỉ hiện \"x/y left\", không có \"Chance: xx.xx%\" và không hiện giá; settings.chance trong metafield giữ nguyên sau đơn dù tồn kho giảm.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "LOW",
+      "kb_refs": [
+        "storefront-data-sync#KB-053"
+      ]
     }
   ],
-  "observed_validations": [],
+  "observed_validations": [
+    {
+      "input": "Box Draft: tổng Remaining các item của Prize #1 (6) khác số box trong kho (\"5 boxes in stock\"), bấm Save",
+      "message_verbatim": "Couldn't be saved / The item quantities in Prize #1 are inconsistent. Please adjust each item so that the total quantities equals 5.",
+      "condition": "Chặn phía client, không gửi request.",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "storefront-data-sync#KB-052"
+      ]
+    }
+  ],
   "permissions": [
     {
       "statement": "Metafield cấu hình shop và bản dịch là công khai — ai xem mã trang cũng đọc được.",
       "kb_refs": [
         "_object-level.storefront-widget#KB-004"
-      ]
+      ],
+      "observed_kb_refs": [
+        "_object-level.storefront-widget#KB-006"
+      ],
+      "refresh_note": "Staging: script#mysbox-config inline JS gán window._Mysbox (settings, storefrontToken, bản dịch, subscription, capabilities) đọc được bởi khách vãng lai."
     },
     {
       "statement": "Storefront API được gọi bằng token công khai; cách cấp/quản lý token chưa được tài liệu nêu.",
       "kb_refs": [
         "storefront-data-sync#KB-023"
-      ]
+      ],
+      "observed_kb_refs": [
+        "storefront-data-sync#KB-050"
+      ],
+      "refresh_note": "Staging: token nằm ở window._Mysbox.storefrontToken, gửi qua X-Shopify-Storefront-Access-Token."
     }
   ],
   "limitations": [
@@ -425,20 +627,41 @@
         "storefront-data-sync#KB-006",
         "storefront-data-sync#KB-041",
         "storefront-data-sync#KB-044"
-      ]
+      ],
+      "observed_kb_refs": [
+        "storefront-data-sync#KB-048"
+      ],
+      "refresh_note": "Một đơn staging: ≤ 23 giây — nằm trong mọi phía, không thành oracle."
     },
     {
       "statement": "Nguồn tồn kho từng món (Storefront API hay dữ liệu đã publish) đang conflict — INFERRED/LOW.",
       "kb_refs": [
         "storefront-data-sync#KB-019",
         "storefront-data-sync#KB-039"
-      ]
+      ],
+      "observed_kb_refs": [
+        "storefront-data-sync#KB-049"
+      ],
+      "refresh_note": "Quan sát staging nghiêng về dữ liệu đã publish (KB-049, UNRESOLVED) — không phân xử."
     },
     {
       "statement": "Ví dụ chance cũ hiện tới khi metafield được ghi lại, và nhận định dữ liệu publish cũ là gốc thường gặp gây sai hàng loạt, chỉ là ví dụ/lời rào đón — INFERRED/LOW.",
       "kb_refs": [
         "storefront-data-sync#KB-037",
         "storefront-data-sync#KB-038"
+      ],
+      "observed_kb_refs": [
+        "storefront-data-sync#KB-052"
+      ],
+      "refresh_note": "Save khi Draft không ghi lại metafield (hướng khớp KB-037); chance trên widget không quan sát được vì widget ẩn khi Draft."
+    },
+    {
+      "statement": "Quan sát staging chỉ có 1 đơn test, 1 box (Single, tracked, show_item_stock); xoá box và Activate lại không thử.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "storefront-data-sync#KB-048",
+        "storefront-data-sync#KB-051",
+        "storefront-data-sync#KB-052"
       ]
     }
   ],
@@ -448,6 +671,17 @@
         "item": "Publish box (kích hoạt ghi metafield)",
         "kb_refs": [
           "storefront-data-sync#KB-022"
+        ],
+        "observed_kb_refs": [
+          "storefront-data-sync#KB-047"
+        ]
+      },
+      {
+        "item": "Form box: Deactivate box (không xác nhận), Save khi Draft (Chance tự tính, chặn tổng Remaining) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "storefront-data-sync#KB-051",
+          "storefront-data-sync#KB-052"
         ]
       }
     ],
@@ -457,6 +691,10 @@
         "kb_refs": [
           "storefront-data-sync#KB-012",
           "storefront-data-sync#KB-023"
+        ],
+        "observed_kb_refs": [
+          "storefront-data-sync#KB-049",
+          "storefront-data-sync#KB-053"
         ]
       },
       {
@@ -478,6 +716,15 @@
         "kb_refs": [
           "storefront-data-sync#KB-032"
         ]
+      },
+      {
+        "item": "script#mysbox-config (window.mysboxStore, window._Mysbox) trong HTML trang product — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "_object-level.storefront-widget#KB-006",
+          "storefront-data-sync#KB-047",
+          "storefront-data-sync#KB-050"
+        ]
       }
     ],
     "api": [
@@ -498,6 +745,50 @@
         "kb_refs": [
           "storefront-data-sync#KB-023",
           "storefront-data-sync#KB-033"
+        ],
+        "observed_kb_refs": [
+          "storefront-data-sync#KB-049",
+          "storefront-data-sync#KB-050"
+        ]
+      },
+      {
+        "item": "POST /api/2026-04/graphql.json (getVariants, getProducts; header X-Shopify-Storefront-Access-Token) — staging",
+        "method": "POST",
+        "route": "/api/2026-04/graphql.json",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "storefront-data-sync#KB-049",
+          "storefront-data-sync#KB-050"
+        ]
+      },
+      {
+        "item": "POST /api/boxes (201), POST /api/boxes/{box_id}/publish (200) — staging",
+        "method": "POST",
+        "route": "/api/boxes · /api/boxes/{box_id}/publish",
+        "host": "<MYS_API_BASE>",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "storefront-data-sync#KB-047"
+        ]
+      },
+      {
+        "item": "POST /api/boxes/{box_id}/unpublish (200) — staging",
+        "method": "POST",
+        "route": "/api/boxes/{box_id}/unpublish",
+        "host": "<MYS_API_BASE>",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "storefront-data-sync#KB-051"
+        ]
+      },
+      {
+        "item": "PUT /api/boxes/{box_id} (200, version mới) — staging",
+        "method": "PUT",
+        "route": "/api/boxes/{box_id}",
+        "host": "<MYS_API_BASE>",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "storefront-data-sync#KB-052"
         ]
       }
     ],
@@ -507,7 +798,14 @@
         "kb_refs": [
           "storefront-data-sync#KB-003",
           "storefront-data-sync#KB-015"
-        ]
+        ],
+        "observed_kb_refs": [
+          "storefront-data-sync#KB-047",
+          "storefront-data-sync#KB-048",
+          "storefront-data-sync#KB-051",
+          "storefront-data-sync#KB-052"
+        ],
+        "refresh_note": "Staging: inventory.pools giảm sau đơn; published_at null sau Deactivate; version không đổi sau Save khi Draft."
       },
       {
         "item": "Metafield shop mysbox.config, subscription, capabilities, bản dịch; metafield mirror khi cài app",
@@ -516,6 +814,9 @@
           "storefront-data-sync#KB-016",
           "storefront-data-sync#KB-017",
           "storefront-data-sync#KB-018"
+        ],
+        "observed_kb_refs": [
+          "_object-level.storefront-widget#KB-006"
         ]
       }
     ],
@@ -529,6 +830,10 @@
         "storefront-data-sync#KB-022",
         "storefront-data-sync#KB-025",
         "storefront-data-sync#KB-026"
+      ],
+      "observed_kb_refs": [
+        "storefront-data-sync#KB-047",
+        "storefront-data-sync#KB-051"
       ]
     },
     {
@@ -561,6 +866,9 @@
       "kb_refs": [
         "storefront-data-sync#KB-004",
         "storefront-data-sync#KB-035"
+      ],
+      "observed_kb_refs": [
+        "storefront-data-sync#KB-048"
       ]
     },
     {
@@ -592,6 +900,17 @@
       "reason": "Kết quả Style Settings nằm trong mysbox.config.",
       "kb_refs": [
         "storefront-data-sync#KB-017"
+      ],
+      "observed_kb_refs": [
+        "storefront-data-sync#KB-053"
+      ]
+    },
+    {
+      "feature_key": "box-versioning",
+      "reason": "Save khi Draft tạo current_version_id mới nhưng metafield giữ version đã publish.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "storefront-data-sync#KB-052"
       ]
     }
   ],
@@ -618,10 +937,27 @@
       "kb_refs": [
         "storefront-data-sync#KB-046"
       ]
+    },
+    {
+      "statement": "Sau Deactivate metafield vẫn còn trên variant (published_at null) và Add to cart vẫn hiện — khách vẫn mua được variant box Draft nếu điều kiện chặn mua không nằm ở chỗ khác.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "storefront-data-sync#KB-051"
+      ]
+    },
+    {
+      "statement": "Token Storefront API và cấu hình shop lộ trong HTML trang (đúng thiết kế công khai theo tài liệu, nhưng cần kiểm phạm vi quyền của token).",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "storefront-data-sync#KB-050",
+        "_object-level.storefront-widget#KB-006",
+        "_object-level.storefront-widget#KB-004"
+      ]
     }
   ],
   "freshness": {
-    "observed_at": null
+    "observed_at": "2026-10-17",
+    "base_observed_at": null
   },
   "unknown_areas": [
     {
@@ -631,7 +967,11 @@
         "storefront-data-sync#KB-041",
         "storefront-data-sync#KB-044"
       ],
-      "oq_id": "OQ-storefront-widget-002"
+      "oq_id": "OQ-storefront-widget-002",
+      "refresh_note": "Một đơn staging: ≤ 23 giây; không trả lời câu hỏi về expected (CONFLICT).",
+      "refresh_kb_refs": [
+        "storefront-data-sync#KB-048"
+      ]
     },
     {
       "question": "Độ trễ của khối hiển thị tồn kho: vài giây (tài liệu tồn kho) hay một phút / vài phút (playbook storefront)? Độ trễ tối đa là bao nhiêu?",
@@ -641,7 +981,11 @@
         "storefront-data-sync#KB-041",
         "storefront-data-sync#KB-044"
       ],
-      "oq_id": "OQ-storefront-widget-003"
+      "oq_id": "OQ-storefront-widget-003",
+      "refresh_note": "≤ 23 giây, mốc dưới không đo được; một đơn.",
+      "refresh_kb_refs": [
+        "storefront-data-sync#KB-048"
+      ]
     },
     {
       "question": "Tồn kho từng món trên widget lấy từ Storefront API của Shopify (luôn mới) hay từ dữ liệu đã publish do app ghi lên biến thể (có thể cũ)? Có phải hai loại tồn kho khác nhau (tồn kho sản phẩm Shopify vs tồn kho/pool của box)?",
@@ -650,7 +994,11 @@
         "storefront-data-sync#KB-019",
         "storefront-data-sync#KB-039"
       ],
-      "oq_id": "OQ-storefront-widget-004"
+      "oq_id": "OQ-storefront-widget-004",
+      "refresh_note": "Staging: số tồn kho lấy từ metafield mysbox.box in trong Liquid (pools/quantity); Storefront API không có quantityAvailable (KB-049, UNRESOLVED). OQ type CONFLICT — không gỡ.",
+      "refresh_kb_refs": [
+        "storefront-data-sync#KB-049"
+      ]
     },
     {
       "question": "Khi lần ghi metafield thất bại, hệ thống có retry, cảnh báo hay ghi log cho merchant/admin không; mức độ nghiêm trọng và kế hoạch sửa các hạn chế dữ liệu cũ (kể cả cờ capacity cũ)?",
@@ -671,7 +1019,14 @@
         "storefront-data-sync#KB-015",
         "storefront-data-sync#KB-022"
       ],
-      "oq_id": "OQ-storefront-widget-008"
+      "oq_id": "OQ-storefront-widget-008",
+      "refresh_note": "Staging: variant chỉ có mysbox.box; ghi khi publish, pools cập nhật sau đơn, giữ với published_at null khi Deactivate, không ghi lại khi Save lúc Draft. Danh sách đầy đủ vẫn cần Dev — không gỡ.",
+      "refresh_kb_refs": [
+        "storefront-data-sync#KB-047",
+        "storefront-data-sync#KB-048",
+        "storefront-data-sync#KB-051",
+        "storefront-data-sync#KB-052"
+      ]
     },
     {
       "question": "Deactivate (về Draft) box có xoá metafield mysbox.box không, hay chỉ xoá khi xoá box?",
@@ -681,7 +1036,11 @@
         "storefront-data-sync#KB-025",
         "storefront-data-sync#KB-042"
       ],
-      "oq_id": "OQ-storefront-widget-009"
+      "oq_id": "OQ-storefront-widget-009",
+      "refresh_note": "Nửa Deactivate đã có quan sát staging (1 lần): metafield KHÔNG bị xoá, chỉ published_at = null (KB-051). Nửa \"chỉ xoá khi xoá box\" không thử (cấm xoá) → chưa trả lời đầy đủ, giữ unknown area; orchestrator có thể thu hẹp câu hỏi về nhánh xoá box.",
+      "refresh_kb_refs": [
+        "storefront-data-sync#KB-051"
+      ]
     },
     {
       "question": "Metafield khách dùng cho store credit được tài liệu viết hai cách (có và không có tiền tố namespace mysbox) — có phải cùng một metafield?",
@@ -706,7 +1065,11 @@
         "storefront-data-sync#KB-007",
         "storefront-data-sync#KB-023"
       ],
-      "oq_id": "OQ-storefront-widget-011"
+      "oq_id": "OQ-storefront-widget-011",
+      "refresh_note": "Staging: token ở window._Mysbox.storefrontToken, gửi qua X-Shopify-Storefront-Access-Token; cấp/quản lý và hành vi lỗi chưa quan sát — không gỡ.",
+      "refresh_kb_refs": [
+        "storefront-data-sync#KB-050"
+      ]
     },
     {
       "question": "Hai plan đặc biệt vĩnh viễn được miễn điều kiện ẩn widget/khối unbox theo trạng thái hết hạn là plan nào?",
@@ -723,11 +1086,40 @@
         "storefront-data-sync#KB-015",
         "storefront-data-sync#KB-042"
       ],
-      "oq_id": "OQ-storefront-widget-008"
+      "oq_id": "OQ-storefront-widget-008",
+      "refresh_note": "Staging: metafield có mảng bundles[].items {linked_id, quantity, rate, position, settings} (KB-047) — shape thấy được, ý nghĩa điều kiện hiển thị chưa xác nhận.",
+      "refresh_kb_refs": [
+        "storefront-data-sync#KB-047"
+      ]
+    },
+    {
+      "question": "Activate lại box đã sửa khi Draft có ghi metafield mysbox.box version mới (quantity/chance mới) không, và widget hiện chance nào sau đó?",
+      "why_it_matters": "Save khi Draft không ghi lại metafield (KB-052); nếu Activate cũng không ghi thì widget hiện chance/tồn kho cũ.",
+      "kb_refs": [
+        "storefront-data-sync#KB-052",
+        "storefront-data-sync#KB-037"
+      ],
+      "oq_id": "OQ-storefront-widget-061"
+    },
+    {
+      "question": "Khi box Draft (metafield published_at null) khách vẫn bấm Add to cart / Buy it now trên variant box được — đơn đó được xử lý thế nào?",
+      "why_it_matters": "Widget ẩn nhưng nút mua vẫn hiện (KB-051); chưa có expected result cho đơn mua box Draft.",
+      "kb_refs": [
+        "storefront-data-sync#KB-051"
+      ],
+      "oq_id": "OQ-storefront-widget-062"
+    },
+    {
+      "question": "Vì sao getProducts (Storefront API) trả metafield mysbox.box = null trong khi Liquid in được metafield đó — widget có phụ thuộc vào trường này không?",
+      "why_it_matters": "Có thể là quyền đọc metafield của token Storefront; ảnh hưởng nguồn dữ liệu dự phòng của widget.",
+      "kb_refs": [
+        "storefront-data-sync#KB-049"
+      ],
+      "oq_id": "OQ-storefront-widget-063"
     }
   ],
   "last_updated": {
-    "date": "2026-10-16",
+    "date": "2026-10-17",
     "ccr_ref": "bootstrap"
   },
   "coverage_matrix": [
@@ -810,6 +1202,91 @@
       "state": "any",
       "environment": "production",
       "covered": false
+    },
+    {
+      "feature_id": "FEAT-04-storefront-data-sync",
+      "layer": "data",
+      "role": "merchant",
+      "state": "publish lần đầu → metafield variant mysbox.box",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "storefront-data-sync#KB-047"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-storefront-data-sync",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "box Active, show_item_stock, trước/sau 1 đơn test (độ trễ tồn kho)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "storefront-data-sync#KB-048",
+        "storefront-data-sync#KB-049",
+        "storefront-data-sync#KB-053"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-storefront-data-sync",
+      "layer": "api",
+      "role": "guest buyer",
+      "state": "Storefront GraphQL getVariants/getProducts thành công",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "storefront-data-sync#KB-049",
+        "storefront-data-sync#KB-050"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-storefront-data-sync",
+      "layer": "storefront",
+      "role": "merchant + guest buyer",
+      "state": "box Deactivate → Draft",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "storefront-data-sync#KB-051"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-storefront-data-sync",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "sửa + Save khi Draft",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "storefront-data-sync#KB-052"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-storefront-data-sync",
+      "layer": "storefront",
+      "role": "logged_in_customer",
+      "state": "any",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: không có session khách đăng nhập."
+    },
+    {
+      "feature_id": "FEAT-04-storefront-data-sync",
+      "layer": "data",
+      "role": "merchant",
+      "state": "xoá box / Activate lại sau sửa / đổi gói",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: cấm xoá, box phải kết thúc Draft, cấm đổi plan."
+    },
+    {
+      "feature_id": "FEAT-04-storefront-data-sync",
+      "layer": "storefront",
+      "role": "customer",
+      "state": "block checkout Thank-you / banner Unbox alert",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED trong shard này (quan sát checkout extension thuộc object reveal)."
     }
   ],
   "profile_conflicts": [
@@ -828,7 +1305,13 @@
         ],
         "summary": "Playbook storefront mục box báo hết hàng sai: trễ vài phút là bình thường."
       },
-      "resolution": "UNRESOLVED"
+      "resolution": "UNRESOLVED",
+      "observation_notes": [
+        {
+          "kb_ref": "storefront-data-sync#KB-048",
+          "note": "Staging 1 đơn: ≤ 23 giây — nhất quán với cả hai phía, không phân biệt."
+        }
+      ]
     },
     {
       "conflict_group": "CONF-storefront-widget-03",
@@ -846,7 +1329,13 @@
         ],
         "summary": "Playbook storefront: trễ một phút / vài phút là bình thường."
       },
-      "resolution": "UNRESOLVED"
+      "resolution": "UNRESOLVED",
+      "observation_notes": [
+        {
+          "kb_ref": "storefront-data-sync#KB-048",
+          "note": "≤ 23 giây, mốc dưới không đo được; không phân biệt chắc chắn."
+        }
+      ]
     },
     {
       "conflict_group": "CONF-storefront-widget-04",
@@ -863,7 +1352,13 @@
         ],
         "summary": "Playbook storefront: widget không đọc tồn kho trực tiếp từ Shopify mà đọc dữ liệu đã publish trên biến thể."
       },
-      "resolution": "UNRESOLVED"
+      "resolution": "UNRESOLVED",
+      "observation_notes": [
+        {
+          "kb_ref": "storefront-data-sync#KB-049",
+          "note": "Staging: số tồn kho khớp metafield render trong Liquid; Storefront API không có quantityAvailable — nghiêng phía B (KB-039). Item mang UNRESOLVED; không phân xử."
+        }
+      ]
     }
   ],
   "profile_relationships": [
@@ -893,6 +1388,16 @@
       "note": "Custom code cũng tới storefront qua metafield.",
       "kb_refs": [
         "storefront-data-sync#KB-010"
+      ]
+    },
+    {
+      "from": "storefront-data-sync",
+      "to": "box-versioning",
+      "type": "shares_state",
+      "note": "Staging: version mới khi Save lúc Draft không được ghi vào metafield.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "storefront-data-sync#KB-052"
       ]
     }
   ]

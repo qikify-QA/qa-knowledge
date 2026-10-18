@@ -2,7 +2,7 @@
   "feature_id": "FEAT-04-storefront-data-sync",
   "feature_key": "storefront-data-sync",
   "object_id": "storefront-widget",
-  "checklist_version": "1",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -35,7 +35,8 @@
       "open_question_draft": null,
       "related_kb_ids": [
         "storefront-data-sync#KB-009",
-        "storefront-data-sync#KB-011"
+        "storefront-data-sync#KB-011",
+        "storefront-data-sync#KB-047"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -614,7 +615,8 @@
       "related_kb_ids": [
         "storefront-data-sync#KB-005",
         "storefront-data-sync#KB-040",
-        "storefront-data-sync#KB-009"
+        "storefront-data-sync#KB-009",
+        "storefront-data-sync#KB-048"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -686,7 +688,8 @@
       "related_kb_ids": [
         "storefront-data-sync#KB-006",
         "storefront-data-sync#KB-041",
-        "storefront-data-sync#KB-044"
+        "storefront-data-sync#KB-044",
+        "storefront-data-sync#KB-048"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -725,7 +728,8 @@
       "related_kb_ids": [
         "storefront-data-sync#KB-019",
         "storefront-data-sync#KB-039",
-        "storefront-data-sync#KB-015"
+        "storefront-data-sync#KB-015",
+        "storefront-data-sync#KB-049"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -762,7 +766,8 @@
       "open_question_draft": "Khi merchant sửa chance trong Mysbox mà chưa publish lại, widget có tiếp tục hiện chance cũ cho tới khi metafield được ghi lại không; sửa box có tự kích hoạt ghi lại metafield hay chỉ khi publish?",
       "related_kb_ids": [
         "storefront-data-sync#KB-037",
-        "storefront-data-sync#KB-022"
+        "storefront-data-sync#KB-022",
+        "storefront-data-sync#KB-052"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -889,6 +894,254 @@
       "priority": "P1",
       "automation_suitability": "SUITABLE",
       "oq_id": "OQ-storefront-widget-026"
+    },
+    {
+      "check_id": "CHK-025",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "Sau một đơn, metafield chỉ giảm pool của item trúng và widget phản ánh trong vòng vài chục giây",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "box Single Active, \"Show remaining stock\" bật, không custom script",
+        "environment": "staging",
+        "surface_or_device": "storefront trang sản phẩm + checkout test (Bogus Gateway) + Shopify admin metafield"
+      },
+      "precondition": "Box test Single tracked, 3 item quantity khác nhau, \"Show remaining stock\" bật; ghi lại \"Remaining boxes\", nhãn \"x/y left\" từng item và inventory.pools[0].items trong metafield mysbox.box.",
+      "steps": [
+        "Đặt 1 đơn test (1 box) qua Bogus Gateway; ghi thời điểm đơn paid.",
+        "Tải lại trang sản phẩm box theo chu kỳ ~15 giây; ghi thời điểm đầu tiên metafield in trong trang (Liquid) và widget đổi.",
+        "Ghi item khách trúng; so inventory.pools[0].items, quantity, settings.chance và current_version_id trước/sau.",
+        "Đọc lại metafield mysbox.box trong Shopify admin."
+      ],
+      "observation_point": "Dòng \"Remaining boxes\", nhãn \"x/y left\"; metafield trong HTML và trong Shopify admin.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Mẫu trang đầu tiên sau khi đơn paid (≤ 23 giây) đã có inventory.pools[0].items giảm 1 đúng ở item khách trúng; quantity, settings.chance và current_version_id giữ nguyên; widget hiện \"Remaining boxes\" giảm 1 (vd 6/6 → 5/6) và nhãn item trúng giảm tử số (vd 2/2 left → 1/2 left); các lần tải sau (kể cả sau Multi-unbox) không đổi thêm; metafield trong Shopify admin khớp.",
+      "oracle": {
+        "kb_ids": [
+          "storefront-data-sync#KB-048",
+          "storefront-data-sync#KB-053"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging (1 đơn): tồn kho trên widget cập nhật ≤ 23 giây sau khi đơn paid, chỉ pool của item trúng giảm, chance trong metafield không tính lại. Đây có phải hành vi mong đợi (chance hiển thị không tính lại theo tồn kho còn lại), và độ trễ tối đa chấp nhận được là bao nhiêu?",
+      "related_kb_ids": [
+        "storefront-data-sync#KB-004",
+        "storefront-data-sync#KB-006",
+        "storefront-data-sync#KB-009",
+        "storefront-data-sync#KB-041",
+        "storefront-data-sync#KB-044"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Giới hạn tốc độ ghi gây trễ hiển thị tồn kho"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-storefront-widget-044"
+    },
+    {
+      "check_id": "CHK-026",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Box vừa publish: variant chỉ có metafield mysbox.box với shape cố định, trang sản phẩm nhúng cùng dữ liệu",
+      "applicability": {
+        "role": "merchant + guest buyer",
+        "state": "box Single digital tracked vừa Save lần đầu (tự publish)",
+        "environment": "staging",
+        "surface_or_device": "portal merchant + Shopify admin (variant metafield) + storefront (window.mysboxStore)"
+      },
+      "precondition": "Mở network capture; form box mới hợp lệ (Single, digital, tracked, \"Show remaining stock\").",
+      "steps": [
+        "Bấm Save; ghi các request POST /api/boxes và POST /api/boxes/{id}/publish.",
+        "Shopify admin: mở variant của box, liệt kê metafield và đọc giá trị mysbox.box.",
+        "Mở trang sản phẩm box (không đăng nhập); đọc window.mysboxStore.mysboxProductPageData.variantMetafields.",
+        "Đọc lại metafield variant sau vài chục phút."
+      ],
+      "observation_point": "Request Save/publish; danh sách và giá trị metafield variant; variantMetafields trên trang.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) POST <MYS_API_BASE>/api/boxes trả 201 rồi POST /api/boxes/{id}/publish trả 200 (box Active). Variant chỉ có đúng một metafield \"mysbox.box\" (không có key khác), JSON gồm id, linked_id, type, category, settings {picking_mode, title, image, animation, bundles_animation, enable_store_credit, buyback_enabled, buyback_refund_method, show_item_stock, randomization_method}, bundles[].items {linked_id, quantity, rate, position, settings {chance, chance_color, title, image, price {amount, currencyCode}}}, tracked_inventory, current_version_id, published_at, created_at, updated_at và inventory {mode \"stock\", tracked, pools[{id, position, available, items}]}; trang sản phẩm nhúng đúng metafield này (cùng shape) vào variantMetafields; đọc lại sau đó vẫn chỉ có key này.",
+      "oracle": {
+        "kb_ids": [
+          "storefront-data-sync#KB-047"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging (một box, 4 lần đọc): variant chỉ có metafield mysbox.box với shape như đã ghi. Đây có phải contract ổn định của metafield (key nào bắt buộc), và Mysbox còn ghi metafield ở những thời điểm nào khác?",
+      "related_kb_ids": [
+        "storefront-data-sync#KB-003",
+        "storefront-data-sync#KB-015",
+        "storefront-data-sync#KB-022"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-storefront-widget-045"
+    },
+    {
+      "check_id": "CHK-027",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Widget gọi Storefront API bằng token phía client trong header X-Shopify-Storefront-Access-Token",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "box Active",
+        "environment": "staging",
+        "surface_or_device": "storefront trang sản phẩm + DevTools"
+      },
+      "precondition": "Box Active có item; mở DevTools → Network.",
+      "steps": [
+        "Mở trang sản phẩm box (không đăng nhập).",
+        "Trong Console, kiểm window._Mysbox.storefrontToken có giá trị (chỉ ghi độ dài, không ghi giá trị).",
+        "Trong Network, lọc request POST /api/<version>/graphql.json; ghi domain, initiator, tên query, header X-Shopify-Storefront-Access-Token có/không và có khớp token trên trang không (không ghi giá trị).",
+        "Đọc response getVariants: các field trả về."
+      ],
+      "observation_point": "window._Mysbox.storefrontToken; request Storefront API (domain, header, query, response).",
+      "expected_result": "(baseline staging, lệch = cần điều tra) window._Mysbox.storefrontToken là chuỗi 32 ký tự do script cấu hình của trang render; widget gửi đúng giá trị đó trong header X-Shopify-Storefront-Access-Token cho 2 request POST https://<MYS_STORE_DOMAIN>/api/2026-04/graphql.json (cùng domain storefront, initiator mysbox-v1.js, đều 200); getVariants trả title, ảnh, giá và availableForSale của các variant prize.",
+      "oracle": {
+        "kb_ids": [
+          "storefront-data-sync#KB-050"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging: token Storefront API nằm công khai trong trang (window._Mysbox.storefrontToken) và được widget gửi qua header. Token này được cấp/xoay vòng thế nào, phạm vi quyền của nó là gì, và widget xử lý ra sao khi lời gọi Storefront API lỗi?",
+      "related_kb_ids": [
+        "storefront-data-sync#KB-019",
+        "storefront-data-sync#KB-023",
+        "storefront-data-sync#KB-007",
+        "_object-level.storefront-widget#KB-004"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Dữ liệu công khai trên storefront"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-storefront-widget-046"
+    },
+    {
+      "check_id": "CHK-028",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "Deactivate box: metafield giữ lại với published_at null và widget không render",
+      "applicability": {
+        "role": "merchant + guest buyer",
+        "state": "box Active đã bán → Draft sau Deactivate",
+        "environment": "staging",
+        "surface_or_device": "portal merchant + Shopify admin metafield + storefront trang sản phẩm"
+      },
+      "precondition": "Box test Active, đã có đơn; widget đang hiện; mở network capture.",
+      "steps": [
+        "Trong portal bấm \"Deactivate box\"; ghi có hộp thoại xác nhận không, request và response.",
+        "Đọc metafield variant \"mysbox.box\" sau ~1 phút.",
+        "Tải lại trang sản phẩm box (không đăng nhập); đọc metafield in trong trang, console và khối widget; kiểm nút Add to cart / Buy it now."
+      ],
+      "observation_point": "Request unpublish; badge trạng thái; metafield variant; widget và nút mua trên trang sản phẩm.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Không có hộp thoại xác nhận; POST <MYS_API_BASE>/api/boxes/{id}/unpublish trả 200 với published_at null, current_version_id và inventory giữ nguyên; badge chuyển \"Draft\". Metafield \"mysbox.box\" vẫn còn trên variant, cùng nội dung nhưng published_at = null. Trên trang sản phẩm, metafield vẫn được in ra với published_at null, console log widget mounted không lỗi, nhưng khối widget không render gì (không \"Box items\", \"Remaining boxes\", \"Powered by Mysbox\"); nút Add to cart / Buy it now vẫn hiện.",
+      "oracle": {
+        "kb_ids": [
+          "storefront-data-sync#KB-051"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging (1 lần): sau Deactivate, widget ẩn nhưng nút Add to cart / Buy it now của biến thể box vẫn hiện và metafield vẫn còn với published_at null. Khách có mua được biến thể box đang Draft không, và đó có phải hành vi mong đợi?",
+      "related_kb_ids": [
+        "storefront-data-sync#KB-003",
+        "storefront-data-sync#KB-025",
+        "storefront-data-sync#KB-026",
+        "storefront-data-sync#KB-042",
+        "widget-theme-embed-setup#KB-020",
+        "widget-theme-embed-setup#KB-031"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Khách có thể mua box Draft khi nút mua vẫn hiện"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-storefront-widget-047"
+    },
+    {
+      "check_id": "CHK-029",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Sửa và Save box khi Draft: tạo version mới, không tự publish, metafield variant không ghi lại",
+      "applicability": {
+        "role": "merchant",
+        "state": "box Draft (sau Deactivate)",
+        "environment": "staging",
+        "surface_or_device": "portal merchant + network + Shopify admin metafield"
+      },
+      "precondition": "Box test ở Draft; ghi current_version_id và metafield \"mysbox.box\" hiện tại; mở network capture.",
+      "steps": [
+        "Sửa Remaining của các item sao cho tổng khớp số box trong kho, bấm Save; ghi request và response.",
+        "Kiểm có request POST /publish không và trạng thái box sau Save.",
+        "Đọc metafield \"mysbox.box\" của variant sau ~1 phút; so current_version_id, quantity và chance với trước khi Save."
+      ],
+      "observation_point": "Request PUT/publish; current_version_id; trạng thái box; metafield variant.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Mỗi lần Save hợp lệ gọi PUT <MYS_API_BASE>/api/boxes/{id} 200 và tạo current_version_id mới với quantity/chance mới; không có POST /publish và box vẫn Draft; metafield variant \"mysbox.box\" đọc sau đó vẫn là version cũ (quantity, chance cũ, published_at null).",
+      "oracle": {
+        "kb_ids": [
+          "storefront-data-sync#KB-052"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging: Save box ở Draft tạo version mới nhưng không ghi lại metafield variant. Khi Activate lại, metafield có được ghi theo version mới nhất không, và với box đang Active thì Save có ghi lại metafield ngay không?",
+      "related_kb_ids": [
+        "storefront-data-sync#KB-037",
+        "storefront-data-sync#KB-022",
+        "storefront-data-sync#KB-013"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Widget hiển thị cấu hình cũ sau khi merchant sửa box"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-storefront-widget-048"
+    },
+    {
+      "check_id": "CHK-030",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Box bật \"Show remaining stock\": thẻ item chỉ hiện nhãn tồn kho, không hiện Chance và giá",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "box Active, \"Show remaining stock\" bật, Style Settings mặc định",
+        "environment": "staging",
+        "surface_or_device": "storefront trang sản phẩm"
+      },
+      "precondition": "Box test Single bật \"Show remaining stock\"; Style Settings giữ mặc định (Hide item price ON).",
+      "steps": [
+        "Mở trang sản phẩm box (không đăng nhập).",
+        "Đọc từng thẻ item: nhãn hiển thị, có chữ \"Chance\" không, có giá không.",
+        "So với settings.chance và price trong metafield in trên trang."
+      ],
+      "observation_point": "Thẻ item trên widget; metafield trong trang.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Mỗi thẻ item chỉ hiện nhãn tồn kho \"x/y left\"; không có chữ \"Chance: xx.xx%\" và không hiện giá item dù metafield có price.",
+      "oracle": {
+        "kb_ids": [
+          "storefront-data-sync#KB-053"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging: ở chế độ \"Show remaining stock\", thẻ item chỉ hiện \"x/y left\" và không có Chance. Hai chế độ hiển thị (tồn kho / chance) có loại trừ nhau theo thiết kế không, và chế độ \"Show original chance\" hiển thị gì trên storefront?",
+      "related_kb_ids": [
+        "storefront-data-sync#KB-007",
+        "storefront-data-sync#KB-015",
+        "storefront-data-sync#KB-021",
+        "widget-theme-embed-setup#KB-009",
+        "widget-theme-embed-setup#KB-025"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-storefront-widget-049"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -900,7 +1153,8 @@
         "CHK-002",
         "CHK-003",
         "CHK-004",
-        "CHK-018"
+        "CHK-018",
+        "CHK-026"
       ],
       "covered": true
     },
@@ -913,7 +1167,9 @@
         "CHK-007",
         "CHK-008",
         "CHK-009",
-        "CHK-010"
+        "CHK-010",
+        "CHK-027",
+        "CHK-030"
       ],
       "covered": true
     },
@@ -923,10 +1179,11 @@
       "check_ids": [
         "CHK-011",
         "CHK-012",
-        "CHK-013"
+        "CHK-013",
+        "CHK-028"
       ],
       "covered": true,
-      "note": "Active / không có món kiểm ở widget-theme-embed-setup CHK-009, CHK-010"
+      "note": "Active / không có món kiểm ở widget-theme-embed-setup CHK-009, CHK-010; Deactivate có baseline staging (CHK-028)"
     },
     {
       "feature_id": "FEAT-04-storefront-data-sync",
@@ -953,10 +1210,12 @@
         "CHK-019",
         "CHK-020",
         "CHK-021",
-        "CHK-022"
+        "CHK-022",
+        "CHK-025",
+        "CHK-029"
       ],
       "covered": true,
-      "note": "độ trễ và nguồn tồn kho chưa có oracle (conflict)"
+      "note": "độ trễ và nguồn tồn kho chưa có oracle (conflict); staging: ≤ 23 giây sau một đơn, Save khi Draft không ghi lại metafield"
     },
     {
       "feature_id": "FEAT-04-storefront-data-sync",
@@ -973,7 +1232,8 @@
       "feature_id": "FEAT-04-storefront-data-sync",
       "capability_or_risk": "Dữ liệu công khai trên storefront",
       "check_ids": [
-        "CHK-024"
+        "CHK-024",
+        "CHK-027"
       ],
       "covered": true
     }

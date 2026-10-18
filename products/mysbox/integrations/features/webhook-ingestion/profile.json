@@ -23,7 +23,12 @@
         "webhook-ingestion#KB-001",
         "webhook-ingestion#KB-007",
         "webhook-ingestion#KB-009"
-      ]
+      ],
+      "observed_kb_refs": [
+        "webhook-ingestion#KB-043",
+        "webhook-ingestion#KB-044"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-17 (gián tiếp): đơn test Bogus paid → bản ghi đơn Mysbox ~5 giây sau; webhook không thấy trực tiếp trong trình duyệt."
     },
     {
       "role": "system (AWS EventBridge)",
@@ -41,6 +46,16 @@
         "webhook-ingestion#KB-035",
         "_product-level#KB-PL-006"
       ]
+    },
+    {
+      "role": "guest buyer + merchant (staging, quan sát hệ quả)",
+      "permission_observed": "OBSERVED_CURRENT staging: khách vãng lai thanh toán đơn test Bogus và mở box; merchant thấy đơn ở Manage orders, Box sales limit và trang đơn Shopify admin.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "webhook-ingestion#KB-043",
+        "webhook-ingestion#KB-044",
+        "webhook-ingestion#KB-045"
+      ]
     }
   ],
   "entry_points": [
@@ -53,7 +68,11 @@
         "webhook-ingestion#KB-010",
         "webhook-ingestion#KB-021",
         "webhook-ingestion#KB-022"
-      ]
+      ],
+      "observed_kb_refs": [
+        "webhook-ingestion#KB-043"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-17: chỉ thấy hệ quả của orders/paid (đơn Mysbox được tạo); request webhook không thấy."
     },
     {
       "path": "/webhook/event-bridge — webhook Shopify chuyển tiếp qua AWS EventBridge (production)",
@@ -123,6 +142,18 @@
         "webhook-ingestion#KB-033",
         "webhook-ingestion#KB-035"
       ]
+    },
+    {
+      "name": "Đơn đã thanh toán được Mysbox xử lý sau orders/paid (hệ quả quan sát staging)",
+      "description": "OBSERVED_CURRENT (một đơn test Bogus, cờ Exclude Test Order bật): Mysbox tạo bản ghi đơn (có opening request) ~5 giây sau paid, bốc thăm xong (winning_bundles[].winning_items), block trang cảm ơn hiện link Unbox ≤ 9 giây sau paid, khách mở được box, Manage orders liệt kê \"1/1 boxes opened\" / \"Unfulfilled\", quà được thêm vào đơn Shopify; bộ đếm Box sales limit không tăng. Không suy cho POS/kênh khác.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "webhook-ingestion#KB-043",
+        "webhook-ingestion#KB-044",
+        "webhook-ingestion#KB-045",
+        "webhook-ingestion#KB-001",
+        "webhook-ingestion#KB-041"
+      ]
     }
   ],
   "state_transitions": [
@@ -178,6 +209,17 @@
         "webhook-ingestion#KB-033",
         "webhook-ingestion#KB-035"
       ]
+    },
+    {
+      "from": "Đơn test Bogus vừa paid (chưa có trong Mysbox)",
+      "to": "Đơn Mysbox được tạo (~5 giây), link Unbox trên trang cảm ơn (≤ 9 giây), đã bốc thăm",
+      "trigger": "Shopify gửi orders/paid (server-to-server, không thấy trực tiếp)",
+      "condition": "OBSERVED_CURRENT staging 2026-10-17, một mẫu; cột Date của Manage orders hiện created_at của bản ghi Mysbox theo giờ máy, không phải giờ paid",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "webhook-ingestion#KB-043",
+        "webhook-ingestion#KB-044"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -185,6 +227,9 @@
       "rule": "Shopify đóng vai trò gửi webhook cho Mysbox.",
       "kb_refs": [
         "webhook-ingestion#KB-001"
+      ],
+      "refresh_kb_refs": [
+        "webhook-ingestion#KB-043"
       ]
     },
     {
@@ -378,6 +423,39 @@
       "kb_refs": [
         "webhook-ingestion#KB-042"
       ]
+    },
+    {
+      "behavior": "Đơn test thanh toán qua Bogus Gateway (1 box digital, cờ Exclude Test Order bật) được xử lý như đơn thật: Mysbox tạo bản ghi đơn (có opening request), bốc thăm xong (winning_bundles[].winning_items), block trang cảm ơn hiện \"Unbox your mystery box now!\" với link Multi-unbox/Unbox, khách mở được box; Manage orders liệt kê \"1/1 boxes opened\", \"Unfulfilled\"; trang đơn Shopify admin có dòng quà ₫0 \"MYSBOX: -100%\" và timeline \"edited this order\" + \"sent an order edited email\".",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "note": "Webhook server-to-server không thấy trực tiếp; ghi usage billing chưa quan sát.",
+      "kb_refs": [
+        "webhook-ingestion#KB-043"
+      ]
+    },
+    {
+      "behavior": "Đơn test paid lúc 11:32:53Z: bản ghi đơn Mysbox created_at 11:32:58Z (~5 giây); endpoint customer của block trang cảm ơn 404 lúc ~11:32:56Z rồi 200 lúc ~11:33:00Z; link Unbox hiện muộn nhất 11:33:01.9Z (≤ 9 giây sau paid); cột Date của Manage orders hiện created_at bản ghi Mysbox theo giờ máy (18:32:58 ở UTC+7).",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "note": "Một mẫu, mốc gián tiếp — không dùng làm boundary; endpoint customer ở host chưa xác nhận.",
+      "kb_refs": [
+        "webhook-ingestion#KB-044"
+      ]
+    },
+    {
+      "behavior": "Trước và sau một đơn test Bogus 1 box (đã bốc thăm và mở), shop gói Free có exclude_test_order true: Box sales limit giữ \"0 / 10\", dữ liệu nhúng giữ box_sold_in_cycle 0, box_capacity_used 0; tồn pool của món trúng giảm từ 1 về 0.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "note": "Một mẫu; không kết luận quan hệ nhân quả với cờ; usage billing chưa quan sát.",
+      "kb_refs": [
+        "webhook-ingestion#KB-045"
+      ]
     }
   ],
   "observed_validations": [],
@@ -419,6 +497,14 @@
       "kb_refs": [
         "webhook-ingestion#KB-038"
       ]
+    },
+    {
+      "limitation": "Quan sát staging 2026-10-17 chỉ thấy hệ quả gián tiếp của orders/paid cho một đơn test (webhook server-to-server không thấy); HMAC sai, X-Api-Key, giao trùng, topic khác, Horizon không quan sát.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "webhook-ingestion#KB-043",
+        "webhook-ingestion#KB-044"
+      ]
     }
   ],
   "permissions": [
@@ -444,8 +530,27 @@
     }
   ],
   "surface_mapping": {
-    "portal": [],
-    "storefront": [],
+    "portal": [
+      {
+        "surface": "Manage orders (\"1/1 boxes opened\", \"Unfulfilled\", cột Date = created_at bản ghi Mysbox) và Box sales limit sau đơn test — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "webhook-ingestion#KB-043",
+          "webhook-ingestion#KB-044",
+          "webhook-ingestion#KB-045"
+        ]
+      }
+    ],
+    "storefront": [
+      {
+        "surface": "Block trang cảm ơn hiện \"Unbox your mystery box now!\" + link Multi-unbox/Unbox sau paid — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "webhook-ingestion#KB-043",
+          "webhook-ingestion#KB-044"
+        ]
+      }
+    ],
     "api": [
       {
         "surface": "/webhook — webhook Shopify gửi trực tiếp qua HTTP, kiểm HMAC, staging",
@@ -469,6 +574,9 @@
         "kb_refs": [
           "webhook-ingestion#KB-032",
           "webhook-ingestion#KB-042"
+        ],
+        "observed_kb_refs": [
+          "webhook-ingestion#KB-043"
         ]
       },
       {
@@ -477,9 +585,30 @@
           "webhook-ingestion#KB-002",
           "webhook-ingestion#KB-003"
         ]
+      },
+      {
+        "surface": "GET /api/orders, /api/orders/{id} (merchant đọc đơn test: winning_bundles, created_at) — staging",
+        "method": "GET",
+        "route": "/api/orders/{id}",
+        "host": "<MYS_API_BASE>",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "webhook-ingestion#KB-043",
+          "webhook-ingestion#KB-044"
+        ]
       }
     ],
-    "data": [],
+    "data": [
+      {
+        "surface": "Bản ghi đơn Mysbox (opening request, winning_bundles, created_at) tạo sau orders/paid; box_sold_in_cycle / box_capacity_used không đổi với đơn test — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "webhook-ingestion#KB-043",
+          "webhook-ingestion#KB-044",
+          "webhook-ingestion#KB-045"
+        ]
+      }
+    ],
     "code": [],
     "backend": [
       {
@@ -529,6 +658,13 @@
         "webhook-ingestion#KB-033",
         "webhook-ingestion#KB-035"
       ]
+    },
+    {
+      "dependency": "Cờ Exclude Test Order của shop và bộ đếm hạn mức (đơn test không làm tăng Box sales limit — quan sát staging).",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "webhook-ingestion#KB-045"
+      ]
     }
   ],
   "risks": [
@@ -564,10 +700,19 @@
         "webhook-ingestion#KB-012",
         "webhook-ingestion#KB-014"
       ]
+    },
+    {
+      "risk": "Đơn test được bốc thăm và trừ tồn pool như đơn thật (quan sát staging) trong khi không tính vào hạn mức — test trên shop có tồn kho thật sẽ tiêu tồn món.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "webhook-ingestion#KB-043",
+        "webhook-ingestion#KB-045"
+      ]
     }
   ],
   "freshness": {
-    "observed_at": null
+    "observed_at": "2026-10-17",
+    "base_observed_at": null
   },
   "unknown_areas": [
     {
@@ -672,7 +817,12 @@
       "kb_refs": [
         "webhook-ingestion#KB-041"
       ],
-      "oq_id": "OQ-integrations-025"
+      "oq_id": "OQ-integrations-025",
+      "refresh_note": "Quan sát staging 2026-10-17 (một đơn test Bogus, cờ Exclude Test Order bật): có đơn Mysbox, opening request, bốc thăm, khách mở được, quà thêm vào đơn Shopify (KB-043); Box sales limit 0/10 → 0/10 (KB-045); ghi usage billing chưa quan sát. OQ NEEDS_CONFIRMATION — không gỡ.",
+      "refresh_kb_refs": [
+        "webhook-ingestion#KB-043",
+        "webhook-ingestion#KB-045"
+      ]
     },
     {
       "question": "Lịch gửi lại của Shopify khi nhận 401 (số lần, khoảng cách) là gì?",
@@ -702,7 +852,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-10-16",
+    "date": "2026-10-17",
     "ccr_ref": "bootstrap"
   },
   "coverage_matrix": [
@@ -865,6 +1015,48 @@
       "environment": "documented",
       "covered": false,
       "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-02-webhook-ingestion",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "đơn test Bogus sau orders/paid: Manage orders, Box sales limit",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "webhook-ingestion#KB-043",
+        "webhook-ingestion#KB-045"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-webhook-ingestion",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "trang cảm ơn sau paid: link Unbox, độ trễ",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "webhook-ingestion#KB-043",
+        "webhook-ingestion#KB-044"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-webhook-ingestion",
+      "layer": "api",
+      "role": "system (Shopify)",
+      "state": "request webhook trực tiếp (HMAC, header, body, giao trùng, topic khác)",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: webhook server-to-server không thấy từ trình duyệt; không forge webhook."
+    },
+    {
+      "feature_id": "FEAT-02-webhook-ingestion",
+      "layer": "backend",
+      "role": "admin-staff",
+      "state": "Horizon failed jobs / usage billing đơn test",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: admin/backend không bật; job billing 00:00 UTC không quan sát."
     }
   ],
   "profile_conflicts": [
@@ -915,6 +1107,24 @@
       "kb_refs": [
         "webhook-ingestion#KB-033",
         "webhook-ingestion#KB-035"
+      ]
+    },
+    {
+      "from": "webhook-ingestion",
+      "to": "dashboard-and-analytics",
+      "relation": "RELATED",
+      "note": "Đơn test không làm tăng Box sales limit khi Exclude Test Order bật (quan sát staging).",
+      "kb_refs": [
+        "webhook-ingestion#KB-045"
+      ]
+    },
+    {
+      "from": "webhook-ingestion",
+      "to": "purchase-and-prize-draw",
+      "relation": "RELATED",
+      "note": "orders/paid dẫn tới tạo đơn Mysbox và bốc thăm (hệ quả quan sát staging).",
+      "kb_refs": [
+        "webhook-ingestion#KB-043"
       ]
     }
   ]

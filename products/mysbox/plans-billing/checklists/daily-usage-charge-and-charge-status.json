@@ -2,7 +2,7 @@
   "feature_id": "FEAT-04-daily-usage-charge-and-charge-status",
   "feature_key": "daily-usage-charge-and-charge-status",
   "object_id": "plans-billing",
-  "checklist_version": "1",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -86,7 +86,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Cần test case đã chạy PASS xác nhận job chỉ xử lý shop thoả cả bốn điều kiện (Paid, subscription Active, không trial, có dòng phí chưa gửi); shop Free có sinh Charge nào không?",
       "related_kb_ids": [
-        "daily-usage-charge-and-charge-status#KB-024"
+        "daily-usage-charge-and-charge-status#KB-024",
+        "daily-usage-charge-and-charge-status#KB-087"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -732,6 +733,42 @@
       "priority": "P3",
       "automation_suitability": "UNKNOWN",
       "oq_id": "OQ-plans-billing-006"
+    },
+    {
+      "check_id": "CHK-019",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Shop Free: merchant app không gọi API charge/subscription và dữ liệu nhúng không có charge/recurring",
+      "applicability": {
+        "role": "merchant",
+        "state": "shop gói Free",
+        "environment": "staging",
+        "surface_or_device": "portal merchant → Pricing, Dashboard + network"
+      },
+      "precondition": "Đăng nhập portal bằng merchant shop gói Free; mở network capture.",
+      "steps": [
+        "Mở Pricing rồi Dashboard; liệt kê request API trong network.",
+        "Đọc dữ liệu nhúng user: subscription_plan_name, plan_id, plan.price, plan.shopify_paid, plan.capped_amount, plan.test, is_extend_trial; tìm key nào tên charge hay recurring."
+      ],
+      "observation_point": "Request network; dữ liệu nhúng user.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Không có request API nào về charge/subscription/recurring; dữ liệu nhúng user có subscription_plan_name \"Free\", plan_id 1, plan.price 0, plan.shopify_paid false, plan.capped_amount null, plan.test false, is_extend_trial true và không có key nào tên charge hay recurring.",
+      "oracle": {
+        "kb_ids": [
+          "daily-usage-charge-and-charge-status#KB-087"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging: shop Free không có dữ liệu charge/recurring phía client. Phía server, shop Free có bản ghi Charge/Recurring giá 0 nào không, và merchant có màn hình nào trong app để xem lịch sử charge không?",
+      "related_kb_ids": [
+        "daily-usage-charge-and-charge-status#KB-005",
+        "daily-usage-charge-and-charge-status#KB-021"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-plans-billing-134"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -865,9 +902,11 @@
       "feature_id": "FEAT-04-daily-usage-charge-and-charge-status",
       "item": "Layer portal merchant app (coverage_matrix covered=false)",
       "kind": "layer",
-      "check_ids": [],
-      "coverage": "GAP",
-      "note": "KB không mô tả màn merchant app nào cho Charge; merchant đối chiếu qua Shopify Billing (CHK-012)."
+      "check_ids": [
+        "CHK-019"
+      ],
+      "coverage": "PARTIAL",
+      "note": "KB không mô tả màn merchant app nào cho Charge; staging chỉ xác nhận shop Free không có dữ liệu charge phía client (CHK-019 BASELINE); merchant đối chiếu qua Shopify Billing (CHK-012)."
     }
   ],
   "excluded_dimensions": [],

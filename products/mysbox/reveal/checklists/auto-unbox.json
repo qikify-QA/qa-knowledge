@@ -2,7 +2,7 @@
   "feature_id": "FEAT-03-auto-unbox",
   "feature_key": "auto-unbox",
   "object_id": "reveal",
-  "checklist_version": "1",
+  "checklist_version": "3",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -35,7 +35,8 @@
       "status": "READY",
       "open_question_draft": null,
       "related_kb_ids": [
-        "auto-unbox#KB-003"
+        "auto-unbox#KB-003",
+        "auto-unbox#KB-065"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -100,10 +101,7 @@
       "observation_point": "Giờ auto-unbox trên dữ liệu đơn so với giờ tạo và giờ paid.",
       "expected_result": "",
       "oracle": {
-        "kb_ids": [
-          "auto-unbox#KB-004",
-          "auto-unbox#KB-050"
-        ],
+        "kb_ids": [],
         "oracle_strength": "NONE"
       },
       "status": "NEEDS_CONFIRMATION",
@@ -112,7 +110,10 @@
         "auto-unbox#KB-017",
         "auto-unbox#KB-052",
         "auto-unbox#KB-057",
-        "auto-unbox#KB-040"
+        "auto-unbox#KB-040",
+        "auto-unbox#KB-004",
+        "auto-unbox#KB-050",
+        "auto-unbox#KB-066"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -150,7 +151,8 @@
       "status": "READY",
       "open_question_draft": null,
       "related_kb_ids": [
-        "auto-unbox#KB-017"
+        "auto-unbox#KB-017",
+        "auto-unbox#KB-066"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -530,8 +532,6 @@
       "expected_result": "",
       "oracle": {
         "kb_ids": [
-          "auto-unbox#KB-028",
-          "auto-unbox#KB-034",
           "auto-unbox#KB-033"
         ],
         "oracle_strength": "NONE"
@@ -540,7 +540,9 @@
       "open_question_draft": "Ngưỡng thật khiến đơn có resell window dài không bao giờ được auto-unbox là bao nhiêu: giờ auto-unbox phải nằm trong 7 ngày gần nhất lúc quét, hay resell window không được dài hơn 7 ngày trừ độ trễ auto-unbox? Đơn vượt ngưỡng thì quà vào đơn bằng cách nào?",
       "related_kb_ids": [
         "auto-unbox#KB-047",
-        "auto-unbox#KB-030"
+        "auto-unbox#KB-030",
+        "auto-unbox#KB-028",
+        "auto-unbox#KB-034"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -570,9 +572,7 @@
       "observation_point": "Line item quà trên đơn Shopify; kết quả resell.",
       "expected_result": "",
       "oracle": {
-        "kb_ids": [
-          "auto-unbox#KB-049"
-        ],
+        "kb_ids": [],
         "oracle_strength": "NONE"
       },
       "status": "NEEDS_CONFIRMATION",
@@ -581,7 +581,8 @@
         "auto-unbox#KB-035",
         "auto-unbox#KB-056",
         "auto-unbox#KB-032",
-        "auto-unbox#KB-048"
+        "auto-unbox#KB-048",
+        "auto-unbox#KB-049"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -820,6 +821,92 @@
       ],
       "priority": "P3",
       "automation_suitability": "NOT_SUITABLE"
+    },
+    {
+      "check_id": "CHK-022",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "Pane Auto-Unbox khi Enable auto-unbox đang tắt chỉ hiện checkbox, không hiện ô độ trễ hay trigger",
+      "applicability": {
+        "role": "merchant",
+        "state": "Enable auto-unbox đang tắt, không Save",
+        "environment": "staging",
+        "surface_or_device": "portal (General Settings)"
+      },
+      "precondition": "Shop có Enable auto-unbox đang tắt; không lưu thay đổi nào.",
+      "steps": [
+        "Mở General Settings; ghi các mục menu.",
+        "Mở \"Instantly opening box\" → \"Auto-Unbox\"; ghi mọi ô hiển thị."
+      ],
+      "observation_point": "Menu General Settings và các ô trong pane Auto-Unbox.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) Menu có \"Instantly opening box\" → \"Auto-Unbox\", \"Buyback limit time\"; \"Sealed box\" → \"Order setting\"; \"Integration\" → \"Koin Store Credit & Rewards\", \"Shopify Flow\". Pane Auto-Unbox chỉ có checkbox \"Enable auto-unbox\" (không tick) kèm \"Automatically unbox all items in confirmed orders after a specified delay.\"; không hiển thị ô \"Auto-unbox after\" hay trigger khi checkbox tắt. Mỗi lần đổi pane gọi GET /api/users/config (200, {\"data\": null}).",
+      "oracle": {
+        "kb_ids": [
+          "auto-unbox#KB-065",
+          "auto-unbox#KB-068"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Trên staging, pane Auto-Unbox khi checkbox tắt chỉ hiện checkbox, không có ô \"Auto-unbox after\" / \"Enable auto-unbox trigger\" / \"Trigger before\" như tài liệu mô tả. Các ô này chỉ hiện khi bật checkbox (và giá trị mặc định 2 / 1 có giữ không), hay tài liệu đã cũ?",
+      "related_kb_ids": [
+        "auto-unbox#KB-008",
+        "auto-unbox#KB-009",
+        "auto-unbox#KB-012",
+        "auto-unbox#KB-013",
+        "auto-unbox#KB-015",
+        "auto-unbox#KB-067"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "CHK-001 có thể báo lệch nếu ô chỉ hiện khi bật"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-reveal-058"
+    },
+    {
+      "check_id": "CHK-023",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Enable auto-unbox tắt: đơn mới có unboxing_at null ở API merchant và app proxy, trang khách không có \"Auto-open in\"",
+      "applicability": {
+        "role": "merchant + guest buyer",
+        "state": "Enable auto-unbox đang tắt; đơn test mới có box digital",
+        "environment": "staging",
+        "surface_or_device": "portal (Manage orders) + trang khách /apps/mysbox/ + network"
+      },
+      "precondition": "Xác nhận checkbox \"Enable auto-unbox\" đang tắt; đặt đơn test có box digital; mở network capture.",
+      "steps": [
+        "Mở chi tiết đơn trong app merchant; ghi unboxing_at trong GET /api/orders/{id}.",
+        "Mở trang khách của đơn; ghi unboxing_at trong GET /apps/mysbox/api/orders/{id}.",
+        "Kiểm danh sách và chi tiết đơn của khách có đếm ngược \"Auto-open in\" hay banner auto-unbox không."
+      ],
+      "observation_point": "unboxing_at ở hai API; đếm ngược / banner trên trang khách.",
+      "expected_result": "(baseline staging, lệch = cần điều tra) unboxing_at là null ở cả API merchant và API trang khách; trang khách không có \"Auto-open in\" hay banner auto-unbox.",
+      "oracle": {
+        "kb_ids": [
+          "auto-unbox#KB-068"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Staging (auto-unbox tắt): đơn mới có unboxing_at null và trang khách không có đếm ngược. Khi bật auto-unbox, unboxing_at được ghi ở thời điểm nào (paid, tạo đơn) và hiển thị ra sao — cần một lượt bật checkbox để có baseline cho CHK-002/CHK-003.",
+      "related_kb_ids": [
+        "auto-unbox#KB-010",
+        "auto-unbox#KB-011",
+        "auto-unbox#KB-017",
+        "auto-unbox#KB-038",
+        "reveal-journey#KB-116",
+        "reveal-journey#KB-117"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "R-02"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-reveal-067"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -829,9 +916,10 @@
       "check_ids": [
         "CHK-001",
         "CHK-002",
-        "CHK-018"
+        "CHK-018",
+        "CHK-022"
       ],
-      "coverage": "covered; validation form chưa có oracle"
+      "coverage": "covered; validation form chưa có oracle; staging: pane chỉ hiện checkbox khi tắt (CHK-022)"
     },
     {
       "feature_id": "FEAT-03-auto-unbox",
@@ -843,7 +931,8 @@
         "CHK-005",
         "CHK-006",
         "CHK-019",
-        "CHK-020"
+        "CHK-020",
+        "CHK-023"
       ],
       "coverage": "covered; mốc tính giờ đang conflict"
     },
@@ -876,7 +965,8 @@
       "check_ids": [
         "CHK-002",
         "CHK-012",
-        "CHK-013"
+        "CHK-013",
+        "CHK-023"
       ],
       "coverage": "covered; P1 chờ test_case PASS"
     },
@@ -909,7 +999,8 @@
         "CHK-014",
         "CHK-019",
         "CHK-020",
-        "CHK-021"
+        "CHK-021",
+        "CHK-023"
       ],
       "coverage": "covered; 1 defect watch"
     },

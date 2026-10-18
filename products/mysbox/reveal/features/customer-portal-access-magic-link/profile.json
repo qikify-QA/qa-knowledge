@@ -49,6 +49,35 @@
         "customer-portal-access-magic-link#KB-025",
         "customer-portal-access-magic-link#KB-026"
       ]
+    },
+    {
+      "role": "guest buyer (staging, quan sát)",
+      "permission_observed": "OBSERVED_CURRENT staging: vào reveal, chi tiết đơn, \"Your orders\" bằng link từ trang cảm ơn, không bị chuyển /account; một link mở được mọi đơn của customer.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-029",
+        "customer-portal-access-magic-link#KB-032"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-17: thêm 2 đơn (#1009, #1010) cùng token/customer_id; mở /apps/mysbox/orders thiếu hoặc cắt ?parameters= bị chuyển sang \"Sign in\" của Shopify.",
+      "refresh_kb_refs": [
+        "customer-portal-access-magic-link#KB-036",
+        "customer-portal-access-magic-link#KB-037"
+      ]
+    },
+    {
+      "role": "checkout / customer-account UI extension (staging, quan sát)",
+      "permission_observed": "OBSERVED_CURRENT staging: gọi thẳng staging-api.mysbox.io lấy customer_id + token của đơn (không qua app proxy).",
+      "basis": "OBSERVED_CURRENT",
+      "tags": [
+        "host_not_in_expected_api_base"
+      ],
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-034"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-17: tiếp tục quan sát ở 3 đơn mới (reveal-journey#KB-108).",
+      "refresh_kb_refs": [
+        "reveal-journey#KB-108"
+      ]
     }
   ],
   "entry_points": [
@@ -58,6 +87,10 @@
       "kb_refs": [
         "customer-portal-access-magic-link#KB-007",
         "customer-portal-access-magic-link#KB-022"
+      ],
+      "observed_kb_refs": [
+        "customer-portal-access-magic-link#KB-029",
+        "customer-portal-access-magic-link#KB-037"
       ]
     },
     {
@@ -66,6 +99,11 @@
       "kb_refs": [
         "customer-portal-access-magic-link#KB-011",
         "customer-portal-access-magic-link#KB-017"
+      ],
+      "observed_kb_refs": [
+        "customer-portal-access-magic-link#KB-031",
+        "customer-portal-access-magic-link#KB-036",
+        "customer-portal-access-magic-link#KB-037"
       ]
     },
     {
@@ -73,6 +111,10 @@
       "precondition": "Đơn có box mở được (xem reveal-journey).",
       "kb_refs": [
         "customer-portal-access-magic-link#KB-018"
+      ],
+      "observed_kb_refs": [
+        "customer-portal-access-magic-link#KB-034",
+        "customer-portal-access-magic-link#KB-036"
       ]
     }
   ],
@@ -100,14 +142,30 @@
         "customer-portal-access-magic-link#KB-012",
         "customer-portal-access-magic-link#KB-013",
         "customer-portal-access-magic-link#KB-014"
-      ]
+      ],
+      "observed_kb_refs": [
+        "customer-portal-access-magic-link#KB-029",
+        "customer-portal-access-magic-link#KB-030",
+        "customer-portal-access-magic-link#KB-031",
+        "customer-portal-access-magic-link#KB-032",
+        "customer-portal-access-magic-link#KB-033",
+        "customer-portal-access-magic-link#KB-036",
+        "customer-portal-access-magic-link#KB-038"
+      ],
+      "refresh_note": "Staging: ?parameters= là base64 JSON đọc được (KB-031) — base nói 'mã hoá'; normalizer: NOT_A_CONFLICT_PENDING_CONFIRMATION, câu hỏi OQ-reveal-046. Quan sát staging 2026-10-17: base64 chuẩn (không url-safe), không thấy chữ ký; khoá theo loại link; 30/30 request app proxy mang customer-id + customer-token (KB-036, KB-038)."
     },
     {
       "name": "Lấy link mở box từ trang cảm ơn / order status",
       "description": "Khối unbox lấy token magic link qua lời gọi lấy mã khách của đơn rồi mở trang reveal bằng link đó, tức tạo được link mới cho khách.",
       "kb_refs": [
         "customer-portal-access-magic-link#KB-018"
-      ]
+      ],
+      "observed_kb_refs": [
+        "customer-portal-access-magic-link#KB-034",
+        "customer-portal-access-magic-link#KB-035",
+        "customer-portal-access-magic-link#KB-036"
+      ],
+      "refresh_note": "Lời gọi quan sát đi tới host staging-api.mysbox.io (host_not_in_expected_api_base, LOW)."
     },
     {
       "name": "Chặn truy cập không hợp lệ vào trang khách",
@@ -123,6 +181,19 @@
         "customer-portal-access-magic-link#KB-026",
         "customer-portal-access-magic-link#KB-027",
         "customer-portal-access-magic-link#KB-028"
+      ],
+      "observed_kb_refs": [
+        "customer-portal-access-magic-link#KB-037"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-17: thiếu hoặc cắt cụt ?parameters= → redirect phía server tới trang \"Sign in\" của Shopify customer account, không có thông báo Mysbox (không thấy \"magic link is not correct\"); hop trung gian không capture nên chưa biết có qua /account (NOT_A_CONFLICT_PENDING_CONFIRMATION)."
+    },
+    {
+      "name": "Bản đồ endpoint app proxy của trang khách (quan sát staging)",
+      "description": "OBSERVED_CURRENT staging: các endpoint /apps/mysbox/api/* trang khách gọi, method, status thành công và lỗi đã thấy (422 ids rỗng, 400 \"No more items to open\").",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-039",
+        "customer-portal-access-magic-link#KB-038"
       ]
     }
   ],
@@ -185,6 +256,37 @@
         "customer-portal-access-magic-link#KB-005",
         "customer-portal-access-magic-link#KB-017"
       ]
+    },
+    {
+      "from": "trang cảm ơn (Mysbox chưa có customer của đơn)",
+      "to": "trang cảm ơn có customer_id + token của đơn",
+      "trigger": "Extension gọi staging-api /api/orders/{id}/customer — 404 rồi 200",
+      "condition": "OBSERVED_CURRENT staging, host_not_in_expected_api_base (LOW)",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-034",
+        "customer-portal-access-magic-link#KB-035"
+      ]
+    },
+    {
+      "from": "guest mở link của đơn A",
+      "to": "\"Your orders\" liệt kê mọi đơn của customer (A, B, đơn khác cùng email)",
+      "trigger": "Điều hướng sang \"Your orders\"",
+      "condition": "OBSERVED_CURRENT staging, 2 chiều; token theo customer",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-032"
+      ]
+    },
+    {
+      "from": "guest (không session customer) mở /apps/mysbox/orders không có ?parameters= hoặc ?parameters= cắt còn 100/280 ký tự (cả link /3023/1/open)",
+      "to": "trang \"Sign in\" của Shopify (shopify.com/authentication/<shop_id>/login; \"Sign in or create an account\", \"Email\", \"Continue\")",
+      "trigger": "Redirect phía server của document",
+      "condition": "OBSERVED_CURRENT staging, 3 mẫu; không có lời gọi /apps/mysbox/api/*; đối chứng ?parameters= nguyên vẹn → 200 trang Mysbox",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-037"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -214,6 +316,11 @@
         "customer-portal-access-magic-link#KB-001",
         "customer-portal-access-magic-link#KB-011",
         "customer-portal-access-magic-link#KB-003"
+      ],
+      "refresh_note": "Staging: ?parameters= là base64 JSON đọc được (KB-031, LOW) — 'mã hoá' chờ xác nhận (OQ-reveal-046); rule base không đổi. Quan sát staging 2026-10-17: base64 chuẩn, không chữ ký (KB-036).",
+      "refresh_kb_refs": [
+        "customer-portal-access-magic-link#KB-031",
+        "customer-portal-access-magic-link#KB-036"
       ]
     },
     {
@@ -243,6 +350,10 @@
       "kb_refs": [
         "customer-portal-access-magic-link#KB-005",
         "customer-portal-access-magic-link#KB-017"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-17: trang cuối quan sát là \"Sign in\" của Shopify customer account (KB-037); hop trung gian không capture — NOT_A_CONFLICT_PENDING_CONFIRMATION, rule không đổi.",
+      "refresh_kb_refs": [
+        "customer-portal-access-magic-link#KB-037"
       ]
     },
     {
@@ -286,9 +397,158 @@
       "kb_refs": [
         "customer-portal-access-magic-link#KB-010"
       ]
+    },
+    {
+      "behavior": "Guest bấm link Unbox / Multi-unbox trên trang cảm ơn vào được trang reveal, chi tiết đơn và \"Your orders\" dưới /apps/mysbox/ mà không bị chuyển /account; sau reload/back app điều hướng bằng ?parameters= chỉ chứa token và customer_id.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 6,
+      "confidence": "HIGH",
+      "note": "Khớp base KB-001/KB-007.",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-029"
+      ]
+    },
+    {
+      "behavior": "Mọi request /apps/mysbox/api/* của trang khách có capture header đều mang header customer-id và customer-token (đã redact), không có authorization header; chữ ký app proxy không hiện trong browser.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 5,
+      "confidence": "MEDIUM",
+      "note": "Khớp base KB-012.",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-030"
+      ]
+    },
+    {
+      "behavior": "?parameters= của link trên khối Mysbox là base64 JSON đọc được trực tiếp, khoá {order_id, customer_id, token, path, box_version_id} (Unbox) và {order_id, customer_id, token, path, openAll: true} (Multi-unbox); chỉ đọc tên khoá.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "tags": [
+        "security-observation"
+      ],
+      "note": "security-observation; base KB-011 nói 'mã hoá' — NOT_A_CONFLICT_PENDING_CONFIRMATION (OQ-reveal-046).",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-031"
+      ]
+    },
+    {
+      "behavior": "Đi từ link của đơn A (#1007) hoặc đơn B (#1008) sang \"Your orders\" đều liệt kê #1008, #1007 và #1006 (GET /apps/mysbox/api/orders trả mọi đơn của customer); token customer-token của A, B và token trả cho trang cảm ơn A, B đều bằng nhau (theo customer, không theo đơn).",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 3,
+      "confidence": "MEDIUM",
+      "tags": [
+        "security-observation"
+      ],
+      "note": "security-observation về phạm vi token theo customer (câu hỏi OPEN_ISSUE OQ-reveal-047); base không nói phạm vi một đơn hay mọi đơn.",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-032"
+      ]
+    },
+    {
+      "behavior": "GET /apps/mysbox/api/orders?order_by=created_at&direction=desc&page=1 (status tuỳ chọn unopened|opened; header customer-id + customer-token) trả 200 với data[] đơn của customer; status=unopened gồm cả đơn mở một phần — 6 sample.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 6,
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-033"
+      ]
+    },
+    {
+      "behavior": "Checkout/customer-account UI extension (referer extensions.shopifycdn.com) gọi thẳng GET https://staging-api.mysbox.io/api/orders/{shopify_order_id}/customer?shop=<MYS_STORE_DOMAIN> (không qua app proxy): 404 trước khi Mysbox có customer, rồi 200 {customer_id, token (64 ký tự)}; không thấy header authorization, customer-id hay customer-token; response mang access-control-allow-origin: * — 7 sample (5×200, 2×404).",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 7,
+      "confidence": "LOW",
+      "tags": [
+        "host_not_in_expected_api_base",
+        "security-observation"
+      ],
+      "note": "host_not_in_expected_api_base (staging-api.mysbox.io, khác expected_api_base) — giữ LOW, không làm cơ sở cho item khác tới khi operator xác nhận (OQ-reveal-050). security-observation: endpoint trả token không thấy header auth (OQ-reveal-048).",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-034"
+      ]
+    },
+    {
+      "behavior": "Response 404 của staging-api.mysbox.io (hỏi customer trước khi Mysbox có customer) có body exception Laravel (NotFoundHttpException \"No query results for model [App\\Models\\Customer].\") kèm tên class, đường dẫn tuyệt đối file server, số dòng và stack trace; không chép giá trị.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "tags": [
+        "host_not_in_expected_api_base",
+        "security-observation"
+      ],
+      "note": "host_not_in_expected_api_base + security-observation: 404 lộ exception debug (OQ-reveal-049); production không kiểm.",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-035"
+      ]
+    },
+    {
+      "behavior": "?parameters= trên link khối trang cảm ơn (#1009, #1010) là base64 chuẩn (không url-safe) của JSON, giải được phía client, không thấy chữ ký; Multi-unbox: order_id (chuỗi 13 chữ số), customer_id (số), token (64 ký tự), path (= pathname), openAll (boolean); Unbox: order_id, customer_id, token, path, box_version_id (= segment URL); link điều hướng nội bộ chỉ token + customer_id; token và customer_id giống nhau giữa #1009 và #1010.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "MEDIUM",
+      "tags": [
+        "security-observation"
+      ],
+      "note": "Corroborate KB-001/012/031/032; email xác nhận đơn không kiểm.",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-036"
+      ]
+    },
+    {
+      "behavior": "Guest (không session customer) mở /apps/mysbox/orders không có ?parameters= và với ?parameters= cắt còn 100/280 ký tự (base64 giải được nhưng không phải JSON hợp lệ): document redirect phía server, trang cuối \"Sign in\" của Shopify (shopify.com/authentication/<shop_id>/login; \"Sign in or create an account\", \"Email\", \"Continue\"), không có trang/thông báo Mysbox nào (kể cả \"magic link is not correct\"); link /3023/1/open bị cắt cũng vậy; ?parameters= nguyên vẹn → 200; không có lời gọi /apps/mysbox/api/*.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 3,
+      "confidence": "MEDIUM",
+      "note": "NOT_A_CONFLICT_PENDING_CONFIRMATION với KB-005/KB-017 (/account) — hop trung gian không capture; shop dùng customer account mới.",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-037"
+      ]
+    },
+    {
+      "behavior": "30/30 request /apps/mysbox/api/* được map trong capture đều mang header customer-id và customer-token (đã redact).",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 30,
+      "confidence": "MEDIUM",
+      "note": "Corroborate KB-012/KB-030.",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-038"
+      ]
+    },
+    {
+      "behavior": "Endpoint app proxy quan sát: GET box-versions/{id} 200; GET box-versions/by-ids?ids=<csv> 200 (ids rỗng → 422 \"The ids field is required.\"); GET translations/{section}?locale=default 200 (unboxing, order trả {\"data\": null}); GET shopify/product-variants?ids=…&country_code=VN&locale=en 200; POST unopened-boxes/open?order_id=&box_version_id=&quantity=1 200 (box đã hết → 400 \"No more items to open\"); POST orders/{id}/unopened-boxes/open 200 (đơn đã mở hết → 400); GET orders?order_by=created_at&direction=desc&page=1 200; GET orders/{id}?page=1&limit=10 200; GET orders/{id}/resellable/exists 200 {\"data\": false}; ngoài app proxy, extension gọi staging-api /api/orders/{id}/customer (404 rồi 200).",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 9,
+      "confidence": "MEDIUM",
+      "note": "Phần lớn endpoint 1–8 sample; không suy field bắt buộc; UI không gọi /orders/{id}/boxes của app proxy.",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-039"
+      ]
     }
   ],
-  "observed_validations": [],
+  "observed_validations": [
+    {
+      "input": "Trang khách gọi GET /apps/mysbox/api/box-versions/by-ids với ids rỗng (đơn chỉ có box sealed)",
+      "message_verbatim": "The ids field is required.",
+      "condition": "staging, guest buyer; HTTP 422",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "note": "1 mẫu; cùng hiện tượng ở box-versioning#KB-054 và physical-sealed-box-fulfilment#KB-074 — không tổng quát hoá.",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-039"
+      ]
+    }
+  ],
   "permissions": [
     {
       "rule": "Khách chỉ xem được trang đơn / reveal của chính mình; mở đơn của khách khác bị chặn (404 / trắng / đẩy sang đăng nhập).",
@@ -309,6 +569,17 @@
       "rule": "Request có chữ ký app proxy sai bị từ chối.",
       "kb_refs": [
         "customer-portal-access-magic-link#KB-009"
+      ]
+    },
+    {
+      "rule": "Quan sát staging: phạm vi magic link/token là theo customer (mọi đơn của customer), không theo đơn — chưa xác nhận là chủ ý.",
+      "basis": "OBSERVED_CURRENT",
+      "tags": [
+        "security-observation"
+      ],
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-032",
+        "customer-portal-access-magic-link#KB-036"
       ]
     }
   ],
@@ -342,6 +613,22 @@
         "kb_refs": [
           "customer-portal-access-magic-link#KB-018"
         ]
+      },
+      {
+        "surface": "Link khối Mysbox ?parameters= (base64 JSON) → reveal / winner / \"Your orders\" — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "customer-portal-access-magic-link#KB-029",
+          "customer-portal-access-magic-link#KB-031",
+          "customer-portal-access-magic-link#KB-036"
+        ]
+      },
+      {
+        "surface": "Trang \"Sign in\" của Shopify customer account (khi thiếu/cắt ?parameters=) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "customer-portal-access-magic-link#KB-037"
+        ]
       }
     ],
     "api": [
@@ -364,6 +651,60 @@
         "kb_refs": [
           "customer-portal-access-magic-link#KB-018"
         ]
+      },
+      {
+        "surface": "/apps/mysbox/api/* — header customer-id + customer-token, không authorization",
+        "method": "GET/POST",
+        "route": "/apps/mysbox/api/* (box-versions, product-variants, unopened-boxes/open, orders/{id}, orders)",
+        "host": "<MYS_STORE_DOMAIN> app proxy",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "customer-portal-access-magic-link#KB-030",
+          "customer-portal-access-magic-link#KB-038",
+          "customer-portal-access-magic-link#KB-039"
+        ],
+        "refresh_note": "Quan sát staging 2026-10-17: 30/30 request mang header; bảng endpoint + status (gồm 422, 400) ở KB-039."
+      },
+      {
+        "surface": "GET /apps/mysbox/api/orders (danh sách đơn của customer)",
+        "method": "GET",
+        "route": "/apps/mysbox/api/orders?order_by=created_at&direction=desc&page=1&status=unopened|opened",
+        "host": "<MYS_STORE_DOMAIN> app proxy",
+        "observed": "200; data[] mọi đơn của customer; 6 sample",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "customer-portal-access-magic-link#KB-033",
+          "customer-portal-access-magic-link#KB-032",
+          "customer-portal-access-magic-link#KB-039"
+        ]
+      },
+      {
+        "surface": "Trang app proxy /apps/mysbox/orders/… (điều hướng bằng ?parameters=)",
+        "route": "/apps/mysbox/orders/…?parameters=",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "customer-portal-access-magic-link#KB-029",
+          "customer-portal-access-magic-link#KB-036",
+          "customer-portal-access-magic-link#KB-037"
+        ],
+        "refresh_note": "Quan sát staging 2026-10-17: thiếu/cắt ?parameters= → redirect phía server tới Sign in Shopify; nguyên vẹn → 200."
+      },
+      {
+        "surface": "GET staging-api.mysbox.io /api/orders/{shopify_order_id}/customer?shop= (UI extension, không qua app proxy)",
+        "method": "GET",
+        "route": "/api/orders/{shopify_order_id}/customer?shop=<MYS_STORE_DOMAIN>",
+        "host": "staging-api.mysbox.io (host_not_in_expected_api_base)",
+        "observed": "404 (exception Laravel) rồi 200 {customer_id, token}; không thấy header auth; CORS *",
+        "basis": "OBSERVED_CURRENT",
+        "tags": [
+          "host_not_in_expected_api_base",
+          "security-observation"
+        ],
+        "kb_refs": [
+          "customer-portal-access-magic-link#KB-034",
+          "customer-portal-access-magic-link#KB-035",
+          "customer-portal-access-magic-link#KB-039"
+        ]
       }
     ],
     "data": [
@@ -373,6 +714,16 @@
           "customer-portal-access-magic-link#KB-003",
           "customer-portal-access-magic-link#KB-002",
           "customer-portal-access-magic-link#KB-013"
+        ]
+      },
+      {
+        "surface": "?parameters= base64 JSON {order_id, customer_id, token, path, box_version_id | openAll}; token theo customer (64 ký tự) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "customer-portal-access-magic-link#KB-031",
+          "customer-portal-access-magic-link#KB-032",
+          "customer-portal-access-magic-link#KB-034",
+          "customer-portal-access-magic-link#KB-036"
         ]
       }
     ],
@@ -401,6 +752,22 @@
       "kb_refs": [
         "customer-portal-access-magic-link#KB-025"
       ]
+    },
+    {
+      "feature_key": "(backend staging-api.mysbox.io)",
+      "reason": "Quan sát staging: UI extension trang cảm ơn lấy customer token từ host thứ hai staging-api.mysbox.io — chưa xác nhận.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-034"
+      ]
+    },
+    {
+      "feature_key": "(Shopify customer account mới)",
+      "reason": "Quan sát staging: khách không nhận diện được bị chuyển tới trang \"Sign in\" của Shopify customer account.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-037"
+      ]
     }
   ],
   "risks": [
@@ -425,6 +792,58 @@
         "customer-portal-access-magic-link#KB-006",
         "customer-portal-access-magic-link#KB-026"
       ]
+    },
+    {
+      "risk": "security-observation (endpoint trả token không thấy header auth): GET staging-api /api/orders/{id}/customer?shop= trả customer_id + token magic link không thấy header auth (CORS *) — nếu không có bảo vệ khác, biết shop + order id là lấy được token truy cập mọi đơn của customer.",
+      "basis": "OBSERVED_CURRENT",
+      "tags": [
+        "security-observation",
+        "host_not_in_expected_api_base"
+      ],
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-034",
+        "customer-portal-access-magic-link#KB-032"
+      ]
+    },
+    {
+      "risk": "security-observation (phạm vi token theo customer): một magic link (của một đơn) mở được mọi đơn của customer; guest dùng chung email chia sẻ cùng token.",
+      "basis": "OBSERVED_CURRENT",
+      "tags": [
+        "security-observation"
+      ],
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-032",
+        "customer-portal-access-magic-link#KB-036"
+      ]
+    },
+    {
+      "risk": "security-observation: ?parameters= là base64 JSON đọc được chứa customer_id + token — link bị chia sẻ/ghi log làm lộ token.",
+      "basis": "OBSERVED_CURRENT",
+      "tags": [
+        "security-observation"
+      ],
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-031",
+        "customer-portal-access-magic-link#KB-036"
+      ]
+    },
+    {
+      "risk": "security-observation (404 lộ exception debug): 404 của staging-api lộ exception Laravel (class, đường dẫn file server, stack trace) — debug mode bật trên staging; production chưa kiểm.",
+      "basis": "OBSERVED_CURRENT",
+      "tags": [
+        "security-observation",
+        "host_not_in_expected_api_base"
+      ],
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-035"
+      ]
+    },
+    {
+      "risk": "Guest mở link thiếu/cắt ?parameters= bị đẩy sang Sign in Shopify không có thông báo Mysbox — khách guest không có tài khoản dễ bế tắc.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-037"
+      ]
     }
   ],
   "limitations": [
@@ -434,11 +853,30 @@
         "customer-portal-access-magic-link#KB-009",
         "customer-portal-access-magic-link#KB-027",
         "customer-portal-access-magic-link#KB-028"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-17: case thiếu/cắt ?parameters= đã có trang đích quan sát (Sign in Shopify, KB-037); các case khác vẫn không.",
+      "refresh_kb_refs": [
+        "customer-portal-access-magic-link#KB-037"
+      ]
+    },
+    {
+      "limitation": "Quan sát staging chỉ có buyer guest; chữ ký app proxy thêm ở phía Shopify server, không thấy trong browser — không kiểm được nhánh khách đăng nhập và chữ ký.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-030"
+      ]
+    },
+    {
+      "limitation": "URL tampering (token sửa, order_id/customer_id khác) không được phép trong đợt quan sát staging 2026-10-17 — phân quyền chéo khách chưa có bằng chứng runtime.",
+      "basis": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-037"
       ]
     }
   ],
   "freshness": {
-    "observed_at": null
+    "observed_at": "2026-10-17",
+    "base_observed_at": "2026-10-16"
   },
   "unknown_areas": [
     {
@@ -458,7 +896,13 @@
         "customer-portal-access-magic-link#KB-020",
         "customer-portal-access-magic-link#KB-001"
       ],
-      "oq_id": "OQ-reveal-037"
+      "oq_id": "OQ-reveal-037",
+      "refresh_note": "Staging: một link mở được mọi đơn của customer, token theo customer (KB-032, security-observation) — chờ PO/dev xác nhận chủ ý (OQ-reveal-047). Quan sát staging 2026-10-17: token/customer_id giống nhau giữa link #1009 và #1010; \"Your orders\" liệt kê #1006–#1011 (KB-036, reveal-journey#KB-116).",
+      "refresh_kb_refs": [
+        "customer-portal-access-magic-link#KB-032",
+        "customer-portal-access-magic-link#KB-036",
+        "reveal-journey#KB-116"
+      ]
     },
     {
       "question": "Request app proxy có chữ ký sai bị từ chối với mã phản hồi / trang nào?",
@@ -476,7 +920,11 @@
         "customer-portal-access-magic-link#KB-027",
         "customer-portal-access-magic-link#KB-028"
       ],
-      "oq_id": "OQ-reveal-017"
+      "oq_id": "OQ-reveal-017",
+      "refresh_note": "Quan sát staging 2026-10-17: (a) không có ?parameters= và (b) ?parameters= bị cắt đều redirect về trang \"Sign in\" của Shopify customer account, không có thông báo Mysbox; ?parameters= nguyên vẹn → 200 (KB-037). (c) token sửa, (d) đơn của khách khác, shop OFF, cache cũ, tài khoản khác không chạy — vẫn mở.",
+      "refresh_kb_refs": [
+        "customer-portal-access-magic-link#KB-037"
+      ]
     },
     {
       "question": "Trang cảm ơn / order status có tự làm mới token magic link đã hết hạn không?",
@@ -494,16 +942,13 @@
         "customer-portal-access-magic-link#KB-001",
         "customer-portal-access-magic-link#KB-011"
       ],
-      "oq_id": "OQ-reveal-019"
-    },
-    {
-      "question": "Method HTTP, endpoint con, status code và shape request/response của API Mysbox gọi qua app proxy?",
-      "why_it_matters": "Lớp API chưa có route+method để kiểm.",
-      "kb_refs": [
-        "customer-portal-access-magic-link#KB-007",
-        "customer-portal-access-magic-link#KB-012"
-      ],
-      "oq_id": "OQ-reveal-020"
+      "oq_id": "OQ-reveal-019",
+      "refresh_note": "Staging: tham số là ?parameters= (base64 JSON, khoá customer_id, token, order_id, path, box_version_id|openAll); guest nhận link qua khối trang cảm ơn (KB-029, KB-031). Quan sát staging 2026-10-17: định dạng chi tiết (base64 chuẩn, order_id chuỗi 13 số, customer_id số, token 64 ký tự) đã rõ (KB-036); kênh email xác nhận đơn vẫn chưa kiểm — giữ mở.",
+      "refresh_kb_refs": [
+        "customer-portal-access-magic-link#KB-029",
+        "customer-portal-access-magic-link#KB-031",
+        "customer-portal-access-magic-link#KB-036"
+      ]
     },
     {
       "question": "Việc không kiểm độ mới của chữ ký app proxy là hạn chế đã biết hay thiết kế chủ đích, có kế hoạch bổ sung không?",
@@ -512,10 +957,57 @@
         "customer-portal-access-magic-link#KB-010"
       ],
       "oq_id": "OQ-reveal-015"
+    },
+    {
+      "question": "'Mã hoá' trong KB-011 là encoding (base64) hay mã hoá thật? Staging thấy ?parameters= là base64 JSON đọc được.",
+      "why_it_matters": "Quyết định oracle cho check bảo mật magic link; câu hỏi NEEDS_CONFIRMATION OQ-reveal-046.",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-031",
+        "customer-portal-access-magic-link#KB-011"
+      ],
+      "oq_id": "OQ-reveal-046",
+      "refresh_note": "Quan sát staging 2026-10-17: base64 chuẩn (không url-safe) của JSON, giải được phía client, không thấy chữ ký (KB-036).",
+      "refresh_kb_refs": [
+        "customer-portal-access-magic-link#KB-036"
+      ]
+    },
+    {
+      "question": "Endpoint staging-api /api/orders/{id}/customer?shop= trả customer_id + token được bảo vệ thế nào (origin/referer, rate limit…) và có phải hành vi chủ ý?",
+      "why_it_matters": "Quan sát bảo mật: endpoint trả token không thấy header auth (câu hỏi OPEN_ISSUE OQ-reveal-048). Không tự escalate — hỏi operator.",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-034"
+      ],
+      "oq_id": "OQ-reveal-048",
+      "refresh_note": "Quan sát staging 2026-10-17: thêm 4×200 trả {customer_id, token}, 3×404; capture không thấy header auth (reveal-journey#KB-108).",
+      "refresh_kb_refs": [
+        "reveal-journey#KB-108"
+      ]
+    },
+    {
+      "question": "404 lộ exception Laravel trên staging-api là debug mode chủ ý của staging không, và production có lộ tương tự không?",
+      "why_it_matters": "Quan sát bảo mật: 404 lộ exception debug (câu hỏi OPEN_ISSUE OQ-reveal-049).",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-035"
+      ],
+      "oq_id": "OQ-reveal-049",
+      "refresh_note": "Quan sát staging 2026-10-17: ngoài 404 của staging-api, body 400 của app proxy (mở box đã hết) cũng trả exception Laravel kèm class, file, line, trace; 422 validation thì không (reveal-journey#KB-115, KB-108).",
+      "refresh_kb_refs": [
+        "reveal-journey#KB-115",
+        "reveal-journey#KB-108"
+      ]
+    },
+    {
+      "question": "Xác nhận host backend thứ hai staging-api.mysbox.io (UI extension gọi thẳng, khác expected_api_base của config) là backend hợp lệ của staging hay cấu hình lệch?",
+      "why_it_matters": "KB-034, KB-035 tag host_not_in_expected_api_base, giữ LOW và không làm cơ sở cho item khác tới khi operator xác nhận (OQ-reveal-050). Không tự sửa config.",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-034",
+        "customer-portal-access-magic-link#KB-035"
+      ],
+      "oq_id": "OQ-reveal-048"
     }
   ],
   "last_updated": {
-    "date": "2026-10-16",
+    "date": "2026-10-17",
     "ccr_ref": "bootstrap"
   },
   "coverage_matrix": [
@@ -582,6 +1074,121 @@
       "state": "đổi subpath app proxy",
       "environment": "documented",
       "covered": true
+    },
+    {
+      "feature_id": "FEAT-02-customer-portal-access-magic-link",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "magic link từ trang cảm ơn còn hạn",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-029",
+        "customer-portal-access-magic-link#KB-031",
+        "customer-portal-access-magic-link#KB-032",
+        "customer-portal-access-magic-link#KB-036"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-customer-portal-access-magic-link",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "thiếu ?parameters= / ?parameters= bị cắt",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-037"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-customer-portal-access-magic-link",
+      "layer": "api",
+      "role": "guest buyer",
+      "state": "/apps/mysbox/api/* với customer-id + customer-token",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-030",
+        "customer-portal-access-magic-link#KB-033",
+        "customer-portal-access-magic-link#KB-038",
+        "customer-portal-access-magic-link#KB-039"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-customer-portal-access-magic-link",
+      "layer": "api",
+      "role": "system (UI extension)",
+      "state": "staging-api customer endpoint",
+      "environment": "staging",
+      "covered": true,
+      "note": "host_not_in_expected_api_base — LOW, chờ operator.",
+      "kb_refs": [
+        "customer-portal-access-magic-link#KB-034",
+        "customer-portal-access-magic-link#KB-035"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-customer-portal-access-magic-link",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "token hết hạn / sai / đăng nhập tài khoản khác / đơn của khách khác",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: negative case token/IDOR không được phép (URL tampering chờ operator duyệt)."
+    },
+    {
+      "feature_id": "FEAT-02-customer-portal-access-magic-link",
+      "layer": "storefront",
+      "role": "logged-in customer",
+      "state": "request app proxy đã ký",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: chỉ buyer guest."
+    },
+    {
+      "feature_id": "FEAT-02-customer-portal-access-magic-link",
+      "layer": "api",
+      "role": "system",
+      "state": "chữ ký app proxy / replay",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: chữ ký phía Shopify server."
+    },
+    {
+      "feature_id": "FEAT-02-customer-portal-access-magic-link",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "đổi subpath app proxy",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: ngoài phạm vi."
+    },
+    {
+      "feature_id": "FEAT-02-customer-portal-access-magic-link",
+      "layer": "db",
+      "role": "system",
+      "state": "token Customer",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: db surface tắt."
+    },
+    {
+      "feature_id": "FEAT-02-customer-portal-access-magic-link",
+      "layer": "email",
+      "role": "customer",
+      "state": "link trong email xác nhận đơn",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: không có hộp thư."
+    },
+    {
+      "feature_id": "FEAT-02-customer-portal-access-magic-link",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "mobile",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: chỉ desktop."
     }
   ],
   "profile_conflicts": [],
@@ -592,7 +1199,8 @@
       "type": "gates_access_to",
       "kb_refs": [
         "customer-portal-access-magic-link#KB-001",
-        "customer-portal-access-magic-link#KB-018"
+        "customer-portal-access-magic-link#KB-018",
+        "customer-portal-access-magic-link#KB-039"
       ]
     },
     {
