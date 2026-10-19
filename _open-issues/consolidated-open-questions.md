@@ -2,7 +2,7 @@
 
 File này được SINH TỰ ĐỘNG bởi `scripts/generate-manifest.mjs` từ toàn bộ `open-questions.md` theo object (§5a của contract) — KHÔNG sửa tay ở đây. Cần thêm/sửa/resolve 1 open question thì sửa ở file object-level tương ứng rồi chạy lại script; sửa trực tiếp ở đây sẽ bị ghi đè mất ở lần chạy sau.
 
-Tổng: 2622 open question đang mở trên 69 object.
+Tổng: 2688 open question đang mở trên 69 object.
 
 ## auth-token (`knowledge/products/duos/auth-token/open-questions.md`) — 20 mục
 
@@ -2469,7 +2469,7 @@ Tổng: 2622 open question đang mở trên 69 object.
 - **[OQ-ask-for-review-005]** (feature: ask-for-review) [NEEDS_CONFIRMATION] Overlay hien cho moi merchant staff co quyen tao offer, hay chi owner/admin
 - **[OQ-ask-for-review-006]** (feature: ask-for-review) [NEEDS_CONFIRMATION] Offer tao thu cong roi sua bang AI assistant co bi gan nguoc (retroactive) isAiGenerated khong
 
-## discount-offers (`knowledge/products/qik-volume/discount-offers/open-questions.md`) — 48 mục
+## discount-offers (`knowledge/products/qik-volume/discount-offers/open-questions.md`) — 105 mục
 
 ### Conflict — 2 statement mâu thuẫn nhau
 
@@ -2485,6 +2485,30 @@ Tổng: 2622 open question đang mở trên 69 object.
 - **[OQ-discount-offers-004]** (feature: wholesale-pricing-offer) [DCONF-001] Storefront — drawer doesn't exist (structural correction)
     - Phía A: Tài liệu §Storefront nêu rằng, trái với spec, hành vi live trên store test-vl-1 (product 'Clay Plant Pot', offer 'Offer 17') render toàn bộ variant-composition UI trực tiếp inline trên PDP — không có preview card, không có link 'Select now', không slide-in panel, không backdrop. Lưu ý: (Table layout) lại mô tả nội dung render 'inside the Variant Selection Drawer' — xem DCONF-001, hai mô tả này chưa được hoà giải trong tài liệu.
     - Phía B: Tài liệu §Table layout nêu rằng cùng table này cũng render bên trong Variant Selection Drawer, compact hơn (giảm font size/padding) để fit chiều rộng drawer; hành vi active-row highlight giống hệt và vẫn update live theo stepper. Lưu ý: điều này nhắc tới 'Variant Selection Drawer' như một UI đang tồn tại, trong khi ở §Storefront nêu rằng rendering thực tế trên test-vl-1 là inline, không có drawer — xem DCONF-001, chưa được hoà giải.
+- **[OQ-discount-offers-049]** (feature: quantity-break) Mặc định 3 checkbox Combination (Product/Order/Shipping) của offer Quantity Break: tài liệu nói tắt hết, staging hiện bật hết (kèm dropdown 'One per product (best value wins)'). Expected mặc định là gì?
+    - Phía A: Base KB-055: tất cả default unchecked (QVD-25).
+    - Phía B: Staging KB-082: cả 3 CHECKED mặc định; offer lưu combinesWith true/true/true.
+- **[OQ-discount-offers-050]** (feature: quantity-break) Màu mặc định Appearance & style của offer Quantity Break: tài liệu #2196F3/#262626/#FC81C7/#FFFFFF, staging #606B57/#1C1D21/#D75E60/#FFFFFF. Default hiện hành là bộ nào?
+    - Phía A: Base KB-054: #2196F3 / #262626 / #FC81C7 / #FFFFFF.
+    - Phía B: Staging KB-081: #606B57 / #1C1D21 / #D75E60 / #FFFFFF.
+- **[OQ-discount-offers-051]** (feature: quantity-break) Label type mặc định của tier 2 Quantity Break: tài liệu 'Flat', staging 'Classic' (dropdown không có 'Flat').
+    - Phía A: Base KB-017: tier 2 label 'Flat' text 'Most popular'.
+    - Phía B: Staging KB-076: tier 2 Label type 'Classic', options Classic/Oval/Tag/Callout.
+- **[OQ-discount-offers-052]** (feature: multibuy-mix-match-combo) Tier mặc định khi tạo Multibuy: tài liệu 1 tier (qty 1, $10), staging 3 tier (2→$10, 3→$20, 4→$30).
+    - Phía A: Base KB-022: 1 tier quantity 1 $10.
+    - Phía B: Staging KB-086: 3 tier 2/$10, 3/$20, 4/$30.
+- **[OQ-discount-offers-053]** Overlap Quantity Break × Multibuy: tài liệu nói luôn đúng một discount, không bao giờ cả hai/không chia; staging thấy một giỏ (11 đơn vị, add không property) tách 2 line cùng product mang 2 mã khác nhau. Expected là gì? (Không suy quy tắc ưu tiên — topic discount-priority/discount-calculation không supersede.)
+    - Phía A: Base KB-005: đúng một discount thắng, không cả hai, không chia (store test-vl-1).
+    - Phía B: Staging KB-028: line 4 đơn vị mã Multibuy + line 7 đơn vị mã Quantity Break trên cùng product (2/2 lần); các giỏ khác mỗi line một mã, mã thắng tương quan với đường add (KB-026/027).
+- **[OQ-discount-offers-054]** (feature: wholesale-pricing-offer) Header cột thứ 3 bảng Wholesale (layout table): tài liệu 'Unit price', staging 'ITEM PRICE'.
+    - Phía A: Base KB-WPO-059: Quantity | Discount | Unit price.
+    - Phía B: Staging KB-WPO-082: QUANTITY | DISCOUNT | ITEM PRICE.
+- **[OQ-discount-offers-055]** (feature: quantity-break) End time mặc định khi end date = start date: tài liệu 11:59 PM; staging (tick end date trên offer đã lưu, start hôm nay) điền End date = hôm nay, End time ≈ hiện tại + 1 giờ. Quy tắc hiện hành là gì (khác nhau giữa form mới và offer đã lưu?)
+    - Phía A: Base KB-057: start = end date → end time default 11:59 PM.
+    - Phía B: Staging KB-084: End date = hôm nay, End time ≈ giờ hiện tại + 1h (form mới: start + 1 ngày).
+- **[OQ-discount-offers-056]** (feature: quantity-break) Slots QVD-127 trên widget Quantity Break: tài liệu nói có slot hiện dần theo số unit còn thiếu; staging (layout mặc định) không có slot (slot chỉ ở widget Multibuy). Slot phụ thuộc layout/cấu hình, hay đã bỏ?
+    - Phía A: Base KB-024: storefront hiển thị slots đến tier kế tiếp (QVD-127).
+    - Phía B: Staging KB-087: widget Quantity Break không có slot.
 
 ### Needs confirmation — chưa có authority xác nhận
 
@@ -2531,12 +2555,70 @@ Tổng: 2622 open question đang mở trên 69 object.
 - **[OQ-discount-offers-045]** Khi 2-3 offer type (Quantity Break / Multibuy – Mix & Match Combo / Wholesale Pricing Offer) cùng qualify trên 1 cart (trigger overlap), đúng 1 discount thắng -- xác nhận không bao giờ cả hai, không bao giờ chia -- nhưng biến quyết định offer nào thắng chưa được xác định. Kết quả live-test bị flip giữa 2 lần test trên cùng 1 cặp offer (store test-vl-1, 2026-09-03); test 3-way (2026-09-09) không đủ sạch để trả lời vì Wholesale Tier 1 = 0% ở mức quantity test đó, nên không có 2 discount active cùng lúc thật. Cần PO/Dev xác nhận rule độ ưu tiên (discount rank/order trong Shopify admin? function evaluate sau? thứ tự add-to-cart?) trước khi viết được test case regression xác định cho trigger-overlap.
 - **[OQ-discount-offers-046]** Doc set nguồn cho object discount-offers trải cả merchant (Portal) và buyer (storefront) surface, không có 1 role duy nhất khai báo ở mức doc-set/object (bootstrap context.role=null, theo thiết kế). Từng claim riêng lẻ có role_stated rõ (merchant cho Portal settings, buyer cho storefront widget) nhưng ở mức object không có 1 role tổng quát -- cần xác nhận đây có phải invariant đúng (object luôn đa-role) hay chỉ là gap của bộ tài liệu nguồn.
 - **[OQ-discount-offers-047]** (feature: quantity-break) Card "Appstle℠ Subscriptions App" dưới info banner của Volume discount for subscription (Quantity Break) được tài liệu nguồn tự diễn giải (hedged, chưa xác nhận) thành "app Quantity Break không tự có hạ tầng subscription riêng mà phụ thuộc vào 1 app subscription riêng" — cách diễn đạt chung của app có thể tương thích app subscription khác ngoài Appstle. Cần PO/Dev xác nhận app Quantity Break có phụ thuộc cứng vào một app subscription ngoài hay không, và nếu có thì giới hạn ở app nào (KB-074, INFERRED/LOW, tách riêng khỏi KB-043 vì mang nội dung hedged mà KB-043 không có).
+- **[OQ-discount-offers-057]** (feature: multibuy-mix-match-combo) Customer product selection behavior trên staging có 3 lựa chọn (thêm 'Direct to collection page'), mặc định 'Redirect to specific page/URL' và lưu được với URL rỗng (khi đó slot '+' trên storefront không phản hồi); tài liệu nói 2 cách (popup/redirect) và ticket nói mặc định popup. Expected mặc định và có nên chặn lưu URL rỗng?
+- **[OQ-discount-offers-058]** (feature: wholesale-pricing-offer) Trên product thuộc cả Wholesale (layout table) và Quantity Break, composer Wholesale ở 11/21 đơn vị không đánh dấu hàng active và 'Subtotal' hiện giá gốc (không trừ 15%/20%), trong khi tài liệu nói hàng active được highlight và subtotal gạch giá gốc khi có discount. Đây là hành vi đúng khi overlap (offer khác thắng ở cart) hay lỗi hiển thị?
+- **[OQ-discount-offers-059]** Option 'Discount code' trên form Quantity Break/Multibuy staging không bị khoá (chọn được, có field Discount code + Generate), trong khi tài liệu nói chuyển sang discount code phải liên hệ support (Wholesale KB-WPO-007, ticket Multibuy KB-007). Discount code nay là self-serve cho mọi loại offer? (Form Wholesale và việc lưu offer discount code chưa kiểm.)
+- **[OQ-discount-offers-060]** Section Combination có dropdown mới 'One per product (best value wins)' (mặc định) / 'Multiple per product' dưới Product discount — tài liệu không nhắc. Ý nghĩa nghiệp vụ và quan hệ với overlap giữa các offer của app? (Chỉ hỏi, không suy quy tắc ưu tiên.)
+- **[OQ-discount-offers-061]** Manage offers staging có filter Status 'Scheduled' và các action 'Rename', 'Ask Sidekick about this offer', 'Deactivate', 'Duplicate' mà tài liệu không nhắc (tài liệu chỉ nêu Running/Expired, không Draft). Đây là phạm vi chính thức cần test?
+- **[OQ-discount-offers-062]** Trang Create offer staging có thẻ thứ 6 'Product recommendations (Upselling)' (badge Recommended, 'Free to install' — app bên thứ ba). Thẻ này có thuộc phạm vi app (điều kiện hiển thị) không?
+- **[OQ-discount-offers-063]** Modal 'How's your experience so far?' (xin review) xuất hiện sau khi lưu offer tạo tay thứ 2 (không phải offer AI), không xuất hiện ở offer 1 và 3. Điều kiện kích hoạt expected là gì? (Liên quan object ask-for-review — base nói overlay gắn với offer AI.)
+- **[OQ-discount-offers-064]** Internal name không hiện trên UI storefront nhưng có trong JSON cấu hình nhúng ở HTML PDP (kèm discount id, lịch của offer Scheduled). Tài liệu nói internal name chỉ merchant thấy — việc lộ qua view-source có chấp nhận được không?
+- **[OQ-discount-offers-065]** Known defect chuỗi text thô dưới nút Add to cart (QVD-28) không tái hiện trên staging (theme khác Dawn, product không có swatch). Bug đã được sửa hay chỉ do khác theme/dữ liệu? Cần kiểm lại với product có swatch màu/ảnh.
+- **[OQ-discount-offers-066]** Mở form offer MỚI (chưa sửa gì) đã hiện save bar 'Unsaved changes' và chặn điều hướng back/nav (không có modal), Discard không hỏi lại. Đây là hành vi mong muốn?
+- **[OQ-discount-offers-071]** (feature: wholesale-pricing-offer) Tạo offer có start date tương lai: discount Shopify được tạo ở trạng thái ACTIVE (startsAt = lúc lưu) rồi vài giây sau mới update sang SCHEDULED. Khoảng ACTIVE ngắn này có được chấp nhận (rủi ro áp discount sớm) không?
+- **[OQ-discount-offers-073]** (feature: multibuy-mix-match-combo) Backend lưu "How discount is applied" dưới field tier_application_method, xử lý trong multibuy-discount Function
+- **[OQ-discount-offers-074]** (feature: multibuy-mix-match-combo) Empty "+" combo slot tồn tại trong DOM với id qvl-multibuy-tier_add-more
+- **[OQ-discount-offers-075]** (feature: multibuy-mix-match-combo) Widget Multibuy trên PDP: cấu trúc, phản ánh cart thật, không chặn nút Add to cart của theme
+- **[OQ-discount-offers-076]** (feature: multibuy-mix-match-combo) Số trên badge 'Saved' của widget Multibuy so với discount thực trong cart
+- **[OQ-discount-offers-078]** (feature: quantity-break) Form 'Quantity breaks for same product' mới: Offer title mặc định và trigger mặc định 'All products'
+- **[OQ-discount-offers-079]** (feature: quantity-break) Add to cart với widget Quantity Break: số lượng = tier đang chọn, property ẩn; không chọn tier thì theme thêm 1 đơn vị
+- **[OQ-discount-offers-080]** (feature: quantity-break) [Mức object] Mỗi offer = một automatic discount Shopify: tạo/sửa/xoá offer đồng bộ discount
+- **[OQ-discount-offers-081]** (feature: quantity-break) Badge Quantity Break trên card collection/search: text theo tier cao nhất, góc trên-trái
+- **[OQ-discount-offers-084]** (feature: wholesale-pricing-offer) Add to cart từ composer Wholesale: 1 request nhiều item kèm property ẩn; tier tính trên tổng số lượng các variant line
+- **[OQ-discount-offers-085]** (feature: wholesale-pricing-offer) Nút Add to cart của theme bị disable khi composer Wholesale đang ở số lượng 0
+- **[OQ-discount-offers-086]** (feature: wholesale-pricing-offer) Badge Wholesale trên card collection/search: 'BULK SAVING' góc trên-trái
+- **[OQ-discount-offers-101]** Xác nhận expected cho các hành vi rủi ro cao (tiền/discount, mất dữ liệu, quyền) mới quan sát trên staging 2026-10-18 — hiện chỉ là OBSERVED_CURRENT, chưa có nguồn thẩm quyền, không dùng làm oracle STRONG: KB-024 (permission: POST /api/events từ guest không thấy auth, CORS '*'. Item vẫn publish theo kno); KB-026 (tiền / discount-priority: mã thắng theo đường add khi overlap. Item vẫn publish theo knowl); KB-027 (tiền / discount-priority: overlap QB × Wholesale luôn thấy mã QB. Item vẫn publish theo kn)
+- **[OQ-discount-offers-102]** (feature: multibuy-mix-match-combo) Xác nhận expected cho các hành vi rủi ro cao (tiền/discount, mất dữ liệu, quyền) mới quan sát trên staging 2026-10-18 — hiện chỉ là OBSERVED_CURRENT, chưa có nguồn thẩm quyền, không dùng làm oracle STRONG: KB-087 (tiền / discount-calculation: multiplier bật mặc định → nhiều combo trong 1 cart. Item vẫn ); KB-095 (tiền / discount-calculation: pooling Multibuy và phân bổ theo tỷ lệ giá. Item vẫn publish )
+- **[OQ-discount-offers-103]** (feature: quantity-break) Xác nhận expected cho các hành vi rủi ro cao (tiền/discount, mất dữ liệu, quyền) mới quan sát trên staging 2026-10-18 — hiện chỉ là OBSERVED_CURRENT, chưa có nguồn thẩm quyền, không dùng làm oracle STRONG: KB-089 (tiền / discount-calculation: cart tự tính lại mức Quantity Break khi đổi số lượng. Item vẫ)
+- **[OQ-discount-offers-104]** (feature: wholesale-pricing-offer) Xác nhận expected cho các hành vi rủi ro cao (tiền/discount, mất dữ liệu, quyền) mới quan sát trên staging 2026-10-18 — hiện chỉ là OBSERVED_CURRENT, chưa có nguồn thẩm quyền, không dùng làm oracle STRONG: KB-WPO-080 (tiền: Max trống ở tier cuối, 42 đơn vị vẫn nhận mức tier cuối. Item vẫn publish theo knowl)
 
 ### Open issue — gap khác (unknown area, scope chưa rõ, chưa explore được)
 
 - **[OQ-discount-offers-048]** Quy ước confirmation_source.type cho toàn bộ product qik-volume (áp dụng cho 329 item CONFIRMED_EXPECTED trên cả 8 object, không riêng discount-offers): bộ tài liệu nguồn "qa-volume-kb" là KB do chính QA tự biên soạn từ live-test qua Playwright MCP trên store test-vl-1 -- KHÔNG phải tài liệu dev-gen từ source code, KHÔNG phải spec/PRD chính thức, và KHÔNG phải một hệ thống test case có track (không có test-case ID/PASS/build record). Claim không gắn 1 ngày live-test cụ thể (narrative chung) được gán type="spec_doc", và claim gắn 1 ngày live-test cụ thể được gán type="test_case" -- một pragmatic nearest-fit trong 4 giá trị enum cố định của §3, không giá trị nào khớp chữ nghĩa 100%. Hệ quả cần biết: theo §12.5, 192 item "spec_doc" (claim không gắn ngày, nguồn yếu hơn) KHÔNG có blocker (a) chặn một dev_doc tương lai ghi đè chúng, trong khi 137 item "test_case" (claim gắn ngày live-verify) CÓ. Đây là lựa chọn chấp nhận được cho lần bootstrap đầu (không có lựa chọn nào khớp 100% trong 4 giá trị enum cố định) nhưng cần ghi lại tường minh, không âm thầm hấp thụ. Revisit nếu/khi có Testlane test-case backfill chính thức hoặc spec_doc thật cho product này.
+- **[OQ-discount-offers-067]** Document iframe app tải từ https://staging-bkv-embedded.qikify.com — host không nằm trong environments.staging.expected_api_base và config không khai host bổ sung. Chờ operator xác nhận host có hợp lệ cho staging (additional_api_hosts) hay không; item giữ LOW, không oracle.
+- **[OQ-discount-offers-068]** POST /api/completions/review trên staging trả 500 với stack trace debug (đường dẫn nội bộ, thư viện vendor) mỗi lần mở form offer (9/9). Ghi nhận như issue staging — không tự escalate; operator quyết có báo dev không.
+- **[OQ-discount-offers-069]** (feature: multibuy-mix-match-combo) Popup Multibuy trên staging: mỗi lần 'Pick' console báo 'TypeError: Cannot read properties of null (reading 'url')' và subtotal/slot trong popup không cập nhật (dù 'Done' vẫn thêm đúng item vào cart). Có thể liên quan product không có ảnh — cần xác nhận là defect hay do dữ liệu thử.
+- **[OQ-discount-offers-070]** POST /api/events (ghi analytics) từ storefront nhận request guest không thấy header auth, response CORS allow-origin '*'. Khả năng gửi event giả chưa kiểm (ngoài policy). Ghi nhận bề mặt bảo mật — không tự escalate.
+- **[OQ-discount-offers-072]** (feature: multibuy-mix-match-combo) [Regression watch — known defect] [Regression-watch, KNOWN_DEFECT/limitation — KHÔNG dùng làm oracle] Đổi quantity trực tiếp trong cart có thể hiện discount/compare price inconsistent
+- **[OQ-discount-offers-077]** (feature: quantity-break) [Regression watch — known defect] [Regression-watch, KNOWN_DEFECT — KHÔNG dùng làm oracle đúng/sai] Giá trị discount âm nhập trực tiếp không bị chặn
+- **[OQ-discount-offers-082]** (feature: wholesale-pricing-offer) [Regression watch — known defect] [Regression-watch, KNOWN_DEFECT] Sửa Max của 1 tier tạo gap — save không báo lỗi validation
+- **[OQ-discount-offers-083]** (feature: wholesale-pricing-offer) [Regression watch — known defect] [Regression-watch, KNOWN_DEFECT] Quantity rơi vào gap do misconfiguration — full price, không lỗi hiển thị cho buyer
+- **[OQ-discount-offers-087]** (feature: multibuy-mix-match-combo) Chế độ Percentage và 'How discount is applied' (Apply per combo / highest tier) tính giá thế nào trên storefront staging?
+- **[OQ-discount-offers-088]** (feature: multibuy-mix-match-combo) Badge Multibuy có ẩn khi offer ngoài lịch, và countdown có hiện trên widget Multibuy không; offer sau giờ start/hết hạn hiển thị thế nào?
+- **[OQ-discount-offers-089]** (feature: multibuy-mix-match-combo) Popup và widget Multibuy trên mobile và với product có ảnh hiển thị thế nào?
+- **[OQ-discount-offers-090]** Gating QVD-167 trên staging chưa quan sát được: khi app embed bị tắt, discount của Quantity Break / Multibuy / Wholesale có còn áp trong cart không (run REFRESH chỉ quan sát với embed Active; tắt embed là theme_change bị cấm, cần operator chủ động tắt/bật).
+- **[OQ-discount-offers-091]** (feature: quantity-break) Widget subscription (Subscribe & save / One-time purchase) trên storefront render và tính giá thế nào khi có app subscription (Appstle) và product eligible?
+- **[OQ-discount-offers-092]** (feature: quantity-break) Offer Scheduled khi tới giờ start có tự chuyển Running và widget/discount xuất hiện trên storefront không; khi tới end date, countdown về 0 và offer chuyển Expired thì widget/discount ra sao?
+- **[OQ-discount-offers-093]** (feature: quantity-break) Khi store chạm giới hạn 25 automatic discount của Shopify, app báo gì khi tạo offer Quantity Break mới?
+- **[OQ-discount-offers-094]** (feature: quantity-break) Quantity Break có thật sự không gộp số lượng giữa các product khác nhau trên store staging hiện tại?
+- **[OQ-discount-offers-095]** (feature: wholesale-pricing-offer) Trên product nằm trong trigger của cả Wholesale và Quantity Break, có đường thêm cart nào tạo line mang property _qvl-wholesale-id không, và khi đó mã nào áp?
+- **[OQ-discount-offers-096]** (feature: wholesale-pricing-offer) Offer Wholesale Scheduled khi tới giờ start có tự chuyển Running và widget/discount xuất hiện; khi tới end date chuyển Expired thì sao?
+- **[OQ-discount-offers-097]** (feature: wholesale-pricing-offer) Composer product 1 option khi Wholesale đứng riêng, và layout table ở số lượng có giảm khi product chỉ thuộc Wholesale, hiển thị thế nào?
+- **[OQ-discount-offers-098]** (feature: wholesale-pricing-offer) Typography của form Wholesale có nhóm 'Normal text' (KB-WPO-032) không?
+- **[OQ-discount-offers-099]** (feature: wholesale-pricing-offer) Account staff hạn quyền có cấu hình offer Wholesale được không; khi store chạm 25 automatic discount thì tạo offer báo gì?
+- **[OQ-discount-offers-100]** (feature: wholesale-pricing-offer) Tier continuity (gap) trên store staging hiện tại có còn không được validate như KNOWN_DEFECT KB-WPO-023?
+- **[OQ-discount-offers-105]** (feature: quantity-break) Known defect (tài liệu v1): casing của label đếm gift của Buy X get Y không nhất quán giữa các tier ('1 gift' / '2 Gifts' / '3 gifts') — chỉ là regression watch, không phải expected. Chưa tái kiểm trên staging (run REFRESH 2026-10-18 không tạo offer Buy X get Y).
 
-## onboarding-dashboard (`knowledge/products/qik-volume/onboarding-dashboard/open-questions.md`) — 4 mục
+## onboarding-dashboard (`knowledge/products/qik-volume/onboarding-dashboard/open-questions.md`) — 13 mục
+
+### Conflict — 2 statement mâu thuẫn nhau
+
+- **[OQ-onboarding-dashboard-007]** (feature: onboarding-dashboard) 'Recently created offers': tài liệu nói correction QA phủ định dạng bảng cột của QVD-27; staging hiển thị bảng cột Internal name/Extension type/Status/Trigger/Combination/Actions. Expected hiện hành?
+    - Phía A: Base KB-007: 5 offer mới nhất, phủ định bảng cột QVD-27.
+    - Phía B: Staging KB-030: bảng 6 cột (request limit=5); empty state khi 0 offer.
+- **[OQ-onboarding-dashboard-008]** (feature: onboarding-dashboard) Cấu trúc Dashboard: tài liệu nói gồm 3 section; staging có thêm card Sidekick (3 prompt), promo Transcy BFCM, promo 'Ultimate kit for conversion' (chỉ khi có offer), card 'Add to cart click' (ẩn khi 0 offer). Expected hiện hành và các card này có thuộc phạm vi test?
+    - Phía A: Base KB-006: 3 section Theme Extension Status / Setup Guide / Recently created offers.
+    - Phía B: Staging KB-032 (+KB-031): thêm card Sidekick, promo, Add to cart click, dropdown Language.
 
 ### Needs confirmation — chưa có authority xác nhận
 
@@ -2544,6 +2626,16 @@ Tổng: 2622 open question đang mở trên 69 object.
 - **[OQ-onboarding-dashboard-002]** (feature: onboarding-dashboard) Staff permission level required to view Home or perform onboarding/dashboard actions
 - **[OQ-onboarding-dashboard-003]** (feature: onboarding-dashboard) Dashboard ATC click stat identity vs. the standalone Analytics feature's metric
 - **[OQ-onboarding-dashboard-004]** (feature: onboarding-dashboard) Backend persistence (or absence thereof) behind the onboarding<->dashboard switch and Setup Guide progress
+- **[OQ-onboarding-dashboard-005]** (feature: onboarding-dashboard) Setup guide staging quay về '1 / 2 Completed' (bước 'Create your offer' chưa xong) sau khi xoá hết offer, tức theo số offer hiện có chứ không theo 'đã từng tạo'; trong khi view Dashboard vẫn giữ (không về onboarding). Expected là gì?
+- **[OQ-onboarding-dashboard-006]** (feature: onboarding-dashboard) Trong lúc Dashboard đang tải (~20s), card Theme extension hiển thị 'Inactive' + nút 'Enable theme app' (disabled/Loading) dù embed Active, sau đó mới đổi Active. Trạng thái tạm thời này là loading state chấp nhận được hay lỗi hiển thị?
+- **[OQ-onboarding-dashboard-009]** (feature: onboarding-dashboard) Window 30 ngày của số ATC (Dashboard) và Analytics dùng offset timezone trình duyệt (+07:00) và kết thúc hôm qua, trong khi form offer hiển thị timezone store (-04:00). Expected là timezone store hay trình duyệt, và có tính cả hôm nay không?
+- **[OQ-onboarding-dashboard-010]** (feature: onboarding-dashboard) Nút 'Manage offers' trong 'Recently created offers' chỉ hiện khi store có ≥1 offer (0 offer chỉ có 'Create offer'); tài liệu KB-008 nêu cả 2 nút không kèm điều kiện. Expected?
+
+### Open issue — gap khác (unknown area, scope chưa rõ, chưa explore được)
+
+- **[OQ-onboarding-dashboard-011]** (feature: onboarding-dashboard) Trên store mới cài (chưa từng có offer), Home có hiện onboarding 'Hello {Store name}!' như tài liệu, và chuyển sang Dashboard khi nào?
+- **[OQ-onboarding-dashboard-012]** (feature: onboarding-dashboard) Khi app embed thật sự tắt, card Theme extension, nút 'Enable theme app' và deep-link theme editor hoạt động thế nào trên staging?
+- **[OQ-onboarding-dashboard-013]** (feature: onboarding-dashboard) Request GET /api/offers?status=ACTIVE&limit=1 (chỉ khi có offer) dùng cho phần nào của Dashboard?
 
 ## translate-offers (`knowledge/products/qik-volume/translate-offers/open-questions.md`) — 11 mục
 

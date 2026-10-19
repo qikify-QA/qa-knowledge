@@ -1,6 +1,8 @@
 {
+  "feature_id": "FEAT-03-quantity-break",
   "feature_key": "quantity-break",
-  "checklist_version": "v1",
+  "object_id": "discount-offers",
+  "checklist_version": "v2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -232,19 +234,26 @@
       "steps": [
         "Quan sát 3 tier hiển thị ngay khi trang load lần đầu."
       ],
-      "observation_point": "Nội dung Tier 1/2/3 (quantity, discount %, title, subtitle, label, badge, selected-by-default) ngay khi load.",
-      "expected_result": "Pre-populate đúng 3 tier: Tier1=qty1/0%/'1 pack'; Tier2=qty2/10%/'2 packs'/subtitle 'Buy 2 save 10% off'/label 'Flat' text 'Most popular'/badge 'Free shipping'/selected-by-default; Tier3=qty3/20%/'3 packs'/subtitle 'Buy 3 save 20% off'/badge 'Free shipping'.",
+      "observation_point": "Nội dung Tier 1/2/3 (quantity, discount %, title, subtitle, label type, label text, badge, selected-by-default) ngay khi load.",
+      "expected_result": "",
       "oracle": {
-        "kb_ids": [
-          "KB-017"
-        ],
-        "oracle_strength": "STRONG"
+        "kb_ids": [],
+        "oracle_strength": "NONE"
       },
-      "status": "READY",
-      "open_question_draft": null,
-      "risk_refs": [],
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Conflict CONF-discount-offers-R1018-03 — Label type mặc định của tier 2 trên form Quantity Break mới là gì? Tài liệu (KB-017): tier 2 có label 'Flat' text 'Most popular'. Staging 2026-10-18 (KB-076): tier 2 Label type 'Classic', Label text 'Most popular'; dropdown Label type chỉ có Classic / Oval / Tag / Callout, không có 'Flat'. Các giá trị khác của 3 tier (qty 1/2/3, 0/10/20%, title, subtitle, badge 'Free shipping', tier 2 selected by default) hai bên khớp. Cần owner chọn phía trước khi check này dùng lại được làm oracle.",
+      "related_kb_ids": [
+        "KB-017",
+        "KB-076",
+        "KB-015"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "CONF-discount-offers-R1018-03"
+      ],
       "priority": "P2",
-      "automation_suitability": "SUITABLE"
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-051"
     },
     {
       "check_id": "CHK-009",
@@ -723,6 +732,9 @@
       },
       "status": "READY",
       "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-089"
+      ],
       "risk_refs": [],
       "priority": "P1",
       "automation_suitability": "SUITABLE"
@@ -843,6 +855,9 @@
       },
       "status": "READY",
       "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-088"
+      ],
       "risk_refs": [],
       "priority": "P2",
       "automation_suitability": "SUITABLE"
@@ -851,7 +866,7 @@
       "check_id": "CHK-029",
       "dimension": "CORE",
       "layer": "storefront",
-      "title": "Slot indicator hiện dần số unit cần để đạt tier kế tiếp",
+      "title": "Slot indicator số unit cần để đạt tier kế tiếp (có hiển thị không, hiện dần thế nào)",
       "applicability": {
         "role": "buyer",
         "state": "below_threshold_no_discount",
@@ -861,21 +876,27 @@
       "precondition": "Offer có tier ở 3/5/8 unit (ví dụ), cart đang ở 0 unit.",
       "steps": [
         "Thêm dần item vào cart: 0→3→5→8 unit.",
-        "Quan sát slot indicator ở mỗi bước."
+        "Quan sát slot indicator ở mỗi bước (ghi layout widget đang dùng)."
       ],
-      "observation_point": "Số slot trống/đã hiện ở mỗi mức quantity.",
-      "expected_result": "Khởi đầu 3 slot trống; đạt 3 → hiện thêm 2 (tới 5); đạt 5 → hiện thêm 3 (tới 8); đạt 8 (tier cao nhất) → hết slot, tier cao nhất được highlight unlocked.",
+      "observation_point": "Có/không có slot; số slot trống/đã hiện ở mỗi mức quantity; layout widget.",
+      "expected_result": "",
       "oracle": {
-        "kb_ids": [
-          "KB-024"
-        ],
-        "oracle_strength": "STRONG"
+        "kb_ids": [],
+        "oracle_strength": "NONE"
       },
-      "status": "READY",
-      "open_question_draft": null,
-      "risk_refs": [],
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Conflict CONF-discount-offers-R1018-07 — Widget Quantity Break trên storefront có 'slots' đếm đơn vị còn thiếu không? Tài liệu (KB-024, QVD-127): slot hiện dần khi thêm item (tier 3/5/8: khởi đầu 3 slot trống; đạt 3 → thêm 2; đạt 5 → thêm 3; đạt 8 → hết slot, tier cao nhất highlight unlocked). Staging 2026-10-18 (KB-087): widget layout mặc định trên PDP KHÔNG có slot đếm đơn vị còn thiếu (slot chỉ thấy ở widget Multibuy). Slot phụ thuộc layout/cấu hình hay đã bỏ? Cần owner chọn phía trước khi check này dùng lại được làm oracle.",
+      "related_kb_ids": [
+        "KB-024",
+        "KB-087"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "CONF-discount-offers-R1018-07"
+      ],
       "priority": "P3",
-      "automation_suitability": "SUITABLE"
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-056"
     },
     {
       "check_id": "CHK-030",
@@ -983,48 +1004,63 @@
         "Mở lần lượt 5 sub-group: Layout, Color, Typography, Badge, Custom CSS.",
         "Ghi nhận field-set và default của mỗi group."
       ],
-      "observation_point": "Field-set và default value của mỗi sub-group.",
-      "expected_result": "Có đúng 5 sub-group với default value đã xác nhận; field-set khác với Multibuy (không chia sẻ component).",
+      "observation_point": "Field-set và default value của mỗi sub-group (đặc biệt 4 màu Primary/Secondary/Label background/Label text).",
+      "expected_result": "",
       "oracle": {
-        "kb_ids": [
-          "KB-054"
-        ],
-        "oracle_strength": "STRONG"
+        "kb_ids": [],
+        "oracle_strength": "NONE"
       },
-      "status": "READY",
-      "open_question_draft": null,
-      "risk_refs": [],
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Conflict CONF-discount-offers-R1018-02 — Bộ màu mặc định Appearance & style của offer Quantity Break là bộ nào? Tài liệu (KB-054): Primary #2196F3, Secondary #262626, Label background #FC81C7, Label text #FFFFFF. Staging 2026-10-18 (KB-081): Primary #606B57, Secondary #1C1D21, Label background #D75E60, Label text #FFFFFF. Hai bên khớp ở 5 sub-group, Card border radius 8px, Typography và Badge. Cần owner xác nhận bộ màu hiện hành trước khi check này dùng lại được làm oracle.",
+      "related_kb_ids": [
+        "KB-054",
+        "KB-081",
+        "KB-070"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "CONF-discount-offers-R1018-02"
+      ],
       "priority": "P3",
-      "automation_suitability": "SUITABLE"
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-050"
     },
     {
       "check_id": "CHK-034",
       "dimension": "CORE",
       "layer": "portal",
-      "title": "Discount combination: checkbox Order/Product/Shipping default OFF",
+      "title": "Discount combination: trạng thái mặc định của checkbox Order/Product/Shipping",
       "applicability": {
         "role": "merchant",
         "state": "shared_settings_configuration",
         "environment": "documented",
         "theme_or_device": null
       },
-      "precondition": "Merchant ở Discount combination settings.",
+      "precondition": "Merchant ở Discount combination settings của offer Quantity Break mới.",
       "steps": [
-        "Quan sát trạng thái 3 checkbox (Order/Product/Shipping discount) khi mới load offer mới."
+        "Quan sát trạng thái 3 checkbox (Order/Product/Shipping discount) khi mới load offer mới.",
+        "Ghi thêm mọi control đi kèm checkbox Product discount (nếu có)."
       ],
-      "observation_point": "Trạng thái check/uncheck của 3 checkbox.",
-      "expected_result": "Cả 3 checkbox default OFF (unchecked).",
+      "observation_point": "Trạng thái check/uncheck của 3 checkbox và control đi kèm.",
+      "expected_result": "",
       "oracle": {
-        "kb_ids": [
-          "KB-055"
-        ],
-        "oracle_strength": "STRONG"
+        "kb_ids": [],
+        "oracle_strength": "NONE"
       },
-      "status": "READY",
-      "open_question_draft": null,
-      "risk_refs": [],
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Conflict CONF-discount-offers-R1018-01 — Mặc định 3 checkbox Combination của offer Quantity Break mới là bật hay tắt? Tài liệu (KB-055, QVD-25): cả 3 Order/Product/Shipping default unchecked. Staging 2026-10-18 (KB-082, object:KB-012): cả 3 CHECKED mặc định, kèm dropdown 'One per product (best value wins)' / 'Multiple per product' dưới Product discount, offer lưu với combinesWith order/product/shipping = true. Mặc định này còn ảnh hưởng stacking với discount khác — cần owner quyết.",
+      "related_kb_ids": [
+        "KB-055",
+        "KB-082",
+        "object:KB-012"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "CONF-discount-offers-R1018-01"
+      ],
       "priority": "P2",
-      "automation_suitability": "SUITABLE"
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-049"
     },
     {
       "check_id": "CHK-035",
@@ -1052,6 +1088,9 @@
       },
       "status": "READY",
       "open_question_draft": null,
+      "related_kb_ids": [
+        "object:KB-013"
+      ],
       "risk_refs": [],
       "priority": "P2",
       "automation_suitability": "SUITABLE"
@@ -1060,32 +1099,39 @@
       "check_id": "CHK-036",
       "dimension": "CORE",
       "layer": "portal",
-      "title": "Offer scheduling: end date tuỳ chọn, ẩn sau checkbox, phải ≥ start date",
+      "title": "Offer scheduling: end date tuỳ chọn sau checkbox — điều kiện ≥ start date và end time mặc định",
       "applicability": {
         "role": "merchant",
         "state": "shared_settings_configuration",
         "environment": "documented",
         "theme_or_device": null
       },
-      "precondition": "Merchant đang ở offer scheduling settings.",
+      "precondition": "Merchant đang ở offer scheduling settings (ghi rõ form mới hay offer đã lưu).",
       "steps": [
         "Quan sát checkbox 'Enable end date' khi mới load (default).",
-        "Bật checkbox, thử set end date < start date.",
+        "Bật checkbox, ghi End date/End time được điền sẵn; thử set end date < start date.",
         "Set end date = cùng ngày start date, quan sát end time default."
       ],
-      "observation_point": "Trạng thái checkbox default; kết quả validation khi end date < start date; end time default khi cùng ngày.",
-      "expected_result": "Checkbox 'Enable end date' default off (chạy vô thời hạn); khi bật, end date phải ≥ start date; nếu bằng ngày, end time default 11:59 PM.",
+      "observation_point": "Trạng thái checkbox default; giá trị điền sẵn; kết quả validation khi end date < start date; end time default khi cùng ngày.",
+      "expected_result": "",
       "oracle": {
-        "kb_ids": [
-          "KB-057"
-        ],
-        "oracle_strength": "STRONG"
+        "kb_ids": [],
+        "oracle_strength": "NONE"
       },
-      "status": "READY",
-      "open_question_draft": null,
-      "risk_refs": [],
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Conflict CONF-discount-offers-R1018-08 — End time mặc định khi bật 'Enable end date' là gì? Tài liệu (KB-057): end date tuỳ chọn sau checkbox (default off), end date phải ≥ start date; nếu start date = end date thì end time mặc định 11:59 PM. Staging 2026-10-18 (KB-084): trên offer ĐÃ LƯU (start hôm nay) tick 'Enable end date' điền sẵn End date = hôm nay và End time ≈ giờ hiện tại + 1 giờ (form mới: End date = start + 1 ngày, End time = giờ start — object:KB-013). Cần owner xác nhận quy tắc mặc định hiện hành trước khi check này dùng lại được làm oracle.",
+      "related_kb_ids": [
+        "KB-057",
+        "KB-084",
+        "object:KB-013"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "CONF-discount-offers-R1018-08"
+      ],
       "priority": "P2",
-      "automation_suitability": "SUITABLE"
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-055"
     },
     {
       "check_id": "CHK-037",
@@ -1390,7 +1436,7 @@
     },
     {
       "check_id": "CHK-047",
-      "dimension": "NEGATIVE",
+      "dimension": "REGRESSION",
       "layer": "portal",
       "title": "[Regression-watch, KNOWN_DEFECT — KHÔNG dùng làm oracle đúng/sai] Giá trị discount âm nhập trực tiếp không bị chặn",
       "applicability": {
@@ -1405,19 +1451,27 @@
         "Thử Save.",
         "(Đối chứng) Thử dùng nút tăng/giảm mũi tên để đạt giá trị âm tương tự."
       ],
-      "observation_point": "Field có bị validation chặn hay không, theo từng cách nhập (gõ/paste trực tiếp vs nút mũi tên).",
-      "expected_result": "QUAN SÁT HIỆN HÀNH (KNOWN_DEFECT, đang bị kẹt chưa fix — không coi đây là hành vi đúng): gõ/paste trực tiếp giá trị âm KHÔNG bị validation chặn; chỉ nút tăng/giảm mũi tên bị chặn. Nếu lần chạy này thấy hành vi KHÁC (ví dụ đã bị chặn, hoặc ảnh hưởng thấy rõ lên giá storefront), báo ngay cho QA/Dev — đó có thể là fix mới hoặc 1 regression liên quan, không tự kết luận đâu là 'đúng'.",
+      "observation_point": "Field có bị validation chặn hay không, theo từng cách nhập (gõ/paste trực tiếp vs nút mũi tên); nếu lưu được, giá storefront có bị ảnh hưởng không.",
+      "current_defect_behavior": "KNOWN_DEFECT (đang kẹt, chưa fix — không phải hành vi đúng): gõ/paste trực tiếp giá trị âm KHÔNG bị validation chặn; chỉ nút tăng/giảm mũi tên bị chặn.",
+      "expected_result": "",
       "oracle": {
-        "kb_ids": [
-          "KB-063"
-        ],
-        "oracle_strength": "BASELINE"
+        "kb_ids": [],
+        "oracle_strength": "NONE"
       },
-      "status": "READY",
-      "open_question_draft": null,
-      "risk_refs": [],
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Known defect KB-063: Discount value âm gõ/paste trực tiếp không bị chặn (chỉ nút mũi tên bị chặn). Đây vẫn là defect mở? Expected sau fix là chặn mọi giá trị âm bằng inline error? Nếu lần chạy thấy hành vi khác (đã chặn, hoặc ảnh hưởng giá storefront), báo QA/Dev — không tự kết luận đâu là đúng.",
+      "related_kb_ids": [
+        "KB-013"
+      ],
+      "regression_watch_kb_ids": [
+        "KB-063"
+      ],
+      "risk_refs": [
+        "RISK-known-defect-oracle-misuse"
+      ],
       "priority": "P1",
-      "automation_suitability": "SUITABLE"
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-077"
     },
     {
       "check_id": "CHK-048",
@@ -1634,7 +1688,8 @@
         "RISK-low-confidence-ui-fields"
       ],
       "priority": "P2",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-discount-offers-005"
     },
     {
       "check_id": "CHK-055",
@@ -1696,7 +1751,8 @@
       "open_question_draft": "Khi discount của subscription app thay đổi hoặc bị xoá giữa session, giá quantity-break hiển thị cho shopper có tự recompute ngay lập tức hay giữ giá cũ (stale) cho tới khi reload/điều hướng? Tài liệu nguồn tự gắn cờ chưa chắc cho mô tả này.",
       "risk_refs": [],
       "priority": "P2",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-discount-offers-006"
     },
     {
       "check_id": "CHK-057",
@@ -1723,9 +1779,13 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Sau khi Save và refresh toàn bộ trang Settings, mọi field (trigger/tier/gift/subscription/display/appearance/combination/scheduling/advanced) có reload lại đúng khớp dữ liệu đã lưu không? KB hiện chỉ xác nhận success toast xuất hiện ngay sau Save, chưa có xác nhận riêng cho bước reload.",
+      "related_kb_ids": [
+        "object:KB-032"
+      ],
       "risk_refs": [],
       "priority": "P2",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-discount-offers-007"
     },
     {
       "check_id": "CHK-058",
@@ -1754,6 +1814,9 @@
       },
       "status": "READY",
       "open_question_draft": null,
+      "related_kb_ids": [
+        "object:KB-014"
+      ],
       "risk_refs": [],
       "priority": "P2",
       "automation_suitability": "SUITABLE"
@@ -1784,6 +1847,9 @@
       },
       "status": "READY",
       "open_question_draft": null,
+      "related_kb_ids": [
+        "object:KB-025"
+      ],
       "risk_refs": [],
       "priority": "P2",
       "automation_suitability": "SUITABLE"
@@ -1817,11 +1883,19 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Khi ≥2 offer type (bao gồm Quantity Break) cùng qualify trên 1 cart, biến nào quyết định offer nào thắng (discount rank/order trong Shopify admin? thứ tự Function evaluate? thứ tự add-to-cart?)? Đã xác nhận chắc là đúng 1 offer thắng (không chia/không cả hai), nhưng kết quả bị flip giữa 2 lần test live trên cùng 1 cặp offer — cần PO/Dev xác định rule trước khi viết test case regression xác định cho mọi tình huống overlap.",
+      "related_kb_ids": [
+        "object:KB-026",
+        "object:KB-027",
+        "object:KB-028",
+        "object:KB-012"
+      ],
       "risk_refs": [
-        "RISK-offer-priority-undefined"
+        "RISK-offer-priority-undefined",
+        "CONF-discount-offers-R1018-05"
       ],
       "priority": "P1",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-discount-offers-008"
     },
     {
       "check_id": "CHK-061",
@@ -1845,18 +1919,24 @@
       "oracle": {
         "kb_ids": [
           "KB-060",
-          "KB-061",
-          "KB-062"
+          "KB-061"
         ],
         "oracle_strength": "NONE"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "DCONF-001: Automatic discount của Quantity Break có áp dụng khi app block/theme embed bị tắt hay không? Banner UI (KB-060) nói 'có vẫn hoạt động', nhưng fix QVD-167 sau 1 incident thật (77 đơn live, KB-062) cho thấy discount Function SKIP khi app block/theme-embed tắt (KB-061). Cần PO/Dev xác nhận: banner đang là copy cũ chưa update sau fix, hay 'app block' và 'theme embed' là 2 khái niệm Shopify khác nhau mà fix chỉ cover 1 trong 2, hay đây là 1 gap thật cần fix thêm.",
+      "related_kb_ids": [
+        "KB-083"
+      ],
+      "regression_watch_kb_ids": [
+        "KB-062"
+      ],
       "risk_refs": [
         "DCONF-001"
       ],
       "priority": "P1",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-discount-offers-009"
     },
     {
       "check_id": "CHK-062",
@@ -1890,7 +1970,7 @@
     },
     {
       "check_id": "CHK-063",
-      "dimension": "INTEGRATION",
+      "dimension": "REGRESSION",
       "layer": "storefront",
       "title": "[Regression-watch, cross-object KNOWN_DEFECT — KHÔNG dùng làm oracle đúng/sai] Text JS-object-like leak dưới nút Add to cart",
       "applicability": {
@@ -1899,26 +1979,34 @@
         "environment": "documented",
         "theme_or_device": null
       },
-      "precondition": "Offer Quantity Break có trigger scope = 'Specific products', sản phẩm có variant dùng Variant Swatches.",
+      "precondition": "Offer Quantity Break có trigger scope = 'Specific products', sản phẩm có variant dùng Variant Swatches (color/image swatch đã config).",
       "steps": [
         "Mở PDP của sản phẩm trong trigger scope 'Specific products'.",
         "Quan sát khu vực ngay dưới nút Add to cart/Buy it now."
       ],
-      "observation_point": "Nội dung text/markup hiển thị ngay dưới nút Add to cart/Buy it now.",
-      "expected_result": "QUAN SÁT HIỆN HÀNH (KNOWN_DEFECT, root cause ở tầng Variant Swatches/SDK chung — không coi đây là hành vi đúng của Quantity Break): có thể xuất hiện 1 chuỗi text thô JS-object-like (ví dụ '{ [Default Title]: \"\", }') ngay dưới nút Add to cart/Buy it now — bug này tái lập trên cả Wholesale Pricing và sản phẩm theme thuần không gắn offer nào, KHÔNG phải lỗi riêng của Quantity Break. Nếu lần chạy này không còn thấy text leak này, kiểm tra fix status của feature Variant Swatches trước khi kết luận Quantity Break đã 'fix' gì — bug này không thuộc code của Quantity Break.",
+      "observation_point": "Nội dung text/markup hiển thị ngay dưới nút Add to cart/Buy it now; ghi theme đang dùng và sản phẩm có swatch màu/ảnh hay không.",
+      "current_defect_behavior": "KNOWN_DEFECT (root cause ở tầng Variant Swatches/SDK chung — không phải hành vi đúng của Quantity Break): có thể xuất hiện 1 chuỗi text thô JS-object-like (ví dụ '{ [Default Title]: \"\", }') ngay dưới nút Add to cart/Buy it now; bug tái lập trên cả Wholesale Pricing và sản phẩm theme thuần không gắn offer nào. Staging 2026-10-18 (object:KB-030, theme khác Dawn, product không có swatch) KHÔNG tái hiện — không đủ để kết luận đã sửa.",
+      "expected_result": "",
       "oracle": {
-        "kb_ids": [
-          "KB-064"
-        ],
-        "oracle_strength": "BASELINE"
+        "kb_ids": [],
+        "oracle_strength": "NONE"
       },
-      "status": "READY",
-      "open_question_draft": null,
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Known defect KB-064 / object:KB-008 (QVD-28): chuỗi text thô dưới nút Add to cart không tái hiện trên staging (theme khác Dawn, product không có swatch màu/ảnh — object:KB-030). Bug đã được sửa hay chỉ do khác theme/dữ liệu? Cần kiểm lại với product có swatch màu/ảnh và kiểm fix status của feature Variant Swatches trước khi kết luận.",
+      "related_kb_ids": [
+        "object:KB-030"
+      ],
+      "regression_watch_kb_ids": [
+        "KB-064",
+        "object:KB-008"
+      ],
       "risk_refs": [
-        "RISK-variant-swatches-config-link-unclear"
+        "RISK-variant-swatches-config-link-unclear",
+        "RISK-known-defect-oracle-misuse"
       ],
       "priority": "P2",
-      "automation_suitability": "SUITABLE"
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-065"
     },
     {
       "check_id": "CHK-064",
@@ -1946,6 +2034,10 @@
       },
       "status": "READY",
       "open_question_draft": "Template 'Volume discount for subscription' có hoạt động được với các app subscription khác ngoài Appstle(SM) Subscriptions App hay không, hay đây là dependency cứng chỉ tương thích đúng 1 app? Tài liệu nguồn chỉ xác nhận banner/card giới thiệu Appstle xuất hiện, phần 'chỉ tương thích Appstle' là suy luận tự gắn cờ hedge, chưa kiểm chứng với app khác.",
+      "related_kb_ids": [
+        "KB-074",
+        "KB-077"
+      ],
       "risk_refs": [],
       "priority": "P3",
       "automation_suitability": "UNKNOWN"
@@ -1976,9 +2068,13 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Portal tier-settings preview pricing có LUÔN khớp chính xác với giá render thực tế trên storefront cho mọi offer/sản phẩm, hay ví dụ khớp đã quan sát (offer 'Offer 15') chỉ là 1 trường hợp đơn lẻ? Cần thêm ≥1 sample độc lập khác (sản phẩm/offer khác) để nâng cấp thành rule tổng quát CONFIRMED_EXPECTED.",
+      "related_kb_ids": [
+        "KB-086"
+      ],
       "risk_refs": [],
       "priority": "P2",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-discount-offers-010"
     },
     {
       "check_id": "CHK-066",
@@ -2006,9 +2102,13 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "True default của field Position (Volume discount for subscription) là 'Above volume tiers' hay 'Below volume tiers'? Ticket gốc và ví dụ live quan sát mâu thuẫn nhau; cần 1 lần test trên offer hoàn toàn mới (chưa qua tay merchant) để xác định default ngoài-hộp.",
+      "related_kb_ids": [
+        "KB-077"
+      ],
       "risk_refs": [],
       "priority": "P3",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-discount-offers-011"
     },
     {
       "check_id": "CHK-067",
@@ -2036,9 +2136,13 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Group 'Content' trong Display settings có tồn tại/được ship cho Quantity Break hay không? 3 ví dụ live kiểm tra đều không thấy group này. Cần PO/Dev xác nhận group này có áp dụng cho offer type này hay chỉ tồn tại ở ticket.",
+      "related_kb_ids": [
+        "KB-079"
+      ],
       "risk_refs": [],
       "priority": "P3",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-discount-offers-012"
     },
     {
       "check_id": "CHK-068",
@@ -2066,9 +2170,13 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Display settings có hành vi accordion (collapsed-by-default, click để mở) như spec mô tả, hay luôn hiển thị (always-visible section) như quan sát qua accessibility-tree gợi ý? Cần 1 lần click-test trực tiếp trên Portal thật để xác nhận.",
+      "related_kb_ids": [
+        "KB-079"
+      ],
       "risk_refs": [],
       "priority": "P3",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-discount-offers-013"
     },
     {
       "check_id": "CHK-069",
@@ -2096,9 +2204,14 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Khi bật checkbox cha của Variant display, 2 field con ('Allow customer to choose variant for single-item offer', 'Variant swatch settings') có thực sự xuất hiện như ticket mô tả hay không? Chưa có ví dụ live nào bật thử checkbox cha này.",
+      "related_kb_ids": [
+        "KB-079",
+        "KB-080"
+      ],
       "risk_refs": [],
       "priority": "P3",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-discount-offers-014"
     },
     {
       "check_id": "CHK-070",
@@ -2126,9 +2239,15 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Checkbox 'Enable countdown timer' có hành vi/validation bổ sung nào liên quan QVD-147 ngoài việc hiện/ẩn 1 countdown timer đơn giản không? Ticket chưa được phân tích sâu; cần PO/Dev xác nhận phạm vi đầy đủ trước khi viết test case regression chi tiết.",
+      "related_kb_ids": [
+        "KB-084",
+        "KB-085",
+        "object:KB-013"
+      ],
       "risk_refs": [],
       "priority": "P3",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-discount-offers-015"
     },
     {
       "check_id": "CHK-071",
@@ -2154,9 +2273,13 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Khi 1 tier có nhiều gift PRODUCT KHÁC NHAU (không cùng loại) được gắn cùng lúc, badge đếm gift và dòng giá hiển thị trên storefront có dạng gì? Tài liệu nguồn chỉ quan sát trường hợp nhiều gift cùng loại; cần 1 lần test live để xác định UI thật.",
+      "related_kb_ids": [
+        "KB-078"
+      ],
       "risk_refs": [],
       "priority": "P3",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-discount-offers-016"
     },
     {
       "check_id": "CHK-072",
@@ -2185,11 +2308,15 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Checkbox 'Allow customers to choose different variants for each item' (Display settings của Quantity Break) có thực sự nối với/chia sẻ configuration của feature Variant Swatches riêng hay không, và nếu có, UI 'Variant swatch settings' hình dạng gì? Hiện Preview chỉ hiện mock data chung, chưa rõ liên kết thật.",
+      "related_kb_ids": [
+        "KB-080"
+      ],
       "risk_refs": [
         "RISK-variant-swatches-config-link-unclear"
       ],
       "priority": "P2",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-discount-offers-017"
     },
     {
       "check_id": "CHK-073",
@@ -2247,9 +2374,473 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Khi merchant bật toggle cho widget hiện variant selector riêng, selector đó có thực sự đồng bộ động 2 chiều với variant selector gốc của theme, hay là 2 selector độc lập có thể lệch nhau? Tài liệu tự gắn cờ chưa chắc cho phần đồng bộ này.",
+      "related_kb_ids": [
+        "KB-087"
+      ],
       "risk_refs": [],
       "priority": "P3",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-discount-offers-018"
+    },
+    {
+      "check_id": "CHK-075",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Form 'Quantity breaks for same product' mới: Offer title mặc định và trigger mặc định 'All products'",
+      "applicability": {
+        "role": "merchant",
+        "state": "form offer Quantity Break mới, chưa lưu",
+        "environment": "staging",
+        "theme_or_device": null
+      },
+      "precondition": "Merchant ở trang Create offer; chưa sửa field nào của form mới.",
+      "steps": [
+        "Click 'Create' trên thẻ 'Quantity breaks for same product'.",
+        "Đọc giá trị field 'Offer title'.",
+        "Đọc radio đang chọn trong 'Offer is triggered for' và vị trí nút 'Exclude products'.",
+        "Chọn 'Specific products', quan sát nút 'Exclude products' và vùng chọn product; Discard form."
+      ],
+      "observation_point": "Giá trị Offer title; radio trigger mặc định; sự hiện/ẩn của 'Exclude products'.",
+      "expected_result": "(baseline staging 2026-10-18; lệch = cần điều tra, không mặc nhiên là bug) 'Offer title' = 'Buy more, save more'; 'Offer is triggered for' mặc định 'All products' (5 radio All products / Collections / Product tags / Specific products / Custom trigger); nút 'Exclude products' hiện dưới danh sách khi chọn 'All products' và biến mất khi chọn 'Specific products' (khi đó hiện '0 product selected' + 'Browse').",
+      "oracle": {
+        "kb_ids": [
+          "KB-075"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Offer title mặc định 'Buy more, save more' và trigger mặc định 'All products' của form Quantity Break mới (quan sát staging) có phải là mặc định mong muốn không? Tài liệu chỉ xác nhận 5 radio và vị trí 'Exclude products', không nêu giá trị mặc định.",
+      "related_kb_ids": [
+        "KB-004",
+        "KB-007"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-078"
+    },
+    {
+      "check_id": "CHK-076",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Form 'Buy X, get Y free' mới: tier 1 có sẵn khối Gifts thay cho link 'Add free gift'",
+      "applicability": {
+        "role": "merchant",
+        "state": "form offer Buy X get Y mới, chưa lưu",
+        "environment": "staging",
+        "theme_or_device": null
+      },
+      "precondition": "Merchant ở trang Create offer.",
+      "steps": [
+        "Click 'Create' trên thẻ 'Buy X, get Y free'.",
+        "So sánh các section của form với form 'Quantity breaks for same product'.",
+        "Mở tier 1, liệt kê các field trong khối gift."
+      ],
+      "observation_point": "Khác biệt giữa form BXGY và form Quantity Break; nội dung khối gift ở tier 1.",
+      "expected_result": "(baseline staging 2026-10-18; lệch = cần điều tra) Form giống form Quantity Break (cùng Offer title, 3 tier 0/10/20%, banner, trigger, display, appearance, combination, scheduling); khác duy nhất: tier 1 có sẵn khối gift — 'Gifts' [Search products] [Browse]; 'Promotion message' = '+ {gift_qty} FREE GIFT'; [ ] 'Show gifts' price'; [ ] 'Show quantity counter'; nút 'Remove gift'.",
+      "oracle": {
+        "kb_ids": [
+          "KB-078"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Form 'Buy X, get Y free' trên staging có sẵn khối gift ở tier 1 (Promotion message mặc định '+ {gift_qty} FREE GIFT', checkbox 'Show gifts' price' và 'Show quantity counter', nút 'Remove gift'). Đây là thiết kế mong muốn? Checkbox 'Show quantity counter' và nhãn 'Remove gift' không có trong tài liệu (tài liệu: 'Show gift's price', nút 'Remove').",
+      "related_kb_ids": [
+        "KB-030",
+        "KB-035",
+        "KB-036",
+        "KB-037"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-016"
+    },
+    {
+      "check_id": "CHK-077",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Bật 'Enable end date' + countdown trên offer Quantity Break đã lưu: giá trị điền sẵn, lưu được, status sau lưu",
+      "applicability": {
+        "role": "merchant",
+        "state": "offer Quantity Break đã lưu, start cùng ngày, chưa có end date",
+        "environment": "staging",
+        "theme_or_device": null
+      },
+      "precondition": "Có 1 offer Quantity Break đã lưu (start = hôm nay), đang Running.",
+      "steps": [
+        "Mở offer, tick 'Enable end date'; ghi End date và End time được điền sẵn.",
+        "Chọn end date +7 ngày qua date picker, tick 'Enable countdown timer'; ghi Heading/Subheading mặc định.",
+        "Save; mở Manage offers xem status; reload form xem end date/countdown còn giữ.",
+        "Quan sát Preview trên form."
+      ],
+      "observation_point": "End date/End time prefill; status sau lưu; giá trị sau reload; Preview.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Conflict CONF-discount-offers-R1018-08 — Giá trị điền sẵn khi bật 'Enable end date' trên offer đã lưu là gì? Tài liệu (KB-057): nếu start date = end date thì end time mặc định 11:59 PM. Staging 2026-10-18 (KB-084): trên offer ĐÃ LƯU (start hôm nay) End date điền sẵn = hôm nay, End time ≈ giờ hiện tại + 1 giờ theo timezone store (form mới: start + 1 ngày); bật countdown ('HURRY UP!' / 'Sale end in') rồi Save → offer giữ end date + countdown, status vẫn 'Running', Preview hiện khối đếm ngược. Cần owner xác nhận quy tắc end time mặc định trước khi check này dùng làm oracle.",
+      "related_kb_ids": [
+        "KB-057",
+        "KB-084",
+        "KB-058",
+        "object:KB-013"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "CONF-discount-offers-R1018-08"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-discount-offers-055"
+    },
+    {
+      "check_id": "CHK-078",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Countdown của offer Quantity Break trên PDP: vị trí, nội dung, đếm ngược khớp end date",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "offer Quantity Break có end date + 'Enable countdown timer' bật",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "Offer Quantity Break đang Running có end date tương lai và countdown bật (ví dụ sau CHK-077); product trong trigger.",
+      "steps": [
+        "Mở PDP của product thuộc offer.",
+        "Ghi vị trí và nội dung khối countdown so với widget.",
+        "Đợi vài giây, ghi lại giá trị giây.",
+        "So thời gian còn lại với end date đã lưu ở portal."
+      ],
+      "observation_point": "Vị trí khối countdown; text; giá trị đếm ngược theo thời gian.",
+      "expected_result": "(baseline staging 2026-10-18; lệch = cần điều tra) Khối countdown nằm ở ĐẦU widget Quantity Break (header, phía trên tiêu đề 'Buy more, save more'), nền màu, chữ trắng, nguyên văn 'HURRY UP!' / 'Sale end in' / 'N Days : N Hrs : N Mins : N Secs'; giây giảm theo thời gian thực; thời gian còn lại khớp end date đã lưu.",
+      "oracle": {
+        "kb_ids": [
+          "KB-085"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Vị trí/hành vi countdown trên PDP (đầu widget Quantity Break, 'HURRY UP!'/'Sale end in', đếm ngược live) quan sát trên staging có phải hành vi mong muốn (phạm vi QVD-147)? Hành vi lúc hết giờ chưa quan sát.",
+      "related_kb_ids": [
+        "KB-058",
+        "object:KB-013"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-discount-offers-036"
+    },
+    {
+      "check_id": "CHK-079",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Widget Quantity Break trên PDP: tier card radio, tier chọn sẵn, slot, click tier đang chọn",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "PDP product thuộc offer Quantity Break, cart rỗng, 'Allow customers to choose different variants' tắt",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "Offer Quantity Break mặc định 3 tier (1/0%, 2/10%, 3/20%) đang Running trên 1 product có variant.",
+      "steps": [
+        "Mở PDP của product; ghi vị trí widget so với giá theme và nút Add to cart.",
+        "Ghi nội dung từng tier card (giá hiển thị, giá gạch, badge, label, tier đang chọn) và có/không slot đếm đơn vị còn thiếu.",
+        "Click vào tier đang chọn; ghi trạng thái 3 radio. Click lại; ghi trạng thái.",
+        "Đổi variant ở selector của theme; ghi widget có đổi tier/giá không."
+      ],
+      "observation_point": "Cấu trúc widget; có/không slot; giá trên card; trạng thái radio sau mỗi click; phản ứng khi đổi variant theme.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Conflict CONF-discount-offers-R1018-07 — Widget Quantity Break trên PDP có slot đếm đơn vị còn thiếu không? Tài liệu (KB-024, QVD-127): có slot hiện dần. Staging 2026-10-18 (KB-087): widget 'Buy more, save more' dưới giá theme, trên nút Add to cart; 3 tier card radio hiển thị TỔNG giá gói kèm giá gốc gạch, không giá/đơn vị; tier '2 packs' có badge 'Free shipping', subtitle, label 'Most popular', chọn sẵn; 'powered by qikify'; không nút Add to cart riêng, không selector variant riêng, KHÔNG có slot; click tier đang chọn → bỏ chọn (cả 3 unchecked), click lại → chọn lại; đổi variant theme thì widget giữ nguyên. Slot phụ thuộc layout/cấu hình hay đã bỏ, và bỏ chọn tier có phải hành vi mong muốn?",
+      "related_kb_ids": [
+        "KB-087",
+        "KB-024",
+        "KB-022"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "CONF-discount-offers-R1018-07"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-056"
+    },
+    {
+      "check_id": "CHK-080",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "Add to cart với widget Quantity Break: số lượng = tier đang chọn, property ẩn; không chọn tier thì theme thêm 1 đơn vị",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "PDP product thuộc offer Quantity Break",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "Offer Quantity Break 3 tier đang Running; cart rỗng; DevTools Network mở.",
+      "steps": [
+        "Chọn tier '2 packs', bấm Add to cart của theme; ghi request add và nội dung cart (số lượng, property của line).",
+        "Xoá cart. Bỏ chọn mọi tier (click lại tier đang chọn), bấm Add to cart; ghi request và cart.",
+        "Trong cart, tăng số lượng line không property từ 1 lên 2; ghi discount."
+      ],
+      "observation_point": "Request add (endpoint, quantity, property); số lượng và discount trong cart.",
+      "expected_result": "(baseline staging 2026-10-18; lệch = cần điều tra) Có tier được chọn: widget chặn submit của theme, gửi POST /cart/add.js?qvl-discount với quantity = số lượng của tier (1/2/3) và property ẩn _qvl-volume-id = id offer, rồi theme chuyển sang /cart. Không tier nào được chọn: form gốc của theme gửi POST /cart/add với 1 đơn vị, không property. Line không property vẫn nhận discount khi số lượng đạt tier (1→2 trong cart → giảm 10%).",
+      "oracle": {
+        "kb_ids": [
+          "KB-088"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Đường add-to-cart của widget Quantity Break trên staging (add.js?qvl-discount với số lượng = tier và property _qvl-volume-id; không chọn tier thì theme thêm 1 đơn vị không property) có phải hành vi mong muốn? Property này còn ảnh hưởng mã thắng khi product thuộc nhiều offer (object:KB-026) — cần xác nhận vai trò của property.",
+      "related_kb_ids": [
+        "KB-022",
+        "KB-029",
+        "object:KB-026"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-079"
+    },
+    {
+      "check_id": "CHK-081",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "Giá tier trên PDP theo giá thật của product và khớp cart; Preview portal dùng giá mẫu cố định",
+      "applicability": {
+        "role": "merchant, buyer (guest)",
+        "state": "offer Quantity Break mặc định (0/10/20%) trên 1 product giá cố định",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "Offer Quantity Break đã lưu với trigger 1 product (ví dụ giá $20).",
+      "steps": [
+        "Ghi giá từng tier ở Preview của form offer.",
+        "Mở PDP product; ghi giá từng tier card.",
+        "Thêm 2 rồi 3 đơn vị vào cart; ghi tổng line và mã discount.",
+        "Tăng 3→4, rồi giảm 4→3→2→1; ghi tổng sau mỗi lần."
+      ],
+      "observation_point": "Giá Preview; giá PDP; tổng line trong cart theo từng số lượng.",
+      "expected_result": "(baseline staging 2026-10-18; lệch = cần điều tra) Preview form dùng giá mẫu cố định không theo product: 1 pack $100.00; 2 packs $180.00 (gạch $200.00); 3 packs $240.00 (gạch $300.00). PDP dùng giá thật: 1 pack $20.00; 2 packs $36.00 (gạch $40.00); 3 packs $48.00 (gạch $60.00). Cart khớp PDP và áp mã QIKIFY-xxxxxx của offer: 2 → $36.00, 3 → $48.00, 4 → $64.00 (vẫn 20%); giảm 4→3→2→1 tính lại 20% → 10% → không giảm.",
+      "oracle": {
+        "kb_ids": [
+          "KB-086",
+          "KB-089"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Preview trong form offer Quantity Break dùng giá mẫu cố định ($100/$180/$240), không phản ánh giá product trigger, trong khi PDP và cart dùng giá thật và khớp nhau. Preview dùng giá mẫu có phải thiết kế mong muốn? (liên quan câu hỏi base về preview khớp storefront)",
+      "related_kb_ids": [
+        "KB-020",
+        "KB-027",
+        "KB-028",
+        "KB-029"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-010"
+    },
+    {
+      "check_id": "CHK-082",
+      "dimension": "REGRESSION",
+      "layer": "storefront",
+      "title": "[Regression-watch, conflict — KHÔNG phải quy tắc ưu tiên] Giỏ overlap tách 2 line cùng product mang 2 mã discount khác nhau",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "product thuộc trigger của Quantity Break + Multibuy (+ Wholesale) cùng Running, mỗi offer có mức giảm khác 0 ở số lượng thử",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "1 product thuộc trigger của 1 offer Quantity Break, 1 offer Multibuy (multiplier tắt) và (tuỳ chọn) 1 offer Wholesale; cart rỗng.",
+      "steps": [
+        "Thêm 11 đơn vị một variant bằng POST /cart/add.js trực tiếp, không property; ghi số line, số lượng mỗi line và mã discount trên mỗi line.",
+        "Xoá cart; thêm cùng 11 đơn vị qua widget/composer + nút Add to cart của theme; ghi lại như trên.",
+        "Lặp mỗi cách ≥2 lần; ghi cấu hình Combination của các offer."
+      ],
+      "observation_point": "Số line, số lượng mỗi line, mã QIKIFY trên mỗi line, tổng cart, theo từng đường add.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Conflict CONF-discount-offers-R1018-05 — Khi Quantity Break và Multibuy overlap trên cùng product, cart có được phép mang HAI mã khác nhau trên hai line cùng product? Tài liệu (object:KB-005): đúng một discount áp cho cart, không bao giờ cả hai, không chia. Staging 2026-10-18 (object:KB-028, 2/2 lần): 11 đơn vị add không property → cart tách 2 line cùng variant, line 4 đơn vị mã Multibuy + line 7 đơn vị mã Quantity Break; add qua composer + ATC theme → 1 line mã Quantity Break. Check này chỉ theo dõi hiện tượng, không dùng để suy biến quyết định offer nào thắng.",
+      "related_kb_ids": [
+        "object:KB-005",
+        "object:KB-028",
+        "object:KB-026",
+        "object:KB-012"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "CONF-discount-offers-R1018-05",
+        "RISK-offer-priority-undefined"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-discount-offers-053"
+    },
+    {
+      "check_id": "CHK-083",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[Mức object] Mỗi offer = một automatic discount Shopify: tạo/sửa/xoá offer đồng bộ discount",
+      "applicability": {
+        "role": "merchant",
+        "state": "tạo, sửa rồi xoá 1 offer (áp cho cả 3 loại offer)",
+        "environment": "staging",
+        "theme_or_device": null
+      },
+      "precondition": "Store có slot automatic discount còn trống; DevTools Network mở; mở song song Shopify admin → Discounts (chỉ đọc).",
+      "steps": [
+        "Tạo và lưu 1 offer; ghi thứ tự request (GraphQL tạo discount, POST /api/offers, GraphQL cập nhật discount) và dòng discount mới trong Shopify admin → Discounts.",
+        "Sửa 1 field rồi lưu; ghi request PUT /api/offers/{id} và cập nhật discount.",
+        "Ở Manage offers bấm Delete → modal 'Delete offer' → 'Delete'; ghi request DELETE và việc xoá discount; kiểm Shopify admin → Discounts."
+      ],
+      "observation_point": "Thứ tự và kết quả request; danh sách discount trong Shopify admin trước/sau mỗi bước; modal xoá.",
+      "expected_result": "(baseline staging 2026-10-18; lệch = cần điều tra) Tạo: frontend gọi discountAutomaticAppCreate (discount title dạng QIKIFY-xxxxxx) TRƯỚC POST /api/offers (201), rồi discountAutomaticAppUpdate. Sửa: PUT /api/offers/{id} (200) rồi discountAutomaticAppUpdate. Xoá: modal 'Delete offer' / 'Are you sure you want to delete this offer?' / 'Cancel' / 'Delete' (không nêu tên offer); DELETE /api/offers/{id} (204) rồi discountAutomaticDelete cho đúng discount đó; hàng biến mất khỏi Manage offers. Shopify admin → Discounts: mỗi offer đúng một dòng Automatic 'Product discount' kèm tên app; xoá offer thì dòng đó biến mất.",
+      "oracle": {
+        "kb_ids": [
+          "object:KB-015",
+          "object:KB-017"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Vòng đời offer ↔ automatic discount Shopify (tạo discount trước khi lưu offer; xoá discount phía client sau DELETE API) quan sát trên staging có phải thiết kế mong muốn? Khi một bước phía client thất bại (ví dụ discountAutomaticDelete lỗi sau khi offer đã xoá) có cơ chế dọn discount mồ côi không — chưa kiểm.",
+      "related_kb_ids": [
+        "object:KB-016"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Discount Shopify mồ côi có thể tiếp tục giảm giá sau khi offer bị xoá"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-discount-offers-080"
+    },
+    {
+      "check_id": "CHK-084",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[Mức object] Manage offers: status Running/Scheduled ngay sau lưu, bộ lọc và empty state",
+      "applicability": {
+        "role": "merchant",
+        "state": "store 0 offer, rồi có offer Running và offer start ngày mai",
+        "environment": "staging",
+        "theme_or_device": null
+      },
+      "precondition": "Store không có offer; có quyền tạo offer thử.",
+      "steps": [
+        "Mở Manage offers khi 0 offer; ghi empty state và trạng thái pagination.",
+        "Tạo 1 offer với start hiện tại và 1 offer với start ngày mai; quay lại Manage offers.",
+        "Ghi cột bảng, status từng offer, các lựa chọn của filter Status/Type và sort, tooltip ở cột Actions.",
+        "Xoá các offer thử."
+      ],
+      "observation_point": "Empty state; cột; status; filter/sort; actions.",
+      "expected_result": "(baseline staging 2026-10-18; lệch = cần điều tra) 0 offer: empty state 'Create your first deal!' / 'Create your first volume discount offer to get started.' + 'Create offer', pagination disabled. Có offer: nút 'Create offer', ô 'Search by Internal name', filter Status (All / Running / Expired / Scheduled), filter Type (All / Quantity break / Multibuy / Wholesale), sort 'Created date (DESC)' / '(ASC)'; cột Internal name / Extension type / Status / Trigger / Combination / Actions; actions có tooltip 'Ask Sidekick about this offer', 'Deactivate', 'Duplicate', 'Edit', 'Delete' và 'Rename' cạnh tên. Offer start hiện tại hiện 'Running' ngay (không có Draft); offer start ngày mai hiện 'Scheduled'.",
+      "oracle": {
+        "kb_ids": [
+          "object:KB-016"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Manage offers staging có filter Status 'Scheduled' và các action 'Rename', 'Ask Sidekick about this offer', 'Deactivate', 'Duplicate' mà tài liệu không nhắc (tài liệu chỉ nêu Running/Expired, không Draft). Đây là phạm vi chính thức cần test?",
+      "related_kb_ids": [
+        "object:KB-013",
+        "object:KB-017"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-061"
+    },
+    {
+      "check_id": "CHK-085",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[Mức object] Form offer mới hiện save bar 'Unsaved changes' ngay khi mở; điều hướng bị chặn; Discard không hỏi lại",
+      "applicability": {
+        "role": "merchant",
+        "state": "form offer mới vừa mở, chưa sửa gì",
+        "environment": "staging",
+        "theme_or_device": null
+      },
+      "precondition": "Merchant ở trang Create offer; console DevTools mở.",
+      "steps": [
+        "Mở form offer mới bất kỳ; không sửa field nào; quan sát contextual save bar của Shopify admin.",
+        "Bấm nút ← back trong iframe, rồi một link nav của admin; ghi trang có đổi không, có modal không.",
+        "Bấm 'Discard'; ghi có hộp thoại xác nhận không, trang đích và lỗi console."
+      ],
+      "observation_point": "Save bar; kết quả điều hướng; hành vi Discard; console.",
+      "expected_result": "(baseline staging 2026-10-18; lệch = cần điều tra) Save bar 'Unsaved changes' [Discard] [Save] hiện ngay khi mở form mới (bên ngoài iframe). Khi save bar hiện, ← back và link nav KHÔNG điều hướng, không modal, nút 'Save' được focus. 'Discard' không hỏi xác nhận, điều hướng về Manage offers; console có lỗi 'SaveBar with ID bk-volume-save-bar not found'.",
+      "oracle": {
+        "kb_ids": [
+          "object:KB-018"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Mở form offer MỚI (chưa sửa gì) đã hiện save bar 'Unsaved changes' và chặn điều hướng back/nav (không có modal), Discard không hỏi lại và console báo lỗi SaveBar. Đây là hành vi mong muốn?",
+      "related_kb_ids": [],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-066"
+    },
+    {
+      "check_id": "CHK-086",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Badge Quantity Break trên card collection/search: text theo tier cao nhất, góc trên-trái",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "product chỉ thuộc offer Quantity Break mặc định (tier cao nhất 20%)",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "Offer Quantity Break mặc định đang Running; product trong trigger có ảnh (để quan sát cả badge trên ảnh nếu có).",
+      "steps": [
+        "Mở /collections/all, tìm card của product; ghi text, vị trí, border-radius của badge.",
+        "Tìm product ở trang search; ghi lại badge.",
+        "Nếu product thuộc thêm offer khác, ghi số badge trên card."
+      ],
+      "observation_point": "Badge trên card collection và search.",
+      "expected_result": "(baseline staging 2026-10-18; lệch = cần điều tra) Badge ở góc trên-trái card (top 10px, left 10px, border-radius 6px) với text 'UP TO 20% OFF' (cấu hình 'UP TO {discount} OFF' với tier cao nhất 20%), giống nhau ở collection và search. Product thuộc nhiều offer chỉ hiện MỘT badge của app.",
+      "oracle": {
+        "kb_ids": [
+          "object:KB-031"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Badge trên collection/search cho product thuộc nhiều offer chỉ hiện một badge (quan sát: Quantity Break + Wholesale → 'UP TO 20% OFF'; cả 3 loại → 'MULTIBUY'). Quy tắc chọn badge nào là gì? (không suy từ quan sát)",
+      "related_kb_ids": [
+        "object:KB-025"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-081"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -2274,9 +2865,10 @@
       "risk_description": "4 KNOWN_DEFECT (KB-039, KB-062 lịch sử-đã-fix, KB-063, KB-064) nếu bị dùng làm expected result sẽ tạo oracle sai.",
       "covered_by_checks": [
         "CHK-047",
+        "CHK-061",
         "CHK-063"
       ],
-      "coverage_status": "MITIGATED_AS_REGRESSION_WATCH — KB-039 (gift casing) và KB-062 (historical, đã fix, gộp vào CHK-061/DCONF-001) KHÔNG có check riêng khẳng định hành vi đúng; KB-063 và KB-064 có check READY với oracle_strength=BASELINE, diễn đạt rõ là 'quan sát hiện hành', không phải 'hành vi đúng'."
+      "coverage_status": "MITIGATED_AS_REGRESSION_WATCH — từ v2 không item KNOWN_DEFECT nào nằm trong oracle.kb_ids: CHK-047 (KB-063) và CHK-063 (KB-064, object:KB-008) là check REGRESSION dạng watch, oracle NONE; KB-062 (incident lịch sử đã fix) nằm ở regression_watch_kb_ids của CHK-061 (DCONF-001, oracle NONE chỉ còn KB-060/KB-061). KB-039 vẫn không có check khẳng định hành vi đúng."
     },
     {
       "risk_ref": "RISK-low-confidence-ui-fields",
@@ -2289,7 +2881,7 @@
         "CHK-070",
         "CHK-054"
       ],
-      "coverage_status": "FLAGGED_NEEDS_CONFIRMATION — mỗi field có 1 check riêng, không generalize thành rule cho tới khi có xác nhận live trực tiếp."
+      "coverage_status": "FLAGGED_NEEDS_CONFIRMATION — mỗi field có 1 check riêng, không generalize thành rule cho tới khi có xác nhận live trực tiếp. Staging 2026-10-18 có quan sát cho CHK-066..CHK-070 (related_kb_ids), OQ vẫn mở."
     },
     {
       "risk_ref": "RISK-variant-swatches-config-link-unclear",
@@ -2305,16 +2897,73 @@
       "risk_description": "Core capability coverage theo coverage_matrix của Feature Profile (6 state portal + 5 state storefront covered:true, 2 state covered:false, api/data/code covered:false).",
       "covered_by_checks": [
         "CHK-001..CHK-039 (CORE)",
-        "CHK-040..CHK-047 (NEGATIVE)",
+        "CHK-040..CHK-046 (NEGATIVE)",
         "CHK-048..CHK-052 (BOUNDARY)"
       ],
-      "coverage_status": "COVERED — mọi state covered:true trong coverage_matrix có ≥1 check STRONG; 2 state covered:false (app_block_theme_embed_disabled, checkout_with_overlapping_offer_types) nay có check NEEDS_CONFIRMATION tương ứng (CHK-061, CHK-060/CHK-059) — KHÔNG đổi thành covered:true vì oracle vẫn thiếu, chỉ đổi từ 'chưa ai viết check' thành 'đã có check nhưng đang chờ PO/Dev'. 3 layer api/data/code vẫn KHÔNG có check nào — feature này không có API/DB evidence (surface_mapping.api=[], surface_mapping.data=[]) nên không có gì để viết check layer=api/db; đây là tình trạng đúng của DOC_BOOTSTRAP, không phải thiếu sót của checklist này."
+      "coverage_status": "COVERED ở v1 — từ v2: 5 check (CHK-008, CHK-029, CHK-033, CHK-034, CHK-036) mất oracle STRONG vì conflict mới, chờ owner; phần còn lại giữ STRONG."
+    },
+    {
+      "feature_id": "FEAT-03-quantity-break",
+      "risk_ref": "CONF-discount-offers-R1018-01/02/03",
+      "risk_description": "3 conflict mặc định form (Combination, màu, Label type tier 2) giữa tài liệu và staging — test case giá trị mặc định không có oracle.",
+      "covered_by_checks": [
+        "CHK-034",
+        "CHK-033",
+        "CHK-008"
+      ],
+      "coverage_status": "FLAGGED_NEEDS_CONFIRMATION — oracle NONE, expected_result trống, hai phía trong open_question_draft."
+    },
+    {
+      "feature_id": "FEAT-03-quantity-break",
+      "risk_ref": "CONF-discount-offers-R1018-07/08",
+      "risk_description": "Slot đếm đơn vị trên widget (KB-024 vs KB-087) và end time mặc định khi bật end date (KB-057 vs KB-084).",
+      "covered_by_checks": [
+        "CHK-029",
+        "CHK-079",
+        "CHK-036",
+        "CHK-077"
+      ],
+      "coverage_status": "FLAGGED_NEEDS_CONFIRMATION — oracle NONE, expected_result trống, hai phía trong open_question_draft."
+    },
+    {
+      "feature_id": "FEAT-03-quantity-break",
+      "risk_ref": "CONF-discount-offers-R1018-05",
+      "risk_description": "Giỏ overlap tách 2 line cùng product mang 2 mã khác nhau, trái object:KB-005.",
+      "covered_by_checks": [
+        "CHK-082",
+        "CHK-060"
+      ],
+      "coverage_status": "REGRESSION_WATCH — NONE, không suy quy tắc ưu tiên."
+    },
+    {
+      "feature_id": "FEAT-03-quantity-break",
+      "risk_ref": "STAGING_BASELINE_STOREFRONT",
+      "risk_description": "Hành vi storefront staging của widget (add-to-cart, giá PDP ↔ cart, countdown, badge collection).",
+      "covered_by_checks": [
+        "CHK-078",
+        "CHK-080",
+        "CHK-081",
+        "CHK-086"
+      ],
+      "coverage_status": "BASELINE + NEEDS_CONFIRMATION — store staging, theme 'Generated Data Theme', guest, desktop. CHK-079 (render widget) NONE do conflict R1018-07."
+    },
+    {
+      "feature_id": "FEAT-03-quantity-break",
+      "risk_ref": "STAGING_BASELINE_OFFER_LIFECYCLE",
+      "risk_description": "Mức object: offer ↔ automatic discount Shopify, Manage offers, save bar form mới (rủi ro discount mồ côi khi xoá offer).",
+      "covered_by_checks": [
+        "CHK-083",
+        "CHK-084",
+        "CHK-085",
+        "CHK-075",
+        "CHK-076"
+      ],
+      "coverage_status": "BASELINE + NEEDS_CONFIRMATION. CHK-077 NONE do conflict R1018-08."
     }
   ],
-  "excluded_dimensions": [
-    {
-      "dimension": "REGRESSION",
-      "reason": "Run này là bootstrap v1 (DOC_BOOTSTRAP, profile_change_summary ghi 'Initial creation — chưa có feature profile nào tồn tại trước đó'); chưa có so sánh version trước/sau output nào so sánh version trước/sau để sinh behavior-change claim. Theo đúng định nghĩa dimension REGRESSION trong contract ('khi có behavior change từ diff analyzer'), KHÔNG có input để tạo check dimension này ở lần chạy này. 4 KNOWN_DEFECT item (KB-039, KB-062, KB-063, KB-064) được giữ lại như regression-watch check nhưng gắn dimension NEGATIVE/INTEGRATION (theo đúng hành vi chức năng mà chúng ảnh hưởng) với oracle_strength=BASELINE, không gắn dimension REGRESSION — tránh đánh tráo 'không có diff analyzer' thành 'có behavior-change claim'."
-    }
-  ]
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-10-18",
+    "ccr_ref": "bootstrap"
+  }
 }
