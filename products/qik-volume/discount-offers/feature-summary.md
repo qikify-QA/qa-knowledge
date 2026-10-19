@@ -1,23 +1,31 @@
 # Discount Offers (Quantity Break / Multibuy / Wholesale Pricing — stacking & shared settings layer)
-**Published context version:** 1
+**Published context version:** 2
 
-**Product:** qik-volume · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-05
+**Product:** qik-volume · **Object:** `discount-offers` · **Mode:** REFRESH (trên nền DOC_BOOTSTRAP v1) · **Environment:** documented + staging · **Published:** 2026-10-18
 
 ## Features
 
-- **quantity-break** — gate: CONDITIONAL_PASS
-- **multibuy-mix-match-combo** — gate: CONDITIONAL_PASS
-- **wholesale-pricing-offer** — gate: CONDITIONAL_PASS
+- **multibuy-mix-match-combo** — Merchant sets up a promotion where a customer mixes and matches across multiple different eligible products (not a repeat quantity of one pr: 95 KB item (11 quan sát staging), 72 check (27 cần xác nhận)
+- **quantity-break** — Merchant thưởng khách mua nhiều hơn bằng cách cấu hình 1 bộ tier quantity/price dùng chung cho 3 dạng reward (price break free gift subscrip: 89 KB item (15 quan sát staging), 86 check (33 cần xác nhận)
+- **wholesale-pricing-offer** — B2B buyer nhận một discount theo % (hoặc fixed amount) tăng dần theo tổng quantity đã order trên nhiều variant combination của 1 product, qu: 80 KB item (9 quan sát staging), 35 check (18 cần xác nhận)
+
+## Tóm tắt knowledge
+
+- KB item: 296 (CONFIRMED_EXPECTED 170 · INFERRED 58 · OBSERVED_CURRENT 68), trong đó 32 item mức object (`kb.json`).
+- Quan sát staging (OBSERVED_CURRENT, `scope.environment: staging`, 2026-10-18): 59 item. Đây là hành vi hiện tại trên store staging (app Staging BK Volume, theme khác Dawn), không phải kỳ vọng đã xác nhận; khác biệt với tài liệu (viết từ store cũ test-vl-1) được giữ thành conflict hai phía, không phân xử.
+- Known defect (status KNOWN_DEFECT, chỉ làm regression watch): 9.
+- Checklist: 193 check, 115 oracle STRONG, 19 BASELINE, 59 NONE; 78 cần xác nhận.
+- Conflict đang mở: CONF-DOC04-001, CONF-DOC04-002, CONF-discount-offers-R1018-01, CONF-discount-offers-R1018-02, CONF-discount-offers-R1018-03, CONF-discount-offers-R1018-04, CONF-discount-offers-R1018-05, CONF-discount-offers-R1018-06, CONF-discount-offers-R1018-07, CONF-discount-offers-R1018-08, DCONF-001.
 
 ## Trạng thái open questions
 
-- CONFLICT (chưa ngã ngũ, 2 phía song song): 4
-- OPEN_ISSUE (known defect, quan sát hiện tại): 1
-- NEEDS_CONFIRMATION (thiếu oracle đủ mạnh, chờ PO/Dev hoặc test_case PASS): 43
-- Tổng: 48 — chi tiết đầy đủ trong `open-questions.md` của object này.
-
-**Lưu ý về oracle_strength**: KB của bootstrap đầu tiên này có nguồn `spec_doc` (narrative chung, không gắn 1 lần live-test cụ thể) và `test_case` (gắn 1 lần live-test cụ thể trên store test-vl-1, ngày cụ thể) — cả hai được coi là CONFIRMED_EXPECTED đủ mạnh làm oracle STRONG khi `confirmation_source.derivation == "prose"`, theo đúng luật C5 của contract. Một số check vẫn ở BASELINE (do derivation=code_artifact hoặc do trace tới item OBSERVED_CURRENT/KNOWN_DEFECT) hoặc NONE (do KB nguồn chỉ INFERRED/hedged) — đây là kết quả ĐÚNG và dự kiến, không phải thiếu sót.
+- CONFLICT: 12
+- OPEN_ISSUE: 24
+- NEEDS_CONFIRMATION: 69
+- Tổng: 105 — chi tiết trong `open-questions.md` của object này.
 
 ## Nguồn & giới hạn
 
-Toàn bộ knowledge của object này sinh từ bootstrap DOC_BOOTSTRAP đầu tiên (0 quan sát runtime — không có credential/portal/API access khi bootstrap). Tài liệu nguồn là `qa-volume-kb` — KB do chính QA tự biên soạn (phần lớn từ live-test qua Playwright MCP trên store `test-vl-1`, 2026-09-03 → 2026-09-14), KHÔNG phải tài liệu dev-gen từ source code. Version v1, generated 2026-10-01.
+- v1: DOC_BOOTSTRAP từ `qa-volume-kb` (KB do QA biên soạn, live-test trên store cũ test-vl-1, 2026-09). Item tài liệu giữ `scope.environment: documented`.
+- v2: REFRESH 2026-10-18 — explore runtime đầu tiên trên store staging (portal merchant + storefront guest, dừng ở cart, mutation SAFE_REVERSIBLE_ONLY). Không supersede, không nâng CONFIRMED_EXPECTED, không đóng conflict.
+- Chưa quan sát: gating khi tắt app embed (QVD-167), view onboarding của store mới cài, widget subscription trên storefront, Buy X get Y kèm gift, offer sau giờ start/end, quyền staff, giới hạn 25 automatic discount, mobile chỉ xem render.

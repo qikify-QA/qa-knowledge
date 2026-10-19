@@ -1225,6 +1225,8 @@
       "date": "2026-10-05",
       "ccr_ref": "bootstrap"
     },
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-discount-offers-R1018-06",
     "confirmation_source": {
       "type": "test_case",
       "ref": "qa-volume-kb KB v1 — \"Wholesale Pricing Offer\" (live-verified, store test-vl-1)",
@@ -1603,5 +1605,273 @@
     "related_kb_ids": [
       "KB-WPO-077"
     ]
+  },
+  {
+    "kb_id": "KB-WPO-079",
+    "topic": "Form Wholesale mới: general, tier table, hint Max trống, Appearance mặc định",
+    "statement": "Khi mở form 'Wholesale pricing (B2B)' mới ở merchant/staging, quan sát thấy 'Tier pricing title' = 'TIER PRICING', 'Variant title' = 'VARIANTS'; trigger 5 radio ('All products' mặc định) + 'Exclude products'; 'Discount type' Percentage (mặc định) / Fixed Amount; [x] 'Show discount badge'; bảng 'Tier | Min quantity | Max quantity | Discount per item' với #1 1–10 0%, #2 11–20 10%, #3 21–30 20% (mỗi dòng icon xoá), hint nguyên văn 'With last tier, leave \"Max quantity\" field empty to set for unlimited', nút 'Add new tier'; form không có Display settings và không có Maximum discount uses. Appearance & style: Layout 2 thumbnail (card grid — mặc định / table) + Card border radius 12px; Color Primary #000000, Secondary #000000, Accent #FFFFFF, Badge background #D75E60; Typography Heading Bold 20, Body Regular 14, Badge Regular 10; Badge text 'BULK SAVING', 'Top left', radius 6px; Custom CSS khoá (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "form-default"
+    ],
+    "related_kb_ids": [
+      "KB-WPO-004",
+      "KB-WPO-005",
+      "KB-WPO-009",
+      "KB-WPO-010",
+      "KB-WPO-014",
+      "KB-WPO-015",
+      "KB-WPO-016",
+      "KB-WPO-017",
+      "KB-WPO-019",
+      "KB-WPO-026",
+      "KB-WPO-027",
+      "KB-WPO-030",
+      "KB-WPO-032",
+      "KB-WPO-035"
+    ],
+    "last_updated": {
+      "date": "2026-10-18",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-WPO-080",
+    "topic": "Để trống Max của tier cuối: nhãn '21+ Items', lưu null; storefront 42 đơn vị vẫn nhận mức tier cuối",
+    "statement": "Khi xoá giá trị Max của tier cuối (Min 21) rồi lưu offer Wholesale ở merchant/staging, quan sát thấy preview portal đổi nhãn thành '21+ Items', offer lưu max_quantity null và reload vẫn để trống. Trên PDP storefront nhãn tier cuối là '21+ Items -20% $24.00/Item' (product giá $30); 42 đơn vị (gấp đôi Min tier cuối) qua 2 variant → card '21+ Items' active và cart áp mã của offer giảm 20% cho cả 42 đơn vị, không có trần (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (guest)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "tier",
+      "boundary",
+      "cross-layer"
+    ],
+    "related_kb_ids": [
+      "KB-WPO-020",
+      "KB-WPO-021",
+      "KB-WPO-022"
+    ],
+    "last_updated": {
+      "date": "2026-10-18",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-WPO-081",
+    "topic": "Sửa tier hợp lệ (không gap) được lưu và giữ sau reload; giá trị sửa lưu dạng chuỗi",
+    "statement": "Khi sửa Discount của tier #2 từ 10 thành 15% (không tạo gap) rồi lưu offer Wholesale ở merchant/staging, quan sát thấy không có thông báo validation; reload form hiển thị 1–10/0, 11–20/15, 21–(trống)/20 và GET offer trả tier 2 = \"15\" (chuỗi, các tier khác dạng số); preview đổi '11-20 Items -15%'. Sau đó PDP storefront hiện '11-20 Items -15% $25.50 /Item' cho product giá $30 (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "tier",
+      "persistence",
+      "type-drift"
+    ],
+    "related_kb_ids": [
+      "KB-WPO-023"
+    ],
+    "last_updated": {
+      "date": "2026-10-18",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-WPO-082",
+    "topic": "Đổi Layout card → table: preview đổi ngay trước khi lưu; storefront hiện bảng header 'QUANTITY | DISCOUNT | ITEM PRICE'",
+    "statement": "Khi chọn thumbnail table trong Appearance & style → Layout của offer Wholesale ở merchant/staging, quan sát thấy preview đổi ngay (trước khi lưu) sang bảng 'QUANTITY | DISCOUNT | ITEM PRICE'; lưu → wholesale_layout đổi 'layout-1' → 'layout-2'. Lần mở PDP storefront sau đó (khoảng 24 phút sau khi lưu) render dạng bảng 'TIER PRICING' với header cột 'QUANTITY' | 'DISCOUNT' | 'ITEM PRICE' và các hàng '1-10 Items | — | $30.00 /Item', '11-20 Items | -15% | $25.50 /Item', '21+ Items | -20% | $24.00 /Item'; phần VARIANTS/stepper không đổi theo layout. Độ trễ cập nhật storefront không đo được (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (guest)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "layout",
+      "copy"
+    ],
+    "related_kb_ids": [
+      "KB-WPO-058",
+      "KB-WPO-059",
+      "KB-WPO-062",
+      "KB-WPO-075"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-discount-offers-R1018-06",
+    "last_updated": {
+      "date": "2026-10-18",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-WPO-083",
+    "topic": "Composer Wholesale render inline trên PDP (không preview card, không 'Select now', không drawer) — desktop và mobile, theme không phải Dawn",
+    "statement": "Khi buyer guest mở PDP của product thuộc offer Wholesale (layout card, product 2 option) ở storefront/staging (theme 'Generated Data Theme', không phải Dawn), quan sát thấy composer render INLINE thay chỗ selector variant + giá của theme — không có preview card, không có 'Select now', không có drawer — cả desktop 1655px lẫn mobile 390px: 'TIER PRICING' 3 card ('1-10 Items $30.00/Item'; '11-20 Items' '-10%' '$27.00/Item'; '21+ Items' '-20%' '$24.00/Item'); 'VARIANTS' với option đầu dạng swatch text, mỗi giá trị của option CUỐI một dòng có giá/Item và stepper −/+ riêng (stepper đổi theo giá trị option đầu đang chọn); 'Quantity' và 'Subtotal'. Nút Add to cart/Buy it now của theme bị disable khi quantity 0. Giá trị gõ vào ô chỉ được nhận sau khi blur; khi đạt 11: card '11-20 Items' highlight, giá dòng '$27.00/Item', swatch hiện số tổng đã chọn, xuất hiện 'Reset selection', Subtotal gốc gạch + số sau giảm. Composer không phản ánh số lượng đang có trong cart (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (guest)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "widget-render",
+      "observation-only"
+    ],
+    "related_kb_ids": [
+      "KB-WPO-043",
+      "KB-WPO-061",
+      "KB-WPO-044",
+      "KB-WPO-045",
+      "KB-WPO-046",
+      "KB-WPO-047",
+      "KB-WPO-048",
+      "KB-WPO-049",
+      "KB-WPO-050",
+      "KB-WPO-051",
+      "KB-WPO-052",
+      "KB-WPO-053",
+      "KB-WPO-054",
+      "KB-WPO-055"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "DCONF-001",
+    "last_updated": {
+      "date": "2026-10-18",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-WPO-084",
+    "topic": "Add to cart từ composer Wholesale: 1 request nhiều item kèm property ẩn; tier tính trên tổng số lượng các variant line",
+    "statement": "Khi buyer guest bấm Add to cart sau khi chọn số lượng cho nhiều variant trong composer Wholesale (product chỉ thuộc offer Wholesale) ở storefront/staging, quan sát thấy 1 POST /cart/add.js?qvl-discount gửi nhiều item, mỗi item có property ẩn _qvl-wholesale-id = id offer, rồi theme chuyển /cart; mọi line nhận mã của offer với mức theo tổng số lượng của product qua các variant line (42 → 20% cho cả 2 line, subtotal khớp composer; đổi 1 line để tổng còn 20 → cả 2 line 10%). Với 2 đơn vị (tier 1 = 0%) cart không có mã nào (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (guest)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "cart-handoff",
+      "discount-calculation",
+      "cross-layer"
+    ],
+    "related_kb_ids": [
+      "KB-WPO-020",
+      "KB-WPO-046"
+    ],
+    "last_updated": {
+      "date": "2026-10-18",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-WPO-085",
+    "topic": "Composer Wholesale trên product 1 option: chỉ nhãn option + dòng stepper từng giá trị, không có hàng swatch",
+    "statement": "Khi buyer guest mở PDP của product chỉ có 1 option (Size S/M) thuộc offer Wholesale ở storefront/staging, quan sát thấy phần 'VARIANTS' của composer chỉ có nhãn 'Size' và mỗi giá trị một dòng có giá/Item và stepper riêng ('S $15.00/Item', 'M $15.00/Item'), không có hàng swatch/selector option phía trên (product 2 option thì option đầu là swatch, option cuối là các dòng stepper); stepper S ×3 → 'Quantity 3', 'Subtotal $45.00', nút Add to cart theme hết disable. Product này đồng thời thuộc offer Quantity Break và Multibuy, và line thêm qua composer mang property _qvl-volume-id của offer Quantity Break thay vì _qvl-wholesale-id (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (guest)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "widget-render",
+      "single-option"
+    ],
+    "related_kb_ids": [
+      "KB-WPO-048",
+      "KB-WPO-049"
+    ],
+    "last_updated": {
+      "date": "2026-10-18",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-WPO-086",
+    "topic": "Offer Wholesale start ngày mai: status Scheduled; discount Shopify thoáng ACTIVE rồi SCHEDULED; storefront không hiện widget, không áp discount",
+    "statement": "Khi tạo offer Wholesale với Start date ngày mai ở merchant/staging, quan sát thấy header và Manage offers hiện 'Scheduled' (API status SCHEDULED, starts_at ngày mai); phía Shopify, discountAutomaticAppCreate trả status ACTIVE với startsAt = lúc lưu, vài giây sau discountAutomaticAppUpdate đặt SCHEDULED với startsAt ngày mai. Trên storefront trước giờ start: PDP chỉ render widget của offer Wholesale khác đang Running (không có tier của offer Scheduled), không có event view cho offer Scheduled, cart 2 đơn vị không có mã nào (mức của offer Scheduled không áp); cấu hình offer Scheduled vẫn nhúng trong HTML và SDK log 'Time not right or already got offered <id>'; badge collection không phân biệt được (cùng text 'BULK SAVING') (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (guest)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "scheduling",
+      "cross-layer",
+      "transient-state"
+    ],
+    "related_kb_ids": [
+      "KB-WPO-040",
+      "KB-WPO-041"
+    ],
+    "last_updated": {
+      "date": "2026-10-18",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-WPO-087",
+    "topic": "Product thuộc Wholesale + Quantity Break, layout table: composer không đánh dấu hàng active, Subtotal hiện giá gốc",
+    "statement": "Khi buyer guest nhập 11 (rồi 21) vào composer Wholesale layout table trên PDP của product cũng thuộc offer Quantity Break ở storefront/staging, quan sát thấy sau khi blur composer hiện 'Quantity 11' và 'Subtotal $220.00' (= 11 × giá gốc $20, không trừ 15%) và bảng tier không đánh dấu hàng nào active (cả 3 hàng cùng class thường); với 21 → 'Subtotal $420.00'. Cart nhận mã của offer Quantity Break, không phải Wholesale (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (guest)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "widget-render",
+      "overlap",
+      "possible-divergence"
+    ],
+    "related_kb_ids": [
+      "KB-WPO-054",
+      "KB-WPO-060"
+    ],
+    "last_updated": {
+      "date": "2026-10-18",
+      "ccr_ref": "bootstrap"
+    }
   }
 ]

@@ -1,7 +1,14 @@
 {
+  "feature_id": "FEAT-04-multibuy-mix-match-combo",
   "feature_key": "multibuy-mix-match-combo",
   "name": "Multibuy – Mix & Match Combo",
   "user_goal": "Merchant sets up a promotion where a customer mixes and matches across multiple different eligible products (not a repeat quantity of one product) to unlock a bundle discount — distinct from Quantity Break, which only counts quantity of the same product.",
+  "user_goal_kb_refs": [
+    "KB-001",
+    "KB-002",
+    "KB-032"
+  ],
+  "stable_since_version": "1",
   "actors": [
     {
       "role": "merchant",
@@ -29,7 +36,19 @@
         "KB-067",
         "KB-071",
         "KB-078"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-085",
+        "KB-086",
+        "KB-087",
+        "KB-088",
+        "KB-089",
+        "KB-090",
+        "KB-091",
+        "object:KB-015",
+        "object:KB-017"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-18 (merchant, store development): mở form, tạo/lưu/sửa (đổi selection behavior, bỏ multiplier, thêm trigger) và xoá offer Multibuy; quyền staff không kiểm."
     },
     {
       "role": "buyer",
@@ -48,7 +67,16 @@
         "KB-072",
         "KB-073",
         "KB-076"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-087",
+        "KB-092",
+        "KB-093",
+        "KB-094",
+        "KB-095",
+        "object:KB-031"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-18: buyer guest, desktop; widget PDP, popup, recommendation inline, cart pooling 2 product."
     }
   ],
   "entry_points": [
@@ -60,7 +88,12 @@
         "KB-003",
         "KB-004",
         "KB-005"
-      ]
+      ],
+      "observed_kb_refs": [
+        "object:KB-009",
+        "KB-085"
+      ],
+      "refresh_note": "Staging 2026-10-18: thẻ 'Multibuy (mix & match combo)' trên trang Create offer mở /offers/setting/multibuy; sau khi lưu → /offers/setting/multibuy/<id offer>."
     },
     {
       "path": "Storefront · product page cart page checkout page — Multibuy widget",
@@ -71,7 +104,12 @@
         "KB-010",
         "KB-012",
         "KB-078"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-092",
+        "object:KB-025"
+      ],
+      "refresh_note": "Staging: widget dưới giá theme trên PDP; product thuộc 3 offer thì widget Multibuy nằm giữa composer Wholesale và widget Quantity Break."
     },
     {
       "path": "Storefront · in-page selection popup",
@@ -80,7 +118,12 @@
         "KB-003",
         "KB-045",
         "KB-046"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-088",
+        "KB-094"
+      ],
+      "refresh_note": "Staging: mặc định form mới là 'Redirect to specific page/URL' (không phải popup); khi đổi sang popup, click slot '+' mở modal căn giữa."
     },
     {
       "path": "Storefront · merchant-defined redirect page",
@@ -89,7 +132,30 @@
         "KB-003",
         "KB-045",
         "KB-072"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-088",
+        "KB-093"
+      ],
+      "refresh_note": "Staging: lưu được với URL rỗng; khi URL rỗng, click slot '+' không điều hướng, không phản hồi."
+    },
+    {
+      "path": "Storefront · /collections/all và trang search — badge 'MULTIBUY' trên card",
+      "precondition": "Offer Running (mục mới, staging); product không có ảnh nên badge trên ảnh PDP không đánh giá được.",
+      "kb_refs": [
+        "KB-091",
+        "object:KB-031"
+      ],
+      "basis": "OBSERVED_CURRENT"
+    },
+    {
+      "path": "Portal · Manage offers (danh sách, filter Type 'Multibuy', Delete)",
+      "precondition": "Store có ≥1 offer (mục mới, cơ chế mức object).",
+      "kb_refs": [
+        "object:KB-016",
+        "object:KB-017"
+      ],
+      "basis": "OBSERVED_CURRENT"
     }
   ],
   "capabilities": [
@@ -106,7 +172,12 @@
         "KB-014",
         "KB-015",
         "KB-078"
-      ]
+      ],
+      "observed_kb_refs": [
+        "object:KB-019",
+        "object:KB-014"
+      ],
+      "refresh_note": "Staging: picker 'Select products' riêng của app hiện cả dòng variant kèm giá; trùng product với offer khác → cảnh báo overlap không chặn lưu."
     },
     {
       "name": "Configure multi-tier bundle rewards",
@@ -124,6 +195,14 @@
         "KB-026",
         "KB-027",
         "KB-075"
+      ],
+      "observed_kb_refs": [
+        "KB-086"
+      ],
+      "refresh_note": "CONFLICT CONF-discount-offers-R1018-04: base KB-022 (1 tier qty 1, $10) vs staging KB-086 (3 tier 2→$10 / 3→$20 / 4→$30, Fixed total price mặc định) — UNRESOLVED. Title '{quantity} for {tier_price}' và badge 'Saved {saved_price}' khớp base.",
+      "status": "UNRESOLVED",
+      "conflict_groups": [
+        "CONF-discount-offers-R1018-04"
       ]
     },
     {
@@ -142,7 +221,11 @@
         "KB-044",
         "KB-074",
         "KB-079"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-086"
+      ],
+      "refresh_note": "Staging: form mặc định Fixed total price nên control ẩn (khớp KB-041); offer lưu có giá trị ẩn discount_apply_type 'per_combo'. Chế độ Percentage chưa thử."
     },
     {
       "name": "Pool quantity across different eligible products (core mix & match mechanic)",
@@ -154,7 +237,11 @@
         "KB-033",
         "KB-034",
         "KB-080"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-095"
+      ],
+      "refresh_note": "Staging corroborate với trigger Specific products 2 product ($15/$12): 1+1 → $10, 1+2 → $20, 2+2 → $30; mã chia theo tỷ lệ giá (allocation 'across'); 5 món → 1 đơn vị rẻ hơn ở giá gốc. Tie-break khi cùng giá chưa kiểm."
     },
     {
       "name": "Hướng dẫn customer chọn sản phẩm cho bundle",
@@ -171,7 +258,14 @@
         "KB-052",
         "KB-053",
         "KB-072"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-088",
+        "KB-092",
+        "KB-093",
+        "KB-094"
+      ],
+      "refresh_note": "Staging: 3 radio (thêm 'Direct to collection page'), mặc định Redirect, lưu được URL rỗng; popup là modal căn giữa (fade), '+' chỉ mở rộng thẻ, 'Pick' không thêm cart, 'Done' mới thêm (1 request add.js?qvl-multibuy) và chuyển /cart, nút 'Done' thay vì 'Buy now'; 'Pick' ở recommendation inline (mode Redirect) thêm thẳng vào cart. Show product recommendations bật, Max mặc định 5. POSSIBLE_DIVERGENCE với KB-003 (2 cách) và với KB-049/KB-050 (Pick trong popup)."
     },
     {
       "name": "Giới hạn/nhân discount theo order",
@@ -179,7 +273,11 @@
       "kb_refs": [
         "KB-028",
         "KB-029"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-087"
+      ],
+      "refresh_note": "Staging: checkbox CHECKED mặc định; bật → cart 6 món $40.00 (nhiều combo); tắt → 6 món $54.00, 8 món $78.00, 12/18 món vẫn chỉ một combo."
     },
     {
       "name": "Nudge buyer hoàn thành bundle",
@@ -188,7 +286,12 @@
         "KB-030",
         "KB-031",
         "KB-073"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-085",
+        "KB-092"
+      ],
+      "refresh_note": "Staging: default nguyên văn khớp; widget hiện 'Add N more items to get this deal' + progress bar 3 mốc, phản ánh cart thật kể cả ở PDP product khác."
     },
     {
       "name": "Kiểm soát stacking với native Shopify discount khác",
@@ -196,7 +299,11 @@
       "kb_refs": [
         "KB-061",
         "KB-074"
-      ]
+      ],
+      "observed_kb_refs": [
+        "object:KB-012"
+      ],
+      "refresh_note": "Staging: form Multibuy mới có cả 3 checkbox CHECKED mặc định + dropdown 'One per product (best value wins)' — khác ticket KB-061 (INFERRED); normalizer ghi là quan sát cho OQ-discount-offers-024, không mở conflict_group."
     },
     {
       "name": "Lên lịch thời gian offer active",
@@ -206,7 +313,11 @@
         "KB-063",
         "KB-064",
         "KB-076"
-      ]
+      ],
+      "observed_kb_refs": [
+        "object:KB-013"
+      ],
+      "refresh_note": "Staging: start = lúc mở form theo timezone store, ngày quá khứ disabled; countdown chỉ hiện sau khi bật end date ('HURRY UP!' / 'Sale end in'); countdown trên widget Multibuy và badge ẩn ngoài lịch không quan sát."
     },
     {
       "name": "Branding widget và discount badge",
@@ -227,6 +338,18 @@
         "KB-084",
         "object:KB-001",
         "object:KB-002"
+      ],
+      "observed_kb_refs": [
+        "KB-089",
+        "KB-090",
+        "KB-091",
+        "object:KB-031"
+      ],
+      "refresh_note": "Staging: Layout radius 12px, Color #606B57/#1C1D21/#FFFFFF, Typography Bold 20/Regular 14/Regular 12, Image 60px/12px, Badge 'MULTIBUY' Top left 6px, Custom CSS khoá; storefront badge 'MULTIBUY' radius 6px ở góc trên-trái card. Quan sát nghiêng về phía KB-081 (6px) và KB-083 ('MULTIBUY') của CONF-DOC04-001/002 nhưng conflict giữ UNRESOLVED.",
+      "status": "UNRESOLVED",
+      "conflict_groups": [
+        "CONF-DOC04-001",
+        "CONF-DOC04-002"
       ]
     },
     {
@@ -246,7 +369,13 @@
       "kb_refs": [
         "KB-004",
         "KB-005"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-085",
+        "object:KB-010",
+        "object:KB-029"
+      ],
+      "refresh_note": "Staging: Internal name mặc định 'Offer N' (không '#'); 'Offer title (Fixed price)' = BUY ANY {quantity_tier} ITEMS FOR {discount}; internal name không hiện trên UI storefront nhưng có trong JSON cấu hình nhúng ở HTML PDP."
     },
     {
       "name": "Chọn discount method (automatic vs code)",
@@ -254,7 +383,12 @@
       "kb_refs": [
         "KB-006",
         "KB-007"
-      ]
+      ],
+      "observed_kb_refs": [
+        "object:KB-011",
+        "quantity-break#KB-083"
+      ],
+      "refresh_note": "Staging: Automatic mặc định; option 'Discount code' không khoá, chọn được trong form chưa lưu (POSSIBLE_DIVERGENCE); banner 'Automatic discounts work even if the app block is disabled…' hiện khi chọn Automatic; giới hạn 25 chưa chạm (store 5/25)."
     },
     {
       "name": "Store-specific SDK config cho recommendation display (dev-set)",
@@ -262,6 +396,19 @@
       "kb_refs": [
         "KB-071"
       ]
+    },
+    {
+      "name": "Lưu, tải lại và xoá offer Multibuy (vòng đời offer — cơ chế mức object dùng chung)",
+      "description": "Mục mới (OBSERVED_CURRENT, staging): offer lưu tạo 1 automatic app discount Shopify; reload giữ đúng giá trị; xoá qua modal 'Delete offer'; form mới hiện save bar 'Unsaved changes'; sau khi lưu offer tạo tay thứ 2 có modal xin review (1 lần).",
+      "kb_refs": [
+        "object:KB-015",
+        "object:KB-016",
+        "object:KB-017",
+        "object:KB-018",
+        "object:KB-020",
+        "object:KB-032"
+      ],
+      "basis": "OBSERVED_CURRENT"
     }
   ],
   "state_transitions": [
@@ -273,7 +420,12 @@
       "kb_refs": [
         "KB-062",
         "KB-063"
-      ]
+      ],
+      "observed_kb_refs": [
+        "object:KB-013",
+        "object:KB-016"
+      ],
+      "refresh_note": "Staging: offer lưu với start = lúc mở form → Running ngay; chuyển Scheduled → Running theo thời gian chưa quan sát."
     },
     {
       "from": "offer active",
@@ -312,7 +464,11 @@
       "kb_refs": [
         "KB-025",
         "KB-026"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-086"
+      ],
+      "refresh_note": "Staging: form mới mở sẵn tier '2 for $10'."
     },
     {
       "from": "buyer chưa đạt tier đầu",
@@ -323,7 +479,12 @@
         "KB-008",
         "KB-032",
         "KB-033"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-095",
+        "KB-092"
+      ],
+      "refresh_note": "Staging corroborate với 2 product trong trigger Specific products."
     },
     {
       "from": "badge hiển thị",
@@ -332,7 +493,8 @@
       "condition": "",
       "kb_refs": [
         "KB-076"
-      ]
+      ],
+      "refresh_note": "Staging: không kiểm được riêng cho Multibuy."
     },
     {
       "from": "popup mode, selection in-progress",
@@ -342,7 +504,64 @@
       "kb_refs": [
         "KB-049",
         "KB-050"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-094",
+        "KB-093"
+      ],
+      "refresh_note": "DIVERGENCE chưa phân định: staging mode popup — '+' chỉ mở stepper + 'Pick', 'Pick' KHÔNG thêm cart, 'Done' mới thêm; chỉ 'Pick' ở recommendation inline (mode Redirect) thêm thẳng vào cart. Không chọn phía."
+    },
+    {
+      "from": "popup mở, đã Pick ≥1 item",
+      "to": "item vào cart, điều hướng /cart",
+      "trigger": "buyer bấm 'Done' (mục mới, staging)",
+      "condition": "1 POST /cart/add.js?qvl-multibuy với các item đã Pick, không property; 'Done' khi chưa Pick thì chỉ đóng popup",
+      "kb_refs": [
+        "KB-094"
+      ],
+      "basis": "OBSERVED_CURRENT"
+    },
+    {
+      "from": "mode Redirect, URL rỗng",
+      "to": "không đổi (không điều hướng, không popup)",
+      "trigger": "buyer click slot '+' (mục mới, staging)",
+      "condition": "không lỗi console; cart không đổi",
+      "kb_refs": [
+        "KB-093",
+        "KB-088"
+      ],
+      "basis": "OBSERVED_CURRENT"
+    },
+    {
+      "from": "multiplier bật (nhiều combo/cart)",
+      "to": "multiplier tắt (chỉ một combo/cart)",
+      "trigger": "merchant bỏ tick 'Allow to apply multiplier discounts per order' và Save (mục mới, staging)",
+      "condition": "6/8/12/18 món chỉ giảm một combo; Shopify tách line có/không discount",
+      "kb_refs": [
+        "KB-087"
+      ],
+      "basis": "OBSERVED_CURRENT"
+    },
+    {
+      "from": "selection behavior Redirect",
+      "to": "Open selection popup (textbox URL ẩn)",
+      "trigger": "merchant chọn radio 'Open selection popup' và Save (mục mới, staging)",
+      "condition": "không thêm field",
+      "kb_refs": [
+        "KB-088"
+      ],
+      "basis": "OBSERVED_CURRENT"
+    },
+    {
+      "from": "offer Running",
+      "to": "offer bị xoá",
+      "trigger": "Manage offers → Delete → modal 'Delete offer' (mục mới, mức object)",
+      "condition": "modal không nêu tên offer; discount Shopify bị xoá",
+      "kb_refs": [
+        "object:KB-017",
+        "object:KB-015"
+      ],
+      "basis": "OBSERVED_CURRENT"
     }
   ],
   "confirmed_rules": [
@@ -365,7 +584,8 @@
         "KB-014",
         "KB-015",
         "KB-078"
-      ]
+      ],
+      "refresh_note": "Staging corroborate: 3 radio, All products mặc định, không Exclude (normalizer ghi corroboration, không thêm item)."
     },
     {
       "statement": "Ít nhất 1 tier phải luôn tồn tại (không xoá được tier cuối); không tier nào configured → không discount nào áp dụng.",
@@ -394,7 +614,13 @@
         "KB-020",
         "KB-021",
         "KB-022"
-      ]
+      ],
+      "refresh_kb_refs": [
+        "KB-086"
+      ],
+      "refresh_note": "Title/badge single brace khớp staging. Vế 'default state 1 tier' (KB-022) nay UNRESOLVED (CONF-discount-offers-R1018-04) — không dùng làm oracle cho tier mặc định.",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-discount-offers-R1018-04"
     },
     {
       "statement": "Khi \"Allow to apply multiplier discounts per order\" enabled, discount áp dụng cho MỖI qualifying pack trong 1 order (không chỉ 1 lần).",
@@ -402,7 +628,11 @@
       "kb_refs": [
         "KB-028",
         "KB-029"
-      ]
+      ],
+      "refresh_kb_refs": [
+        "KB-087"
+      ],
+      "refresh_note": "Staging corroborate; thêm: checkbox CHECKED mặc định, tắt thì chỉ một combo."
     },
     {
       "statement": "Field \"Remaining quantity message\" (default \"Add {remaining_quantity} more items to get this deal\") chỉ cover progress trước tier đầu, không cover leftover-unit case.",
@@ -410,6 +640,9 @@
       "kb_refs": [
         "KB-030",
         "KB-031"
+      ],
+      "refresh_kb_refs": [
+        "KB-085"
       ]
     },
     {
@@ -417,7 +650,11 @@
       "source_strength": "STRONG",
       "kb_refs": [
         "KB-032"
-      ]
+      ],
+      "refresh_kb_refs": [
+        "KB-095"
+      ],
+      "refresh_note": "Staging quan sát pooling với trigger Specific products (không phải All products)."
     },
     {
       "statement": "Với tier \"Fixed total price\" có remainder, set được fill bằng unit giá cao nhất trước, để remainder là unit giá rẻ nhất ở full price. Với exact-match (không remainder), fixed total price phân bổ theo TỶ LỆ giá gốc của từng unit, không chia đều, không highest-priced-first.",
@@ -425,6 +662,9 @@
       "kb_refs": [
         "KB-033",
         "KB-080"
+      ],
+      "refresh_kb_refs": [
+        "KB-095"
       ]
     },
     {
@@ -439,7 +679,11 @@
         "KB-040",
         "KB-041",
         "KB-042"
-      ]
+      ],
+      "refresh_kb_refs": [
+        "KB-086"
+      ],
+      "refresh_note": "Staging corroborate vế ẩn khi Fixed; Percentage không thử."
     },
     {
       "statement": "Dưới lowest tier threshold → không có discount, ở cả 2 mode của \"How discount is applied\".",
@@ -461,6 +705,9 @@
       "kb_refs": [
         "KB-054",
         "KB-060"
+      ],
+      "refresh_kb_refs": [
+        "KB-089"
       ]
     },
     {
@@ -498,7 +745,11 @@
       "source_strength": "STRONG",
       "kb_refs": [
         "KB-072"
-      ]
+      ],
+      "refresh_kb_refs": [
+        "KB-093"
+      ],
+      "refresh_note": "Staging chỉ quan sát URL rỗng (slot '+' không phản hồi) — chưa kiểm mở tab mới với URL thật."
     },
     {
       "statement": "Trong Percentage mode + Apply per combo product, leftover item không có nudge message nào — chỉ itemized price breakdown.",
@@ -513,7 +764,13 @@
       "kb_refs": [
         "KB-049",
         "KB-050"
-      ]
+      ],
+      "refresh_kb_refs": [
+        "KB-094",
+        "KB-093",
+        "KB-092"
+      ],
+      "refresh_note": "DIVERGENCE chưa phân định: staging popup — 'Pick' chỉ ghi nhận lựa chọn, cart vẫn 0, 'Done' mới thêm; 'Pick' ở recommendation inline (mode Redirect) thêm ngay; progress phản ánh cart thật (khớp). Normalizer không mở conflict_group; cần owner xác nhận trước khi dùng vế 'Pick trong popup' làm oracle."
     },
     {
       "statement": "Dưới redirect-URL input có checkbox \"Show product recommendations\" (max 10 sản phẩm); áp dụng cho CẢ 2 selection mode (popup và redirect), không chỉ popup.",
@@ -521,7 +778,11 @@
       "kb_refs": [
         "KB-052",
         "KB-053"
-      ]
+      ],
+      "refresh_kb_refs": [
+        "KB-088"
+      ],
+      "refresh_note": "Staging: [x] Show product recommendations, Max mặc định 5 (tối đa 10)."
     }
   ],
   "observed_behavior": [
@@ -532,7 +793,11 @@
       "note": "derivation code_artifact — suy ra từ cách dữ liệu được tổ chức trong code, không phải một quy tắc được phát biểu rõ trong tài liệu. Không dùng làm oracle mạnh.",
       "kb_refs": [
         "KB-043"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-086"
+      ],
+      "refresh_note": "Staging: offer lưu có field discount_apply_type 'per_combo' (tên field khác tier_application_method) — chỉ ghi nhận, không kết luận."
     },
     {
       "statement": "Empty \"+\" combo slot của widget tồn tại trong DOM với id `qvl-multibuy-tier_add-more`.",
@@ -541,7 +806,11 @@
       "note": "derivation code_artifact — cùng loại nguồn yếu như KB-043, suy ra từ cách dữ liệu được tổ chức trong code, không phải một quy tắc được phát biểu rõ trong tài liệu.",
       "kb_refs": [
         "KB-051"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-092"
+      ],
+      "refresh_note": "Staging corroborate (normalizer: slot '+' class qvl-multibuy-tier_add-more)."
     },
     {
       "statement": "Internal name là text field, auto-default \"Offer #1\"/\"Offer #2\"...; merchant-only, không hiển thị customer. Offer title default template {{quantity_tier}} for {{total_price}}, hỗ trợ variable picker {}.",
@@ -551,7 +820,13 @@
       "kb_refs": [
         "KB-004",
         "KB-005"
-      ]
+      ],
+      "observed_kb_refs": [
+        "object:KB-010",
+        "KB-085",
+        "object:KB-029"
+      ],
+      "refresh_note": "Staging: 'Offer N' không '#'; Offer title (Fixed price) 'BUY ANY {quantity_tier} ITEMS FOR {discount}'; internal name có trong JSON nhúng HTML PDP."
     },
     {
       "statement": "Automatic discount là default; đụng limit 25 hoặc muốn discount code → hướng dẫn liên hệ support, không self-serve.",
@@ -561,7 +836,11 @@
       "kb_refs": [
         "KB-006",
         "KB-007"
-      ]
+      ],
+      "observed_kb_refs": [
+        "object:KB-011"
+      ],
+      "refresh_note": "Staging: Discount code chọn được, không khoá (form chưa lưu) — POSSIBLE_DIVERGENCE; limit 25 chưa chạm."
     },
     {
       "statement": "Customer product selection behavior: radio \"Open selection popup\" (default) \"Redirect to a specific page/URL\"; popup mode có variant picker trượt lên, overlay semi-transparent, cart summary cố định với CTA \"Buy now\"; no-variant product thêm cart ngay + icon đổi trạng thái.",
@@ -573,7 +852,12 @@
         "KB-046",
         "KB-047",
         "KB-048"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-088",
+        "KB-094"
+      ],
+      "refresh_note": "Staging: mặc định Redirect, có radio thứ 3; popup modal fade (không slide-up), nút 'Done', không instant add."
     },
     {
       "statement": "Discount combination: checkbox combine Order/Product/Shipping discount, default off.",
@@ -582,7 +866,11 @@
       "note": "Nguồn ticket QVD-108, chưa QA re-confirm.",
       "kb_refs": [
         "KB-061"
-      ]
+      ],
+      "observed_kb_refs": [
+        "object:KB-012"
+      ],
+      "refresh_note": "Staging: cả 3 CHECKED mặc định."
     },
     {
       "statement": "Start date/time required, default = creation time, không là ngày quá khứ, dùng store timezone. End date/time optional sau toggle \"Enable end date\", default off = chạy vô thời hạn.",
@@ -592,7 +880,11 @@
       "kb_refs": [
         "KB-062",
         "KB-063"
-      ]
+      ],
+      "observed_kb_refs": [
+        "object:KB-013"
+      ],
+      "refresh_note": "Staging khớp shape."
     },
     {
       "statement": "Multibuy discount badge: optional, hiển thị trên product image ở collection pages/recommendation sections/optionally cart; Position dropdown có đúng 4 option (Top-left default, Top-right, Bottom-left, Bottom-right).",
@@ -602,7 +894,12 @@
       "kb_refs": [
         "KB-065",
         "KB-066"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-091",
+        "object:KB-031"
+      ],
+      "refresh_note": "Staging: badge trên card collection/search góc trên-trái; trên ảnh PDP không đánh giá được."
     },
     {
       "statement": "Known, accepted limitation: nếu customer đổi quantity trực tiếp trong cart (không re-add từ product page), displayed discount/compare price có thể trông inconsistent — coi là Shopify cart-display constraint, không phải app bug, đã được accept chứ không fix.",
@@ -619,10 +916,189 @@
       "confidence": "LOW",
       "kb_refs": [
         "KB-070"
+      ],
+      "observed_kb_refs": [
+        "KB-089"
+      ],
+      "refresh_note": "Staging: Custom CSS vẫn khoá; silent mode không kiểm được."
+    },
+    {
+      "statement": "Form Multibuy mới: 'Offer title (Fixed price)' = BUY ANY {quantity_tier} ITEMS FOR {discount}; 'Remaining quantity message' = 'Add {remaining_quantity} more items to get this deal'; offer lưu có percentage_offer_title ẩn 'BUY ANY {quantity_tier} ITEMS GET {discount} OFF'.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-085"
+      ]
+    },
+    {
+      "statement": "Discount type mặc định 'Fixed total price'; 3 tier mặc định 2 for $10 / 3 for $20 / 4 for $30; không có 'How discount is applied' khi Fixed; offer lưu có discount_value_percentage 10/20/30 và discount_apply_type 'per_combo' ẩn.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "LOW",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-discount-offers-R1018-04",
+      "kb_refs": [
+        "KB-086"
+      ]
+    },
+    {
+      "statement": "[x] 'Allow to apply multiplier discounts per order' mặc định; bật → nhiều combo/cart ($40.00 cho 6 món 2 product); tắt → chỉ một combo (6 món $54.00, 8 món $78.00, 12/18 món một combo).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 5,
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-087"
+      ]
+    },
+    {
+      "statement": "'Customer product selection behavior' 3 radio: Open selection popup / Redirect to specific page/URL (mặc định) / Direct to collection page; lưu được với URL rỗng; [x] Show product recommendations, Max 5.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-088"
+      ]
+    },
+    {
+      "statement": "Appearance & style mặc định: radius 12px; Primary #606B57, Secondary #1C1D21, Accent #FFFFFF; Heading Bold 20, Body Regular 14, Badge Regular 12; Image 60px / 12px; Badge 'MULTIBUY' Top left 6px; Custom CSS khoá.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-089"
+      ]
+    },
+    {
+      "statement": "Badge border radius mặc định 6px trên form mới; badge storefront render radius 6px.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "LOW",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-DOC04-001",
+      "kb_refs": [
+        "KB-090"
+      ]
+    },
+    {
+      "statement": "Badge text mặc định 'MULTIBUY'; offer lưu multibuy_badge_text 'MULTIBUY'; storefront hiện 'MULTIBUY' trên /collections/all và search.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 3,
+      "confidence": "LOW",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-DOC04-002",
+      "kb_refs": [
+        "KB-091"
+      ]
+    },
+    {
+      "statement": "Widget PDP: tiêu đề tier 'BUY ANY 2 ITEMS FOR $10.00' + badge 'Saved $X', 'Add N more items to get this deal', progress 3 mốc, slot '+', thẻ recommendation (stepper, select variant, 'Pick'), 'powered by qikify'; phản ánh cart thật; ATC theme vẫn submit (POST /cart/add, không property); số trên badge 'Saved' không bằng discount thực trong cart ($27.00 vs $41.00).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 4,
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-092"
+      ]
+    },
+    {
+      "statement": "Mode Redirect với URL rỗng: click slot '+' không phản hồi; 'Pick' ở recommendation inline thêm thẳng vào cart bằng POST /cart/add.js?qvl-multibuy, ở lại PDP, widget cập nhật.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-093"
+      ]
+    },
+    {
+      "statement": "Mode popup: modal căn giữa, fade, nút '×'; '+' chỉ mở rộng thẻ (stepper/select + 'Pick'); 'Pick' không thêm cart; 'Done' gửi 1 POST /cart/add.js?qvl-multibuy rồi chuyển /cart; mỗi lần 'Pick' console báo 'TypeError: Cannot read properties of null (reading 'url')' và subtotal/slot trong popup không cập nhật (product không có ảnh).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 3,
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-094"
+      ]
+    },
+    {
+      "statement": "Pooling giữa 2 product trong trigger Specific products: 1+1 → $10.00, 1+2 → $20.00, 2+2 → $30.00, mã chia theo tỷ lệ giá; 5 món → $42.00 (4 món $30.00 + 1 đơn vị rẻ hơn giá gốc), Shopify tách line.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 5,
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-095"
       ]
     }
   ],
-  "observed_validations": [],
+  "observed_validations": [
+    {
+      "input": "Lưu offer với 'Customer product selection behavior' = Redirect và textbox URL rỗng",
+      "message_verbatim": "",
+      "condition": "Không có thông báo validation; lưu thành công; storefront slot '+' không phản hồi khi URL rỗng.",
+      "blocking": false,
+      "observed_count": 2,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "KB-088",
+        "KB-093"
+      ]
+    },
+    {
+      "input": "Chọn product trigger trùng với offer khác (QB/Multibuy/Wholesale, kể cả offer Scheduled)",
+      "message_verbatim": "This trigger overlaps with offer(s): <tên các offer, phân cách dấu phẩy> / Overlapping triggers may cause discount conflicts. / Please consider carefully whether to adjust this trigger.",
+      "condition": "Hiện dưới khối trigger trước khi lưu; không chặn lưu (4/4).",
+      "blocking": false,
+      "observed_count": 4,
+      "rule_confidence": "MEDIUM",
+      "kb_refs": [
+        "object:KB-014",
+        "object:KB-003"
+      ]
+    },
+    {
+      "input": "Chọn Start date trước hôm nay trong date picker",
+      "message_verbatim": "",
+      "condition": "Ngày quá khứ disabled trong picker, không có thông báo lỗi.",
+      "blocking": true,
+      "observed_count": 3,
+      "rule_confidence": "MEDIUM",
+      "kb_refs": [
+        "object:KB-013"
+      ]
+    },
+    {
+      "input": "Mở form offer mới rồi điều hướng đi khi chưa lưu",
+      "message_verbatim": "Unsaved changes",
+      "condition": "Save bar hiện ngay khi mở form; back/nav bị chặn, không modal; Discard không hỏi lại.",
+      "blocking": true,
+      "observed_count": 3,
+      "rule_confidence": "MEDIUM",
+      "kb_refs": [
+        "object:KB-018"
+      ]
+    },
+    {
+      "input": "Mở Appearance & style → Custom CSS",
+      "message_verbatim": "contact our support team to enable",
+      "condition": "Field khoá, không self-serve (chỉ ghi phần chữ explorer trích).",
+      "blocking": true,
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "KB-089",
+        "KB-060"
+      ]
+    }
+  ],
   "permissions": [
     {
       "role": "merchant",
@@ -638,7 +1114,12 @@
         "KB-062",
         "KB-067"
       ],
-      "note": "Không có Portal role/sub-permission riêng nào được tài liệu hoá cho feature này — xem unknown_areas."
+      "note": "Không có Portal role/sub-permission riêng nào được tài liệu hoá cho feature này — xem unknown_areas.",
+      "observed_kb_refs": [
+        "object:KB-015",
+        "object:KB-017"
+      ],
+      "refresh_note": "Staging: owner session tạo/sửa/xoá được; staff hạn quyền không kiểm."
     },
     {
       "role": "buyer",
@@ -649,7 +1130,12 @@
         "KB-049",
         "KB-050"
       ],
-      "note": "Không có yêu cầu login/account nào được tài liệu hoá."
+      "note": "Không có yêu cầu login/account nào được tài liệu hoá.",
+      "observed_kb_refs": [
+        "KB-092",
+        "KB-095"
+      ],
+      "refresh_note": "Staging: buyer guest nhận discount trong cart."
     }
   ],
   "surface_mapping": {
@@ -706,7 +1192,32 @@
       "KB-081",
       "KB-082",
       "KB-083",
-      "KB-084"
+      "KB-084",
+      {
+        "item": "Form Multibuy staging (/offers/setting/multibuy): Offer title (Fixed price), Remaining quantity message, Discount type + 3 tier mặc định, Maximum discount uses (multiplier), Customer product selection behavior (3 radio + URL + recommendations), Appearance & style, Combination, Campaign scheduling",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "KB-085",
+          "KB-086",
+          "KB-087",
+          "KB-088",
+          "KB-089",
+          "KB-090",
+          "KB-091",
+          "object:KB-012",
+          "object:KB-013"
+        ]
+      },
+      {
+        "item": "Manage offers / modal Delete / save bar / modal xin review sau lưu — staging (mức object)",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "object:KB-016",
+          "object:KB-017",
+          "object:KB-018",
+          "object:KB-020"
+        ]
+      }
     ],
     "storefront": [
       "KB-003",
@@ -733,10 +1244,92 @@
       "KB-076",
       "KB-077",
       "KB-079",
-      "KB-080"
+      "KB-080",
+      {
+        "item": "PDP widget Multibuy (tiêu đề tier, badge 'Saved', progress, slot '+', recommendation, 'powered by qikify') — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "KB-092"
+        ]
+      },
+      {
+        "item": "Popup modal chọn sản phẩm ('Pick', 'Done', Subtotal) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "KB-094"
+        ]
+      },
+      {
+        "item": "Cart: mã QIKIFY-xxxxxx chia across theo tỷ lệ giá; Shopify tách line có/không discount — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "KB-095",
+          "KB-087"
+        ]
+      },
+      {
+        "item": "Collection/search: badge 'MULTIBUY' góc trên-trái, radius 6px — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "KB-091",
+          "KB-090",
+          "object:KB-031"
+        ]
+      }
     ],
-    "api": [],
-    "data": [],
+    "api": [
+      {
+        "item": "Backend app <QVL_API_BASE>: POST /api/offers, GET /api/offers/{id}, PUT /api/offers/{id}, DELETE /api/offers/{id} — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "KB-085",
+          "KB-086",
+          "KB-087",
+          "KB-088",
+          "object:KB-015",
+          "object:KB-032"
+        ]
+      },
+      {
+        "item": "Shopify Admin GraphQL qua app proxy: discountAutomaticAppCreate / Update / Delete — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "object:KB-015"
+        ]
+      },
+      {
+        "item": "Storefront cart: POST /cart/add.js?qvl-multibuy (popup Done / Pick inline), POST /cart/add (ATC theme), đổi số lượng, đọc cart — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "KB-093",
+          "KB-094",
+          "KB-092",
+          "KB-095",
+          "KB-087"
+        ]
+      },
+      {
+        "item": "POST <QVL_API_BASE>/api/events (view; add_to_cart — 'Done' popup chỉ gửi cho offer Multibuy) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "KB-092",
+          "object:KB-023"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "Offer lưu: allow_apply_multiple_discount, discount_type fixed_amount, discount_value_percentage, discount_apply_type 'per_combo', percentage_offer_title, product_selection_behavior (open_popup), multibuy_badge_text — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "KB-085",
+          "KB-086",
+          "KB-087",
+          "KB-088",
+          "KB-091"
+        ]
+      }
+    ],
     "code": [
       "KB-043",
       "KB-071"
@@ -752,7 +1345,13 @@
         "object:KB-003",
         "object:KB-004",
         "object:KB-007"
-      ]
+      ],
+      "observed_kb_refs": [
+        "object:KB-014",
+        "object:KB-025",
+        "object:KB-026"
+      ],
+      "refresh_note": "Staging: cảnh báo 3 dòng; mã thắng tương quan đường add (popup Multibuy / add không property → mã Multibuy; composer/ATC có property QB → mã QB)."
     },
     {
       "depends_on": "wholesale-pricing-offer (feature, cùng object discount-offers)",
@@ -763,7 +1362,12 @@
         "object:KB-005",
         "object:KB-006",
         "object:KB-007"
-      ]
+      ],
+      "observed_kb_refs": [
+        "object:KB-025",
+        "object:KB-028"
+      ],
+      "refresh_note": "Staging: 11 đơn vị add không property → 2 line, line 4 đơn vị mã Multibuy + line 7 đơn vị mã QB (CONF-discount-offers-R1018-05, base object:KB-005 nay UNRESOLVED)."
     },
     {
       "depends_on": "Custom CSS (object-level shared advanced setting, discount-offers)",
@@ -773,6 +1377,9 @@
         "KB-060",
         "object:KB-001",
         "object:KB-002"
+      ],
+      "observed_kb_refs": [
+        "KB-089"
       ]
     },
     {
@@ -782,7 +1389,48 @@
       "kb_refs": [
         "KB-006",
         "KB-007"
-      ]
+      ],
+      "observed_kb_refs": [
+        "object:KB-011",
+        "object:KB-015"
+      ],
+      "refresh_note": "Staging: mỗi offer = 1 automatic app discount; Discount code chọn được trong form (chưa lưu); store 5/25."
+    },
+    {
+      "depends_on": "discount-offers object-level lifecycle (mục mới, staging)",
+      "relation": "object_level_shared_mechanism",
+      "description": "Internal name 'Offer N', Manage offers (filter Type 'Multibuy', Scheduled, actions), modal Delete, save bar 'Unsaved changes', reload giữ giá trị, picker product, Campaign scheduling, Combination giống 3 form.",
+      "kb_refs": [
+        "object:KB-010",
+        "object:KB-012",
+        "object:KB-013",
+        "object:KB-015",
+        "object:KB-016",
+        "object:KB-017",
+        "object:KB-018",
+        "object:KB-019",
+        "object:KB-032"
+      ],
+      "basis": "OBSERVED_CURRENT"
+    },
+    {
+      "depends_on": "analytics (object khác) — event storefront",
+      "relation": "emits_events",
+      "description": "Mục mới (staging): widget gửi view khi tải trang; 'Done' popup chỉ gửi add_to_cart cho offer Multibuy; Dashboard/Analytics có đếm hay không chưa kiểm.",
+      "kb_refs": [
+        "object:KB-023",
+        "object:KB-024"
+      ],
+      "basis": "OBSERVED_CURRENT"
+    },
+    {
+      "depends_on": "ask-for-review (object khác)",
+      "relation": "related",
+      "description": "Mục mới (staging): modal 'How's your experience so far?' xuất hiện sau khi lưu offer Multibuy tạo tay (offer thứ 2 của store); điều kiện kích hoạt chưa rõ.",
+      "kb_refs": [
+        "object:KB-020"
+      ],
+      "basis": "OBSERVED_CURRENT"
     }
   ],
   "risks": [
@@ -791,6 +1439,10 @@
       "kb_refs": [
         "object:KB-005",
         "object:KB-006"
+      ],
+      "observed_kb_refs": [
+        "object:KB-026",
+        "object:KB-028"
       ]
     },
     {
@@ -800,7 +1452,12 @@
         "KB-082",
         "KB-083",
         "KB-084"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-090",
+        "KB-091"
+      ],
+      "refresh_note": "Staging nghiêng 6px / 'MULTIBUY' (store khác test-vl-1) — conflict vẫn mở."
     },
     {
       "risk": "2 KB item (backend field `tier_application_method`, DOM id `qvl-multibuy-tier_add-more`) suy ra từ cách dữ liệu được tổ chức trong code, không phải một quy tắc được phát biểu rõ trong tài liệu — độ tin cậy thấp hơn các confirmed_rule khác trong profile này; cần xác minh lại với source code thật trước khi dùng làm regression oracle mạnh.",
@@ -825,7 +1482,16 @@
         "KB-063",
         "KB-065",
         "KB-066"
-      ]
+      ],
+      "observed_kb_refs": [
+        "object:KB-010",
+        "KB-085",
+        "object:KB-011",
+        "KB-088",
+        "KB-094",
+        "object:KB-012"
+      ],
+      "refresh_note": "Staging xác nhận drift ở nhiều section ticket-only: Internal name không '#', Offer title khác, Discount code không khoá, selection mặc định Redirect + radio thứ 3, popup modal fade/Done, Combination mặc định checked."
     },
     {
       "risk": "confirmation_source.type của mọi confirmed_rule trong profile này (spec_doc/test_case) được quá trình chuẩn hoá gán theo heuristic chưa được PO/Dev xác nhận ('QA' là ai — person/role cụ thể hay chính quy trình qa-volume-kb). Nếu heuristic sai, oracle_strength thực tế của các rule này có thể cần hạ xuống.",
@@ -841,28 +1507,91 @@
       "kb_refs": [
         "KB-043",
         "KB-051"
-      ]
+      ],
+      "observed_kb_refs": [
+        "KB-087",
+        "KB-093",
+        "KB-094",
+        "object:KB-015"
+      ],
+      "refresh_note": "Run REFRESH này đã bổ sung evidence API (REST offers, Shopify discount GraphQL, cart) ở staging; DB/code vẫn không có."
+    },
+    {
+      "risk": "Mục mới: tier mặc định của form (CONF-discount-offers-R1018-04) — test case default tier không có oracle.",
+      "kb_refs": [
+        "KB-022",
+        "KB-086"
+      ],
+      "knowledge_kind": "OBSERVED_CURRENT"
+    },
+    {
+      "risk": "Mục mới: 'Pick' trong popup không thêm cart trên staging, trái confirmed rule KB-049/KB-050 — test case theo rule base có thể FAIL trên staging; cần owner xác nhận.",
+      "kb_refs": [
+        "KB-049",
+        "KB-050",
+        "KB-094"
+      ],
+      "knowledge_kind": "OBSERVED_CURRENT"
+    },
+    {
+      "risk": "Mục mới: lưu được Redirect với URL rỗng → slot '+' trên storefront không phản hồi (buyer kẹt, không chọn được sản phẩm qua slot).",
+      "kb_refs": [
+        "KB-088",
+        "KB-093"
+      ],
+      "knowledge_kind": "OBSERVED_CURRENT"
+    },
+    {
+      "risk": "Mục mới: số trên badge 'Saved' của widget không bằng discount thực trong cart — có thể gây hiểu nhầm cho buyer; công thức chưa rõ.",
+      "kb_refs": [
+        "KB-092"
+      ],
+      "knowledge_kind": "OBSERVED_CURRENT"
+    },
+    {
+      "risk": "Mục mới: lỗi console mỗi lần 'Pick' trong popup và subtotal/slot không cập nhật (có thể do product không ảnh).",
+      "kb_refs": [
+        "KB-094"
+      ],
+      "knowledge_kind": "OBSERVED_CURRENT"
     }
   ],
   "freshness": {
-    "observed_at": "2026-10-01"
+    "observed_at": "2026-10-18",
+    "base_observed_at": "2026-10-01"
   },
   "unknown_areas": [
     {
       "question": "Biến nào quyết định offer nào thắng khi trigger của Multibuy overlap với Quantity Break (2-way)?",
-      "why_it_matters": "Kết quả bị 'flip' giữa 2 lần test live trên cùng 1 cặp offer, không biến nào được xác định (rank/order trong Shopify admin? function evaluate sau? thứ tự add-to-cart?). Không viết được regression test case xác định cho trigger-overlap nếu thiếu câu trả lời này."
+      "why_it_matters": "Kết quả bị 'flip' giữa 2 lần test live trên cùng 1 cặp offer, không biến nào được xác định (rank/order trong Shopify admin? function evaluate sau? thứ tự add-to-cart?). Không viết được regression test case xác định cho trigger-overlap nếu thiếu câu trả lời này.",
+      "refresh_note": "Staging: mã thắng lặp lại ổn định theo đường add (có/không property widget) — chỉ tương quan, không gỡ.",
+      "refresh_kb_refs": [
+        "object:KB-026"
+      ]
     },
     {
       "question": "Biến nào quyết định offer nào thắng khi cả 3 offer type (Multibuy, Quantity Break, Wholesale Pricing) cùng trigger và ≥2 discount đang active cùng lúc (3-way)?",
-      "why_it_matters": "Test 3-way hiện có (qty=3) không phải test priority sạch vì Wholesale's Tier 1 là 0% ở mức quantity đó — chưa có dữ liệu trả lời priority thật."
+      "why_it_matters": "Test 3-way hiện có (qty=3) không phải test priority sạch vì Wholesale's Tier 1 là 0% ở mức quantity đó — chưa có dữ liệu trả lời priority thật.",
+      "refresh_note": "Staging: 11 đơn vị (cả 3 khác 0) — qua composer 1 line mã QB; add không property 2 line mã Multibuy + mã QB; không thấy mã Wholesale.",
+      "refresh_kb_refs": [
+        "object:KB-028"
+      ]
     },
     {
       "question": "True out-of-the-box default của Multibuy discount badge border radius là 6px (live-observed) hay 10px (ticket QVD-132)?",
-      "why_it_matters": "2 giá trị khác nhau trong cùng 1 tài liệu, chưa resolve — không dùng được làm expected default cho test case badge appearance."
+      "why_it_matters": "2 giá trị khác nhau trong cùng 1 tài liệu, chưa resolve — không dùng được làm expected default cho test case badge appearance.",
+      "refresh_note": "Staging form mới 6px (CONF-DOC04-001 vẫn mở).",
+      "refresh_kb_refs": [
+        "KB-090"
+      ]
     },
     {
       "question": "True out-of-the-box default của Multibuy discount badge text là \"MULTIBUY\" (live example) hay \"Multi buy\" (ticket), hoặc liệu giá trị live đã bị merchant chỉnh?",
-      "why_it_matters": "Tương tự — không dùng được làm expected default cho test case badge text."
+      "why_it_matters": "Tương tự — không dùng được làm expected default cho test case badge text.",
+      "refresh_note": "Staging form mới 'MULTIBUY' (chưa qua tay merchant) — CONF-DOC04-002 vẫn mở.",
+      "refresh_kb_refs": [
+        "KB-091"
+      ]
     },
     {
       "question": "'QA' được dùng làm nguồn (Source) trong decision-log.\"Feature Map\" là 1 người/role cụ thể hay chính quy trình authoring qa-volume-kb?",
@@ -870,7 +1599,18 @@
     },
     {
       "question": "7 Business Rules section hoàn toàn ticket-sourced (Internal name/Offer title, Discount method, Customer selection core + popup detail, Discount combination, base Offer scheduling, base badge definition/position) còn khớp hành vi live hiện tại không?",
-      "why_it_matters": "Cùng tài liệu này đã phát hiện ≥3 trường hợp khác nơi ticket spec không khớp live; các section ticket-only còn lại chưa được re-test nên rủi ro drift tương tự chưa loại trừ được."
+      "why_it_matters": "Cùng tài liệu này đã phát hiện ≥3 trường hợp khác nơi ticket spec không khớp live; các section ticket-only còn lại chưa được re-test nên rủi ro drift tương tự chưa loại trừ được.",
+      "refresh_note": "Staging đã quan sát cả 7 section: nhiều khác biệt (xem observed_behavior); vẫn chưa có authority nên không gỡ.",
+      "refresh_kb_refs": [
+        "object:KB-010",
+        "KB-085",
+        "object:KB-011",
+        "KB-088",
+        "KB-094",
+        "object:KB-012",
+        "object:KB-013",
+        "KB-091"
+      ]
     },
     {
       "question": "Phạm vi đầy đủ offer type dùng Custom CSS có rộng hơn 3 loại (Multibuy/Wholesale Pricing/Quantity Break) đã xác nhận không?",
@@ -878,15 +1618,159 @@
     },
     {
       "question": "Có permission/role boundary nào (vd Portal staff sub-role, plan/feature-flag gating) kiểm soát việc ai được cấu hình Multibuy không?",
-      "why_it_matters": "permissions[] trong profile này chỉ phân biệt ở mức merchant (Portal) vs buyer (storefront) — không phải 1 authorization model; chưa biết có cấp quyền chi tiết hơn hay không."
+      "why_it_matters": "permissions[] trong profile này chỉ phân biệt ở mức merchant (Portal) vs buyer (storefront) — không phải 1 authorization model; chưa biết có cấp quyền chi tiết hơn hay không.",
+      "refresh_note": "Staging: không có account phụ nên quyền staff/cross-tenant không kiểm.",
+      "refresh_kb_refs": [
+        "object:KB-015"
+      ]
     },
     {
       "question": "Multibuy có evidence ở layer API/DB/code thật (ngoài 2 fragment code_artifact) không?",
-      "why_it_matters": "surface_mapping.api và.data đang rỗng vì mode DOC_BOOTSTRAP không chạy explorer nào — cần 1 run riêng (INCREMENTAL_UPDATE/explore) nếu cần oracle ở layer này."
+      "why_it_matters": "surface_mapping.api và.data đang rỗng vì mode DOC_BOOTSTRAP không chạy explorer nào — cần 1 run riêng (INCREMENTAL_UPDATE/explore) nếu cần oracle ở layer này.",
+      "refresh_note": "Đã có evidence API staging (REST offers, Shopify discount, cart, events); DB/code vẫn chưa (surface tắt).",
+      "refresh_kb_refs": [
+        "object:KB-015",
+        "KB-093",
+        "KB-094"
+      ]
+    },
+    {
+      "question": "'Pick' trên sản phẩm trong popup có phải thêm ngay vào cart (KB-049/KB-050) hay chỉ ghi nhận lựa chọn cho tới khi bấm 'Done' (staging)?",
+      "why_it_matters": "Confirmed rule base và quan sát staging khác nhau ở cùng thao tác; test case popup không có oracle cho tới khi owner xác nhận.",
+      "kb_refs": [
+        "KB-049",
+        "KB-050",
+        "KB-094",
+        "KB-093"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-021"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-discount-offers-021"
+    },
+    {
+      "question": "Chế độ 'Direct to collection page' hoạt động thế nào trên storefront, và mặc định expected của Customer product selection behavior là popup hay Redirect; có nên chặn lưu URL rỗng?",
+      "why_it_matters": "Staging có radio thứ 3 chưa thử, mặc định Redirect khác ticket, URL rỗng làm slot '+' vô hiệu.",
+      "kb_refs": [
+        "KB-003",
+        "KB-045",
+        "KB-088",
+        "KB-093"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-020"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-discount-offers-057"
+    },
+    {
+      "question": "Chế độ Percentage và 'How discount is applied' (Apply per combo / highest tier) tính giá thế nào trên storefront staging?",
+      "why_it_matters": "Run giữ mặc định Fixed total price nên control ẩn; 2 mode tính giá chưa có quan sát.",
+      "kb_refs": [
+        "KB-035",
+        "KB-037",
+        "KB-038",
+        "KB-086"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-discount-offers-087"
+    },
+    {
+      "question": "Số trên badge 'Saved' của widget được tính theo công thức nào (lệch với discount thực trong cart)?",
+      "why_it_matters": "Badge hiện $27.00 trong khi cart giảm $41.00; không suy được công thức.",
+      "kb_refs": [
+        "KB-092",
+        "KB-021"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-discount-offers-076"
+    },
+    {
+      "question": "Lỗi console 'Cannot read properties of null (reading 'url')' khi 'Pick' trong popup là defect hay do product thử không có ảnh?",
+      "why_it_matters": "Subtotal/slot popup không cập nhật đúng dù 'Done' vẫn thêm đúng item.",
+      "kb_refs": [
+        "KB-094"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-021"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-discount-offers-069"
+    },
+    {
+      "question": "Tie-break remainder khi nhiều đơn vị cùng giá rẻ nhất, và cách chia combo khi multiplier bật (4+2 hay 3+3)?",
+      "why_it_matters": "Staging chỉ quan sát 2 product giá khác nhau; tổng tiền không phân biệt được cách chia.",
+      "kb_refs": [
+        "KB-033",
+        "KB-095",
+        "KB-087"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-034"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-discount-offers-034"
+    },
+    {
+      "question": "Badge Multibuy có ẩn khi offer ngoài lịch, và countdown có hiện trên widget Multibuy không; offer sau giờ start/hết hạn hiển thị thế nào?",
+      "why_it_matters": "KB-076 chưa kiểm được riêng cho Multibuy; chuyển trạng thái theo thời gian NOT_COVERED.",
+      "kb_refs": [
+        "KB-076",
+        "KB-064",
+        "object:KB-013",
+        "object:KB-016"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-discount-offers-088"
+    },
+    {
+      "question": "Popup và widget Multibuy trên mobile và với product có ảnh hiển thị thế nào?",
+      "why_it_matters": "Popup chỉ kiểm desktop; product thử không có ảnh (badge trên ảnh, lỗi console).",
+      "kb_refs": [
+        "KB-094",
+        "KB-091"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-discount-offers-089"
+    },
+    {
+      "question": "Khi tắt app embed (gating QVD-167), discount Multibuy có còn áp trong cart không?",
+      "why_it_matters": "Banner 'Automatic discounts work even if the app block is disabled…' hiện trên form Multibuy; nhánh embed tắt NOT_COVERED.",
+      "kb_refs": [
+        "quantity-break#KB-083",
+        "object:KB-011"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-001",
+        "OQ-discount-offers-009"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-discount-offers-090"
+    },
+    {
+      "question": "Khi store chạm giới hạn 25 automatic discount, tạo offer Multibuy báo gì; Discount code lưu và áp được không?",
+      "why_it_matters": "Base nói phải liên hệ support; staging: Discount code chọn được (chưa lưu), store 5/25 chưa chạm ngưỡng.",
+      "kb_refs": [
+        "KB-006",
+        "KB-007",
+        "object:KB-011",
+        "object:KB-015"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-028"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-discount-offers-059"
     }
   ],
+  "last_updated": {
+    "date": "2026-10-18",
+    "ccr_ref": "bootstrap"
+  },
   "coverage_matrix": [
     {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
       "layer": "portal",
       "role": "merchant",
       "state": "documented",
@@ -894,6 +1778,7 @@
       "covered": true
     },
     {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
       "layer": "storefront",
       "role": "buyer",
       "state": "documented",
@@ -901,6 +1786,7 @@
       "covered": true
     },
     {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
       "layer": "api",
       "role": null,
       "state": "documented",
@@ -908,6 +1794,7 @@
       "covered": false
     },
     {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
       "layer": "data",
       "role": null,
       "state": "documented",
@@ -915,6 +1802,7 @@
       "covered": false
     },
     {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
       "layer": "code",
       "role": null,
       "state": "documented",
@@ -922,6 +1810,7 @@
       "covered": false
     },
     {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
       "layer": "portal",
       "role": "merchant",
       "state": "trigger_overlap_warning_shown",
@@ -929,6 +1818,7 @@
       "covered": true
     },
     {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
       "layer": "storefront",
       "role": "buyer",
       "state": "trigger_overlap_priority_resolution",
@@ -936,29 +1826,197 @@
       "covered": false
     },
     {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
       "layer": "storefront",
       "role": "buyer",
       "state": "badge_appearance_default",
       "environment": "documented",
       "covered": false
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "form mặc định, lưu, đổi selection behavior, bỏ multiplier, xoá",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-085",
+        "KB-086",
+        "KB-087",
+        "KB-088",
+        "KB-089",
+        "object:KB-017"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
+      "layer": "storefront",
+      "role": "buyer (guest)",
+      "state": "widget PDP, Redirect URL rỗng, popup, pooling 2 product, multiplier bật/tắt",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-087",
+        "KB-092",
+        "KB-093",
+        "KB-094",
+        "KB-095"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
+      "layer": "storefront",
+      "role": "buyer (guest)",
+      "state": "badge collection/search",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-090",
+        "KB-091"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
+      "layer": "storefront",
+      "role": "buyer (guest)",
+      "state": "overlap QB × Multibuy × Wholesale",
+      "environment": "staging",
+      "covered": true,
+      "note": "Chỉ quan sát, không oracle.",
+      "kb_refs": [
+        "object:KB-026",
+        "object:KB-028"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
+      "layer": "storefront",
+      "role": "buyer (guest)",
+      "state": "Percentage / How discount is applied",
+      "environment": "staging",
+      "covered": false,
+      "note": "Chưa thử."
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
+      "layer": "storefront",
+      "role": "buyer (guest)",
+      "state": "Direct to collection page; Redirect với URL thật",
+      "environment": "staging",
+      "covered": false,
+      "note": "Chưa thử."
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
+      "layer": "storefront",
+      "role": "buyer (guest)",
+      "state": "mobile; product có ảnh",
+      "environment": "staging",
+      "covered": false,
+      "note": "Popup chỉ desktop; product thử không có ảnh."
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
+      "layer": "storefront",
+      "role": "buyer (guest)",
+      "state": "ngoài lịch / sau giờ start / embed tắt",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED."
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
+      "layer": "portal",
+      "role": "staff (hạn quyền)",
+      "state": "any",
+      "environment": "staging",
+      "covered": false,
+      "note": "NOT_COVERED: không có secondary_account_env."
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
+      "layer": "api",
+      "role": "merchant / buyer (guest)",
+      "state": "REST offers, Shopify discount GraphQL, cart, events",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "object:KB-015",
+        "KB-093",
+        "KB-094",
+        "object:KB-023"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
+      "layer": "data",
+      "role": "unspecified",
+      "state": "any",
+      "environment": "staging",
+      "covered": false,
+      "note": "DB surface tắt; chỉ field qua response API."
     }
   ],
   "profile_conflicts": [
     {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
       "conflict_id": "CONF-DOC04-001",
       "summary": "Badge border radius default: 6px (live-observed) vs 10px (ticket QVD-132) — UNRESOLVED.",
       "kb_refs": [
         "KB-081",
         "KB-082"
+      ],
+      "resolution": "UNRESOLVED",
+      "observation_notes": [
+        {
+          "kb_ref": "KB-090",
+          "note": "Staging 2026-10-18: form Multibuy mới mặc định 6px, storefront render 6px — nghiêng phía KB-081 nhưng store khác test-vl-1; không đóng conflict."
+        }
       ]
     },
     {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
       "conflict_id": "CONF-DOC04-002",
       "summary": "Badge text default: \"MULTIBUY\" (live example) vs \"Multi buy\" (ticket QVD-132) — UNRESOLVED.",
       "kb_refs": [
         "KB-083",
         "KB-084"
+      ],
+      "resolution": "UNRESOLVED",
+      "observation_notes": [
+        {
+          "kb_ref": "KB-091",
+          "note": "Staging 2026-10-18: form mới mặc định 'MULTIBUY', storefront 'MULTIBUY' — nghiêng phía KB-083; không đóng conflict."
+        }
       ]
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
+      "conflict_group": "CONF-discount-offers-R1018-04",
+      "topic": "Tier mặc định khi load form Multibuy lần đầu",
+      "side_a": "Base KB-022 (CONFIRMED_EXPECTED, spec_doc): 1 tier pre-populate — quantity 1, $10 total, badge 'Saved {saved_price}'.",
+      "side_b": "Staging KB-086 (OBSERVED_CURRENT): 3 tier 2→$10, 3→$20, 4→$30 (Fixed total price mặc định), title '{quantity} for {tier_price}', badge 'Saved {saved_price}'.",
+      "kb_refs": [
+        "KB-022",
+        "KB-086"
+      ],
+      "resolution": "UNRESOLVED",
+      "requires_human_decision": true
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-mix-match-combo",
+      "conflict_group": "CONF-discount-offers-R1018-05",
+      "scope": "object-level (dependency)",
+      "topic": "Overlap: 'đúng một discount thắng, không bao giờ cả hai, không chia' vs 2 mã trên 2 line cùng product",
+      "side_a": "Base object:KB-005 (CONFIRMED_EXPECTED, test_case): Quantity Break × Multibuy overlap → đúng một discount.",
+      "side_b": "Staging object:KB-028 (OBSERVED_CURRENT, 2 lần): 2 line cùng variant, line 4 đơn vị mã Multibuy + line 7 đơn vị mã Quantity Break.",
+      "kb_refs": [
+        "object:KB-005",
+        "object:KB-028"
+      ],
+      "resolution": "UNRESOLVED",
+      "requires_human_decision": true
     }
   ],
   "profile_relationships": [
@@ -972,6 +2030,10 @@
         "object:KB-004",
         "object:KB-005",
         "object:KB-007"
+      ],
+      "observed_kb_refs": [
+        "object:KB-026",
+        "object:KB-028"
       ]
     },
     {
@@ -983,6 +2045,10 @@
         "object:KB-005",
         "object:KB-006",
         "object:KB-007"
+      ],
+      "observed_kb_refs": [
+        "object:KB-025",
+        "object:KB-028"
       ]
     }
   ]
