@@ -2,7 +2,7 @@
 
 File này được SINH TỰ ĐỘNG bởi `scripts/generate-manifest.mjs` từ toàn bộ `open-questions.md` theo object (§5a của contract) — KHÔNG sửa tay ở đây. Cần thêm/sửa/resolve 1 open question thì sửa ở file object-level tương ứng rồi chạy lại script; sửa trực tiếp ở đây sẽ bị ghi đè mất ở lần chạy sau.
 
-Tổng: 2688 open question đang mở trên 69 object.
+Tổng: 2725 open question đang mở trên 70 object.
 
 ## auth-token (`knowledge/products/duos/auth-token/open-questions.md`) — 20 mục
 
@@ -3473,6 +3473,64 @@ Tổng: 2688 open question đang mở trên 69 object.
 - **[OQ-global-option-019]** (feature: artwork-personalization-global-option-link) Ý nghĩa của field 'artwork-4172': '' (chuỗi rỗng) bên trong request body POST /api/merchant/shopify/customization là gì — khả năng chỉ là current_version_id=null của artwork 4172 bị stringify, nhưng chưa xác nhận với api-explorer/db-explorer. Ghi nhận nguyên trạng, chưa điều tra.
 - **[OQ-global-option-020]** (feature: global-option-instance-management) 23/30 leaf layer type của Global Option hoàn toàn chưa được tạo/test (chỉ 7/30 đã tạo); và trong số 7 đã tạo, 6/7 fixture (mọi type trừ Text) chưa test Edit/Clone/Delete riêng — cơ chế CRUD generic hiện chỉ là GIẢ ĐỊNH type-agnostic dựa trên endpoint chung, chưa xác minh trực tiếp theo từng type.
 - **[OQ-global-option-021]** (feature: global-option-instance-management) Nhóm 'Dynamic Clipart by Text' (2 leaf con: Manual Placement, Auto Placement) hiện 'Unavailable'/disabled, hoàn toàn không tạo được ở trạng thái hiện tại. Lý do (feature flag / plan tier / rollout) chưa được điều tra.
+
+## image-library (`knowledge/products/teeinblue/image-library/open-questions.md`) — 37 mục
+
+### Conflict — 2 statement mâu thuẫn nhau
+
+- **[OQ-image-library-001]** (feature: mockup-layer-library) Upload file không phải ảnh (text đổi đuôi .png) làm mockup: knowledge đã publish nói backend nhận và kẹt 'Rendering' mãi mãi, nay server trả 422 và không tạo bản ghi. Hành vi hiện hành/expected là gì và KB-081 của product-base còn đúng không?
+    - Phía A: product-base/mockup-attachment KB-081 (2026-09-13): file được nhận, tạo bản ghi width/height 0, url rỗng, card 'Rendering' mãi mãi, không báo lỗi.
+    - Phía B: image-library 2026-10-26: POST /api/mockup-layers/by-temporary-file → 422 'This file type is not supported. Please upload a PNG, JPEG, GIF or WebP image.', không tạo bản ghi.
+- **[OQ-image-library-002]** (feature: mockup-layer-library) Giới hạn ~3 file khi chọn nhiều file upload mockup: KB-083 thấy chỉ 3/5 file được xử lý; run này 4/4 file raster ở mockup library (và 4/4, 6/6 ở image library). Cần retest đúng 5 file raster cùng lúc để biết giới hạn còn không.
+    - Phía A: product-base/mockup-attachment KB-083: 5 file chọn cùng lúc → chỉ 3 upload-url, 2 file bị bỏ âm thầm.
+    - Phía B: image-library 2026-10-26: 4 raster + 1 svg → 4 upload-url, 4 file xử lý xong; svg bị client từ chối. Không phải cùng điều kiện (chưa thử 5 file raster).
+- **[OQ-image-library-003]** (feature: mockup-layer-library) Polling trạng thái render mockup: KB-084/KB-051 nói không có polling tự động (phải bấm Refresh), run này thấy media library modal tự poll mockup_layers khoảng 2 giây/lần sau upload. Đây là hai cơ chế khác scope (card mockup đã gán vs modal sau upload) hay là mâu thuẫn?
+    - Phía A: product-base/mockup-attachment KB-084 (CONFIRMED_EXPECTED legacy) / KB-051: 0 request polling trong 8,2 giây sau 'Rendering' trên card mockup đã gán; Refresh '.la-sync' gọi lại GraphQL 'mockups'.
+    - Phía B: image-library 2026-10-26: media library modal tự gọi GraphQL mockup_layers(ids) ~2 giây/lần sau upload tới khi có url (8 mẫu).
+- **[OQ-image-library-004]** (feature: image-layer-library) Bằng chứng mới cho CONF-API-CTX20260921-03-01 (OQ-artwork-010): REST /api/layer-image-categories?type=clipart và GraphQL clipart_categories có đang đọc hai tập dữ liệu khác nhau (category của image library vs Clipart Categories) không? Nếu đúng, conflict cũ có thể không phải lỗi dữ liệu — cần owner artwork/dev xác nhận.
+    - Phía A: artwork OQ-artwork-010 / CONF-API-CTX20260921-03-01: REST trả [] trong khi GraphQL trả 10 dòng cho cùng user/session.
+    - Phía B: image-library 2026-10-26: REST trả đúng category tạo qua POST /api/layer-image-categories; GraphQL trả 10 Clipart Category không chứa nó; hai tập id không giao nhau (2 lần đo).
+- **[OQ-image-library-005]** (feature: object-level (image-layer-library + mockup-layer-library)) Popup '+ Layer' của artwork editor nay có nhóm DESIGN ELEMENTS (Rectangle) — knowledge artwork KB-001 ghi 7 nhóm/29 item. Layer type mới được thêm hay khác plan/store? Cần refresh artwork/editor-layer-workspace.
+    - Phía A: artwork/editor-layer-workspace KB-001 (2026-09-10): 29 item, 7 nhóm.
+    - Phía B: image-library 2026-10-26: có thêm nhóm DESIGN ELEMENTS (Rectangle); số item không đếm lại.
+
+### Needs confirmation — chưa có authority xác nhận
+
+- **[OQ-image-library-007]** (feature: object-level (image-layer-library + mockup-layer-library)) Xác nhận host object storage oe-cdn.sgp1.digitaloceanspaces.com (PUT presigned của luồng upload cả hai thư viện) là host hợp lệ của staging — có nên thêm vào environments.staging.additional_api_hosts trong config teeinblue? Cho tới khi xác nhận, các item phụ thuộc host này không làm oracle.
+- **[OQ-image-library-008]** (feature: image-layer-library) Đổi tên ảnh thành chuỗi rỗng được chấp nhận (200, card hiện '...'), không có kiểm tra client/server. Tên ảnh có bắt buộc không? Đây là defect hay hành vi chấp nhận được?
+- **[OQ-image-library-009]** (feature: mockup-layer-library) Confirm xoá một mockup ghi 'Are you sure to remove ?' (thiếu tên), trong khi image library hiện tên ảnh. Có phải lỗi hiển thị?
+- **[OQ-image-library-010]** (feature: image-layer-library) Lựa chọn ảnh được giữ khi chuyển trang; trên trang 2 các nút 'Delete' / 'Move to category' / 'Select 6 images' tác động lên ảnh không hiển thị — rủi ro xoá ảnh không nhìn thấy. Có phải hành vi mong muốn?
+- **[OQ-image-library-011]** (feature: image-layer-library) Bấm Move không chọn category vẫn thành công (PUT /api/layer-images/move category_id null → 200), không có validation. Expected là chặn hay đây là cách 'gỡ khỏi category'? Lưu ý: mẫu chỉ có ảnh vốn chưa có category, nên việc ảnh đang thuộc category bị gỡ im lặng là suy luận, chưa quan sát.
+- **[OQ-image-library-012]** (feature: object-level (image-layer-library + mockup-layer-library)) Tên category toàn khoảng trắng làm nút Create bật, server trả 422 'The name field is required.' và UI hiện toast chung 'Something went wrong!' (cả hai thư viện). Client có nên chặn trước/hiển thị lỗi tại field?
+- **[OQ-image-library-013]** (feature: object-level (image-layer-library + mockup-layer-library)) Không thấy giới hạn kích thước file — PNG 27 MB được chấp nhận ở cả hai thư viện (upload-url, PUT, by-temporary-file đều thành công). Có giới hạn kích thước mong đợi không? Nếu có thì là bao nhiêu?
+- **[OQ-image-library-014]** (feature: mockup-layer-library) Bộ đếm hiển thị 'Showing 1 to 0 of 0 entries' khi kết quả rỗng (API trả meta.from null, total 0). Có phải lỗi hiển thị?
+- **[OQ-image-library-015]** (feature: image-layer-library) DELETE /api/layer-images/{id} và POST /api/layer-images/in-use gửi JSON artwork đang mở (chưa lưu) trong body; chặn 400 chỉ quan sát được khi chính artwork đang mở dùng ảnh. Server có kiểm các artwork đã lưu khác dùng ảnh đó không? Nếu không, xoá ảnh đang được artwork khác dùng sẽ ra sao?
+- **[OQ-image-library-016]** (feature: object-level (image-layer-library + mockup-layer-library)) Upload bị từ chối (422) vẫn để lại temporary file trên object storage (upload-url 201 + PUT 200 trước khi server kiểm nội dung), không thấy request dọn dẹp hay UI xoá. Có cơ chế dọn temporary file phía server (TTL/cron) không?
+- **[OQ-image-library-017]** (feature: mockup-layer-library) Xoá một mockup (thùng rác trên card) không gọi POST /api/mockup-layers/in-use, trong khi xoá hàng loạt thì có. Server có chặn xoá mockup đang được product dùng ở đường xoá đơn không?
+- **[OQ-image-library-036]** (feature: image-layer-library) Các check BASELINE của image-layer-library chỉ dựa trên hành vi quan sát (OBSERVED_CURRENT), chưa có nguồn thẩm quyền (spec/PO/Dev/test case PASS) xác nhận là expected: CHK-001, CHK-002, CHK-003, CHK-004, CHK-005, CHK-006, CHK-010, CHK-013, CHK-015, CHK-017, CHK-019, CHK-020, CHK-021, CHK-025, CHK-027, CHK-029, CHK-030, CHK-032, CHK-034, CHK-036, CHK-037. Cần PO/Dev xác nhận hành vi hiện tại là đúng trước khi dùng làm expected result.
+- **[OQ-image-library-037]** (feature: mockup-layer-library) Các check BASELINE của mockup-layer-library chỉ dựa trên hành vi quan sát (OBSERVED_CURRENT), chưa có nguồn thẩm quyền (spec/PO/Dev/test case PASS) xác nhận là expected: CHK-001, CHK-002, CHK-005, CHK-010, CHK-012, CHK-014, CHK-015, CHK-019, CHK-021, CHK-025. Cần PO/Dev xác nhận hành vi hiện tại là đúng trước khi dùng làm expected result.
+
+### Open issue — gap khác (unknown area, scope chưa rõ, chưa explore được)
+
+- **[OQ-image-library-006]** (feature: image-layer-library) Trả lời một phần OQ-artwork-047 (picker image library có rơi vào trạng thái rỗng chặn thêm layer như Vector không): đã thấy category rỗng hiện 'Empty data' (cùng câu chữ với Vector picker), search không khớp hiện 'No data matched', và dropzone vẫn upload được trong trạng thái rỗng — tức picker không tự chặn việc thêm ảnh. CÒN THIẾU: trạng thái toàn bộ image library rỗng (0 ảnh) và việc nút Select/thêm layer có bị chặn khi đó — không quan sát được vì account có 9 ảnh có sẵn không được phép xoá. Cần account/store có image library trống, hoặc operator cho phép tạm thời.
+- **[OQ-image-library-018]** (feature: object-level (image-layer-library + mockup-layer-library)) Upload bằng kéo-thả vào dropzone có cùng hành vi với click-to-upload không?
+- **[OQ-image-library-019]** (feature: object-level (image-layer-library + mockup-layer-library)) Picker của Photo Upload, Clipart Category (tab 'Upload an image') và Dynamic Clipart có dùng chung image layer library/component không?
+- **[OQ-image-library-020]** (feature: object-level (image-layer-library + mockup-layer-library)) SVG bị loại khỏi image picker (master NOT ILIKE '%.svg'); luồng /api/layer-images/svg của Vector layer có cùng bảng dữ liệu với image library không?
+- **[OQ-image-library-021]** (feature: object-level (image-layer-library + mockup-layer-library)) GIF và WebP (được nêu trong câu lỗi 422) có thực sự upload được vào hai thư viện không?
+- **[OQ-image-library-022]** (feature: object-level (image-layer-library + mockup-layer-library)) Account khác (hoặc token forbidden/invalid) có đọc/sửa/xoá được ảnh, mockup, category theo id của account này không? Server có ràng buộc x-acting-user-id với phiên không?
+- **[OQ-image-library-023]** (feature: object-level (image-layer-library + mockup-layer-library)) Khi vượt x-ratelimit-limit (vd 60 cho in-use, 1000 cho by-temporary-file) thì client/server phản ứng thế nào? Chu kỳ quota có đúng theo ngày không?
+- **[OQ-image-library-024]** (feature: object-level (image-layer-library + mockup-layer-library)) Plan/role khác có trang thư viện độc lập hoặc điểm vào khác không? Spec OpenAPI có liệt kê thêm operation nào của layer-images/mockup-layers ngoài các operation đã trace không?
+- **[OQ-image-library-025]** (feature: object-level (image-layer-library + mockup-layer-library)) Import artwork từ 'TIB Library' và trang Customer Uploads (beta) có thuộc object nào khác cần bootstrap riêng không?
+- **[OQ-image-library-026]** (feature: image-layer-library) 'Select N images' với N>1 thêm N layer, một layer, hay bị chặn? Kích thước hiển thị 400x400 cho ảnh 10x10 có phải quy tắc chung không?
+- **[OQ-image-library-027]** (feature: image-layer-library) Đổi page size 50/100/250/500, lùi trang nhiều lần và search kết hợp filter category hoạt động ra sao?
+- **[OQ-image-library-028]** (feature: image-layer-library) Giới hạn độ dài/ký tự đặc biệt của tên ảnh và tên category là gì? Trùng tên category có bị chặn không?
+- **[OQ-image-library-029]** (feature: image-layer-library) PUT /api/layer-image-categories/{id} với tên rỗng/khoảng trắng có bị từ chối như khi tạo (422) không?
+- **[OQ-image-library-030]** (feature: image-layer-library) Tab 'Choose from clipart category' trong image picker hoạt động thế nào và có thuộc phạm vi image library không?
+- **[OQ-image-library-031]** (feature: mockup-layer-library) Chọn mockup ('Select' / 'Select N images') gán vào product base hoạt động thế nào, và xoá một mockup đã gán thì product base ra sao?
+- **[OQ-image-library-032]** (feature: mockup-layer-library) Khi mockup library có 0 mockup của user, modal hiển thị gì và 'Select' có bị chặn không?
+- **[OQ-image-library-033]** (feature: mockup-layer-library) Đổi tên mockup có được hỗ trợ ở nơi khác (endpoint/UI) không, hay mockup không đổi tên được theo thiết kế?
+- **[OQ-image-library-034]** (feature: mockup-layer-library) Phân trang offset quá trang 1 và đổi page size 50/100/250/500 hoạt động thế nào? Lựa chọn có giữ qua trang như image library không?
+- **[OQ-image-library-035]** (feature: mockup-layer-library) PUT /api/mockup-layers/move với category_id null có được chấp nhận như image library không?
 
 ## order (`knowledge/products/teeinblue/order/open-questions.md`) — 17 mục
 
