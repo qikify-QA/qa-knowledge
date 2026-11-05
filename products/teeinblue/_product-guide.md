@@ -1,149 +1,172 @@
 # Product guide — teeinblue
 
-Tổng quan và setup của Teeinblue: product làm gì, chức năng ở đâu, cần env, account gì để chạy. File được cập nhật cùng các lần publish knowledge: setup mức product mới thì thêm vào đây. Config riêng và khác biệt staging/production của một feature nằm ở `profile.json` của feature đó.
+Bản chỉ dẫn của Teeinblue: product làm gì, feature ở đâu, môi trường nào test được gì, setup ra sao. Chi tiết của từng feature nằm ở `<object>/features/<feature>/profile.json`.
 
-Đọc theo vai trò:
-
-| Bạn là | Đọc | Để làm gì |
-|---|---|---|
-| Newbie / agent mới | §0 → §4 → §9 | hiểu product, biết chức năng nằm ở đâu |
-| Agent kiểm thử | §0 → §2 → §5 → §8 → §10 | dựng data và test một feature bất kỳ |
-
-**Guide này trả lời "vào đâu, làm thế nào". KB và checklist cùng thư mục trả lời "đúng phải là gì".** Không dùng guide này làm expected result. Không ghi credential, email hay tên người thật vào file này.
-
-**Độ tin cậy của từng thông tin:**
-
-| Nhãn | Nghĩa |
+| Đang làm | Đọc |
 |---|---|
-| `[KB]` | Có trong knowledge đã publish |
-| `[QA]` | Từ sổ tay QA hằng ngày, đã kiểm chứng trên staging |
-| `[?]` | Chưa biết. Ai gặp thì ghi lại và báo operator |
+| Phân tích yêu cầu, viết test case | Phần A |
+| Dựng data, chạy test | Phần A, Phần B |
 
-## 0. Product trong 5 phút
+**Guide trả lời "vào đâu, làm thế nào". KB và checklist trả lời "đúng phải là gì".** Không dùng guide làm expected result. Không ghi giá trị credential, id account, id instance, tên store vào file này: biến env ở `_env.example`, giá trị ở `.env` local.
 
-Teeinblue là app cá nhân hoá sản phẩm in theo yêu cầu (print-on-demand). Merchant dựng sản phẩm trên portal, buyer tự điền nội dung trên storefront, order đi kèm file design để in. `[KB]`
+<!-- PART-A:start -->
+# Phần A: Bản đồ
 
-Luồng chính:
+## A1. Product
 
-1. Merchant tạo **Product base**: phôi có variant, print area, mockup. Hoặc dùng sẵn Shopify product.
-2. Merchant thiết kế **Artwork** gồm nhiều layer, cấu hình personalization, điều kiện hiển thị, giá trị tự điền.
+Teeinblue là app cá nhân hoá sản phẩm in theo yêu cầu (print-on-demand). Luồng chính:
+
+1. Merchant tạo **Product base** (phôi có variant, print area, mockup) hoặc dùng sẵn Shopify product.
+2. Merchant thiết kế **Artwork** nhiều layer, cấu hình personalization, condition, populate.
 3. Merchant ghép thành **Campaign** rồi publish lên store.
-4. Buyer mở product page, **SDK** hiện form và live preview, buyer điền rồi add to cart. Customization đi kèm cart qua line item properties.
+4. Buyer mở product page, **SDK** hiện form và live preview, buyer điền rồi add to cart. **Customization** đi kèm cart qua line item properties.
 5. Order về portal, teeinblue render design, merchant review và gửi fulfillment.
 
-Phần phụ trợ: thư viện asset (clipart, vector, color, map style, font, image), Global Option dùng chung nhiều campaign, translation cho storefront.
+| Thuật ngữ | Nghĩa |
+|---|---|
+| Instance | Một store gắn với account trên teeinblue |
+| Personalization option | Input buyer điền trên storefront, map vào layer |
+| Global Option | Option định nghĩa một lần, gắn vào nhiều artwork |
+| Populate values | Tự điền giá trị layer từ layer khác |
+| Conditional setting | Điều kiện hiện hoặc ẩn layer |
+| Boundless / open platform | Kênh không phải Shopify, nhúng SDK qua iframe |
 
-**Knowledge hiện có:** 10 object, 62 feature, 715 KB item (110 `CONFIRMED_EXPECTED`, 581 `OBSERVED_CURRENT`, 19 `INFERRED`, 5 `PROPOSED`), 1085 check (558 `READY`, 526 `NEEDS_CONFIRMATION`), 579 Open Question (36 `CONFLICT`). Phần lớn KB là quan sát, nên nhiều check chưa đủ làm oracle.
+## A2. Object và feature
 
-## 1. Surfaces và entry point
+Từ khoá ticket sang object: `_registry.json`. Trạng thái, version, dùng làm oracle được không: `manifest.json`. Mỗi feature có `features/<key>/profile.json` (entry point, precondition, `environment_differences`) và `checklists/<key>.json`.
 
-| Surface | Staging | Ghi chú |
+| Object | Phạm vi | Không thuộc | Feature |
+|---|---|---|---|
+| `campaign` | Tạo, duyệt, xoá campaign, đồng bộ media Shopify | Phía storefront (`sdk`) | `campaign-delete` `campaign-list-browse` `campaign-navigation` `campaign-security-permissions` `campaign-shopify-media-sync` `create-campaign-by-product-base` `create-campaign-by-shopify` |
+| `product-base` | Print area, variant, mockup, vòng đời, liên kết campaign | Thư viện ảnh mockup (`image-library`) | `mockup-attachment` `printarea-definition` `product-base-browse` `product-base-campaign-link` `product-base-create` `product-base-identity` `product-base-lifecycle` `variant-add-to-campaigns` `variant-catalog` |
+| `artwork` | Editor, layer, config, condition, populate, render | Form buyer trên storefront (`sdk`) | **Quản lý:** `artwork-list-management` `artwork-save-persist` `artwork-template-management` `editor-layer-workspace` `psd-import` · **Layer:** `layer-common-config` `layer-config-form-elements` `layer-config-image` `layer-config-maps-astronomy` `layer-config-others` `layer-config-puzzles` `layer-config-text` `layer-config-vector` `layer-duplicate-link-copy` `layer-print-effects` `text-multi-stroke` · **Logic:** `condition-cycle-validation` `conditional-setting-config` `layer-condition-value-binding` `populate-values` · **Group, render:** `group-layer-effective-visibility` `group-layer-order-design-render` `text-color-sequence-render` `clipart-category-storefront-behavior` |
+| `asset-category` | 6 loại category: Clipart, Vector, Color, Additional Option, Map Style, Font Category | Font (`font`) | `asset-category-bulk-upload` `asset-category-crud` `asset-category-item-management` `asset-category-route-entity-clarification` |
+| `font` | `/fonts` | Font category (`asset-category`) | `manage-uploaded-font` `upload-custom-font` `use-custom-font-in-artwork-editor` `view-and-configure-font-list` |
+| `image-library` | Thư viện ảnh của Image layer và Mockup layer, không có trang riêng | Clipart (`asset-category`) | `image-layer-library` `mockup-layer-library` |
+| `global-option` | Option dùng chung nhiều campaign | | `artwork-personalization-global-option-link` `global-option-additional-option-items` `global-option-instance-management` |
+| `translation` | Dynamic Translations, Product Page Content, chọn ngôn ngữ | | `dynamic-translations` `language-locale-switcher` `product-page-content-translation` |
+| `order` | Đặt order, review, fulfillment | | `place-personalized-order-storefront` `review-and-initiate-fulfillment-portal` |
+| `sdk` | Runtime personalization của buyer, Product Page Settings, open platform | | `genai-personalization-runtime` `open-platform-customization-callback` `product-page-settings-config` `storefront-buyer-facing` |
+
+Ticket không khớp key nào: ghi knowledge gap, đề xuất key mới trong CCR.
+
+## A3. Môi trường
+
+Host từng môi trường: B1. Nhận biết môi trường của storefront: xem script SDK.
+
+**Store theo việc:**
+
+| Biến | Đặc điểm | Dùng cho | Không dùng cho |
+|---|---|---|---|
+| `TIB_STORE_URL`, `TIB_STORE_INSTANCE_ID` | Dev store, non-Plus | Mặc định: portal, storefront, Thank You, Order status | App block trên Checkout page, Generate test design |
+| `TIB_SDK_V2`, `TIB_SDK_V2_INSTANCE_ID` | Shopify Plus | App block trên Checkout page, storefront SDK v2 | |
+| `TIB_BOUNDLESS_*`, `TIB_BOUNDLESS_INSTANCE_ID` | Boundless, không có storefront thật | Case Boundless trên portal | Campaign by Shopify; chạy song song với store mặc định (chung account) |
+| `TIB_BOUNDLESS_STOREFRONT_INSTANCE_ID` | Storefront Boundless | Case Boundless cần storefront | Tạo data mới |
+| `TIB_ONBOARDING_*` | Chưa connect fulfillment | Luồng onboarding | Chỉ đọc, giữ sạch |
+| `TIB_USER_A_*`, `TIB_USER_B_*` | Hai tenant | Permission, cross-tenant | Thiếu biến thì `NOT_COVERED`, không thay account khác |
+| `TIB_STAFF_VIEW_ONLY*`, `TIB_STAFF_GEN_ONLY*` | Staff quyền hạn chế | Phân quyền | |
+
+**Cần người hỗ trợ:**
+
+- Bảng nội bộ không lộ qua GraphQL: agent soạn query read-only, người có quyền chạy.
+- Job theo lịch: nhờ Dev chạy command trên staging, không chờ tới giờ.
+- Config server (provider key, branch, migration): là điều kiện tiên quyết cho Dev.
+
+## A4. Index giới hạn môi trường
+
+Chi tiết và cách test: `environment_differences` trong profile của feature. `type`: `NOT_TESTABLE` không chạy, `ALTERNATIVE_SETUP` test theo cách khác, `DIFFERENT_VALUE` test theo giá trị của staging.
+
+| Hạng mục | Feature | `type` | Mức |
+|---|---|---|---|
+| Generate test design trên dev store | `campaign/create-campaign-by-product-base` | `ALTERNATIVE_SETUP` | Vế |
+| Horizon (job failed, queued) | Nhiều feature | `NOT_TESTABLE` | Vế |
+| Strava trong Route Maps | `artwork/layer-config-maps-astronomy`, `sdk/storefront-buyer-facing` | `NOT_TESTABLE` | Vế |
+| Tracking từ provider | `order/review-and-initiate-fulfillment-portal` | `NOT_TESTABLE` | Case |
+| Size gốc của provider | `product-base/printarea-definition` | `NOT_TESTABLE` | Vế |
+| `photo_endpoint=snap` | `sdk/storefront-buyer-facing` | `DIFFERENT_VALUE` | Case hoặc vế |
+| Upload CORS, preconnect tới host production | `sdk/storefront-buyer-facing` | `NOT_TESTABLE` | Vế |
+| Network timing | `sdk/storefront-buyer-facing` | `ALTERNATIVE_SETUP` | Vế |
+| Browser chặn site data, ITP | `sdk/storefront-buyer-facing` | `ALTERNATIVE_SETUP` | Vế |
+
+## A5. Bẫy làm sai kết luận
+
+| Dấu hiệu | Cách hiểu |
+|---|---|
+| Bản dịch vừa Save chưa lên storefront | Cache theo `translation_version`. Đợi rồi reload, hoặc mở context sạch |
+| Toggle mặc định khác mong đợi | Mặc định theo config shop (`default_value`). Đọc config trước khi báo bug |
+| `ERR_FAILED` kèm lỗi CORS khi body có `<script` hoặc `onload=` | WAF chặn. Không suy ra app an toàn |
+| Ngưỡng rate limit khác ticket | Staging cố ý đặt nhỏ hơn. Tin header `x-ratelimit-limit` |
+| Link Edit Customization trên staging 404 | Link luôn trỏ customize production. Đổi host sang customize staging, giữ nguyên query |
+| Upload qua Playwright lọt `accept` | Tool bypass, merchant thật bị chặn ở FE. Không log bug |
+
+## A6. Mutation guard
+
+- **Production chỉ đọc**, trừ khi operator giao đúng việc đó.
+- Data tạo cho một ticket đặt tên theo title ticket và giữ lại sau test. Không sửa data có sẵn của người khác.
+- Thay đổi tạm (config store, throttle, route) phải trả về giá trị cũ sau khi test.
+- Order chỉ đặt bằng thanh toán test.
+- Evidence phải che token: `GET /api/instances/<id>` và một số response trả kèm `token`, API key.
+<!-- PART-A:end -->
+
+<!-- PART-B:start -->
+# Phần B: Thực thi
+
+## B1. Env và login
+
+| Surface | Staging | Production (thấy host này thì dừng) |
 |---|---|---|
-| Portal (merchant) | `staging-portal.teeinblue.com` | SPA, biến `TIB_PORTAL_BASE` |
-| API portal | `staging-api.teeinblue.com/api` | Cookie session, REST và GraphQL `/api/graphql` |
-| API merchant (SDK gọi) | `staging-api.teeinblue.com/api/merchant/...` | Public, cần tham số `shop` |
-| SDK storefront | `staging-sdk.teeinblue.com` | `shopify/app-v1.js`, `app-v2.js`, `open/index.js` |
-| Customize page | `staging-sdk.teeinblue.com/customize/` | |
-| Upload | `upload-staging.teeinblue.com` | |
-| Open API | Biến `TIB_OPENAPI_BASE` | Bearer token, xem §2 |
+| Portal | `staging-portal.teeinblue.com` | `portal.teeinblue.com` |
+| API portal, REST và GraphQL `/api/graphql` | `staging-api.teeinblue.com/api` | `portal-api.teeinblue.com/api` |
+| API merchant (SDK gọi) | `staging-api.teeinblue.com/api/merchant/...` | `api.teeinblue.com` |
+| SDK storefront | `staging-sdk.teeinblue.com` | `sdk.teeinblue.com` |
+| Customize page | `staging-sdk.teeinblue.com/customize/` | `customize.teeinblue.com` |
+| Upload | `upload-staging.teeinblue.com` | `photo-api.teeinblue.com` |
+| CDN design order | `cdn.ownego.com/teeinblue-staging/designs/` | `cdn.teeinblue.com/designs/` |
+| Open API | `TIB_OPENAPI_BASE` | |
 
-**Nhận biết production để dừng lại:** `portal.teeinblue.com`, `api.teeinblue.com`, `portal-api.teeinblue.com`, `sdk.teeinblue.com`, `customize.teeinblue.com`, `photo-api.teeinblue.com`. Trên storefront, xem script SDK: `staging-sdk` là staging. `[QA]`
+Chép `_env.example` thành `.env` rồi điền giá trị do operator cấp. Tạo token bằng `POST /api/tokens` với `name` và `abilities`, giá trị chỉ hiện lúc tạo. Ability: `orders:read`, `orders:write`, `customizations:read`, `campaigns:read`, `products:read`, `mcp:access`.
 
-Trang chính của portal `[QA]`:
+**Login, làm lại sau mỗi lần session hết hạn:**
+
+1. Mở `/login?staff=true`. Route `/login` là đường Shopify owner, không dùng.
+2. Ghi đè cả email lẫn password. Form có thể autofill email của account khác.
+3. `GET /api/user` và sidebar phải khớp account của biến đang dùng. Sai thì dừng, không tạo data.
+
+**Session:** cookie Laravel Sanctum, TTL khoảng 15 phút. storageState hết hạn thì tạo lại. Gọi API trong page: `fetch()` với `credentials: 'include'` và header `X-XSRF-TOKEN`. Ngoài browser: `GET /sanctum/csrf-cookie` với Origin/Referer của portal, rồi `POST /api/login`. Thiếu User-Agent thì 403. Cloudflare Turnstile hiện challenge thì nhờ người login tay. `/login/two-factor` hiện lại thì nhờ người nhập mã.
+
+**Instance active lưu phía server theo account**, phiên khác có thể đổi giữa chừng. Kiểm sidebar trước khi tạo data.
+
+## B2. Dựng test data
+
+| Mã | Fixture | Cách dựng | Lưu ý |
+|---|---|---|---|
+| F0 | Session | Login theo B1 | Bắt buộc cho mọi fixture |
+| F1 | Product base | `/products/new`, thêm print area, variant, mockup | Có thể duplicate thay vì tạo mới |
+| F2 | Artwork | `/artworks`, thêm layer cần test, Save từng chặng | `Save & Close` chỉ tạo artwork, chưa gắn vào print area |
+| F3 | Campaign by Product Base | `/campaigns/new`, add F1, gắn F2 vào print area | |
+| F4 | Campaign by Shopify | `/platform-products/new`, chọn Shopify product, connect variant | Product phải bật Online Store |
+| F5 | Storefront | Publish F3 hoặc F4, mở store bằng biến ở A3 | Dùng context sạch |
+| F6 | Order | Add to cart từ F5 rồi checkout | Bogus gateway, hiển thị "Credit card": thẻ `1` thành công, `2` fail, `3` exception |
+| F7 | Asset | Category, item, font, ảnh trong trang Assets | Tạo layer-image dồn dập có thể bị 429 |
+| F8 | Global Option | `/global-options/create` | Bật Show in cart nếu cần thấy ở cart |
+| F9 | Hai tenant | `TIB_USER_A_*`, `TIB_USER_B_*` | |
+
+## B3. Route và API
 
 | Menu | Route |
 |---|---|
-| Campaigns by Product Base | `/campaigns` |
-| Campaigns by Shopify Products | `/platform-products` |
-| Product Base | `/products` |
-| Artworks | `/artworks` |
+| Campaigns | `/campaigns`, `/platform-products` |
+| Product Base, Artworks | `/products`, `/artworks` |
 | Assets | `/cliparts`, `/vectors`, `/fonts`, `/global-options` |
-| Extras > Dynamic Translations | `/artwork-translations` |
+| Dynamic Translations | `/artwork-translations` |
 | Store Settings | `/general-settings`, `/product-page-settings`, `/product-page-content` |
 | Trash, Activity logs | `/trash`, `/activity-logs` |
 
 `/settings` trả 404. Sau login portal luôn về `/`, phải tự mở lại trang đích.
 
-**Không có:** agent không có DB access. Khi expected nằm ở bảng nội bộ, người có quyền chạy query read-only do agent soạn. Job theo lịch thì nhờ Dev chạy command trên staging, không chờ tới giờ chạy. `[QA]`
-
-## 2. Auth và xác minh account
-
-**Biến env.** Chỉ ghi tên, giá trị do operator cấp trong `.env` không commit.
-
-| Nhóm | Biến | Dùng cho |
-|---|---|---|
-| Account chính | `TIB_STAGING_EMAIL`, `TIB_STAGING_PASSWORD` | Login portal |
-| Host | `TIB_STAGING_PORTAL`, `TIB_API_BASE`, `TIB_OPENAPI_BASE` | Portal, API, Open API. Một số bộ env đặt portal là `TIB_PORTAL_BASE` |
-| Storefront | `TIB_STORE_URL`, `TIB_STORE_PASSWORD` | Storefront SDK v1 |
-| Storefront v2 | `TIB_SDK_V2`, `TIB_SDK_V2_PASSWORD` | Storefront SDK v2 |
-| Public | `TIB_STAGING_PUBLIC_USER`, `TIB_STAGING_PUBLIC_INSTANCE_ID` | `[?]` chưa rõ mục đích |
-| Hai tenant | `TIB_USER_A_*`, `TIB_USER_B_*` | Permission, cross-tenant |
-| Account đặc thù | `TIB_BOUNDLESS_*`, `TIB_ONBOARDING_*`, `TIB_STAFF_VIEW_ONLY*`, `TIB_STAFF_GEN_ONLY*` | Boundless, store chưa connect fulfillment, staff quyền hạn chế |
-| Token Open API | `TIB_FULL_ACCESS_TOKEN`, `TIB_ORDERS_*_TOKEN`, `TIB_CUSTOMIZATIONS_READ_TOKEN`, `TIB_ASSETS_*_TOKEN`, `TIB_USER_B_*_TOKEN` | Theo ability |
-| Token negative | `TIB_FORBIDDEN_TOKEN`, `TIB_INVALID_TOKEN`, `TIB_REVOKED_TOKEN`, `TIB_ASSETS_REVOKED_TOKEN` | Negative auth |
-| Điều kiện đặc biệt | `TIB_NO_MAPBOX_KEY_TOKEN` | Account không có Mapbox |
-
-Tạo token bằng `POST /api/tokens` với `name` và `abilities`. Giá trị chỉ hiện lúc tạo. Ability: `orders:read`, `orders:write`, `customizations:read`, `campaigns:read`, `products:read`, `mcp:access`. `[QA]`
-
-**Login, làm lại sau mỗi lần session hết hạn:**
-
-1. Mở `/login?staff=true`. Route `/login` là đường Shopify owner, không dùng.
-2. Ghi đè cả email lẫn password. Form có thể autofill email của account khác; chỉ điền password là vào nhầm.
-3. `GET /api/user` và sidebar phải khớp account của biến đang dùng. Sai thì dừng, không tạo data.
-
-**Session:** cookie Laravel Sanctum, không còn JWT trong `localStorage`, TTL khoảng 15 phút, login lại thay vì dùng lại storageState cũ. Gọi API ngoài UI: chạy `fetch()` trong page với `credentials: 'include'` và header `X-XSRF-TOKEN`. Ngoài browser: `GET /sanctum/csrf-cookie` với Origin/Referer của portal, rồi `POST /api/login`. Thiếu User-Agent thì 403. Trang login có Cloudflare Turnstile; hiện challenge thì dừng và nhờ người login tay. 2FA tắt từ 2026-10-28; `/login/two-factor` hiện lại thì nhờ người nhập mã. `[QA]`
-
-**Instance active lưu phía server theo account**, dùng chung giữa các phiên, có thể bị phiên khác đổi giữa chừng. Kiểm lại sidebar trước khi tạo data. `[QA]`
-
-## 3. Object map
-
-Danh sách object hợp lệ và alias: `_registry.json`.
-
-| `object_key` | Surface chính | Phạm vi |
-|---|---|---|
-| `campaign` | portal | Tạo, duyệt, xoá campaign, đồng bộ media Shopify. Phía storefront thuộc `sdk` |
-| `product-base` | portal | Duyệt, tạo, print area, variant, mockup, vòng đời, liên kết campaign |
-| `artwork` | portal + storefront preview | Editor, layer, config, điều kiện, populate, render |
-| `asset-category` | portal | 6 loại category: Clipart, Vector, Color, Additional Option, Map Style, Font Category |
-| `font` | portal | `/fonts`, khác font category |
-| `image-library` | portal | Thư viện ảnh của Image layer và Mockup layer, không có trang riêng |
-| `global-option` | portal | Option dùng chung nhiều campaign |
-| `translation` | portal + storefront | Dynamic Translations, Product Page Content, chọn ngôn ngữ |
-| `order` | storefront + portal | Đặt order, review, fulfillment |
-| `sdk` | storefront | Runtime personalization của buyer, Product Page Settings, open platform |
-
-## 4. Vocabulary
-
-| Thuật ngữ | Nghĩa |
+| Mục đích | Request |
 |---|---|
-| Instance | Một store gắn với account trên teeinblue |
-| Campaign | Sản phẩm bán ra: product base + artwork + cấu hình personalization |
-| Product base | Phôi sản phẩm với variant, print area, mockup |
-| Artwork | Thiết kế nhiều layer có thể cá nhân hoá. Có schema 1.0 và 2.0 |
-| Personalization option | Input buyer điền trên storefront, map vào layer |
-| Global Option | Option định nghĩa một lần, gắn vào nhiều artwork |
-| Populate values | Tự điền giá trị layer từ layer khác |
-| Conditional setting | Điều kiện hiện hoặc ẩn layer |
-| Live preview | Ảnh xem trước cập nhật theo input của buyer |
-| SDK | Runtime personalization trên storefront, không phải software package |
-| Customization | Bộ giá trị buyer đã điền, lưu khi add to cart |
-| Line item properties | Dữ liệu personalization đi kèm item trong cart |
-| Boundless / open platform | Kênh không phải Shopify, nhúng SDK qua iframe |
-
-## 5. Mutation guard
-
-- **Production chỉ đọc**, trừ khi operator giao đúng việc đó.
-- Data tự tạo có tiền tố `QA-`, dọn sau khi test. Chỉ xoá data mình tạo, không sửa data có sẵn của người khác.
-- Order chỉ đặt bằng thanh toán test.
-- Config dùng chung của store hoặc account: ghi lại giá trị trước khi đổi, trả về sau khi test.
-- Evidence phải che token: `GET /api/instances/<id>` và một số response trả kèm `token`, API key. `[QA]`
-
-## 6. Network / API hints
-
-| Mục đích | Request `[QA]` |
-|---|---|
-| User hiện tại | `GET /api/user` |
-| Danh sách instance | `GET /api/instances` |
+| User hiện tại, instance | `GET /api/user`, `GET /api/instances` |
 | GraphQL portal | `POST /api/graphql`, id kiểu `bigint` |
 | Đọc artwork | GraphQL `artworks_by_pk`. `GET /api/artworks/<id>` trả 405 |
 | Config campaign công khai | `GET /api/merchant/campaigns/<shopifyProductId>.json?shop=<shop>` |
@@ -151,206 +174,50 @@ Danh sách object hợp lệ và alias: `_registry.json`.
 | Đọc customization | `GET /api/merchant/shopify/customization/<uuid>?shop=<shop>` |
 | Shopify product id | Storefront `/products/<handle>.js` |
 
-Gọi thẳng `staging-graphql.teeinblue.com` trả "Invalid response from authorization hook". Request analytics và chat widget là nhiễu. Endpoint lặp theo chu kỳ khi không có action là polling.
+Gọi thẳng `staging-graphql.teeinblue.com` trả "Invalid response from authorization hook". Request analytics và chat widget là nhiễu.
 
-## 7. Gotchas
+## B4. Giới hạn tool
 
-Áp dụng cho nhiều feature. `[QA]`
+| Tool | Giới hạn | Cách xử lý |
+|---|---|---|
+| Staging MCP, tạo Global Option | Không có `show_in_cart`; type `text` có lúc lỗi `top/left/width required` | Tạo bằng Portal hoặc `POST /api/global-options` |
+| Staging MCP, tạo GO và layer | Không áp `default_layer_value` của user | Expected là payload truyền vào. Case phụ thuộc default thì tạo bằng Portal |
+| Staging MCP, condition | `dependency.dependencies[].value` phải đúng kiểu id, sai kiểu vẫn nhận nhưng storefront không match | Lấy id từ `clipart_categories[].options[].id` của campaign JSON |
+| Shopify MCP | Không tạo collection, không publish Online Store; `get-orders` chỉ trả order cũ nhất | Làm qua Shopify admin |
+| Playwright headless | Timing mạng sai | Chạy headed |
 
-| Dấu hiệu | Cách hiểu |
+## B5. Thao tác UI
+
+| Dấu hiệu | Cách xử lý |
 |---|---|
-| Sau `Save` không có lỗi console | Đọc toast: đây là cách duy nhất biết validate fail ở artwork editor |
-| Mất layer chưa lưu | Session hết hạn im lặng. Save sớm, save từng chặng |
-| Đã sửa mà storefront vẫn cũ | `app-v1.js` không có hash, cache rất lâu. So bundle trang đang chạy với `fetch(url, {cache:'no-store'})`, lệch thì bust rồi reload |
+| Đã sửa mà storefront vẫn cũ | `app-v1.js` không có hash, cache rất lâu. So bundle trang đang chạy với `fetch(url, {cache:'no-store'})` |
 | Field storefront có sẵn giá trị cũ, gõ bị nối | SDK khôi phục từ localStorage. Dùng context sạch |
-| Toggle mặc định khác mong đợi | Mặc định theo config shop (`default_value`). Đọc config trước khi báo bug |
-| `ERR_FAILED` kèm lỗi CORS khi body có `<script` hoặc `onload=` | WAF chặn. Không suy ra app an toàn |
-| Ngưỡng rate limit khác ticket | Staging cố ý đặt nhỏ hơn. Tin header `x-ratelimit-limit` |
 | Storefront 404 dù campaign by Shopify đã publish | Shopify product chưa bật Online Store |
-| Trang "Verify you are human" trên storefront | Bot protection của Shopify sau nhiều request. Nghỉ vài phút, dùng browser đã vào được |
-| Upload qua Playwright lọt `accept` | Tool bypass, merchant thật bị chặn ở FE. Không log bug |
 | Theme editor, checkout editor không có data teeinblue | Chỉ là placeholder. Verify bằng storefront thật |
+| Dialog Confirm password không hiện | Có hiệu lực 15 phút sau lần xác nhận trước |
+| Race condition chỉ thấy với `dispatchEvent` liền `blur` | Có thể là artifact của automation. Đo ngưỡng, chạy lại bằng thao tác thật |
+| Sau `Save` không có lỗi console | Đọc toast: cách duy nhất biết validate fail ở artwork editor |
+| Mất layer chưa lưu | Session hết hạn im lặng. Save từng chặng |
+| Trang "Verify you are human" trên storefront | Bot protection của Shopify. Nghỉ vài phút, dùng browser đã vào được |
 | Sidebar collapse, label có icon | Chờ `attached`, match theo `href` |
 | Click chữ của toggle không ăn | Toggle là `label.vue-js-switch` |
-| Dialog Confirm password không hiện | Có hiệu lực 15 phút sau lần xác nhận trước |
 
-**SDK v1 và v2 khác nhau ở UI, cùng hợp đồng dữ liệu** `[QA]`:
-
-| Điểm | v1 | v2 |
+| Điểm | SDK v1 | SDK v2 |
 |---|---|---|
 | Nút add to cart | `#teeAtcButton` | Nút của theme |
 | Endpoint cart | `/cart/add.js` (JSON) | `/cart/add` (FormData) |
 | Auto chọn template | Có | Không, phải chọn tay |
 
-## 8. Dựng test data
-
-Login theo §2 trước. Mỗi fixture ghi lại id.
-
-| Mã | Fixture | Cách dựng | Lưu ý |
-|---|---|---|---|
-| F0 | Session | Login theo §2 | Bắt buộc cho mọi fixture |
-| F1 | Product base | `/products/new`, thêm print area, variant, mockup | Có thể duplicate thay vì tạo mới |
-| F2 | Artwork | `/artworks`, thêm layer cần test, Save từng chặng | `Save & Close` chỉ tạo artwork, chưa gắn vào print area |
-| F3 | Campaign by Product Base | `/campaigns/new`, add F1, gắn F2 vào print area | Kiểm print area đã đổi |
-| F4 | Campaign by Shopify | `/platform-products/new`, chọn Shopify product, connect variant | Product phải bật Online Store |
-| F5 | Storefront | Publish F3 hoặc F4, mở `TIB_STORE_URL` bằng `TIB_STORE_PASSWORD` | Dùng context sạch |
-| F6 | Order | Add to cart từ F5 rồi checkout | Bogus gateway, hiển thị "Credit card": thẻ `1` thành công, `2` fail, `3` exception |
-| F7 | Asset | Category, item, font, ảnh trong trang Assets | Tên `QA-`. Tạo layer-image dồn dập có thể bị 429 |
-| F8 | Global Option | `/global-options/create` | Bật Show in cart nếu cần thấy ở cart |
-| F9 | Hai tenant | `TIB_USER_A_*`, `TIB_USER_B_*` | Thiếu biến thì check là `NOT_COVERED`, không thay account khác |
-
-**Chọn biến theo việc** `[QA]`:
-
-| Việc cần test | Dùng |
-|---|---|
-| Portal, storefront, Thank You, Order status | `TIB_STAGING_EMAIL`, `TIB_STORE_URL` |
-| App block trên Checkout page (cần Shopify Plus) | `TIB_SDK_V2` |
-| Open platform | `TIB_BOUNDLESS_*`. Dùng data sẵn có |
-| Store chưa connect fulfillment | `TIB_ONBOARDING_*`. Chỉ đọc, giữ sạch |
-| Staff quyền hạn chế | `TIB_STAFF_VIEW_ONLY*`, `TIB_STAFF_GEN_ONLY*` |
-
-## 9. Bản đồ feature
-
-Số check lấy từ checklist đã publish (`READY` / tổng). Cột Fixture trỏ về §8.
-
-### `artwork` (version 12)
-
-| Feature | Vào ở đâu | Check | Fixture |
-|---|---|---|---|
-| `artwork-list-management` | `/artworks` | 5 / 12 | F0 |
-| `artwork-save-persist` | Artwork editor, `Save`, `Save & Close` | 12 / 20 | F2 |
-| `artwork-template-management` | Editor, Template bar | 10 / 15 | F2 |
-| `clipart-category-storefront-behavior` | Storefront, form và Preview của layer clipart | 13 / 22 | F5, F7 |
-| `condition-cycle-validation` | Editor, accordion Conditional Setting, Save | 8 / 13 | F2 |
-| `conditional-setting-config` | Editor, accordion Conditional Setting | 13 / 21 | F2 |
-| `editor-layer-workspace` | Editor, `+ Layer`, canvas | 13 / 18 | F2 |
-| `group-layer-effective-visibility` | Editor 2.0, mắt của Group trong layer panel | 10 / 15 | F2 |
-| `group-layer-order-design-render` | Order detail, Item Activity logs | 6 / 16 | F6 |
-| `layer-common-config` | Editor, config panel của layer | 10 / 13 | F2 |
-| `layer-condition-value-binding` | Layer đã có condition, đọc qua PUT response hoặc GraphQL | 5 / 12 | F2 |
-| `layer-config-form-elements` | Editor, nhóm Form Elements | 8 / 9 | F2 |
-| `layer-config-image` | Editor, nhóm Image | 34 / 53 | F2, F7 |
-| `layer-config-maps-astronomy` | Editor, nhóm Maps & Astronomy | 4 / 6 | F2 |
-| `layer-config-others` | Editor, nhóm Others | 4 / 5 | F2 |
-| `layer-config-puzzles` | Editor, nhóm Puzzles | 4 / 5 | F2 |
-| `layer-config-text` | Editor, nhóm Text | 6 / 9 | F2 |
-| `layer-config-vector` | Editor, nhóm Vector | 6 / 8 | F2, F7 |
-| `layer-duplicate-link-copy` | Editor, layer action bar, Copy to clipboard | 5 / 12 | F2 |
-| `layer-print-effects` | Editor, toolbar canvas, Print Effects | 4 / 10 | F2 |
-| `populate-values` | Editor, accordion Populate Values | 17 / 25 | F2 |
-| `psd-import` | `/artworks`, Import, PSD Single template | 1 / 5 | F0 |
-| `text-color-sequence-render` | Storefront, rồi Locate Artwork của line item | 0 / 19 | F5, F6 |
-| `text-multi-stroke` | Editor 2.0, popover Stroke | 0 / 25 | F2 |
-
-### `asset-category` (version 1)
-
-| Feature | Vào ở đâu | Check | Fixture |
-|---|---|---|---|
-| `asset-category-bulk-upload` | Trang category, bulk upload zip | 7 / 10 | F7 |
-| `asset-category-crud` | `/cliparts`, `/vectors` và các trang category | 13 / 18 | F7 |
-| `asset-category-item-management` | Trang chi tiết category | 9 / 17 | F7 |
-| `asset-category-route-entity-clarification` | Các route category trong Assets | 5 / 7 | F0 |
-
-### `campaign` (version 6)
-
-| Feature | Vào ở đâu | Check | Fixture |
-|---|---|---|---|
-| `campaign-delete` | `/campaigns`, menu `...`, Delete campaign | 3 / 9 | F3 |
-| `campaign-list-browse` | `/campaigns` | 5 / 15 | F0 |
-| `campaign-navigation` | Sidebar, Campaigns | 3 / 6 | F0 |
-| `campaign-security-permissions` | Campaign của tenant khác | 3 / 9 | F3, F9 |
-| `campaign-shopify-media-sync` | Campaign editor, Update hoặc publish | 1 / 5 | F3 |
-| `create-campaign-by-product-base` | `/campaigns/new` | 21 / 38 | F1, F2 |
-| `create-campaign-by-shopify` | `/platform-products/new` | 12 / 20 | F2, F4 |
-
-### `font` (version 1)
-
-| Feature | Vào ở đâu | Check | Fixture |
-|---|---|---|---|
-| `manage-uploaded-font` | `/fonts`, action trên font card | 4 / 9 | F7 |
-| `upload-custom-font` | `/fonts`, Upload fonts | 4 / 10 | F0 |
-| `use-custom-font-in-artwork-editor` | Editor, text layer, Custom Fonts | 1 / 6 | F2, F7 |
-| `view-and-configure-font-list` | `/fonts` | 9 / 12 | F0 |
-
-### `global-option` (version 3)
-
-| Feature | Vào ở đâu | Check | Fixture |
-|---|---|---|---|
-| `artwork-personalization-global-option-link` | Editor, Personalization Settings | 15 / 28 | F2, F8 |
-| `global-option-additional-option-items` | `/global-options/<id>/edit` | 8 / 14 | F8 |
-| `global-option-instance-management` | `/global-options`, `/global-options/create` | 11 / 24 | F0 |
-
-### `order` (version 5)
-
-| Feature | Vào ở đâu | Check | Fixture |
-|---|---|---|---|
-| `place-personalized-order-storefront` | Storefront, product page đến cart | 11 / 22 | F5 |
-| `review-and-initiate-fulfillment-portal` | Portal, Orders, order detail | 14 / 26 | F6 |
-
-### `product-base` (version 6)
-
-| Feature | Vào ở đâu | Check | Fixture |
-|---|---|---|---|
-| `mockup-attachment` | `/products/{id}/edit`, section Mockup | 9 / 17 | F1 |
-| `printarea-definition` | `/products/{id}/edit`, section Printareas | 15 / 16 | F1 |
-| `product-base-browse` | `/products`, `?tab=archived` | 14 / 16 | F0 |
-| `product-base-campaign-link` | `/products`, icon Update campaign | 12 / 17 | F3 |
-| `product-base-create` | `/products/new` | 13 / 14 | F0 |
-| `product-base-identity` | `/products/{id}/edit` | 9 / 9 | F1 |
-| `product-base-lifecycle` | `/products`, menu `...` | 10 / 10 | F1 |
-| `variant-add-to-campaigns` | Product base, bảng Variants, Add to campaigns | 10 / 23 | F3 |
-| `variant-catalog` | `/products/{id}/edit`, section Variants | 13 / 16 | F1 |
-
-### `sdk` (version 13)
-
-| Feature | Vào ở đâu | Check | Fixture |
-|---|---|---|---|
-| `genai-personalization-runtime` | Editor, Live Preview | 10 / 23 | F2 |
-| `open-platform-customization-callback` | SDK open platform trong iframe | 1 / 5 | `TIB_BOUNDLESS_*` |
-| `product-page-settings-config` | `/product-page-settings` | 15 / 25 | F0 |
-| `storefront-buyer-facing` | Storefront, product page của campaign | 46 / 100 | F5 |
-
-### `translation` (version 2)
-
-| Feature | Vào ở đâu | Check | Fixture |
-|---|---|---|---|
-| `dynamic-translations` | `/artwork-translations`, storefront theo locale | 10 / 26 | F3, F5 |
-| `language-locale-switcher` | Portal và header storefront | 5 / 9 | F5 |
-| `product-page-content-translation` | `/product-page-content`, storefront | 9 / 13 | F5 |
-
-### `image-library` (version 1)
-
-| Feature | Vào ở đâu | Check | Fixture |
-|---|---|---|---|
-| `image-layer-library` | Editor, `+ Layer`, Image, hoặc Replace image layer | 0 / 43 | F2, F7 |
-| `mockup-layer-library` | `/products/<id>/edit`, section Mockup | 0 / 30 | F1, F7 |
-
-## 10. Quy trình kiểm thử
-
-Làm theo thứ tự với một feature hoặc một ticket:
-
-1. **Chọn feature:** map từ khoá sang `object_key` qua `_registry.json`. Đọc `manifest.json` ở gốc repo để biết object có `PUBLISHED`, version nào. Quy tắc đầy đủ: `how-to-request/consumer-guide.md` §2–§4.
-2. **Đọc knowledge:** `<object>/feature-summary.md` → `features/<feature>/profile.json` → `checklists/<feature>.json` → `open-questions.md` lọc theo feature. Trong profile, xem `entry_points[].precondition` để biết config riêng của feature, và `environment_differences` nếu có.
-3. **Dựng data:** theo cột Fixture ở §9, sau khi login theo §2.
-4. **Chạy từng check:** `precondition` → `steps` → xem `observation_point` → so `expected_result`.
-5. **Ghi evidence:** tên biến account (không ghi email), id data, thời điểm, screenshot hoặc response đã che token. Re-test SDK thì ghi thêm bundle đã bust hay chưa.
-6. **Dọn data** theo §5.
-
-**Kết luận mỗi check:**
+## B6. Kết luận check
 
 | Tình huống | Kết luận |
 |---|---|
 | `status: READY`, khớp `expected_result` | `PASS` |
-| `status: READY`, oracle `STRONG`, lệch | `FAIL`. Trước đó loại trừ §7: cache, config shop, môi trường |
-| `status: READY`, oracle `BASELINE`, lệch | `SUSPECTED_FAIL`: baseline chỉ là hành vi đã thấy, ghi evidence rồi đối chiếu PO/Dev |
-| `status: NEEDS_CONFIRMATION`, oracle `NONE`, hoặc item `UNRESOLVED` | Chỉ ghi `OBSERVED: <hành vi thật>`, không kết luận |
+| `status: READY`, oracle `STRONG`, lệch | `FAIL`, sau khi loại trừ A5 và B5 |
+| `status: READY`, oracle `BASELINE`, lệch | `SUSPECTED_FAIL`, đối chiếu PO/Dev |
+| `status: NEEDS_CONFIRMATION`, oracle `NONE`, hoặc item `UNRESOLVED` | Chỉ ghi `OBSERVED: <hành vi thật>` |
 | `environment_differences` có `NOT_TESTABLE` | `NOT_APPLICABLE` trên môi trường đó |
 | Không quan sát được, thiếu quyền, thiếu data | `NOT_COVERED` hoặc `BLOCKED`, nêu rõ thiếu gì |
 
-**Trước khi báo bug:** race condition thì đo ngưỡng trigger và chạy lại bằng thao tác thật, vì `dispatchEvent` liền `blur` có thể chỉ là artifact của automation. Sai giá trị mặc định thì đọc config shop trước. `[QA]`
-
-**Sau khi test:**
-
-- Hành vi thật khác knowledge, hoặc đã xác nhận một Open Question → gửi CCR bằng skill `create-ccr` (`consumer-guide.md` §5).
-- Bug thật → báo theo quy trình của team trên Testlane. Không tự tạo hay comment Jira, không nhắn kênh ngoài khi operator chưa đồng ý.
-- Guide sai hoặc gặp `[?]` đã có đáp án → báo operator để cập nhật mục đó.
+Hành vi thật khác knowledge, hoặc đã xác nhận một Open Question: gửi CCR (`how-to-request/consumer-guide.md` §5). Bug thật: báo trên Testlane theo quy trình của team.
+<!-- PART-B:end -->
