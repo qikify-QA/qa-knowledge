@@ -1,7 +1,9 @@
 # Object: Artwork (product: teeinblue) — Feature Profile Summary
+**Published context version:** 12
 
-- **19 features**, all `OBSERVED_CURRENT` (0 `CONFIRMED_EXPECTED` — no capability in this object has authority confirmation per contract §2 rule 1, even where a linked Jira ticket is Resolution: Done).
-- **12 conflicts, all UNRESOLVED** — see `open-questions.md` (type `CONFLICT`) for both sides of each; `kb.json`/feature `kb.json` items carry a matching `conflict_group` + `status: UNRESOLVED`.
+
+- **24 features.** Đa số item là `OBSERVED_CURRENT`. Item `CONFIRMED_EXPECTED` của object đến từ CBS-006 (TIB-5584, effective visibility của layer Group): nguồn là test case Testlane PASS hoặc QA plan của dev, chỉ trên staging 2026-10-16 — TIB-5584 chưa xác nhận đã ship production, chưa chạy lại sau khi đủ PR merge (OQ-artwork-144). CBS-011 (TIB-5558, action Hide trong Conditional Setting) thêm KB-221, KB-222, KB-224, KB-227 (đang conflict), KB-228, KB-229 là `CONFIRMED_EXPECTED`/MEDIUM theo test case Testlane PASS trên staging 2026-10-28, chạy trước khi 6 PR của TIB-5558 merge; TIB-5558 chưa xác nhận đã ship production.
+- **13 conflicts, all UNRESOLVED** (mới nhất: `CONF-artwork-dependency-action-01`, shape `dependency` có key `action`, CBS-011) — see `open-questions.md` (type `CONFLICT`) for both sides of each; `kb.json`/feature `kb.json` items carry a matching `conflict_group` + `status: UNRESOLVED`.
 - **1 CRITICAL finding** — canvas/Preview modal/cart customization image never composites a selected Clipart Category item (KB-112, feature `clipart-category-storefront-behavior`); not concluded as a confirmed product defect vs. a test-fixture artifact — see that feature's Risks section.
 - **1 cross-object dispute** — Text to Image (AI) personalization option count (2 vs 3 choices, `CONF-CBS003-01`, feature `layer-config-image`) is cross-referenced with object `global-option`; a checklist item for this area (`layer-config-image` checklist) is currently `automation_suitability: SUITABLE` while the underlying fact is disputed — worth auditing before trusting that check's PASS/FAIL signal.
 - **Actors observed across this object's history:** store owner/staff (account "Linh explorer", plan "Blue (Test)"), buyer (guest, storefront), and a staff-authenticated Live Preview proxy used to approximate buyer-facing runtime for GenAI layer types (not a true guest session).
@@ -27,6 +29,10 @@
 - Publish/sync artwork vào campaign: 0 evidence
 - Role khác owner / cross-tenant: chưa test
 
+**Cập nhật CBS-011 (TIB-5558, action Hide):**
+- Duplicate artwork có layer đặt Conditional Setting: bản copy giữ action của layer (editor của bản copy hiển thị Hide/Show như artwork gốc); campaign dùng bản copy của artwork Hide ẩn/hiện đúng chiều trên storefront (KB-229, CONFIRMED_EXPECTED/MEDIUM, nguồn: test case Testlane PASS trên staging 2026-10-28, chạy trước khi 6 PR của TIB-5558 merge (2026-10-29); production chưa xác nhận). KB-229 không khẳng định giá trị `action` đọc qua API (shape đang conflict, OQ-artwork-152); chưa chạy lại sau merge (OQ-artwork-161).
+- Bản copy có map `element` sang layer của chính bản copy hay không chưa được ghi tường minh (OQ-artwork-160).
+
 **Gate:** CONDITIONAL_PASS (đủ phát hiện regression trên 4 action + 3 menu item đã quan sát; KHÔNG đủ oracle cho effect sau Import to Translation/Mark as archive; không mở rộng sang tạo mới/import/publish)
 
 ---
@@ -34,6 +40,7 @@
 ## FEAT-02 — Artwork Template Management
 **Goal:** Tạo/nhân bản/sửa/ẩn/convert các phiên bản template (biến thể layout) trong cùng 1 artwork, qua Template bar.
 **Entry points:** artwork editor > Template bar (panel trái)
+**Cập nhật CBS-006 (TIB-5584, staging 2026-10-16):** linked template có cờ visible null kế thừa trạng thái ẩn/hiện từ global template, cả Group lẫn layer thường (KB-176); bật lại Group đang ẩn do kế thừa ở linked template thì cờ ở linked thành true, global giữ nguyên (KB-177). Cả hai `CONFIRMED_EXPECTED`/MEDIUM. Chưa rõ linked có cờ cụ thể thì có đổi theo global không (OQ-artwork-149). Checklist CHK-013..CHK-015.
 
 **Capabilities:**
 1. Điều hướng + danh sách template hiện có
@@ -59,6 +66,7 @@
 ## FEAT-03 — Editor Layer Workspace
 **Goal:** Thêm layer mới vào artwork và thao tác chọn/toolbar dùng chung trong canvas, độc lập với cấu hình chi tiết từng layer type.
 **Entry points:** nút "+ Layer" · canvas — click chọn layer
+**Cập nhật CBS-006 (TIB-5584, staging 2026-10-16):** chọn Group đang ẩn không có box drag/resize/rotate, không có thao tác transform, Align không đổi vị trí (KB-169); chọn layer con của Group ẩn không mở quick editor (KB-171, theo dev); kéo Group hiện có con tự ẩn thì mọi con di chuyển cùng (KB-172, theo dev); artwork không có Group render như trước (KB-173). **Quan sát chưa chốt (KB-170):** quick toolbar của Group ẩn chỉ còn mục Align (6 nút không disable, bấm không tác dụng), không có Transform, Print Effects, Mask — expected cho Align chưa chốt (OQ-artwork-145), Mask ẩn hay disable chưa chốt (KB-167, OQ-artwork-138). Checklist CHK-013..CHK-018; OQ-artwork-145..146.
 
 **Capabilities:**
 1. Popup "Select a layer type": 29 item / 7 nhóm (TEXT/IMAGE/VECTOR/MAPS & ASTRONOMY/PUZZLES/OTHERS/FORM ELEMENTS); 6 item có submenu → tổng 35 layer type khả dụng
@@ -82,6 +90,7 @@
 ## FEAT-04 — Layer Common Config (mechanism/boundary dùng chung, cross-cutting)
 **Goal:** Mô tả RANH GIỚI/mechanism dùng chung cho mọi/hầu hết 35 layer type (icon button trên layer row, accordion nào TỒN TẠI theo type, field boundary Custom class/Group name) — KHÔNG mô tả nội dung field cụ thể (xem FEAT-12..FEAT-18).
 **Entry points:** config panel của 1 layer đã tồn tại
+**Cập nhật CBS-006 (TIB-5584, staging 2026-10-16):** lock và display setting của Group cascade xuống layer con, editor ghi layer_display cho cả Group và từng con (KB-174, `CONFIRMED_EXPECTED`/MEDIUM). **Quan sát chưa chốt:** layer_display chỉ đặt ở Group (con null, dữ liệu qua JSON/API) thì storefront không cascade (KB-175, OQ-artwork-147). Print file của Group "Design only" chưa kiểm (OQ-artwork-148). Checklist CHK-010..CHK-013.
 
 **Capabilities (baseline N/35):**
 1. Icon buttons layer row: 5 icon chuẩn (eye/unlock/pen/copy/trash) ở 34/35 type — trừ Toggle Switch (FEAT-18, có thêm icon thứ 6)
@@ -120,6 +129,10 @@
 - Shape JSON của layer linked trong PUT request (field source_layer_id?) — chưa đối chiếu với KB-053/KB-055
 - Storefront rendering layer linked — 0 evidence
 
+**Cập nhật CBS-011 (TIB-5558, action Hide):**
+- Tài liệu dev (chưa test, OBSERVED_CURRENT/LOW) nói action Hide được giữ qua import artwork, copy/paste layer và global template replica (KB-230, OQ-artwork-156); chỉ Duplicate artwork đã có test case (xem FEAT-01).
+- 'Duplicate & Link options' trên layer Hide chưa có evidence (OQ-artwork-157).
+
 **Gate:** CONDITIONAL_PASS (CONF-003 phải giữ nguyên; checklist KHÔNG được dùng icon chain làm oracle phân biệt linked/plain)
 
 ---
@@ -138,6 +151,8 @@
 - "Order Design" (nơi effect thực sự hiển thị làm production guide) — chưa khám phá
 - Print Effects lưu vào field nào trong PUT body (layer object) — chưa đối chiếu KB-053/KB-055
 - Hành vi runtime storefront/production file — 0 evidence
+
+**Cập nhật CBS-015 (TIB-5633):** Group 3 layer có photo_border contour cut — viền trắng cắt theo hình từng layer, đúng vị trí trên order design (KB-391, `OBSERVED_CURRENT`/LOW, staging 2026-10-29). Chưa rõ có cùng đường xử lý với preset shape-cut (OQ-artwork-174); Group shape-cut ~250 layer và emboss với Group chưa kiểm (OQ-artwork-175); cần chạy lại sau merge/production (OQ-artwork-176). CHK-008..CHK-010 là NEEDS_CONFIRMATION. CONF-004 giữ nguyên.
 
 **Gate:** CONDITIONAL_PASS (CONF-004 phải giữ nguyên; checklist KHÔNG được khẳng định "không có emboss" như fact đã xác nhận, chỉ ghi "chưa tìm thấy trên account/plan đã test")
 
@@ -165,6 +180,8 @@
 - required/optional/enum chính thức cho phần lớn field request/response PUT — observed_count=1, LOW
 - Role khác owner/cross-tenant, storefront rendering từ templates jsonb, DB Postgres schema thật — chưa kiểm tra trực tiếp (db-explorer không chạy)
 
+- **KB-145 (CBS-007, 1 lần quan sát, staging):** trên một bản copy Artwork 1.0, `PUT /api/artworks/{id}` trả 500 kể cả khi không sửa gì nên không Save được; chưa rõ nguyên nhân và chưa rõ artwork 1.0 khác có Save được không (OQ-artwork-114..116, CHK-018..CHK-020).
+
 **Gate:** CONDITIONAL_PASS (core sequence validate→PUT confidence HIGH đủ làm baseline regression oracle; phần lớn field-level detail vẫn LOW; CONF-005/CONF-007 phải giữ nguyên cả 2 phía; không suy diễn hành vi server khi validate-default-value lỗi)
 
 ---
@@ -189,6 +206,14 @@
 - 2 layer type Dynamic Clipart by Text không có accordion này — có đường API bypass UI để set condition không?
 - Storefront render show/hide theo giá trị buyer chọn, role khác owner/cross-tenant — chưa test
 
+**Cập nhật CBS-011 (TIB-5558, action Hide):**
+- Artwork Editor 2.0: heading Conditional Setting có dropdown action đúng 2 giá trị Show/Hide, mặc định Show (cả layer mới); chọn Hide đổi heading thành 'Hide this layer and its option when:' (KB-221, CONFIRMED_EXPECTED/MEDIUM, nguồn: test case Testlane PASS trên staging 2026-10-28, chạy trước khi 6 PR của TIB-5558 merge (2026-10-29); production chưa xác nhận).
+- Một layer chỉ mang một action tại một thời điểm; đổi Show ↔ Hide giữ nguyên điều kiện, match type và trạng thái toggle first load (KB-222, CONFIRMED_EXPECTED/MEDIUM). KB-222 chỉ khẳng định PUT gửi một khối `dependency` cho layer; key `action` trong body thuộc shape đang conflict (OQ-artwork-152) — oracle tầng API cho key này chưa dùng được.
+- Artwork 1.0 không có lựa chọn Show/Hide; Convert to Artwork 2.0 cho layer có điều kiện hiện dropdown ở giá trị Show, giữ điều kiện và match type (KB-224, CONFIRMED_EXPECTED/MEDIUM, chỉ phần portal). Storefront của layer sau Convert và của layer cũ không có key `action` mới chỉ quan sát trên SDK bản 2026-10-14 chưa có code Hide — chưa xác minh, không dùng làm oracle (OQ-artwork-161).
+- Các hành vi portal ở trên (KB-221, KB-222, KB-224) chưa chạy lại trên build sau khi 6 PR merge và trên production (OQ-artwork-161).
+- Chỉ là quan sát/tài liệu, chưa xác nhận (OBSERVED_CURRENT/LOW, không dùng làm oracle): tooltip match type và nhãn toggle khi chọn Hide (KB-223, OQ-artwork-153); Bulk apply có dropdown Show/Hide (KB-225, OQ-artwork-154); Conditional Setting không đặt được ở cấp Group trên UI, trái expected của test case, BUG-436 (KB-226, OQ-artwork-155).
+- Hành vi Hide phía buyer nằm ở object `sdk` (`storefront-buyer-facing`, KB-231..KB-237).
+
 **Gate:** CONDITIONAL_PASS (CONF-001 phải giữ nguyên khi dùng KB-066 làm oracle; KHÔNG khẳng định 8 nguồn/toán tử quan sát được là toàn bộ tập hệ thống hỗ trợ)
 
 ---
@@ -212,6 +237,9 @@
 - Self-loop qua API trực tiếp (bypass UI) — chưa thử
 - Storefront khi 1 artwork (giả sử) có vòng lọt qua validation — 0 evidence, và bản thân trường hợp này chưa xác nhận có thể xảy ra
 
+**Cập nhật CBS-011 (TIB-5558, action Hide):**
+- Hai layer action Hide phụ thuộc vòng vào nhau: Save & Close bị chặn, editor không đóng, hiện thông báo 'Circular conditions between: …' giống hệt trường hợp Show (KB-228, CONFIRMED_EXPECTED/MEDIUM, chỉ tầng UI/client). Dòng 'Conditions haven't been finished' đi kèm có thể do fixture (OQ-artwork-159). BLK-API-002 không đổi.
+
 **Gate:** CONDITIONAL_PASS — BLK-API-002 PHẢI ở nguyên trong unknown_areas/risks; feature này CHỈ được mô tả ở tầng UI/client cho tới khi có direct-API test được orchestrator duyệt tường minh; KHÔNG mở rộng phạm vi thành "server-side protection đã xác nhận"
 
 ---
@@ -234,6 +262,10 @@
 - Shape multi-value (≥2 giá trị) cho 6/8 type nguồn dạng array còn lại — chưa test
 - `element` có luôn là layer id trong MỌI trường hợp hay chỉ đúng với 8 type đã test — INFERRED, chưa CONFIRMED
 - DB Postgres thật, storefront rendering theo giá trị buyer thật — chưa kiểm tra trực tiếp / 0 evidence
+
+**Cập nhật CBS-011 (TIB-5558, action Hide):**
+- ⚠️ **CONF-artwork-dependency-action-01 (UNRESOLVED):** KB-067 (capability 1 ở trên, shape `{match_type, show_by_default, dependencies}`) và KB-227 (test case PASS 2026-10-28: PUT gửi thêm key `action` 'hide'/'show'; bản ghi cũ không có `action` được hiểu là Show) mâu thuẫn. Supersede không bật cho product này nên cả hai giữ UNRESOLVED chờ PO chốt (OQ-artwork-152); không bên nào được dùng làm oracle — check base CHK-001 đã chuyển NEEDS_CONFIRMATION.
+- Nghĩa của `show_by_default` khi action là hide và các giá trị `action` API chấp nhận chưa rõ (OQ-artwork-158).
 
 **Gate:** CONDITIONAL_PASS (CONF-002 phải giữ nguyên cả 2 phía; KB-068/036/037 LOW/INFERRED KHÔNG được nâng thành required/enum/CONFIRMED chính thức)
 
@@ -292,6 +324,8 @@
 **Gate:** CONDITIONAL_PASS (mọi per-type item observed_count=1 → LOW, không suy required/optional/enum; field JSON qua bundle-registry INFERRED, chưa coi là contract chính thức)
 
 ---
+
+- **KB-157 (CBS-008, 1 lần quan sát, staging):** layer Curve Text không có tuỳ chọn căn lề text; layer lưu `align: center`. Chưa rõ là thiết kế hay thiếu, và nút 'Align' trên toolbar (KB-042) căn layer hay căn text (OQ-artwork-136, OQ-artwork-137; CHK-009).
 
 ## FEAT-13 — Layer Config: nhóm IMAGE (8 layer type)
 **Goal:** Cấu hình field/behavior riêng nhóm IMAGE: Static Image, Clipart Category, Clipart Category Group, Photo Upload Single/Multiple, Text to Image (AI), Dynamic Clipart by Text Manual/Auto Placement.
@@ -460,6 +494,100 @@
 - Storefront/role khác owner-cross-tenant — chưa test
 
 **Gate:** CONDITIONAL_PASS (per-type observed_count=1 → LOW; field JSON qua bundle-registry INFERRED)
+
+---
+
+## FEAT-20 — Text Multi-Stroke (Paragraph stack stroke, TIB-5580)
+**Goal:** Store owner/staff tạo và lưu nhiều lớp stroke (stack) cho Paragraph new-schema (Artwork 2.0) trong Artwork Editor, và nhận PNG order design khớp preview editor.
+**Entry points:** Artwork Editor 2.0 → layer Paragraph → popover Stroke; `PUT /api/artworks/{id}` (field `stroke_layers`); storefront personalization `POST /api/merchant/shopify/customization` (buyer).
+
+**Trạng thái nguồn:** mọi item (KB-129..KB-144, KB-251) là `OBSERVED_CURRENT`/LOW từ lượt test trên staging 2026-10-21→22, chạy **trước khi 7 PR của TIB-5580 merge (2026-10-22)**; ticket đã Done nhưng **ship production chưa xác nhận** — câu "chưa ship"/"QA Review" trong statement của KB-129..KB-144 là trạng thái tại thời điểm quan sát. Không ai xác nhận đây là hành vi đúng. CBS-017 mang test case Testlane PASS khẳng định cùng hành vi của 11 item (KB-129..132, 134..137, 140, 141, 143), nhưng supersede không bật cho teeinblue nên các item **vẫn là quan sát**, chờ PO quyết (OQ-artwork-162); chạy lại sau merge/production: OQ-artwork-163. **Preview storefront SDK và SVG (vectorize) chưa kiểm** (SDK staging lúc test chưa có PR sdk #2124, SVG không tải được).
+
+**Capabilities (quan sát):**
+- Stack tối đa 3 lớp; đủ 3 row thì nút Add stroke bị disable; Save + reload, xoá lớp giữa, đổi thứ tự giữ đúng `stroke_layers` (KB-129..KB-131)
+- Paragraph mới: `stroke_color`/`stroke_width` mirror lớp trong cùng (KB-132); tắt stroke giữ `stroke_layers`, bật lại khôi phục (KB-135)
+- Với các stack đã so trong lượt test (mỏng và dày, opacity 1), PNG order design khớp preview editor (so bằng mắt); góc round; autoscale không cắt vành (KB-133, KB-134, KB-139). Một order PNG khác cho vành trắng mỏng hơn hẳn preview, chưa rõ nguyên nhân (OQ-artwork-119)
+- Convert Text ↔ Paragraph giữ stack; convert sang Curve/Warp gộp về lớp trong cùng (KB-136, KB-137); linked paragraph thừa hưởng stack (KB-138)
+- Stroke legacy được lift thành stack 1 row; Custom Shape và Paragraph Artwork 1.0 chỉ có 1 stroke (KB-140..KB-142); multi-stroke Text 1 dòng không đổi (KB-143)
+- Paragraph có shadow + nhiều lớp stroke: preview editor và PNG order design vẽ 1 khối shadow cho cả paragraph, không lặp theo dòng (KB-251, quan sát bằng mắt trên 2 order; hai test case Blocked; OQ-artwork-118)
+- Buyer gửi `stroke_layers` chèn thêm qua personalization: API trả 201 và echo payload, localStorage và PNG order không bị ảnh hưởng (KB-144, BUG-357) — server nên từ chối hay bỏ qua **chưa ai quyết** (OQ-artwork-111, cần PO)
+
+**Checklist:** CHK-001..CHK-024 và CHK-027 (shadow paragraph), tất cả NEEDS_CONFIRMATION; 17 BASELINE, 8 không có oracle (storefront SDK, SVG, PUT entry thứ 4, convert sang Spiral, server lưu hay chỉ echo payload chèn...). Không check nào STRONG.
+**Lưu ý evidence:** status Testlane của task TIB-220 đã đổi sau lượt chạy và lệch actualResult (OQ-artwork-113) — không dùng status làm bằng chứng.
+**Open questions:** OQ-artwork-100..OQ-artwork-113, OQ-artwork-117..OQ-artwork-121 (global template, shadow paragraph — nay có quan sát KB-251, opacity < 1, import PSD, chọn nhiều layer), OQ-artwork-162 (PO quyết nâng các hành vi đã có test case PASS thành expected), OQ-artwork-163 (chạy lại sau merge/production).
+
+---
+
+## FEAT-21 — Text Color Sequence Render (rainbow trên ảnh in, TIB-5606)
+**Goal:** Store owner/staff xem và nhận ảnh Locate Artwork / Order Design PNG của text Color Sequence (rainbow); hành vi ghi dưới đây là quan sát trên staging, chưa được xác nhận là hành vi đúng.
+**Entry points:** campaign editor → Locate Artwork; Orders → Order Design (PNG); preview SDK trên storefront dùng làm mốc so.
+
+**Trạng thái nguồn:** mọi item (KB-146..KB-156, KB-404, KB-406, KB-412..KB-414) là `OBSERVED_CURRENT`/LOW. KB-146..KB-156 và KB-404, KB-406 từ một lượt test trên staging 2026-10-22 (font thay thế Dancing Script / Heebo / Roboto), chạy trước khi PR teeinblue-api #4044 merge (2026-10-22 15:44); ngày ship production chưa xác nhận; không ai xác nhận đây là hành vi đúng. KB-412..KB-414 là mô tả của dev, chưa được kiểm. Các test case Testlane PASS của lượt chạy đó chưa được dùng để nâng item thành expected: chờ PO quyết (OQ-artwork-182). **Chưa kiểm:** font Carattere của case gốc, SVG/vector export, Re-generate design cho order cũ, nhánh font fallback, Curve Text căn phải, build đã merge, production (OQ-artwork-183).
+
+**Capabilities (quan sát):**
+- Căn phải/giữa/trái: Locate Artwork và Order Design PNG đủ ký tự, khớp preview SDK (KB-146, KB-147); độ rộng rainbow bằng cùng text 1 màu (KB-148); tên dài 32 ký tự autoscale: co vừa printarea, đủ ký tự, căn phải (KB-149)
+- Letter spacing ở 3 kiểu căn lề và kerning (KB-151, KB-152); font thường và text 1 màu khớp preview, chỉ có tóm tắt kết quả (KB-150)
+- Stroke 1 lớp liền ở chỗ nối chữ (KB-153); RTL giữ màu từng chữ (KB-155); Curve Text căn giữa khớp preview, không chứng minh gì cho căn phải (KB-156)
+- **Đang conflict (CONF-CBS-016-01, OQ-artwork-177):** độ rộng Order Design PNG sau autoscale so với preview SDK — kết luận của kết quả test (KB-149) và số đo của cùng lượt chạy (KB-404) không khớp nhau; cả hai UNRESOLVED, không bên nào là oracle.
+- Số đo một lượt chạy cho rainbow font Roboto và text 1 màu căn phải, lệch 1–2px so với preview SDK; dung sai chưa chốt (KB-406, OQ-artwork-178)
+- Theo mô tả dev, chưa kiểm: đoạn text dùng font fallback giữ cách đặt vị trí cũ của PNG renderer (KB-412, OQ-artwork-179); design render trước deploy phải regenerate (KB-413, OQ-artwork-180); SVG renderer không đổi (KB-414, OQ-artwork-181)
+- **Rainbow + multi-stroke 3 lớp (KB-154, BUG-363):** Order Design PNG có sợi mảnh màu chữ đè lên stroke ở mọi chỗ nối chữ, preview SDK sạch. Đây là output hiện tại, **không phải hành vi đúng**; chưa biết lỗi có từ trước bản fix hay không (OQ-artwork-126). CHK-008 là defect watch, không có oracle.
+
+**Checklist:** CHK-001..CHK-019, tất cả NEEDS_CONFIRMATION; 9 BASELINE, 10 không có oracle (CHK-004 mất oracle do conflict CONF-CBS-016-01). Không check nào STRONG.
+**Open questions:** OQ-artwork-122..OQ-artwork-135, OQ-artwork-177..OQ-artwork-183. Liên quan FEAT-20 (text-multi-stroke) và FEAT-12 (KB-157: Curve Text không có tuỳ chọn căn lề, OQ-artwork-136..137).
+
+---
+
+## FEAT-22 — Group Layer Effective Visibility (TIB-5584)
+**Goal:** Seller ẩn/hiện layer Group trong Artwork Editor 2.0 và nhận đúng kết quả render cho cả nhánh con, không mất cờ visible riêng của từng con.
+**Entry points:** Artwork Editor 2.0 → layer panel (mắt của Group/layer con), quick toolbar khi chọn Group; tab Live preview của portal; MCP render-design-preview.
+
+**Trạng thái nguồn:** KB-158..KB-160, KB-162..KB-166, KB-168 là `CONFIRMED_EXPECTED`/MEDIUM theo test case Testlane PASS trên staging (instance 520) ngày 2026-10-16; KB-161 theo QA plan của dev (test case chưa chạy); KB-167 là `OBSERVED_CURRENT`/LOW. Chỉ phủ Artwork 2.0; production và build sau khi đủ PR merge chưa xác nhận. Fixture "Group ẩn + con visible ON" dựng qua MCP/API, chưa được xác nhận là dữ liệu hợp lệ (OQ-artwork-140).
+
+**Capabilities:**
+- Effective visibility: layer chỉ render khi cờ của chính nó và mọi Group tổ tiên đều ON (KB-158); ẩn/hiện Group không ghi đè cờ con, Save + reload giữ cờ (KB-159); toggle con khi Group ON chỉ đổi đúng con đó (KB-160)
+- Ẩn hết con thì Group vẫn ON (KB-161, theo dev); Group rỗng (KB-164); Undo/Redo khôi phục cờ con (KB-165)
+- Layer panel khi Group ẩn: con dimmed, mắt con ON màu amber, vẫn click được (KB-162); Group có mask ẩn thì không vẽ con nào (KB-163)
+- Thiếu key visible = visible ở canvas editor và Live preview portal (KB-166, renderer server chưa đối chiếu); MCP render-design-preview theo effective visibility (KB-168)
+- **Quan sát chưa chốt expected:** Mask/Edit mask biến mất khỏi quick toolbar thay vì disable (KB-167, OQ-artwork-138)
+
+**Checklist:** CHK-001..CHK-015; 5 NEEDS_CONFIRMATION (CHK-010, 011, 013, 014, 015).
+**Open questions:** OQ-artwork-138..OQ-artwork-144. Liên quan FEAT-03 (quick toolbar, KB-169..KB-173), FEAT-04 (display setting cascade, KB-174..KB-175), FEAT-02 (linked template, KB-176..KB-177), object `sdk` (buyer preview/form), `order` (print file), `campaign` (preview mockup), `product-base` (Mockup Editor).
+
+---
+
+## FEAT-23 — PSD Import (folder ẩn)
+**Goal:** Seller import file PSD thành artwork; folder ẩn trong PSD trở thành Group ẩn.
+**Entry points:** Artworks → Import → PSD Single template.
+
+**Trạng thái nguồn:** chỉ một item KB-178 (`CONFIRMED_EXPECTED`/MEDIUM, test case Testlane PASS staging 2026-10-16): Group tương ứng folder ẩn có visible=false, con giữ cờ ON (mắt amber, dimmed), canvas không vẽ nội dung Group. Storefront, print file, PSD Multiple template, folder lồng nhiều cấp, file lỗi chưa kiểm.
+
+**Checklist:** CHK-001..CHK-005; 4 NEEDS_CONFIRMATION (CHK-002..CHK-005).
+**Open questions:** OQ-artwork-150..OQ-artwork-151.
+
+---
+
+## FEAT-24 — Group Layer Order Design Render (TIB-5633)
+**Goal:** Order design (print file) của artwork có layer Group nhiều layer (~250) được generate hoàn tất (không auto-stop/timeout, không kẹt Generating) và đúng nội dung.
+**Entry points:** order có item dùng artwork Artwork 2.0 chứa Group nhiều layer → generate order design; order detail → Regenerate design (object `order`).
+
+**Trạng thái nguồn:** KB-380, KB-382, KB-383, KB-387, KB-388, KB-389 là `CONFIRMED_EXPECTED`/MEDIUM theo test case Testlane PASS trên staging ngày 2026-10-29 — chỉ đúng điều expectedResult của case khẳng định, trên fixture đã chạy; lượt chạy trước khi PR thứ hai của TIB-5633 cập nhật lần cuối, production chưa xác nhận (OQ-artwork-170), PO chưa xác nhận ý định (OQ-artwork-173). KB-381, KB-384, KB-385, KB-386, KB-390 là `OBSERVED_CURRENT`/LOW — quan sát, chưa phải hành vi đúng.
+
+**Capabilities (đã xác nhận bằng test case, phạm vi fixture đã chạy):**
+- Group phẳng ~250 layer ảnh: generate order design hoàn tất (design Completed), không auto-stop/timeout, không kẹt Generating (KB-380); print file giống pixel bản không group tương đương (KB-382)
+- Group nhỏ có layer con mang shadow hoặc xoay tràn box: hiện đủ trong vùng in (KB-383)
+- Group có mask Rectangle chứa ~250 layer: chỉ hiện phần trong mask (KB-387); Group lồng nhau không làm layer dịch chỗ (KB-388); layer con tắt visible vắng đúng trên print file (KB-389)
+
+**Quan sát chưa chốt expected:**
+- Thời gian generate: chỉ có số đo một lần mỗi fixture, không phải SLA; ngưỡng chấp nhận chờ PO; order item hiện Ready sau khi generate xong cũng chỉ là quan sát (KB-381, OQ-artwork-165)
+- Shadow vượt printarea bị cắt theo printarea (KB-384, OQ-artwork-166); hướng shadow chưa đối chiếu bản trước fix, chờ PO xác nhận ý định (KB-385, OQ-artwork-167)
+- Text trong Group ~250 layer: không thấy cắt chữ trong vùng in, nhưng cỡ chữ render nhỏ hơn cỡ khai báo — chưa rõ đúng hay lỗi (KB-386, OQ-artwork-168)
+- Canvas 148,5 Mpx (sát, dưới ngưỡng route-large 150 Mpx) trên printarea 72 Mpx: generate xong; đường route-large chưa được kích hoạt (KB-390, OQ-artwork-169)
+
+**Chưa kiểm:** mask hình tròn/custom shape, PDF của Group có mask, Group ~250 layer có layer tràn box, layer chia 2 cấp Group, Group cha ẩn/visibility theo điều kiện (OQ-artwork-171); blend mode, layer tag Context, Artwork 1.0 (OQ-artwork-172).
+
+**Checklist:** CHK-001..CHK-016; CHK-001..CHK-006 có oracle từ test case; 10 NEEDS_CONFIRMATION (CHK-007..CHK-016).
+**Open questions:** OQ-artwork-165..OQ-artwork-173. Liên quan FEAT-22 (effective visibility, KB-158), FEAT-06 (print effects), object `order` (Regenerate design, Item Activity logs), object `sdk` (storefront preview).
 
 ---
 

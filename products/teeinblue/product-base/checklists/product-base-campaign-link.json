@@ -1,6 +1,8 @@
 {
   "feature_id": "FEAT-08-product-base-campaign-link",
   "feature_key": "product-base-campaign-link",
+  "object_id": "product-base",
+  "checklist_version": "3",
   "checks": [
     {
       "check_id": "CHK-08-001",
@@ -421,6 +423,249 @@
       "priority": "P2",
       "automation_suitability": "HYBRID",
       "oq_ref": "OQ-product-base-002"
+    },
+    {
+      "check_id": "CHK-08-014",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Campaign đã published nhận variant mới qua bulk Add: hiện nút đỏ 'Update required'; instance_variants chỉ có variant mới sau khi bấm 'Update required'",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "campaign đã published lên store, vừa nhận V3, V4 qua bulk Add từ Product Base",
+        "environment": "staging (production chưa xác nhận)",
+        "surface_or_device": "portal desktop — campaign editor + dữ liệu sync Shopify (instance_variants) qua API"
+      },
+      "precondition": "Campaign đã published lên store test, đang có V1, V2. Ghi lại instance_variants của campaign trước khi thao tác.",
+      "steps": [
+        "Từ Product Base editor, bulk Add V3, V4 vào campaign (theo CHK-09-006)",
+        "Mở campaign editor; ghi nút cập nhật hiện ra (nhãn, màu)",
+        "Đọc instance_variants của campaign qua API; ghi các variant có mặt",
+        "Bấm 'Update required'; chờ hoàn tất",
+        "Đọc lại instance_variants; ghi các variant có mặt"
+      ],
+      "observation_point": "Nút 'Update required' trên campaign editor; instance_variants trước và sau khi bấm Update",
+      "expected_result": "Sau bulk Add, campaign editor hiện nút đỏ 'Update required'. Trước khi bấm, instance_variants chỉ có V1, V2 (chưa có V3, V4). Sau khi bấm 'Update required', instance_variants có thêm V3, V4. Check ở mức dữ liệu sync, không phát biểu hiển thị trên storefront (xem CHK-08-015). Nút này khác nút 'Update' trong modal liệt kê campaign của CHK-08-007.",
+      "oracle": {
+        "kb_ids": [
+          "KB-203"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-203",
+        "KB-204",
+        "KB-061",
+        "KB-062",
+        "KB-092"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "manual-sync-required MEDIUM",
+        "soft-warning-insufficient MEDIUM"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-08-015",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[Gap] Sau 'Update required', variant vừa bulk Add có hiển thị và chọn được trên trang product của storefront không (đúng giá, available)",
+      "applicability": {
+        "role": "buyer (guest) trên storefront",
+        "state": "campaign đã published, đã bấm 'Update required' sau bulk Add",
+        "environment": "staging, store không khoá mật khẩu (store kiểm thử hiện bị khoá)",
+        "surface_or_device": "storefront desktop — trang product của campaign"
+      },
+      "precondition": "Đã chạy xong CHK-08-014 trên một store test truy cập được storefront.",
+      "steps": [
+        "Mở trang product của campaign trên storefront",
+        "Ghi danh sách option/variant chọn được; chọn V3, V4",
+        "Ghi giá và trạng thái available của V3, V4"
+      ],
+      "observation_point": "Option/variant hiển thị, giá, available trên storefront",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Sau khi bấm 'Update required', variant vừa bulk Add có hiển thị (chọn được, đúng giá, available) trên trang product của storefront không? Store kiểm thử bị khoá mật khẩu nên chưa kiểm.",
+      "related_kb_ids": [
+        "KB-203"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "coverage-gap: buyer-facing chưa kiểm",
+        "manual-sync-required MEDIUM"
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-product-base-031"
+    },
+    {
+      "check_id": "CHK-08-016",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[CBS-009] Campaign mới tạo từ Product Base (thêm PB vào campaign by Product Base, hoặc bulk create campaign từ PB) có kế thừa assignment video ↔ variant của PB không — chưa xác nhận",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (verify GET /api/user id=266 sau mỗi lần login)",
+        "state": "Product Base có video đã gán cho một hoặc nhiều variant",
+        "environment": "staging, ghi build (lượt gốc 2026-10-22 trước khi 4 PR TIB-5428 merge; cùng flow có known defect BUG-361)",
+        "surface_or_device": "portal (campaign by Product Base: Add more product / bulk create campaign từ PB) + Mockup assignments + network"
+      },
+      "precondition": "Dùng Product Base throwaway; ghi assignment video ↔ variant của PB trước khi tạo campaign.",
+      "steps": [
+        "Tạo campaign mới by Product Base, thêm PB đó; ghi request tạo media của campaign.",
+        "Mở Mockup assignments của campaign mới; ghi assignment của từng video; reload và ghi lại.",
+        "Bulk create campaign từ PB; lặp lại bước trên cho campaign vừa tạo."
+      ],
+      "observation_point": "Assignment video ↔ variant của campaign mới so với PB, trước và sau reload. Quan sát 1 lượt (2026-10-22, OBSERVED_CURRENT/LOW — không dùng làm expected): campaign mới kế thừa đúng assignment video ↔ variant của PB, không phải gán lại, reload vẫn còn; video trong campaign mới mất URL/thumbnail (known defect BUG-361, CHK-08-017).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Sau khi fix BUG-361, chạy lại TC-TIB-6436/6439 trên bản đã merge: campaign tạo từ Product Base (thêm PB / bulk create) có kế thừa assignment video ↔ variant của PB không?",
+      "related_kb_ids": [
+        "KB-329",
+        "KB-093"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Cùng flow có known defect BUG-361 — fix có thể đổi cả phần kế thừa assignment"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-product-base-034"
+    },
+    {
+      "check_id": "CHK-08-017",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "[CBS-009] Watch known defect BUG-361: video sang campaign mới tạo từ Product Base (thêm PB / bulk create) — URL, thumbnail và slide trên storefront",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (verify GET /api/user id=266 sau mỗi lần login) + guest buyer trên storefront",
+        "state": "Product Base có video (URL hợp lệ) đã gán variant",
+        "environment": "staging, ghi build và ngày chạy",
+        "surface_or_device": "portal (picker media, card video) + merchant JSON GET /api/merchant/campaigns/<platform_product_id>.json + storefront gallery"
+      },
+      "precondition": "Như CHK-08-016; campaign mới được publish lên store staging để xem storefront; vượt password-gate bằng TIB_STORE_PASSWORD.",
+      "steps": [
+        "Tạo campaign by Product Base từ PB có video (và bulk create từ PB đó).",
+        "Ghi URL/thumbnail của video trong campaign mới (portal picker, card media).",
+        "Publish/Update; GET merchant JSON; ghi type, url, preview_url, thumbnail của media video.",
+        "Mở storefront, chọn variant được gán video; ghi slide của video.",
+        "Ghi kết quả kèm build và ngày chạy."
+      ],
+      "observation_point": "URL/thumbnail của video trong campaign mới; type/url của media trong merchant JSON; slide trên storefront. Hành vi lỗi hiện tại (2026-10-22, kèm TC-TIB-6436/6439, KB-330): video trong campaign mới mất URL và thumbnail (url/preview_url/thumbnail = null, thumbnail vỡ trong picker), merchant JSON ghi media đó type 'image', storefront hiện slide trống. Còn tái hiện = defect còn; khác = cần xác nhận đã fix trên build nào.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Known defect BUG-361 (video sang campaign tạo/bulk create từ Product Base mất URL/thumbnail, storefront slide trống) đã fix/retest chưa, trên build nào?",
+      "related_kb_ids": [
+        "KB-329"
+      ],
+      "regression_watch_kb_ids": [
+        "KB-330"
+      ],
+      "risk_refs": [
+        "Mất URL video khi tạo campaign từ PB (mất dữ liệu) — buyer thấy slide trống trên storefront"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-product-base-035"
     }
-  ]
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-08-product-base-campaign-link",
+      "capability_or_risk": "Đồng bộ variant mới vào campaign đã published bằng 'Update required'",
+      "check_ids": [
+        "CHK-08-014",
+        "CHK-08-015"
+      ]
+    },
+    {
+      "feature_id": "FEAT-08-product-base-campaign-link",
+      "capability_or_risk": "Risk manual-sync-required MEDIUM",
+      "check_ids": [
+        "CHK-08-014",
+        "CHK-08-015",
+        "CHK-08-009"
+      ]
+    },
+    {
+      "feature_id": "FEAT-08-product-base-campaign-link",
+      "capability_or_risk": "Icon rocket / modal liệt kê campaign, risk unverified-core-flow",
+      "check_ids": [
+        "CHK-08-001",
+        "CHK-08-007"
+      ]
+    },
+    {
+      "feature_id": "FEAT-08-product-base-campaign-link",
+      "capability_or_risk": "Thêm product base vào campaign (Select your product)",
+      "check_ids": [
+        "CHK-08-002",
+        "CHK-08-003",
+        "CHK-08-004",
+        "CHK-08-006",
+        "CHK-08-008",
+        "CHK-08-011"
+      ]
+    },
+    {
+      "feature_id": "FEAT-08-product-base-campaign-link",
+      "capability_or_risk": "Không có liên kết trực tiếp product base ↔ artwork",
+      "check_ids": [
+        "CHK-08-005"
+      ]
+    },
+    {
+      "feature_id": "FEAT-08-product-base-campaign-link",
+      "capability_or_risk": "Logs object-level, risk audit-log-inconsistent",
+      "check_ids": [
+        "CHK-08-010",
+        "CHK-08-012",
+        "CHK-08-013"
+      ]
+    },
+    {
+      "feature_id": "FEAT-08-product-base-campaign-link",
+      "capability_or_risk": "[CBS-009] Campaign tạo từ Product Base kế thừa assignment video (KB-329, S1) và known defect BUG-361 mất URL/thumbnail video (KB-330)",
+      "check_ids": [
+        "CHK-08-016",
+        "CHK-08-017"
+      ]
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "PERMISSION",
+      "reason": "Chỉ có nguồn cho role owner/merchant-owner; không có nguồn cho role khác — để mở như unknown của profile.permissions, không sinh check giả định. Base cũng không có check PERMISSION; CBS-010 không chạm phần này."
+    },
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Không có KB item nào về giới hạn số lượng/kích thước của liên kết product base–campaign; giới hạn 25 campaign/trang của modal bulk Add thuộc FEAT-09 (CHK-09-008, CHK-09-012)."
+    },
+    {
+      "dimension": "REGRESSION — phạm vi CBS-010 (KB-203)",
+      "reason": "KB-203 là item ADD, không đổi hành vi item base nào. (Với CBS-009 đã có item KNOWN_DEFECT KB-330 → regression watch CHK-08-017.)"
+    },
+    {
+      "dimension": "NEGATIVE / BOUNDARY / PERMISSION / STATE_DATA — phạm vi CBS-009 (KB-329, KB-330)",
+      "reason": "Evidence chỉ là quan sát owner trên một PB: không có input sai, giới hạn hay quyền khác; persistence (reload) của assignment kế thừa nằm trong bước của CHK-08-016."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-10-30",
+    "ccr_ref": "CBS-009"
+  }
 }

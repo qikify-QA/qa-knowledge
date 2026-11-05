@@ -186,8 +186,8 @@
       "KB-095",
       "KB-097"
     ],
-    "conflict_group": "CONF-CHK-08-010-002",
-    "status": "UNRESOLVED"
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-CHK-08-010-002"
   },
   {
     "kb_id": "KB-100",
@@ -209,7 +209,98 @@
       "KB-095",
       "KB-097"
     ],
-    "conflict_group": "CONF-CHK-08-010-002",
-    "status": "UNRESOLVED"
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-CHK-08-010-002"
+  },
+  {
+    "kb_id": "KB-203",
+    "topic": "Sau bulk Add vào campaign đã published: campaign hiện 'Update required'; variant mới chỉ vào dữ liệu sync Shopify (instance_variants) sau khi Update thủ công",
+    "statement": "Theo Testlane TC-TIB-5049 PASS (task TIB-169, Jira TIB-5496; chạy 2026-10-09 trên staging, build sau lần giao QA cuối 2026-10-06, build hash không rõ; production chưa xác nhận), sau khi bulk Add variant từ Product Base vào một campaign đã published lên store, trang campaign hiện nút đỏ 'Update required'; trước khi bấm Update, dữ liệu sync lên Shopify của TeeInBlue (instance_variants) chỉ có variant đã có từ trước, chưa có các variant vừa Add; sau khi bấm 'Update required' ở store đó, instance_variants có thêm các variant vừa Add — tức variant mới chỉ vào dữ liệu sync sau khi Update thủ công. Item phát biểu ở mức dữ liệu sync; hiển thị trên trang product của storefront chưa được kiểm.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner/staff, store Nprice1)",
+      "surface": "portal (campaign editor, nút \"Update required\") · api (dữ liệu sync instance_variants)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-30",
+      "ccr_ref": "CBS-010"
+    },
+    "tags": [
+      "TIB-5496",
+      "campaign-sync",
+      "need-sync",
+      "update-required",
+      "instance_variants",
+      "add-to-campaigns"
+    ],
+    "related_kb_ids": [
+      "KB-060",
+      "KB-061",
+      "KB-092",
+      "KB-204"
+    ],
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "Testlane TC-TIB-5049 PASS (task TIB-169, Jira TIB-5496), staging @ 2026-10-09 giờ không rõ (sau lần TIB-5496 giao QA cuối 2026-10-06; không có Fix Version; build hash không rõ), chạy 2026-10-09",
+      "authored_on": "2026-10-09",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-329",
+    "topic": "Campaign tạo từ Product Base (thêm PB / bulk create) kế thừa assignment video ↔ variant của PB",
+    "statement": "Quan sát staging 2026-10-22 (1 lượt, Testlane TC-TIB-6436, TC-TIB-6439, task TIB-221, cùng flow có lỗi BUG-361; chưa có nguồn xác nhận đây là hành vi đúng): khi Product Base đã gán video cho variant, tạo campaign mới by Product Base rồi thêm PB đó (POST /api/campaign-mockups/generate) hoặc bulk create campaign từ PB (POST /api/artworks/<id>/campaigns) thì campaign mới kế thừa đúng assignment video ↔ variant của PB, không phải gán lại; reload vẫn còn. Video trong campaign mới mất URL/thumbnail (KB-330).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner/staff, portal staging, instance 520 Nprice1)",
+      "surface": "portal · api (campaign by PB: thêm PB / bulk creator)",
+      "brand": null
+    },
+    "tags": [
+      "TIB-5428",
+      "video-assignment",
+      "inherit-from-pb",
+      "bulk-create"
+    ],
+    "related_kb_ids": [
+      "KB-330"
+    ],
+    "last_updated": {
+      "date": "2026-10-30",
+      "ccr_ref": "CBS-009"
+    }
+  },
+  {
+    "kb_id": "KB-330",
+    "topic": "LỖI ĐÃ QUAN SÁT (BUG-361): video sang campaign tạo từ Product Base mất URL và thumbnail",
+    "statement": "Lỗi đã quan sát (BUG-361), KHÔNG phải hành vi đúng — quan sát staging 2026-10-22 (1 lượt, kèm Testlane TC-TIB-6436, TC-TIB-6439, task TIB-221): khi tạo campaign by Product Base từ PB có video, hoặc bulk create campaign từ PB đó, video trong campaign mới mất URL và thumbnail (url/preview_url/thumbnail = null, thumbnail vỡ trong picker), merchant JSON ghi media đó type 'image', storefront hiện slide trống. Trạng thái fix/retest BUG-361 chưa rõ.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner/staff, portal staging, instance 520 Nprice1)",
+      "surface": "portal · storefront · api",
+      "brand": null
+    },
+    "tags": [
+      "TIB-5428",
+      "known-defect",
+      "BUG-361",
+      "inherit-from-pb",
+      "bulk-create"
+    ],
+    "related_kb_ids": [
+      "KB-329"
+    ],
+    "status": "KNOWN_DEFECT",
+    "last_updated": {
+      "date": "2026-10-30",
+      "ccr_ref": "CBS-009"
+    }
   }
 ]

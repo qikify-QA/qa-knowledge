@@ -1,6 +1,7 @@
 {
   "feature_id": "FEAT-07-artwork-save-persist",
   "feature_key": "artwork-save-persist",
+  "object_id": "artwork",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -520,6 +521,168 @@
       "automation_suitability": "SUITABLE",
       "conflict_refs": [],
       "oq_ref": "OQ-artwork-022"
+    },
+    {
+      "check_id": "CHK-018",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "Watch: Save bản copy artwork Artwork 1.0 chưa có version đã lưu — PUT /api/artworks/{id} trả 500 kể cả khi không sửa gì",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "bản copy của một artwork Artwork 1.0 (legacy-schema), chưa có version nào đã lưu",
+        "environment": "staging",
+        "surface_or_device": "portal Artwork Editor (nút Save) + PUT /api/artworks/{id}"
+      },
+      "precondition": "Tạo bản copy của một artwork Artwork 1.0 (cách đã thấy lỗi: 'All layers copy' của một artwork Artwork 1.0); mở network monitor.",
+      "steps": [
+        "Mở bản copy trong Artwork Editor; không sửa gì, bấm Save.",
+        "Ghi HTTP status và body của PUT /api/artworks/{id}; ghi phản hồi trên UI.",
+        "Sửa 1 field bất kỳ, bấm Save lại; ghi status và body.",
+        "Đóng editor, mở lại artwork; ghi lại thay đổi có được lưu không."
+      ],
+      "observation_point": "HTTP status + body PUT; artwork có được lưu không. Hành vi lỗi hiện tại (1 fixture #5187, staging 2026-10-21→22, build có TIB-5580 chưa ship): PUT trả 500 {\"message\":\"Server Error\"}, kể cả khi Save không đổi gì; artwork không Save được. Nguyên nhân chưa rõ.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Vì sao PUT /api/artworks/{id} trả 500 'Server Error' khi Save (kể cả không đổi gì) trên bản copy artwork Artwork 1.0 chưa có version đã lưu — lỗi dữ liệu của bản copy, lỗi sản phẩm với artwork Artwork 1.0 chưa có version, hay liên quan TIB-5580? Save trên loại artwork này phải thành công không?",
+      "related_kb_ids": [
+        "KB-050",
+        "KB-052"
+      ],
+      "regression_watch_kb_ids": [
+        "KB-145"
+      ],
+      "risk_refs": [
+        "Artwork Artwork 1.0 không Save được → mất thay đổi của merchant",
+        "Chỉ 1 fixture, 1 lượt chạy; không suy rộng"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-114"
+    },
+    {
+      "check_id": "CHK-019",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Save các artwork Artwork 1.0 khác (artwork gốc, artwork Artwork 1.0 đã có version lưu)",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "(a) artwork Artwork 1.0 gốc (không phải bản copy); (b) artwork Artwork 1.0 đã có ít nhất 1 version đã lưu",
+        "environment": "staging",
+        "surface_or_device": "portal Artwork Editor (nút Save) + PUT /api/artworks/{id}"
+      },
+      "precondition": "Chỉ thao tác trên artwork throwaway hoặc thay đổi có thể hoàn tác; ghi lại current_version_id trước khi Save.",
+      "steps": [
+        "Với từng trường hợp (a), (b): mở artwork, sửa 1 field nhỏ, bấm Save.",
+        "Ghi HTTP status, body PUT, current_version_id và schema_version trong response.",
+        "Mở lại artwork; kiểm tra thay đổi đã lưu."
+      ],
+      "observation_point": "HTTP status + response PUT; dữ liệu đọc lại.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Các artwork Artwork 1.0 khác (artwork gốc, artwork Artwork 1.0 đã có version lưu) có Save được không, và Save có chuyển artwork sang schema mới không? Cần một artwork Artwork 1.0 Save được làm fixture để kiểm payload stroke của Paragraph Artwork 1.0.",
+      "related_kb_ids": [
+        "KB-145",
+        "KB-050"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Phạm vi lỗi 500 chưa biết"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-115"
+    },
+    {
+      "check_id": "CHK-020",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Artwork Editor phản hồi thế nào khi PUT /api/artworks/{id} trả 500 lúc Save",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "artwork mà Save đang trả 500 (vd fixture của CHK-018), có thay đổi chưa lưu",
+        "environment": "staging",
+        "surface_or_device": "portal Artwork Editor, desktop browser"
+      },
+      "precondition": "Có artwork tái tạo được PUT 500 (CHK-018).",
+      "steps": [
+        "Sửa 1 field, bấm Save.",
+        "Ghi thông báo/toast hiển thị (nguyên văn), trạng thái nút Save, editor có đóng không.",
+        "Không reload, kiểm tra thay đổi còn trên editor không; thử Save lại."
+      ],
+      "observation_point": "Thông báo lỗi trên UI; trạng thái thay đổi chưa lưu.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Khi PUT /api/artworks/{id} trả 500, Artwork Editor phải hiển thị gì cho người dùng (thông báo lỗi, giữ thay đổi chưa lưu hay không)?",
+      "related_kb_ids": [
+        "KB-145"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Merchant tưởng đã lưu trong khi Save thất bại"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-116"
     }
-  ]
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "item": "Risk: bản copy Artwork 1.0 không Save được (PUT 500)",
+      "check_ids": [
+        "CHK-018",
+        "CHK-020"
+      ],
+      "oracle": "NONE (watch KB-145)"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "item": "Gap: phạm vi lỗi 500 trên artwork Artwork 1.0 khác; fixture cho Paragraph Artwork 1.0 của text-multi-stroke",
+      "check_ids": [
+        "CHK-019"
+      ],
+      "oracle": "NONE"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "item": "Capability base (Save flow, full-replace, validation, readback, JWT, permission)",
+      "check_ids": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-003",
+        "CHK-004",
+        "CHK-005",
+        "CHK-006",
+        "CHK-007",
+        "CHK-008",
+        "CHK-009",
+        "CHK-010",
+        "CHK-011",
+        "CHK-012",
+        "CHK-013",
+        "CHK-014",
+        "CHK-015",
+        "CHK-016",
+        "CHK-017"
+      ],
+      "oracle": "không đổi so với base"
+    }
+  ],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-10-26",
+    "ccr_ref": "CBS-007"
+  }
 }

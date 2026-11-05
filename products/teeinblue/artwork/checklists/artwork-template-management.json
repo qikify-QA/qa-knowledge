@@ -1,6 +1,8 @@
 {
   "feature_id": "FEAT-02-artwork-template-management",
   "feature_key": "artwork-template-management",
+  "object_id": "artwork",
+  "checklist_version": "8",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -360,6 +362,179 @@
       "priority": "P2",
       "automation_suitability": "SUITABLE",
       "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Linked template có cờ visible=null kế thừa trạng thái visible từ global template (Group và layer thường); linked vẫn giữ null sau khi global Save",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "global template có Group 'GT' (GT1, GT2) và layer thường GT3, mọi cờ ON; linked template LT-1 dùng global đó, cờ visible=null ở cả 4 layer (kèm global_id)",
+        "environment": "staging, build có TIB-5584 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor 2.0 (global + linked template) + PUT /api/artworks/{id}"
+      },
+      "precondition": "Fixture throwaway như applicability; xác nhận LT-1 có visible=null từ một PUT/GET trước đó (nếu UI không tạo được, ghi qua API).",
+      "steps": [
+        "Ở global template, ẩn Group 'GT'; Save; ghi cờ visible của global và LT-1 trong PUT.",
+        "Mở LT-1; ghi mắt Group 'GT', mắt/dimmed của GT1/GT2, layer vẽ trên canvas.",
+        "Ở global, hiện Group lại; Save; mở LT-1 và ghi lại như bước 2; ghi cờ LT-1 trong PUT.",
+        "Ở global, tắt layer thường GT3; Save; mở LT-1; ghi mắt GT3 và các layer khác."
+      ],
+      "observation_point": "layer.visible của global và LT-1 trong PUT; layer panel và canvas của LT-1.",
+      "expected_result": "Bước 1: PUT trả 200, global GT visible=false, GT1/GT2/GT3=true; LT-1 giữ visible=null ở cả 4 layer. Bước 2: LT-1 Group 'GT' ở trạng thái ẩn (mắt gạch chéo), GT1/GT2 dimmed, canvas chỉ còn GT3. Bước 3: LT-1 hiện lại GT1, GT2, GT3, không dòng nào dimmed; cờ LT-1 vẫn null. Bước 4: PUT trả 200, global GT3 visible=false, LT-1 giữ null; ở LT-1 GT3 mắt gạch chéo (ẩn do kế thừa), GT, GT1, GT2 không bị ảnh hưởng.",
+      "oracle": {
+        "kb_ids": [
+          "KB-176"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-046",
+        "KB-158",
+        "KB-162"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle không phủ linked đã có cờ true/false cụ thể — xem CHK-015",
+        "Lượt PASS chạy trước khi đủ PR merge, shipped UNKNOWN"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Ở linked template bật lại Group đang ẩn do kế thừa: sau Save cờ linked thành true, global vẫn visible=false",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "fixture như CHK-013; global đã ẩn Group 'GT' và Save; LT-1 cờ null (Group đang ẩn do kế thừa)",
+        "environment": "staging, build có TIB-5584 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor 2.0 (linked template) + PUT /api/artworks/{id}"
+      },
+      "precondition": "Đã chạy CHK-013 bước 1 (hoặc dựng lại trạng thái tương đương).",
+      "steps": [
+        "Mở LT-1; click mắt Group 'GT' để bật; ghi mắt/dimmed của các con.",
+        "Save; ghi cờ visible của Group 'GT' ở LT-1 và ở global trong PUT.",
+        "Reload LT-1; ghi trạng thái Group.",
+        "Mở global template; ghi trạng thái Group 'GT'."
+      ],
+      "observation_point": "Layer panel LT-1; layer.visible trong PUT; trạng thái Group ở global sau reload.",
+      "expected_result": "Bật được Group ở LT-1, các con hiện lại (hết dimmed). PUT trả 200: LT-1 Group 'GT' visible=true (không còn null), global GT vẫn visible=false. Sau reload LT-1 Group vẫn hiện; global Group 'GT' vẫn ẩn, không bị đổi.",
+      "oracle": {
+        "kb_ids": [
+          "KB-177"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-176",
+        "KB-046"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Ghi đè cờ của global template khi sửa linked (mất cấu hình ở template khác)"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-015",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Linked template đã có cờ visible cụ thể (true/false) rồi global template đổi cờ",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "fixture như CHK-013, LT-1 Group 'GT' visible=true (sau CHK-014) và một layer khác visible=false cụ thể",
+        "environment": "staging, build có TIB-5584 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor 2.0 (global + linked template) + PUT /api/artworks/{id}"
+      },
+      "precondition": "Đã chạy CHK-014.",
+      "steps": [
+        "Ở global, đổi cờ visible của Group 'GT' và của layer có cờ cụ thể ở LT-1; Save.",
+        "Ghi cờ LT-1 trong PUT; mở LT-1, ghi mắt và canvas."
+      ],
+      "observation_point": "layer.visible của LT-1; layer panel và canvas LT-1.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Linked template đã có cờ visible cụ thể (true/false) rồi global template đổi cờ — linked đổi theo hay giữ riêng?",
+      "related_kb_ids": [
+        "KB-176",
+        "KB-177"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Q9 treo"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-149"
     }
-  ]
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-02-artwork-template-management",
+      "item": "Base: control Template bar, convert, extra charge, import, client-side-until-save (CHK-001..CHK-012)",
+      "check_ids": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-003",
+        "CHK-004",
+        "CHK-005",
+        "CHK-006",
+        "CHK-007",
+        "CHK-008",
+        "CHK-009",
+        "CHK-010",
+        "CHK-011",
+        "CHK-012"
+      ],
+      "oracle": "giữ nguyên base (BASELINE / NONE)"
+    },
+    {
+      "feature_id": "FEAT-02-artwork-template-management",
+      "item": "Capability mới: kế thừa cờ visible global → linked (null) và override ở linked",
+      "check_ids": [
+        "CHK-013",
+        "CHK-014",
+        "CHK-015"
+      ],
+      "oracle": "STRONG (KB-176, KB-177); CHK-015 NONE"
+    },
+    {
+      "feature_id": "FEAT-02-artwork-template-management",
+      "item": "Risk P1: sửa linked ghi đè global",
+      "check_ids": [
+        "CHK-014"
+      ],
+      "oracle": "STRONG (KB-177)"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Không có KB item về input sai/thiếu precondition cho kế thừa visible (vd linked không có global_id); base cũng không có."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "Không có KB item nào về role khác owner/cross-tenant (profile unknown_areas[5] base, chưa có evidence)."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Không có hành vi trong shard khác base đã publish (KB-176/KB-177 là ADD, bổ sung KB-046); không có item KNOWN_DEFECT."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-10-30",
+    "ccr_ref": "CBS-006"
+  }
 }

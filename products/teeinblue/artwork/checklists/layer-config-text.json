@@ -1,6 +1,8 @@
 {
   "feature_id": "FEAT-12-layer-config-text",
   "feature_key": "layer-config-text",
+  "object_id": "artwork",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -260,6 +262,67 @@
       "priority": "P2",
       "automation_suitability": "SUITABLE",
       "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-008] Curve Text (curve-text) trong Artwork Editor: có hay không tuỳ chọn căn lề text (trái/giữa/phải), và giá trị căn lề được lưu của layer — baseline: không thấy tuỳ chọn, layer lưu align center",
+      "applicability": {
+        "role": "merchant-owner (store owner/staff)",
+        "state": "Artwork 2.0, layer Curve Text (data-type curve-text) đang được chọn trong Artwork Editor",
+        "environment": "staging",
+        "surface_or_device": "portal — Artwork Editor (config panel của layer và canvas toolbar)"
+      },
+      "precondition": "Artwork 2.0 có hoặc thêm được 1 layer Curve Text; trình duyệt test ghi được network log khi lưu artwork.",
+      "steps": [
+        "Thêm layer Curve Text, chọn layer; mở mọi accordion của config panel (DESIGN SETTINGS, PERSONALIZATION SETTINGS, EXTRA...) và liệt kê tuỳ chọn liên quan căn lề text",
+        "Với layer Curve Text đang chọn, bấm nút 'Align' trên canvas toolbar (nếu có); ghi lại nó căn vị trí layer trên canvas hay đổi căn lề text",
+        "Lưu artwork; trong request lưu artwork (hoặc layer JSON), ghi giá trị căn lề của layer Curve Text",
+        "Đối chiếu với layer Single-line Text cùng artwork: tuỳ chọn căn lề text có hiện ở config panel của Single-line Text không"
+      ],
+      "observation_point": "Có/không tuỳ chọn căn lề text trong config panel của Curve Text; tác dụng của nút 'Align' trên canvas toolbar; giá trị căn lề của layer Curve Text sau khi lưu",
+      "expected_result": "Baseline hiện tại (1 lần quan sát khi dựng fixture trên staging 2026-10-22, chưa có dev/PO xác nhận là thiết kế hay thiếu tính năng): không thấy tuỳ chọn căn lề text (trái/giữa/phải) cho layer Curve Text; layer được lưu với align center. Tác dụng của nút 'Align' trên canvas toolbar chưa được đối chiếu. Xuất hiện tuỳ chọn căn lề text (hoặc 'Align' đổi được căn lề text) là thay đổi cần ghi nhận, không tự kết luận là bug hay fix — khi đó phạm vi render Curve Text rainbow ở checklist text-color-sequence-render (CHK-010, CHK-016) cần cập nhật.",
+      "oracle": {
+        "kb_ids": [
+          "KB-157"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Layer Curve Text không có tuỳ chọn căn lề text (lưu align center) là thiết kế có chủ đích hay tính năng còn thiếu? Nút 'Align' trên canvas toolbar khi chọn layer curve-text là căn vị trí layer hay căn lề text?",
+      "related_kb_ids": [
+        "KB-157",
+        "KB-156"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Quan sát 1 lần, chưa có dev/PO xác nhận — không dùng làm rule 'Curve Text phải không có căn lề'.",
+        "Nếu Curve Text có cách căn lề text, quan sát render Curve Text rainbow chỉ ở căn giữa không còn đủ bao phủ."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-136"
     }
-  ]
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-12-layer-config-text",
+      "risk": "[CBS-008] Curve Text không có tuỳ chọn căn lề text (KB-157) — chưa rõ thiết kế hay thiếu tính năng; giới hạn phạm vi kiểm render Curve Text rainbow (FEAT-21)",
+      "checks": [
+        "CHK-009"
+      ],
+      "covered": "BASELINE + NEEDS_CONFIRMATION (1 lần quan sát); câu hỏi nút 'Align' canvas toolbar nằm trong bước của CHK-009"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "NEGATIVE / BOUNDARY / PERMISSION / STATE_DATA / INTEGRATION / REGRESSION — phạm vi CBS-008",
+      "reason": "KB-157 chỉ là quan sát cấu hình UI của layer Curve Text (không có input sai, giới hạn, quyền hay persistence ngoài giá trị align được lưu — đã nằm trong bước của CHK-009). Ảnh hưởng tới render nằm ở checklist text-color-sequence-render (CHK-010, CHK-016). KB-157 là item mới, không đổi hành vi item base và không phải KNOWN_DEFECT nên không có REGRESSION/regression watch."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-10-26",
+    "ccr_ref": "CBS-008"
+  }
 }

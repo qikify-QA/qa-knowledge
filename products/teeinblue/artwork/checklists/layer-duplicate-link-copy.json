@@ -1,6 +1,8 @@
 {
   "feature_id": "FEAT-05-layer-duplicate-link-copy",
   "feature_key": "layer-duplicate-link-copy",
+  "object_id": "artwork",
+  "checklist_version": "9",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -244,6 +246,210 @@
       "automation_suitability": "SUITABLE",
       "conflict_refs": [],
       "oq_ref": "OQ-artwork-083"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Copy/paste layer action Hide giữa các artwork 2.0 (và trong cùng artwork): bản paste có giữ action Hide và điều kiện",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "artwork 2.0 nguồn có layer đích action Hide với điều kiện; artwork 2.0 đích khác (có layer nguồn cùng loại) và cùng artwork nguồn",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor 2.0 (Copy to clipboard, Ctrl+V)"
+      },
+      "precondition": "Hai artwork 2.0 throwaway như applicability.",
+      "steps": [
+        "Chọn layer Hide, bấm 'Copy to clipboard'; Ctrl+V trong cùng artwork; mở Conditional Setting của layer vừa paste; ghi action, heading, điều kiện.",
+        "Ctrl+V vào artwork 2.0 khác; ghi lại như bước 1.",
+        "Save cả hai; reload; ghi lại action của các layer vừa paste."
+      ],
+      "observation_point": "Action, heading, điều kiện của layer paste trước và sau reload.",
+      "expected_result": "Baseline (nguồn duy nhất là dev doc 2026-10-13, chưa có test case — không phải expected): copy/paste layer giữ lựa chọn Hide. Lệch là cần điều tra, không tự kết luận bug.",
+      "oracle": {
+        "kb_ids": [
+          "KB-230"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Trên build đã merge, copy/paste layer (trong cùng artwork và sang artwork 2.0 khác) có giữ action Hide và điều kiện của layer không?",
+      "related_kb_ids": [
+        "KB-224",
+        "KB-229"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mất Hide khi copy đảo chiều ẩn/hiện trên storefront",
+        "Nguồn dev doc viết trước khi code còn đổi tới merge; chưa có test case",
+        "Paste sang artwork 1.0 bị chặn — đã có ở conditional-setting-config CHK-020"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-156"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Import artwork có layer action Hide: artwork được import có giữ action Hide",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "file export của artwork 2.0 có layer action Hide; (tuỳ chọn) file export định dạng v1",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal luồng import artwork + Artwork Editor 2.0"
+      },
+      "precondition": "Export artwork 2.0 throwaway có layer Hide ra file.",
+      "steps": [
+        "Import file export vào store; mở artwork vừa import; mở Conditional Setting của layer đích; ghi action, heading, điều kiện.",
+        "Nếu có file export định dạng v1: import; ghi artwork version và action hiển thị."
+      ],
+      "observation_point": "Action, heading, điều kiện của layer đích trong artwork import.",
+      "expected_result": "Baseline (nguồn duy nhất là dev doc 2026-10-13, chưa có test case — không phải expected): import artwork giữ lựa chọn Hide. Import từ file export định dạng v1 chưa có thông tin — không suy rộng. Lệch là cần điều tra, không tự kết luận bug.",
+      "oracle": {
+        "kb_ids": [
+          "KB-230"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Trên build đã merge, import artwork có giữ action Hide không; import từ file export định dạng v1 xử lý action thế nào?",
+      "related_kb_ids": [
+        "KB-229"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nguồn dev doc viết trước khi code còn đổi tới merge; chưa có test case",
+        "Luồng import artwork chưa có KB item nào khác (profile artwork-list-management unknown_areas)"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-156"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Global template replica của artwork có layer action Hide: bản replica có giữ action Hide",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "global template có layer action Hide; tạo replica sang artwork khác",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal global templates + Artwork Editor 2.0"
+      },
+      "precondition": "Global template throwaway có layer Hide.",
+      "steps": [
+        "Tạo replica của global template theo luồng global templates.",
+        "Mở replica; mở Conditional Setting của layer đích; ghi action, heading, điều kiện."
+      ],
+      "observation_point": "Action, heading, điều kiện của layer đích trong replica.",
+      "expected_result": "Baseline (nguồn duy nhất là dev doc 2026-10-13, chưa có test case — không phải expected): global template replica giữ lựa chọn Hide. Lệch là cần điều tra, không tự kết luận bug.",
+      "oracle": {
+        "kb_ids": [
+          "KB-230"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Trên build đã merge, global template replica có giữ action Hide của layer không?",
+      "related_kb_ids": [],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nguồn dev doc viết trước khi code còn đổi tới merge; chưa có test case"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-156"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "'Duplicate & Link options' trên layer action Hide: bản LINKED/PLAIN_COPY có mang action và điều kiện của layer gốc không",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "artwork 2.0 có 1 layer nhóm LINKED và 1 layer nhóm PLAIN_COPY, cả hai action Hide với điều kiện",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor 2.0 (Duplicate & Link options)"
+      },
+      "precondition": "Fixture throwaway như applicability.",
+      "steps": [
+        "Chọn layer nhóm LINKED, bấm 'Duplicate & Link options'; ghi config panel của bản mới có Conditional Setting không, nếu có ghi action và điều kiện.",
+        "Lặp với layer nhóm PLAIN_COPY.",
+        "Save; reload; ghi lại."
+      ],
+      "observation_point": "Conditional Setting (action, điều kiện) của bản LINKED và bản PLAIN_COPY.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "'Duplicate & Link options' trên layer có action Hide: bản LINKED/PLAIN_COPY có mang action và điều kiện của layer gốc không?",
+      "related_kb_ids": [
+        "KB-045",
+        "KB-230"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-045 đang UNRESOLVED (CONF-003)"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-157"
     }
-  ]
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-05-layer-duplicate-link-copy",
+      "item": "Capability: Duplicate & Link LINKED vs PLAIN_COPY (base)",
+      "check_ids": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-003",
+        "CHK-004",
+        "CHK-005"
+      ],
+      "oracle": "BASELINE (KB-045, đang UNRESOLVED CONF-003 — tồn đọng)"
+    },
+    {
+      "feature_id": "FEAT-05-layer-duplicate-link-copy",
+      "item": "Capability: copy/paste, import, global template replica giữ Hide",
+      "check_ids": [
+        "CHK-009",
+        "CHK-010",
+        "CHK-011"
+      ],
+      "oracle": "BASELINE (KB-230), NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-05-layer-duplicate-link-copy",
+      "item": "Gap: sync LINKED, type mới, shape LINKED, Duplicate & Link với layer Hide",
+      "check_ids": [
+        "CHK-006",
+        "CHK-007",
+        "CHK-008",
+        "CHK-012"
+      ],
+      "oracle": "NONE"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Không có KB item về giới hạn số lượng/kích thước khi duplicate hay copy/paste layer."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "Không có KB item về role khác owner/staff hay copy/paste sang artwork của tenant khác."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-10-30",
+    "ccr_ref": "CBS-011"
+  }
 }

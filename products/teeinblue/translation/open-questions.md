@@ -5,9 +5,9 @@ Mỗi mục dưới đây là 1 entry độc lập với `oq_id` ổn định (k
 | Loại | Số lượng |
 |---|---|
 | CONFLICT | 1 |
-| NEEDS_CONFIRMATION | 15 |
-| OPEN_ISSUE | 6 |
-| **Tổng** | **22** |
+| NEEDS_CONFIRMATION | 24 |
+| OPEN_ISSUE | 8 |
+| **Tổng** | **33** |
 
 ## OQ-translation-001 — CONFLICT
 
@@ -139,4 +139,70 @@ Mỗi mục dưới đây là 1 entry độc lập với `oq_id` ổn định (k
 
 ```json
 {"oq_id": "OQ-translation-022", "type": "OPEN_ISSUE", "feature_id": "dynamic-translations", "summary": "Domain-knowledge do user cung cấp sau khi context đã publish lần đầu (chưa verify bằng thao tác thật — xem KB-020/KB-021 trong features/dynamic-translations/kb.json): (1) entry point import thật sự cho Dynamic Translations có thể là nút 'Import to Translations' trên các trang LIST của Artwork/Product Base/Campaign, khác với nút 'Import' đã test trực tiếp trên /artwork-translations; (2) phạm vi field dịch được theo entity nguồn có thể rộng hơn banner UI hiện tại (bao gồm layer placeholder, artwork custom name, campaign custom name/label). Cần 1 lần khảo sát bổ sung (đúng nút import + entity có field thật) — có thể giúp giải quyết luôn OQ-translation-001."}
+```
+
+## OQ-translation-023 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-translation-023", "type": "OPEN_ISSUE", "feature_id": "dynamic-translations", "summary": "Các hành vi Dynamic Translations nạp từ CCR CBS-001 (KB-022..KB-029) mới được verify trên staging cho TIB-5352 (Jira status QA Review, 3 PR còn OPEN, chỉ deploy staging); chưa release production. Cần re-verify (hoặc xác nhận) sau khi TIB-5352 lên production; trong lúc đó không dùng các item này để đánh giá hành vi production.", "kb_ids": ["KB-022", "KB-023", "KB-024", "KB-025", "KB-026", "KB-027", "KB-028", "KB-029"]}
+```
+
+## OQ-translation-024 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-024", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "Ngưỡng 1000 key để chuyển dictionary từ nhúng HTML sang API translations/<locale>.json (KB-022) là giá trị quan sát trên staging; Dev nói ngưỡng chỉnh được qua biến môi trường. Cần Dev xác nhận tên biến và giá trị trên production trước khi dùng 1000 làm boundary cho test production.", "kb_ids": ["KB-022"]}
+```
+
+## OQ-translation-025 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-025", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "Nhánh locale có 0 key đã dịch (Dev mô tả: hiện chữ gốc) chưa được verify — test case TC-TIB-004 blocked vì thiếu data. Cần test PASS hoặc xác nhận Dev/PO cho nhánh này (KB-022 cố ý không bao gồm).", "kb_ids": ["KB-022"]}
+```
+
+## OQ-translation-026 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-026", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "Độ trễ để HTML storefront nhận translation_version mới sau khi Save (KB-024: 30–45s ở một lần đo, ~30–70s theo tổng hợp vài mẫu) chưa có ngưỡng/SLA được xác nhận. Cần Dev/PO nêu khoảng trễ chấp nhận được (nếu có) để checklist có oracle.", "kb_ids": ["KB-024"]}
+```
+
+## OQ-translation-027 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-027", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "Endpoint public translations/<locale>.json trả 200 + full dictionary khi tham số v thiếu/rỗng/sai/rác, với cache-control 'immutable, max-age=31536000, private' khi có v và 'max-age=900, private' khi không có v (KB-025). Chỉ là quan sát; cần Dev/PO xác nhận đây có phải hành vi mong muốn không (đặc biệt cache immutable 1 năm với v sai/rác).", "kb_ids": ["KB-025"]}
+```
+
+## OQ-translation-028 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-028", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "Locale không tồn tại/chưa publish (xx-YY, pt-BR, zh-CN) trả 200 + dictionary ngôn ngữ chính (KB-026). CCR 4.2 nói KHÔNG coi đây là hành vi đúng. Cần Dev/PO xác nhận hành vi mong muốn (fallback primary hay 404).", "kb_ids": ["KB-026"]}
+```
+
+## OQ-translation-029 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-029", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "translations/zh-TW.json và zh-tw.json đều trả 200 với cùng dictionary (KB-027). Cần xác nhận so khớp mã locale không phân biệt hoa/thường là thiết kế (liên quan known issue Dev nêu về hoa/thường khi ghi metafield, chưa verify).", "kb_ids": ["KB-027"]}
+```
+
+## OQ-translation-030 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-030", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "Phản hồi của translations/<locale>.json với locale dị dạng ('..%2f..%2fx' 404, '<script>' 403 Cloudflare, 300 ký tự 404, %00 400, không stack trace — KB-028) chỉ là quan sát; cần Dev xác nhận đây là hành vi mong muốn trước khi dùng làm expected.", "kb_ids": ["KB-028"]}
+```
+
+## OQ-translation-031 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-translation-031", "type": "OPEN_ISSUE", "feature_id": "dynamic-translations", "summary": "CCR CBS-001: các hành vi Dev mô tả trong comment Jira TIB-5352 nhưng chưa verify — API trả đúng dictionary cho locale có mã vùng viết hoa (trước 404); xoá locale lẻ/bulk save → bản dịch trên Shopify cập nhật lại; đổi ngôn ngữ chính → storefront đồng bộ lại; embed ngoài Shopify vẫn gọi API, không có version; known issue không sửa: so khớp hoa/thường mã ngôn ngữ khi ghi metafield, shop inactive/thiếu quyền không tự sync lại. Các test case liên quan (TC-TIB-013/018/019/020/022) blocked. Cần nguồn: test case PASS trên build có thay đổi, hoặc xác nhận Dev/PO trích nguyên văn được chấp nhận."}
+```
+
+## OQ-translation-032 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-032", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "Endpoint public translations/<locale>.json chỉ nhận diện shop qua tham số shop=<domain>: một shop có đọc được dictionary của shop khác không, và đây có phải ranh giới dữ liệu mong muốn? Test case cross-shop bị blocked (P1, permission).", "kb_ids": ["KB-025"]}
+```
+
+## OQ-translation-033 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-033", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "PO xác nhận Save ở một locale không làm thay đổi bản dịch của các locale khác (KB-023) là hành vi mong muốn. Kết hợp với việc Save thay toàn bộ tập bản dịch (KB-012), nếu sai sẽ mất bản dịch — check P1 CHK-016 dùng KB-023 làm oracle duy nhất.", "kb_ids": ["KB-023", "KB-012"]}
 ```

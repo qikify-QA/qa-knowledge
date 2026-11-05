@@ -3,16 +3,19 @@
   "feature_key": "artwork-save-persist",
   "name": "Lưu và đọc lại artwork (Save & Close, API/auth dependency)",
   "user_goal": "Store owner lưu toàn bộ thay đổi (layer/template) của artwork từ editor xuống server một cách đáng tin cậy, và hệ thống đọc lại đúng dữ liệu đã lưu ở lần mở editor tiếp theo.",
-  "last_updated": {
-    "date": "2026-09-10",
-    "ccr_ref": "bootstrap"
-  },
   "actors": [
     {
       "role": "store owner / staff (sub=273, user_id=266, plan Blue (Test))",
       "permission_observed": "Full quyền save artwork; JWT chứa cả staff id (sub) và tenant/user id (user_id) trong cùng token",
       "kb_refs": [
         "KB-058"
+      ]
+    },
+    {
+      "role": "merchant-owner (store owner/staff, instance 520 nprice1)",
+      "permission_observed": "Mở artwork trong Artwork Editor và bấm Save; trên bản copy Artwork 1.0 #5187 PUT trả 500 nên không Save được",
+      "kb_refs": [
+        "KB-145"
       ]
     }
   ],
@@ -85,6 +88,15 @@
       "kb_refs": [
         "KB-051"
       ]
+    },
+    {
+      "from": "bản copy Artwork 1.0 #5187 (chưa có version nào đã lưu) mở trong Artwork Editor",
+      "to": "artwork không Save được; PUT /api/artworks/5187 trả 500 {\"message\":\"Server Error\"}",
+      "trigger": "bấm Save (kể cả khi không sửa gì)",
+      "condition": "quan sát 1 lần trên 1 fixture (staging 2026-10-21→22); nguyên nhân chưa rõ, không suy rộng cho mọi artwork Artwork 1.0",
+      "kb_refs": [
+        "KB-145"
+      ]
     }
   ],
   "confirmed_rules": [],
@@ -135,6 +147,15 @@
       "statement": "Response header access-control-expose-headers của PUT liệt kê tên Retry-After/X-RateLimit-Limit/X-RateLimit-Remaining/X-RateLimit-Reset, nhưng giá trị thực chưa từng xuất hiện trong bất kỳ capture nào.",
       "kb_refs": [
         "KB-061"
+      ],
+      "observed_count": 1
+    },
+    {
+      "statement": "Trên staging (instance 520 / nprice1, lượt chạy test 2026-10-21→22, build có TIB-5580 chưa ship), bấm Save trên artwork #5187 (bản copy Artwork 1.0 của #2164, chưa có version nào đã lưu) — kể cả khi mở lại editor và Save không đổi gì — PUT /api/artworks/5187 trả 500 với body {\"message\":\"Server Error\"}, artwork không Save được. Một fixture, một lượt chạy; chưa rõ do dữ liệu bản copy, lỗi sản phẩm hay liên quan TIB-5580; không suy rộng cho mọi artwork Artwork 1.0.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-145"
       ],
       "observed_count": 1
     }
@@ -242,7 +263,8 @@
       "PUT /api/artworks/{id}",
       "GET /api/artworks/{id} (405 not supported)",
       "GET /api/artworks (list, thiếu field templates)",
-      "POST /v1/graphql (Hasura, đọc artworks.templates jsonb)"
+      "POST /v1/graphql (Hasura, đọc artworks.templates jsonb)",
+      "PUT /api/artworks/{id} — 500 {\"message\":\"Server Error\"} quan sát trên bản copy Artwork 1.0 #5187 (KB-145)"
     ],
     "data": [
       "artworks.templates (jsonb, qua GraphQL/Hasura, KHÔNG phải db-explorer trực tiếp)"
@@ -288,6 +310,18 @@
         "KB-054",
         "KB-055"
       ]
+    },
+    {
+      "risk": "Bản copy Artwork 1.0 #5187 không Save được (PUT 500) — fixture này không dùng được cho bất kỳ check nào cần Save; check Paragraph Artwork 1.0 của feature text-multi-stroke đang bị chặn bởi lỗi này.",
+      "kb_refs": [
+        "KB-145"
+      ]
+    },
+    {
+      "risk": "Chỉ 1 fixture, 1 lượt chạy: không được dùng KB-145 làm oracle 'Save artwork Artwork 1.0 luôn lỗi', cũng không được bỏ qua như lỗi fixture khi chưa có nguyên nhân. TC-TIB-6332 hiện 'passed' trên Testlane trong khi actualResult ghi Blocked.",
+      "kb_refs": [
+        "KB-145"
+      ]
     }
   ],
   "unknown_areas": [
@@ -318,8 +352,39 @@
     {
       "question": "DB thật (Postgres schema/constraint bảng artworks) chưa được db-explorer kiểm tra trực tiếp — mọi 'DB' evidence ở đây thực chất qua GraphQL/Hasura hoặc chính response PUT.",
       "why_it_matters": "coverage_gaps #2 — cần phân biệt rõ với DB evidence thật khi review."
+    },
+    {
+      "question": "Vì sao PUT /api/artworks/5187 trả 500 'Server Error' kể cả khi Save không đổi gì trên bản copy Artwork 1.0 chưa có version đã lưu — lỗi dữ liệu của bản copy, lỗi sản phẩm với artwork Artwork 1.0 chưa có version, hay liên quan TIB-5580?",
+      "why_it_matters": "Quyết định đây là bug sản phẩm cần check hồi quy hay chỉ là fixture hỏng; cần log server để phân biệt.",
+      "kb_refs": [
+        "KB-145"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-114"
+    },
+    {
+      "question": "Các artwork Artwork 1.0 khác (không phải bản copy #5187, kể cả artwork gốc #2164 hoặc artwork 1.0 đã có version lưu) có Save được không?",
+      "why_it_matters": "Cần một artwork Artwork 1.0 Save được làm fixture để chạy lại check Paragraph Artwork 1.0; hiện chưa biết phạm vi của lỗi 500.",
+      "kb_refs": [
+        "KB-145"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-artwork-115"
+    },
+    {
+      "question": "Khi PUT /api/artworks/{id} trả 500, Artwork Editor hiển thị gì cho người dùng (toast/thông báo lỗi, giữ thay đổi chưa lưu hay không)?",
+      "why_it_matters": "KB-145 chỉ ghi artwork không Save được, không ghi phản hồi UI; check negative cho lỗi server khi Save chưa có oracle.",
+      "kb_refs": [
+        "KB-145"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-artwork-116"
     }
   ],
+  "last_updated": {
+    "date": "2026-10-26",
+    "ccr_ref": "CBS-007"
+  },
   "coverage_matrix": [
     {
       "feature_id": "FEAT-07-artwork-save-persist",
@@ -376,8 +441,32 @@
       "state": "toàn bộ",
       "environment": "staging",
       "covered": false
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "layer": "api",
+      "role": "owner",
+      "state": "Save bản copy Artwork 1.0 chưa có version đã lưu (#5187) — PUT 500",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-145"
+      ],
+      "basis": "1 quan sát, 1 fixture"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "layer": "api",
+      "role": "owner",
+      "state": "Save artwork Artwork 1.0 khác (không phải bản copy #5187); phản hồi UI khi PUT 500",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-145"
+      ]
     }
   ],
+  "profile_conflicts": [],
   "profile_relationships": [
     {
       "from_feature_id": "FEAT-07-artwork-save-persist",
@@ -402,6 +491,17 @@
       "to_feature_id": "FEAT-11-populate-values",
       "relation": "persists",
       "note": "retrieval_*/retrieval_styles chỉ persist qua PUT của feature này (KB-076)."
+    },
+    {
+      "from_feature_id": "FEAT-07-artwork-save-persist",
+      "to_feature_id": "FEAT-20-text-multi-stroke",
+      "relation": "persists",
+      "note": "stroke_layers / stroke_enabled / stroke_color / stroke_width của text layer chỉ persist qua PUT của feature này (KB-129); lỗi PUT 500 trên bản copy Artwork 1.0 #5187 (KB-145) chặn việc kiểm payload Paragraph Artwork 1.0 (KB-142).",
+      "kb_refs": [
+        "KB-129",
+        "KB-142",
+        "KB-145"
+      ]
     }
   ]
 }
