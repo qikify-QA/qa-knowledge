@@ -1,18 +1,14 @@
 # Product guide — teeinblue
 
-Bản chỉ dẫn của Teeinblue: product làm gì, feature ở đâu, môi trường nào test được gì, setup ra sao. Chi tiết của từng feature nằm ở `<object>/features/<feature>/profile.json`.
+Bản đồ của product: có gì, ở đâu, test được không. Mọi bước đều đọc file này.
 
-| Đang làm | Đọc |
-|---|---|
-| Phân tích yêu cầu, viết test case | Phần A |
-| Dựng data, chạy test | Phần A, Phần B |
+- Đúng phải là gì: `<object>/features/<feature>/kb.json`, `checklists/`.
+- Làm thế nào: `_flows/`, đọc `_flows/README.md` rồi đúng file theo chủ đề.
+- Biến env: `_env.example`.
 
-**Guide trả lời "vào đâu, làm thế nào". KB và checklist trả lời "đúng phải là gì".** Không dùng guide làm expected result. Không ghi giá trị credential, id account, id instance, tên store vào file này: biến env ở `_env.example`, giá trị ở `.env` local.
+Không dùng guide làm expected result. Không ghi giá trị credential, id, tên store.
 
-<!-- PART-A:start -->
-# Phần A: Bản đồ
-
-## A1. Product
+## 1. Product
 
 Teeinblue là app cá nhân hoá sản phẩm in theo yêu cầu (print-on-demand). Luồng chính:
 
@@ -31,7 +27,7 @@ Teeinblue là app cá nhân hoá sản phẩm in theo yêu cầu (print-on-deman
 | Conditional setting | Điều kiện hiện hoặc ẩn layer |
 | Boundless / open platform | Kênh không phải Shopify, nhúng SDK qua iframe |
 
-## A2. Object và feature
+## 2. Object và feature
 
 Từ khoá ticket sang object: `_registry.json`. Trạng thái, version, dùng làm oracle được không: `manifest.json`. Mỗi feature có `features/<key>/profile.json` (entry point, precondition, `environment_differences`) và `checklists/<key>.json`.
 
@@ -50,11 +46,9 @@ Từ khoá ticket sang object: `_registry.json`. Trạng thái, version, dùng l
 
 Ticket không khớp key nào: ghi knowledge gap, đề xuất key mới trong CCR.
 
-## A3. Môi trường
+## 3. Môi trường
 
-Host từng môi trường: B1. Nhận biết môi trường của storefront: xem script SDK.
-
-**Store theo việc:**
+Thấy host production thì dừng: `portal.teeinblue.com`, `api.teeinblue.com`, `portal-api.teeinblue.com`, `sdk.teeinblue.com`, `customize.teeinblue.com`, `photo-api.teeinblue.com`.
 
 | Biến | Đặc điểm | Dùng cho | Không dùng cho |
 |---|---|---|---|
@@ -66,158 +60,46 @@ Host từng môi trường: B1. Nhận biết môi trường của storefront: x
 | `TIB_USER_A_*`, `TIB_USER_B_*` | Hai tenant | Permission, cross-tenant | Thiếu biến thì `NOT_COVERED`, không thay account khác |
 | `TIB_STAFF_VIEW_ONLY*`, `TIB_STAFF_GEN_ONLY*` | Staff quyền hạn chế | Phân quyền | |
 
+## 4. Test được gì
+
+**Nhãn test case:** không test được cả case là `env-blocked`: không execute, Testlane `skipped` kèm lý do, verdict `NOT_APPLICABLE`. Không test được một vế: giữ case, ghi "vế X: skip — <lý do>", kết luận theo các vế còn lại.
+
+| Hạng mục | Feature | `type` | Mức | Cách xử lý |
+|---|---|---|---|---|
+| Generate test design trên dev store | `campaign/create-campaign-by-product-base` | `ALTERNATIVE_SETUP` | Vế | Đặt order test rồi lấy design của order |
+| Horizon (job failed, queued) | Nhiều feature | `NOT_TESTABLE` | Vế | Bỏ vế Horizon, verify UI và API |
+| Strava trong Route Maps | `artwork/layer-config-maps-astronomy` | `NOT_TESTABLE` | Vế | Bỏ dòng Strava |
+| Tracking từ provider | `order/review-and-initiate-fulfillment-portal` | `NOT_TESTABLE` | Case | `env-blocked`; fulfill tay đi đường khác, không thay được |
+| Size gốc của provider | `product-base/printarea-definition` | `NOT_TESTABLE` | Vế | Skip vế giảm size, vẫn verify DPI |
+| `photo_endpoint=snap` | `sdk/storefront-buyer-facing` | `DIFFERENT_VALUE` | Case hoặc vế | Chỉ Dev set được; staging chỉ verify HTML, preconnect |
+| Upload CORS, preconnect tới host production | `sdk/storefront-buyer-facing` | `NOT_TESTABLE` | Vế | Kiểm trên production |
+| Network timing | `sdk/storefront-buyer-facing` | `ALTERNATIVE_SETUP` | Vế | Kết luận theo Chrome thật, số headless chỉ tham khảo |
+| Browser chặn site data, ITP | `sdk/storefront-buyer-facing` | `ALTERNATIVE_SETUP` | Vế | Chỉ giả lập được, nêu rõ giới hạn |
+
+Khác biệt riêng của feature còn nằm ở `environment_differences` trong profile.
+
 **Cần người hỗ trợ:**
 
 - Bảng nội bộ không lộ qua GraphQL: agent soạn query read-only, người có quyền chạy.
 - Job theo lịch: nhờ Dev chạy command trên staging, không chờ tới giờ.
 - Config server (provider key, branch, migration): là điều kiện tiên quyết cho Dev.
 
-## A4. Index giới hạn môi trường
-
-Chi tiết và cách test: `environment_differences` trong profile của feature. `type`: `NOT_TESTABLE` không chạy, `ALTERNATIVE_SETUP` test theo cách khác, `DIFFERENT_VALUE` test theo giá trị của staging.
-
-| Hạng mục | Feature | `type` | Mức |
-|---|---|---|---|
-| Generate test design trên dev store | `campaign/create-campaign-by-product-base` | `ALTERNATIVE_SETUP` | Vế |
-| Horizon (job failed, queued) | Nhiều feature | `NOT_TESTABLE` | Vế |
-| Strava trong Route Maps | `artwork/layer-config-maps-astronomy`, `sdk/storefront-buyer-facing` | `NOT_TESTABLE` | Vế |
-| Tracking từ provider | `order/review-and-initiate-fulfillment-portal` | `NOT_TESTABLE` | Case |
-| Size gốc của provider | `product-base/printarea-definition` | `NOT_TESTABLE` | Vế |
-| `photo_endpoint=snap` | `sdk/storefront-buyer-facing` | `DIFFERENT_VALUE` | Case hoặc vế |
-| Upload CORS, preconnect tới host production | `sdk/storefront-buyer-facing` | `NOT_TESTABLE` | Vế |
-| Network timing | `sdk/storefront-buyer-facing` | `ALTERNATIVE_SETUP` | Vế |
-| Browser chặn site data, ITP | `sdk/storefront-buyer-facing` | `ALTERNATIVE_SETUP` | Vế |
-
-## A5. Bẫy làm sai kết luận
+## 5. Bẫy làm sai kết luận
 
 | Dấu hiệu | Cách hiểu |
 |---|---|
-| Bản dịch vừa Save chưa lên storefront | Cache theo `translation_version`. Đợi rồi reload, hoặc mở context sạch |
 | Toggle mặc định khác mong đợi | Mặc định theo config shop (`default_value`). Đọc config trước khi báo bug |
 | `ERR_FAILED` kèm lỗi CORS khi body có `<script` hoặc `onload=` | WAF chặn. Không suy ra app an toàn |
 | Ngưỡng rate limit khác ticket | Staging cố ý đặt nhỏ hơn. Tin header `x-ratelimit-limit` |
 | Link Edit Customization trên staging 404 | Link luôn trỏ customize production. Đổi host sang customize staging, giữ nguyên query |
 | Upload qua Playwright lọt `accept` | Tool bypass, merchant thật bị chặn ở FE. Không log bug |
+| Theme editor, checkout editor không có data teeinblue | Chỉ là placeholder. Verify bằng storefront thật |
+| Storefront vẫn cũ sau khi sửa | Cache `app-v1.js` hoặc `translation_version`, localStorage. Cách xử lý: `_flows/environment.md` |
 
-## A6. Mutation guard
+## 6. Mutation guard
 
 - **Production chỉ đọc**, trừ khi operator giao đúng việc đó.
 - Data tạo cho một ticket đặt tên theo title ticket và giữ lại sau test. Không sửa data có sẵn của người khác.
 - Thay đổi tạm (config store, throttle, route) phải trả về giá trị cũ sau khi test.
 - Order chỉ đặt bằng thanh toán test.
 - Evidence phải che token: `GET /api/instances/<id>` và một số response trả kèm `token`, API key.
-<!-- PART-A:end -->
-
-<!-- PART-B:start -->
-# Phần B: Thực thi
-
-## B1. Env và login
-
-| Surface | Staging | Production (thấy host này thì dừng) |
-|---|---|---|
-| Portal | `staging-portal.teeinblue.com` | `portal.teeinblue.com` |
-| API portal, REST và GraphQL `/api/graphql` | `staging-api.teeinblue.com/api` | `portal-api.teeinblue.com/api` |
-| API merchant (SDK gọi) | `staging-api.teeinblue.com/api/merchant/...` | `api.teeinblue.com` |
-| SDK storefront | `staging-sdk.teeinblue.com` | `sdk.teeinblue.com` |
-| Customize page | `staging-sdk.teeinblue.com/customize/` | `customize.teeinblue.com` |
-| Upload | `upload-staging.teeinblue.com` | `photo-api.teeinblue.com` |
-| CDN design order | `cdn.ownego.com/teeinblue-staging/designs/` | `cdn.teeinblue.com/designs/` |
-| Open API | `TIB_OPENAPI_BASE` | |
-
-Chép `_env.example` thành `.env` rồi điền giá trị do operator cấp. Tạo token bằng `POST /api/tokens` với `name` và `abilities`, giá trị chỉ hiện lúc tạo. Ability: `orders:read`, `orders:write`, `customizations:read`, `campaigns:read`, `products:read`, `mcp:access`.
-
-**Login, làm lại sau mỗi lần session hết hạn:**
-
-1. Mở `/login?staff=true`. Route `/login` là đường Shopify owner, không dùng.
-2. Ghi đè cả email lẫn password. Form có thể autofill email của account khác.
-3. `GET /api/user` và sidebar phải khớp account của biến đang dùng. Sai thì dừng, không tạo data.
-
-**Session:** cookie Laravel Sanctum, TTL khoảng 15 phút. storageState hết hạn thì tạo lại. Gọi API trong page: `fetch()` với `credentials: 'include'` và header `X-XSRF-TOKEN`. Ngoài browser: `GET /sanctum/csrf-cookie` với Origin/Referer của portal, rồi `POST /api/login`. Thiếu User-Agent thì 403. Cloudflare Turnstile hiện challenge thì nhờ người login tay. `/login/two-factor` hiện lại thì nhờ người nhập mã.
-
-**Instance active lưu phía server theo account**, phiên khác có thể đổi giữa chừng. Kiểm sidebar trước khi tạo data.
-
-## B2. Dựng test data
-
-| Mã | Fixture | Cách dựng | Lưu ý |
-|---|---|---|---|
-| F0 | Session | Login theo B1 | Bắt buộc cho mọi fixture |
-| F1 | Product base | `/products/new`, thêm print area, variant, mockup | Có thể duplicate thay vì tạo mới |
-| F2 | Artwork | `/artworks`, thêm layer cần test, Save từng chặng | `Save & Close` chỉ tạo artwork, chưa gắn vào print area |
-| F3 | Campaign by Product Base | `/campaigns/new`, add F1, gắn F2 vào print area | |
-| F4 | Campaign by Shopify | `/platform-products/new`, chọn Shopify product, connect variant | Product phải bật Online Store |
-| F5 | Storefront | Publish F3 hoặc F4, mở store bằng biến ở A3 | Dùng context sạch |
-| F6 | Order | Add to cart từ F5 rồi checkout | Bogus gateway, hiển thị "Credit card": thẻ `1` thành công, `2` fail, `3` exception |
-| F7 | Asset | Category, item, font, ảnh trong trang Assets | Tạo layer-image dồn dập có thể bị 429 |
-| F8 | Global Option | `/global-options/create` | Bật Show in cart nếu cần thấy ở cart |
-| F9 | Hai tenant | `TIB_USER_A_*`, `TIB_USER_B_*` | |
-
-## B3. Route và API
-
-| Menu | Route |
-|---|---|
-| Campaigns | `/campaigns`, `/platform-products` |
-| Product Base, Artworks | `/products`, `/artworks` |
-| Assets | `/cliparts`, `/vectors`, `/fonts`, `/global-options` |
-| Dynamic Translations | `/artwork-translations` |
-| Store Settings | `/general-settings`, `/product-page-settings`, `/product-page-content` |
-| Trash, Activity logs | `/trash`, `/activity-logs` |
-
-`/settings` trả 404. Sau login portal luôn về `/`, phải tự mở lại trang đích.
-
-| Mục đích | Request |
-|---|---|
-| User hiện tại, instance | `GET /api/user`, `GET /api/instances` |
-| GraphQL portal | `POST /api/graphql`, id kiểu `bigint` |
-| Đọc artwork | GraphQL `artworks_by_pk`. `GET /api/artworks/<id>` trả 405 |
-| Config campaign công khai | `GET /api/merchant/campaigns/<shopifyProductId>.json?shop=<shop>` |
-| Lưu customization | `POST /api/merchant/shopify/customization?shop=<shop>&id=<productId>` |
-| Đọc customization | `GET /api/merchant/shopify/customization/<uuid>?shop=<shop>` |
-| Shopify product id | Storefront `/products/<handle>.js` |
-
-Gọi thẳng `staging-graphql.teeinblue.com` trả "Invalid response from authorization hook". Request analytics và chat widget là nhiễu.
-
-## B4. Giới hạn tool
-
-| Tool | Giới hạn | Cách xử lý |
-|---|---|---|
-| Staging MCP, tạo Global Option | Không có `show_in_cart`; type `text` có lúc lỗi `top/left/width required` | Tạo bằng Portal hoặc `POST /api/global-options` |
-| Staging MCP, tạo GO và layer | Không áp `default_layer_value` của user | Expected là payload truyền vào. Case phụ thuộc default thì tạo bằng Portal |
-| Staging MCP, condition | `dependency.dependencies[].value` phải đúng kiểu id, sai kiểu vẫn nhận nhưng storefront không match | Lấy id từ `clipart_categories[].options[].id` của campaign JSON |
-| Shopify MCP | Không tạo collection, không publish Online Store; `get-orders` chỉ trả order cũ nhất | Làm qua Shopify admin |
-| Playwright headless | Timing mạng sai | Chạy headed |
-
-## B5. Thao tác UI
-
-| Dấu hiệu | Cách xử lý |
-|---|---|
-| Đã sửa mà storefront vẫn cũ | `app-v1.js` không có hash, cache rất lâu. So bundle trang đang chạy với `fetch(url, {cache:'no-store'})` |
-| Field storefront có sẵn giá trị cũ, gõ bị nối | SDK khôi phục từ localStorage. Dùng context sạch |
-| Storefront 404 dù campaign by Shopify đã publish | Shopify product chưa bật Online Store |
-| Theme editor, checkout editor không có data teeinblue | Chỉ là placeholder. Verify bằng storefront thật |
-| Dialog Confirm password không hiện | Có hiệu lực 15 phút sau lần xác nhận trước |
-| Race condition chỉ thấy với `dispatchEvent` liền `blur` | Có thể là artifact của automation. Đo ngưỡng, chạy lại bằng thao tác thật |
-| Sau `Save` không có lỗi console | Đọc toast: cách duy nhất biết validate fail ở artwork editor |
-| Mất layer chưa lưu | Session hết hạn im lặng. Save từng chặng |
-| Trang "Verify you are human" trên storefront | Bot protection của Shopify. Nghỉ vài phút, dùng browser đã vào được |
-| Sidebar collapse, label có icon | Chờ `attached`, match theo `href` |
-| Click chữ của toggle không ăn | Toggle là `label.vue-js-switch` |
-
-| Điểm | SDK v1 | SDK v2 |
-|---|---|---|
-| Nút add to cart | `#teeAtcButton` | Nút của theme |
-| Endpoint cart | `/cart/add.js` (JSON) | `/cart/add` (FormData) |
-| Auto chọn template | Có | Không, phải chọn tay |
-
-## B6. Kết luận check
-
-| Tình huống | Kết luận |
-|---|---|
-| `status: READY`, khớp `expected_result` | `PASS` |
-| `status: READY`, oracle `STRONG`, lệch | `FAIL`, sau khi loại trừ A5 và B5 |
-| `status: READY`, oracle `BASELINE`, lệch | `SUSPECTED_FAIL`, đối chiếu PO/Dev |
-| `status: NEEDS_CONFIRMATION`, oracle `NONE`, hoặc item `UNRESOLVED` | Chỉ ghi `OBSERVED: <hành vi thật>` |
-| `environment_differences` có `NOT_TESTABLE` | `NOT_APPLICABLE` trên môi trường đó |
-| Không quan sát được, thiếu quyền, thiếu data | `NOT_COVERED` hoặc `BLOCKED`, nêu rõ thiếu gì |
-
-Hành vi thật khác knowledge, hoặc đã xác nhận một Open Question: gửi CCR (`how-to-request/consumer-guide.md` §5). Bug thật: báo trên Testlane theo quy trình của team.
-<!-- PART-B:end -->
