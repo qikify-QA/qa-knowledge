@@ -580,3 +580,320 @@
 }
 ```
 
+## OQ-sdk-050 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-sdk-050", "type": "OPEN_ISSUE", "feature_id": "storefront-buyer-facing", "summary": "Các hành vi SDK về translations nạp từ CCR CBS-001 (KB-053..KB-060) mới được verify trên staging cho TIB-5352 (Jira status QA Review, 3 PR còn OPEN, chỉ deploy staging); chưa release production. Cần re-verify (hoặc xác nhận) sau khi TIB-5352 lên production; trong lúc đó không dùng các item này để đánh giá hành vi production.", "kb_ids": ["KB-053", "KB-054", "KB-055", "KB-056", "KB-057", "KB-058", "KB-059", "KB-060"]}
+```
+
+## OQ-sdk-051 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-051", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "summary": "Fallback chữ gốc khi API translations trả 500/503 hoặc bị abort (KB-054) chỉ quan sát trong test case FAILED TC-TIB-4696; cần test PASS hoặc Dev/PO xác nhận trước khi làm oracle.", "kb_ids": ["KB-054"]}
+```
+
+## OQ-sdk-052 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-052", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "summary": "Khi translations API timeout, console có pageerror 'signal is aborted without reason' (KB-055). CCR 4.2 nói không coi đây là hành vi mong muốn. Cần Dev xác nhận đây là lỗi cần sửa hay chấp nhận được.", "kb_ids": ["KB-055"]}
+```
+
+## OQ-sdk-053 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-053", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "summary": "Thiết kế retry khi fetch translations lỗi: staging quan sát retry lazy (tối đa 2 fetch, lần 2 chỉ ở lần gọi kế tiếp trong cùng page session, không retry khi load trang — KB-057), trong khi Dev mô tả 'SDK chỉ thử lại đúng 1 lần' không nêu điều kiện và test case TC-TIB-4696 FAILED vì kỳ vọng '1 retry khi load'. Cần Dev xác nhận hành vi retry mong muốn.", "kb_ids": ["KB-057"]}
+```
+
+## OQ-sdk-054 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-054", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "summary": "Dictionary inline chỉ in 1 lần trong HTML /zh-zh/ (KB-059); điều kiện 'trang render cả theme app extension và theme script' (KB-060) chỉ suy từ dấu hiệu HTML, chưa mở theme editor xác nhận cấu hình. Cần owner chấp nhận dấu hiệu HTML, hoặc chạy lại với cấu hình theme đã xác nhận.", "kb_ids": ["KB-059", "KB-060"]}
+```
+
+## OQ-sdk-055 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-055", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "summary": "Mốc 5 giây (timeout headers đọc từ bundle, KB-056) có phải ngưỡng chính thức không, và widget hiển thị gì khi response translations đến ngay dưới 5 giây?", "kb_ids": ["KB-056", "KB-053"]}
+```
+
+## OQ-sdk-056 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-sdk-056", "type": "OPEN_ISSUE", "feature_id": "storefront-buyer-facing", "summary": "Chưa kiểm trường hợp translations API timeout lúc load rồi buyer gọi lần thứ hai trong cùng page session (vd 'Edit design' trong cart): widget có lấy được bản dịch không hay vẫn hiện chữ gốc?", "kb_ids": ["KB-057"]}
+```
+
+## OQ-sdk-057 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-sdk-057", "type": "OPEN_ISSUE", "feature_id": "storefront-buyer-facing", "summary": "Mọi evidence về fallback/retry/nhãn thiếu của translations (KB-053..KB-058) đến từ bundle app-v1.js; bundle app-v2.js chưa được kiểm.", "kb_ids": ["KB-053", "KB-054", "KB-055", "KB-056", "KB-057", "KB-058"]}
+```
+
+## OQ-sdk-058 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-058", "type": "NEEDS_CONFIRMATION", "feature_id": "open-platform-customization-callback", "summary": "Với customization từ 2 artwork trở lên: design_urls có đúng 1 phần tử cho mỗi artwork không, thứ tự có theo thứ tự artwork trong form không, mỗi URL có lấy đuôi theo design_format riêng của artwork khi các artwork khác định dạng không, và nền tảng có cho phép design_format khác nhau trong cùng customization không? Mới verify được trường hợp 1 artwork (KB-061); phần nhiều artwork chỉ đọc từ bundle (KB-062), các test case nhiều artwork đều skipped.", "kb_ids": ["KB-062"]}
+```
+
+## OQ-sdk-059 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-059", "type": "NEEDS_CONFIRMATION", "feature_id": "open-platform-customization-callback", "summary": "Khi 1 artwork trong customization nhiều artwork tạo design thất bại, design_urls xử lý thế nào (bỏ phần tử, null, cờ lỗi, hay chặn cả payload)? Yêu cầu không định nghĩa, test case tương ứng skipped.", "kb_ids": ["KB-062"]}
+```
+
+## OQ-sdk-060 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-060", "type": "NEEDS_CONFIRMATION", "feature_id": "open-platform-customization-callback", "summary": "Bảng ánh xạ design_format → đuôi file của open-platform SDK (svg, eps, ai, jpeg, jpeg_cmyk*, pdf giữ định dạng; còn lại mặc định png) có đúng là hành vi chủ đích không? Mới quan sát nhánh 'rgb' → .png; phần còn lại chỉ đọc từ bundle (KB-063).", "kb_ids": ["KB-063"]}
+```
+
+## OQ-sdk-061 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-061", "type": "NEEDS_CONFIRMATION", "feature_id": "open-platform-customization-callback", "summary": "Khi widget open-platform chạy trong iframe, payload (kể cả design_urls) có được gửi tới trang cha qua window.parent.postMessage không, và payload đầy đủ gồm những key nào? Mới quan sát nhánh gọi trực tiếp window.teeinblue.onCustomizationCreated (KB-064).", "kb_ids": ["KB-064"]}
+```
+
+## OQ-sdk-062 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-062", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "summary": "Bundle Shopify theme-embed app-v1.js không có design_urls / onCustomizationCreated, và hằng EVENT_CUSTOMIZATION_CREATED được định nghĩa nhưng không được dispatch (KB-065). Đây là phạm vi chủ đích của TIB-5427 (chỉ open-platform) hay là thiếu sót cần bổ sung cho kênh theme-embed? Cần Dev/PO trả lời.", "kb_ids": ["KB-065", "KB-009"]}
+```
+
+## OQ-sdk-063 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-063", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "summary": "Bundle app-v2.js có giống app-v1.js về design_urls / onCustomizationCreated / EVENT_CUSTOMIZATION_CREATED không? KB-065 chỉ kiểm app-v1.js, trong khi store đang serve app-v2.js (KB-040).", "kb_ids": ["KB-065", "KB-040"]}
+```
+
+## OQ-sdk-064 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-064", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "summary": "Ở kênh theme-embed, cart line-item property _tib_design_link_N (KB-009) có phải cơ chế giao design link theo từng artwork duy nhất không? Điều này mới chỉ suy ra từ việc grep bundle không thấy cơ chế khác.", "kb_ids": ["KB-065", "KB-009"]}
+```
+
+## OQ-sdk-065 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-sdk-065", "type": "OPEN_ISSUE", "feature_id": "open-platform-customization-callback", "summary": "Kiểm soát truy cập của design URL trả trong design_urls/design_url chưa có kết luận: test case bảo mật (một design URL có dùng được để lần ra design của customization khác hay không) đang bị chặn chờ PO/Dev. Chưa có oracle cho chiều PERMISSION của feature này.", "kb_ids": ["KB-061"]}
+```
+
+## OQ-sdk-066 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-066", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "summary": "'teeinblue-customizations' giữ tối đa bao nhiêu entry (người chạy test ghi khoảng 10, chưa đếm độc lập) và entry bị loại theo tiêu chí nào — timestamp cũ nhất hay thứ tự thêm? Check về draft localStorage khi buyer thao tác nhiều product cần biết giới hạn và thứ tự loại chính xác; hiện chỉ có 1 lượt quan sát, chưa có nguồn dev/spec.", "kb_ids": ["KB-066"]}
+```
+
+## OQ-sdk-067 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-sdk-067", "type": "OPEN_ISSUE", "feature_id": "storefront-buyer-facing", "summary": "Giới hạn khoảng 10 entry có áp dụng cho key đồng hành 'teeinblue-global-options' và cho cả hai bundle app-v1.js / app-v2.js không? Quan sát KB-066 không ghi bundle/SDK version của store test và chỉ nói về 'teeinblue-customizations'; không được suy giới hạn sang key hay bundle khác khi viết check.", "kb_ids": ["KB-066", "KB-015"]}
+```
+
+## OQ-sdk-068 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-sdk-068", "type": "OPEN_ISSUE", "feature_id": "storefront-buyer-facing", "summary": "Known defect BUG-321..324: field required trong Group ẩn vẫn chặn Add to cart (TC-TIB-6064 Fail 2026-10-16). Testlane hiện ghi passed và bugId đã bị gỡ khỏi case nhưng không có lần chạy lại có ngày. Bug đã fix chưa, fix trên build nào? Cần chạy lại TC-TIB-6063/6064 có ngày + build.", "kb_ids": ["KB-179"]}
+```
+
+## OQ-sdk-069 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-sdk-069", "type": "OPEN_ISSUE", "feature_id": "storefront-buyer-facing", "summary": "Known defect BUG-321: field của layer con trong Group ẩn vẫn có trong form storefront, kể cả khi condition buyer-side thoả (TC-TIB-6066, TC-TIB-6067 Fail 2026-10-16; ghi chú '=>> Do bị cache' không có ngày chạy lại; TC-TIB-6065 rỗng). Đã fix chưa? Cần chạy lại có ngày; tách riêng hiệu ứng 'Show this layer on first load' khỏi condition.", "kb_ids": ["KB-180"]}
+```
+
+## OQ-sdk-070 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-070", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "summary": "Hành vi đúng của form cá nhân hoá storefront khi artwork có Group ẩn là gì — form không có field của layer trong Group ẩn, required của các field đó không chặn Add to cart, condition trỏ vào layer ẩn hiệu dụng không bao giờ pass (như QA plan/ticket của dev mô tả) — PO có xác nhận không?", "kb_ids": ["KB-179", "KB-180"]}
+```
+
+## OQ-sdk-071 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-071", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "summary": "Layer con bật 'Show this layer on first load' dưới Group ẩn, khi không gắn condition, phải hiện hay không ở lần load đầu, và có field trong form không? (lượt 2026-10-16 không hiện nhưng layer đó còn gắn condition nên chưa tách được hiệu ứng)", "kb_ids": []}
+```
+
+## OQ-sdk-072 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-sdk-072", "type": "OPEN_ISSUE", "feature_id": "storefront-buyer-facing", "summary": "Buyer preview storefront theo effective visibility (TC-TIB-6068) có giữ nguyên trên build staging sau khi toàn bộ 6 PR của TIB-5584 merge, trên production khi TIB-5584 release, và trên cả hai bundle app-v1.js / app-v2.js không?", "kb_ids": ["KB-181"]}
+```
+
+## OQ-sdk-073 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-073", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "summary": "Với 'Hide this layer on first load' TẮT và nguồn chưa trả lời, layer action Hide có hiện trên artwork preview trên build đã merge không? Nhánh này chỉ có tài liệu dev viết trước khi code còn đổi, chưa test case nào kiểm.", "kb_ids": ["KB-233"]}
+```
+
+## OQ-sdk-074 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-074", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "summary": "PO xác nhận trên build đã merge: điều kiện có nguồn đang bị ẩn được tính là không khớp, linked layer đi theo hiển thị cuối của layer gốc, điều kiện 2 cấp lan theo — và 'nguồn bị ẩn' có bao gồm nguồn nằm trong Group ẩn không (giao với known defect KB-180)? Chỉ có nguồn tài liệu dev.", "kb_ids": ["KB-235"]}
+```
+
+## OQ-sdk-075 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-075", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "summary": "Layer không điều kiện và layer Show có giữ nguyên hành vi trên SDK đã có code Hide (bản từ 2026-10-28 03:01:11 GMT hoặc build đã merge) không? Test case regression mới chạy trên SDK cũ.", "kb_ids": ["KB-236"]}
+```
+
+## OQ-sdk-076 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-076", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "summary": "Sau khi deploy production, storefront có thể chạy SDK cũ đã cache trong bao lâu (max-age=14400 hay khác), trong thời gian đó layer Hide hiển thị thế nào (một lượt quan sát cho thấy đảo chiều, BUG-429), và có cần cảnh báo merchant không?", "kb_ids": ["KB-237"]}
+```
+
+## OQ-sdk-077 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-sdk-077", "type": "OPEN_ISSUE", "feature_id": "storefront-buyer-facing", "summary": "Các rule Hide trên storefront (KB-231, KB-232, KB-234) có giữ nguyên trên build staging sau khi 6 PR của TIB-5558 merge (2026-10-29), trên production khi TIB-5558 release, và trên bundle app-v1.js không? Lượt PASS duy nhất chạy trước khi merge, chỉ trên app-v2.js.", "kb_ids": ["KB-231", "KB-232", "KB-234"]}
+```
+
+## OQ-sdk-078 — CONFLICT
+
+```json
+{"oq_id":"OQ-sdk-078","type":"CONFLICT","feature_id":"product-page-settings-config","summary":"Chuỗi label của setting lọc media theo variant đang chọn mâu thuẫn giữa hai nguồn; teeinblue không tự supersede nên KB-025 và KB-318 đều UNRESOLVED, CHK-003 không có oracle cho tới khi PO chọn: (a) thay chuỗi trong KB-025 bằng KB-318, (b) giữ cả hai như hai thời điểm (thu phạm vi KB-025 thành 'trước tính năng gán video'), hay (c) giữ base. Chỉ phần chuỗi label bị tranh chấp; các giá trị control khác trong KB-025 không bị claim chạm.","kb_ids":["KB-025","KB-318"],"side_a":"KB-025 (base, quan sát 2026-09-21 trên store1/store2): label là 'Show only the assigned images of the selected variant'.","side_b":"KB-318 (test case PASS 2026-10-22, staging, trước khi các PR merge): label là 'Show only the assigned images and videos of the selected variant' và trang không còn chuỗi cũ."}
+```
+
+## OQ-sdk-079 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-079","type":"NEEDS_CONFIRMATION","feature_id":"product-page-settings-config","summary":"Dev xác nhận config key của setting lọc media theo variant vẫn là show_assigned_variant_images_only sau khi tính năng mở rộng sang video (bản đã merge). Mới chỉ thấy trong actualResult.","kb_ids":["KB-319"]}
+```
+
+## OQ-sdk-080 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-080","type":"OPEN_ISSUE","feature_id":"product-page-settings-config","summary":"Kết quả kiểm label của setting lọc media theo variant (TC-TIB-6423) chỉ có một lượt PASS trên staging 2026-10-22, trước khi 4 PR của TIB-5428 merge (2026-10-27); cần chạy lại trên bản đã merge / production (sau khi PO chốt conflict label).","kb_ids":["KB-318"]}
+```
+
+## OQ-sdk-081 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-081","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"PO/dev xác nhận: đổi assignment mockup/video ↔ variant có chủ ý cần Update/Sync campaign thì storefront mới phản ánh không? Mới chỉ là ghi chú trong actualResult.","kb_ids":["KB-321"]}
+```
+
+## OQ-sdk-082 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-082","type":"OPEN_ISSUE","feature_id":"storefront-buyer-facing","summary":"Lỗi đã biết BUG-359: video bật 'Always load first' chỉ được focus nhưng vẫn ở vị trí thứ 2 trong gallery. Đã fix/retest chưa, trên bản nào? KB-327 không làm oracle.","kb_ids":["KB-327"]}
+```
+
+## OQ-sdk-083 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-083","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"PO xác nhận: video bật 'Always load first' và được gán cho variant đang chọn có phải đứng đầu gallery và là item focus không? Một trao đổi nội bộ có nêu như vậy nhưng chưa phải nguồn xác nhận; sau khi fix BUG-359 cần chạy lại case tương ứng.","kb_ids":["KB-327"]}
+```
+
+## OQ-sdk-084 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-084","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"PO xác nhận ý định (ảnh hưởng đơn hàng/fulfillment): khi variant chỉ được gán video, form cá nhân hoá và design của đơn hàng hoạt động thế nào? KB-323 chỉ xác nhận gallery và khu vực preview.","kb_ids":["KB-323"]}
+```
+
+## OQ-sdk-085 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-085","type":"OPEN_ISSUE","feature_id":"storefront-buyer-facing","summary":"Các rule gallery theo variant (KB-320, KB-322..KB-326) chỉ có lượt PASS trên staging 2026-10-22, trước khi 4 PR của TIB-5428 merge (2026-10-27); cần chạy lại trên bản đã merge, production và từng bundle SDK.","kb_ids":["KB-320","KB-322","KB-323","KB-324","KB-325","KB-326"]}
+```
+
+## OQ-sdk-086 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-086","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Chạy lại sau merge/production: mọi quan sát và lượt PASS của TIB-5203 (payload campaign v2 + cache) đều chạy trên staging ngày 2026-10-28, TRƯỚC khi 2 PR merge 2026-10-29; chưa rõ dev có đẩy commit sau ~10:30 UTC không; production chưa kiểm. Cần chạy lại TC-TIB-7507 (shape response: có resource_type, không còn các field đã bỏ) trên build sau merge và trên production để xác nhận hành vi đã ship.","kb_ids":["KB-350","KB-352"]}
+```
+
+## OQ-sdk-087 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-087","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Response campaigns/{id}.json đã bỏ một số field (theo TC-TIB-7507). Chưa ai kiểm consumer nào khác (theme custom, renderer, public API) còn đọc các field đã bỏ — Dev/PO xác nhận không có consumer nào bị ảnh hưởng.","kb_ids":["KB-352"]}
+```
+
+## OQ-sdk-088 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-088","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Tập giá trị chính thức của resource_type (mới thấy \"campaign\" / \"platform_product\" ở 1 lượt chạy trước redeploy; TC-TIB-7507 không kiểm giá trị) — Dev xác nhận và chạy lại trên build đã merge.","kb_ids":["KB-351"]}
+```
+
+## OQ-sdk-089 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-089","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Danh sách key artworks[] chính thức của payload platform product sau thay đổi TIB-5203 — mới chỉ thấy trong actualResult của 1 lượt test.","kb_ids":["KB-353"]}
+```
+
+## OQ-sdk-090 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-090","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Shape artworks[]: URL v mới chỉ còn global_option_ids, nhưng URL ?v=1 SDK gọi vẫn có artworks[].global_options (BUG-437). Dev/PO xác nhận shape đúng và trạng thái BUG-437 (sửa/hoãn/chấp nhận); chạy lại trên URL SDK thật sau merge.","kb_ids":["KB-354"]}
+```
+
+## OQ-sdk-091 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-091","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"SDK được quan sát lấy platform product qua campaigns/{shopify product id}.json, lệch với kịch bản kiểm thử của dev (platform-products/{uuid}.json). Dev xác nhận endpoint chính thức và platform-products/{uuid}.json còn dùng ở trường hợp nào.","kb_ids":["KB-355"]}
+```
+
+## OQ-sdk-092 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-092","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"PO quyết ý định: sau Save artwork + Update/Sync campaign, URL ?v=1 SDK gọi vẫn trả bản cũ (BUG-446) trong khi URL v mới trả bản mới — storefront phải hiện thay đổi ngay hay chấp nhận độ trễ cache (bao lâu)? Rủi ro: buyer đặt hàng với design cũ. Trạng thái BUG-446 chưa rõ dù Jira Done. KB-321 (storefront phản ánh sau Update/Sync, quan sát 2026-10-22 trước khi có cache) có thể đã cũ — cần re-verify trên build sau merge.","kb_ids":["KB-356","KB-321"]}
+```
+
+## OQ-sdk-093 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-093","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"PO quyết ý định: sau sửa + Publish platform product, URL ?v=1 SDK gọi vẫn trả bản cũ (BUG-439) — đây là độ trễ cache chấp nhận được hay lỗi? Trạng thái BUG-439 chưa rõ; chạy lại sau merge.","kb_ids":["KB-357"]}
+```
+
+## OQ-sdk-094 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-094","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Nhóm hành vi form storefront với Global Option (form tải đủ, giống hệt sau reload, preview + payload customization, 2 layer dùng chung GO chỉ gửi 1 giá trị, GO tự điền khi mở campaign khác cùng trình duyệt) mới chỉ quan sát 1 lượt trên build trước redeploy mà dev yêu cầu recheck. Chạy lại trên build đã merge TIB-5203 và PO/Dev xác nhận đây là hành vi đúng.","kb_ids":["KB-358","KB-359","KB-360","KB-361","KB-362"]}
+```
+
+## OQ-sdk-095 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-095","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Campaign không dùng Global Option (1 input text): form chỉ có input thường và giá trị text còn sau reload — mới quan sát 1 lượt trước redeploy. Chạy lại sau merge và xác nhận hành vi đúng; lưu ý KB-019 (form template không khôi phục lựa chọn sau reload) là phạm vi khác (field phụ thuộc template).","kb_ids":["KB-363"]}
+```
+
+## OQ-sdk-096 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-096","type":"OPEN_ISSUE","feature_id":"storefront-buyer-facing","summary":"Theo dõi BUG-310: trang storefront thật của platform product không render form personalization (console SyntaxError / \"TypeError: e is not iterable\"; tester ghi nguyên nhân là tên category chứa <script> không được escape — rủi ro XSS, buyer không mua được). Trạng thái fix chưa rõ; sau khi sửa cần chạy lại trên trang thật để cập nhật/retire KB-364. PO/Dev cho biết trạng thái và mức ưu tiên.","kb_ids":["KB-364"]}
+```
+
+## OQ-sdk-097 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-097","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Form platform product mới chỉ được thấy render trên HTML đã patch (né BUG-310); chưa có quan sát trên trang thật. Chạy lại trên trang thật (sau khi BUG-310 được xử lý hoặc với category sạch) trên build đã merge.","kb_ids":["KB-365"]}
+```
+
+## OQ-sdk-098 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-098","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Request /products/<id>.js trả 404 mỗi lần load campaign — chưa rõ là gì, có từ trước TIB-5203 không, và có phải lỗi cần theo dõi không.","kb_ids":["KB-366"]}
+```
+
+## OQ-sdk-099 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-099","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"PO/Dev xác nhận config.maps_api_key (Mapbox, tiền tố 'pk.') được phép xuất hiện trong response public không cần auth của campaigns/{id}.json; nếu chính sách là không public key nào thì đây là lỗi.","kb_ids":["KB-367"]}
+```
+
+## OQ-sdk-100 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-100","type":"NEEDS_CONFIRMATION","feature_id":"product-page-settings-config","summary":"PO quyết ý định: sau đổi setting store (PUT /api/instances/{id}/config 200), config trong URL SDK ?v=1 và link preload vẫn trả giá trị cũ (BUG-440) — setting phải áp dụng ngay sau reload hay chấp nhận độ trễ cache (bao lâu)? Trạng thái BUG-440 chưa rõ. KB-319 (quan sát 2026-10-22 trước khi có cache) có thể đã cũ — re-verify sau merge.","kb_ids":["KB-368","KB-319"]}
+```
+
+## OQ-sdk-101 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-101","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Storefront preview của sản phẩm có Group khoảng 250 layer: TC-TIB-7632 chỉ đếm DOM toàn trang, không tách popup Preview khỏi mockup chính, không so với trước fix. Cần kiểm lại phần tử thuộc popup Preview. Không dùng quan sát này để giải conflict của KB-011 hay thay mô tả KB-042.","kb_ids":["KB-394"]}
+```
+
+## OQ-sdk-102 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-102","type":"OPEN_ISSUE","feature_id":"storefront-buyer-facing","summary":"Chạy lại sau merge và trên production cho storefront preview của sản phẩm có Group nhiều layer (lượt chạy 2026-10-29 trước khi PR thứ hai của TIB-5633 cập nhật lần cuối; ngày deploy production chưa rõ).","kb_ids":["KB-394"]}
+```

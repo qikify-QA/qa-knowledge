@@ -1,6 +1,8 @@
 {
   "feature_id": "FEAT-06-mockup-attachment",
   "feature_key": "mockup-attachment",
+  "object_id": "product-base",
+  "checklist_version": "6",
   "checks": [
     {
       "check_id": "CHK-06-001",
@@ -378,6 +380,252 @@
       "priority": "P2",
       "automation_suitability": "SUITABLE",
       "oq_ref": "OQ-product-base-001"
+    },
+    {
+      "check_id": "CHK-06-013",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Mockup Editor: ẩn layer Group (bấm mắt) thì các layer con của Group có ngừng render trên canvas không — chưa rõ Mockup Editor có hỗ trợ Group",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL, verify GET /api/user id=266)",
+        "state": "Product Base có mockup chứa một layer Group (vd 'MKG') có layer con và ít nhất một layer ngoài Group; Group đang hiện",
+        "environment": "staging, build có TIB-5584 (shipped UNKNOWN)",
+        "surface_or_device": "portal /products/{id}/edit → card mockup → Edit → Mockup Editor (full-screen canvas), desktop browser"
+      },
+      "precondition": "Dùng Product Base/mockup throwaway. Chưa Save trong check này.",
+      "steps": [
+        "Mở Mockup Editor của mockup; ghi lại danh sách layer: có cấp Group (layer con thụt vào dưới Group) hay danh sách phẳng.",
+        "Bấm mắt của layer Group để ẩn; chụp canvas.",
+        "Ghi lại: phần nào của Group biến mất, các layer con còn render không, có bị dimmed không, mắt của layer con ON hay OFF.",
+        "Bấm lại mắt để hiện Group; đóng editor không Save."
+      ],
+      "observation_point": "Danh sách layer trong Mockup Editor; canvas và trạng thái mắt/dimmed của layer con sau khi ẩn layer Group. Quan sát 2026-10-16 (KB-185, TC-TIB-6073, BUG-325): danh sách phẳng, không có cấp Group; ẩn 'MKG' chỉ làm mất phần của chính MKG, các layer khác vẫn render, không dimmed, mắt vẫn ON — chưa được coi là lỗi.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Mockup Editor có hỗ trợ Group không — tức là khi ẩn một layer Group thì các layer con của Group có phải ngừng render (cascade theo effective visibility) như ở Artwork Editor không? Quan sát 2026-10-16: danh sách layer phẳng, ẩn Group 'MKG' không làm layer khác ngừng render (BUG-325).",
+      "related_kb_ids": [
+        "KB-185",
+        "KB-086"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nếu Mockup Editor được kỳ vọng hỗ trợ Group, mockup có thể hiển thị/render nội dung merchant tưởng đã ẩn; nếu không hỗ trợ, check viết theo kỳ vọng cascade sẽ fail sai",
+        "TC-TIB-6073 ghi 'passed' trên Testlane trong khi actualResult ghi Fail — không dùng status Testlane"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-product-base-014"
+    },
+    {
+      "check_id": "CHK-06-014",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Ẩn layer Group trong Mockup Editor rồi Save: mockup được render lại có hay không có nội dung của Group và các layer con",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL, verify GET /api/user id=266)",
+        "state": "mockup như CHK-06-013, Group đang hiện",
+        "environment": "staging, build có TIB-5584 (shipped UNKNOWN)",
+        "surface_or_device": "portal Mockup Editor + card mockup trên /products/{id}/edit + request lưu mockup"
+      },
+      "precondition": "Dùng Product Base/mockup throwaway; chụp ảnh mockup đã render trước khi sửa; mở network monitor.",
+      "steps": [
+        "Mở Mockup Editor, ẩn layer Group; bấm Save; ghi request/response lưu mockup.",
+        "Chờ render xong (bấm Refresh '.la-sync' theo CHK-06-007); chụp ảnh mockup mới.",
+        "So sánh ảnh mockup mới với ảnh trước: phần của Group và các layer con còn hay mất.",
+        "Mở lại Mockup Editor; ghi trạng thái mắt của Group và layer con sau reload."
+      ],
+      "observation_point": "Ảnh mockup sau render lại; trạng thái mắt layer sau khi mở lại editor; request lưu.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Sau khi ẩn layer Group trong Mockup Editor rồi Save, mockup được render lại thế nào (có hay không có nội dung của Group và các layer con)?",
+      "related_kb_ids": [
+        "KB-185",
+        "KB-084"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Save + render lại mockup sau khi ẩn Group chưa từng được kiểm"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-product-base-015"
+    },
+    {
+      "check_id": "CHK-06-015",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Mockup đã render và đang hiển thị ở Campaign Editor / storefront có tự cập nhật sau khi ẩn Group trong Mockup Editor không, hay cần sync/render lại thủ công",
+      "applicability": {
+        "role": "merchant owner/staff (portal) + guest buyer (storefront)",
+        "state": "Product Base có mockup chứa layer Group, đã gán vào campaign by-product-base đã publish lên store staging",
+        "environment": "staging, build có TIB-5584 (shipped UNKNOWN)",
+        "surface_or_device": "portal Mockup Editor + Campaign Editor preview + storefront product page, desktop browser"
+      },
+      "precondition": "Đã chạy CHK-06-014 (ẩn Group + Save) trên mockup đang dùng trong campaign đã publish; chụp mockup trên Campaign Editor và storefront trước khi ẩn.",
+      "steps": [
+        "Sau khi Save Mockup Editor (CHK-06-014), mở Campaign Editor của campaign; chụp mockup.",
+        "Mở product page trên storefront; chụp mockup.",
+        "Nếu chưa đổi: dùng More → 'Sync to campaigns' trên card mockup (lưu ý CHK-06-011) hoặc sync campaign; lặp lại hai bước trên.",
+        "Ghi lại thời điểm và thao tác khiến mockup cập nhật (nếu có)."
+      ],
+      "observation_point": "Mockup trên Campaign Editor và storefront trước/sau khi ẩn Group, trước/sau sync.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Mockup đã render và đang hiển thị ở Campaign/storefront có tự cập nhật sau khi ẩn Group trong Mockup Editor không, hay cần sync/render lại thủ công? (Q12 của CCR CBS-006)",
+      "related_kb_ids": [
+        "KB-185",
+        "KB-086",
+        "KB-087"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Buyer có thể thấy mockup cũ khác với cấu hình merchant đã đổi"
+      ],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-product-base-016"
+    },
+    {
+      "check_id": "CHK-06-016",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-009] Product Base editor: modal 'Assign mockups' có hiện video (thumbnail/icon play) cùng grid với mockup và chọn được video không — chưa xác nhận",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (verify GET /api/user id=266 sau mỗi lần login)",
+        "state": "Product Base có ít nhất 3 mockup và 2 video, ít nhất 1 variant",
+        "environment": "staging, ghi build (lượt gốc 2026-10-22 trước khi 4 PR TIB-5428 merge; case gắn BUG-376 chưa rõ nội dung)",
+        "surface_or_device": "portal /products/{id}/edit → modal 'Assign mockups', desktop browser"
+      },
+      "precondition": "Dùng Product Base throwaway. Check chỉ đọc — không bấm Save.",
+      "steps": [
+        "Mở modal 'Assign mockups' của Product Base.",
+        "Ghi các item trong grid (mockup nào, video nào, video hiển thị thế nào).",
+        "Click vào một video; ghi trạng thái chọn/highlight và thông báo lỗi (nếu có).",
+        "Đóng modal không Save; ghi build."
+      ],
+      "observation_point": "Item trong grid; trạng thái chọn của video; lỗi. Quan sát 1 lượt (2026-10-22, OBSERVED_CURRENT/LOW — không dùng làm expected): grid hiện video có thumbnail/icon play cùng mockup (3 mockup + 2 video), click video thì ô được tick và highlight, không lỗi.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "BUG-376 (gắn với TC-TIB-6413) là gì, có chạm hành vi hiển thị/chọn video trong modal Assign mockups của Product Base không? Cần chạy lại TC-TIB-6413 trên bản đã merge.",
+      "related_kb_ids": [
+        "KB-328",
+        "KB-052",
+        "KB-085"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không suy kết quả từ campaign editor (campaign KB-300) sang Product Base editor"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-product-base-032"
+    },
+    {
+      "check_id": "CHK-06-017",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-009] Gap: Save gán video ↔ variant trong modal 'Assign mockups' của Product Base (điều kiện Save khi chỉ chọn video / không chọn media, request lưu, reload) — chưa có quan sát",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (verify GET /api/user id=266 sau mỗi lần login)",
+        "state": "như CHK-06-016",
+        "environment": "staging, ghi build",
+        "surface_or_device": "portal /products/{id}/edit → modal 'Assign mockups' + bảng Variants/card media + network"
+      },
+      "precondition": "Dùng Product Base throwaway; mở network monitor.",
+      "steps": [
+        "Chọn một variant và chỉ một video (0 mockup); ghi trạng thái nút Save; Save; ghi request lưu.",
+        "Chọn một variant, không chọn media nào; ghi trạng thái nút Save và request.",
+        "Reload; ghi assignment video ↔ variant hiển thị trên Product Base."
+      ],
+      "observation_point": "Trạng thái nút Save; request lưu (có mang video không); assignment sau reload.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Save assignment video ↔ variant trong modal Assign mockups của Product Base hoạt động thế nào (điều kiện Save khi chỉ chọn video hoặc không chọn media, request lưu, reload)? Chưa có quan sát; không suy từ campaign editor.",
+      "related_kb_ids": [
+        "KB-328",
+        "KB-085"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Assignment video ở Product Base được campaign tạo từ PB kế thừa (product-base-campaign-link) — lỗi lưu ở đây lan sang campaign mới"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-product-base-033"
     }
-  ]
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-06-mockup-attachment",
+      "risk": "[CBS-006] Mockup Editor không áp cascade khi ẩn layer Group (BUG-325, KB-185) — chưa rõ có hỗ trợ Group; Save/render lại và đồng bộ sang Campaign/storefront chưa kiểm",
+      "checks": [
+        "CHK-06-013",
+        "CHK-06-014",
+        "CHK-06-015"
+      ],
+      "covered": "gap NONE + NEEDS_CONFIRMATION (OQ-product-base-014, OQ-product-base-015, OQ-product-base-016); KB-185 chỉ ở related_kb_ids"
+    },
+    {
+      "feature_id": "FEAT-06-mockup-attachment",
+      "risk": "Capability base (upload 4 bước, media library, render/refresh, assign mockups, card actions, sync, resize threshold)",
+      "checks": [
+        "CHK-06-001",
+        "CHK-06-002",
+        "CHK-06-003",
+        "CHK-06-004",
+        "CHK-06-005",
+        "CHK-06-006",
+        "CHK-06-007",
+        "CHK-06-008",
+        "CHK-06-009",
+        "CHK-06-010",
+        "CHK-06-011",
+        "CHK-06-012"
+      ],
+      "covered": "không đổi so với base"
+    },
+    {
+      "feature_id": "FEAT-06-mockup-attachment",
+      "risk": "[CBS-009] Video trong modal Assign mockups của Product Base: hiển thị/chọn (KB-328, S1, BUG-376 chưa rõ) và Save assignment video chưa kiểm",
+      "checks": [
+        "CHK-06-016",
+        "CHK-06-017"
+      ],
+      "covered": "NONE + NEEDS_CONFIRMATION; KB-328 chỉ ở related_kb_ids"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "NEGATIVE / BOUNDARY / PERMISSION / REGRESSION — phạm vi CBS-006 (KB-185)",
+      "reason": "KB-185 chỉ là quan sát UI Mockup Editor của owner (bấm mắt, chưa Save); không có evidence input sai, giới hạn hay quyền khác owner. KB-185 không phải KNOWN_DEFECT và không đổi hành vi item base nào (KB-086 vẫn đúng) nên không có REGRESSION/regression watch; nếu PO xác nhận là lỗi thì run sau gắn KNOWN_DEFECT và thêm watch."
+    },
+    {
+      "dimension": "NEGATIVE / BOUNDARY / PERMISSION / INTEGRATION / REGRESSION — phạm vi CBS-009 (KB-328)",
+      "reason": "KB-328 là case chỉ đọc của owner (S1): không có evidence input sai, giới hạn số video, quyền khác hay contract API; điều kiện Save đặt ở gap CHK-06-017. KB-328 không phải KNOWN_DEFECT và không đổi hành vi item base nên không có REGRESSION/regression watch."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-10-30",
+    "ccr_ref": "CBS-009"
+  }
 }

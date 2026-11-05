@@ -2,17 +2,26 @@
   "feature_id": "FEAT-02-artwork-template-management",
   "feature_key": "artwork-template-management",
   "name": "Quản lý template bên trong 1 artwork",
-  "user_goal": "Store owner tạo/nhân bản/sửa/ẩn/convert các phiên bản template (biến thể layout) trong cùng 1 artwork, qua thanh Template ở panel trái editor.",
-  "last_updated": {
-    "date": "2026-09-10",
-    "ccr_ref": "bootstrap"
-  },
+  "user_goal": "Store owner tạo/nhân bản/sửa/ẩn/convert các phiên bản template (biến thể layout) trong cùng 1 artwork, qua thanh Template ở panel trái editor; với global template và linked template, linked template kế thừa trạng thái ẩn/hiện từ global khi chưa đặt riêng và seller vẫn override được ở linked mà không đổi global.",
+  "user_goal_kb_refs": [
+    "KB-046",
+    "KB-176",
+    "KB-177"
+  ],
   "actors": [
     {
       "role": "store owner / staff (sub=273, user_id=266, plan Blue (Test))",
       "permission_observed": "Truy cập đầy đủ mọi control trên Template bar",
       "kb_refs": [
         "KB-046"
+      ]
+    },
+    {
+      "role": "merchant-owner (store owner/staff, instance 520 nprice1)",
+      "permission_observed": "Ẩn/hiện layer ở global template và linked template, Save (PUT /api/artworks/{id} trả 200).",
+      "kb_refs": [
+        "KB-176",
+        "KB-177"
       ]
     }
   ],
@@ -22,6 +31,14 @@
       "precondition": "đang trong artwork editor, artwork đang có 1 template (Default template) tại thời điểm quan sát",
       "kb_refs": [
         "KB-046"
+      ]
+    },
+    {
+      "path": "Artwork Editor 2.0 → global template / linked template (vd 'LT-1 linked template') → layer panel",
+      "precondition": "Artwork có global template và ≥1 linked template (layer linked có global_id, visible=null)",
+      "kb_refs": [
+        "KB-176",
+        "KB-177"
       ]
     }
   ],
@@ -74,6 +91,14 @@
       "kb_refs": [
         "KB-046"
       ]
+    },
+    {
+      "name": "Linked template kế thừa và override trạng thái ẩn/hiện từ global template",
+      "description": "Layer ở linked template có visible=null kế thừa trạng thái từ global (Group và layer thường): global ẩn thì linked ẩn (Group ẩn kéo con dimmed, không render), global bật lại thì linked hiện lại; linked giữ null sau khi global Save. Seller bật lại được Group đang ẩn do kế thừa ở linked; sau Save cờ linked thành true (hết kế thừa), global vẫn visible=false.",
+      "kb_refs": [
+        "KB-176",
+        "KB-177"
+      ]
     }
   ],
   "state_transitions": [
@@ -94,9 +119,55 @@
       "kb_refs": [
         "KB-046"
       ]
+    },
+    {
+      "from": "global layer/Group visible=true; linked visible=null (hiện do kế thừa)",
+      "to": "global visible=false; linked vẫn null và ẩn do kế thừa (Group ẩn kéo con dimmed, không render)",
+      "trigger": "ẩn layer/Group ở global template rồi Save",
+      "condition": "linked chưa đặt cờ riêng (null)",
+      "kb_refs": [
+        "KB-176"
+      ]
+    },
+    {
+      "from": "global visible=false; linked null (ẩn do kế thừa)",
+      "to": "global visible=true; linked vẫn null và hiện lại",
+      "trigger": "bật lại ở global rồi Save",
+      "condition": "linked null",
+      "kb_refs": [
+        "KB-176"
+      ]
+    },
+    {
+      "from": "linked Group null, ẩn do kế thừa global visible=false",
+      "to": "linked Group visible=true (hết kế thừa), con hết dimmed; global vẫn visible=false",
+      "trigger": "bấm mắt Group ở linked template rồi Save",
+      "condition": "—",
+      "kb_refs": [
+        "KB-177"
+      ]
     }
   ],
-  "confirmed_rules": [],
+  "confirmed_rules": [
+    {
+      "statement": "Layer ở linked template có visible=null kế thừa trạng thái visible từ global template, cho cả Group và layer thường; linked giữ null sau khi global Save.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "test_case",
+      "kb_refs": [
+        "KB-176"
+      ]
+    },
+    {
+      "statement": "Seller bật lại được Group đang ẩn do kế thừa ở linked template; sau Save cờ linked thành true, global không đổi.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "test_case",
+      "kb_refs": [
+        "KB-177"
+      ]
+    }
+  ],
   "observed_behavior": [
     {
       "statement": "btn-set-invisible bị disabled và không mở menu khi artwork chỉ có 1 template.",
@@ -114,26 +185,77 @@
       "kb_refs": [
         "KB-046"
       ]
+    },
+    {
+      "role": "merchant-owner",
+      "capability": "ẩn/hiện layer ở global và linked template, Save",
+      "observed": true,
+      "kb_refs": [
+        "KB-176",
+        "KB-177"
+      ]
     }
   ],
   "surface_mapping": {
     "portal": [
-      "artwork editor — Template bar (panel trái)"
+      "artwork editor — Template bar (panel trái)",
+      {
+        "item": "Artwork Editor 2.0 → global template / linked template → layer panel (mắt gạch chéo khi ẩn do kế thừa, con dimmed)",
+        "kb_refs": [
+          "KB-176",
+          "KB-177"
+        ]
+      }
     ],
     "storefront": [],
-    "api": [],
-    "data": [],
+    "api": [
+      {
+        "item": "PUT /api/artworks/{id} — layer.visible của global và linked template (linked null = kế thừa, kèm global_id)",
+        "kb_refs": [
+          "KB-176",
+          "KB-177"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "layer.visible ở linked template: null = kế thừa global; true/false = cờ riêng; layer.global_id",
+        "kb_refs": [
+          "KB-176",
+          "KB-177"
+        ]
+      }
+    ],
     "code": []
   },
-  "dependencies": [],
+  "dependencies": [
+    {
+      "type": "feature",
+      "description": "Kế thừa ẩn/hiện ở linked template áp quy tắc effective visibility của Group (FEAT-22-group-layer-effective-visibility).",
+      "kb_refs": [
+        "KB-176"
+      ]
+    }
+  ],
   "risks": [
     {
       "risk": "Toàn bộ control chỉ observed_count=1, confidence LOW — chưa lặp lại độc lập ở run khác.",
       "kb_refs": [
         "KB-046"
       ]
+    },
+    {
+      "risk": "KB-176/177 dựa một artwork (#5058) trên staging 2026-10-16, chạy trước khi merge đủ PR của TIB-5584, shipped UNKNOWN.",
+      "kb_refs": [
+        "KB-176",
+        "KB-177"
+      ]
     }
   ],
+  "freshness": {
+    "observed_at": "2026-10-30",
+    "source_observed_on": "2026-10-16"
+  },
   "unknown_areas": [
     {
       "question": "Điều gì xảy ra khi 'Convert to Global Template' hoàn tất — chưa quan sát kết quả.",
@@ -158,8 +280,22 @@
     {
       "question": "Hành vi với role khác owner / cross-tenant — chưa test.",
       "why_it_matters": "coverage_gaps #3 của KB gốc."
+    },
+    {
+      "question": "Linked template đã có cờ visible cụ thể (true/false) rồi global template đổi cờ — linked đổi theo hay giữ riêng? (Q9 treo)",
+      "why_it_matters": "KB-176/177 chỉ phủ null-kế thừa và bật lại ở linked; check cho linked có cờ riêng không có expected.",
+      "kb_refs": [
+        "KB-176",
+        "KB-177"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-artwork-149"
     }
   ],
+  "last_updated": {
+    "date": "2026-10-30",
+    "ccr_ref": "CBS-006"
+  },
   "coverage_matrix": [
     {
       "feature_id": "FEAT-02-artwork-template-management",
@@ -192,8 +328,33 @@
       "state": "artwork chỉ có 1 template",
       "environment": "staging",
       "covered": false
+    },
+    {
+      "feature_id": "FEAT-02-artwork-template-management",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "global + linked template, linked visible=null kế thừa / override thành true",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-176",
+        "KB-177"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-artwork-template-management",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "linked có cờ visible cụ thể khi global đổi",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-176",
+        "KB-177"
+      ]
     }
   ],
+  "profile_conflicts": [],
   "profile_relationships": [
     {
       "from_feature_id": "FEAT-02-artwork-template-management",
@@ -206,6 +367,26 @@
       "to_feature_id": "FEAT-07-artwork-save-persist",
       "relation": "persists_via",
       "note": "Template chỉ thực sự ghi DB khi Save & Close artwork (xem KB-049/KB-050 ở FEAT-07); thao tác template trong panel không tự sinh API call."
+    },
+    {
+      "from_feature_id": "FEAT-02-artwork-template-management",
+      "to_feature_id": "FEAT-22-group-layer-effective-visibility",
+      "relation": "applies_rule_of",
+      "note": "Linked template kế thừa visible=null từ global; Group ẩn do kế thừa kéo con dimmed/không render theo quy tắc FEAT-22.",
+      "kb_refs": [
+        "KB-176",
+        "KB-177"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-02-artwork-template-management",
+      "to_feature_id": "FEAT-07-artwork-save-persist",
+      "relation": "persists_via",
+      "note": "Cờ visible của global/linked lưu qua PUT /api/artworks/{id} (200).",
+      "kb_refs": [
+        "KB-176",
+        "KB-177"
+      ]
     }
   ]
 }

@@ -1,6 +1,8 @@
 {
   "feature_id": "FEAT-09-condition-cycle-validation",
   "feature_key": "condition-cycle-validation",
+  "object_id": "artwork",
+  "checklist_version": "9",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -337,6 +339,155 @@
       "automation_suitability": "UNKNOWN",
       "conflict_refs": [],
       "oq_ref": "OQ-artwork-039"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Vòng điều kiện giữa 2 layer action Hide bị chặn khi Save & Close giống hệt action Show; dữ liệu không bị ghi",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "2 artwork Artwork 2.0 throwaway cùng cấu trúc: layer A và B phụ thuộc vòng vào nhau (A theo B, B theo A); artwork thứ nhất đặt action cả A và B là Hide, artwork thứ hai là Show; chưa Save cấu hình vòng",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor 2.0 (Save & Close) + GraphQL artworks để đọc lại"
+      },
+      "precondition": "Dựng 2 artwork như applicability; ghi dependency hiện có của A và B qua GraphQL trước khi thử.",
+      "steps": [
+        "Trên artwork Hide: bấm Save & Close; ghi editor có đóng không và nguyên văn thông báo.",
+        "Trên artwork Show: làm đúng bước 1; ghi nguyên văn thông báo.",
+        "So hai thông báo từng chữ (bỏ qua phần tên template nếu khác nhau).",
+        "Đọc lại dependency của A và B ở cả hai artwork qua GraphQL (hoặc đóng không lưu rồi mở lại artwork)."
+      ],
+      "observation_point": "Editor có đóng không; nguyên văn thông báo Hide vs Show; dependency của A, B sau khi thử.",
+      "expected_result": "Với Hide: Save & Close bị chặn, editor không đóng, thông báo bắt đầu bằng 'Template - <tên template>:' và có 'Circular conditions between:' kèm tên layer A và B. Hành vi chặn và nội dung thông báo của Hide giống từng chữ với Show. Đọc lại: dependency của A và B giữ nguyên như trước khi thử (null nếu trước đó chưa có điều kiện) ở cả hai artwork — không có request ghi nào thành công.",
+      "oracle": {
+        "kb_ids": [
+          "KB-228"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-072",
+        "KB-073"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "data-integrity: vòng Hide lọt qua sẽ khiến render không resolve được",
+        "Không assert nguyên văn toàn bộ thông báo (dòng 'Conditions haven't been finished' có thể do fixture — CHK-013)",
+        "Lượt PASS 2026-10-28 chạy trước khi các PR của TIB-5558 merge; build ship chưa xác nhận",
+        "PUT trực tiếp bypass client vẫn treo ở CHK-008 (BLK-API-002) cho cả Hide"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Dòng 'Conditions haven't been finished' đi kèm thông báo vòng: do điều kiện chưa hoàn tất hay luôn xuất hiện khi có vòng",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "(a) vòng 2 layer với điều kiện đã chọn đủ giá trị; (b) vòng 2 layer với điều kiện chưa chọn giá trị",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor 2.0 (Save & Close)"
+      },
+      "precondition": "Hai artwork throwaway dựng như applicability (a) và (b), action tuỳ chọn (làm cả Show và Hide nếu có thời gian).",
+      "steps": [
+        "Trên (a): Save & Close; ghi nguyên văn thông báo.",
+        "Trên (b): Save & Close; ghi nguyên văn thông báo.",
+        "So hai thông báo: dòng 'Conditions haven't been finished' xuất hiện ở trường hợp nào."
+      ],
+      "observation_point": "Nguyên văn thông báo của (a) và (b).",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Dòng 'Conditions haven't been finished' đi kèm thông báo vòng ở test Hide/Show là do fixture (điều kiện chưa hoàn tất) hay luôn xuất hiện khi có vòng?",
+      "related_kb_ids": [
+        "KB-228",
+        "KB-073"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Automation assert nguyên văn thông báo sẽ gãy nếu dòng này phụ thuộc fixture"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-159"
     }
-  ]
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-09-condition-cycle-validation",
+      "item": "Capability: UI không chặn lúc chọn nguồn vòng",
+      "check_ids": [
+        "CHK-001",
+        "CHK-002"
+      ],
+      "oracle": "BASELINE (KB-071)"
+    },
+    {
+      "feature_id": "FEAT-09-condition-cycle-validation",
+      "item": "Capability: chặn Save khi có vòng, không ghi data (Show)",
+      "check_ids": [
+        "CHK-003",
+        "CHK-004",
+        "CHK-005",
+        "CHK-006"
+      ],
+      "oracle": "BASELINE (KB-072, KB-073)"
+    },
+    {
+      "feature_id": "FEAT-09-condition-cycle-validation",
+      "item": "Capability: chặn Save khi có vòng giữa layer action Hide, giống Show",
+      "check_ids": [
+        "CHK-012"
+      ],
+      "oracle": "STRONG (KB-228)"
+    },
+    {
+      "feature_id": "FEAT-09-condition-cycle-validation",
+      "item": "Risk P1 BLK-API-002: server không tự chặn vòng (mọi action)",
+      "check_ids": [
+        "CHK-008",
+        "CHK-009"
+      ],
+      "oracle": "NONE"
+    },
+    {
+      "feature_id": "FEAT-09-condition-cycle-validation",
+      "item": "Gap: self-loop qua UI, layer gốc của message, storefront khi vòng lọt, dòng 'Conditions haven't been finished'",
+      "check_ids": [
+        "CHK-007",
+        "CHK-010",
+        "CHK-011",
+        "CHK-013"
+      ],
+      "oracle": "BASELINE (CHK-007) / NONE"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "CORE",
+      "reason": "Feature là validation chặn vòng; happy path (Save không có vòng) thuộc artwork-save-persist."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "Không có KB item về role khác owner/staff hay cross-tenant cho validation vòng."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "KB-228 không đổi hành vi base (KB-072/KB-073), chỉ mở rộng sang action Hide; shard không có item KNOWN_DEFECT."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-10-30",
+    "ccr_ref": "CBS-011"
+  }
 }

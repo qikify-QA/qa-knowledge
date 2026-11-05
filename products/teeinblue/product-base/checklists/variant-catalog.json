@@ -1,6 +1,8 @@
 {
   "feature_id": "FEAT-05-variant-catalog",
   "feature_key": "variant-catalog",
+  "object_id": "product-base",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-05-001",
@@ -416,6 +418,184 @@
       "priority": "P1",
       "automation_suitability": "SUITABLE",
       "oq_ref": "OQ-product-base-010"
+    },
+    {
+      "check_id": "CHK-05-015",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Bảng Variants chọn nhiều dòng: Ctrl-click chọn/bỏ chọn từng dòng rời rạc, Shift-click chọn dải liên tiếp tính cả hai đầu; Delete selected enabled, bảng không reload làm mất vùng chọn",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base có ≥7 variant (V1–V7), chưa có dòng nào chọn",
+        "environment": "staging (production chưa xác nhận)",
+        "surface_or_device": "portal desktop, Windows (Ctrl-click) — Product Base editor, bảng Variants"
+      },
+      "precondition": "Mở Product Base editor, bảng Variants có V1–V7; Delete selected đang disabled. KHÔNG bấm Delete selected trong check này.",
+      "steps": [
+        "Click V1, Ctrl-click V2, V3; ghi các dòng có highlight, trạng thái Delete selected, bảng có reload không",
+        "Bỏ chọn hết; click V1, Ctrl-click V3, V5; ghi các dòng được chọn",
+        "Ctrl-click V3 lần nữa; ghi các dòng còn được chọn",
+        "Bỏ chọn hết; click V2 rồi Shift-click V5; ghi các dòng được chọn"
+      ],
+      "observation_point": "Dòng có highlight (class select) sau mỗi bước; trạng thái Delete selected; bảng có reload không",
+      "expected_result": "Bước 1: đúng V1, V2, V3 được chọn, V4–V7 không; Delete selected chuyển enabled; bảng không reload, vùng chọn giữ nguyên. Bước 2: đúng V1, V3, V5 được chọn. Bước 3: V3 bỏ chọn, còn V1 và V5. Bước 4: dải V2, V3, V4, V5 được chọn; V1, V6, V7 không. Check không phát biểu việc Delete selected xoá đúng vùng chọn (xem CHK-05-017) và không áp cho Cmd-click macOS (xem CHK-05-016).",
+      "oracle": {
+        "kb_ids": [
+          "KB-186"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-186",
+        "KB-187",
+        "KB-079"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-05-016",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[Gap] Cmd-click trên macOS có chọn thêm/bỏ chọn từng dòng trong bảng Variants giống Ctrl-click trên Windows không",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base có ≥5 variant, chưa có dòng nào chọn",
+        "environment": "staging",
+        "surface_or_device": "portal desktop, macOS (Chrome/Safari) — Product Base editor, bảng Variants"
+      },
+      "precondition": "Mở Product Base editor trên máy macOS.",
+      "steps": [
+        "Click V1, Cmd-click V3, V5; ghi các dòng được chọn và trạng thái Delete selected",
+        "Cmd-click V3 lần nữa; ghi các dòng còn được chọn",
+        "Thử Ctrl-click trên macOS; ghi hành vi (có mở context menu không)"
+      ],
+      "observation_point": "Dòng được chọn sau mỗi bước; trạng thái Delete selected",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Cmd-click trên macOS có chọn thêm/bỏ chọn từng dòng trong bảng Variants giống Ctrl-click trên Windows không? Nguồn hiện chỉ kiểm Ctrl-click trên Windows.",
+      "related_kb_ids": [
+        "KB-186"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "coverage-gap: luồng bulk Add to campaigns trên macOS dựa vào cách chọn này"
+      ],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-product-base-029"
+    },
+    {
+      "check_id": "CHK-05-017",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[Gap] Delete selected trên vùng chọn nhiều dòng: có xoá đúng và chỉ các dòng trong vùng chọn không, có dialog xác nhận không",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "vùng chọn ≥2 dòng rời rạc (Ctrl-click) hoặc dải (Shift-click)",
+        "environment": "staging, chỉ trên product base test dùng một lần",
+        "surface_or_device": "portal desktop + GET deletion-check / DELETE variant"
+      },
+      "precondition": "Product base test riêng có V1–V7 không dùng cho campaign nào; ghi lại id của V1–V7. Thao tác phá huỷ — không chạy trên dữ liệu thật.",
+      "steps": [
+        "Click V1, Ctrl-click V3, V5",
+        "Bấm Delete selected; ghi có dialog xác nhận không",
+        "Ghi các request deletion-check/DELETE (id nào)",
+        "Reload trang; ghi danh sách variant còn lại"
+      ],
+      "observation_point": "Dialog xác nhận; id trong request DELETE; danh sách variant sau reload",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Delete selected trên vùng chọn nhiều dòng có xoá đúng và chỉ các dòng trong vùng chọn không, và có cần dialog xác nhận không? Hiện chỉ biết xoá một dòng là xoá ngay, không dialog.",
+      "related_kb_ids": [
+        "KB-186",
+        "KB-079",
+        "KB-199"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "destructive-action-no-confirm MEDIUM",
+        "coverage-gap: xoá hàng loạt chưa được kiểm"
+      ],
+      "priority": "P1",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-product-base-030"
     }
-  ]
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-05-variant-catalog",
+      "capability_or_risk": "Chọn nhiều dòng trong bảng Variants (Ctrl-click/Shift-click)",
+      "check_ids": [
+        "CHK-05-015",
+        "CHK-05-016"
+      ]
+    },
+    {
+      "feature_id": "FEAT-05-variant-catalog",
+      "capability_or_risk": "Import / Export / Delete selected (bulk), risk destructive-action-no-confirm",
+      "check_ids": [
+        "CHK-05-008",
+        "CHK-05-013",
+        "CHK-05-014",
+        "CHK-05-017"
+      ]
+    },
+    {
+      "feature_id": "FEAT-05-variant-catalog",
+      "capability_or_risk": "Quick-add variant + chặn SKU trùng",
+      "check_ids": [
+        "CHK-05-001",
+        "CHK-05-004",
+        "CHK-05-005",
+        "CHK-05-006",
+        "CHK-05-007"
+      ]
+    },
+    {
+      "feature_id": "FEAT-05-variant-catalog",
+      "capability_or_risk": "Display settings",
+      "check_ids": [
+        "CHK-05-003",
+        "CHK-05-009"
+      ]
+    },
+    {
+      "feature_id": "FEAT-05-variant-catalog",
+      "capability_or_risk": "Custom printarea theo variant",
+      "check_ids": [
+        "CHK-05-002",
+        "CHK-05-011"
+      ]
+    },
+    {
+      "feature_id": "FEAT-05-variant-catalog",
+      "capability_or_risk": "Risk audit-log-unreliable",
+      "check_ids": [
+        "CHK-05-012"
+      ]
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "PERMISSION",
+      "reason": "Chưa có nguồn nào cho role khác owner/merchant-owner (profile.permissions); base không có check PERMISSION và CBS-010 không chạm phần này — để mở như unknown của profile, không sinh check giả định."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-10-30",
+    "ccr_ref": "CBS-010"
+  }
 }

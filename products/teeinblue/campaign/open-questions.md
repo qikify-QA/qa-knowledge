@@ -290,3 +290,135 @@ Mỗi mục có 1 `oq_id` ổn định và đúng 1 `type` (`NEEDS_CONFIRMATION`
 ```json
 {"oq_id": "OQ-campaign-048", "type": "NEEDS_CONFIRMATION", "feature_id": "campaign-security-permissions", "summary": "GraphQL schema đầy đủ (toàn bộ type/permission liên quan Campaign) chưa được introspect — Run này không introspect GraphQL schema; phạm vi type/permission đầy đủ cho Campaign chưa được xác nhận.", "related_checks": ["CHK-009"]}
 ```
+
+## OQ-campaign-049 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-campaign-049", "type": "OPEN_ISSUE", "feature_id": "create-campaign-by-product-base", "summary": "Preview trên mockup của Campaign Editor theo effective visibility của Group (TC-TIB-6072) có giữ nguyên trên build staging sau khi toàn bộ 6 PR của TIB-5584 merge, và trên production khi TIB-5584 release không?", "kb_ids": ["KB-184"]}
+```
+
+## OQ-campaign-050 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-campaign-050", "type": "NEEDS_CONFIRMATION", "feature_id": "create-campaign-by-product-base", "summary": "Khi đổi trạng thái ẩn/hiện của Group trên cùng một artwork đã gán vào campaign, preview trên mockup của Campaign Editor có cập nhật theo không (cần Save/sync campaign hay tự cập nhật)?", "kb_ids": ["KB-184"]}
+```
+
+## OQ-campaign-051 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-051","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"Grid của modal Assign mockups có luôn xếp item theo thứ tự list media của campaign (kể cả khi video nằm giữa list) không? Mới chỉ thấy trong actualResult của một lượt test.","kb_ids":["KB-301"]}
+```
+
+## OQ-campaign-052 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-052","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"Dev xác nhận request lưu assignment video ↔ variant (tên mutation, shape payload) trên bản đã merge có giữ như lượt test 2026-10-22 không. Mới chỉ thấy trong actualResult.","kb_ids":["KB-303"]}
+```
+
+## OQ-campaign-053 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-053","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"PO xác nhận: Duplicate campaign / Duplicate mockup ảnh có chủ ý giữ assignment mockup ảnh ↔ variant không? Quan sát nằm ngoài oracle của test case.","kb_ids":["KB-307"]}
+```
+
+## OQ-campaign-054 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-054","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"Sau khi fix BUG-360, sửa URL video trên bản đã merge có giữ id video và assignment, và storefront có phát URL mới không? Hiện chỉ là quan sát vì cùng request có BUG-360.","kb_ids":["KB-308"]}
+```
+
+## OQ-campaign-055 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-campaign-055","type":"OPEN_ISSUE","feature_id":"create-campaign-by-product-base","summary":"Lỗi đã biết BUG-360: sửa URL video vẫn gửi lại thumbnail cũ nên thumbnail không đổi. Đã fix/retest chưa, trên bản nào, và thumbnail mong đợi sau khi sửa URL là gì? KB-309 không làm oracle.","kb_ids":["KB-309"]}
+```
+
+## OQ-campaign-056 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-056","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"Dev xác nhận request xoá video và xoá variant trên bản đã merge có như quan sát không; xoá variant khỏi campaign có cách nào khác ngoài đặt Unavailable? Mới chỉ thấy trong actualResult.","kb_ids":["KB-311"]}
+```
+
+## OQ-campaign-057 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-campaign-057","type":"OPEN_ISSUE","feature_id":"create-campaign-by-product-base","summary":"Các hành vi gán video cho variant đã xác nhận (KB-300, KB-302, KB-304, KB-305, KB-306, KB-310) chỉ có lượt test PASS trên staging 2026-10-22, trước khi 4 PR của TIB-5428 merge (2026-10-27); production chưa kiểm. Cần chạy lại trên bản đã merge / production.","kb_ids":["KB-300","KB-302","KB-304","KB-305","KB-306","KB-310"]}
+```
+
+## OQ-campaign-058 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-058","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"PO xác nhận ý định (rủi ro mất dữ liệu): một lần Save sau không được xoá các assignment video ↔ variant đã có (KB-302, nguồn duy nhất là một test case PASS trước khi merge).","kb_ids":["KB-302"]}
+```
+
+## OQ-campaign-059 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-059","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"PO xác nhận ý định (rủi ro xoá dữ liệu): xoá video hoặc variant chỉ gỡ assignment của chính nó và không đụng các assignment khác (KB-310, nguồn duy nhất là một test case PASS trước khi merge).","kb_ids":["KB-310"]}
+```
+
+## OQ-campaign-060 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-060","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-shopify","summary":"PO xác nhận: picker của campaign by Shopify products hiển thị video bằng thumbnail của chính video (như campaign by Product Base)? Mới chỉ thấy trong actualResult.","kb_ids":["KB-313"]}
+```
+
+## OQ-campaign-061 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-campaign-061","type":"OPEN_ISSUE","feature_id":"create-campaign-by-shopify","summary":"Chọn video trong modal Assign mockups của platform product (KB-312) chỉ có một lượt PASS trên staging 2026-10-22, trước khi 4 PR của TIB-5428 merge (2026-10-27), trên một platform product. Cần chạy lại trên bản đã merge / production.","kb_ids":["KB-312"]}
+```
+
+## OQ-campaign-062 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-062","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-shopify","summary":"Save assignment video ↔ variant cho platform product (campaign by Shopify products) — lưu, reload, sync lên Shopify — chưa từng được quan sát; cần nguồn xác nhận hoặc lượt test.","kb_ids":["KB-312"]}
+```
+
+## OQ-campaign-063 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-campaign-063","type":"OPEN_ISSUE","feature_id":"campaign-shopify-media-sync","summary":"Rule Shopify variant image = mockup được gán đầu tiên khi variant có cả video và mockup (KB-314) chỉ có một lượt PASS trên staging 2026-10-22, trước khi 4 PR của TIB-5428 merge (2026-10-27), đọc qua storefront .json. Cần chạy lại trên bản đã merge / production, kiểm cả request sync và Shopify admin.","kb_ids":["KB-314"]}
+```
+
+## OQ-campaign-064 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-064","type":"NEEDS_CONFIRMATION","feature_id":"campaign-shopify-media-sync","summary":"Video từ URL hợp lệ có luôn vào Shopify product media, không variant Shopify nào được gán video, và mapping video ↔ variant chỉ giữ phía Teeinblue không? Test case chưa PASS trọn oracle; cần chạy lại với video hợp lệ trên bản đã merge.","kb_ids":["KB-315"]}
+```
+
+## OQ-campaign-065 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-065","type":"NEEDS_CONFIRMATION","feature_id":"campaign-shopify-media-sync","summary":"Dev xác nhận: lỗi 'Can not upload images to shopify' khi publish/sync campaign có một URL Vimeo có tồn tại trước tính năng gán video không, do URL hay do tính năng; app có nên báo rõ video nào hỏng?","kb_ids":["KB-316"]}
+```
+
+## OQ-campaign-066 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-campaign-066","type":"OPEN_ISSUE","feature_id":"campaign-shopify-media-sync","summary":"Lỗi đã biết BUG-362: variant chỉ gán video vẫn nhận ảnh đầu tiên làm Shopify variant image. Đã fix/retest chưa, trên bản nào? KB-317 không làm oracle.","kb_ids":["KB-317"]}
+```
+
+## OQ-campaign-067 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-067","type":"NEEDS_CONFIRMATION","feature_id":"campaign-shopify-media-sync","summary":"PO xác nhận ý định: variant chỉ gán video (không có mockup) thì Shopify variant image để trống? Mô tả ticket chưa đủ làm nguồn xác nhận; sau khi fix BUG-362 cần chạy lại case tương ứng.","kb_ids":["KB-317"]}
+```
+
+## OQ-campaign-068 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-068","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"Dev xác nhận phần network của các hành vi KB-306/KB-310 trên bản đã merge: response duplicate video và response clone campaign có chứa mapping video ↔ variant không; request load lại assignment sau khi xoá video/variant có còn mapping của video/variant đã xoá không. Lượt test 2026-10-22 chỉ kiểm qua view Mockup assignments, chưa thấy các bước network này.","kb_ids":["KB-306","KB-310"]}
+```
+
+## OQ-campaign-069 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-069","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"Re-publish campaign qua Update trong Multi-store launch (POST /api/campaigns/{id}/sync) mới quan sát 1 lượt (TC-TIB-7408) trên build trước redeploy, không thấy toast. PO xác nhận hành vi đúng (có toast thành công không; metafield version có phải đổi và khớp tham số v SDK dùng không); chạy lại sau merge. KB-308 (storefront phát URL video mới sau Update, quan sát 2026-10-22 trước khi có cache) có thể đã cũ — re-verify sau merge.","kb_ids":["KB-370","KB-308"]}
+```
+
+## OQ-campaign-070 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-campaign-070","type":"OPEN_ISSUE","feature_id":"create-campaign-by-product-base","summary":"Metafield version đổi sau re-publish qua Update (KB-370) có liên hệ gì với tham số v trong URL SDK mà storefront dùng để tải payload campaign không — tức là sau Update storefront có nhận nội dung mới không? KB-370 chỉ ghi metafield version đổi và form tải đủ, chưa kiểm nội dung mới; phía sdk có quan sát URL ?v=1 vẫn trả bản cũ sau Update/Sync. Không suy ra 'Update làm storefront cập nhật' khi chưa có xác nhận.","kb_ids":["KB-370"]}
+```

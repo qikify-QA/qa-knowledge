@@ -1,7 +1,8 @@
 # Object: SDK (product: teeinblue) — Feature Profile Summary
+**Published context version:** 13
 
-- **Environment:** staging. Toàn bộ kiến thức trong object này là `OBSERVED_CURRENT` baseline — **0 item `CONFIRMED_EXPECTED`**, chưa có nguồn thẩm quyền nào xác nhận business rule.
-- **Feature hiện có (3):** `storefront-buyer-facing`, `product-page-settings-config`, `genai-personalization-runtime` — mỗi feature có `features/<key>/{kb.json,profile.json}` và `checklists/<key>.json`. 3 feature KHÔNG phải tín hiệu coverage đủ ở cấp object (xem `open-questions.md` OQ-sdk-002).
+- **Environment:** staging. Kiến thức trong object này phần lớn là `OBSERVED_CURRENT` baseline; **`CONFIRMED_EXPECTED` chỉ có KB-053, KB-058 (CBS-001, chỉ staging build TIB-5352) và KB-061 (CBS-003, open-platform callback, chỉ trường hợp 1 artwork), KB-181 (CBS-006, buyer preview theo effective visibility của Group, chỉ staging 2026-10-16), KB-320, KB-322..KB-326 (CBS-009, gallery lọc media theo variant, staging 2026-10-22 trước khi code merge), KB-350, KB-352 (CBS-013, shape response campaigns/{id}.json khi gọi với tham số v mới, staging 2026-10-28 trước khi code merge)**; KB-318 (CBS-009) cũng là CONFIRMED_EXPECTED nhưng đang UNRESOLVED vì conflict với KB-025, KB-056/KB-060 là `INFERRED`, chưa có nguồn thẩm quyền nào xác nhận business rule.
+- **Feature hiện có (4):** `storefront-buyer-facing`, `product-page-settings-config`, `genai-personalization-runtime`, `open-platform-customization-callback` — mỗi feature có `features/<key>/{kb.json,profile.json}` và `checklists/<key>.json`. 4 feature KHÔNG phải tín hiệu coverage đủ ở cấp object (xem `open-questions.md` OQ-sdk-002).
 - **Actor đã test:** `guest` (storefront, không login) trên 2 store — store1 (instance 609, `linh-explorer.myshopify.com`) và store2 (instance 613, `linh-explorer-2.myshopify.com`); `owner` (portal: multi-store launch + inventory config `/product-page-settings`); và staff-authenticated Live Preview widget dùng làm proxy cho buyer ở `genai-personalization-runtime`. **Chưa test buyer đã login, chưa test role portal khác owner, chưa test guest session thật cho luồng GenAI.**
 - **⚠ Conflict P1 ảnh hưởng 2 feature (UNRESOLVED):** SDK version thực sự đang serve cho từng store mâu thuẫn giữa 3 nguồn evidence (baseline 2026-09-12 "store1 = SDK v1" vs portal API `sdk_version=2` cho cả 2 instance + storefront runtime re-check 2026-09-21 cho thấy cả 2 store serve `app-v2.js`). Đọc đầy đủ 3 phía ở `open-questions.md` OQ-sdk-001 (conflict_group `CFL-004`) **trước khi** dùng bất kỳ capability/check phân biệt v1/v2 theo store làm oracle.
 
@@ -10,6 +11,7 @@
 ## storefront-buyer-facing
 
 **Goal:** Buyer/guest xem và tương tác với sản phẩm của 1 campaign đã publish trên storefront — vượt password-gate, xem trang sản phẩm, personalize (kể cả draft cá nhân hoá đệm tạm ở client), preview mockup, add-to-cart, cart.
+**Cập nhật CBS-006 (TIB-5584, staging 2026-10-16):** buyer preview không vẽ nội dung Group ẩn, khớp canvas editor (KB-181, `CONFIRMED_EXPECTED`/MEDIUM). **Known defect (output hiện tại, không phải hành vi đúng):** field required trong Group ẩn vẫn chặn Add to cart (KB-179, BUG-321..324) và field của layer con trong Group ẩn vẫn có trong form (KB-180, BUG-321); Testlane hiện ghi passed nhưng không có lần chạy lại có ngày. Checklist CHK-052..CHK-056 (CHK-052/053 là defect watch); OQ-sdk-068..072.
 
 **Entry points:**
 - `linh-explorer.myshopify.com` (store1) / `linh-explorer-2.myshopify.com` (store2) → `/password` → route sản phẩm campaign 2595 (cần `TIB_STORE_PASSWORD` hợp lệ)
@@ -59,6 +61,28 @@ storefront guest store1 ✅ · storefront guest store2 ✅ · localStorage draft
 
 ---
 
+**CBS-001 (TIB-5352, staging):** khi translations API timeout >5s widget hiện chữ gốc (KB-053); nhãn thiếu trong dictionary hiện chữ gốc (KB-058); fallback khi 500/503/abort, pageerror khi timeout, retry lazy và dictionary inline in 1 lần còn cần xác nhận (OQ-sdk-051..054). Chỉ kiểm bundle app-v1.js (OQ-sdk-057).
+
+- **Kênh theme-embed và design link (CBS-003, KB-065, OBSERVED_CURRENT/LOW, CHK-049):** bundle `app-v1.js` không có `design_urls` / `onCustomizationCreated`, hằng `EVENT_CUSTOMIZATION_CREATED` không được dispatch; cơ chế design link quan sát được ở kênh này là line-item property `_tib_design_link_N` (KB-009). Chưa kiểm `app-v2.js`; chưa rõ là phạm vi chủ đích hay thiếu sót (OQ-sdk-062..064).
+
+- **localStorage giữ khoảng 10 entry (CBS-008, KB-066, OBSERVED_CURRENT/LOW, CHK-050..CHK-051):** `teeinblue-customizations` chỉ giữ khoảng 10 entry gần nhất, entry cũ bị đẩy ra khi thêm nhiều product (1 lượt quan sát, staging). KB-015 ('đúng 1 object') được quan sát sau khi thao tác với 1 product; khi kiểm localStorage sau Add-to-cart nhiều product, đọc ngay sau từng lần. Số entry chính xác và phạm vi áp dụng: OQ-sdk-066, OQ-sdk-067.
+
+**Cập nhật CBS-011 (TIB-5558, action Hide):**
+- Layer action Hide và field của nó ẩn khi điều kiện khớp, hiện khi không khớp, trên form và live preview; match OR chỉ cần một điều kiện khớp (KB-231, CONFIRMED_EXPECTED/MEDIUM, nguồn: test case Testlane PASS trên staging 2026-10-28, chạy trước khi 6 PR của TIB-5558 merge (2026-10-29); production chưa xác nhận; SDK app-v2.js bản Last-Modified 2026-10-28 03:01:11 GMT).
+- 'Hide this layer on first load' bật: trước khi buyer chọn, layer không được vẽ nhưng field vẫn hiện; quy tắc OR/AND theo KB-232 (CONFIRMED_EXPECTED/MEDIUM).
+- Toggle và Additional Option làm nguồn cho layer Hide chạy đúng chiều, form và preview khớp nhau (KB-234, CONFIRMED_EXPECTED/MEDIUM).
+- Chưa xác nhận (OBSERVED_CURRENT/LOW, không dùng làm oracle): nhánh first load tắt (KB-233, OQ-sdk-073); nguồn bị ẩn, linked layer, điều kiện 2 cấp (KB-235, OQ-sdk-074); regression layer Show/không điều kiện mới chạy trên SDK cũ (KB-236, OQ-sdk-075); SDK cũ bị cache (max-age=14400) làm đảo chiều Hide ở một lượt chạy, BUG-429 (KB-237, OQ-sdk-076).
+- Chưa chạy lại trên build sau merge, production và app-v1.js (OQ-sdk-077).
+
+**Cập nhật CBS-013 (TIB-5203, payload campaign v2 + cache):**
+- Đã xác nhận, phạm vi hẹp (KB-350, KB-352, CONFIRMED_EXPECTED/MEDIUM; test case PASS trên staging 2026-10-28, trước khi 2 PR merge 2026-10-29; production chưa xác nhận): response origin của `GET /api/merchant/campaigns/{shopify product id}.json` khi gọi với tham số `v` chưa từng dùng có key `resource_type`, vẫn giữ các field SDK cần, và không còn các field đã bỏ. KHÔNG phủ URL `?v=1` mà SDK thực sự gọi. Oracle của CHK-080, CHK-081.
+- Chưa xác nhận (OBSERVED_CURRENT/LOW, 1 lượt, không dùng làm oracle; CHK-082..CHK-093, CHK-095..CHK-099 là NEEDS_CONFIRMATION): giá trị `resource_type` và danh sách key artworks[] (KB-351, KB-353); shape artworks[] khác nhau giữa URL v mới và `?v=1` (KB-354, BUG-437); SDK lấy platform product qua campaigns/{id}.json (KB-355); sau Update/Sync campaign hoặc Publish platform product, URL `?v=1` vẫn trả bản cũ trong khi URL v mới trả bản mới (KB-356 BUG-446, KB-357 BUG-439) — chưa rõ thiết kế hay lỗi, chờ PO (OQ-sdk-092, OQ-sdk-093); form với Global Option và campaign không GO (KB-358..KB-363); form platform product trên HTML đã patch (KB-365); request 404 `/products/<id>.js` (KB-366); `config.maps_api_key` trong response public (KB-367, OQ-sdk-099).
+- KB-321 (storefront phản ánh sau Update/Sync, quan sát 2026-10-22 trước khi có cache) có thể đã cũ trên build có cache — cần chạy lại (OQ-sdk-092). KB-363 (giữ giá trị text sau reload) và KB-019 (form template không khôi phục lựa chọn sau reload) là hai phạm vi khác nhau.
+- Lỗi đã biết (KB-364, KNOWN_DEFECT, BUG-310): trang storefront thật của platform product không render form personalization — output hiện tại, không phải hành vi đúng; CHK-094 theo dõi (OQ-sdk-096).
+- Mọi quan sát của CBS-013 chạy trước khi code merge; cần chạy lại trên build sau merge và production (OQ-sdk-086). Câu hỏi mở: OQ-sdk-086..OQ-sdk-099.
+
+**Cập nhật CBS-015 (TIB-5633, Group nhiều layer):** popup Preview trên storefront của sản phẩm có artwork Group ~250 layer mở được, không thấy lỗi UI (KB-394, `OBSERVED_CURRENT`/LOW, staging 2026-10-29) — chỉ đếm DOM toàn trang, không tách popup khỏi mockup chính, không so trước fix; không dùng để giải CFL-004. CHK-100 là NEEDS_CONFIRMATION; OQ-sdk-101, OQ-sdk-102 (chạy lại sau merge/production).
+
 ## product-page-settings-config
 
 **Goal:** Merchant (owner) cấu hình cách Teeinblue hiển thị/vận hành trên trang sản phẩm Shopify của từng store (instance) đã kết nối — gallery/mockup, personalization form, upload photo, cross-sell, nút Preview, nút ATC + addon charge, hành vi mobile, extras, logo, và style/màu sắc — riêng biệt theo từng store, qua trang portal `/product-page-settings` (2 tab: Elements & Behaviors, Styles & Colors).
@@ -100,6 +124,12 @@ portal owner, 2 store (609/613) ✅ · UI inventory 67/67 control ✅ (giá tr�
 
 **Ràng buộc khi dùng làm oracle:** `CFL-004`/`CFL-005` giữ UNRESOLVED, không chọn phía; capability #14 giữ nhãn INFERRED, không trình bày như data contract; không viết oracle "giá trị hex/icon-swatch phải là X" cho tới khi đọc được giá trị thật.
 
+**Cập nhật CBS-009 (TIB-5428, gán video cho variant; test case Testlane PASS trên staging 2026-10-22, trước khi 4 PR của TIB-5428 merge 2026-10-27; production chưa xác nhận):** khi bật setting lọc media theo variant đang chọn, gallery SDK chỉ hiện mockup + video đã gán cho variant đó và lọc lại khi đổi variant (KB-320); variant chỉ gán video thì gallery đúng bằng tập video đó, không fallback hiện tất cả mockup (KB-322) và không render ảnh preview cá nhân hoá (KB-323); variant không gán gì thì hiện toàn bộ mockup + video (KB-324); tắt setting thì mọi variant thấy toàn bộ media (KB-325); gallery xếp theo thứ tự list media khi 'Always load first' tắt (KB-326). Storefront chỉ phản ánh assignment mới sau Update/Sync campaign là quan sát chưa xác nhận (KB-321). **Known defect BUG-359 (KB-327):** video bật 'Always load first' được focus nhưng không đứng đầu gallery — output hiện tại, không phải hành vi đúng (OQ-sdk-082, OQ-sdk-083). Form cá nhân hoá và design đơn hàng của variant chỉ gán video chưa xác định (OQ-sdk-084); cần chạy lại sau merge/production và từng bundle SDK (OQ-sdk-085).
+
+**⚠ Conflict CBS-009 (UNRESOLVED, chờ PO — OQ-sdk-078):** chuỗi label của setting lọc media theo variant đang chọn mâu thuẫn: KB-025 (quan sát 2026-09-21) ghi 'Show only the assigned images of the selected variant'; KB-318 (test case PASS staging 2026-10-22, trước khi code merge) ghi 'Show only the assigned images and videos of the selected variant'. Cả hai UNRESOLVED (conflict_group `CONF-sdk-assigned-media-setting-label`), không dùng làm oracle; CHK-003 không có expected cho tới khi PO quyết. Config key vẫn là `show_assigned_variant_images_only` chỉ là quan sát (KB-319, OQ-sdk-079).
+
+**Cập nhật CBS-013 (TIB-5203):** sau đổi setting store (PUT config 200), config trong URL SDK `?v=1` và link preload vẫn trả giá trị cũ (KB-368, OBSERVED_CURRENT/LOW, BUG-440, 1 lượt trên staging trước khi code merge) — chưa rõ thiết kế hay lỗi, chờ PO (OQ-sdk-100); KB-319 có thể đã cũ trên build có cache. CHK-025 là NEEDS_CONFIRMATION.
+
 ---
 
 ## genai-personalization-runtime
@@ -135,6 +165,13 @@ portal owner, 2 store (609/613) ✅ · UI inventory 67/67 control ✅ (giá tr�
 **Ràng buộc khi dùng làm oracle:** mọi capability giữ `knowledge_kind: OBSERVED_CURRENT`, KHÔNG nâng `CONFIRMED_EXPECTED` (ticket Jira không phải authority); KHÔNG viết oracle khẳng định route fallback là sync hay async cho tới khi quan sát được 1 lần fallback THÀNH CÔNG; phải đọc kèm companion feature `layer-config-image` của object `artwork` khi dựng test case. **KB-051 (rate-limit/thumbmark) và KB-049/050 (bug/fix TIB-5460) giữ nguyên `OBSERVED_CURRENT`/`PROPOSED` — KHÔNG nâng `CONFIRMED_EXPECTED` dù có Dev confirm nguyên văn, cho tới khi TIB-5460 ship VÀ ≥1/13 test case Testlane TIB-116 PASS đúng hành vi tương ứng.**
 
 ---
+
+## open-platform-customization-callback
+
+- **Mục tiêu:** integration của merchant dùng SDK open-platform (bundle `open/index.js`) nhận payload customization qua callback `onCustomizationCreated` sau khi buyer submit form, gồm `design_url` và `design_urls`.
+- **Đã xác nhận (KB-061, CONFIRMED_EXPECTED, test case PASS, staging 2026-10-07):** với customization 1 artwork, `design_urls` là mảng đúng 1 phần tử, `design_url == design_urls[0]`, URL theo mẫu `designs/{customizationId}/{customizationId}-{artworkId}.{ext}`, đuôi file theo `design_format` của artwork (`rgb` → `.png`). Oracle của CHK-001 (P1).
+- **Chưa xác nhận (INFERRED):** hành vi với 2+ artwork, thứ tự, artwork lỗi (KB-062, OQ-sdk-058, OQ-sdk-059); bảng đuôi file ngoài `rgb` (KB-063, OQ-sdk-060); nhánh `window.parent.postMessage` khi chạy trong iframe và danh sách key payload (KB-064, OQ-sdk-061). CHK-002..CHK-005 là NEEDS_CONFIRMATION.
+- **Ngoài phạm vi:** kiểm soát truy cập design URL chưa có kết luận (OQ-sdk-065). Bundle theme-embed `app-v1.js` không chứa callback này (KB-065, một lần grep, LOW); `app-v2.js` chưa kiểm và chưa rõ là phạm vi chủ đích hay thiếu sót — xem OQ-sdk-062..064 ở `storefront-buyer-facing`.
 
 ## Gaps ở cấp Object (áp dụng cho toàn bộ object `sdk`)
 

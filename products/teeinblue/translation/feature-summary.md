@@ -1,8 +1,9 @@
 # Object: Translation (product: teeinblue) — Feature Profile Summary
+**Published context version:** 2
 
-Env: staging — role `owner` (Linh explorer) on portal, `GUEST buyer` on storefront.
+Env: staging — role `owner` (account explore) on portal, `GUEST buyer` on storefront.
 
-**Mode:** Entire KB is `OBSERVED_CURRENT`/`OBSERVED_BASELINE`, except KB-011 (`INFERRED`) and KB-020/KB-021 (`PROPOSED`, unverified user annotation). **No `CONFIRMED_EXPECTED` item exists.** Object covers 2 user-facing sub-features plus 1 shared mechanism, across 3 feature profiles, all `CONDITIONAL_PASS`.
+**Mode:** Entire KB is `OBSERVED_CURRENT`/`OBSERVED_BASELINE`, except KB-011 (`INFERRED`) and KB-020/KB-021 (`PROPOSED`, unverified user annotation). **`CONFIRMED_EXPECTED`: KB-022, KB-023, KB-029 (CBS-001, test case PASS, chỉ staging build TIB-5352 — chưa release production, OQ-translation-023).** Object covers 2 user-facing sub-features plus 1 shared mechanism, across 3 feature profiles, all `CONDITIONAL_PASS`.
 
 ## FEAT-01-05 — Product Page Content translation (`product-page-content-translation`)
 **Goal:** Merchant translates the app's static, built-in product-page UI strings (form labels, buttons, help text) so buyers see localized UI text.
@@ -41,6 +42,8 @@ A later, unverified user annotation (KB-020, KB-021 — `PROPOSED`) suggests the
 **Gate:** CONDITIONAL_PASS — OQ-translation-001 preserved with both sides' evidence intact at every layer (KB → feature profile `state_transitions`/`risks`/`dependencies` → checklist CHK-008/009/010); no layer picked a side.
 
 ---
+
+**CBS-001 (TIB-5352, staging):** dưới 1000 key dictionary nhúng trong HTML, từ 1000 key nạp qua `translations/<locale>.json` (KB-022); Save một locale không đổi locale khác (KB-023, cần PO xác nhận — OQ-translation-033); chuỗi form được dịch trên product page và modal 'Edit design' (KB-029). Endpoint public chưa rõ ranh giới cross-shop (OQ-translation-032).
 
 ## FEAT-02-04 — Language / locale switcher (`language-locale-switcher`)
 **Goal:** Merchant chooses which published language they're editing translations for (without changing portal UI language); buyer chooses which published language they browse the storefront in.

@@ -1,12 +1,14 @@
 {
   "feature_id": "FEAT-10-layer-condition-value-binding",
   "feature_key": "layer-condition-value-binding",
+  "object_id": "artwork",
+  "checklist_version": "9",
   "checks": [
     {
       "check_id": "CHK-001",
       "dimension": "STATE_DATA",
       "layer": "api",
-      "title": "Key 'dependency' presence-based — chỉ tồn tại khi layer có condition",
+      "title": "Key 'dependency' presence-based và tập key bên trong dependency (shape đang tranh chấp: có/không key action)",
       "applicability": {
         "role": "store owner / staff",
         "state": "artwork có cả layer có condition và layer không có condition, đã save",
@@ -16,21 +18,31 @@
       "precondition": "Artwork có ≥1 layer có condition và ≥1 layer không có condition.",
       "steps": [
         "Save artwork.",
-        "Kiểm tra key 'dependency' trong từng layer object của response PUT."
+        "Kiểm tra key 'dependency' trong từng layer object của response PUT.",
+        "Với mỗi layer có condition, ghi đủ tập key bên trong dependency và giá trị của chúng."
       ],
-      "observation_point": "Key 'dependency' có mặt hay hoàn toàn vắng mặt (không phải null) theo từng layer.",
-      "expected_result": "Layer có ≥1 condition: key 'dependency' hiện diện với shape {match_type: 'all'|'any', show_by_default: boolean, dependencies: [{element, value},...]}. Layer KHÔNG có condition: key 'dependency' HOÀN TOÀN VẮNG MẶT (absent, không phải null).",
+      "observation_point": "Key 'dependency' có mặt hay hoàn toàn vắng mặt (không phải null) theo từng layer; tập key bên trong dependency của layer có condition. Ghi lại nguyên trạng để đối chiếu hai phía của CONF-artwork-dependency-action-01: KB-067 (quan sát 2026-09-10) liệt kê đúng 3 key match_type, show_by_default, dependencies; KB-227 (test case staging 2026-10-28) ghi thêm key action 'hide'/'show'. Không kết luận đúng/sai tới khi PO chốt.",
+      "expected_result": null,
       "oracle": {
-        "kb_ids": [
-          "KB-067"
-        ],
-        "oracle_strength": "BASELINE"
+        "kb_ids": [],
+        "oracle_strength": "NONE"
       },
-      "status": "READY",
-      "risk_refs": [],
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Shape dependency của layer có điều kiện là gì sau tính năng Hide: thay KB-067 bằng KB-227 (có key action 'hide'/'show', bản ghi cũ không có action = Show), giữ cả hai như hai thời điểm dữ liệu (KB-067 thu phạm vi thành 'bản ghi trước tính năng Hide'), hay giữ base?",
+      "related_kb_ids": [
+        "KB-067",
+        "KB-227"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle base (KB-067) bị tranh chấp bởi KB-227 — trước đây check này READY/BASELINE với expected không có key action; nay không có oracle tới khi PO chốt"
+      ],
       "priority": "P2",
       "automation_suitability": "SUITABLE",
-      "conflict_refs": []
+      "conflict_refs": [
+        "CONF-artwork-dependency-action-01"
+      ],
+      "oq_id": "OQ-artwork-152"
     },
     {
       "check_id": "CHK-002",
@@ -295,6 +307,150 @@
         "CONF-002"
       ],
       "oq_ref": "OQ-artwork-052"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "Bản ghi dependency tạo trước tính năng Hide (không có key action): không bị migrate, editor hiển thị Show, storefront chạy đúng chiều Show",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL); guest buyer cho bước storefront",
+        "state": "artwork Artwork 2.0 có layer điều kiện được lưu trước khi build có TIB-5558 lên staging (dependency đọc qua GraphQL không có key action), gắn campaign đã publish",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN); storefront vượt password-gate bằng TIB_STORE_PASSWORD",
+        "surface_or_device": "GraphQL artworks + portal Artwork Editor 2.0 + storefront form/preview"
+      },
+      "precondition": "Tìm artwork cũ của account explore thoả applicability (không tạo được bằng UI sau khi tính năng lên); ghi điều kiện của layer đích: '<nguồn> is any of: <V1>'.",
+      "steps": [
+        "Đọc dependency của layer đích qua GraphQL artworks; ghi đủ tập key.",
+        "Mở editor (không Save); mở Conditional Setting của layer đích; ghi dropdown action, heading, điều kiện, match type, nhãn toggle.",
+        "Đọc lại dependency qua GraphQL; ghi tập key (kiểm việc mở editor có ghi đè không).",
+        "Trên storefront chọn nguồn = V1; ghi field và layer đích trên form và preview; đổi sang giá trị khác; ghi lại."
+      ],
+      "observation_point": "Tập key dependency trước/sau khi mở editor; Conditional Setting trên editor; form và preview storefront.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Bản ghi dependency cũ không có key action có được giữ nguyên (không migrate) và luôn hiểu là Show ở editor lẫn storefront không? Nguồn duy nhất (KB-227, test case staging 2026-10-28) đang thuộc conflict CONF-artwork-dependency-action-01 — PO chốt conflict này cũng chốt oracle cho check.",
+      "related_kb_ids": [
+        "KB-227",
+        "KB-067",
+        "KB-224"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nếu bản ghi cũ bị hiểu sai thành Hide, toàn bộ artwork điều kiện có sẵn đảo chiều ẩn/hiện trên storefront và đơn in",
+        "Phần editor/storefront không bị tranh chấp nhưng item nguồn duy nhất là KB-227 (UNRESOLVED) nên không dùng làm oracle"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [
+        "CONF-artwork-dependency-action-01"
+      ],
+      "oq_id": "OQ-artwork-152"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "Nghĩa của show_by_default khi action = hide, và API có chấp nhận giá trị action ngoài 'hide'/'show' không",
+      "applicability": {
+        "role": "merchant owner/staff (qua direct API)",
+        "state": "layer có điều kiện; gửi PUT trực tiếp với action ngoài 'hide'/'show' hoặc thiếu action",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "PUT /api/artworks/{id} + portal Artwork Editor 2.0"
+      },
+      "precondition": "CẦN orchestrator/operator duyệt direct-API mutation test trên artwork throwaway.",
+      "steps": [
+        "Trên editor đặt layer đích action Hide, bật 'Hide this layer on first load', Save; ghi giá trị show_by_default trong body PUT.",
+        "Gửi PUT trực tiếp với dependency.action là một giá trị khác 'hide'/'show' (vd chuỗi rỗng hoặc 'toggle'); ghi mã trả về và dữ liệu đọc lại.",
+        "Mở editor; ghi dropdown action hiển thị cho layer đó."
+      ],
+      "observation_point": "show_by_default khi Hide + toggle bật; phản hồi API với action lạ; editor hiển thị gì.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Khi action = 'hide', key show_by_default (giữ nguyên tên) mang nghĩa 'Hide this layer on first load' — đây là thiết kế chủ đích của data model hay chỉ là cách hiển thị của editor/SDK? Có giá trị action nào khác ngoài 'hide'/'show' được API chấp nhận không?",
+      "related_kb_ids": [
+        "KB-227",
+        "KB-222"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Dữ liệu ghi qua API/MCP với action lạ có thể làm editor/SDK hiểu sai chiều ẩn/hiện",
+        "Phụ thuộc shape đang tranh chấp CONF-artwork-dependency-action-01"
+      ],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [
+        "CONF-artwork-dependency-action-01"
+      ],
+      "oq_id": "OQ-artwork-158"
     }
-  ]
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-10-layer-condition-value-binding",
+      "item": "Capability: key dependency presence + shape",
+      "check_ids": [
+        "CHK-001"
+      ],
+      "oracle": "NONE (CONF-artwork-dependency-action-01)"
+    },
+    {
+      "feature_id": "FEAT-10-layer-condition-value-binding",
+      "item": "Capability: shape dependencies[].value theo loại nguồn",
+      "check_ids": [
+        "CHK-002",
+        "CHK-003",
+        "CHK-004",
+        "CHK-005",
+        "CHK-006"
+      ],
+      "oracle": "BASELINE (KB-068)"
+    },
+    {
+      "feature_id": "FEAT-10-layer-condition-value-binding",
+      "item": "Risk P1: bản ghi cũ không có action bị hiểu sai chiều",
+      "check_ids": [
+        "CHK-011"
+      ],
+      "oracle": "NONE (nguồn duy nhất thuộc conflict)"
+    },
+    {
+      "feature_id": "FEAT-10-layer-condition-value-binding",
+      "item": "Gap: element, toggle Off, multi-value, CONF-002, nghĩa show_by_default khi hide / action lạ",
+      "check_ids": [
+        "CHK-007",
+        "CHK-008",
+        "CHK-009",
+        "CHK-010",
+        "CHK-012"
+      ],
+      "oracle": "NONE"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "CORE",
+      "reason": "Feature mô tả dữ liệu serialize (không có happy path UI riêng); thao tác cấu hình điều kiện thuộc FEAT-08 conditional-setting-config."
+    },
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Không có KB item về payload dependency sai bị từ chối; API mutation với action lạ đã gom vào CHK-012 (BOUNDARY)."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "Không có KB item về role khác owner/staff hay cross-tenant cho dữ liệu dependency."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-10-30",
+    "ccr_ref": "CBS-011"
+  }
 }

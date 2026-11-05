@@ -3,12 +3,23 @@
   "feature_key": "variant-catalog",
   "name": "Quan ly Variant Catalog cua Product Base",
   "user_goal": "La owner, quan ly catalog variant (SKU, mau/size, gia, ton kho) cua mot product base: them nhanh variant, cau hinh hien thi mau/size, gan printarea rieng theo variant, va export/import du lieu.",
+  "last_updated": {
+    "date": "2026-10-30",
+    "ccr_ref": "CBS-010"
+  },
   "actors": [
     {
       "role": "owner (Linh explorer, sub=273)",
       "permission_observed": "Them/sua variant, doi Display settings, bat toggle custom printarea, gan Custom Printareas rieng cho variant, import/export/bulk-delete variant tren nhieu product base (3203/3233/3237/3238) thanh cong.",
       "kb_refs": [
         "KB-064"
+      ]
+    },
+    {
+      "role": "merchant-owner (store owner/staff, store Nprice1)",
+      "permission_observed": "Chọn nhiều dòng trong bảng Variants bằng Ctrl-click/Shift-click; nút Delete selected chuyển enabled khi có vùng chọn (staging 2026-10-09).",
+      "kb_refs": [
+        "KB-186"
       ]
     }
   ],
@@ -59,6 +70,13 @@
         "KB-053",
         "KB-079"
       ]
+    },
+    {
+      "name": "Chọn nhiều dòng trong bảng Variants (Ctrl-click / Shift-click)",
+      "description": "Click một dòng rồi Ctrl-click các dòng khác để chọn thêm từng dòng rời rạc (Ctrl-click lại dòng đang chọn thì chỉ bỏ chọn dòng đó); click rồi Shift-click để chọn dải liên tiếp tính cả hai đầu. Khi có vùng chọn, Delete selected enabled và bảng không reload làm mất vùng chọn. Vùng chọn là đầu vào của bulk Add to campaigns (FEAT-09). Đã kiểm Ctrl-click trên Windows; Cmd-click macOS và việc Delete selected xoá đúng vùng chọn nhiều dòng chưa được kiểm.",
+      "kb_refs": [
+        "KB-186"
+      ]
     }
   ],
   "state_transitions": [
@@ -98,6 +116,15 @@
       "kb_refs": [
         "KB-079"
       ]
+    },
+    {
+      "from": "bảng Variants không có dòng nào chọn (Delete selected disabled)",
+      "to": "vùng chọn nhiều dòng có highlight, Delete selected enabled",
+      "trigger": "click một dòng rồi Ctrl-click (rời rạc) hoặc Shift-click (dải liên tiếp)",
+      "condition": "bảng không reload, vùng chọn giữ nguyên; đã kiểm trên Windows",
+      "kb_refs": [
+        "KB-186"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -111,6 +138,12 @@
       "statement": "[CHK-05-011] Sau khi bat toggle 'Custom variant's printarea', click (1 lan, khong can double-click) vao o 'Custom Printareas' cua 1 variant se mo popup checkbox danh sach Printarea cua product de chon/bo chon rieng cho variant do. Duong UI nay TON TAI va HOAT DONG dung.",
       "kb_refs": [
         "KB-080"
+      ]
+    },
+    {
+      "statement": "Trong bảng Variants của Product Base editor: click một dòng rồi Ctrl-click các dòng khác chọn thêm từng dòng rời rạc (chỉ các dòng đó có highlight); Ctrl-click lại một dòng đang chọn chỉ bỏ chọn dòng đó; click một dòng rồi Shift-click dòng khác chọn cả dải liên tiếp tính cả hai đầu. Khi có vùng chọn, Delete selected chuyển enabled và bảng không reload làm mất vùng chọn. Rule đã kiểm bằng Ctrl-click trên Windows và không phát biểu việc Delete selected xoá đúng các dòng trong vùng chọn.",
+      "kb_refs": [
+        "KB-186"
       ]
     }
   ],
@@ -208,6 +241,12 @@
           "KB-080",
           "KB-079"
         ]
+      },
+      {
+        "item": "Bảng Variants: chọn nhiều dòng bằng Ctrl-click/Shift-click (dòng chọn có highlight), Delete selected enabled khi có vùng chọn",
+        "kb_refs": [
+          "KB-186"
+        ]
       }
     ],
     "storefront": [],
@@ -262,6 +301,14 @@
       "kb_refs": [
         "KB-080"
       ]
+    },
+    {
+      "target_feature": "FEAT-09-variant-add-to-campaigns",
+      "relation": "vùng chọn nhiều dòng của bảng Variants là đầu vào của bulk Add to campaigns (nút (+) trên dòng thuộc vùng chọn)",
+      "kb_refs": [
+        "KB-186",
+        "KB-187"
+      ]
     }
   ],
   "risks": [
@@ -314,6 +361,10 @@
       ]
     }
   ],
+  "freshness": {
+    "observed_at": "2026-10-30",
+    "source_observed_on": "2026-10-09"
+  },
   "unknown_areas": [
     {
       "question": "Field nao trong quick-add variant thuc su required o server (chi moi test rong toan bo 1 lan)?",
@@ -322,10 +373,106 @@
     {
       "question": "Nguyen nhan goc cua HTTP 500 khi import file hop le la gi (server-side bug cu the)?",
       "why_it_matters": "SEC-001 chan hoan toan tinh nang Import variant hop le; can dev dieu tra truoc khi coi day la known-limitation hay bug uu tien cao can fix ngay."
+    },
+    {
+      "question": "Cmd-click trên macOS có chọn thêm/bỏ chọn từng dòng trong bảng Variants giống Ctrl-click trên Windows không?",
+      "why_it_matters": "KB-186 chỉ kiểm Ctrl-click trên Windows; luồng chọn nhiều dòng (và bulk Add to campaigns dựa trên nó) chưa có oracle cho macOS.",
+      "oq_id": "OQ-product-base-029"
+    },
+    {
+      "question": "Delete selected trên vùng chọn nhiều dòng có xoá đúng và chỉ các dòng trong vùng chọn không, có dialog xác nhận không?",
+      "why_it_matters": "KB-186 chỉ chứng minh nút chuyển enabled; KB-079 chỉ thử xoá 1 dòng (xoá ngay, không dialog). Thao tác xoá hàng loạt không xác nhận là rủi ro mất dữ liệu chưa được kiểm.",
+      "oq_id": "OQ-product-base-030"
     }
   ],
-  "last_updated": {
-    "date": "2026-09-14",
-    "ccr_ref": "bootstrap"
-  }
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-05-variant-catalog",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "chọn nhiều dòng — Ctrl-click/Shift-click (Windows)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-186"
+      ]
+    },
+    {
+      "feature_id": "FEAT-05-variant-catalog",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "chọn nhiều dòng — Cmd-click (macOS)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-186"
+      ]
+    },
+    {
+      "feature_id": "FEAT-05-variant-catalog",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Delete selected trên vùng chọn nhiều dòng",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-186",
+        "KB-079"
+      ]
+    },
+    {
+      "feature_id": "FEAT-05-variant-catalog",
+      "layer": "portal",
+      "role": "owner",
+      "state": "quick-add / Display settings / custom printarea / import-export / delete 1 dòng",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-039",
+        "KB-044",
+        "KB-045",
+        "KB-053",
+        "KB-079",
+        "KB-080"
+      ]
+    },
+    {
+      "feature_id": "FEAT-05-variant-catalog",
+      "layer": "api",
+      "role": "owner",
+      "state": "insert/pre-check SKU/import/delete",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-040",
+        "KB-042",
+        "KB-043",
+        "KB-078",
+        "KB-079"
+      ]
+    },
+    {
+      "feature_id": "FEAT-05-variant-catalog",
+      "layer": "portal",
+      "role": "role khác owner",
+      "state": "bất kỳ",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-064"
+      ]
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from": "FEAT-09-variant-add-to-campaigns",
+      "to": "FEAT-05-variant-catalog",
+      "relation": "depends_on — dùng vùng chọn nhiều dòng của bảng Variants làm đầu vào",
+      "kb_refs": [
+        "KB-186",
+        "KB-187"
+      ]
+    }
+  ]
 }

@@ -1,7 +1,8 @@
 # Object: Product Base (product: teeinblue) — Feature Profile Summary
+**Published context version:** 6
 
 - **Phạm vi đã kiểm thử:** role `owner` (Linh explorer, sub=273), 1 organization, store `linh-explorer.myshopify.com`, environment staging. Chưa có evidence cho role khác (không có tài khoản thứ 2 để test permission/cross-tenant).
-- **8/8 feature có profile:** product-base-browse, product-base-create, product-base-identity, printarea-definition, variant-catalog, mockup-attachment, product-base-lifecycle, product-base-campaign-link. Confidence tổng thể object: MEDIUM. `product-base-campaign-link` là feature yếu nhất (confidence LOW, gần như không có bằng chứng cho đường ghi dữ liệu).
+- **9/9 feature có profile:** product-base-browse, product-base-create, product-base-identity, printarea-definition, variant-catalog, variant-add-to-campaigns, mockup-attachment, product-base-lifecycle, product-base-campaign-link. Confidence tổng thể object: MEDIUM. `product-base-campaign-link` là feature yếu nhất (confidence LOW, gần như không có bằng chứng cho đường ghi dữ liệu).
 - Lịch sử thay đổi chi tiết: xem `CHANGELOG.md`. Câu hỏi/mâu thuẫn còn mở: xem `open-questions.md`.
 
 ---
@@ -102,6 +103,7 @@
 ## Quản lý Variant Catalog (`variant-catalog`)
 **Goal:** Quản lý catalog variant (SKU, màu/size, giá, tồn kho) của 1 product base: thêm nhanh variant, cấu hình hiển thị màu/size, gán printarea riêng theo variant, export/import.
 **Entry points:** `/products/{id}/edit` (section Variants)
+**Cập nhật CBS-010 (TIB-5496, test case PASS trên staging 2026-10-09, production chưa xác nhận):** bảng Variants hỗ trợ chọn nhiều dòng — Ctrl-click chọn/bỏ chọn từng dòng rời rạc, Shift-click chọn cả dải liên tiếp; có vùng chọn thì Delete selected chuyển enabled (KB-186). Chưa kiểm Cmd-click trên macOS (OQ-product-base-029) và hành vi Delete selected trên nhiều dòng (OQ-product-base-030). Checklist CHK-05-015..CHK-05-017.
 
 **Capabilities:**
 1. Quick-add variant — client chặn submit nếu thiếu field (không gửi request); chỉ báo viền đỏ, không có text message
@@ -118,13 +120,46 @@
 - **MEDIUM:** Export/Template thiếu cột ID và printarea — vòng export-sửa-import sẽ mất liên kết, rủi ro tạo trùng/lệch dữ liệu khi thao tác hàng loạt
 - **LOW:** xử lý giá trị rỗng không nhất quán trong cùng payload (Weight='' vs Compare price=null)
 - **LOW:** Modal Display settings hiện toàn bộ radio disabled/không checked dù record đã có giá trị — có thể là bug UI
-- Export/Import Excel của grid, "Delete selected" hàng loạt — chưa được khảo sát
+- Export/Import Excel của grid, "Delete selected" hàng loạt — chưa được khảo sát (vùng chọn nhiều dòng đã có, KB-186; xoá thật trên nhiều dòng chưa kiểm, xem OQ-product-base-030)
+
+---
+
+## Thêm nhiều Variant vào Campaign (`variant-add-to-campaigns`)
+**Goal:** Chọn nhiều variant trong bảng Variants của Product Base rồi thêm chúng một lần vào các campaign đang dùng product base đó.
+**Entry points:** `/products/{id}/edit` (bảng Variants → nút (+) "Add to campaigns" trên dòng nằm trong vùng chọn nhiều dòng; bấm (+) ngoài vùng chọn hoặc khi không chọn dòng nào chạy luồng 1 variant)
+**Nguồn:** CBS-010 (TIB-5496), test case trên staging chạy 2026-10-09, build hash không rõ, production chưa xác nhận.
+
+**Quy tắc đã xác nhận bằng test case PASS (CONFIRMED_EXPECTED, MEDIUM):**
+1. Bấm (+) trên dòng trong vùng chọn mở modal "Campaigns that use this product" chế độ nhiều variant, banner "Adding N variants to selected campaigns will also mark them as available" với N = số variant được chọn (KB-187)
+2. (+) trên dòng variant Unavailable luôn disabled, kể cả khi dòng đó nằm trong vùng chọn (KB-188)
+3. Campaign 0/N hoặc K/N (K < N) tick được; campaign N/N bị disable; "+ Add" chỉ enabled khi có ít nhất 1 campaign được tick (KB-191). Select-all tick mọi campaign có checkbox enabled (KB-192)
+4. "+ Add" mở confirmation "Add variants to campaigns" (Add/Cancel); Cancel không gửi gì và giữ nguyên trạng thái modal (KB-195)
+5. Xác nhận Add chỉ insert variant campaign còn thiếu (không nhân đôi), variant được thêm ở trạng thái available, không thêm variant Unavailable; double-click Add chỉ gửi 1 mutation (KB-197)
+6. Ghi dữ liệu chỉ qua operation có sẵn (insert_campaign_variants, update_campaign_instances đặt need_sync), campaign được đánh dấu "Update required" (KB-204)
+7. Bấm (+) ngoài vùng chọn chạy luồng 1 variant như cũ (KB-202)
+
+**Hành vi đang quan sát — KHÔNG dùng làm expected (OBSERVED_CURRENT, LOW):**
+- Vùng chọn lẫn Unavailable: modal chỉ nhận variant Available, N chỉ đếm Available (KB-189; OQ-product-base-017). Ca toàn bộ vùng chọn Unavailable chưa kiểm (OQ-product-base-018)
+- Select-all chỉ áp cho 25 campaign của trang đang xem (KB-193; OQ-product-base-020)
+- Sau Add thành công modal vẫn mở (KB-198; OQ-product-base-023)
+- Bulk Add gửi một mutation insert chung cho mọi campaign; nhánh lỗi một phần chưa kiểm (KB-200; OQ-product-base-025)
+
+**Known defect đang mở (chưa có lần chạy lại có ngày):** BUG-262 thiếu hint variant Unavailable bị bỏ qua (KB-190; OQ-product-base-019) · BUG-263 select-all không label, header checkbox sai ở trang 2 (KB-194; OQ-product-base-021) · BUG-261 câu hỏi confirmation không nêu số campaign/variant inactive (KB-196; OQ-product-base-022) · BUG-264 vùng chọn không clear sau Add, Delete selected vẫn enabled (KB-199; OQ-product-base-024) · BUG-265 mutation lỗi nhưng UI vẫn báo Success, dữ liệu không ghi (KB-201; OQ-product-base-026)
+
+**Coverage:** portal + network (staging, merchant-owner) ✅ · campaign có variant inactive (RA R7/R8) ❌ (OQ-product-base-027) · role/plan khác ❌ (OQ-product-base-028) · storefront sau Update ❌ (OQ-product-base-031) · production ❌
+**Confidence:** MEDIUM cho các quy tắc có test case PASS; LOW cho phần quan sát
+**Risks:**
+- **HIGH:** BUG-265 — Add lỗi vẫn báo Success, dữ liệu không ghi, user không biết (OQ-product-base-026)
+- **HIGH:** BUG-264 — vùng chọn còn sót sau Add trong khi Delete selected xoá ngay không xác nhận (KB-079) → rủi ro xoá nhầm (OQ-product-base-024)
+- **MEDIUM:** select-all theo trang + header checkbox sai trạng thái — rủi ro bỏ sót campaign khi product base có >25 campaign
+- Checklist CHK-09-001..CHK-09-023
 
 ---
 
 ## Upload & Gán Mockup cho Product Base (`mockup-attachment`)
 **Goal:** Upload ảnh mockup mới hoặc chọn từ media library, và gán cho product base/variant để preview sản phẩm.
 **Entry points:** `/products/{id}/edit` (section Mockup)
+**Cập nhật CBS-006 (TIB-5584, staging 2026-10-16, quan sát):** Mockup Editor hiển thị layer phẳng, không có cấp Group; ẩn layer Group không làm layer khác ngừng render (KB-185, `OBSERVED_CURRENT`/LOW, BUG-325 chưa chốt hướng). Checklist CHK-06-013..CHK-06-015; OQ-product-base-014..016.
 
 **Capabilities:**
 1. Upload mockup mới — luồng 4 bước tách rời: (1) lấy presigned upload URL, (2) PUT thẳng lên CDN (không qua backend teeinblue), (3) đăng ký mockup-layer, (4) gán vào product; không có giới hạn kích thước file ở bước lấy presigned URL (đã xác nhận với file 15MB)
@@ -144,6 +179,8 @@
 - **LOW:** bước lấy upload URL dùng `{userId}` = `users.id`, KHÔNG phải `staffs.id` — khác biệt định danh duy nhất trong toàn bộ khảo sát, rủi ro nhầm lẫn nếu có logic phân quyền dựa trên path param
 - **[MISMATCH-003] MEDIUM:** "Sync to campaigns" báo mockup không dùng trong campaign nào dù product đã liên kết campaign — xem OQ-004
 - Cơ chế thông báo hoàn tất render qua webhook (nếu có, khác refresh thủ công) chưa rõ
+
+**Cập nhật CBS-009 (TIB-5428, quan sát, chưa làm oracle):** modal Assign mockups của Product Base hiện video (thumbnail/icon play) cạnh mockup và chọn được (KB-328, OBSERVED_CURRENT/LOW; case liên quan gắn BUG-376 chưa rõ nội dung — OQ-product-base-032). Save assignment video trong editor Product Base chưa được quan sát (OQ-product-base-033).
 
 ---
 
@@ -170,6 +207,7 @@
 
 ## Liên kết Product Base với Campaign & Đồng bộ (`product-base-campaign-link`)
 **Goal:** Liên kết 1 product base vào campaign và đồng bộ thay đổi (printarea/variant/mockup) sang campaign đang dùng nó, qua nút "Update campaign".
+**Cập nhật CBS-010 (TIB-5496, test case PASS trên staging 2026-10-09, production chưa xác nhận):** sau khi bulk Add variant từ Product Base vào campaign đã published, trang campaign hiện nút đỏ "Update required"; variant vừa Add chỉ vào dữ liệu sync (instance_variants) sau khi bấm Update thủ công (KB-203). Hiển thị trên storefront chưa kiểm (OQ-product-base-031). Checklist CHK-08-014, CHK-08-015.
 **Entry points:** `/products/{id}/edit` (khi imported + có provider + đang được campaign dùng) · `/campaigns/{id}/edit` (khối "Available Products") · `/campaigns/new` (không có bước chọn product base) · modal "Select your product"
 
 **Capabilities:**
@@ -187,3 +225,5 @@
 - **MEDIUM:** modal "Select your product" không lọc bỏ product base chưa sẵn sàng — rủi ro gán nhầm sản phẩm chưa hoàn thiện vào campaign, phát hiện lỗi khi publish
 - **MEDIUM:** cảnh báo đồng bộ chỉ ở mức mềm, không có cơ chế bắt buộc — rủi ro user quên đồng bộ, campaign live hiển thị sai printarea/variant
 - **MEDIUM:** độ tin cậy của Activity Log object-level không ổn định — xem OQ-002/OQ-008
+
+**Cập nhật CBS-009 (TIB-5428, quan sát, chưa làm oracle):** campaign tạo từ Product Base (thêm PB / bulk create) mang theo assignment video ↔ variant của Product Base (KB-329, OBSERVED_CURRENT/LOW). **Known defect BUG-361 (KB-330, High):** video sang campaign tạo từ Product Base mất URL và thumbnail, storefront hiện slide trống — output hiện tại, không phải hành vi đúng (OQ-product-base-035; PO xác nhận ý định ở OQ-product-base-036).

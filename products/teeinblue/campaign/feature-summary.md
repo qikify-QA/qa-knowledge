@@ -1,11 +1,12 @@
 # Object: Campaign (product: teeinblue) — Feature Profile Summary
+**Published context version:** 6
 
 - **Environment mọi fact dưới đây được quan sát:** staging
-- **Toàn bộ profile là `OBSERVED_CURRENT`** — chưa có item nào được nâng lên `CONFIRMED_EXPECTED` (chưa có spec/PO/dev confirm nào cho object này)
+- **Gần như toàn bộ profile là `OBSERVED_CURRENT`** — item `CONFIRMED_EXPECTED` là KB-184 (CBS-006, test case Testlane PASS, staging 2026-10-16) và KB-300, KB-302, KB-304, KB-305, KB-306, KB-310, KB-312, KB-314 (CBS-009, test case Testlane PASS trên staging 2026-10-22, trước khi code merge; production chưa xác nhận)
 - **Actor duy nhất đã exercise:** role `owner` (Linh explorer, sub=273), 1 organization
-- **6 feature có profile:** FEAT-00, FEAT-01, FEAT-02, FEAT-03, FEAT-04, FEAT-06. FEAT-05 không tồn tại trong sequence (chưa giải thích — `OQ-campaign-005`)
+- **7 feature có profile:** FEAT-00, FEAT-01, FEAT-02, FEAT-03, FEAT-04, FEAT-06, FEAT-07 (`campaign-shopify-media-sync`, mới từ CBS-009). FEAT-05 không tồn tại trong sequence (chưa giải thích — `OQ-campaign-005`)
 - **Surface storefront/buyer-facing KHÔNG thuộc object này** — được theo dõi ở object độc lập `sdk` (`knowledge/products/teeinblue/objects/sdk/`). Không được diễn giải là Campaign đã cover storefront (`OQ-campaign-004`)
-- **Độ chắc chắn của checklist:** 37/71 check (52%) đang ở `NEEDS_CONFIRMATION` — baseline observed, chưa phải business rule đã confirm. Mỗi check như vậy có 1 `oq_ref` trỏ tới `open-questions.md`
+- **Độ chắc chắn của checklist:** 53/101 check (52%) đang ở `NEEDS_CONFIRMATION` — baseline observed, chưa phải business rule đã confirm. Mỗi check như vậy có 1 `oq_ref` trỏ tới `open-questions.md`
 
 ---
 
@@ -29,6 +30,7 @@
 ## FEAT-01 — Create Campaign by Product Base
 **Goal:** Tạo campaign gắn Product Base có sẵn, gán artwork theo print area, publish 1 hoặc nhiều store.
 **Entry points:** `/campaigns/new` → redirect `/campaigns/{id}/edit`
+**Cập nhật CBS-006 (TIB-5584, staging 2026-10-16):** preview trên mockup của Campaign Editor theo effective visibility của Group — Group ẩn thì preview không có layer con của Group (KB-184). Checklist CHK-017..CHK-019; OQ-campaign-049..050.
 
 **Capabilities:**
 1. Tạo campaign shell với title (2 field: title bắt buộc, tags optional)
@@ -48,6 +50,10 @@
 - DOM quirk ở nút '+' thêm product base (node ẩn trùng class-signature) — rủi ro locator cho automation
 
 **Caveat khi dùng làm oracle:** không tổng quát hoá validation title từ duy nhất case rỗng; không dùng suy đoán header sau publish làm expected result.
+
+**Cập nhật CBS-009 (TIB-5428, gán video cho variant; test case Testlane PASS trên staging 2026-10-22, trước khi 4 PR của TIB-5428 merge 2026-10-27; production chưa xác nhận):** modal Assign mockups hiện video cùng grid với mockup và chọn được video (KB-300); gán video ↔ variant nhiều-nhiều, reload giữ, lần Save sau không xoá mapping video khác (KB-302); Save được khi chỉ chọn video, không chọn media thì Save disabled, video hiện bằng thumbnail của chính nó (KB-304); Mockup assignments hiện video thành dòng riêng ở cả hai chế độ nhóm (KB-305); Duplicate video / Duplicate campaign giữ assignment video (KB-306); xoá video hoặc variant chỉ gỡ assignment của chính nó (KB-310). Chỉ là quan sát, chưa làm oracle: thứ tự grid theo list media (KB-301), tên request lưu/xoá (KB-303, KB-311), Duplicate giữ cả assignment mockup ảnh (KB-307), sửa URL video giữ id và assignment (KB-308). **Known defect BUG-360 (KB-309):** sửa URL video vẫn giữ thumbnail cũ — output hiện tại, không phải hành vi đúng. Lượt test chỉ kiểm Duplicate/xoá qua view Mockup assignments (và storefront với xoá video); response duplicate/clone và request load lại sau xoá chưa xác minh (OQ-campaign-068). PO cần xác nhận ý định của KB-302 và KB-310 (OQ-campaign-058, OQ-campaign-059); cần chạy lại sau merge/production (OQ-campaign-057).
+
+**Cập nhật CBS-013 (TIB-5203):** re-publish campaign qua Update trong Multi-store launch gọi `POST /api/campaigns/{id}/sync` và không thấy toast (KB-370, OBSERVED_CURRENT/LOW, 1 lượt trên staging trước redeploy) — chưa xác nhận hành vi đúng, CHK-038 là NEEDS_CONFIRMATION (OQ-campaign-069). Chưa rõ metafield version đổi sau Update có liên hệ với tham số v mà SDK dùng để tải payload hay không, nên không suy ra storefront nhận nội dung mới sau Update (OQ-campaign-070). KB-308 (quan sát trước khi có cache) có thể đã cũ.
 
 ---
 
@@ -72,6 +78,8 @@
 - Platform-product có Delete tương đương campaign hay chỉ archival-only (Unpublish) — chưa xác nhận
 
 **Caveat khi dùng làm oracle:** không tổng quát hoá "No mockup"; không dùng per-variant behavior chưa test làm expected result.
+
+**Cập nhật CBS-009 (TIB-5428; test case Testlane PASS trên staging 2026-10-22, trước khi 4 PR của TIB-5428 merge 2026-10-27; production chưa xác nhận):** modal Assign mockups của platform product hiện video cùng grid và chọn được video (KB-312, một platform product). Video YouTube hiện bằng thumbnail YouTube chỉ là quan sát (KB-313). Save/reload/sync assignment video cho platform product chưa được quan sát (OQ-campaign-062).
 
 ---
 
@@ -133,6 +141,15 @@
 - GraphQL schema đầy đủ — chưa introspect
 
 Đây là **gap bảo mật lớn nhất** của object Campaign, ưu tiên cao cho lần refresh kế tiếp.
+
+---
+
+## FEAT-07 — Đồng bộ media campaign sang Shopify (`campaign-shopify-media-sync`, mới từ CBS-009)
+**Goal:** Khi publish/sync campaign có video gán cho variant, Shopify nhận media và variant image phù hợp.
+- **Đã xác nhận (KB-314, CONFIRMED_EXPECTED/MEDIUM, test case Testlane PASS trên staging 2026-10-22, trước khi 4 PR của TIB-5428 merge 2026-10-27; production chưa xác nhận, đọc qua storefront .json):** variant gán cả video và mockup thì Shopify variant image là mockup được gán đầu tiên; video không được dùng làm variant image.
+- **Chỉ là quan sát, chưa làm oracle:** video URL vào Shopify product media và mapping video ↔ variant chỉ giữ phía Teeinblue (KB-315); một URL Vimeo làm publish/sync báo lỗi chung 'Can not upload images to shopify' (KB-316).
+- **Known defect BUG-362 (KB-317):** variant chỉ gán video vẫn nhận ảnh đầu tiên của product làm Shopify variant image — output hiện tại, không phải hành vi đúng; hành vi mong đợi chờ PO (OQ-campaign-067).
+- **Chưa có nguồn, không nạp:** đồng bộ video sang Etsy, migration dữ liệu video.
 
 ---
 

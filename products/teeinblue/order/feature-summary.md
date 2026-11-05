@@ -1,7 +1,8 @@
 # Object: Order (product: teeinblue) — Feature Profile Summary
+**Published context version:** 5
 
-- **Context version:** 1 (published 2026-09-13, env: staging)
-- **Mode:** bootstrap — all knowledge is `OBSERVED_CURRENT` (0 `CONFIRMED_EXPECTED`; no authority source such as spec/PO/ticket was available)
+- **Env:** staging. Bootstrap 2026-09-13; cập nhật CBS-006 (TIB-5584) và CBS-011 (TIB-5558, action Hide) 2026-10-30.
+- **Nguồn:** phần lớn knowledge là `OBSERVED_CURRENT` từ bootstrap; item `CONFIRMED_EXPECTED` duy nhất là KB-182 (CBS-006, test case Testlane PASS, staging 2026-10-16) — chờ PO xác nhận vì đổi đầu ra fulfillment (OQ-order-020)
 - **Actor coverage:** storefront = GUEST buyer only (no signed-in buyer tested); portal = owner (Linh explorer, sub=273) only (no non-owner/restricted role tested)
 - **Authoritative store: `linh-explorer-2.myshopify.com`** — NOT `linh-explorer.myshopify.com`. The latter has a known add-to-cart failure for this campaign that prevents completing a real order there; this KB should not be treated as verified for that store until its add-to-cart issue is investigated separately (see `OQ-order-013`).
 - **2/2 features covered** (`place-personalized-order-storefront`, `review-and-initiate-fulfillment-portal`). Neither is fully blocked.
@@ -31,12 +32,19 @@
 - Không có error path (4xx/5xx, declined card, missing field) nào được quan sát trong lần khám phá này (xem `OQ-order-002`, `OQ-order-003`)
 - Mọi finding pricing/field-dependency chỉ dựa 1-2 sample, không được suy rộng thành rule chung
 
+**Cập nhật CBS-011 (TIB-5558, action Hide):**
+- Layer action Hide có field Required đang bị ẩn không chặn Add to cart; payload customization và localStorage không có key của layer đó; giá trị đã nhập trước khi layer bị ẩn không vào cart/order/print file (KB-238, CONFIRMED_EXPECTED/MEDIUM, nguồn: test case Testlane PASS trên staging 2026-10-28, chạy trước khi 6 PR của TIB-5558 merge (2026-10-29); production chưa xác nhận).
+- Chưa chạy lại trên build sau merge/production (OQ-order-021); layer Required kiểu khác text hoặc nhiều layer Hide cùng ẩn chưa kiểm (OQ-order-022); PO chưa xác nhận đây là ý định cho merchant (OQ-order-025).
+
 **Gate:** publish này giữ điều kiện — `OQ-order-001` phải giữ UNRESOLVED; KB-006/KB-009 giữ INFERRED, không nâng cấp
+
+**Cập nhật CBS-013 (TIB-5203):** chuỗi Add to cart → checkout → order trên portal → file design có giá trị layer + Global Option (KB-369, OBSERVED_CURRENT/LOW, 1 lượt trên staging trước redeploy) — chưa xác nhận, ảnh hưởng order/fulfillment, chờ PO/Dev (OQ-order-027). CHK-022-ORDER01 là NEEDS_CONFIRMATION.
 
 ---
 
 ## review-and-initiate-fulfillment-portal — Review and initiate fulfillment for an incoming order
 **Goal:** Merchant (owner) xem lại order đã sync (line item, campaign/variant, customization/design, customer/shipping/billing, status) và khởi tạo bước gửi fulfillment.
+**Cập nhật CBS-006 (TIB-5584, staging 2026-10-16):** print file PNG/PDF của order từ artwork có Group ẩn không chứa nội dung Group (KB-182, `CONFIRMED_EXPECTED`/MEDIUM). Layout emboss/shape-cut chưa verify (KB-183, OQ-order-018). Checklist CHK-P17..CHK-P20; OQ-order-018..020.
 **Entry point:** portal Orders list → order-details → nút "Confirm & Send to fulfill" (KHÔNG có route `/fulfills` riêng biệt)
 
 **Capabilities:**
@@ -56,9 +64,15 @@
 - 3/5 network entry quanh action fulfill-click chưa xác định được
 - Không có permission boundary nào được test (chỉ owner sub=273) (`OQ-order-009`)
 
+**Cập nhật CBS-011 (TIB-5558, action Hide):**
+- Preview customization, mockup và print file (order design PNG) áp điều kiện Hide giống storefront: item khớp Hide không có layer đó, item không khớp có layer với đúng chữ đã nhập (KB-239, CONFIRMED_EXPECTED/MEDIUM, nguồn: test case Testlane PASS trên staging 2026-10-28, chạy trước khi 6 PR của TIB-5558 merge (2026-10-29); production chưa xác nhận).
+- Chưa chạy lại trên build sau merge/production, BUG-430 (print file rỗng ở lượt đầu) chưa rõ fix ở build nào (OQ-order-023); PDF, emboss, shape-cut với layer Hide chưa kiểm (OQ-order-024); PO chưa xác nhận đây là ý định cho merchant/nhà in (OQ-order-026).
+
 **Gate:** publish này giữ điều kiện — KB-022 phải giữ scope POD-disconnected; `OQ-order-001` giữ UNRESOLVED
 
 ---
+
+**Cập nhật CBS-015 (TIB-5633, Group nhiều layer):** Regenerate design trong order detail cho item có artwork Group ~250 layer tạo xong design mới (Item Activity log 'generated a new design'), không kẹt generating (KB-392, `CONFIRMED_EXPECTED`/MEDIUM, test case Testlane PASS staging 2026-10-29; PO chưa xác nhận ý định — OQ-order-030; chạy lại sau merge/production — OQ-order-029). Toast 'put your design in queue', việc Item Activity logs không có dòng 'is generating' riêng và việc order vẫn ở Ready sau Regenerate chỉ là quan sát (KB-393, `OBSERVED_CURRENT`/LOW, OQ-order-028). Checklist CHK-P24..CHK-P26 (CHK-P25, CHK-P26 NEEDS_CONFIRMATION). Render order design của Group nhiều layer nằm ở object `artwork` (feature `group-layer-order-design-render`).
 
 ## Gaps ở cấp Object (áp dụng cho MỌI feature trên)
 

@@ -113,3 +113,81 @@ Root cause (claimed webhook configuration fix) has never been independently veri
 ```json
 {"oq_id": "OQ-order-017", "type": "OPEN_ISSUE", "feature_id": "review-and-initiate-fulfillment-portal", "summary": "The 'Bulk Fulfill' sidebar flyout item exists but has never been opened or explored. Its behavior is completely unknown and must not be inferred from the single-order 'Confirm & Send to fulfill' flow — it may operate at a different (higher-risk, multi-order) scope."}
 ```
+
+## OQ-order-018 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-order-018", "type": "OPEN_ISSUE", "feature_id": "review-and-initiate-fulfillment-portal", "summary": "Print file của layout emboss / shape-cut khi artwork có Group ẩn chưa verify: TC-TIB-6071 Blocked (Product Base 3385 không có cell layout emboss), TC-TIB-6070 (shape cut) actualResult rỗng. Cần chạy lại với Product Base có layout emboss/shape-cut.", "kb_ids": ["KB-183"]}
+```
+
+## OQ-order-019 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-order-019", "type": "OPEN_ISSUE", "feature_id": "review-and-initiate-fulfillment-portal", "summary": "Rule print file PNG/PDF theo Group ẩn (TC-TIB-6068/6069) có giữ nguyên trên build staging sau khi toàn bộ 6 PR của TIB-5584 merge, và trên production khi TIB-5584 release không?", "kb_ids": ["KB-182"]}
+```
+
+## OQ-order-020 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-020", "type": "NEEDS_CONFIRMATION", "feature_id": "review-and-initiate-fulfillment-portal", "summary": "Print file PNG/PDF của order bỏ nội dung của Group ẩn (và các layer con) — đây là thay đổi đầu ra fulfillment. PO xác nhận đây là hành vi đúng cho merchant/nhà in (kể cả order đã đặt trước khi TIB-5584 release) để check P1 về print file giữ oracle hiện tại? Đồng thời xác nhận layout emboss/shape-cut có phải theo cùng quy tắc (KB-183 mới là quan sát, chưa verify).", "kb_ids": ["KB-182", "KB-183"]}
+```
+
+## OQ-order-021 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-order-021", "type": "OPEN_ISSUE", "feature_id": "place-personalized-order-storefront", "summary": "Hành vi 'layer bị Hide không chặn Add to cart và giá trị đã nhập không vào cart/order/print file' có giữ nguyên trên build staging sau khi 6 PR của TIB-5558 merge (2026-10-29) và trên production khi TIB-5558 release không?", "kb_ids": ["KB-238"]}
+```
+
+## OQ-order-022 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-order-022", "type": "OPEN_ISSUE", "feature_id": "place-personalized-order-storefront", "summary": "Layer Hide Required kiểu khác text (image, clipart, …) hoặc nhiều layer Hide cùng bị ẩn có cùng hành vi không chặn Add to cart và không vào cart/order không? KB-238 chỉ kiểm một layer text Required với một điều kiện.", "kb_ids": ["KB-238"]}
+```
+
+## OQ-order-023 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-order-023", "type": "OPEN_ISSUE", "feature_id": "review-and-initiate-fulfillment-portal", "summary": "Print file / preview / mockup của order theo điều kiện Hide có giữ nguyên trên build staging sau khi 6 PR của TIB-5558 merge (2026-10-29) và trên production khi TIB-5558 release không; BUG-430 (print file order rỗng ở lượt đầu) đã được fix trên build nào?", "kb_ids": ["KB-239"]}
+```
+
+## OQ-order-024 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-order-024", "type": "OPEN_ISSUE", "feature_id": "review-and-initiate-fulfillment-portal", "summary": "Print file PDF và layout emboss / shape-cut có loại bỏ layer bị Hide như print file PNG layout thường không? KB-239 chỉ kiểm PNG layout thường.", "kb_ids": ["KB-239"]}
+```
+
+## OQ-order-025 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-025", "type": "NEEDS_CONFIRMATION", "feature_id": "place-personalized-order-storefront", "summary": "PO xác nhận đây là hành vi đúng cho merchant: layer action Hide có field Required đang bị ẩn không chặn Add to cart, và giá trị buyer đã nhập trước khi layer bị ẩn không vào cart, order và print file (bị bỏ đi, không lưu lại)? KB-238 đến từ test case PASS, chưa có PO/business xác nhận ý định.", "kb_ids": ["KB-238"]}
+```
+
+## OQ-order-026 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-026", "type": "NEEDS_CONFIRMATION", "feature_id": "review-and-initiate-fulfillment-portal", "summary": "PO xác nhận đây là hành vi đúng cho merchant và nhà in: preview customization, mockup và print file của order áp điều kiện Hide giống storefront (item khớp điều kiện Hide không có layer đó trong print file)? KB-239 đến từ test case PASS, chưa có PO/business xác nhận ý định.", "kb_ids": ["KB-239"]}
+```
+
+## OQ-order-027 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-order-027","type":"NEEDS_CONFIRMATION","feature_id":"place-personalized-order-storefront","summary":"PO/Dev xác nhận: chuỗi Add to cart → checkout → order trên portal → file design có giá trị layer + Global Option mới chỉ quan sát 1 lượt (TC-TIB-7405) trên build trước redeploy (ảnh hưởng order/fulfillment). Chạy lại trên build đã merge TIB-5203 và production.","kb_ids":["KB-369"]}
+```
+
+## OQ-order-028 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-order-028","type":"NEEDS_CONFIRMATION","feature_id":"review-and-initiate-fulfillment-portal","summary":"Dev/PO: toast 'put your design in queue' khi Regenerate và việc Item Activity logs không ghi dòng 'is generating' cho lần regenerate chỉ có ở actualResult của TC-TIB-7630 — có phải hành vi mong đợi không? Tương tự cho việc order vẫn ở trạng thái Ready sau Regenerate (chỉ ở actualResult TC-TIB-7630). Không dùng để diễn giải lại chuỗi sự kiện Item Activity logs hiện có.","kb_ids":["KB-393"]}
+```
+
+## OQ-order-029 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-order-029","type":"OPEN_ISSUE","feature_id":"review-and-initiate-fulfillment-portal","summary":"Chạy lại sau merge và trên production: Regenerate design của order item có artwork Group nhiều layer chỉ được chạy 2026-10-29 trên staging, trước khi PR thứ hai của TIB-5633 cập nhật lần cuối; ngày deploy production chưa rõ.","kb_ids":["KB-392","KB-393"]}
+```
+
+## OQ-order-030 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-order-030","type":"NEEDS_CONFIRMATION","feature_id":"review-and-initiate-fulfillment-portal","summary":"PO xác nhận đây là hành vi đúng cho merchant và nhà in: Regenerate design của order item có artwork Group nhiều layer tạo xong design mới và không kẹt generating? KB-392 đến từ test case PASS, chưa có PO/business xác nhận ý định.","kb_ids":["KB-392"]}
+```

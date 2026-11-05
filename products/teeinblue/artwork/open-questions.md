@@ -593,3 +593,507 @@
 ```json
 {"oq_id": "OQ-artwork-099", "type": "OPEN_ISSUE", "feature_id": "object-wide", "summary": "Every run to date tested exactly one role (store owner/staff, account 'Linh explorer') on one tenant/organization — no permission or cross-tenant behavior has been verified for any Artwork feature."}
 ```
+
+## OQ-artwork-100 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-100", "type": "NEEDS_CONFIRMATION", "feature_id": "text-multi-stroke", "summary": "Stack stroke của Paragraph (tối đa 3 lớp, width là độ dày riêng từng vòng, xếp từ mép chữ ra ngoài theo thứ tự row, xoá/đổi thứ tự giữ dữ liệu) có phải hành vi đúng theo PO/business, và có giữ nguyên trên build TIB-5580 khi ship không? Mới là quan sát một lượt chạy test staging trước khi ship; checklist không có oracle xác nhận cho các check cốt lõi của feature.", "kb_ids": ["KB-129", "KB-130", "KB-131"]}
+```
+
+## OQ-artwork-101 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-101", "type": "NEEDS_CONFIRMATION", "feature_id": "text-multi-stroke", "summary": "Gửi thẳng PUT /api/artworks/{id} cho Paragraph với stroke_layers có entry thứ 4, hoặc width không phải số, thì server từ chối, cắt bớt hay lưu nguyên? Giới hạn 3 lớp chỉ thấy ở UI (nút 'Add stroke' disable); không có oracle cho validate phía server của artwork.", "kb_ids": ["KB-129"]}
+```
+
+## OQ-artwork-102 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-102", "type": "NEEDS_CONFIRMATION", "feature_id": "text-multi-stroke", "summary": "Paragraph mới tạo khi stroke còn tắt có lưu sẵn entry stroke_layers không, và mặc định (tắt; bật lên 1 row #FF0000 / 1px; stroke_color/stroke_width bằng lớp trong cùng) có phải hành vi đúng? Dữ liệu lưu khi stroke tắt chưa quan sát; check dữ liệu mặc định của paragraph mới không có oracle.", "kb_ids": ["KB-132"]}
+```
+
+## OQ-artwork-103 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-103", "type": "OPEN_ISSUE", "feature_id": "text-multi-stroke", "summary": "Preview storefront (SDK) hiển thị Paragraph nhiều lớp stroke thế nào (thứ tự vành, round, autoscale, layer linked) khi SDK staging có code TIB-5580? SDK staging chưa có code TIB-5580 nên mọi phần storefront của các test case bị Blocked; buyer thấy preview storefront trước khi đặt hàng.", "kb_ids": ["KB-133", "KB-138", "KB-139"]}
+```
+
+## OQ-artwork-104 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-104", "type": "OPEN_ISSUE", "feature_id": "text-multi-stroke", "summary": "Bản SVG (vectorize) của order design có đúng thứ tự vành, góc round, không vẽ vành khi stroke tắt, không cắt vành khi autoscale — cho Paragraph và Text 1 dòng? Không có đường tải SVG order design trên portal staging; SVG là một đầu ra in nhưng hoàn toàn chưa được kiểm.", "kb_ids": ["KB-133", "KB-134", "KB-135", "KB-139", "KB-143"]}
+```
+
+## OQ-artwork-105 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-105", "type": "NEEDS_CONFIRMATION", "feature_id": "text-multi-stroke", "summary": "PNG order design khớp preview Artwork Editor (fill trên mọi vành, góc round, autoscale không cắt vành) có phải hành vi đúng, và mức chênh lệch bề dày vành nào là chấp nhận được khi đo pixel? Kết luận render đều dựa trên so sánh bằng mắt, chưa có xác nhận PO/business; check render không có ngưỡng đo khách quan.", "kb_ids": ["KB-130", "KB-133", "KB-134", "KB-139"]}
+```
+
+## OQ-artwork-106 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-106", "type": "NEEDS_CONFIRMATION", "feature_id": "text-multi-stroke", "summary": "Tắt stroke giữ nguyên stroke_layers (stroke_enabled=false) và bật lại khôi phục các lớp cũ có phải hành vi đúng? Quyết định check 'tắt rồi bật lại' kỳ vọng khôi phục hay reset; chưa có xác nhận.", "kb_ids": ["KB-135"]}
+```
+
+## OQ-artwork-107 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-107", "type": "NEEDS_CONFIRMATION", "feature_id": "text-multi-stroke", "summary": "Convert Paragraph nhiều lớp sang Spiral Text và các loại layer khác ngoài Curve/Warp Text cho kết quả gì, và việc gộp về lớp trong cùng (bỏ lớp ngoài) có phải hành vi đúng? Mới quan sát Curve và Warp; người dùng mất lớp ngoài khi convert, cần biết đó là thiết kế hay lỗi. Cần PO xác nhận việc bỏ các lớp stroke ngoài khi convert sang Curve/Warp là chủ đích (dữ liệu stroke ngoài bị mất khỏi bản lưu).", "kb_ids": ["KB-136", "KB-137"]}
+```
+
+## OQ-artwork-108 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-108", "type": "NEEDS_CONFIRMATION", "feature_id": "text-multi-stroke", "summary": "Vành của Paragraph linked scale chính xác theo tỉ lệ kích thước (đo được) không, và PNG order design của layer linked có đúng như preview editor không? Tỉ lệ mới đánh giá bằng mắt trên preview editor; PNG của layer linked chưa kiểm.", "kb_ids": ["KB-138"]}
+```
+
+## OQ-artwork-109 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-109", "type": "NEEDS_CONFIRMATION", "feature_id": "text-multi-stroke", "summary": "Việc Custom Shape text và Paragraph trên Artwork 1.0 chỉ có 1 stroke (không có stack) là quyết định sản phẩm đã duyệt chưa, và Paragraph Artwork 1.0 sau khi đổi width lưu payload thế nào? Phạm vi loại trừ mới là quan sát hiện tại; payload Paragraph Artwork 1.0 chưa kiểm được vì fixture không Save được.", "kb_ids": ["KB-140", "KB-141", "KB-142"]}
+```
+
+## OQ-artwork-110 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-110", "type": "NEEDS_CONFIRMATION", "feature_id": "text-multi-stroke", "summary": "Multi-stroke của Text 1 dòng (TIB-5417) có giữ nguyên trong editor, API và PNG trên build TIB-5580 khi ship không? Regression mới kiểm trên build staging chưa ship; cần kiểm lại sau khi ship.", "kb_ids": ["KB-143"]}
+```
+
+## OQ-artwork-111 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-111", "type": "NEEDS_CONFIRMATION", "feature_id": "text-multi-stroke", "summary": "Server phải từ chối/loại bỏ stroke_layers sai do buyer gửi kèm personalization (4 entry, width không phải số), hay chấp nhận nhưng bỏ qua khi render là đủ? API hiện trả 201 và echo phần chèn (BUG-357); chưa ai phân xử nên check của luồng này không có expected result. Cần PO xác nhận ý định (item mới chạm ranh giới ghi dữ liệu của buyer chưa đăng nhập, BUG-357).", "kb_ids": ["KB-144"]}
+```
+
+## OQ-artwork-112 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-112", "type": "NEEDS_CONFIRMATION", "feature_id": "text-multi-stroke", "summary": "Server có thực sự lưu stroke_layers do buyer chèn vào customization, hay chỉ echo trong response? Việc lưu chỉ suy từ response echo; nếu được lưu, phần chèn có thể ảnh hưởng đầu ra khác (storefront, SVG) chưa kiểm.", "kb_ids": ["KB-144"]}
+```
+
+## OQ-artwork-113 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-113", "type": "OPEN_ISSUE", "feature_id": "text-multi-stroke", "summary": "Ai đã đổi status Testlane của task TIB-220 sau lượt chạy, và status hay actualResult mới là kết quả đúng của các test case lệch ('passed' trong khi actualResult ghi Blocked; TC-TIB-6338 'skipped' trong khi actualResult ghi Fail)? Các test case này không dùng được làm nguồn xác nhận cho tới khi status và actualResult khớp.", "kb_ids": ["KB-133", "KB-138", "KB-139", "KB-142", "KB-144"]}
+```
+
+## OQ-artwork-114 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-114", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-save-persist", "summary": "Vì sao PUT /api/artworks/5187 trả 500 'Server Error' kể cả khi Save không đổi gì trên bản copy Artwork 1.0 chưa có version đã lưu — lỗi dữ liệu của bản copy, lỗi sản phẩm với artwork Artwork 1.0 chưa có version, hay liên quan TIB-5580? Quyết định đây là bug sản phẩm cần check hồi quy hay chỉ là fixture hỏng; cần log server để phân biệt.", "kb_ids": ["KB-145"]}
+```
+
+## OQ-artwork-115 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-115", "type": "OPEN_ISSUE", "feature_id": "artwork-save-persist", "summary": "Các artwork Artwork 1.0 khác (không phải bản copy #5187, kể cả artwork gốc #2164 hoặc artwork 1.0 đã có version lưu) có Save được không? Cần một artwork Artwork 1.0 Save được làm fixture để chạy lại check Paragraph Artwork 1.0; hiện chưa biết phạm vi của lỗi 500.", "kb_ids": ["KB-145"]}
+```
+
+## OQ-artwork-116 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-116", "type": "OPEN_ISSUE", "feature_id": "artwork-save-persist", "summary": "Khi PUT /api/artworks/{id} trả 500, Artwork Editor hiển thị gì cho người dùng (toast/thông báo lỗi, giữ thay đổi chưa lưu hay không)? KB-145 chỉ ghi artwork không Save được, không ghi phản hồi UI; check negative cho lỗi server khi Save chưa có oracle.", "kb_ids": ["KB-145"]}
+```
+
+## OQ-artwork-117 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-117", "type": "OPEN_ISSUE", "feature_id": "text-multi-stroke", "summary": "Global template: stroke_layers của Paragraph có là field local (không bị merge từ global template) và spiral/shape text vẫn 1 stroke không? Chưa kiểm được: fixture global template dựng qua API không mở được trong Artwork Editor trên staging (chưa rõ lỗi fixture hay lỗi sản phẩm).", "kb_ids": []}
+```
+
+## OQ-artwork-118 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-118", "type": "OPEN_ISSUE", "feature_id": "text-multi-stroke", "summary": "Shadow của Paragraph: theo mô tả dev của TIB-5580 (PR api #4016), shadow áp 1 lần cho cả khối ở vectorize và PNG, và preview/PNG/SVG không được lệch; thay đổi này có thể làm sai ghi nhận cũ về shadow paragraph của TIB-5472. Trong lượt test staging 2026-10-21→22, editor và PNG order design cho thấy một khối shadow cho cả paragraph và PNG khớp editor (2 order Bogus); SVG và preview storefront SDK chưa kiểm. Phần editor + PNG đã quan sát nay là KB-251 (OBSERVED_CURRENT/LOW, CBS-017); quy tắc cho cả 3 renderer chưa có nguồn xác nhận. Cần chạy lại khi SDK staging có code và tải được SVG, hoặc nguồn PO/dev xác nhận.", "kb_ids": ["KB-251"]}
+```
+
+## OQ-artwork-119 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-119", "type": "OPEN_ISSUE", "feature_id": "text-multi-stroke", "summary": "Fill opacity < 1 với Paragraph nhiều lớp stroke: quy tắc 'bleed trong 1 dòng là known issue, vùng stroke 2 dòng chồng nhau đậm gấp đôi là lỗi' chỉ là đáp án của QA, chưa kiểm (SVG không tải được, SDK chưa có code). Ngoài ra ở một order PNG trên staging, vành stroke trắng trông mỏng hơn hẳn so với preview editor (ước lượng bằng mắt, chưa rõ nguyên nhân) — KB-133 chỉ áp cho các stack đã so khớp, chưa áp cho trường hợp này.", "kb_ids": ["KB-133"]}
+```
+
+## OQ-artwork-120 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-120", "type": "OPEN_ISSUE", "feature_id": "text-multi-stroke", "summary": "Import PSD có paragraph nhiều lớp stroke: chưa có test case, chưa có kiến thức về cách stroke_layers được tạo khi import.", "kb_ids": []}
+```
+
+## OQ-artwork-121 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-121", "type": "OPEN_ISSUE", "feature_id": "text-multi-stroke", "summary": "Chọn nhiều layer cùng lúc (Text + Paragraph) rồi chỉnh stroke: ngoài phạm vi kiểm của TIB-5580 theo trao đổi nội bộ QA, chưa có kiến thức; chưa có xác nhận PO đây là ngoài phạm vi sản phẩm.", "kb_ids": []}
+```
+
+## OQ-artwork-122 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-122", "type": "NEEDS_CONFIRMATION", "feature_id": "text-color-sequence-render", "summary": "Hành vi đúng (PO/business) của render text rainbow trên Locate Artwork và Order Design PNG — căn phải/giữa/trái, độ rộng bằng text 1 màu, autoscale tên dài, letter spacing, kerning — có đúng như đang quan sát (khớp preview SDK) không? Hiện chỉ là quan sát một lượt chạy trên staging, chưa ai xác nhận; checklist không có oracle cho các nhánh này.", "kb_ids": ["KB-146", "KB-147", "KB-148", "KB-149", "KB-151", "KB-152"]}
+```
+
+## OQ-artwork-123 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-123", "type": "NEEDS_CONFIRMATION", "feature_id": "text-color-sequence-render", "summary": "Text font thường (Roboto) và text 1 màu trên Order Design PNG có thật khớp preview SDK không, khi đo lại có số đo và fixture? Chỉ có tóm tắt kết quả, không có actualResult chi tiết; muốn làm baseline cho nhánh không rainbow cần chạy lại có số đo.", "kb_ids": ["KB-150"]}
+```
+
+## OQ-artwork-124 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-124", "type": "NEEDS_CONFIRMATION", "feature_id": "text-color-sequence-render", "summary": "Stroke 1 lớp liền mạch ở chỗ nối chữ và text RTL giữ màu từng chữ theo thứ tự preview SDK có phải hành vi đúng không? Quan sát một lượt trên staging (stroke đánh giá bằng mắt, RTL chỉ font Heebo), chưa có PO/business xác nhận.", "kb_ids": ["KB-153", "KB-155"]}
+```
+
+## OQ-artwork-125 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-125", "type": "NEEDS_CONFIRMATION", "feature_id": "text-color-sequence-render", "summary": "Với text rainbow mang multi-stroke, Order Design PNG đúng ra phải thế nào — stroke liền mạch ở chỗ nối chữ như preview SDK? PNG hiện có sợi màu chữ đè lên stroke (BUG-363); không có expected được xác nhận thì không viết được check pass/fail cho nhánh này.", "kb_ids": ["KB-154"]}
+```
+
+## OQ-artwork-126 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-126", "type": "OPEN_ISSUE", "feature_id": "text-color-sequence-render", "summary": "BUG-363 (sợi màu chữ đè stroke ở chỗ nối, rainbow + multi-stroke) có từ trước bản fix TIB-5606 hay do bản fix gây ra? Một nguồn ngoài (TC-TIB-4045, verified 2026-10-01) ghi rainbow + multi-stroke render đúng 3 vành, màu từng chữ giữ nguyên — khác build/font với lượt chạy 2026-10-22. Nếu bản fix gây ra, đây là regression của multi-stroke.", "kb_ids": ["KB-154"]}
+```
+
+## OQ-artwork-127 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-127", "type": "NEEDS_CONFIRMATION", "feature_id": "text-color-sequence-render", "summary": "Curve Text rainbow ở căn phải render thế nào, Curve Text trước bản fix có lỗi không, và bản fix có áp dụng cho Curve Text không? Chỉ chạy được căn giữa vì Curve Text không có tuỳ chọn căn lề (FEAT-12, KB-157); phạm vi bản fix cho Curve Text chưa được PO xác nhận.", "kb_ids": ["KB-156"]}
+```
+
+## OQ-artwork-128 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-128", "type": "OPEN_ISSUE", "feature_id": "text-color-sequence-render", "summary": "Text rainbow dùng font Carattere (font của case báo lỗi gốc) render thế nào trên Locate Artwork và Order Design PNG? Staging không có font này; mọi quan sát dùng font thay thế, nên case gốc chưa được tái hiện hay kiểm sau bản fix.", "kb_ids": ["KB-146", "KB-154"]}
+```
+
+## OQ-artwork-129 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-129", "type": "OPEN_ISSUE", "feature_id": "text-color-sequence-render", "summary": "Hành vi render text rainbow trên production sau khi TIB-5606 ship có giống quan sát trên staging không? TIB-5606 chưa ship; mọi item chỉ đúng cho build staging 2026-10-22 (build hash không rõ).", "kb_ids": ["KB-146", "KB-154", "KB-156"]}
+```
+
+## OQ-artwork-130 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-130", "type": "OPEN_ISSUE", "feature_id": "text-color-sequence-render", "summary": "Trước bản fix, text rainbow căn trái, text font thường và text 1 màu render thế nào — kết quả hiện tại có 'không đổi so với trước' không? Staging đã có bản fix khi chạy, không có baseline trước deploy; không phân biệt được hành vi mới và hành vi cũ.", "kb_ids": ["KB-147", "KB-150"]}
+```
+
+## OQ-artwork-131 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-131", "type": "OPEN_ISSUE", "feature_id": "text-color-sequence-render", "summary": "Design đã render trước khi deploy bản fix, khi Re-generate design cho order cũ, có đổi (cỡ chữ, vị trí) so với bản đã in không? Merchant regenerate order cũ có thể nhận ảnh khác bản đã in; trường hợp này chưa kiểm được vì không có order cũ.", "kb_ids": ["KB-149"]}
+```
+
+## OQ-artwork-132 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-132", "type": "OPEN_ISSUE", "feature_id": "text-color-sequence-render", "summary": "Nhánh font fallback của PNG renderer (ký tự không có trong font, emoji) với text rainbow hoạt động thế nào? Nhánh này chưa có quan sát nào tới được renderer; nếu fallback vẫn đo theo cách cũ, lỗi tràn/mất chữ có thể còn ở nhánh này. Lượt test staging 2026-10-22 không tới được nhánh này: ô nhập storefront bỏ emoji ngay lúc gõ (khớp ghi nhận emoji bị chặn mặc định), nên cần ký tự fallback lọt qua ô nhập (vd bật cho phép emoji) để kiểm.", "kb_ids": []}
+```
+
+## OQ-artwork-133 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-133", "type": "OPEN_ISSUE", "feature_id": "text-color-sequence-render", "summary": "SVG/vector export (vectorize) của text rainbow có cùng hành vi căn lề và độ rộng như Order Design PNG không? Chưa tải được file vector nào để kiểm; không biết renderer SVG có cùng lỗi gốc hay đã được sửa.", "kb_ids": []}
+```
+
+## OQ-artwork-134 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-134", "type": "OPEN_ISSUE", "feature_id": "text-color-sequence-render", "summary": "Ngoài Locate Artwork và Order Design PNG, những ảnh nào khác (thumbnail, mockup render phía server, ảnh product) có render text rainbow và có bị lỗi gốc ảnh hưởng không? Phạm vi ảnh bị ảnh hưởng chưa được xác nhận bằng quan sát hay nguồn thẩm quyền; checklist có thể bỏ sót surface.", "kb_ids": []}
+```
+
+## OQ-artwork-135 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-135", "type": "OPEN_ISSUE", "feature_id": "text-color-sequence-render", "summary": "Warp Text dùng Color Sequence và sequence màu do buyer chọn (Populate Color) render thế nào trên ảnh in? Hai tổ hợp này chưa được kiểm; chưa biết bản fix có bao phủ không.", "kb_ids": []}
+```
+
+## OQ-artwork-136 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-136", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-text", "summary": "Layer Curve Text không có tuỳ chọn căn lề text (lưu align center) là thiết kế có chủ đích hay là tính năng còn thiếu? Quyết định checklist coi việc thiếu căn lề là đúng hay là gap; ảnh hưởng phạm vi kiểm render Curve Text rainbow (hiện chỉ kiểm được căn giữa).", "kb_ids": ["KB-157"]}
+```
+
+## OQ-artwork-137 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-137", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-text", "summary": "Nút 'Align' trên canvas toolbar khi chọn layer curve-text (KB-042 của editor-layer-workspace) là căn vị trí layer trên canvas hay căn lề text? Nếu 'Align' là căn lề text, KB-157 ('không có tuỳ chọn căn lề') có thể sai và Curve Text căn phải dựng được; nếu là căn vị trí layer, hai item không mâu thuẫn.", "kb_ids": ["KB-157"]}
+```
+
+## OQ-artwork-138 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-138", "type": "NEEDS_CONFIRMATION", "feature_id": "group-layer-effective-visibility", "summary": "Group ẩn: mục Mask/nút Edit mask biến mất khỏi quick toolbar (quan sát TC-TIB-6060, 2026-10-16) trong khi expectedResult của case và R16 trong file RA/đáp án Slack Q6d (không ghi người trả lời) ghi 'disable'. Cần PO chốt: ẩn hay disable. Ghi chú QA local cũ (2026-09-30: Group ẩn vẫn có Edit mask) đã lỗi thời và không thuộc KB base.", "kb_ids": ["KB-167"]}
+```
+
+## OQ-artwork-139 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-139", "type": "OPEN_ISSUE", "feature_id": "group-layer-effective-visibility", "summary": "Render phía server (print file / render-design-preview) cho layer hoặc Group thiếu key visible chưa được đối chiếu — bước 3 của TC-TIB-6055 không chạy (không có tool server-side trong phiên). KB-166 chỉ phủ canvas editor + Live preview portal.", "kb_ids": ["KB-166"]}
+```
+
+## OQ-artwork-140 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-140", "type": "OPEN_ISSUE", "feature_id": "group-layer-effective-visibility", "summary": "Q11 (treo): fixture 'Group ẩn + con visible:true' dùng cho phần lớn test case được dựng qua MCP/API, chưa được PO/dev xác nhận là dữ liệu hợp lệ; repair command artwork:show-hidden-groups-with-visible-children đã chạy nên dữ liệu thật có thể không còn trạng thái này.", "kb_ids": ["KB-158", "KB-159", "KB-162", "KB-163", "KB-168"]}
+```
+
+## OQ-artwork-141 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-141", "type": "OPEN_ISSUE", "feature_id": "group-layer-effective-visibility", "summary": "Q10(b) (treo): Artwork 1.0 có hỗ trợ Group không — chưa thử; các item về effective visibility của run này chỉ phủ Artwork 2.0.", "kb_ids": ["KB-158"]}
+```
+
+## OQ-artwork-142 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-142", "type": "OPEN_ISSUE", "feature_id": "group-layer-effective-visibility", "summary": "Các mục 'Not for QA' trong QA plan của dev (#54766) chưa có test và không được nạp: dependency trên Group bị bỏ qua; layer trỏ tới Group không tồn tại render ở top level; MCP form preview khớp storefront form; command repair artwork:show-hidden-groups-with-visible-children.", "kb_ids": ["KB-158", "KB-168"]}
+```
+
+## OQ-artwork-143 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-143", "type": "NEEDS_CONFIRMATION", "feature_id": "group-layer-effective-visibility", "summary": "Ẩn hết mọi con thì Group vẫn ON và canvas không vẽ gì — hành vi có đúng như QA plan dev khi chạy TC-TIB-6159/6160 không?", "kb_ids": ["KB-161"]}
+```
+
+## OQ-artwork-144 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-144", "type": "OPEN_ISSUE", "feature_id": "group-layer-effective-visibility", "summary": "TIB-5584 đã deploy production ở bản release nào, và hành vi có giữ nguyên trên build sau khi 3 PR còn mở lúc 16:14 16/10 được merge không?", "kb_ids": ["KB-158", "KB-159", "KB-162", "KB-168"]}
+```
+
+## OQ-artwork-145 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-145", "type": "NEEDS_CONFIRMATION", "feature_id": "editor-layer-workspace", "summary": "Group ẩn: quick toolbar vẫn hiển thị mục Align với 6 nút không disable, bấm không tác dụng (TC-TIB-6058/6059, staging 2026-10-16). QA plan dev (#54766 mục A bước 6) ghi 'quick toolbar offers no transform or align' và expectedResult TC-TIB-6059 ghi 'Align không khả dụng'. Quan sát cùng lượt: quick toolbar của Group ẩn không thấy Print Effects và Mask (KB-170). Cần PO chốt khi Group ẩn thì Align và Print Effects nên ẩn, disable hay hiển thị (Mask hỏi riêng ở OQ-artwork-138). Không phải conflict với KB base (KB-042 không nói về Group ẩn).", "kb_ids": ["KB-170"]}
+```
+
+## OQ-artwork-146 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-146", "type": "NEEDS_CONFIRMATION", "feature_id": "editor-layer-workspace", "summary": "Khi Group đang ẩn, chọn một layer con trong layer panel có hiện box transform không, và các hành vi chọn/kéo theo QA plan dev có đúng khi chạy TC-TIB-6161/6162 không?", "kb_ids": ["KB-171", "KB-172"]}
+```
+
+## OQ-artwork-147 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-147", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-common-config", "summary": "layer_display chỉ đặt ở Group (con null, dữ liệu tạo qua JSON/API) thì storefront không áp cascade — đây là hành vi đúng (dữ liệu ngoài đường editor không được hỗ trợ) hay lỗi?", "kb_ids": ["KB-175"]}
+```
+
+## OQ-artwork-148 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-148", "type": "OPEN_ISSUE", "feature_id": "layer-common-config", "summary": "Print file (order design) của Group đặt display 'Design only' có chứa nội dung con như kỳ vọng không?", "kb_ids": ["KB-174"]}
+```
+
+## OQ-artwork-149 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-149", "type": "OPEN_ISSUE", "feature_id": "artwork-template-management", "summary": "Q9 (treo): linked template đã có cờ visible cụ thể (true/false) rồi global template đổi — linked đổi theo hay giữ riêng? KB-176/177 chỉ phủ null-kế thừa và bật lại ở linked; không suy ra trường hợp này.", "kb_ids": ["KB-176", "KB-177"]}
+```
+
+## OQ-artwork-150 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-150", "type": "OPEN_ISSUE", "feature_id": "psd-import", "summary": "Artwork import từ PSD có folder ẩn: storefront (form/preview) và print file chưa được kiểm (TC-TIB-6078 chỉ kiểm layer panel, canvas và response API). Liên quan OQ-artwork-120 (import PSD với paragraph nhiều lớp stroke).", "kb_ids": ["KB-178"]}
+```
+
+## OQ-artwork-151 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-151", "type": "OPEN_ISSUE", "feature_id": "psd-import", "summary": "Các phần khác của luồng PSD import (Multiple template, folder lồng nhiều cấp, mapping loại layer, file lỗi) hoạt động thế nào?", "kb_ids": ["KB-178"]}
+```
+
+## OQ-artwork-152 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-152", "type": "CONFLICT", "feature_id": "layer-condition-value-binding", "summary": "Shape dependency của layer có điều kiện sau tính năng Hide đang mâu thuẫn: KB-067 (base) mô tả {match_type, show_by_default, dependencies}, còn KB-227 (test case PASS 2026-10-28 trên staging, trước khi các PR merge) cho thấy bản lưu mới có thêm key action ('hide'/'show') và bản ghi cũ không có action được hiểu là Show. PO chọn: (a) thay KB-067 bằng KB-227, (b) giữ cả hai như hai thời điểm dữ liệu (KB-067 thu phạm vi thành 'bản ghi trước tính năng Hide'), hay (c) giữ base? Cho tới khi chốt, mọi check oracle tầng API/data dựa vào shape dependency không có expected.", "kb_ids": ["KB-067", "KB-227"], "side_a": "KB-067 (base, quan sát 2026-09-10): layer có condition có dependency = {match_type: 'all'|'any', show_by_default: boolean, dependencies: [{element, value},...]}.", "side_b": "KB-227 (test case PASS 2026-10-28, staging lượt đầu): PUT gửi dependency có key action 'hide'/'show' cùng match_type, show_by_default, dependencies; bản ghi cũ không có key action được hiểu là Show, không bị migrate."}
+```
+
+## OQ-artwork-153 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-153", "type": "NEEDS_CONFIRMATION", "feature_id": "conditional-setting-config", "summary": "Trên build đã merge, chọn Hide có đổi tooltip match type thành 'hide when all / any options are selected' và toggle 'Hide this layer on first load' có nhãn/tooltip riêng không; chuyển lại Show có khôi phục nhãn cũ không? Nguồn duy nhất là tài liệu dev viết trước khi code còn đổi, chưa test case nào kiểm.", "kb_ids": ["KB-223"]}
+```
+
+## OQ-artwork-154 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-154", "type": "NEEDS_CONFIRMATION", "feature_id": "conditional-setting-config", "summary": "Bulk apply Conditional setting trên build đã merge có dropdown Show/Hide và áp đúng action cho mọi layer được chọn (kể cả khi các layer đang mang action khác nhau) không? Chỉ có nguồn tài liệu dev, chưa test case nào.", "kb_ids": ["KB-225"]}
+```
+
+## OQ-artwork-155 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-155", "type": "NEEDS_CONFIRMATION", "feature_id": "conditional-setting-config", "summary": "Conditional Setting (Show/Hide) có được hỗ trợ ở cấp Group không? Ghi nhận tay của QA trái expected của test case và BUG-436 còn gắn; nếu có hỗ trợ thì UI đặt ở đâu, nếu không thì điều kiện chỉ đặt cho từng layer con.", "kb_ids": ["KB-226"]}
+```
+
+## OQ-artwork-156 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-156", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-duplicate-link-copy", "summary": "Trên build đã merge, import artwork, copy/paste layer (trong artwork và sang artwork 2.0 khác) và global template replica có giữ action Hide không; import từ file export định dạng v1 xử lý action thế nào? Chỉ có nguồn tài liệu dev, chưa test case nào chạy.", "kb_ids": ["KB-230"]}
+```
+
+## OQ-artwork-157 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-157", "type": "OPEN_ISSUE", "feature_id": "layer-duplicate-link-copy", "summary": "'Duplicate & Link options' trên layer có action Hide: bản LINKED/PLAIN_COPY có mang action và điều kiện của layer gốc không? Chưa có evidence cho chính thao tác này với layer Hide.", "kb_ids": ["KB-230"]}
+```
+
+## OQ-artwork-158 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-158", "type": "OPEN_ISSUE", "feature_id": "layer-condition-value-binding", "summary": "Khi action = 'hide', key show_by_default (giữ tên cũ) mang nghĩa 'Hide this layer on first load' — đây là thiết kế chủ đích của data model hay chỉ là cách hiển thị của editor/SDK? API có chấp nhận giá trị action nào khác ngoài 'hide'/'show' không?", "kb_ids": ["KB-227"]}
+```
+
+## OQ-artwork-159 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-159", "type": "OPEN_ISSUE", "feature_id": "condition-cycle-validation", "summary": "Dòng 'Conditions haven't been finished' đi kèm thông báo vòng điều kiện ở test Hide/Show là do fixture (điều kiện chưa hoàn tất) hay luôn xuất hiện khi có vòng? Quyết định phần nào của thông báo được dùng làm expected nguyên văn.", "kb_ids": ["KB-228"]}
+```
+
+## OQ-artwork-160 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-160", "type": "OPEN_ISSUE", "feature_id": "artwork-list-management", "summary": "Khi duplicate artwork có điều kiện, element trong dependencies của bản copy có được map sang layer id của chính bản copy (không trỏ về layer của artwork gốc) không? Test case duplicate không ghi tường minh việc map element.", "kb_ids": ["KB-229"]}
+```
+
+## OQ-artwork-161 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-161", "type": "OPEN_ISSUE", "feature_id": "conditional-setting-config", "summary": "Các hành vi Show/Hide ở portal (dropdown action, một action mỗi layer, Artwork 1.0 và Convert to 2.0, vòng điều kiện giữa layer Hide, Duplicate artwork giữ action — KB-221, KB-222, KB-224, KB-228, KB-229) có giữ nguyên trên build staging sau khi 6 PR của TIB-5558 merge (2026-10-29) và trên production khi TIB-5558 release không? Kèm theo: layer của artwork 1.0 sau Convert to 2.0 và layer cũ không có key action có ẩn/hiện đúng chiều Show trên storefront chạy SDK đã có code Hide không — lượt test duy nhất cho phần storefront này chạy trên SDK bản 2026-10-14 chưa có code Hide nên chưa xác minh.", "kb_ids": ["KB-221", "KB-222", "KB-224", "KB-228", "KB-229"]}
+```
+
+## OQ-artwork-162 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-162", "type": "NEEDS_CONFIRMATION", "feature_id": "text-multi-stroke", "summary": "PO quyết: các test case Testlane PASS trên staging (2026-10-21/22, trước khi 7 PR TIB-5580 merge) khẳng định cùng hành vi với 11 item quan sát KB-129, KB-130, KB-131, KB-132, KB-134, KB-135, KB-136, KB-137, KB-140, KB-141, KB-143 (stack tối đa 3 lớp, width từng vòng, xoá/đổi thứ tự, paragraph mới 1 row, góc round, tắt stroke giữ stroke_layers, convert sang Text/Curve/Warp, stroke legacy, Custom Shape 1 stroke, regression Text 1 dòng). teeinblue không bật supersede nên các item vẫn là OBSERVED_CURRENT/LOW và các check liên quan chưa có expected xác nhận. PO chọn: (a) nâng các hành vi này thành expected, (b) giữ là quan sát, hay (c) giữ cả hai như hai thời điểm? Cặp convert sang Curve/Warp làm mất các lớp ngoài (KB-137) có ảnh hưởng cao.", "kb_ids": ["KB-129", "KB-130", "KB-131", "KB-132", "KB-134", "KB-135", "KB-136", "KB-137", "KB-140", "KB-141", "KB-143"]}
+```
+
+## OQ-artwork-163 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-163", "type": "OPEN_ISSUE", "feature_id": "text-multi-stroke", "summary": "Chạy lại sau merge/production: mọi lượt test multi-stroke của Paragraph (TIB-5580) chạy trên staging 2026-10-21/22, trước khi 7 PR merge (2026-10-22); SDK staging lúc đó chưa có PR sdk #2124. Ticket đã Done 2026-10-22 nhưng việc ship production chưa xác nhận. Cần chạy lại trên build đã merge (staging) và production cho editor, dữ liệu lưu, PNG order design, SVG vectorize và preview storefront rồi gửi CCR mới.", "kb_ids": ["KB-129", "KB-130", "KB-131", "KB-132", "KB-133", "KB-134", "KB-135", "KB-136", "KB-137", "KB-138", "KB-139", "KB-140", "KB-141", "KB-142", "KB-143", "KB-144", "KB-251"]}
+```
+
+## OQ-artwork-164 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-164", "type": "NEEDS_CONFIRMATION", "feature_id": "text-multi-stroke", "summary": "Shadow của Paragraph có nhiều lớp stroke: PNG order design (API) vẽ 1 khối shadow cho cả paragraph, không lặp theo dòng, khớp preview Artwork Editor — có phải hành vi đúng không, và có giữ nguyên ở preview storefront và SVG vectorize khi SDK staging có code TIB-5580 và tải được SVG? Mới là quan sát bằng mắt trên 2 order (#1091, #1096) trong lượt test staging trước khi TIB-5580 merge, hai test case Blocked; check shadow paragraph (CHK-027) chưa có oracle xác nhận. Cần nguồn S3 (test case PASS đủ 3 renderer trên build có code, hoặc PO/dev xác nhận nguyên văn). Liên quan OQ-artwork-118.", "kb_ids": ["KB-251"]}
+```
+
+## OQ-artwork-165 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-165","type":"NEEDS_CONFIRMATION","feature_id":"group-layer-order-design-render","summary":"PO: ngưỡng thời gian chấp nhận cho generate order design của artwork có Group nhiều layer (~250) là bao nhiêu? Số đo hiện có (khoảng 33–68 giây) chỉ đo 1 lần mỗi fixture qua mốc thời gian Item Activity logs, không có baseline trước fix; ngưỡng 1–2 phút chưa được PO xác nhận. Không dùng số đo này làm SLA hay điều kiện pass/fail cho tới khi PO trả lời. Ngoài ra: order item hiển thị Ready/'Ready to fulfill' sau khi order design generate xong (chỉ thấy ở actualResult của TC-TIB-7614/7616, expectedResult không khẳng định) — có phải hành vi mong đợi không?","kb_ids":["KB-381"]}
+```
+
+## OQ-artwork-166 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-166","type":"NEEDS_CONFIRMATION","feature_id":"group-layer-order-design-render","summary":"Dev/PO: phần shadow của layer con vượt ra ngoài printarea bị cắt theo printarea trên order design — có phải hành vi mong đợi không? Chỉ thấy ở actualResult của TC-TIB-7617; expectedResult của case không khẳng định điều này.","kb_ids":["KB-384"]}
+```
+
+## OQ-artwork-167 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-167","type":"NEEDS_CONFIRMATION","feature_id":"group-layer-order-design-render","summary":"Hướng/vị trí shadow của layer con trong Group trên order design sau fix chưa được đối chiếu với bản trước fix (TC-TIB-7620 kiểm bằng mắt, offset của fixture khác test data). PO xác nhận hướng/vị trí shadow hiện thấy trên order design có phải ý định cho merchant và nhà in không; dev/QA đối chiếu toạ độ/pixel với bản trước fix.","kb_ids":["KB-385"]}
+```
+
+## OQ-artwork-168 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-168","type":"NEEDS_CONFIRMATION","feature_id":"group-layer-order-design-render","summary":"Dev/PO: text căn giữa khai báo cỡ 601 chỉ render cao khoảng 22px trên order design (có vẻ co theo box) — đúng hay lỗi? Text có thực sự tràn box của Group không; đường canvas mở rộng cho text tràn box chưa được chứng minh (TC-TIB-7619).","kb_ids":["KB-386"]}
+```
+
+## OQ-artwork-169 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-169","type":"NEEDS_CONFIRMATION","feature_id":"group-layer-order-design-render","summary":"Dev: ngưỡng route-large 150 Mpx đo trên canvas artwork hay trên printarea? Route-large (hàng đợi final-render-large) chưa được kích hoạt trong lượt chạy (printarea 72 Mpx) — cần fixture có printarea đủ lớn để kiểm.","kb_ids":["KB-390"]}
+```
+
+## OQ-artwork-170 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-170","type":"OPEN_ISSUE","feature_id":"group-layer-order-design-render","summary":"Chạy lại sau merge và trên production: lượt chạy test 2026-10-29 trên staging (build hash không rõ) diễn ra trước khi PR thứ hai của TIB-5633 cập nhật lần cuối 2026-10-30; ngày deploy production chưa rõ. Cần chạy lại bộ TIB-268 trên build đã merge và xác nhận trên production trước khi coi các item CONFIRMED của feature này là ổn định.","kb_ids":["KB-380","KB-381","KB-382","KB-383","KB-384","KB-385","KB-386","KB-387","KB-388","KB-389","KB-390"]}
+```
+
+## OQ-artwork-171 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-171","type":"OPEN_ISSUE","feature_id":"group-layer-order-design-render","summary":"Phạm vi render order design của Group nhiều layer chưa được kiểm: mask hình tròn/custom shape; order design PDF của Group có mask; Group khoảng 250 layer có layer tràn box (đường canvas mở rộng); layer chia ở 2 cấp Group (100 + 150); Group cha bị ẩn hoặc visibility theo điều kiện trong Group nhiều layer. Chưa có expected cho các nhánh này.","kb_ids":["KB-383","KB-386","KB-387","KB-388","KB-389"]}
+```
+
+## OQ-artwork-172 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-172","type":"OPEN_ISSUE","feature_id":"group-layer-order-design-render","summary":"Blend mode của layer con, layer gắn tag Context trong Group, và Artwork 1.0 chưa có quan sát nào cho render order design của Group nhiều layer (case liên quan bị bỏ qua, nguồn chưa đủ thẩm quyền). Hành vi mong đợi là gì và ai xác nhận?","kb_ids":[]}
+```
+
+## OQ-artwork-173 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-173","type":"NEEDS_CONFIRMATION","feature_id":"group-layer-order-design-render","summary":"PO xác nhận đây là hành vi đúng cho merchant và nhà in: order design của artwork có Group khoảng 250 layer generate hoàn tất (design Completed, không auto-stop/timeout, không kẹt Generating); print file của Group giống pixel bản không group; shadow/layer xoay tràn box hiện đủ trong vùng in; Group có mask chỉ hiện phần trong mask; Group lồng nhau không lệch layer; layer con tắt visible không xuất hiện. Các item này đến từ test case PASS trên staging, chưa có PO/business xác nhận ý định.","kb_ids":["KB-380","KB-382","KB-383","KB-387","KB-388","KB-389"]}
+```
+
+## OQ-artwork-174 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-174","type":"NEEDS_CONFIRMATION","feature_id":"layer-print-effects","summary":"Dev/PO: photo_border contour cut trên print file của Group có đi qua cùng đường xử lý với preset shape-cut của Print Effects (KB-044) không, và đường cắt đang thấy có phải ý định không? Group shape-cut khoảng 250 layer chưa được kiểm — fixture chỉ là Group 3 layer photo_border contour cut.","kb_ids":["KB-391","KB-044"]}
+```
+
+## OQ-artwork-175 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-175","type":"OPEN_ISSUE","feature_id":"layer-print-effects","summary":"Emboss áp cho Group nhiều layer chưa từng được chạy (case bị bỏ qua, nguồn chưa đủ thẩm quyền). Print file emboss của Group nên ra sao? Không suy ra gì về việc emboss có hay không trên account/plan hiện tại.","kb_ids":[]}
+```
+
+## OQ-artwork-176 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-176","type":"OPEN_ISSUE","feature_id":"layer-print-effects","summary":"Chạy lại sau merge và trên production cho print file photo_border contour cut của Group (lượt chạy 2026-10-29 trước khi PR thứ hai của TIB-5633 cập nhật lần cuối; ngày deploy production chưa rõ).","kb_ids":["KB-391"]}
+```
+
+## OQ-artwork-177 — CONFLICT
+
+```json
+{"oq_id":"OQ-artwork-177","type":"CONFLICT","feature_id":"text-color-sequence-render","conflict_group":"CONF-CBS-016-01","summary":"Text rainbow 32 ký tự bật autoscale, căn phải (staging, lượt chạy 2026-10-22): kết luận của kết quả test và số đo của chính lượt đó không khớp nhau về độ rộng Order Design PNG so với preview SDK. Độ rộng PNG sau autoscale so với preview SDK được kỳ vọng thế nào, dung sai chấp nhận là bao nhiêu? Hai item KB-149 và KB-404 đang UNRESOLVED, không bên nào là oracle. Quyết định này đi cùng quyết định của PO cho cặp KB-149 trong OQ-artwork-182.","side_a":{"kb_id":"KB-149","value":"Kết luận của kết quả test: Order Design PNG sau autoscale chênh 2px, không nhỏ hơn preview SDK."},"side_b":{"kb_id":"KB-404","value":"Số đo của cùng lượt chạy: PNG 495–910 (w=415), preview SDK 493–910 (w=417) — PNG hẹp hơn SDK 2px."},"kb_ids":["KB-149","KB-404"]}
+```
+
+## OQ-artwork-178 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-178","type":"NEEDS_CONFIRMATION","feature_id":"text-color-sequence-render","summary":"Số đo một lượt chạy: rainbow font Roboto căn phải PNG 560–905 so với preview SDK 558–904 (lệch 1–2px); text 1 màu font script PNG 624–912 so với SDK 624–913. Lệch 1–2px này có nằm trong dung sai chấp nhận và có lặp lại trên build sau merge / production không?","kb_ids":["KB-406"]}
+```
+
+## OQ-artwork-179 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-179","type":"NEEDS_CONFIRMATION","feature_id":"text-color-sequence-render","summary":"Theo mô tả dev (comment #55257, PR #4044), đoạn text dùng font fallback giữ cách đặt vị trí cũ của PNG renderer. Trên build đã merge, text rainbow có ký tự rơi vào font fallback render ra sao (đủ ký tự? khớp preview SDK?), và đây có phải hành vi mong muốn không?","kb_ids":["KB-412"]}
+```
+
+## OQ-artwork-180 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-180","type":"NEEDS_CONFIRMATION","feature_id":"text-color-sequence-render","summary":"Theo mô tả dev, preview / order design render trước khi deploy bản sửa TIB-5606 không tự cập nhật và phải regenerate. Đã kiểm trên staging/production chưa, và regenerate cho kết quả đúng (đủ ký tự, vị trí khớp preview SDK) không?","kb_ids":["KB-413"]}
+```
+
+## OQ-artwork-181 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-181","type":"NEEDS_CONFIRMATION","feature_id":"text-color-sequence-render","summary":"Theo mô tả dev, chỉ PNG renderer đổi; SVG renderer teeinblue-vectorize không bị ảnh hưởng và cho cùng hình glyph như text 1 màu. QA chưa tải được file vector trên staging — SVG của text rainbow căn phải có thật đủ ký tự, khớp preview SDK không?","kb_ids":["KB-414"]}
+```
+
+## OQ-artwork-182 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-182","type":"NEEDS_CONFIRMATION","feature_id":"text-color-sequence-render","summary":"PO quyết: các test case Testlane TIB-230 PASS trên staging (chạy 2026-10-22, trước khi PR teeinblue-api #4044 merge) khẳng định cùng hành vi với 10 item quan sát KB-146, KB-147, KB-148, KB-149, KB-150, KB-151, KB-152, KB-153, KB-155, KB-156 (rainbow căn phải/giữa/trái, độ rộng bằng text 1 màu, autoscale tên dài, Roboto và text 1 màu, letter spacing, kerning, stroke 1 lớp, RTL, Curve căn giữa). teeinblue không bật supersede nên các item vẫn là OBSERVED_CURRENT/LOW và các check liên quan chưa có expected xác nhận. PO chọn: (a) nâng các hành vi này thành expected, (b) giữ là quan sát, hay (c) giữ cả hai như hai thời điểm? Riêng KB-149: test case không xác nhận vế độ rộng autoscale so với preview SDK, nên quyết định cho KB-149 phải đi cùng OQ-artwork-177.","kb_ids":["KB-146","KB-147","KB-148","KB-149","KB-150","KB-151","KB-152","KB-153","KB-155","KB-156"]}
+```
+
+## OQ-artwork-183 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-183","type":"OPEN_ISSUE","feature_id":"text-color-sequence-render","summary":"Chạy lại sau merge/production: lượt chạy Testlane TIB-230 (staging 2026-10-22 14:20) diễn ra trước khi PR teeinblue-api #4044 merge (2026-10-22 15:44), chỉ trên font thay thế (Dancing Script/Roboto/Heebo); ngày ship production chưa xác nhận. Cần chạy lại trên build đã merge (staging) và production cho Locate Artwork và Order Design PNG (có số đo), rồi gửi CCR mới.","kb_ids":["KB-146","KB-147","KB-148","KB-149","KB-150","KB-151","KB-152","KB-153","KB-155","KB-156","KB-154","KB-404","KB-406","KB-412","KB-413","KB-414"]}
+```

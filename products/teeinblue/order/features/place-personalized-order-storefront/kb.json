@@ -8,7 +8,6 @@
     "scope": {
       "environment": "staging",
       "role": "GUEST buyer",
-      "object_state": "product page loaded, no personalization selected",
       "surface": "storefront"
     },
     "last_updated": {
@@ -26,7 +25,6 @@
     "scope": {
       "environment": "staging",
       "role": "GUEST buyer",
-      "object_state": "template unselected -> template 2 selected",
       "surface": "storefront"
     },
     "last_updated": {
@@ -44,7 +42,6 @@
     "scope": {
       "environment": "staging",
       "role": "GUEST buyer",
-      "object_state": "all required personalization fields filled",
       "surface": "storefront"
     },
     "last_updated": {
@@ -62,7 +59,6 @@
     "scope": {
       "environment": "staging",
       "role": "GUEST buyer",
-      "object_state": "1 item just added to cart",
       "surface": "storefront"
     },
     "last_updated": {
@@ -80,7 +76,6 @@
     "scope": {
       "environment": "staging",
       "role": "GUEST buyer",
-      "object_state": "add-to-cart click",
       "surface": "storefront"
     },
     "last_updated": {
@@ -98,7 +93,6 @@
     "scope": {
       "environment": "staging",
       "role": "GUEST buyer",
-      "object_state": "on checkout page, before entering payment info",
       "surface": "storefront"
     },
     "last_updated": {
@@ -116,7 +110,6 @@
     "scope": {
       "environment": "staging",
       "role": "GUEST buyer",
-      "object_state": "order confirmed, Standard shipping selected",
       "surface": "storefront"
     },
     "last_updated": {
@@ -134,7 +127,6 @@
     "scope": {
       "environment": "staging",
       "role": "GUEST buyer",
-      "object_state": "on checkout page, shipping methods listed, Standard pre-selected",
       "surface": "storefront"
     },
     "last_updated": {
@@ -152,7 +144,6 @@
     "scope": {
       "environment": "staging",
       "role": "GUEST buyer",
-      "object_state": "payment submitted, order created",
       "surface": "storefront"
     },
     "last_updated": {
@@ -170,7 +161,6 @@
     "scope": {
       "environment": "staging",
       "role": "GUEST buyer / owner (sub=273) for portal side",
-      "object_state": "second order created and confirmed, synced to portal",
       "surface": "storefront+portal"
     },
     "last_updated": {
@@ -188,7 +178,6 @@
     "scope": {
       "environment": "staging",
       "role": "GUEST buyer",
-      "object_state": "personalization filled, before checkout",
       "surface": "storefront"
     },
     "last_updated": {
@@ -206,7 +195,6 @@
     "scope": {
       "environment": "staging",
       "role": "GUEST buyer",
-      "object_state": "cart/checkout containing 1 personalized line item",
       "surface": "storefront"
     },
     "last_updated": {
@@ -214,5 +202,84 @@
       "ccr_ref": "bootstrap"
     },
     "related_kb_ids": []
+  },
+  {
+    "kb_id": "KB-238",
+    "topic": "Layer đang bị Hide: Required không chặn Add to cart; giá trị đã nhập trước khi bị Hide không vào payload, localStorage, line-item properties, order, print file",
+    "statement": "Theo Testlane TC-TIB-7338, TC-TIB-7339 PASS (task TIB-231, Jira TIB-5558), staging @ 2026-10-28 retest, SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT (ETag 85d63a84fa4e7e4dbbeee8c688efab70; sau lần TIB-5558 giao QA cuối 2026-10-13 12:00; build hash không rõ), chạy 2026-10-28 (2026-10-28; test chạy trước khi 6 PR của TIB-5558 merge ngày 2026-10-29; production chưa xác nhận), trên storefront, khi layer action Hide có field Required đang bị ẩn (điều kiện khớp), Add to cart với field đó để trống vẫn thành công, không có lỗi required (giỏ /cart.js tăng thêm 1 item); payload POST /api/merchant/shopify/customization và entry localStorage teeinblue-customizations không có key của layer đó. Giá trị đã nhập vào layer khi nó còn hiện, rồi layer bị Hide do đổi giá trị nguồn, không đi vào payload customization, localStorage, line-item properties của /cart.js (chỉ còn các property nội bộ _customization_id, _customization_image, _tib_fulfilled_sku, _tib_design_link_1), View customization của order trên portal và print file của item (print file không có pixel nào của layer).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "guest-buyer (storefront nprice1)",
+      "surface": "storefront (Add to cart, localStorage teeinblue-customizations) · api (/cart.js, POST customization)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-30",
+      "ccr_ref": "CBS-011"
+    },
+    "tags": [
+      "TIB-5558",
+      "conditional-setting",
+      "hide-action",
+      "add-to-cart",
+      "required-field",
+      "line-item-properties",
+      "print-file"
+    ],
+    "related_kb_ids": [],
+    "cross_object_refs": [
+      {
+        "object_id": "sdk",
+        "relation": "related_feature",
+        "note": "Ẩn/hiện layer Hide trên form/preview storefront và payload customization thuộc sdk, feature storefront-buyer-facing (KB-231)."
+      },
+      {
+        "object_id": "sdk",
+        "relation": "related_feature",
+        "note": "Khác cơ chế với known defect field required trong Group ẩn vẫn chặn Add to cart (sdk KB-179): item này chỉ nói về layer bị ẩn bởi điều kiện Hide."
+      }
+    ],
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "Testlane TC-TIB-7338, TC-TIB-7339 PASS (task TIB-231, Jira TIB-5558), staging @ 2026-10-28 retest, SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT (ETag 85d63a84fa4e7e4dbbeee8c688efab70; sau lần TIB-5558 giao QA cuối 2026-10-13 12:00; build hash không rõ), chạy 2026-10-28",
+      "authored_on": "2026-10-28",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-369",
+    "topic": "Campaign có Global Option: ATC + checkout → payload customization, cart line _customization_id, order portal và file design đúng giá trị",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7405, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trên storefront campaign #3270 (Nprice1), nhập \"ORDER5203\", chọn GO-A \"Blue\", Add to cart rồi checkout (Bogus gateway): POST /api/merchant/shopify/customization → 201 với layer-520311=\"ORDER5203\", global-option-1125=\"blue\"; localStorage teeinblue-customizations khớp; cart line có _customization_id; order Shopify #1121 về portal là order 4812 thuộc campaign #3270; \"View customization\" trong order hiện Name=ORDER5203, Color A1 (global-option-1125)=Blue; file design render \"ORDER5203\" và clipart, không phải default \"NAME\" (GO additional-option không có hình).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
+      "surface": "storefront · portal (order detail)",
+      "brand": null
+    },
+    "tags": [
+      "TIB-5203",
+      "order",
+      "global-option",
+      "customization",
+      "checkout"
+    ],
+    "related_kb_ids": [
+      "KB-238"
+    ],
+    "cross_object_refs": [
+      {
+        "object_id": "sdk",
+        "relation": "related_flow",
+        "note": "Bước nhập/ATC ở storefront SDK (feature storefront-buyer-facing); item này ghi chuỗi tới order và file design."
+      }
+    ],
+    "last_updated": {
+      "date": "2026-10-30",
+      "ccr_ref": "CBS-013"
+    }
   }
 ]
