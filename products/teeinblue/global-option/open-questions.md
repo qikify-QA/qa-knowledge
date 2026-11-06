@@ -236,3 +236,39 @@ _Tổng hợp từ `kb.json` (conflicts, tagged qua `conflict_group`), `features
 ```json
 {"oq_id":"OQ-global-option-038","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Campaign editor hiện layer Global Option kèm lựa chọn — mới quan sát 1 lượt (TC-TIB-7401) trên build trước redeploy mà dev yêu cầu recheck. Chạy lại trên build đã merge TIB-5203 và PO/Dev xác nhận đây là hành vi đúng.","kb_ids":["KB-371"]}
 ```
+
+## OQ-global-option-039 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-global-option-039","type":"OPEN_ISSUE","feature_id":"global-option-instance-management","summary":"'Sync campaign' trong đề xuất KB-372 cụ thể là thao tác nào, thực hiện ở đâu, có phải action 'Update campaign' (icon rocket trên list Global Option, KB-009, OQ-global-option-011) không, và sau sync bao lâu thì storefront đổi? Bước sync của CHK-01-025 chưa chạy lại được cho tới khi trả lời được.","kb_ids":["KB-372","KB-009"]}
+```
+
+## OQ-global-option-040 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-global-option-040","type":"OPEN_ISSUE","feature_id":"global-option-instance-management","summary":"Nếu đề xuất KB-372 được xác nhận, nó có áp dụng cho mọi loại Global Option và mọi kiểu sửa không (nguồn nói chung 'sửa global option'; liên quan OQ-global-option-034 về thứ tự item Additional Option).","kb_ids":["KB-372","KB-043"]}
+```
+
+## OQ-global-option-041 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-global-option-041","type":"OPEN_ISSUE","feature_id":"global-option-instance-management","summary":"Hành vi KB-372 mô tả áp dụng từ build hoặc ngày deploy nào, và hai lượt 2026-10-21 còn đúng trên build hiện tại không? TIB-5591 chỉ là ngữ cảnh chạy regression của TC-TIB-6199, nên trạng thái Done của ticket không trả lời được câu này.","kb_ids":["KB-372"]}
+```
+
+## OQ-global-option-042 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-global-option-042","type":"OPEN_ISSUE","feature_id":"global-option-instance-management","summary":"Vì sao trong TC-TIB-6199 lượt campaign 3069 giữ dữ liệu cũ tới khi sync còn lượt campaign 3072 hiện giá trị mới ngay không cần sync (giải thích 'no cache yet' của nguồn chưa kiểm chứng)? Dữ liệu Global Option có chịu cùng cơ chế cache như sdk KB-356/KB-357 (URL ?v=1 vẫn trả bản cũ sau sync) không? CHK-01-025 chưa kết luận bug ở cả hai vế cho tới khi có câu trả lời.","kb_ids":["KB-372"]}
+```
+
+## OQ-global-option-043 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-global-option-043","type":"NEEDS_CONFIRMATION","feature_id":"global-option-instance-management","summary":"PO xác nhận: ai là \"user\" trong \"confirmed by user 2026-10-21\" của Testlane TC-TIB-6199 và người đó có thẩm quyền không? Sau khi sửa Global Option, storefront cần sync campaign mới nhận thay đổi có đúng là hành vi mong đợi không, kể cả khi biết lượt campaign 3072 hiện ngay không cần sync? KB-372 là PROPOSED và CHK-01-025 không có oracle cho tới khi có câu trả lời.","kb_ids":["KB-372"]}
+```
+
+## OQ-global-option-044 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-global-option-044","type":"OPEN_ISSUE","feature_id":"global-option-instance-management","summary":"Buyer có đặt hàng được trên dữ liệu Global Option cũ trong khoảng trước sync không, và order nhận giá trị nào? Chưa có quan sát; rủi ro này là một lý do KB-372 cần PO xác nhận.","kb_ids":["KB-372"]}
+```

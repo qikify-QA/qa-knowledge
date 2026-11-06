@@ -2,7 +2,7 @@
 
 File này được SINH TỰ ĐỘNG bởi `scripts/generate-manifest.mjs` từ toàn bộ `open-questions.md` theo object (§5a của contract) — KHÔNG sửa tay ở đây. Cần thêm/sửa/resolve 1 open question thì sửa ở file object-level tương ứng rồi chạy lại script; sửa trực tiếp ở đây sẽ bị ghi đè mất ở lần chạy sau.
 
-Tổng: 2948 open question đang mở trên 70 object.
+Tổng: 2954 open question đang mở trên 70 object.
 
 ## auth-token (`knowledge/products/duos/auth-token/open-questions.md`) — 20 mục
 
@@ -3544,7 +3544,7 @@ Tổng: 2948 open question đang mở trên 70 object.
 - **[OQ-font-019]** Cross-role/permission testing hoàn toàn chưa thực hiện trên bất kỳ feature nào của object Font — mọi capability chỉ quan sát qua 1 tài khoản owner (sub=273); không có second account khả dụng để test rename/download/delete/create cross-role hoặc cross-tenant. Cả 4 checklist của object này đều loại trừ dimension PERMISSION vì lý do này.
 - **[OQ-font-021]** 0/5 write operation của object Font (create, rename, download, delete, Font Settings Save) có sample lỗi 4xx/5xx nào được quan sát — không thể kết luận hệ thống 'không có validation lỗi', chỉ là CHƯA CÓ sample lỗi ở bất kỳ thao tác ghi nào. Đây là gap mang tính hệ thống, không riêng 1 checklist item.
 
-## global-option (`knowledge/products/teeinblue/global-option/open-questions.md`) — 38 mục
+## global-option (`knowledge/products/teeinblue/global-option/open-questions.md`) — 44 mục
 
 ### Conflict — 2 statement mâu thuẫn nhau
 
@@ -3590,6 +3590,7 @@ Tổng: 2948 open question đang mở trên 70 object.
 - **[OQ-global-option-036]** (feature: global-option-additional-option-items) GO Additional Option nguồn category tạo trước deploy TIB-5467 có giữ nguyên hành vi (nguồn, category, Default value, item trên storefront) không? Test case cho trường hợp này bị skip.
 - **[OQ-global-option-037]** (feature: global-option-additional-option-items) PO xác nhận hai hành vi có thể gây mất dữ liệu là đúng ý định: đổi nguồn item xoá Default value và làm customization/order cũ không còn khớp (KB-040); Bulk 'Delete items' xoá item đã tick mà không khôi phục được (KB-041). Cả hai đã có test case PASS nhưng thuộc nhóm cần người quyết.
 - **[OQ-global-option-038]** (feature: artwork-personalization-global-option-link) Campaign editor hiện layer Global Option kèm lựa chọn — mới quan sát 1 lượt (TC-TIB-7401) trên build trước redeploy mà dev yêu cầu recheck. Chạy lại trên build đã merge TIB-5203 và PO/Dev xác nhận đây là hành vi đúng.
+- **[OQ-global-option-043]** (feature: global-option-instance-management) PO xác nhận: ai là "user" trong "confirmed by user 2026-10-21" của Testlane TC-TIB-6199 và người đó có thẩm quyền không? Sau khi sửa Global Option, storefront cần sync campaign mới nhận thay đổi có đúng là hành vi mong đợi không, kể cả khi biết lượt campaign 3072 hiện ngay không cần sync? KB-372 là PROPOSED và CHK-01-025 không có oracle cho tới khi có câu trả lời.
 
 ### Open issue — gap khác (unknown area, scope chưa rõ, chưa explore được)
 
@@ -3602,6 +3603,11 @@ Tổng: 2948 open question đang mở trên 70 object.
 - **[OQ-global-option-023]** (feature: global-option-instance-management) KB-023 (security surface: mutation 'updateGlobalOption' do client dựng) và các check edit-save dựa trên KB-006 (CHK-01-007, CHK-01-011, CHK-01-014 — đã hạ về NEEDS_CONFIRMATION) có thể đã lỗi thời sau TIB-5467. Cần tên operation/payload GraphQL mới của edit-save; khi CONF-CBS-004-01 được quyết, cập nhật KB-023 và khôi phục oracle cho các check này (hoặc tách nhánh edit thành check riêng).
 - **[OQ-global-option-024]** (feature: global-option-instance-management) Edit-save qua API validation có áp dụng cho các loại Global Option khác Single-line Text (clipart, color, upload photo, maps, json list...) không, và hành vi khi save hợp lệ / Name rỗng ở từng loại là gì? Test case CBS-004 chỉ verify Single-line Text.
 - **[OQ-global-option-035]** (feature: global-option-additional-option-items) Sau khi đổi nguồn item của một GO Additional Option đang được dùng, customization/order đã có hiển thị gì, và Conditional Setting đang nhắm item cũ còn hoạt động không? Hiện chỉ có text cảnh báo của dialog (KB-040); rủi ro P1 với dữ liệu order cũ.
+- **[OQ-global-option-039]** (feature: global-option-instance-management) 'Sync campaign' trong đề xuất KB-372 cụ thể là thao tác nào, thực hiện ở đâu, có phải action 'Update campaign' (icon rocket trên list Global Option, KB-009, OQ-global-option-011) không, và sau sync bao lâu thì storefront đổi? Bước sync của CHK-01-025 chưa chạy lại được cho tới khi trả lời được.
+- **[OQ-global-option-040]** (feature: global-option-instance-management) Nếu đề xuất KB-372 được xác nhận, nó có áp dụng cho mọi loại Global Option và mọi kiểu sửa không (nguồn nói chung 'sửa global option'; liên quan OQ-global-option-034 về thứ tự item Additional Option).
+- **[OQ-global-option-041]** (feature: global-option-instance-management) Hành vi KB-372 mô tả áp dụng từ build hoặc ngày deploy nào, và hai lượt 2026-10-21 còn đúng trên build hiện tại không? TIB-5591 chỉ là ngữ cảnh chạy regression của TC-TIB-6199, nên trạng thái Done của ticket không trả lời được câu này.
+- **[OQ-global-option-042]** (feature: global-option-instance-management) Vì sao trong TC-TIB-6199 lượt campaign 3069 giữ dữ liệu cũ tới khi sync còn lượt campaign 3072 hiện giá trị mới ngay không cần sync (giải thích 'no cache yet' của nguồn chưa kiểm chứng)? Dữ liệu Global Option có chịu cùng cơ chế cache như sdk KB-356/KB-357 (URL ?v=1 vẫn trả bản cũ sau sync) không? CHK-01-025 chưa kết luận bug ở cả hai vế cho tới khi có câu trả lời.
+- **[OQ-global-option-044]** (feature: global-option-instance-management) Buyer có đặt hàng được trên dữ liệu Global Option cũ trong khoảng trước sync không, và order nhận giá trị nào? Chưa có quan sát; rủi ro này là một lý do KB-372 cần PO xác nhận.
 
 ## image-library (`knowledge/products/teeinblue/image-library/open-questions.md`) — 37 mục
 

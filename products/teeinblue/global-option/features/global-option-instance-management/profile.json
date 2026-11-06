@@ -85,10 +85,11 @@
     },
     {
       "name": "Sửa (edit) Global Option instance đã tồn tại",
-      "description": "Sửa field (vd Option Title, Global Option Name) trên instance có sẵn và Save. [CBS-004] Đường save đang tranh chấp — CONF-CBS-004-01 UNRESOLVED: KB-006 (quan sát 2026-09-15, GO 860) ghi nhận Save gọi Hasura GraphQL mutation client-dựng 'updateGlobalOption', không phải REST PUT; KB-034 (TC-TIB-4513/4514/4515, 2026-10-08, chỉ Single-line Text) ghi nhận save nay qua API validation (lưu dữ liệu hợp lệ, chặn Name rỗng). Không dùng bên nào làm oracle cho tới khi conflict được quyết.",
+      "description": "Sửa field (vd Option Title, Global Option Name) trên instance có sẵn và Save. [CBS-004] Đường save đang tranh chấp — CONF-CBS-004-01 UNRESOLVED: KB-006 (quan sát 2026-09-15, GO 860) ghi nhận Save gọi Hasura GraphQL mutation client-dựng 'updateGlobalOption', không phải REST PUT; KB-034 (TC-TIB-4513/4514/4515, 2026-10-08, chỉ Single-line Text) ghi nhận save nay qua API validation (lưu dữ liệu hợp lệ, chặn Name rỗng). Không dùng bên nào làm oracle cho tới khi conflict được quyết. [CBS-073] Đề xuất chưa xác nhận (KB-372, PROPOSED/LOW, Testlane TC-TIB-6199): sau khi sửa trên Portal, storefront cần sync campaign mới nhận thay đổi. Hai lượt khác nhau: campaign 3069 giữ dữ liệu cũ tới khi sync, campaign 3072 hiện giá trị mới ngay không cần sync. Không dùng làm oracle; KB-372 không nói về đường save nên không giải conflict trên.",
       "kb_refs": [
         "KB-006",
-        "KB-034"
+        "KB-034",
+        "KB-372"
       ]
     },
     {
@@ -185,6 +186,15 @@
       "condition": "n/a — chưa test trường hợp instance đang Used>0 bị xoá, xem unknown_areas",
       "kb_refs": [
         "KB-008"
+      ]
+    },
+    {
+      "from": "đã sửa trên Portal",
+      "to": "storefront hiện thay đổi",
+      "trigger": "chưa xác định: đề xuất là sync campaign, nhưng lượt campaign 3072 không cần sync",
+      "condition": "[CBS-073, PROPOSED/LOW] đề xuất chưa xác nhận, không dùng làm oracle. Hai lượt trong Testlane TC-TIB-6199 khác nhau: campaign 3069 giữ dữ liệu cũ tới khi sync, campaign 3072 hiện giá trị mới ngay không cần sync; lý do khác nhau chưa rõ. Thao tác sync cụ thể nguồn không nêu, chưa nối với icon 'Update campaign' (KB-009)",
+      "kb_refs": [
+        "KB-372"
       ]
     }
   ],
@@ -321,7 +331,9 @@
       "/global-options/create/<type-slug>",
       "/global-options/{id}/edit (General/Settings/Preview; đích redirect sau Save khi tạo Additional Option — KB-033)"
     ],
-    "storefront": [],
+    "storefront": [
+      "Đề xuất chưa xác nhận (KB-372, PROPOSED/LOW): storefront hiển thị global option đã sửa trên Portal. Campaign 3069 giữ dữ liệu cũ tới khi sync, campaign 3072 hiện giá trị mới ngay không cần sync; trang/field cụ thể nguồn chưa nêu"
+    ],
     "api": [
       "POST /api/global-options (create, generic mọi type)",
       "POST /api/graphql operationName=getData (list/refresh, Hasura query)",
@@ -368,6 +380,14 @@
       "kb_refs": [
         "KB-033",
         "KB-040"
+      ]
+    },
+    {
+      "target": "thao tác 'sync campaign'",
+      "direction": "unclear/PROPOSED",
+      "description": "[CBS-073] Đề xuất chưa xác nhận (KB-372, PROPOSED/LOW): storefront cần thao tác này mới nhận thay đổi của Global Option sửa trên Portal. Hai lượt trong Testlane TC-TIB-6199 khác nhau: campaign 3069 giữ dữ liệu cũ tới khi sync, campaign 3072 hiện giá trị mới ngay không cần sync. Thao tác cụ thể và nơi thực hiện nguồn chưa nêu, nên chưa gán về capability hay feature nào.",
+      "kb_refs": [
+        "KB-372"
       ]
     }
   ],
@@ -430,12 +450,19 @@
         "KB-006",
         "KB-034"
       ]
+    },
+    {
+      "risk": "[CBS-073] Check sửa Global Option rồi kiểm storefront chưa có oracle: KB-372 là đề xuất chưa xác nhận, và hai lượt trong Testlane TC-TIB-6199 khác nhau (campaign 3069 giữ dữ liệu cũ tới khi sync, campaign 3072 hiện giá trị mới ngay không cần sync). Storefront đổi ngay hay giữ dữ liệu cũ đều chưa kết luận được là đúng hay lỗi, và bước sync là thao tác nào cũng chưa rõ.",
+      "kb_refs": [
+        "KB-372"
+      ]
     }
   ],
+  "environment_differences": [],
   "freshness": {
-    "observed_at": "2026-10-08",
+    "observed_at": "2026-10-21",
     "base_observed_at": "2026-09-16",
-    "note": "Item base giữ freshness 2026-09-15/16; KB-033/KB-034 nguồn authored 2026-10-08."
+    "note": "Item base giữ freshness 2026-09-15/16; KB-033/KB-034 nguồn authored 2026-10-08; KB-372 (PROPOSED/LOW, đề xuất chưa xác nhận) nguồn Testlane TC-TIB-6199 authored 2026-10-21, gồm hai lượt campaign 3069 và 3072; run này không tự quan sát."
   },
   "unknown_areas": [
     {
@@ -524,11 +551,51 @@
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-global-option-025"
+    },
+    {
+      "question": "[CBS-073] 'Sync campaign' trong đề xuất KB-372 cụ thể là thao tác nào, thực hiện ở đâu, và có phải chính action 'Update campaign' (icon rocket, KB-009) trên list Global Option không?",
+      "why_it_matters": "Nguồn không nêu thao tác nên check sửa GO rồi kiểm storefront chưa có bước xác định, kể cả khi đề xuất được xác nhận sau này. Đầu mối chưa kiểm chứng, không dùng để kết luận: KB-321 (object sdk, OBSERVED_CURRENT LOW, về assignment mockup/video) ghi 'Update/Sync campaign' qua POST /api/campaigns/<id>/sync; KB-043 (feature global-option-additional-option-items) quan sát sau Update campaign. Liên quan OQ-global-option-011.",
+      "kb_refs": [
+        "KB-372",
+        "KB-009",
+        "KB-321",
+        "KB-043"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-global-option-039"
+    },
+    {
+      "question": "[CBS-073] Nếu đề xuất của KB-372 được xác nhận, nó có áp dụng cho mọi loại GO và mọi kiểu sửa không (vd thứ tự item Additional Option)?",
+      "why_it_matters": "Nguồn nói chung 'sửa global option', không liệt kê loại hay field. KB-372 là đề xuất chưa xác nhận nên chưa có căn cứ dùng làm oracle, kể cả theo từng type, và OQ-global-option-034 vẫn mở.",
+      "kb_refs": [
+        "KB-372",
+        "KB-043"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-global-option-040"
+    },
+    {
+      "question": "[CBS-073] Hành vi mà KB-372 mô tả áp dụng từ build hoặc ngày deploy nào?",
+      "why_it_matters": "KB-372 có shipped UNKNOWN và không có build để tính là test_case, nên chưa biết hành vi này gắn với build nào. TIB-5591 chỉ là ngữ cảnh chạy regression của Testlane TC-TIB-6199, không phải nguồn phát biểu hành vi sync, nên trạng thái Done của ticket không trả lời được câu này.",
+      "kb_refs": [
+        "KB-372"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-global-option-041"
+    },
+    {
+      "question": "[CBS-073] Ai là \"user\" trong \"confirmed by user 2026-10-21\" của Testlane TC-TIB-6199, và storefront cần sync campaign mới nhận thay đổi có đúng là hành vi mong đợi không, kể cả khi biết lượt campaign 3072 hiện giá trị mới ngay không cần sync?",
+      "why_it_matters": "KB-372 ở PROPOSED/LOW vì chưa xác định người xác nhận và hai lượt trong cùng test case khác nhau: campaign 3069 giữ dữ liệu cũ tới khi sync, campaign 3072 hiện giá trị mới ngay không cần sync. Giải thích \"no cache yet\" cho lượt 3072 là phỏng đoán chưa kiểm chứng của nguồn. Chưa có câu trả lời thì check sửa GO rồi kiểm storefront không có oracle.",
+      "kb_refs": [
+        "KB-372"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-global-option-043"
     }
   ],
   "last_updated": {
-    "date": "2026-09-16",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-05",
+    "ccr_ref": "CBS-073"
   },
   "coverage_matrix": [
     {
@@ -652,6 +719,29 @@
         "KB-034",
         "KB-023"
       ]
+    },
+    {
+      "feature_id": "FEAT-01-global-option-instance-management",
+      "layer": "storefront",
+      "role": "merchant (owner/staff)",
+      "state": "[CBS-073] sửa global option trên Portal rồi kiểm storefront: đề xuất chưa xác nhận, hai lượt khác nhau (campaign 3069 giữ dữ liệu cũ tới khi sync, campaign 3072 hiện giá trị mới ngay không cần sync)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-372"
+      ],
+      "basis": "Testlane TC-TIB-6199 (KB-372, PROPOSED/LOW); chưa xác nhận hành vi mong đợi nên không phải oracle. TIB-5591 chỉ là ngữ cảnh chạy regression"
+    },
+    {
+      "feature_id": "FEAT-01-global-option-instance-management",
+      "layer": "storefront",
+      "role": "merchant (owner/staff)",
+      "state": "[CBS-073] lý do lượt campaign 3069 và 3072 khác nhau; thao tác sync cụ thể; phạm vi theo loại GO và kiểu sửa",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-372"
+      ]
     }
   ],
   "profile_conflicts": [
@@ -730,6 +820,17 @@
       "kb_refs": [
         "KB-033",
         "KB-040"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-global-option-instance-management",
+      "to_feature_id": "FEAT-07-storefront-buyer-facing",
+      "to_object_key": "sdk",
+      "relationship": "related_feature",
+      "description": "[CBS-073] Cùng chủ đề storefront cập nhật sau sync campaign, nhưng KB-321 nói về assignment mockup/video với variant và thuộc object sdk (OBSERVED_CURRENT). Chỉ liên quan, không phải bằng chứng cho KB-372, vốn là đề xuất chưa xác nhận (PROPOSED/LOW) với hai lượt khác nhau: campaign 3069 giữ dữ liệu cũ tới khi sync, campaign 3072 hiện giá trị mới ngay không cần sync.",
+      "kb_refs": [
+        "KB-372",
+        "KB-321"
       ]
     }
   ]
