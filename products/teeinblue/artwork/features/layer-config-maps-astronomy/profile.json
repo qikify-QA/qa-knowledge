@@ -3,10 +3,13 @@
   "feature_key": "layer-config-maps-astronomy",
   "name": "Cấu hình layer — nhóm sidebar MAPS & ASTRONOMY (field/behavior riêng từng layer type)",
   "user_goal": "Store owner cấu hình field/behavior CHỈ thuộc riêng từng layer type trong nhóm sidebar MAPS & ASTRONOMY khi thêm layer trong artwork editor. Nhóm gồm 4 layer type: Street Maps, Route Maps, Star Maps, Moon Phase. Tách biệt khỏi cơ chế dùng chung (xem FEAT-04-layer-common-config) để 1 lần fix/thêm field cho 1 layer type chỉ cần đọc và sửa đúng phần nhỏ trong file này, không phải đọc lại toàn bộ layer-common-config cũ hay các nhóm sidebar khác.",
-  "last_updated": {
-    "date": "2026-09-10",
-    "ccr_ref": "bootstrap"
-  },
+  "user_goal_kb_refs": [
+    "KB-024",
+    "KB-025",
+    "KB-026",
+    "KB-027"
+  ],
+  "stable_since_version": null,
   "actors": [
     {
       "role": "store owner / staff (sub=273, user_id=266, plan Blue (Test))",
@@ -80,10 +83,10 @@
     ],
     "storefront": [],
     "api": [],
+    "data": [],
     "code": [
       "bundle-registry: maps_style*/masked_* (maps), elevation_profile_* (route-maps, chỉ ở route-maps), star_maps_component_* (star-maps, chỉ ở star-maps), moon_type/maps_seacher_enabled (moon-phase) — INFERRED."
-    ],
-    "data": []
+    ]
   },
   "dependencies": [
     {
@@ -121,8 +124,35 @@
         "KB-026",
         "KB-027"
       ]
+    },
+    {
+      "risk": "[MỚI, CBS-079] KB-419 là INFERRED/LOW, nguồn chỉ là ghi chú ngôi thứ ba, không làm oracle: dòng NOT_TESTABLE chỉ để người test không báo FAIL sai cho vế Strava; không dùng nó để khẳng định Strava hỏng trên môi trường test hay chạy được trên production.",
+      "kb_refs": [
+        "KB-419"
+      ]
     }
   ],
+  "environment_differences": [
+    {
+      "type": "NOT_TESTABLE",
+      "level": "Vế",
+      "test_env": "Strava trong Route Maps (strava-upload) không chạy được",
+      "production": "không rõ",
+      "how_to_test": "Bỏ vế Strava, ghi \"not testable on staging\", không tính blocked",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-419"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-11-06"
+  },
+  "last_updated": {
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-079"
+  },
   "unknown_areas": [
     {
       "question": "Map (Street Maps) không render nếu thiếu Mapbox access token (Extras › 3rd-party Services) — statement gốc tự ghi 'chưa verify trực tiếp trong evidence này'.",
@@ -139,6 +169,15 @@
     {
       "question": "Hành vi với role khác owner / cross-tenant cho các field/layer type trong nhóm này — chưa test, chỉ 1 role/1 tenant trong cả 3 run.",
       "why_it_matters": "coverage_gaps #3 của KB gốc."
+    },
+    {
+      "question": "[MỚI, CBS-079] Strava trong Route Maps (strava-upload) có thật sự không chạy được trên môi trường test không, và phía production hoạt động thế nào?",
+      "why_it_matters": "Nguồn của KB-419 hiện chỉ là ghi chú ngôi thứ ba; các comment Jira TIB-5539 không phát biểu điều này. Cần QA, PO hoặc Dev xác nhận nguyên văn, có ngày, lý do không test được và hành vi production; hoặc operator yêu cầu explore cho claim này.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-419"
+      ],
+      "oq_id": "OQ-artwork-190"
     }
   ],
   "coverage_matrix": [
@@ -173,6 +212,46 @@
       "state": "layer type nhóm MAPS & ASTRONOMY",
       "environment": "staging",
       "covered": false
+    },
+    {
+      "feature_id": "FEAT-15-layer-config-maps-astronomy",
+      "layer": "storefront",
+      "role": "merchant, buyer",
+      "state": "[MỚI, CBS-079] Strava trong Route Maps (strava-upload)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-419"
+      ],
+      "basis": "NOT_TESTABLE, INFERRED/LOW"
+    },
+    {
+      "feature_id": "FEAT-15-layer-config-maps-astronomy",
+      "layer": "storefront",
+      "role": "merchant, buyer",
+      "state": "[MỚI, CBS-079] Strava trong Route Maps (strava-upload)",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "KB-419"
+      ],
+      "basis": "phía production không rõ, shipped UNKNOWN"
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "feature_id": "FEAT-15-layer-config-maps-astronomy",
+      "type": "CROSS_FEATURE_KB_REF_IN_BASE",
+      "detail": "Nội dung có sẵn (dependencies[0]) tham chiếu KB-002, KB-004, KB-005, KB-008, KB-010, KB-011, KB-012 — item thuộc FEAT-04-layer-common-config, không nằm trong kb.json của feature này. Giữ nguyên văn; không thêm tham chiếu mới tới các item đó.",
+      "kb_refs": [
+        "KB-002",
+        "KB-004",
+        "KB-005",
+        "KB-008",
+        "KB-010",
+        "KB-011",
+        "KB-012"
+      ]
     }
   ],
   "profile_relationships": [

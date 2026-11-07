@@ -3,12 +3,30 @@
   "feature_key": "product-base-browse",
   "name": "Duyet va tim kiem danh sach Product Base",
   "user_goal": "La owner, tim va xem danh sach product base hien co (theo tab Active/Archived, filter, search, tuy bien view list/grid) de tu do quan ly, tao moi, hoac thao tac len tung product base.",
+  "user_goal_kb_refs": [
+    "KB-001",
+    "KB-003",
+    "KB-004",
+    "KB-005",
+    "KB-007"
+  ],
+  "stable_since_version": null,
   "actors": [
     {
       "role": "owner (Linh explorer, sub=273, store linh-explorer.myshopify.com)",
       "permission_observed": "Truy cap /products, doi tab Active/Archived, search/filter (bao gom 2 filter chip Internal name/tags), toggle view, dieu huong sang edit roi Back, khong gap access-denied.",
       "kb_refs": [
         "KB-064"
+      ]
+    },
+    {
+      "role": "merchant-owner",
+      "permission_observed": "Theo ghi nhận của QA (một lượt staging mỗi test case): vào Products → Import product, chọn provider và nhận toast lỗi catalog. Theo dev, merchant tự nhập key của nhóm Printful, ShineOn, Picanova ở Extras → Fulfillments và không kích hoạt được lỗi key của nhóm dùng key teeinblue từ UI.",
+      "kb_refs": [
+        "KB-500",
+        "KB-501",
+        "KB-502",
+        "KB-503"
       ]
     }
   ],
@@ -42,6 +60,21 @@
       "precondition": "click '+ Add Manual' tren /products (cua ngo sang FEAT-02-product-base-create)",
       "kb_refs": [
         "KB-002"
+      ]
+    },
+    {
+      "path": "Extras → Fulfillments",
+      "precondition": "Merchant tự nhập key của Printful, ShineOn, Picanova tại đây.",
+      "kb_refs": [
+        "KB-501"
+      ]
+    },
+    {
+      "path": "/products (modal Import product, lỗi key của provider)",
+      "precondition": "Nhóm dùng key teeinblue: merchant không kích hoạt được lỗi key từ UI. Lượt quan sát với Shirtee, Printbelle cần DEV đổi key thành sai trong .env staging, trên account chưa connect fulfillment (dialog hiện \"Connect API\").",
+      "kb_refs": [
+        "KB-502",
+        "KB-503"
       ]
     }
   ],
@@ -114,6 +147,22 @@
       "kb_refs": [
         "KB-066"
       ]
+    },
+    {
+      "name": "Nạp catalog provider theo nhóm giữ key",
+      "description": "Theo dev có hai nhóm: Printful, ShineOn, Picanova do merchant tự nhập key ở Extras → Fulfillments; Merchize, MarketPrint, Printify, Shirtee, Printbelle dùng key của teeinblue. Lời dev chia theo provider, không nói theo trạng thái đã nhập key.",
+      "kb_refs": [
+        "KB-501",
+        "KB-502"
+      ]
+    },
+    {
+      "name": "Báo lỗi khi catalog provider không nạp được",
+      "description": "Modal Import product hiện toast nêu tên provider khi catalog trả lỗi. Chỉ là ghi nhận của QA ở các lượt staging, chưa phải rule.",
+      "kb_refs": [
+        "KB-500",
+        "KB-503"
+      ]
     }
   ],
   "state_transitions": [
@@ -171,6 +220,24 @@
       "kb_refs": [
         "KB-066"
       ]
+    },
+    {
+      "from": "modal Import product, chưa chọn provider",
+      "to": "toast \"Something went wrong!\" kèm [merchOne] 401 Unauthorized",
+      "trigger": "chọn MERCHONE",
+      "condition": "Ghi nhận của QA, một lượt staging, catalog của provider trả lỗi. Không làm oracle.",
+      "kb_refs": [
+        "KB-500"
+      ]
+    },
+    {
+      "from": "modal Import product, chưa chọn provider",
+      "to": "catalog trả 400, toast [Shirtee] Invalid Api key hoặc [Printbelle] User does not exist or incorrect password",
+      "trigger": "chọn Shirtee hoặc Printbelle",
+      "condition": "Ghi nhận của QA, một lượt staging: key trong .env staging bị DEV đổi sai, account chưa connect fulfillment. Không làm oracle.",
+      "kb_refs": [
+        "KB-503"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -178,6 +245,28 @@
       "statement": "[CHK-01-011] Roi /products (dang co tab/filter/trang cu the trong URL) sang /products/{id}/edit roi bam Back trinh duyet: URL va tab active duoc khoi phuc CHINH XAC gia tri truoc do (cung gridstate). Day la co che browser history dua tren URL-sync (query string), khong phai logic rieng cua app.",
       "kb_refs": [
         "KB-066"
+      ]
+    },
+    {
+      "statement": "Printful, ShineOn và Picanova là các provider mà merchant tự nhập key ở Extras → Fulfillments.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, catalog provider, lỗi key",
+      "caveats": "Lời dev chia theo provider, không nói theo trạng thái đã nhập key. shipped UNKNOWN.",
+      "confirmation_ref": "Dev xác nhận 2026-10-13, Jira TIB-5548 comment #53876",
+      "kb_refs": [
+        "KB-501"
+      ]
+    },
+    {
+      "statement": "Merchize, MarketPrint, Printify, Shirtee và Printbelle dùng key của teeinblue, nên merchant không kích hoạt được các lỗi key của nhóm này từ UI.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, catalog provider, lỗi key",
+      "caveats": "Không gồm CustomCat, xem unknown_areas. shipped UNKNOWN.",
+      "confirmation_ref": "Dev xác nhận 2026-10-13, Jira TIB-5548 comment #53876",
+      "kb_refs": [
+        "KB-502"
       ]
     }
   ],
@@ -247,6 +336,24 @@
       "kb_refs": [
         "KB-065"
       ]
+    },
+    {
+      "statement": "Testlane TC-TIB-5443 (passed, một lượt staging 2026-10-13, không ghi build): vào Products → Import product và chọn MERCHONE, toast \"Something went wrong!\" kèm [merchOne] 401 Unauthorized, field provider trong body là \"picanova\". Test case cũng ghi tên hiển thị của provider là merchOne và route là /fulfillments/picanova. QA ghi rằng Picanova trên staging đã đổi tên hiển thị thành merchOne; việc đổi tên chưa có người xác nhận.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "caveats": "Không làm oracle.",
+      "kb_refs": [
+        "KB-500"
+      ]
+    },
+    {
+      "statement": "Testlane TC-TIB-5445 (passed, một lượt staging 2026-10-13, không ghi build): DEV đổi key Shirtee và Printbelle thành sai trong .env staging, trên account chưa connect fulfillment (dialog hiện \"Connect API\" thay vì \"API Connected\"), GET /api/fulfillments/{id}/catalogs của hai provider trả 400, toast [Shirtee] Invalid Api key và [Printbelle] User does not exist or incorrect password.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "caveats": "Không làm oracle cho rule theo trạng thái đã nhập key.",
+      "kb_refs": [
+        "KB-503"
+      ]
     }
   ],
   "observed_validations": [
@@ -295,6 +402,19 @@
           "KB-006",
           "KB-015"
         ]
+      },
+      {
+        "item": "Modal Import product: chọn provider, toast lỗi catalog (ghi nhận của QA). Riêng test case còn ghi tên hiển thị merchOne và route /fulfillments/picanova",
+        "kb_refs": [
+          "KB-500",
+          "KB-503"
+        ]
+      },
+      {
+        "item": "Extras → Fulfillments (merchant nhập key của Printful, ShineOn, Picanova)",
+        "kb_refs": [
+          "KB-501"
+        ]
       }
     ],
     "storefront": [],
@@ -306,6 +426,19 @@
           "KB-005",
           "KB-014",
           "KB-065"
+        ]
+      },
+      {
+        "item": "GET /api/fulfillments/{id}/catalogs (catalog của provider; trả 400 ở lượt Shirtee, Printbelle key sai)",
+        "kb_refs": [
+          "KB-015",
+          "KB-503"
+        ]
+      },
+      {
+        "item": "Field provider trong body là \"picanova\" khi chọn MERCHONE (ghi nhận của QA)",
+        "kb_refs": [
+          "KB-500"
         ]
       }
     ],
@@ -326,6 +459,12 @@
         "item": "products.label/internal_tags (duoc 2 filter chip loc rieng)",
         "kb_refs": [
           "KB-065"
+        ]
+      },
+      {
+        "item": "Key Shirtee, Printbelle trong .env staging (lượt TC-TIB-5445)",
+        "kb_refs": [
+          "KB-503"
         ]
       }
     ],
@@ -352,6 +491,17 @@
       "relation": "entry_point (icon rocket 'Update campaign' hien co dieu kien, mo modal that trong lần khảo sát nay)",
       "kb_refs": [
         "KB-010"
+      ]
+    },
+    {
+      "target_feature": "FEAT-04-printarea-definition",
+      "relation": "Printify và Picanova/merchOne xuất hiện ở cả hai feature: nhóm giữ key ở đây, ngưỡng 9000 px và size gốc ở printarea-definition.",
+      "kb_refs": [
+        "KB-500",
+        "KB-501",
+        "KB-502",
+        "KB-504",
+        "KB-506"
       ]
     }
   ],
@@ -380,8 +530,43 @@
       "kb_refs": [
         "KB-001"
       ]
+    },
+    {
+      "risk": "Lấy quan sát trên account chưa connect (KB-503) làm rule \"chưa nhập key dùng key teeinblue, đã nhập dùng key merchant\" sẽ cho expected chưa có xác nhận: lời dev chia theo provider.",
+      "severity": "MEDIUM",
+      "category": "unconfirmed-rule",
+      "kb_refs": [
+        "KB-501",
+        "KB-502",
+        "KB-503"
+      ]
+    },
+    {
+      "risk": "Chủ key CustomCat chưa chốt: dòng CustomCat nằm dưới mục dev ghi các provider dùng key teeinblue, trong khi toast của chính dòng đó bảo kiểm key ở Extras/Fulfillments. Check về CustomCat có thể sai expected.",
+      "severity": "MEDIUM",
+      "category": "unconfirmed-rule",
+      "kb_refs": [
+        "KB-514"
+      ]
+    },
+    {
+      "risk": "Việc Picanova đổi tên hiển thị thành merchOne chỉ là ghi nhận của QA ở một lượt staging. Coi hai tên là một provider khi chưa xác nhận có thể làm lệch test case theo provider.",
+      "severity": "LOW",
+      "category": "unconfirmed-naming",
+      "kb_refs": [
+        "KB-500"
+      ]
     }
   ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-11-06",
+    "note": "Run này không tự quan sát. Ngày là ngày nạp CCR; KB-500, KB-503 là ghi nhận của QA ngày 2026-10-13, KB-501, KB-502 là lời dev ngày 2026-10-13. Item base giữ freshness của lần khảo sát 2026-09."
+  },
+  "last_updated": {
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-077"
+  },
   "unknown_areas": [
     {
       "question": "Cursor pagination hoat dong the nao khi >20 ban ghi (nut '‹ ›' that su chuyen trang ra sao)? [CHK-01-009]",
@@ -402,10 +587,204 @@
     {
       "question": "Import product base tu catalog nha in qua modal Import co hoat dong dung va validate gi khong?",
       "why_it_matters": "Goi API ben thu ba, ngoai scope ca 2 lần khảo sát, nhung la entry point chinh de nhap hang loat san pham (coverage_gap)."
+    },
+    {
+      "question": "Rule \"provider chưa nhập key dùng key teeinblue, merchant đã nhập key thì dùng key merchant\" có đúng không, và áp cho provider nào?",
+      "why_it_matters": "Rule chỉ có ở ghi chú ngôi thứ ba, lời dev chia theo nhóm provider, và KB-503 mới là quan sát trên account chưa connect nên chưa chứng minh rule. Cần chốt cả việc Picanova/merchOne thuộc nhóm merchant nhập key trong khi TC-TIB-7792 ghi API key trong .env của merchOne trả 403. Chưa có trả lời thì không tạo check expected theo trạng thái đã nhập key.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-500",
+        "KB-501",
+        "KB-502",
+        "KB-503"
+      ],
+      "oq_id": "OQ-product-base-038"
+    },
+    {
+      "question": "Key CustomCat do ai giữ, merchant hay teeinblue?",
+      "why_it_matters": "Dòng CustomCat nằm dưới mục dev ghi các provider dùng key teeinblue, nhưng toast [CustomCat] Access denied, check the API key in Extras/Fulfillments (403) bảo kiểm key ở Extras/Fulfillments và TC-TIB-5449 ghi key owner chưa rõ. KB-514 giữ cả hai phía cho tới khi có trả lời; check về CustomCat phải chờ.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-514"
+      ],
+      "oq_id": "OQ-product-base-039"
+    },
+    {
+      "question": "merchOne và Picanova có phải một provider không, và tên hiển thị merchOne có phải kết quả đổi tên chủ đích không?",
+      "why_it_matters": "KB-500 chỉ là ghi nhận của QA ở một lượt staging, không ghi build, nên không làm oracle. Cần PO hoặc dev xác nhận nguyên văn kèm ngày, hoặc test case PASS có ghi build.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-500"
+      ],
+      "oq_id": "OQ-product-base-037"
     }
   ],
-  "last_updated": {
-    "date": "2026-09-14",
-    "ccr_ref": "bootstrap"
-  }
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "layer": "portal",
+      "role": "owner",
+      "state": "list, tab, search, filter, view toggle, back-restore với store ít bản ghi",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-003",
+        "KB-004",
+        "KB-005",
+        "KB-007",
+        "KB-008",
+        "KB-013",
+        "KB-065",
+        "KB-066"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "layer": "api",
+      "role": "owner",
+      "state": "products_connection với 1 trang dữ liệu",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-014"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "layer": "portal",
+      "role": "owner",
+      "state": "store có hơn 20 bản ghi",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-014"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "layer": "portal",
+      "role": "role khác owner",
+      "state": "mọi trạng thái",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-064"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "chọn MERCHONE, catalog trả lỗi (một lượt, không ghi build)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-500"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "account chưa connect fulfillment, key Shirtee, Printbelle trong .env staging sai (một lượt, không ghi build)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-503"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "nhóm merchant tự nhập key, chỉ có lời dev",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-501"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "nhóm dùng key teeinblue ngoài lượt Shirtee, Printbelle; chủ key CustomCat chưa rõ",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-502",
+        "KB-514"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "account đã nhập key",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-501",
+        "KB-503"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "mọi item KB-500..KB-503, KB-514, shipped UNKNOWN",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "KB-500",
+        "KB-501",
+        "KB-502",
+        "KB-503",
+        "KB-514"
+      ]
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "type": "SOURCE_CONFLICT",
+      "detail": "Ghi chú ngôi thứ ba chia theo trạng thái đã nhập key; dev chia theo nhóm provider và không có câu nào nói theo trạng thái đã nhập key. Phía ghi chú không vào KB. Không chọn bên, xem OQ-product-base-038.",
+      "kb_refs": [
+        "KB-501",
+        "KB-502",
+        "KB-503"
+      ]
+    },
+    {
+      "type": "SOURCE_CONFLICT",
+      "detail": "Dev: Picanova thuộc nhóm merchant tự nhập key. TC-TIB-7792 (skipped): API key trong .env của merchOne trả 403. Hai nguồn có thể không trái nhau nếu rule hai nhánh đúng, nên chỉ ghi nhận, không kết luận. Xem OQ-product-base-038.",
+      "kb_refs": [
+        "KB-500",
+        "KB-501"
+      ]
+    },
+    {
+      "type": "SOURCE_CONFLICT",
+      "detail": "Dòng CustomCat nằm dưới mục dev ghi các provider dùng key teeinblue; toast của chính dòng đó bảo kiểm key ở Extras/Fulfillments và TC-TIB-5449 ghi key owner chưa rõ. KB-514 nêu đủ hai phía, không chọn bên. Xem OQ-product-base-039.",
+      "kb_refs": [
+        "KB-514"
+      ]
+    }
+  ],
+  "profile_relationships": [
+    {
+      "from_feature": "FEAT-01-product-base-browse",
+      "to_feature": "FEAT-04-printarea-definition",
+      "relation": "Cùng dùng thông tin provider: nhóm giữ key của Printify, Picanova/merchOne ở đây liên quan việc lấy size gốc và ngưỡng 9000 px ở printarea-definition.",
+      "kb_refs": [
+        "KB-500",
+        "KB-501",
+        "KB-502",
+        "KB-504",
+        "KB-506"
+      ]
+    }
+  ]
 }

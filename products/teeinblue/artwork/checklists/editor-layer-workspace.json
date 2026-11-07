@@ -2,7 +2,7 @@
   "feature_id": "FEAT-03-editor-layer-workspace",
   "feature_key": "editor-layer-workspace",
   "object_id": "artwork",
-  "checklist_version": "8",
+  "checklist_version": "13",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -592,6 +592,209 @@
       ],
       "priority": "P2",
       "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-019",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-079] Multi-select có giá trị Shadow khác nhau: giá trị hiển thị, và đổi một thuộc tính chỉ ghi thuộc tính đó lên mọi layer",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-426 chưa chốt; ghi lại role đã dùng)",
+        "state": "selection A: có layer bật và layer tắt Shadow; selection B: mọi layer đều bật Shadow, giá trị khác nhau",
+        "environment": "staging; ghi build và ngày chạy (KB-426 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor, desktop"
+      },
+      "precondition": "Fixture throwaway có 2 selection như applicability, không có layer customization type Linked. Ghi trước giá trị Shadow của từng layer.",
+      "steps": [
+        "Chọn selection A; ghi toggle Shadow, color, blur, X, Y, Display",
+        "Chọn selection B; ghi toggle Shadow, color, blur, X, Y, Display",
+        "Ở selection B, đổi một thuộc tính, ví dụ color",
+        "Chọn lại từng layer của selection B; ghi toàn bộ giá trị Shadow"
+      ],
+      "observation_point": "Giá trị hiển thị khi multi-select; giá trị Shadow của từng layer sau khi đổi",
+      "expected_result": "Selection A: toggle Off; color đen, blur/X/Y rỗng, Display không chọn gì. Selection B: toggle On; color đen, blur/X/Y rỗng, Display không chọn gì. Sau khi đổi: mọi layer có giá trị mới của thuộc tính vừa đổi, các thuộc tính còn lại của từng layer giữ như trước.",
+      "oracle": {
+        "kb_ids": [
+          "KB-426"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-426",
+        "KB-428",
+        "KB-429"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle chỉ từ comment dev, chưa có test case PASS."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-020",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-079] Multi-select có giá trị Photo Border khác nhau: hiện default, bật toggle ghi đè mọi giá trị, đổi một thuộc tính cũng bật border",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-427 chưa chốt; ghi lại role đã dùng)",
+        "state": "2 selection riêng, mỗi selection gồm các layer có giá trị Photo Border khác nhau và có layer đang tắt border",
+        "environment": "staging; ghi build và ngày chạy (KB-427 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor, desktop"
+      },
+      "precondition": "Fixture throwaway có 2 selection như applicability, không có layer customization type Linked, không chọn group. Ghi trước Photo Border của từng layer. Ghi giá trị default từ một layer mới chưa cấu hình border.",
+      "steps": [
+        "Chọn selection 1; ghi type, color, size, display, line đang hiện",
+        "Bật toggle Border",
+        "Chọn lại từng layer của selection 1; ghi Photo Border",
+        "Chọn selection 2; đổi một thuộc tính, ví dụ color, không bấm toggle",
+        "Chọn lại từng layer của selection 2; ghi toggle Border và Photo Border"
+      ],
+      "observation_point": "Giá trị hiển thị khi multi-select; Photo Border của từng layer, không chỉ layer đầu",
+      "expected_result": "Selection 1: thuộc tính khác nhau hiện default; sau khi bật toggle, mọi layer có đúng các giá trị đang hiện (type, color, size, display, line), giá trị riêng bị thay. Selection 2: mọi layer bật border, có giá trị mới của thuộc tính vừa đổi, các thuộc tính còn lại của từng layer giữ như trước.",
+      "oracle": {
+        "kb_ids": [
+          "KB-427"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-427",
+        "KB-428",
+        "KB-429"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Thao tác ghi lên mọi layer đang chọn: giá trị riêng của từng layer bị thay; kiểm từng layer.",
+        "Oracle chỉ từ comment dev, chưa có test case PASS."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-021",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-079] Undo khi multi-select: mỗi thay đổi Shadow hoặc Photo Border là 1 step cho mọi layer; ô số lưu theo từng phím, gõ '12' là 2 step",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-428 chưa chốt; ghi lại role đã dùng)",
+        "state": "≥2 layer đang chọn, có Shadow và Photo Border",
+        "environment": "staging; ghi build và ngày chạy (KB-428 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor, desktop"
+      },
+      "precondition": "Fixture throwaway như applicability. Ghi trước giá trị Shadow và Photo Border của từng layer.",
+      "steps": [
+        "Đổi color của Shadow; Undo một lần; ghi Shadow của từng layer",
+        "Đổi color của Photo Border; Undo một lần; ghi Photo Border của từng layer",
+        "Gõ '12' vào ô blur; Undo một lần, ghi giá trị; Undo lần nữa, ghi giá trị",
+        "Lặp bước 3 cho X, Y, border size"
+      ],
+      "observation_point": "Giá trị của từng layer sau mỗi lần Undo",
+      "expected_result": "Một Undo hoàn thay đổi Shadow, hoặc Photo Border, trên mọi layer bị ảnh hưởng. Với mỗi ô số, gõ '12' là 2 step: Undo lần đầu còn 1, Undo lần hai về giá trị trước khi gõ.",
+      "oracle": {
+        "kb_ids": [
+          "KB-428"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-428",
+        "KB-426",
+        "KB-427"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle chỉ từ comment dev, chưa có test case PASS."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-022",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-079] Artwork 2.0: selection có layer Linked ẩn Shadow, Photo Border, HD; chọn một group chỉ ẩn Photo Border; layer replica của Global Template không có rule riêng",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-429 chưa chốt; ghi lại role đã dùng)",
+        "state": "Artwork 2.0 có image layer thường, layer customization type Linked, một group, layer replica của Global Template",
+        "environment": "staging; ghi build và ngày chạy (KB-429 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor 2.0, desktop"
+      },
+      "precondition": "Fixture throwaway như applicability; layer replica không có customization type Linked. Group dùng ở bước chọn group phải đang hiện và không khoá: KB-170 quan sát Group ẩn chỉ còn mục Align trên quick toolbar, nên chọn Group ẩn sẽ cho kết quả không thuộc check này. Thiếu fixture replica thì ghi thiếu data cho vế đó, không tính fail.",
+      "steps": [
+        "Chọn image layer thường cùng layer Linked; ghi Shadow, Photo Border, HD có hiện không",
+        "Bỏ layer Linked khỏi selection; ghi lại 3 field",
+        "Chọn một group; ghi lại 3 field",
+        "Chọn layer replica của Global Template; ghi lại 3 field"
+      ],
+      "observation_point": "Sự có mặt của Shadow, Photo Border, HD theo từng selection",
+      "expected_result": "Selection có layer Linked: cả 3 field ẩn. Bỏ layer Linked: 3 field hiện lại. Chọn một group: Photo Border ẩn, Shadow và HD vẫn hiện. Layer replica: không bị ẩn 3 field chỉ vì là replica.",
+      "oracle": {
+        "kb_ids": [
+          "KB-429"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-429",
+        "KB-426",
+        "KB-427",
+        "KB-421",
+        "KB-045"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nguồn viết 'the three fields'; KB-429 đọc là Shadow, Photo Border, HD.",
+        "Oracle chỉ từ comment dev, chưa có test case PASS."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-023",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-079] Artwork 1.0: selection có layer Linked ẩn Shadow, Photo Border, HD; Shadow trên paragraph chỉ có ở Artwork 2.0",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-429 chưa chốt; ghi lại role đã dùng)",
+        "state": "Artwork 1.0 có image layer thường, layer customization type Linked, layer paragraph; thêm Artwork 2.0 có layer paragraph để đối chiếu",
+        "environment": "staging; ghi build và ngày chạy (KB-429 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor 1.0 và 2.0, desktop"
+      },
+      "precondition": "Fixture throwaway như applicability. Không tạo được Artwork 1.0 thì ghi thiếu data, không tính fail.",
+      "steps": [
+        "Trên Artwork 1.0, chọn image layer thường cùng layer Linked; ghi Shadow, Photo Border, HD có hiện không",
+        "Trên Artwork 1.0, chọn layer paragraph; ghi Shadow có hiện không",
+        "Trên Artwork 2.0, chọn layer paragraph; ghi Shadow có hiện không"
+      ],
+      "observation_point": "Sự có mặt của 3 field ở Artwork 1.0; Shadow trên paragraph ở Artwork 1.0 và 2.0",
+      "expected_result": "Artwork 1.0, selection có layer Linked: cả 3 field ẩn. Paragraph: Shadow không có ở Artwork 1.0, có ở Artwork 2.0.",
+      "oracle": {
+        "kb_ids": [
+          "KB-429"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-429",
+        "KB-426"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle chỉ từ comment dev, chưa có test case PASS."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -658,6 +861,31 @@
         "CHK-018"
       ],
       "oracle": "STRONG; cần chạy lại trên build ship"
+    },
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "item": "[CBS-079] Sửa Shadow và Photo Border khi multi-select có giá trị khác nhau, undo step (KB-426, KB-427, KB-428)",
+      "check_ids": [
+        "CHK-019",
+        "CHK-020",
+        "CHK-021"
+      ],
+      "oracle": "STRONG trên staging, nguồn dev, chưa có test case PASS"
+    },
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "item": "[CBS-079] Điều kiện ẩn Shadow, Photo Border, HD theo selection, ở Artwork 2.0 và 1.0 (KB-429)",
+      "check_ids": [
+        "CHK-022",
+        "CHK-023"
+      ],
+      "oracle": "STRONG trên staging, nguồn dev, chưa có test case PASS"
+    },
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "item": "[CBS-079] Risk: production, KB-426..KB-429 shipped UNKNOWN",
+      "check_ids": [],
+      "oracle": "không có check, check mới chỉ áp cho staging"
     }
   ],
   "excluded_dimensions": [
@@ -668,10 +896,18 @@
     {
       "dimension": "INTEGRATION",
       "reason": "Cross-surface của delta (buyer preview) đã nằm trong CHK-018 dưới REGRESSION; render server/storefront theo Group ẩn thuộc FEAT-22 và object sdk."
+    },
+    {
+      "dimension": "PERMISSION — phạm vi CBS-079",
+      "reason": "KB-426..KB-429 không có phát biểu về quyền. Câu hỏi role đang ở unknown_areas của profile; check mới ghi role unspecified và yêu cầu ghi lại role đã dùng."
+    },
+    {
+      "dimension": "BOUNDARY / INTEGRATION / REGRESSION — phạm vi CBS-079",
+      "reason": "KB-426..KB-429 không nêu giới hạn; hành vi batch HD thuộc FEAT-13 (layer-config-image). Các item có relation ADD; shard không có item status KNOWN_DEFECT nên không có regression watch."
     }
   ],
   "last_updated": {
-    "date": "2026-10-30",
-    "ccr_ref": "CBS-006"
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-079"
   }
 }

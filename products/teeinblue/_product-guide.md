@@ -33,7 +33,7 @@ Từ khoá ticket sang object: `_registry.json`. Trạng thái, version, dùng l
 
 | Object | Phạm vi | Không thuộc | Feature |
 |---|---|---|---|
-| `campaign` | Tạo, duyệt, xoá campaign, đồng bộ media Shopify | Phía storefront (`sdk`) | `campaign-delete` `campaign-list-browse` `campaign-navigation` `campaign-security-permissions` `campaign-shopify-media-sync` `create-campaign-by-product-base` `create-campaign-by-shopify` |
+| `campaign` | Tạo, duyệt, xoá campaign, đồng bộ media Shopify | Phía storefront (`sdk`) | `campaign-artwork-mockup-reflection` `campaign-delete` `campaign-list-browse` `campaign-navigation` `campaign-publication-history` `campaign-security-permissions` `campaign-shopify-media-sync` `create-campaign-by-product-base` `create-campaign-by-shopify` |
 | `product-base` | Print area, variant, mockup, vòng đời, liên kết campaign | Thư viện ảnh mockup (`image-library`) | `mockup-attachment` `printarea-definition` `product-base-browse` `product-base-campaign-link` `product-base-create` `product-base-identity` `product-base-lifecycle` `variant-add-to-campaigns` `variant-catalog` |
 | `artwork` | Editor, layer, config, condition, populate, render | Form buyer trên storefront (`sdk`) | **Quản lý:** `artwork-list-management` `artwork-save-persist` `artwork-template-management` `editor-layer-workspace` `psd-import` · **Layer:** `layer-common-config` `layer-config-form-elements` `layer-config-image` `layer-config-maps-astronomy` `layer-config-others` `layer-config-puzzles` `layer-config-text` `layer-config-vector` `layer-duplicate-link-copy` `layer-print-effects` `text-multi-stroke` · **Logic:** `condition-cycle-validation` `conditional-setting-config` `layer-condition-value-binding` `populate-values` · **Group, render:** `group-layer-effective-visibility` `group-layer-order-design-render` `text-color-sequence-render` `clipart-category-storefront-behavior` |
 | `asset-category` | 6 loại category: Clipart, Vector, Color, Additional Option, Map Style, Font Category | Font (`font`) | `asset-category-bulk-upload` `asset-category-crud` `asset-category-item-management` `asset-category-route-entity-clarification` |
@@ -41,8 +41,10 @@ Từ khoá ticket sang object: `_registry.json`. Trạng thái, version, dùng l
 | `image-library` | Thư viện ảnh của Image layer và Mockup layer, không có trang riêng | Clipart (`asset-category`) | `image-layer-library` `mockup-layer-library` |
 | `global-option` | Option dùng chung nhiều campaign | | `artwork-personalization-global-option-link` `global-option-additional-option-items` `global-option-instance-management` |
 | `translation` | Dynamic Translations, Product Page Content, chọn ngôn ngữ | | `dynamic-translations` `language-locale-switcher` `product-page-content-translation` |
-| `order` | Đặt order, review, fulfillment | | `place-personalized-order-storefront` `review-and-initiate-fulfillment-portal` |
-| `sdk` | Runtime personalization của buyer, Product Page Settings, open platform | | `genai-personalization-runtime` `open-platform-customization-callback` `product-page-settings-config` `storefront-buyer-facing` |
+| `order` | Đặt order, review, fulfillment | | `place-personalized-order-storefront` `review-and-initiate-fulfillment-portal` `edit-customization-after-order` |
+| `sdk` | Runtime personalization của buyer, Product Page Settings, open platform | | `form-artwork-navigation` `genai-personalization-runtime` `open-platform-customization-callback` `product-page-settings-config` `required-addon-validation` `storefront-buyer-facing` |
+| `account-security` | Login portal, trạng thái bảo mật staff, thao tác nhạy cảm | Quyền riêng của campaign (`campaign-security-permissions`) | `acting-user-organisation` `billing-webhook` `confirm-password-dialog` `hasura-permission` `portal-login-paths` `social-login` `staff-security-status` |
+| `open-api` | API cho merchant dưới `/openapi/v1`: token, tra cứu và upload asset | Route `/api` của portal | `open-api-asset-upload` |
 
 Ticket không khớp key nào: ghi knowledge gap, đề xuất key mới trong CCR.
 
@@ -59,6 +61,7 @@ Thấy host production thì dừng: `portal.teeinblue.com`, `api.teeinblue.com`,
 | `TIB_ONBOARDING_*` | Chưa connect fulfillment | Luồng onboarding | Chỉ đọc, giữ sạch |
 | `TIB_USER_A_*`, `TIB_USER_B_*` | Hai tenant | Permission, cross-tenant | Thiếu biến thì `NOT_COVERED`, không thay account khác |
 | `TIB_STAFF_VIEW_ONLY*`, `TIB_STAFF_GEN_ONLY*` | Staff quyền hạn chế | Phân quyền | |
+| `TIB_FULL_ACCESS_TOKEN` | Token Open API | Route `/openapi/v1` | `GET /api/user` (401) |
 
 ## 4. Test được gì
 
@@ -68,7 +71,7 @@ Thấy host production thì dừng: `portal.teeinblue.com`, `api.teeinblue.com`,
 |---|---|---|---|---|
 | Generate test design trên dev store | `campaign/create-campaign-by-product-base` | `ALTERNATIVE_SETUP` | Vế | Đặt order test rồi lấy design của order |
 | Horizon (job failed, queued) | Nhiều feature | `NOT_TESTABLE` | Vế | Bỏ vế Horizon, verify UI và API |
-| Strava trong Route Maps | `artwork/layer-config-maps-astronomy` | `NOT_TESTABLE` | Vế | Bỏ dòng Strava |
+| Strava trong Route Maps | `artwork/layer-config-maps-astronomy` `sdk/storefront-buyer-facing` | `NOT_TESTABLE` | Vế | Bỏ dòng Strava |
 | Tracking từ provider | `order/review-and-initiate-fulfillment-portal` | `NOT_TESTABLE` | Case | `env-blocked`; fulfill tay đi đường khác, không thay được |
 | Size gốc của provider | `product-base/printarea-definition` | `NOT_TESTABLE` | Vế | Skip vế giảm size, vẫn verify DPI |
 | `photo_endpoint=snap` | `sdk/storefront-buyer-facing` | `DIFFERENT_VALUE` | Case hoặc vế | Chỉ Dev set được; staging chỉ verify HTML, preconnect |

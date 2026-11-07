@@ -1,6 +1,8 @@
 {
   "feature_id": "FEAT-14-layer-config-vector",
   "feature_key": "layer-config-vector",
+  "object_id": "artwork",
+  "checklist_version": "13",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -268,6 +270,165 @@
         "CONF-CBS004-001"
       ],
       "oq_ref": "OQ-artwork-080"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-079] Upload .svg qua + Layer > VECTOR > Static Vector tạo layer static-vector, render trên canvas, còn sau khi reload editor — baseline một lượt, chưa xác nhận",
+      "applicability": {
+        "role": "merchant (owner/staff)",
+        "state": "artwork editor, file .svg hợp lệ để upload",
+        "environment": "staging; ghi build và ngày chạy (KB-417 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor, desktop"
+      },
+      "precondition": "Có file .svg hợp lệ. Dùng artwork throwaway.",
+      "steps": [
+        "Mở + Layer > VECTOR > Static Vector, upload file .svg",
+        "Khi file hiện trong danh sách vector (reload dialog nếu cần), chọn file đó",
+        "Ghi layer type của layer vừa tạo và layer có render trên canvas không",
+        "Save & Close, mở lại editor; ghi layer còn trong danh sách layer và trên canvas không"
+      ],
+      "observation_point": "Layer type, canvas editor trước và sau khi mở lại editor",
+      "expected_result": "Baseline một lượt (2026-10-14, record không ghi build), không phải expected đã xác nhận: layer type static-vector được tạo, render trên canvas, còn sau khi reload editor. Lệch baseline là tín hiệu cần điều tra, không tự kết luận là bug.",
+      "oracle": {
+        "kb_ids": [
+          "KB-417"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Upload .svg qua Static Vector tạo layer static-vector, render trên canvas và còn sau khi reload editor, quan sát một lượt ngày 2026-10-14. Đây có phải hành vi đúng không? Cần PO hoặc Dev xác nhận nguyên văn, có ngày; hoặc build của lượt chạy TC-TIB-5705.",
+      "related_kb_ids": [
+        "KB-417",
+        "KB-128",
+        "KB-048"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Một lượt chạy, record không có build. Không dùng làm oracle pass/fail."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-188"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-079] Order của artwork chỉ có layer static-vector: Design format SVG ra file .svg, format mặc định PNG_RGB báo 'Line item cannot generate design' — baseline một lượt, chưa xác nhận",
+      "applicability": {
+        "role": "merchant (owner/staff)",
+        "state": "artwork chỉ có layer static-vector, gắn campaign đã publish",
+        "environment": "staging; ghi build và ngày chạy (KB-418 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor + order design do API render"
+      },
+      "precondition": "Fixture throwaway như applicability; store cho phép order test.",
+      "steps": [
+        "Để Design format mặc định PNG_RGB, đặt 1 order test; ghi lỗi của line item",
+        "Đổi Design format sang SVG, Save",
+        "Đặt 1 order test; chờ order design generate xong; ghi định dạng file design",
+        "Xem file design bằng mắt; ghi kết quả kèm build và ngày chạy"
+      ],
+      "observation_point": "Lỗi của line item với PNG_RGB; định dạng file design với SVG",
+      "expected_result": "Baseline một lượt (2026-10-14, record không ghi build; render xem bằng mắt), không phải expected đã xác nhận: Design format SVG ra file design .svg; format mặc định PNG_RGB báo \"Line item cannot generate design\". Lệch baseline là tín hiệu cần điều tra. Check không kết luận SVG là format đúng duy nhất.",
+      "oracle": {
+        "kb_ids": [
+          "KB-418"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Artwork chỉ có static-vector ra design .svg với Design format SVG, báo \"Line item cannot generate design\" với PNG_RGB, và lưu SVG khi còn raster layer trả HTTP 400, quan sát một lượt ngày 2026-10-14. Đây có phải hành vi đúng không, và SVG có phải format đúng duy nhất cho artwork này không? Cần PO hoặc Dev xác nhận nguyên văn, có ngày, nêu các format hợp lệ; hoặc build của lượt chạy TC-TIB-5710.",
+      "related_kb_ids": [
+        "KB-418",
+        "KB-417",
+        "KB-053"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Giá trị SVG được người chạy chọn theo tên, chưa có xác nhận là format đúng duy nhất."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-189"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-079] Lưu Design format SVG khi artwork còn raster layer trả HTTP 400 — baseline một lượt, chưa xác nhận",
+      "applicability": {
+        "role": "merchant (owner/staff)",
+        "state": "artwork có layer static-vector và còn ít nhất 1 raster layer",
+        "environment": "staging; ghi build và ngày chạy (KB-418 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor + request lưu artwork"
+      },
+      "precondition": "Fixture throwaway như applicability; network capture bật.",
+      "steps": [
+        "Đổi Design format sang SVG",
+        "Save; ghi status và body của request lưu artwork"
+      ],
+      "observation_point": "Status của request lưu artwork",
+      "expected_result": "Baseline một lượt (2026-10-14, record không ghi build), không phải expected đã xác nhận: request lưu trả HTTP 400. Lệch baseline là tín hiệu cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "KB-418"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Artwork chỉ có static-vector ra design .svg với Design format SVG, báo \"Line item cannot generate design\" với PNG_RGB, và lưu SVG khi còn raster layer trả HTTP 400, quan sát một lượt ngày 2026-10-14. Đây có phải hành vi đúng không, và SVG có phải format đúng duy nhất cho artwork này không? Cần PO hoặc Dev xác nhận nguyên văn, có ngày, nêu các format hợp lệ; hoặc build của lượt chạy TC-TIB-5710.",
+      "related_kb_ids": [
+        "KB-418",
+        "KB-053"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-189"
     }
-  ]
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-14-layer-config-vector",
+      "core_capability_coverage": "Static Vector (CHK-001, CHK-002, CHK-007, CHK-008, CHK-009), Vector Category (CHK-003), Vector Upload (CHK-004, CHK-005, CHK-006), Design format của artwork có static-vector (CHK-010, CHK-011) đều có check."
+    },
+    {
+      "feature_id": "FEAT-14-layer-config-vector",
+      "capability": "[CBS-079] Tạo layer static-vector từ file .svg upload (KB-417)",
+      "checks": [
+        "CHK-009"
+      ],
+      "covered": "BASELINE + NEEDS_CONFIRMATION, một lượt"
+    },
+    {
+      "feature_id": "FEAT-14-layer-config-vector",
+      "capability": "[CBS-079] Design format của artwork có layer static-vector (KB-418)",
+      "checks": [
+        "CHK-010",
+        "CHK-011"
+      ],
+      "covered": "BASELINE + NEEDS_CONFIRMATION, một lượt; SVG chưa xác nhận là format đúng duy nhất"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "BOUNDARY / PERMISSION / STATE_DATA riêng — phạm vi CBS-079",
+      "reason": "KB-417, KB-418 không nêu giới hạn hay quyền. Persistence sau reload đã nằm trong CHK-009."
+    },
+    {
+      "dimension": "REGRESSION — phạm vi CBS-079",
+      "reason": "KB-417, KB-418 có relation ADD, không đổi hành vi item base. Shard không có item status KNOWN_DEFECT nên không có regression watch."
+    },
+    {
+      "dimension": "OUT_OF_SCOPE: image picker ẩn SVG",
+      "reason": "Vế 'chủ đích' nằm trong excluded_parts của claim, không có người xác nhận; viết check sẽ phải tự đặt expected."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-079"
+  }
 }

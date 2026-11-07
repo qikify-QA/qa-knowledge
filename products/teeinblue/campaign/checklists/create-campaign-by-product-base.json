@@ -2,7 +2,7 @@
   "feature_id": "FEAT-01-create-campaign-by-product-base",
   "feature_key": "create-campaign-by-product-base",
   "object_id": "campaign",
-  "checklist_version": "6",
+  "checklist_version": "7",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -1298,6 +1298,44 @@
       "priority": "P2",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-campaign-069"
+    },
+    {
+      "check_id": "CHK-039",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[CBS-075] Generate test design trên dev store và cách thay thế bằng design của order test — chưa xác nhận",
+      "applicability": {
+        "role": "merchant (owner/staff)",
+        "state": "campaign by Product Base trên dev store",
+        "environment": "staging, dev store, ghi build; production không rõ",
+        "surface_or_device": "portal campaign editor + order test và design của order, desktop browser"
+      },
+      "precondition": "Khác biệt môi trường ALTERNATIVE_SETUP chưa xác nhận (INFERRED/LOW, không phải oracle): Generate test design được ghi là bị disable trên dev store; cách test được ghi là đặt order test rồi lấy design của order. Dùng campaign throwaway trên store staging được phép.",
+      "steps": [
+        "Mở campaign editor; tìm Generate test design; ghi trạng thái của control và thông báo đi kèm (nếu có).",
+        "Nếu control không dùng được: đặt order test cho campaign đó.",
+        "Lấy design của order; ghi lấy được không và lấy ở đâu.",
+        "Ghi store đã dùng, build và ngày chạy."
+      ],
+      "observation_point": "Trạng thái Generate test design trên dev store; design lấy được từ order test. Ghi kết quả, không kết luận đúng hay sai.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Xác nhận khác biệt môi trường của Generate test design: trên dev store chức năng này có đúng là bị disable không, Production hành xử thế nào, và đặt order test rồi lấy design của order có phải cách thay thế đúng không?",
+      "related_kb_ids": [
+        "KB-450"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nguồn chỉ là kinh nghiệm vận hành do QA ghi lại, Jira không xác nhận; không dùng làm expected",
+        "Output và side effect của Generate test design vẫn chưa được khám phá (OQ-campaign-020); check này không trả lời câu hỏi đó"
+      ],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-campaign-071"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1396,6 +1434,14 @@
         "CHK-038"
       ],
       "covered": "NONE + NEEDS_CONFIRMATION (KB-370 OBSERVED_CURRENT/LOW chỉ ở related_kb_ids)"
+    },
+    {
+      "feature_id": "FEAT-01-create-campaign-by-product-base",
+      "risk": "[CBS-075] Generate test design trên dev store và cách thay thế bằng order test (KB-450 INFERRED/LOW, chưa xác nhận)",
+      "checks": [
+        "CHK-039"
+      ],
+      "covered": "NONE + NEEDS_CONFIRMATION (KB-450 chỉ ở related_kb_ids, không làm oracle)"
     }
   ],
   "excluded_dimensions": [
@@ -1410,10 +1456,14 @@
     {
       "dimension": "CORE / NEGATIVE / BOUNDARY / PERMISSION / STATE_DATA / REGRESSION — phạm vi CBS-013 (KB-370)",
       "reason": "KB-370 là 1 lượt quan sát thao tác Update cross-surface portal → Shopify → storefront (INTEGRATION: CHK-038). Không có evidence input sai, giới hạn, quyền khác owner, hay persistence riêng; happy path publish lần đầu đã có ở CHK-005. KB-370 là ADD, không đổi hành vi item base, không phải KNOWN_DEFECT nên không có REGRESSION/regression watch."
+    },
+    {
+      "dimension": "CORE / NEGATIVE / BOUNDARY / PERMISSION / STATE_DATA / REGRESSION — phạm vi CBS-075 (KB-450)",
+      "reason": "KB-450 là ghi chú khác biệt môi trường về cách test, không phát biểu hành vi sản phẩm: một check INTEGRATION (CHK-039) đủ để kiểm chứng. KB-450 là ADD, không đổi hành vi item base, không phải KNOWN_DEFECT nên không có REGRESSION."
     }
   ],
   "last_updated": {
-    "date": "2026-10-30",
-    "ccr_ref": "CBS-013"
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-075"
   }
 }

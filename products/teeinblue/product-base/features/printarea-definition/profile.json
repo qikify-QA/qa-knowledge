@@ -3,12 +3,27 @@
   "feature_key": "printarea-definition",
   "name": "Dinh nghia va quan ly Printarea cua Product Base",
   "user_goal": "La owner, tao/sua/xoa cac vung in (printarea) tren mot product base, de xac dinh noi thiet ke/artwork se duoc dat khi in san pham.",
+  "user_goal_kb_refs": [
+    "KB-029",
+    "KB-032",
+    "KB-037",
+    "KB-076"
+  ],
+  "stable_since_version": null,
   "actors": [
     {
       "role": "owner (Linh explorer, sub=273)",
       "permission_observed": "Tao/sua/xoa printarea tren product base 3203/3181/3233/3243/3990 thanh cong, khong gap access-denied.",
       "kb_refs": [
         "KB-064"
+      ]
+    },
+    {
+      "role": "merchant-owner",
+      "permission_observed": "Run này không quan sát. Theo dev, seller tự sửa DPI nếu cần, gồm print area import từ provider không có DPI và print area đã import trước đó.",
+      "kb_refs": [
+        "KB-507",
+        "KB-512"
       ]
     }
   ],
@@ -18,6 +33,24 @@
       "precondition": "dang o trang edit cua product base",
       "kb_refs": [
         "KB-029"
+      ]
+    },
+    {
+      "path": "/products/{id}/edit (section Printareas, DPI ở sửa inline và form New printarea)",
+      "precondition": "Đang ở trang edit của product base. Print area có từ trước giữ DPI trống và hiển thị \"300\" màu mờ.",
+      "kb_refs": [
+        "KB-512",
+        "KB-513"
+      ]
+    },
+    {
+      "path": "Popup Import (danh sách print area từ provider)",
+      "precondition": "Import từ provider. Không lấy được size gốc provider trên môi trường test nên bỏ vế \"giảm 1/2 size\", vẫn verify DPI.",
+      "kb_refs": [
+        "KB-504",
+        "KB-506",
+        "KB-507",
+        "KB-508"
       ]
     }
   ],
@@ -86,6 +119,40 @@
       "kb_refs": [
         "KB-036"
       ]
+    },
+    {
+      "name": "Khai báo DPI của print area",
+      "description": "Seller đặt DPI ở sửa inline hoặc form New printarea, khoảng hợp lệ 72–300. DPI trống dùng 300 khi export; print area có từ trước giữ trống và hiển thị \"300\" màu mờ.",
+      "kb_refs": [
+        "KB-505",
+        "KB-512",
+        "KB-513"
+      ]
+    },
+    {
+      "name": "Export file design theo DPI của print area",
+      "description": "File export (PNG/JPG/PDF và thumbnail) ghi resolution theo DPI của print area. DPI không đổi kích thước pixel; muốn đúng kích thước in thật thì width/height cũng phải khớp DPI.",
+      "kb_refs": [
+        "KB-505",
+        "KB-509"
+      ]
+    },
+    {
+      "name": "Nhận DPI khi import print area từ provider",
+      "description": "Provider không có DPI trong API thì mặc định 300; provider trả DPI ngoài khoảng thì BE đổi về 300; Printify, Picanova/merchOne có cạnh lớn hơn 9000 thì giảm một nửa và DPI = 150.",
+      "kb_refs": [
+        "KB-506",
+        "KB-507",
+        "KB-508"
+      ]
+    },
+    {
+      "name": "Ghi activity log khi đổi DPI",
+      "description": "Log ghi DPI trống là 300. Activity do browser ghi qua GraphQL, ticket này không đổi cách ghi.",
+      "kb_refs": [
+        "KB-510",
+        "KB-511"
+      ]
     }
   ],
   "state_transitions": [
@@ -126,6 +193,52 @@
       "kb_refs": [
         "KB-076"
       ]
+    },
+    {
+      "from": "nhập DPI ngoài 72–300 ở sửa inline hoặc form New printarea",
+      "to": "hiện message \"DPI must be a whole number from 72 to 300\", không gửi mutation",
+      "trigger": "xác nhận giá trị DPI",
+      "condition": "FE chặn đúng khoảng 72–300",
+      "kb_refs": [
+        "KB-513"
+      ]
+    },
+    {
+      "from": "print area từ Printify, Picanova/merchOne có width hoặc height > 9000",
+      "to": "cả hai cạnh giảm một nửa, DPI = 150",
+      "trigger": "chưa rõ bước chạy, xem unknown_areas",
+      "condition": "Lớn hơn hẳn 9000, không tính bằng 9000. Vế giảm size không test được trên môi trường test.",
+      "kb_refs": [
+        "KB-504",
+        "KB-506"
+      ]
+    },
+    {
+      "from": "provider không có DPI trong API",
+      "to": "print area được DPI mặc định 300",
+      "trigger": "import từ provider",
+      "condition": "Provider chỉ cho width/height như Printbelle; seller tự sửa theo file TIFF gốc.",
+      "kb_refs": [
+        "KB-507"
+      ]
+    },
+    {
+      "from": "provider trả DPI ngoài khoảng (vd 600)",
+      "to": "print area được DPI 300, import không lỗi",
+      "trigger": "lấy danh sách print area từ provider",
+      "condition": "BE tự đổi về 300 trước khi trả cho popup Import.",
+      "kb_refs": [
+        "KB-508"
+      ]
+    },
+    {
+      "from": "print area có DPI 150",
+      "to": "DPI trống, activity log ghi \"150\" → \"300\"",
+      "trigger": "xoá trống DPI",
+      "condition": "",
+      "kb_refs": [
+        "KB-510"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -151,6 +264,105 @@
       "statement": "[CHK-04-009, phan API/DB - dong dut diem vi tri du lieu] Sau khi xoa 1 printarea dang duoc it nhat 1 variant tham chieu, lien ket cu KHONG nam o field flat variant.printarea_id (field nay luon la null) ma nam o bang rieng variant_printareas, noi row lien ket cu VAN TON TAI duoi dang orphan row (khong tu don dep). Day la vi tri du lieu THAT SU, khac voi mo ta ban dau cua PO ve 'field printarea_id'.",
       "kb_refs": [
         "KB-096"
+      ]
+    },
+    {
+      "statement": "File design export (PNG/JPG/PDF và thumbnail) ghi resolution theo DPI của print area, trống thì dùng 300. DPI chỉ đổi resolution ghi trong file export, không đổi kích thước pixel của print area; muốn file đúng kích thước in thật thì width/height cũng phải khớp DPI đó.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, file design export của print area",
+      "caveats": "shipped UNKNOWN.",
+      "confirmation_ref": "Dev xác nhận 2026-10-23, Jira TIB-5500 comment #55437",
+      "kb_refs": [
+        "KB-505"
+      ]
+    },
+    {
+      "statement": "Ngưỡng 9000 px (Printify, Picanova/merchOne): chỉ cần width hoặc height > 9000 (lớn hơn hẳn, không tính bằng 9000) thì cả hai cạnh giảm một nửa và DPI = 150.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, print area từ provider có width hoặc height > 9000",
+      "caveats": "Vế giảm size không test được trên môi trường test (KB-504). Chưa rõ ngưỡng chạy ở bước nào. shipped UNKNOWN.",
+      "confirmation_ref": "Dev xác nhận 2026-10-30, Jira TIB-5500 comment #56108",
+      "kb_refs": [
+        "KB-506"
+      ]
+    },
+    {
+      "statement": "Provider chỉ cho width/height như Printbelle không có DPI trong API nên import vẫn mặc định 300, seller phải tự sửa theo file TIFF gốc.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, import từ provider không có DPI",
+      "caveats": "shipped UNKNOWN.",
+      "confirmation_ref": "Dev xác nhận 2026-10-23, Jira TIB-5500 comment #55437",
+      "kb_refs": [
+        "KB-507"
+      ]
+    },
+    {
+      "statement": "Provider trả DPI ngoài khoảng (vd 600): lúc lấy danh sách print area từ provider, BE tự đổi về 300 trước khi trả cho popup Import, nên import không lỗi và print area được DPI 300.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, import từ provider trả DPI ngoài khoảng",
+      "caveats": "shipped UNKNOWN.",
+      "confirmation_ref": "Dev xác nhận 2026-10-30, Jira TIB-5500 comment #56108",
+      "kb_refs": [
+        "KB-508"
+      ]
+    },
+    {
+      "statement": "PDF 150 DPI to gấp đôi (336 pt → 672 pt) là đúng hành vi mong muốn: giữ nguyên số pixel mà hạ DPI một nửa thì khổ in thật gấp đôi (đã ghi ở Known limitations). Với Printify import thì pixel cũng giảm một nửa nên khổ in giữ nguyên.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, file PDF export với DPI 150",
+      "caveats": "Vế \"gấp đôi\" không áp cho Printify import. shipped UNKNOWN.",
+      "confirmation_ref": "Dev xác nhận 2026-10-30, Jira TIB-5500 comment #56108",
+      "kb_refs": [
+        "KB-509"
+      ]
+    },
+    {
+      "statement": "Activity log với DPI trống giờ ghi là 300, ví dụ Changed dpi from \"300\" to \"150\"; xoá trống ghi \"150\" → \"300\".",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, sửa DPI của print area",
+      "caveats": "Chưa rõ log này có hiện ở modal Logs không (KB-036). shipped UNKNOWN.",
+      "confirmation_ref": "Dev xác nhận 2026-10-30, Jira TIB-5500 comment #56108",
+      "kb_refs": [
+        "KB-510"
+      ]
+    },
+    {
+      "statement": "Activity log do browser ghi qua GraphQL: đây là cách portal đang ghi mọi activity của product từ trước (width/height, thêm/xoá print area), ticket này không đổi. Nếu cần chuyển sang server ghi thì nên tách ticket riêng.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, ghi activity của product",
+      "caveats": "Lời dev nói ticket không đổi, không nói đây là chủ đích sản phẩm. Lời dev không gọi tên log nào; portal có hai log tách biệt, xem OQ-product-base-041. shipped UNKNOWN.",
+      "confirmation_ref": "Dev xác nhận 2026-10-30, Jira TIB-5500 comment #56108",
+      "kb_refs": [
+        "KB-511"
+      ]
+    },
+    {
+      "statement": "Bảng printareas có thêm cột dpi (cho phép trống). Print area đã có từ trước giữ trống và vẫn export 300 DPI như cũ, hiển thị \"300\" màu mờ. Không tự đổi DPI cho print area đã import trước đó, seller phải tự sửa nếu cần.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, print area có trước khi deploy, dpi trống",
+      "caveats": "shipped UNKNOWN.",
+      "confirmation_ref": "Dev xác nhận 2026-10-23, Jira TIB-5500 comment #55437",
+      "kb_refs": [
+        "KB-512"
+      ]
+    },
+    {
+      "statement": "Khoảng 72–300 là đúng chủ đích: FE chặn đúng khoảng 72–300 ở cả sửa inline lẫn form New printarea, message \"DPI must be a whole number from 72 to 300\", không gửi mutation; BE validate và DB constraint cùng khoảng này. Tên constraint printareas_dpi_check do QA ghi (2026-10-30), không phải lời dev.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, nhập DPI ngoài 72–300",
+      "caveats": "Chưa rõ tầng BE nào validate ngoài DB constraint. shipped UNKNOWN.",
+      "confirmation_ref": "Dev xác nhận 2026-10-30, Jira TIB-5500 comment #56108",
+      "kb_refs": [
+        "KB-513"
       ]
     }
   ],
@@ -220,6 +432,26 @@
           "KB-038",
           "KB-076"
         ]
+      },
+      {
+        "item": "DPI ở section Printareas: sửa inline, form New printarea, hiển thị \"300\" màu mờ khi trống",
+        "kb_refs": [
+          "KB-512",
+          "KB-513"
+        ]
+      },
+      {
+        "item": "Popup Import nhận danh sách print area từ provider",
+        "kb_refs": [
+          "KB-508"
+        ]
+      },
+      {
+        "item": "File design export PNG/JPG/PDF và thumbnail",
+        "kb_refs": [
+          "KB-505",
+          "KB-509"
+        ]
       }
     ],
     "storefront": [],
@@ -245,6 +477,19 @@
         "kb_refs": [
           "KB-035"
         ]
+      },
+      {
+        "item": "BE lấy danh sách print area từ provider, đổi DPI ngoài khoảng về 300",
+        "kb_refs": [
+          "KB-508"
+        ]
+      },
+      {
+        "item": "Activity log do browser ghi qua GraphQL",
+        "kb_refs": [
+          "KB-510",
+          "KB-511"
+        ]
       }
     ],
     "data": [
@@ -263,6 +508,13 @@
         "kb_refs": [
           "KB-074",
           "CONF-CHK-04-009-001"
+        ]
+      },
+      {
+        "item": "printareas.dpi (cho phép trống; constraint printareas_dpi_check khoảng 72–300, tên do QA ghi)",
+        "kb_refs": [
+          "KB-512",
+          "KB-513"
         ]
       }
     ],
@@ -290,6 +542,17 @@
       "kb_refs": [
         "KB-062",
         "KB-075"
+      ]
+    },
+    {
+      "target_feature": "FEAT-01-product-base-browse",
+      "relation": "Printify và Picanova/merchOne xuất hiện ở cả hai feature: ngưỡng 9000 px và size gốc ở đây, nhóm giữ key ở product-base-browse.",
+      "kb_refs": [
+        "KB-500",
+        "KB-501",
+        "KB-502",
+        "KB-504",
+        "KB-506"
       ]
     }
   ],
@@ -353,8 +616,46 @@
       "kb_refs": [
         "KB-036"
       ]
+    },
+    {
+      "risk": "Vế giảm một nửa kích thước của ngưỡng 9000 px chưa kiểm được trên môi trường test, chỉ có lời dev. Check chỉ verify được DPI, vế size là NOT_APPLICABLE.",
+      "severity": "MEDIUM",
+      "category": "not-testable-on-test-env",
+      "kb_refs": [
+        "KB-504",
+        "KB-506"
+      ]
+    },
+    {
+      "risk": "DPI không đổi kích thước pixel: hạ DPI mà giữ nguyên pixel thì khổ in thật gấp đôi. Seller không chỉnh width/height cho khớp DPI thì file không đúng kích thước in thật.",
+      "severity": "MEDIUM",
+      "category": "print-size-mismatch",
+      "kb_refs": [
+        "KB-505",
+        "KB-509"
+      ]
     }
   ],
+  "environment_differences": [
+    {
+      "type": "NOT_TESTABLE",
+      "level": "Vế",
+      "test_env": "không lấy được size gốc provider (Printify không token, merchOne API 403)",
+      "production": "không rõ",
+      "how_to_test": "skip vế \"giảm 1/2 size\", vẫn verify DPI",
+      "kb_refs": [
+        "KB-504"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-11-06",
+    "note": "Run này không tự quan sát. Ngày là ngày nạp CCR; KB-505..KB-513 là lời dev ngày 2026-10-23 và 2026-10-30. Item base giữ freshness của lần khảo sát 2026-09."
+  },
+  "last_updated": {
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-077"
+  },
   "unknown_areas": [
     {
       "question": "Pham vi cot/hang that su ma JWT user thuong duoc phep _set qua Hasura mutation la gi (bao gom ca truong hop sua thanh cong nhu KB-076)?",
@@ -367,10 +668,275 @@
     {
       "question": "Anh huong that su cua xoa printarea toi mockup/campaign tren pham vi rong hon (nhieu product, nhieu campaign) la gi?",
       "why_it_matters": "KB-075 chi la 1 sample, confidence LOW, chua re-query doc lap sau DELETE trong cung file network."
+    },
+    {
+      "question": "Size gốc của provider ở production thế nào, và vế \"giảm 1/2 size\" có thật sự không test được trên staging không?",
+      "why_it_matters": "KB-504 là INFERRED/LOW: quyết định skip chỉ có ở ghi chú ngôi thứ ba, lời dev chỉ nói chưa tra được kích thước của 2 product vì cần token provider, phía production ghi \"không rõ\". Cần làm rõ thêm: TC-TIB-7788 ghi không có token Printify cho QA và dev, trong khi KB-502 ghi Printify dùng key của teeinblue.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-502",
+        "KB-504",
+        "KB-506"
+      ],
+      "oq_id": "OQ-product-base-040"
+    },
+    {
+      "question": "\"BE validate\" khoảng DPI 72–300 ở KB-513 nằm ở tầng nào ngoài DB constraint?",
+      "why_it_matters": "KB-031 ghi print area sửa qua Hasura từ client, nên chưa rõ tầng BE nào validate ngoài constraint. Checklist chưa có oracle cho phản hồi khi mutation đi thẳng, không qua FE.",
+      "level": "feature",
+      "oq_type": "OPEN_ISSUE",
+      "kb_refs": [
+        "KB-031",
+        "KB-047",
+        "KB-513"
+      ],
+      "oq_id": "OQ-product-base-045"
+    },
+    {
+      "question": "Ngưỡng 9000 px của KB-506 chạy ở bước nào?",
+      "why_it_matters": "Nguồn không nói ngưỡng chạy ở bước nào; comment #56108 chỉ nhắc \"Printify import\" ở dòng PDF. Thiếu điều này thì không xác định được thao tác và thời điểm để verify DPI = 150.",
+      "level": "feature",
+      "oq_type": "OPEN_ISSUE",
+      "kb_refs": [
+        "KB-506",
+        "KB-509"
+      ],
+      "oq_id": "OQ-product-base-046"
+    },
+    {
+      "question": "Thay đổi DPI của TIB-5500 đã deploy production chưa, từ ngày nào?",
+      "why_it_matters": "Comment #56108 chỉ nói đã deploy staging; mọi item KB-505..KB-513 có shipped UNKNOWN. Chưa rõ thì không dùng các rule này làm expected trên production, và mốc \"print area có từ trước\" của KB-512 chưa xác định được ở production.",
+      "level": "feature",
+      "oq_type": "OPEN_ISSUE",
+      "kb_refs": [
+        "KB-505",
+        "KB-506",
+        "KB-507",
+        "KB-508",
+        "KB-509",
+        "KB-510",
+        "KB-511",
+        "KB-512",
+        "KB-513"
+      ],
+      "oq_id": "OQ-product-base-047"
     }
   ],
-  "last_updated": {
-    "date": "2026-09-14",
-    "ccr_ref": "bootstrap"
-  }
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "layer": "portal",
+      "role": "owner",
+      "state": "tạo, sửa Width/Height, xoá printarea, gồm printarea đang gán variant",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-029",
+        "KB-032",
+        "KB-037",
+        "KB-074",
+        "KB-076"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "layer": "api",
+      "role": "owner",
+      "state": "Hasura insert/update, REST DELETE, orphan row variant_printareas",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-031",
+        "KB-047",
+        "KB-096"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "layer": "api",
+      "role": "role khác owner, cross-tenant",
+      "state": "phạm vi cột/hàng được _set",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-047"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "nhập DPI ngoài 72–300, chỉ có lời dev",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-513"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "layer": "portal+render",
+      "role": "merchant-owner",
+      "state": "export file theo DPI, PDF DPI 150, chỉ có lời dev",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-505",
+        "KB-509"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "layer": "portal+render",
+      "role": "merchant-owner",
+      "state": "import provider không có DPI hoặc DPI ngoài khoảng, chỉ có lời dev",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-507",
+        "KB-508"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "layer": "portal+render",
+      "role": "merchant-owner",
+      "state": "print area > 9000 px, vế giảm size NOT_TESTABLE",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-504",
+        "KB-506"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "activity log khi đổi DPI, chỉ có lời dev",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-510",
+        "KB-511"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "layer": "portal+render",
+      "role": "merchant-owner",
+      "state": "print area có từ trước, dpi trống, chỉ có lời dev",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-512"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "layer": "portal+render",
+      "role": "merchant-owner",
+      "state": "mọi item KB-504..KB-513, shipped UNKNOWN",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "KB-504",
+        "KB-505",
+        "KB-506",
+        "KB-507",
+        "KB-508",
+        "KB-509",
+        "KB-510",
+        "KB-511",
+        "KB-512",
+        "KB-513"
+      ]
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "type": "LOG_SCOPE_UNCLEAR",
+      "detail": "Portal có hai log tách biệt (KB-097): REST /api/staff-activity-logs/printarea ghi vào log staff toàn cục, nguồn của /activity-logs; modal Logs của product base đọc product_activities qua GraphQL. KB-035 và KB-511 vì vậy cùng đúng được. Lời dev ở KB-511 không gọi tên log nào, câu hỏi nằm ở OQ-product-base-041.",
+      "kb_refs": [
+        "KB-035",
+        "KB-097",
+        "KB-511"
+      ]
+    },
+    {
+      "type": "STALE_CANDIDATE_NOT_APPLIED",
+      "detail": "KB-029 (form New printarea không có DPI) và capabilities[0] của base có thể chỉ là quan sát trước TIB-5500; dev nói form này có chặn DPI (KB-513). Giữ nguyên văn.",
+      "kb_refs": [
+        "KB-029",
+        "KB-513"
+      ]
+    },
+    {
+      "type": "STALE_CANDIDATE_NOT_APPLIED",
+      "detail": "KB-030 và capabilities[1] của base ghi tooltip của 3 cột; comment #55437 nói bảng Printareas có thêm cột DPI có tooltip. Giữ nguyên văn.",
+      "kb_refs": [
+        "KB-030"
+      ]
+    },
+    {
+      "type": "STALE_CANDIDATE_NOT_APPLIED",
+      "detail": "KB-032 và capabilities[2] của base liệt kê inline editor của 4 ô; dev nói DPI cũng sửa inline (KB-513). Giữ nguyên văn.",
+      "kb_refs": [
+        "KB-032",
+        "KB-513"
+      ]
+    },
+    {
+      "type": "STALE_CANDIDATE_NOT_APPLIED",
+      "detail": "KB-034 ghi mutation lỗi không có thông báo ở UI. Comment #56108 có câu \"Nếu mutation lỗi vì lý do khác cũng hiện thông báo lỗi, không còn im lặng\", đứng trong dòng về DPI, chưa rõ có áp cho ô Width không và không nạp vào KB. state_transitions[2], risks[0], observed_validations[0] của base giữ nguyên văn.",
+      "kb_refs": [
+        "KB-034"
+      ]
+    },
+    {
+      "type": "STALE_CANDIDATE_NOT_APPLIED",
+      "detail": "KB-036 và capabilities[8] của base ghi modal Logs chỉ có 4 loại sự kiện; KB-510 nói activity log ghi Changed dpi. Chưa rõ hai thứ có phải một log không. Giữ nguyên văn.",
+      "kb_refs": [
+        "KB-036",
+        "KB-510"
+      ]
+    },
+    {
+      "type": "SOURCE_CONFLICT",
+      "detail": "KB-504 ghi Printify không token và merchOne API 403 trên môi trường test; KB-502 ghi Printify dùng key của teeinblue, KB-501 ghi Picanova do merchant tự nhập key. Không hoà giải, xem OQ-product-base-040.",
+      "kb_refs": [
+        "KB-501",
+        "KB-502",
+        "KB-504"
+      ]
+    },
+    {
+      "type": "CROSS_FEATURE_KB_REF_IN_BASE",
+      "detail": "Base tham chiếu KB-064 (product-base-browse), KB-080 (variant-catalog), KB-062 (product-base-campaign-link), không có trong shard này. Giữ nguyên văn.",
+      "kb_refs": []
+    },
+    {
+      "type": "NON_KB_REF_IN_BASE",
+      "detail": "observed_behavior[3], surface_mapping.data[1], risks[3] của base có CONF-CHK-04-009-001 trong kb_refs, không phải kb_id. Mỗi phần tử vẫn có kb_id khác. Giữ nguyên văn.",
+      "kb_refs": [
+        "KB-074",
+        "KB-096"
+      ]
+    }
+  ],
+  "profile_relationships": [
+    {
+      "from_feature": "FEAT-04-printarea-definition",
+      "to_feature": "FEAT-01-product-base-browse",
+      "relation": "Cùng dùng thông tin provider: việc lấy size gốc và ngưỡng 9000 px ở đây liên quan nhóm giữ key của Printify, Picanova/merchOne ở product-base-browse.",
+      "kb_refs": [
+        "KB-500",
+        "KB-501",
+        "KB-502",
+        "KB-504",
+        "KB-506"
+      ]
+    }
+  ]
 }

@@ -258,5 +258,319 @@
       "date": "2026-09-13",
       "ccr_ref": "bootstrap"
     }
+  },
+  {
+    "kb_id": "KB-504",
+    "topic": "environment_difference",
+    "statement": "[NOT_TESTABLE] Môi trường test: không lấy được size gốc provider (Printify không token, merchOne API 403); Production: không rõ; Cách test: skip vế \"giảm 1/2 size\", vẫn verify DPI.",
+    "knowledge_kind": "INFERRED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "NOT_TESTABLE",
+      "provider-size",
+      "dpi",
+      "TIB-5500"
+    ],
+    "related_kb_ids": [
+      "KB-506"
+    ],
+    "last_updated": {
+      "date": "2026-11-06",
+      "ccr_ref": "CBS-077"
+    }
+  },
+  {
+    "kb_id": "KB-505",
+    "topic": "DPI của print area chỉ là resolution ghi trong file export",
+    "statement": "Theo dev (2026-10-23), file design export (PNG/JPG/PDF và thumbnail) ghi resolution theo DPI của print area, trống thì dùng 300. DPI chỉ đổi resolution ghi trong file export, không đổi kích thước pixel của print area; muốn file đúng kích thước in thật thì width/height cũng phải khớp DPI đó.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal+render",
+      "brand": null
+    },
+    "tags": [
+      "dpi",
+      "export",
+      "TIB-5500"
+    ],
+    "related_kb_ids": [
+      "KB-509",
+      "KB-512"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5500 comment #55437 (dev), 2026-10-23",
+      "authored_on": "2026-10-23",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-06",
+      "ccr_ref": "CBS-077"
+    }
+  },
+  {
+    "kb_id": "KB-506",
+    "topic": "Ngưỡng 9000 px của Printify, Picanova/merchOne",
+    "statement": "Theo dev (2026-10-30), ngưỡng 9000 px (Printify, Picanova/merchOne): chỉ cần width hoặc height > 9000 (lớn hơn hẳn, không tính bằng 9000) thì cả hai cạnh giảm một nửa và DPI = 150.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal+render",
+      "brand": null
+    },
+    "tags": [
+      "dpi",
+      "provider-import",
+      "boundary",
+      "TIB-5500"
+    ],
+    "related_kb_ids": [
+      "KB-504",
+      "KB-509"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5500 comment #56108 (dev), 2026-10-30",
+      "authored_on": "2026-10-30",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-06",
+      "ccr_ref": "CBS-077"
+    }
+  },
+  {
+    "kb_id": "KB-507",
+    "topic": "Provider không có DPI trong API",
+    "statement": "Theo dev (2026-10-23), provider chỉ cho width/height như Printbelle không có DPI trong API nên import vẫn mặc định 300, seller phải tự sửa theo file TIFF gốc.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal+render",
+      "brand": null
+    },
+    "tags": [
+      "dpi",
+      "provider-import",
+      "TIB-5500"
+    ],
+    "related_kb_ids": [
+      "KB-508"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5500 comment #55437 (dev), 2026-10-23",
+      "authored_on": "2026-10-23",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-06",
+      "ccr_ref": "CBS-077"
+    }
+  },
+  {
+    "kb_id": "KB-508",
+    "topic": "Provider trả DPI ngoài khoảng",
+    "statement": "Theo dev (2026-10-30), provider trả DPI ngoài khoảng (vd 600): lúc lấy danh sách print area từ provider, BE tự đổi về 300 trước khi trả cho popup Import, nên import không lỗi và print area được DPI 300.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal+render",
+      "brand": null
+    },
+    "tags": [
+      "dpi",
+      "provider-import",
+      "boundary",
+      "TIB-5500"
+    ],
+    "related_kb_ids": [
+      "KB-507",
+      "KB-513"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5500 comment #56108 (dev), 2026-10-30",
+      "authored_on": "2026-10-30",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-06",
+      "ccr_ref": "CBS-077"
+    }
+  },
+  {
+    "kb_id": "KB-509",
+    "topic": "Khổ PDF khi hạ DPI mà giữ nguyên pixel",
+    "statement": "Theo dev (2026-10-30), PDF 150 DPI to gấp đôi (336 pt → 672 pt) là đúng hành vi mong muốn: giữ nguyên số pixel mà hạ DPI một nửa thì khổ in thật gấp đôi (đã ghi ở Known limitations). Với Printify import thì pixel cũng giảm một nửa nên khổ in giữ nguyên.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal+render",
+      "brand": null
+    },
+    "tags": [
+      "dpi",
+      "export",
+      "pdf",
+      "TIB-5500"
+    ],
+    "related_kb_ids": [
+      "KB-505",
+      "KB-506"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5500 comment #56108 (dev), 2026-10-30",
+      "authored_on": "2026-10-30",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-06",
+      "ccr_ref": "CBS-077"
+    }
+  },
+  {
+    "kb_id": "KB-510",
+    "topic": "Activity log khi DPI trống",
+    "statement": "Theo dev (2026-10-30), activity log với DPI trống giờ ghi là 300, ví dụ Changed dpi from \"300\" to \"150\"; xoá trống ghi \"150\" → \"300\".",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal+render",
+      "brand": null
+    },
+    "tags": [
+      "dpi",
+      "activity-log",
+      "TIB-5500"
+    ],
+    "related_kb_ids": [
+      "KB-036",
+      "KB-511"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5500 comment #56108 (dev), 2026-10-30",
+      "authored_on": "2026-10-30",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-06",
+      "ccr_ref": "CBS-077"
+    }
+  },
+  {
+    "kb_id": "KB-511",
+    "topic": "Activity log của product do browser ghi qua GraphQL",
+    "statement": "Theo dev (2026-10-30), activity log do browser ghi qua GraphQL: đây là cách portal đang ghi mọi activity của product từ trước (width/height, thêm/xoá print area), ticket này không đổi. Nếu cần chuyển sang server ghi thì nên tách ticket riêng.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal+render",
+      "brand": null
+    },
+    "tags": [
+      "activity-log",
+      "TIB-5500"
+    ],
+    "related_kb_ids": [
+      "KB-035",
+      "KB-510"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5500 comment #56108 (dev), 2026-10-30",
+      "authored_on": "2026-10-30",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-06",
+      "ccr_ref": "CBS-077"
+    }
+  },
+  {
+    "kb_id": "KB-512",
+    "topic": "Print area có từ trước để trống DPI",
+    "statement": "Theo dev (2026-10-23), bảng printareas có thêm cột dpi (cho phép trống). Print area đã có từ trước giữ trống và vẫn export 300 DPI như cũ, hiển thị \"300\" màu mờ. Không tự đổi DPI cho print area đã import trước đó, seller phải tự sửa nếu cần.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal+render",
+      "brand": null
+    },
+    "tags": [
+      "dpi",
+      "legacy-data",
+      "TIB-5500"
+    ],
+    "related_kb_ids": [
+      "KB-505"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5500 comment #55437 (dev), 2026-10-23",
+      "authored_on": "2026-10-23",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-06",
+      "ccr_ref": "CBS-077"
+    }
+  },
+  {
+    "kb_id": "KB-513",
+    "topic": "Khoảng DPI hợp lệ 72–300",
+    "statement": "Theo dev (2026-10-30), khoảng 72–300 là đúng chủ đích: FE chặn đúng khoảng 72–300 ở cả sửa inline lẫn form New printarea, message \"DPI must be a whole number from 72 to 300\", không gửi mutation; BE validate và DB constraint cùng khoảng này. Tên constraint printareas_dpi_check do QA ghi (2026-10-30), không phải lời dev.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal+render",
+      "brand": null
+    },
+    "tags": [
+      "dpi",
+      "validation",
+      "boundary",
+      "TIB-5500"
+    ],
+    "related_kb_ids": [
+      "KB-508"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5500 comment #56108 (dev), 2026-10-30",
+      "authored_on": "2026-10-30",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-06",
+      "ccr_ref": "CBS-077"
+    }
   }
 ]

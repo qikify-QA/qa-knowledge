@@ -1,5 +1,5 @@
 # Object: Product Base (product: teeinblue) — Feature Profile Summary
-**Published context version:** 6
+**Published context version:** 7
 
 - **Phạm vi đã kiểm thử:** role `owner` (Linh explorer, sub=273), 1 organization, store `linh-explorer.myshopify.com`, environment staging. Chưa có evidence cho role khác (không có tài khoản thứ 2 để test permission/cross-tenant).
 - **9/9 feature có profile:** product-base-browse, product-base-create, product-base-identity, printarea-definition, variant-catalog, variant-add-to-campaigns, mockup-attachment, product-base-lifecycle, product-base-campaign-link. Confidence tổng thể object: MEDIUM. `product-base-campaign-link` là feature yếu nhất (confidence LOW, gần như không có bằng chứng cho đường ghi dữ liệu).
@@ -29,6 +29,10 @@
 - Cursor pagination khi >20 bản ghi hoàn toàn chưa kiểm được (store test chỉ có 3 bản ghi) — xem OQ-006
 - Rủi ro cursor trong URL bị stale khi tạo product base mới rồi quay lại bằng URL cũ — chưa tái hiện bằng evidence thật, xem OQ-007
 - Import product từ catalog nhà in (bên thứ ba) — ngoài phạm vi đã khảo sát
+
+**Cập nhật theo CBS-077 (hành vi hiện tại):**
+- Hai nhóm provider theo lời dev (KB-501, KB-502): Printful, ShineOn, Picanova do merchant tự nhập key ở Extras → Fulfillments; Merchize, MarketPrint, Printify, Shirtee, Printbelle dùng key của teeinblue. Chủ key CustomCat còn mở (KB-514, OQ-product-base-039).
+- Provider hiển thị merchOne, route và field provider vẫn là picanova (KB-500, quan sát một lượt, chưa xác nhận, OQ-product-base-037). Rule "chưa nhập key thì dùng key teeinblue" chưa xác nhận (KB-503 chỉ là quan sát, OQ-product-base-038).
 
 ---
 
@@ -97,6 +101,15 @@
 - **MEDIUM:** cho phép 2 printarea trùng Fulfilled key song song — rủi ro nhà in nhận sai file nếu Fulfilled key dùng để map file
 - **MEDIUM:** phạm vi ghi Logs chỉ giới hạn ở Printarea event — audit trail cho các thay đổi khác của product base (variant, basic info, mockup) không đầy đủ, và ngay cả với Printarea cũng có nghi vấn không nhất quán (OQ-002)
 - **LOW:** dialog cảnh báo hiện i18n key chưa dịch
+
+**Cập nhật theo CBS-077 (hành vi hiện tại):**
+- DPI của print area chỉ là resolution ghi trong file export, không đổi pixel (KB-505); hạ DPI giữ pixel thì khổ in gấp đôi, PDF 150 DPI to gấp đôi là đúng (KB-509).
+- Khoảng hợp lệ 72–300: FE chặn ở sửa inline và form New printarea, message "DPI must be a whole number from 72 to 300" (KB-513). Print area cũ để trống DPI, hiển thị "300" mờ, export 300 (KB-512).
+- Printify, Picanova/merchOne có width hoặc height > 9000 thì hai cạnh giảm một nửa và DPI 150 (KB-506; bước chạy còn mở, OQ-product-base-046).
+- Import: provider không có DPI thì 300 (KB-507); DPI ngoài khoảng thì BE đổi về 300 (KB-508).
+- Activity log ghi DPI trống là 300 (KB-510); activity của product do browser ghi qua GraphQL, ticket không đổi (KB-511). Log nào là câu hỏi mở (OQ-product-base-041, OQ-product-base-042).
+- Khác biệt môi trường: size gốc provider không test được trên staging, skip vế giảm 1/2 size, vẫn verify DPI (KB-504, chưa xác nhận, không làm oracle, OQ-product-base-040).
+- Chỉ áp cho staging tới khi rõ ngày deploy production (OQ-product-base-047).
 
 ---
 

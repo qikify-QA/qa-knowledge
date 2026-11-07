@@ -1,8 +1,9 @@
 # Object: Artwork (product: teeinblue) — Feature Profile Summary
-**Published context version:** 12
+**Published context version:** 13
 
 
 - **24 features.** Đa số item là `OBSERVED_CURRENT`. Item `CONFIRMED_EXPECTED` của object đến từ CBS-006 (TIB-5584, effective visibility của layer Group): nguồn là test case Testlane PASS hoặc QA plan của dev, chỉ trên staging 2026-10-16 — TIB-5584 chưa xác nhận đã ship production, chưa chạy lại sau khi đủ PR merge (OQ-artwork-144). CBS-011 (TIB-5558, action Hide trong Conditional Setting) thêm KB-221, KB-222, KB-224, KB-227 (đang conflict), KB-228, KB-229 là `CONFIRMED_EXPECTED`/MEDIUM theo test case Testlane PASS trên staging 2026-10-28, chạy trước khi 6 PR của TIB-5558 merge; TIB-5558 chưa xác nhận đã ship production.
+- **CBS-079 (backfill các ticket layer và render):** thêm KB-415..KB-429 và 20 check trên bảy feature, không có supersede, không đổi item base. Chín item là `CONFIRMED_EXPECTED`/MEDIUM theo comment dev (KB-420, KB-421, KB-423..KB-429), năm item là `OBSERVED_CURRENT`/LOW, KB-419 là `INFERRED`/LOW. Build và ngày deploy production chưa biết, các item chỉ dùng cho staging (OQ-artwork-185); role chưa rõ ở KB-420..KB-429 (OQ-artwork-184).
 - **13 conflicts, all UNRESOLVED** (mới nhất: `CONF-artwork-dependency-action-01`, shape `dependency` có key `action`, CBS-011) — see `open-questions.md` (type `CONFLICT`) for both sides of each; `kb.json`/feature `kb.json` items carry a matching `conflict_group` + `status: UNRESOLVED`.
 - **1 CRITICAL finding** — canvas/Preview modal/cart customization image never composites a selected Clipart Category item (KB-112, feature `clipart-category-storefront-behavior`); not concluded as a confirmed product defect vs. a test-fixture artifact — see that feature's Risks section.
 - **1 cross-object dispute** — Text to Image (AI) personalization option count (2 vs 3 choices, `CONF-CBS003-01`, feature `layer-config-image`) is cross-referenced with object `global-option`; a checklist item for this area (`layer-config-image` checklist) is currently `automation_suitability: SUITABLE` while the underlying fact is disputed — worth auditing before trusting that check's PASS/FAIL signal.
@@ -83,6 +84,8 @@
 - Ngoài nhóm VECTOR, các picker khác (image/clipart) có rơi vào trạng thái rỗng tương tự không — chỉ test riêng Vector
 - Storefront rendering layer vừa thêm, role khác owner/cross-tenant — chưa test
 
+- **KB-426..KB-429 (CBS-079, comment dev, staging):** multi-select có giá trị Shadow hoặc Photo Border khác nhau, undo step của Shadow và Photo Border, rule ẩn với layer Linked và group (CHK-019..CHK-023). Ý định của KB-427 chờ PO (OQ-artwork-193); Group đang ẩn chưa chốt (OQ-artwork-194).
+
 **Gate:** CONDITIONAL_PASS (đủ cho regression discovery trên control workspace; Group/Ungroup happy-path chưa có oracle vì chưa quan sát effect thật)
 
 ---
@@ -153,6 +156,8 @@
 - Hành vi runtime storefront/production file — 0 evidence
 
 **Cập nhật CBS-015 (TIB-5633):** Group 3 layer có photo_border contour cut — viền trắng cắt theo hình từng layer, đúng vị trí trên order design (KB-391, `OBSERVED_CURRENT`/LOW, staging 2026-10-29). Chưa rõ có cùng đường xử lý với preset shape-cut (OQ-artwork-174); Group shape-cut ~250 layer và emboss với Group chưa kiểm (OQ-artwork-175); cần chạy lại sau merge/production (OQ-artwork-176). CHK-008..CHK-010 là NEEDS_CONFIRMATION. CONF-004 giữ nguyên.
+
+- **KB-425 (CBS-079, comment dev):** border custom_shape không còn file pre-render, SDK vẽ từ mask trên canvas, không đọc được mask thì quay về `/image_effect` (CHK-011, CHK-012). Print file chưa kiểm (OQ-artwork-195).
 
 **Gate:** CONDITIONAL_PASS (CONF-004 phải giữ nguyên; checklist KHÔNG được khẳng định "không có emboss" như fact đã xác nhận, chỉ ghi "chưa tìm thấy trên account/plan đã test")
 
@@ -321,6 +326,8 @@
 - Single-line Text/Curve Text chưa có DOM dump riêng — chỉ biết không bị liệt là ngoại lệ
 - Storefront rendering (SDK), role khác owner/cross-tenant — 0 evidence cho cả nhóm này
 
+- **KB-416 (CBS-079, 1 lượt chạy, staging):** paragraph vừa là buyer field vừa được populate: rỗng không render trong design, chỉ khoảng trắng thì preview và design trống, xoá field nguồn thì preview về default text. Chưa xác nhận là hành vi đúng, chờ PO (OQ-artwork-187, CHK-010).
+
 **Gate:** CONDITIONAL_PASS (mọi per-type item observed_count=1 → LOW, không suy required/optional/enum; field JSON qua bundle-registry INFERRED, chưa coi là contract chính thức)
 
 ---
@@ -354,6 +361,8 @@
 - **TIB-5188 (thứ tự resize/crop khi minimum-resolution bật cho Multiple Uploads)** HOÀN TOÀN CHƯA TEST — xem companion `sdk` FEAT-09
 - **'Duplicate & Share'** không tìm thấy ở portal editor cho Multiple Uploads/Text to Image — coverage gap, không kết luận không tồn tại
 - Storefront/role khác owner-cross-tenant cho 6 type còn lại ngoài Clipart Category — chưa test
+
+- **KB-420..KB-424 (CBS-079):** batch HD thay tooltip "Selected layers use different images…", tối đa 10 ảnh khác nhau mỗi lần bấm; HD phụ thuộc nơi ảnh nằm, không phụ thuộc layer type; warning ImagenHub match title của Global Option (CHK-054..CHK-060). KB-422 (route, env, 422 của batch HD) là `OBSERVED_CURRENT`/LOW, chưa kiểm trên hệ thống (OQ-artwork-192). Per-field warning và nút "+ variable" chưa chốt (OQ-artwork-191).
 
 **Gate:** CONDITIONAL_PASS (per-type observed_count=1-2 → LOW; field JSON qua bundle-registry INFERRED trừ phần Clipart Category + Photo Upload/Multiple Uploads/Text to Image đã cross-check API trực tiếp; 3 conflict PHẢI giữ UNRESOLVED — 2 cũ + CONF-CBS003-01 mới)
 
@@ -405,6 +414,8 @@
 - **[MỚI]** Cột "Prod" của CCR CBS-004 (vector-upload Prod=20/phút theo khai báo code) hoàn toàn KHÔNG verify trong run này (chỉ staging theo chỉ thị vận hành).
 - **[MỚI]** Route `pdf-upload` (cùng nhóm route-throttle theo CCR) verify runtime khớp CCR (4/phút staging) nhưng KHÔNG tìm được UI entry point sau 5 vị trí hợp lý — coverage_gap, không publish làm oracle.
 
+- **KB-417, KB-418 (CBS-079, 1 lượt chạy, staging 2026-10-14):** upload Static Vector tạo layer static-vector; artwork chỉ có static-vector với Design format SVG ra file .svg, PNG_RGB báo "Line item cannot generate design", lưu SVG khi còn raster layer trả HTTP 400. Chưa xác nhận là hành vi đúng (OQ-artwork-188, OQ-artwork-189; CHK-009..CHK-011).
+
 **Gate:** CONDITIONAL_PASS (per-type observed_count=1 → LOW; field JSON qua bundle-registry INFERRED; rate-limit CONDITIONAL_PASS, CONF-CBS004-001 UNRESOLVED)
 
 ---
@@ -427,6 +438,8 @@
 - Mapbox token dependency của Street Maps — bản thân evidence gốc tự ghi "chưa verify trực tiếp"
 - `maps_seacher_enabled` (Moon Phase, chính tả "seacher" lạ trong code) — typo thật của product hay lỗi ghi chép evidence, chưa rõ
 - Storefront/role khác owner-cross-tenant — chưa test
+
+- **KB-419 (CBS-079, `INFERRED`/LOW):** Strava trong Route Maps ghi là không chạy được trên môi trường test, production không rõ (OQ-artwork-190, CHK-007).
 
 **Gate:** CONDITIONAL_PASS (per-type observed_count=1 → LOW; field JSON qua bundle-registry INFERRED)
 
@@ -469,6 +482,8 @@
 - Giới hạn 4296 ký tự của QR Code chỉ là hint text UI — hành vi thật khi vượt (chặn/cắt/lỗi) chưa thử
 - Song Search có canvas toolbar rỗng nhưng vẫn có Personalization+Conditional (khác layer "ảo" nhóm FORM ELEMENTS hoàn toàn không render) — thiết kế cố ý hay giới hạn kỹ thuật, chưa rõ
 - Storefront/role khác owner-cross-tenant — chưa test
+
+- **KB-415 (CBS-079, 1 lượt chạy, staging 2026-10-08):** default typography của calendar là Heebo/regular, 8 layer text-like là Roboto/regular. Chưa xác nhận giá trị đúng (OQ-artwork-186, CHK-006).
 
 **Gate:** CONDITIONAL_PASS (per-type observed_count=1 → LOW; field JSON qua bundle-registry INFERRED)
 

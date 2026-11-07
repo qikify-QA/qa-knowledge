@@ -2,7 +2,7 @@
   "feature_id": "FEAT-03-06-dynamic-translations",
   "feature_key": "dynamic-translations",
   "object_id": "translation",
-  "checklist_version": "2",
+  "checklist_version": "3",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -932,6 +932,753 @@
       "priority": "P2",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-translation-023"
+    },
+    {
+      "check_id": "CHK-026",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-076] Import to Translation gợi ý key format của date layer đến từ Global Option như date layer thường, mỗi format một lần",
+      "applicability": {
+        "role": "merchant (owner/staff)",
+        "state": "artwork có 1 date layer từ Global Option Date picker không có Placeholder riêng và 1 date layer thường cùng format; key format chưa có trong dictionary",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Đã đăng nhập portal. Artwork test có đủ 2 layer như applicability. Điều kiện chạy, không thuộc kết quả của check: popup chỉ hiện key chưa có trong dictionary, nên key đã có sẽ không hiện và lần chạy đó không kết luận được gì. Giới hạn của lượt chạy TC-TIB-8308: chưa kiểm đúng key dd.mm.yyyy khi key chưa tồn tại, đã kiểm cùng luồng bằng dd/mm/yyyy.",
+      "steps": [
+        "Trên /artwork-translations, tìm key format viết thường của layer (vd dd/mm/yyyy cho format dd/MM/yyyy); nếu đã có thì đổi artwork test sang format chưa có key",
+        "Trên /artworks, mở menu '...' của artwork, chọn Import to Translation",
+        "Trong popup 'Add to translation', đếm số lần key format xuất hiện",
+        "Bấm Cancel để đóng popup mà không đổi dictionary"
+      ],
+      "observation_point": "Danh sách key trong popup 'Add to translation'",
+      "expected_result": "Popup gợi ý key format viết thường của date layer đến từ Global Option, giống date layer thường, và key đó xuất hiện đúng 1 lần dù 2 layer cùng format. Check không assert bước Add to translation và Save.",
+      "oracle": {
+        "kb_ids": [
+          "KB-030"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-030",
+        "KB-020",
+        "KB-031"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Key format đã có trong dictionary làm popup không hiện key đó; đọc nhầm thành lỗi là báo sai."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-027",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-076] Import to Translation không gợi ý key format khi Global Option có Placeholder riêng hoặc không phải Date picker",
+      "applicability": {
+        "role": "merchant (owner/staff)",
+        "state": "2 fixture: (A) date layer từ Global Option Date picker có Placeholder riêng; (B) layer từ Global Option không phải Date picker. Key format liên quan chưa có trong dictionary",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Đã đăng nhập portal. Artwork test không có date layer thường cùng format, vì layer đó sẽ tự sinh ra key. Điều kiện chạy, không thuộc kết quả của check: popup chỉ hiện key chưa có trong dictionary, nên phải xác nhận key format chưa có trước khi chạy; key đã có thì việc không thấy key không chứng minh được gì.",
+      "steps": [
+        "Trên /artwork-translations, xác nhận key format viết thường của fixture chưa có (với fixture B, dùng giá trị format còn trong data của Global Option nếu có)",
+        "Trên /artworks, mở menu '...' của artwork fixture A, chọn Import to Translation",
+        "Trong popup 'Add to translation', tìm key format; bấm Cancel",
+        "Lặp lại với artwork fixture B"
+      ],
+      "observation_point": "Danh sách key trong popup 'Add to translation' của từng fixture",
+      "expected_result": "Với cả 2 fixture, popup không gợi ý key format của layer đó. Check không kết luận về Placeholder text của Global Option, xem CHK-028.",
+      "oracle": {
+        "kb_ids": [
+          "KB-030"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-030"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Kết quả không thấy key dễ thành pass giả nếu key đã có trong dictionary hoặc artwork có date layer thường cùng format."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-028",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-076] Gap: Placeholder text riêng của Global Option có được gợi ý ở Import to Translation không — chưa có expected",
+      "applicability": {
+        "role": "merchant (owner/staff)",
+        "state": "artwork có date layer từ Global Option có Placeholder riêng và date layer thường có Placeholder; cả 2 Placeholder chưa có trong dictionary",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Đã đăng nhập portal. Xác nhận cả 2 Placeholder text chưa có trong dictionary, vì popup chỉ hiện key chưa có.",
+      "steps": [
+        "Trên /artworks, mở menu '...' của artwork, chọn Import to Translation",
+        "Trong popup 'Add to translation', ghi lại Placeholder nào được gợi ý",
+        "Bấm Cancel"
+      ],
+      "observation_point": "Danh sách key trong popup 'Add to translation'",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Placeholder riêng của Global Option có phải được gợi ý ở Import to Translation không? TC-TIB-8308 ghi quan sát chưa có expected: Placeholder riêng của Global Option không được gợi ý, trong khi Placeholder của layer thường có. KB-030 chỉ nói key format.",
+      "related_kb_ids": [
+        "KB-030"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-translation-037"
+    },
+    {
+      "check_id": "CHK-029",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-076] Placeholder date picker tra dictionary bằng nguyên chuỗi format viết thường (dd.mm.yyyy); entry một ký tự không khớp",
+      "applicability": {
+        "role": "buyer (storefront) + tài khoản portal để dựng dictionary",
+        "state": "campaign có date layer Date picker format dd.MM.yyyy, không có Placeholder riêng; dictionary locale đích lần lượt có entry một ký tự, rồi có entry dd.mm.yyyy",
+        "environment": "staging",
+        "surface_or_device": "storefront desktop, portal /artwork-translations để dựng dữ liệu"
+      },
+      "precondition": "Storefront chạy SDK có thay đổi TIB-5608; ghi lại bundle SDK và Last-Modified. Khi chưa có entry, buyer thấy placeholder dd.mm.yyyy ở locale đích. Xác nhận dictionary locale đích chưa có key dd.mm.yyyy.",
+      "steps": [
+        "Trên /artwork-translations, chọn locale đích, thêm entry một ký tự: key d, m, y cùng value C, Save",
+        "Chờ storefront nhận dictionary mới: đường API là translation_version đổi, đường inline là dictionary trong HTML chứa entry (không assert khoảng trễ, xem CHK-017)",
+        "Mở product page ở locale đích, đọc placeholder của date picker",
+        "Thêm entry key dd.mm.yyyy với value X, Save, chờ storefront nhận dictionary mới như bước 2",
+        "Mở lại product page, đọc placeholder của date picker",
+        "Xoá các entry test, Save"
+      ],
+      "observation_point": "Placeholder của date picker trong widget personalization ở locale đích, sau mỗi lần dictionary đổi",
+      "expected_result": "Khi chỉ có entry một ký tự: entry không khớp, placeholder vẫn là dd.mm.yyyy, không chứa value C. Khi có entry dd.mm.yyyy: placeholder hiện value X. Check không assert entry DD.MM.YYYY, dd.MM.yyyy, xem CHK-030.",
+      "oracle": {
+        "kb_ids": [
+          "KB-031"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-031",
+        "KB-030",
+        "KB-040",
+        "KB-022",
+        "KB-023"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Kiểm storefront trước khi dictionary mới tới nơi sẽ cho kết quả sai."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-030",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "[CBS-076] Gap: entry dịch có key DD.MM.YYYY hoặc dd.MM.yyyy có áp dụng cho placeholder date picker không — chưa xác nhận, không có expected",
+      "applicability": {
+        "role": "buyer (storefront) + tài khoản portal để dựng dictionary",
+        "state": "campaign có date layer Date picker format dd.MM.yyyy, không có Placeholder riêng; dictionary locale đích có entry DD.MM.YYYY và dd.MM.yyyy, chưa có dd.mm.yyyy",
+        "environment": "staging",
+        "surface_or_device": "storefront desktop, portal /artwork-translations để dựng dữ liệu"
+      },
+      "precondition": "Như CHK-029. Xác nhận dictionary locale đích chưa có key dd.mm.yyyy.",
+      "steps": [
+        "Trên /artwork-translations, chọn locale đích, thêm entry DD.MM.YYYY với value A và dd.MM.yyyy với value B, Save",
+        "Chờ storefront nhận dictionary mới và xác nhận 2 entry đã có trong dictionary storefront; nếu chưa có thì chưa ghi kết quả",
+        "Mở product page ở locale đích, đọc placeholder của date picker; ghi lại giá trị cùng bundle SDK",
+        "Xoá 2 entry test, Save"
+      ],
+      "observation_point": "Placeholder của date picker ở locale đích; 2 entry trong dictionary storefront; bundle SDK của lần chạy",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-040"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Entry DD.MM.YYYY, dd.MM.yyyy có áp dụng cho placeholder date picker không? KB-040 chỉ dựa vào Testlane TC-TIB-8314, case không ghi ngày chạy và build; comment dev Jira TIB-5608 #56400 viết trước khi code và còn để ngỏ các key này. Cần ngày chạy, build của case và quyết định cuối của Dev.",
+      "related_kb_ids": [
+        "KB-040",
+        "KB-031",
+        "KB-022",
+        "KB-023"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-040 là PROPOSED, không dùng làm expected. Ghi lại quan sát, không phán pass hay fail.",
+        "Đọc placeholder trước khi dictionary mới tới storefront sẽ cho quan sát sai."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-translation-042"
+    },
+    {
+      "check_id": "CHK-031",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-076] Giá trị dịch nhập tay giữ khoảng trắng đầu/cuối khi Save và sau reload",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-032 chưa chốt, ghi lại role đã dùng; xem CHK-044)",
+        "state": "entry mới nhập tay ở locale đích",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Đã đăng nhập portal bằng tài khoản mở được /artwork-translations. Dictionary dùng chung theo user nên dùng key test riêng. Ký hiệu ␣ là một dấu cách.",
+      "steps": [
+        "Chọn locale đích, đợi locale nạp xong, bấm '+ Add new translation'",
+        "Nhập key test, nhập value ␣giá trị test␣␣ (1 dấu cách đầu, 2 dấu cách cuối)",
+        "Bấm Save",
+        "Reload trang, chọn lại locale, tìm key test, đọc value của ô bản dịch",
+        "Xoá dòng test, Save"
+      ],
+      "observation_point": "Value của ô bản dịch sau reload (đọc thuộc tính value của input, không đọc bằng mắt)",
+      "expected_result": "Sau Save và sau reload, value giữ đúng 1 dấu cách đầu và 2 dấu cách cuối như đã nhập.",
+      "oracle": {
+        "kb_ids": [
+          "KB-032"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-032",
+        "KB-010",
+        "KB-035",
+        "KB-037"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chỉ áp cho giá trị nhập tay; Import file rồi Save ở CHK-039, Auto translate ở CHK-034."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-032",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[CBS-076] Bản dịch nhập tay của tiêu đề option giữ nguyên khoảng trắng đầu/cuối trên storefront — chỉ phạm vi tiêu đề option, không phải Dynamic Translations nói chung",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-032 chưa chốt; quan sát ở trang buyer, dựng dictionary bằng tài khoản portal)",
+        "state": "campaign có personalization form, tiêu đề option đã hiện bản dịch ở locale đích; không áp cho tên Product base hay Variants name",
+        "environment": "staging",
+        "surface_or_device": "portal /artwork-translations + storefront desktop"
+      },
+      "precondition": "Trước khi chạy, xác nhận value dịch không có khoảng trắng của tiêu đề option đã hiện trên storefront ở locale đích. Nếu chưa hiện, dừng và ghi lại làm data point cho OQ-translation-010; không phán check này fail. Ghi lại bundle SDK. Ký hiệu ␣ là một dấu cách.",
+      "steps": [
+        "Trên /artwork-translations, đặt value của key tiêu đề option thành ␣giá trị test␣, Save",
+        "Chờ storefront nhận dictionary mới: đường API là translation_version đổi, đường inline là dictionary trong HTML chứa value mới (không assert khoảng trễ, xem CHK-017)",
+        "Mở product page ở locale đích, đọc textContent của tiêu đề option (trình duyệt có thể gộp dấu cách khi hiển thị)",
+        "Khôi phục value ban đầu, Save"
+      ],
+      "observation_point": "textContent của tiêu đề option trong widget personalization ở locale đích",
+      "expected_result": "Tiêu đề option render đúng value đã lưu, giữ dấu cách đầu và cuối. Kết quả này không nói gì về tên Product base (CHK-008) hay Variants name (CHK-010).",
+      "oracle": {
+        "kb_ids": [
+          "KB-032"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-032",
+        "KB-029",
+        "KB-016",
+        "KB-022",
+        "KB-023"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không dùng check này để đóng OQ-translation-001 hay OQ-translation-010: KB-032 không nêu sub-scope, KB-016 nói về tên Product base."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-033",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "[CBS-076] Ô dịch chỉ chứa dấu cách được lưu như một bản dịch; tiêu đề option trên storefront thành khoảng trắng, không quay về tiêu đề gốc",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-036 chưa chốt; quan sát ở trang buyer, dựng dictionary bằng tài khoản portal)",
+        "state": "campaign có personalization form, tiêu đề option đã hiện bản dịch ở locale đích; không áp cho tên Product base",
+        "environment": "staging",
+        "surface_or_device": "portal /artwork-translations + storefront desktop"
+      },
+      "precondition": "Như CHK-032. Ghi lại tiêu đề gốc của option trước khi chạy.",
+      "steps": [
+        "Trên /artwork-translations, đặt value của key tiêu đề option thành đúng 1 dấu cách, Save",
+        "Reload trang, chọn lại locale, đọc thuộc tính value của ô bản dịch",
+        "Chờ storefront nhận dictionary mới (không assert khoảng trễ, xem CHK-017)",
+        "Mở product page ở locale đích, đọc textContent của tiêu đề option",
+        "Khôi phục value ban đầu, Save"
+      ],
+      "observation_point": "Value của ô bản dịch sau reload; textContent của tiêu đề option trên storefront",
+      "expected_result": "Sau reload, ô bản dịch vẫn chứa dấu cách. Trên storefront, tiêu đề option thành khoảng trắng, không hiện tiêu đề gốc. Kết quả này không nói gì về tên Product base (CHK-008).",
+      "oracle": {
+        "kb_ids": [
+          "KB-036"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-036",
+        "KB-032",
+        "KB-029",
+        "KB-016"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không dùng check này để đóng OQ-translation-001 hay OQ-translation-010."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-034",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-076] Kết quả Auto translate vẫn bị cắt khoảng trắng đầu/cuối",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-035 chưa chốt, ghi lại role đã dùng; xem CHK-044)",
+        "state": "dòng test chưa có bản dịch, key có khoảng trắng đầu/cuối",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Đã đăng nhập portal. Nút Auto translate chưa có flow đã verify và có thể chạm dòng khác: dùng locale test; nếu dòng khác đổi thì bấm Reset, ghi lại, không Save.",
+      "steps": [
+        "Chọn locale đích, thêm dòng key test có dấu cách đầu và cuối, để trống ô bản dịch",
+        "Bấm Auto translate, chờ ô bản dịch có kết quả",
+        "Bấm Save",
+        "Reload trang, chọn lại locale, tìm key test, đọc thuộc tính value của ô bản dịch",
+        "Xoá dòng test, Save"
+      ],
+      "observation_point": "Value của ô bản dịch sau reload",
+      "expected_result": "Value do Auto translate tạo không có khoảng trắng đầu/cuối.",
+      "oracle": {
+        "kb_ids": [
+          "KB-035"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-035",
+        "KB-032",
+        "KB-008"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-035",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-076] Bản dịch đã lưu ở dạng cắt trước fix giữ nguyên dạng cắt; merchant nhập lại thì có dấu cách",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-035 chưa chốt, ghi lại role đã dùng; xem CHK-044)",
+        "state": "có bản dịch lưu trước khi fix TIB-5585 lên staging, đang ở dạng đã cắt",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Cần 1 entry lưu trước fix TIB-5585. Không tìm được entry như vậy thì không chạy check này và ghi lại thiếu data, không tính là fail.",
+      "steps": [
+        "Chọn locale của entry, đọc thuộc tính value của ô bản dịch",
+        "Sửa một dòng khác của cùng locale, Save, reload",
+        "Đọc lại value của entry cũ",
+        "Nhập lại value của entry cũ với dấu cách đầu và cuối, Save, reload, đọc value",
+        "Khôi phục value ban đầu, Save"
+      ],
+      "observation_point": "Value của entry cũ trước và sau khi nhập lại",
+      "expected_result": "Khi chưa nhập lại, entry cũ vẫn ở dạng đã cắt, không tự có lại dấu cách. Sau khi nhập lại và Save, value có dấu cách.",
+      "oracle": {
+        "kb_ids": [
+          "KB-035"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-035",
+        "KB-032"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Check phụ thuộc data cũ, có thể không còn trên staging."
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE"
+    },
+    {
+      "check_id": "CHK-036",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-076] Save có xoá dòng dịch: dòng còn lại giữ nguyên value và khoảng trắng đầu/cuối",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-037 chưa chốt, ghi lại role đã dùng; xem CHK-044)",
+        "state": "locale đích có ít nhất 2 dòng test, value có khoảng trắng đầu/cuối",
+        "environment": "staging",
+        "surface_or_device": "portal desktop, instance Shopify"
+      },
+      "precondition": "Đã đăng nhập portal. Dictionary dùng chung theo user nên dùng key test riêng. Ký hiệu ␣ là một dấu cách.",
+      "steps": [
+        "Thêm 2 dòng test: key A value ␣giá trị A␣, key B value ␣giá trị B␣; Save; reload",
+        "Xác nhận cả 2 value còn dấu cách như CHK-031",
+        "Xoá dòng key A bằng trash-can, xác nhận dialog, bấm Save",
+        "Reload trang, chọn lại locale, tìm key B, đọc thuộc tính value của ô bản dịch",
+        "Xoá dòng key B, Save"
+      ],
+      "observation_point": "Key và value của dòng còn lại sau Save có xoá dòng và sau reload",
+      "expected_result": "Dòng key B còn nguyên, value vẫn là ␣giá trị B␣, không bị cắt dấu cách.",
+      "oracle": {
+        "kb_ids": [
+          "KB-037"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-037",
+        "KB-032",
+        "KB-012"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Dev ghi đây là rủi ro lớn nhất của thay đổi: áp cho toàn bộ thao tác Save của trang. Xoá dòng dùng cơ chế gửi lại cả tập entry (KB-012), nên lỗi ở đây có thể sửa hoặc mất dòng khác.",
+        "Save nhiều dòng cùng lúc còn mở ở CHK-005; check này chỉ assert dòng còn lại."
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-037",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[CBS-076] Giữ khoảng trắng khi Save cũng đúng trên nền tảng khác Shopify",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-037 chưa chốt, ghi lại role đã dùng; xem CHK-044)",
+        "state": "instance không phải Shopify, locale có trong dropdown của trang",
+        "environment": "staging",
+        "surface_or_device": "portal desktop, instance TIB_BOUNDLESS_INSTANCE_ID"
+      },
+      "precondition": "Đổi sang account và instance Boundless theo flow login-instance. Dictionary dùng chung theo user nên dùng key test riêng và xoá sau khi chạy.",
+      "steps": [
+        "Mở /artwork-translations trên instance Boundless, chọn 1 locale trong dropdown",
+        "Chạy các bước 1 tới 4 của CHK-031",
+        "Chạy các bước 1 tới 4 của CHK-036",
+        "Xoá các dòng test, Save"
+      ],
+      "observation_point": "Value của ô bản dịch sau reload, sau Save thường và sau Save có xoá dòng",
+      "expected_result": "Ở cả 2 lần Save, value còn lại giữ nguyên khoảng trắng đầu/cuối như trên instance Shopify.",
+      "oracle": {
+        "kb_ids": [
+          "KB-037"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-037",
+        "KB-032"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-038",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-076] Gap: thao tác Save của Dynamic Translations có gồm thêm, sửa, xoá ngôn ngữ và tên ngôn ngữ không — chưa có expected",
+      "applicability": {
+        "role": "unspecified (chưa chốt)",
+        "state": "trang Dynamic Translations có danh sách ngôn ngữ của shop",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Đã đăng nhập portal. Không xoá ngôn ngữ nếu chưa có cách khôi phục.",
+      "steps": [
+        "Mở /artwork-translations, ghi lại trang có UI thêm, sửa tên hay xoá ngôn ngữ không",
+        "Nếu không có UI đó, ghi lại và dừng",
+        "Nếu có, ghi lại thao tác, tên ngôn ngữ trước và sau Save, và khoảng trắng đầu/cuối của tên"
+      ],
+      "observation_point": "UI quản lý ngôn ngữ trên trang; tên ngôn ngữ sau Save",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Thao tác Save của Dynamic Translations có gồm thêm, sửa, xoá ngôn ngữ không? Comment dev Jira TIB-5585 #55043 nêu vế này và nói tên ngôn ngữ không còn bị cắt dấu cách; ghi chú QA 2026-10-30 nói danh sách, tên ngôn ngữ đồng bộ từ Shopify và Portal không có UI add, rename, xoá. Vế ngôn ngữ của comment áp ở đâu?",
+      "related_kb_ids": [
+        "KB-037"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-translation-035"
+    },
+    {
+      "check_id": "CHK-039",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-076] Gap: bản dịch đưa vào qua Import file rồi Save có giữ khoảng trắng đầu/cuối không — chưa có expected",
+      "applicability": {
+        "role": "unspecified (chưa chốt)",
+        "state": "file CSV có value có khoảng trắng đầu/cuối",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Đã đăng nhập portal. CSV theo flow dynamic-translations: header Default,<Tên ngôn ngữ>, key và value không có dấu nháy kép, ít dòng. Dùng key test riêng.",
+      "steps": [
+        "Chọn locale đích, bấm Import, chọn file CSV",
+        "Đọc thuộc tính value của ô bản dịch trước khi Save",
+        "Bấm Save, reload, chọn lại locale, đọc lại value",
+        "Xoá dòng test, Save"
+      ],
+      "observation_point": "Value của ô bản dịch trước Save và sau reload",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Bản dịch đưa vào qua Import file rồi Save có giữ khoảng trắng đầu/cuối không? Comment dev Jira TIB-5585 #55043 có nhắc luồng này, nhưng KB-032 chỉ nói giá trị nhập tay. Cần Dev xác nhận hoặc test case PASS.",
+      "related_kb_ids": [
+        "KB-032",
+        "KB-009"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-translation-038"
+    },
+    {
+      "check_id": "CHK-040",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "[CBS-076] API translations lỗi hoặc quá 5 giây chưa phản hồi: widget vẫn hiện, ở chữ gốc",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-033 chưa chốt; quan sát ở trang buyer)",
+        "state": "locale đích đi đường API (đạt ngưỡng của KB-022); campaign có personalization form",
+        "environment": "staging",
+        "surface_or_device": "storefront desktop"
+      },
+      "precondition": "Trình duyệt test có network interception cho URL translations/<locale>.json; thao tác chỉ ở phía client. Ghi lại bundle SDK. Biết trước chữ gốc của các nhãn form.",
+      "steps": [
+        "Cài interception trả 500 cho translations/<locale>.json; mở product page ở locale đích; chờ trang ổn định; ghi widget có hiện không và nhãn form",
+        "Đổi interception sang giữ response khoảng 8 giây; mở lại product page",
+        "Ở mốc 6 giây sau khi điều hướng, ghi widget có hiện không và nhãn form"
+      ],
+      "observation_point": "Widget personalization và nhãn form khi API lỗi, và ở mốc 6 giây khi API trễ",
+      "expected_result": "Ở cả 2 trường hợp, widget vẫn hiện và nhãn form ở chữ gốc. Check không assert số request hay retry (xem CHK-043), cũng không assert điều xảy ra sau khi response trễ về.",
+      "oracle": {
+        "kb_ids": [
+          "KB-033"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-033",
+        "KB-022",
+        "KB-039"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "OQ-sdk-051 vẫn mở, check này không gỡ. Chi tiết theo mốc thời gian ở sdk CHK-039, theo 500/503/abort ở sdk CHK-040."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-041",
+      "dimension": "NEGATIVE",
+      "layer": "code",
+      "title": "[CBS-076] prefix và suffix không còn trong LAYER_TRANSLATABLE_FIELDS của SDK",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-034 chưa chốt; người chạy cần quyền đọc source SDK)",
+        "state": "source SDK của build đang test",
+        "environment": "staging",
+        "surface_or_device": "code"
+      },
+      "precondition": "Có quyền đọc source SDK đúng commit của build staging. Thay đổi chỉ ở SDK; portal nhận khi bump submodule SDK, nên ghi lại commit SDK đã đọc.",
+      "steps": [
+        "Mở source SDK đúng commit của build staging",
+        "Tìm hằng LAYER_TRANSLATABLE_FIELDS",
+        "Ghi lại toàn bộ entry của danh sách"
+      ],
+      "observation_point": "Danh sách entry của LAYER_TRANSLATABLE_FIELDS",
+      "expected_result": "Danh sách không có prefix và suffix; các entry còn lại là form copy. Check không assert hành vi buyer-facing của prefix, suffix.",
+      "oracle": {
+        "kb_ids": [
+          "KB-034"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-034",
+        "KB-007",
+        "KB-021"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE"
+    },
+    {
+      "check_id": "CHK-042",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[CBS-076] Embed ngoài Shopify gọi API translations không có mã phiên bản",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-038 chưa chốt; quan sát ở trang buyer)",
+        "state": "trang nhúng SDK ngoài Shopify, locale không phải ngôn ngữ chính, có bản dịch",
+        "environment": "staging",
+        "surface_or_device": "kênh nhúng SDK open platform, desktop"
+      },
+      "precondition": "Có trang nhúng SDK ngoài Shopify trên staging, theo flow boundless. Thiếu fixture thì không chạy và ghi lại thiếu data, không tính là fail. KB không nêu endpoint cụ thể của luồng này.",
+      "steps": [
+        "Mở trang nhúng ở locale đích với network capture",
+        "Lọc network theo 'translations', ghi lại URL đầy đủ và status của từng request"
+      ],
+      "observation_point": "URL của request API translations do SDK gọi trên trang nhúng",
+      "expected_result": "SDK có gọi API translations, và URL không mang mã phiên bản (không có tham số v hay translation_version).",
+      "oracle": {
+        "kb_ids": [
+          "KB-038"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-038",
+        "KB-022",
+        "KB-033"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "OQ-translation-031 vẫn mở, check này không gỡ."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-043",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "[CBS-076] Gap: hành vi thử lại của SDK khi fetch translations lỗi — chưa xác nhận, không có expected",
+      "applicability": {
+        "role": "unspecified (chưa chốt; quan sát ở trang buyer)",
+        "state": "locale đích đi đường API; response translations/<locale>.json bị giả lập lỗi",
+        "environment": "staging",
+        "surface_or_device": "storefront desktop"
+      },
+      "precondition": "Như CHK-040. Ghi lại bundle SDK. Có sẵn trong cart 1 item cá nhân hoá để có lần gọi kế tiếp trong cùng page session.",
+      "steps": [
+        "Cài interception trả 500 cho translations/<locale>.json",
+        "Mở product page, chờ trang ổn định, ghi số request translations và thời điểm từng request",
+        "Mở cart, bấm 'Edit design' nhiều lần, ghi tổng số request sau mỗi lần"
+      ],
+      "observation_point": "Số request translations trong một lần load trang và qua các lần gọi trong cùng page session",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-039"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Điều kiện thử lại của SDK khi fetch translations lỗi là gì: thử lại khi load trang, hay ở lần gọi kế tiếp với giới hạn số fetch mỗi page session? Comment dev Jira TIB-5352 #52985 không nêu điều kiện; sdk KB-054, KB-057 quan sát khác với kỳ vọng của TC-TIB-4696 (FAILED). Cùng câu hỏi với OQ-sdk-053.",
+      "related_kb_ids": [
+        "KB-039",
+        "KB-033"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-039 là PROPOSED, không dùng làm expected. Ghi lại quan sát, không phán pass hay fail. Baseline quan sát ở sdk CHK-043."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-translation-036"
+    },
+    {
+      "check_id": "CHK-044",
+      "dimension": "PERMISSION",
+      "layer": "portal",
+      "title": "[CBS-076] Gap: role áp dụng của KB-032..KB-039 chưa chốt — chưa có expected cho role khác",
+      "applicability": {
+        "role": "owner và staff của cùng instance",
+        "state": "như CHK-031, CHK-036",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Có tài khoản owner và tài khoản staff của cùng instance, cả 2 mở được /artwork-translations.",
+      "steps": [
+        "Chạy CHK-031 và CHK-036 bằng tài khoản owner, ghi kết quả",
+        "Chạy lại bằng tài khoản staff, ghi kết quả",
+        "Ghi lại khác biệt, nếu có"
+      ],
+      "observation_point": "Kết quả CHK-031, CHK-036 theo từng role",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Role áp dụng của KB-032..KB-039 là gì (owner, staff hay buyer), cho từng item? scope.role đang là unspecified vì CCR ghi không rõ.",
+      "related_kb_ids": [
+        "KB-032",
+        "KB-033",
+        "KB-034",
+        "KB-035",
+        "KB-036",
+        "KB-037",
+        "KB-038",
+        "KB-039"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-translation-034"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1009,6 +1756,92 @@
       "risk": "[CBS-001] Hành vi chưa có KB (CLAIM-09 S0 + test blocked): xoá locale/bulk save cập nhật Shopify, đổi primary language, embed ngoài Shopify, locale mã vùng viết hoa >= ngưỡng gọi API, cross-sell/addon ở cart, product handle vs Liquid-synced, XSS trong bản dịch, shop dữ liệu cũ, INP",
       "checks": [],
       "covered": "không có check — không có kb_id để trace, theo dõi qua OQ-translation-031 và coverage_gaps của KB shard"
+    },
+    {
+      "feature_id": "FEAT-03-06-dynamic-translations",
+      "capability": "[CBS-076] Dịch placeholder date picker: gợi ý key ở Import to Translation, tra bằng nguyên chuỗi viết thường trên storefront (KB-030, KB-031, KB-040)",
+      "checks": [
+        "CHK-026",
+        "CHK-027",
+        "CHK-028",
+        "CHK-029",
+        "CHK-030"
+      ],
+      "covered": "STRONG trên staging cho gợi ý key, không gợi ý key, tra bằng nguyên chuỗi viết thường và entry một ký tự. Điều kiện chạy: popup chỉ hiện key chưa có trong dictionary. Đúng key dd.mm.yyyy khi chưa tồn tại chưa được kiểm ở Import to Translation. Placeholder text của Global Option (CHK-028) và entry DD.MM.YYYY, dd.MM.yyyy (CHK-030, KB-040) là gap."
+    },
+    {
+      "feature_id": "FEAT-03-06-dynamic-translations",
+      "capability": "[CBS-076] Giữ khoảng trắng của bản dịch nhập tay (KB-032, KB-035, KB-036, KB-037)",
+      "checks": [
+        "CHK-031",
+        "CHK-032",
+        "CHK-033",
+        "CHK-034",
+        "CHK-035",
+        "CHK-036",
+        "CHK-037",
+        "CHK-038",
+        "CHK-039"
+      ],
+      "covered": "STRONG trên staging, nguồn dev, chưa có test case PASS. Phần storefront chỉ ở tiêu đề option. Vế ngôn ngữ (CHK-038) và Import file (CHK-039) là gap."
+    },
+    {
+      "feature_id": "FEAT-03-06-dynamic-translations",
+      "capability": "[CBS-076] Widget khi API translations lỗi hoặc chậm (KB-033, KB-039)",
+      "checks": [
+        "CHK-040",
+        "CHK-043"
+      ],
+      "covered": "STRONG cho widget hiện ở chữ gốc; NONE cho thử lại. OQ-sdk-051, OQ-sdk-053 vẫn mở."
+    },
+    {
+      "feature_id": "FEAT-03-06-dynamic-translations",
+      "capability": "[CBS-076] Trường dịch của layer không gồm prefix, suffix (KB-034)",
+      "checks": [
+        "CHK-041"
+      ],
+      "covered": "STRONG ở layer code. Hành vi buyer-facing của prefix, suffix chưa có item nên không có check."
+    },
+    {
+      "feature_id": "FEAT-03-06-dynamic-translations",
+      "capability": "[CBS-076] Embed ngoài Shopify gọi API translations không có mã phiên bản (KB-038)",
+      "checks": [
+        "CHK-042"
+      ],
+      "covered": "STRONG trên staging, cần fixture trang nhúng. OQ-translation-031 vẫn mở."
+    },
+    {
+      "feature_id": "FEAT-03-06-dynamic-translations",
+      "risk": "[CBS-076] CONFLICT-001: KB-032, KB-036 không được dùng để kết luận Dynamic Translations nói chung hiện trên storefront",
+      "checks": [
+        "CHK-008",
+        "CHK-032",
+        "CHK-033"
+      ],
+      "covered": "CHK-032, CHK-033 chỉ assert tiêu đề option; CHK-008 giữ nguyên. OQ-translation-001 và OQ-translation-010 vẫn mở."
+    },
+    {
+      "feature_id": "FEAT-03-06-dynamic-translations",
+      "risk": "[CBS-076] Save toàn trang có thể sửa hoặc mất dòng khác (KB-037, P1)",
+      "checks": [
+        "CHK-036",
+        "CHK-037"
+      ],
+      "covered": "STRONG trên staging, oracle chỉ từ xác nhận của dev, chưa có test case PASS."
+    },
+    {
+      "feature_id": "FEAT-03-06-dynamic-translations",
+      "risk": "[CBS-076] Role của KB-032..KB-039 chưa chốt",
+      "checks": [
+        "CHK-044"
+      ],
+      "covered": "gap, NONE"
+    },
+    {
+      "feature_id": "FEAT-03-06-dynamic-translations",
+      "risk": "[CBS-076] Production: KB-032..KB-039 shipped UNKNOWN, KB-030 mới kiểm một phần trên production",
+      "checks": [],
+      "covered": "không có check, mọi check mới chỉ áp cho staging"
     }
   ],
   "excluded_dimensions": [
@@ -1031,10 +1864,30 @@
     {
       "dimension": "PERMISSION (portal) — phạm vi CBS-001",
       "reason": "KB mới không chạm permission của POST /api/translations/bulk; CHK-011 base giữ nguyên. Permission của endpoint public mới ở CHK-024."
+    },
+    {
+      "dimension": "REGRESSION — phạm vi CBS-076",
+      "reason": "KB-030..KB-040 đều có relation ADD, không đổi hành vi của item base; shard không có item status KNOWN_DEFECT nên không có regression watch. Re-verify production nằm ngoài phạm vi vì môi trường test là staging."
+    },
+    {
+      "dimension": "PERMISSION (cross-tenant) — phạm vi CBS-076",
+      "reason": "KB-030..KB-040 không có item về quyền hay cross-tenant. Câu hỏi role ở CHK-044; CHK-011, CHK-024 giữ nguyên."
+    },
+    {
+      "dimension": "BOUNDARY (mốc 5 giây, số dấu cách, độ dài value) — phạm vi CBS-076",
+      "reason": "KB-033 chỉ nói quá 5 giây, không nói ngay dưới 5 giây; mốc này đã có ở sdk CHK-042. KB-032 không nêu giới hạn số dấu cách hay độ dài. Ô chỉ chứa dấu cách có ở CHK-033."
+    },
+    {
+      "dimension": "OUT_OF_SCOPE: tên Product base và Variants name với KB-032, KB-036",
+      "reason": "KB-036 nói về tiêu đề option; KB-032 ghi không áp cho hai sub-scope này. KB-016 và OQ-translation-001 vẫn mở. Hai sub-scope này giữ ở CHK-008, CHK-010."
+    },
+    {
+      "dimension": "OUT_OF_SCOPE: hành vi buyer-facing của prefix, suffix",
+      "reason": "KB-034 chỉ phát biểu về danh sách trong code. Viết check storefront sẽ phải tự đặt expected."
     }
   ],
   "last_updated": {
-    "date": "2026-10-11",
-    "ccr_ref": "CBS-001"
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-076"
   }
 }

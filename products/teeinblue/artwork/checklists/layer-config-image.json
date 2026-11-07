@@ -1,6 +1,8 @@
 {
   "feature_id": "FEAT-13-layer-config-image",
   "feature_key": "layer-config-image",
+  "object_id": "artwork",
+  "checklist_version": "13",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -1694,6 +1696,349 @@
       "automation_suitability": "NOT_SUITABLE",
       "conflict_refs": [],
       "oq_ref": "OQ-artwork-072"
+    },
+    {
+      "check_id": "CHK-054",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-079] Chọn nhiều image layer khác ảnh trong limit: HD bật hàng loạt, không còn tooltip 'Selected layers use different images…'",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-420, KB-421 chưa chốt; ghi lại role đã dùng)",
+        "state": "≥2 image layer khác ảnh, chưa ở HD, số ảnh khác nhau không vượt limit, selection không có layer Linked",
+        "environment": "staging; ghi build và ngày chạy (KB-420, KB-421 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor, desktop"
+      },
+      "precondition": "Fixture throwaway như applicability.",
+      "steps": [
+        "Chọn các image layer khác ảnh",
+        "Rê chuột lên control HD; ghi tooltip nếu có",
+        "Bật HD một lần bấm",
+        "Chờ các lượt kiểm xong; ghi trạng thái HD của từng layer"
+      ],
+      "observation_point": "Tooltip của control HD; trạng thái HD của từng layer đang chọn",
+      "expected_result": "Không có tooltip 'Selected layers use different images…'. Một lần bấm bật HD cho mọi layer đang chọn. Check không assert số lượt kiểm hay thời gian chuyển của từng layer.",
+      "oracle": {
+        "kb_ids": [
+          "KB-420",
+          "KB-421"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-420",
+        "KB-421",
+        "KB-429"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle chỉ từ comment dev, chưa có test case PASS. Không dùng cho production khi shipped còn UNKNOWN."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-055",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-079] Batch HD ở limit và vượt limit: đúng limit bật được; vượt limit có toast info rồi toast lỗi 'Something went wrong!' nêu limit",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-421 chưa chốt; ghi lại role đã dùng)",
+        "state": "≥L+1 image layer khác ảnh, chưa ở HD, với L là limit đang đặt",
+        "environment": "staging; ghi build, ngày chạy và limit L (KB-421 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor, desktop"
+      },
+      "precondition": "Xác định L: mặc định 10 trừ khi đặt khác trên server staging; kiểm trên UI bằng cách chọn 11 ảnh khác nhau chưa HD, lỗi hiện limit. Nếu limit lớn hơn 10, tăng số ảnh tới khi có lỗi.",
+      "steps": [
+        "Chọn L+1 layer khác ảnh, chưa HD; bật HD; ghi thứ tự toast, tiêu đề và nội dung",
+        "Chọn đúng L layer khác ảnh, chưa HD; bật HD; ghi toast và trạng thái HD của từng layer"
+      ],
+      "observation_point": "Thứ tự, tiêu đề, nội dung toast; trạng thái HD của layer",
+      "expected_result": "L+1 ảnh: toast info hiện trước, rồi toast lỗi tiêu đề 'Something went wrong!', lỗi nêu limit. L ảnh: không có lỗi vượt limit, HD bật cho các layer đang chọn.",
+      "oracle": {
+        "kb_ids": [
+          "KB-421"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-421",
+        "KB-422"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Limit đặt khác được trên server staging: boundary cần biết giá trị đang đặt.",
+        "Oracle chỉ từ comment dev, chưa có test case PASS."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-056",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-079] POST /layer-images/create-master-large/batch: quá limit trả 422 kèm thông báo limit, không queue, không layer nào đổi; layer đã HD không tính — baseline theo comment tự sinh, chưa kiểm",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-422 chưa chốt; ghi lại role đã dùng)",
+        "state": "≥L+1 image layer khác ảnh chưa ở HD, và ≥1 layer đã ở HD, với L là limit đang đặt (MASTER_LARGE_BATCH_LIMIT, mặc định 10)",
+        "environment": "staging; ghi build, ngày chạy và limit L. Status 422 là nội dung nguồn, CHƯA quan sát trong lượt chạy nào (comment sinh từ branch diff, viết trước khi QA test). KB-422 shipped UNKNOWN, production chưa kiểm",
+        "surface_or_device": "api; route ghi đúng như nguồn, không thêm tiền tố /api"
+      },
+      "precondition": "Xác định L như CHK-055. Network capture bật.",
+      "steps": [
+        "Chọn L+1 layer khác ảnh, chưa HD; bật HD; ghi method, route, urls[], status, body của request",
+        "Chờ qua ít nhất 2 lượt kiểm 2 giây; ghi trạng thái HD của từng layer",
+        "Chọn L layer khác ảnh chưa HD cùng ≥1 layer đã HD; bật HD; ghi status và body",
+        "Nếu bước 1 không phát sinh request, ghi lại điều đó và gọi thẳng route với urls[] có L+1 ảnh; ghi status, body"
+      ],
+      "observation_point": "Method, route, urls[], status, body; trạng thái HD của layer sau request",
+      "expected_result": "Baseline theo comment dev tự sinh từ branch diff, chưa kiểm trên hệ thống, không phải expected đã xác nhận: L+1 ảnh: POST /layer-images/create-master-large/batch nhận urls[] trả 422 kèm thông báo limit; không queue gì, không layer nào đổi. L ảnh cùng layer đã HD: layer đã HD không tính, không có lỗi vượt limit. Lệch baseline là tín hiệu cần điều tra, không tự kết luận là bug.",
+      "oracle": {
+        "kb_ids": [
+          "KB-422"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Route POST /layer-images/create-master-large/batch, env MASTER_LARGE_BATCH_LIMIT (mặc định 10) và status 422 khi quá limit có đúng trên build hiện tại không? Nguồn là comment Jira TIB-5212 #54785 (2026-10-16) tự sinh từ branch diff, chưa kiểm trên hệ thống; comment #55717 không phát biểu lại các điểm này. Cần Dev xác nhận nguyên văn, có ngày; hoặc test case PASS có build.",
+      "related_kb_ids": [
+        "KB-422",
+        "KB-421"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nguồn là comment sinh từ branch diff, viết trước khi QA test; route và 422 chưa có lượt quan sát nào. Comment #55717 của cùng dev không sửa mục này.",
+        "'Không queue gì' chỉ kiểm gián tiếp qua trạng thái layer."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-192"
+    },
+    {
+      "check_id": "CHK-057",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-079] Undo của batch HD: mỗi lượt kiểm 2 giây có layer chuyển là 1 step, một Undo chỉ hoàn lượt mới nhất; tắt HD là 1 step",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-421 chưa chốt; ghi lại role đã dùng)",
+        "state": "nhiều image layer khác ảnh, chưa ở HD, số ảnh trong limit",
+        "environment": "staging; ghi build và ngày chạy (KB-421 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor, desktop"
+      },
+      "precondition": "Fixture throwaway như applicability; đủ layer để việc chuyển HD trải qua hơn 1 lượt kiểm.",
+      "steps": [
+        "Bật HD; ghi layer nào chuyển ở từng lượt kiểm",
+        "Undo một lần; ghi trạng thái HD của từng layer",
+        "Với các layer còn ở HD, tắt HD; ghi trạng thái",
+        "Undo một lần; ghi trạng thái HD của từng layer"
+      ],
+      "observation_point": "Trạng thái HD của từng layer sau mỗi lần Undo",
+      "expected_result": "Mỗi lượt kiểm có ít nhất một layer chuyển là 1 step: một Undo chỉ hoàn các layer của lượt mới nhất, layer của lượt trước giữ HD. Tắt HD là 1 step: một Undo hoàn thao tác tắt.",
+      "oracle": {
+        "kb_ids": [
+          "KB-421"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-421",
+        "KB-428"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nếu mọi layer chuyển trong cùng 1 lượt thì không kiểm được vế 'chỉ hoàn lượt mới nhất'; ghi lại và tăng số layer.",
+        "Oracle chỉ từ comment dev, chưa có test case PASS."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-058",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-079] HD theo nơi ảnh nằm: ảnh pick từ clipart category bật được HD; layer cũ còn trỏ thẳng vào clipart bị disable kèm thông báo",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-423 chưa chốt; ghi lại role đã dùng)",
+        "state": "layer dùng ảnh pick từ clipart category; layer cũ còn trỏ thẳng vào clipart",
+        "environment": "staging; ghi build và ngày chạy (KB-423 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor, desktop"
+      },
+      "precondition": "Fixture throwaway có layer dùng ảnh pick từ clipart category ở build đang test. Layer cũ còn trỏ thẳng vào clipart không dựng mới được thì tìm trên artwork có sẵn được phép dùng; thiếu fixture thì ghi thiếu data cho vế đó, không tính fail.",
+      "steps": [
+        "Chọn layer dùng ảnh pick từ clipart category; bật HD; ghi control HD enabled hay disabled và kết quả",
+        "Chọn layer cũ còn trỏ thẳng vào clipart; ghi control HD enabled hay disabled và thông báo nguyên văn"
+      ],
+      "observation_point": "Trạng thái control HD và thông báo theo từng layer",
+      "expected_result": "Layer dùng ảnh pick từ clipart category: HD bật được. Layer cũ còn trỏ thẳng vào clipart: HD disable với thông báo 'Cannot work with layers imported from clipart'. Check không assert endpoint import.",
+      "oracle": {
+        "kb_ids": [
+          "KB-423"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-423",
+        "KB-421"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Vế layer cũ cần fixture có thể không còn trên staging.",
+        "Oracle chỉ từ comment dev, chưa có test case PASS."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-059",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-079] Warning 'Some ImagenHub variables have no matching layer': layer Global Option match qua title của chính Global Option",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-424 chưa chốt; ghi lại role đã dùng)",
+        "state": "artwork có layer dùng ImagenHub template có 1 biến; layer Global Option có title Global Option trùng tên biến, layer name khác tên biến",
+        "environment": "staging; ghi build và ngày chạy (KB-424 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor, desktop"
+      },
+      "precondition": "Có ImagenHub template có biến. Fixture throwaway như applicability; biến đó không có layer nào khác match.",
+      "steps": [
+        "Mở artwork trong editor; ghi warning 'Some ImagenHub variables have no matching layer' có hiện không và hiện ở đâu",
+        "Đối chứng: đổi title của Global Option để không còn trùng tên biến; ghi lại warning"
+      ],
+      "observation_point": "Warning 'Some ImagenHub variables have no matching layer'",
+      "expected_result": "Khi title của Global Option trùng tên biến, layer được tính match: warning không hiện cho biến đó. Check không assert per-field warning và nút '+ variable' (xem CHK-060).",
+      "oracle": {
+        "kb_ids": [
+          "KB-424"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-424",
+        "KB-115"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle chỉ từ comment dev, chưa có test case PASS."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-060",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-079] Gap: per-field warning và nút '+ variable' có nhận title của layer Global Option không — hai nguồn ngược chiều, không có expected",
+      "applicability": {
+        "role": "unspecified (chưa chốt; ghi lại role đã dùng)",
+        "state": "như CHK-059; thêm layer Text to Image hoặc Multiple Uploads dùng prompt có biến",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork Editor, desktop"
+      },
+      "precondition": "Fixture như CHK-059.",
+      "steps": [
+        "Ghi per-field warning ở field ImagenHub template và field prompt có hiện cho biến trùng title Global Option không",
+        "Bấm nút '+ variable' trong prompt; ghi layer Global Option hiện theo title hay layer name",
+        "Ghi kết quả kèm build và ngày chạy; không phán pass hay fail"
+      ],
+      "observation_point": "Per-field warning; danh sách của nút '+ variable'",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Per-field warning và nút \"+ variable\" có nhận title của layer Global Option không? Comment dev Jira TIB-5465 #55232 viết cùng rule match áp cho per-field warning ở ImagenHub template field và prompt field; ghi chú QA (không có câu của dev) nói chúng không nhận title mà lấy layer name, và lỗi có cả trên prod. Cần Dev xác nhận nguyên văn, có ngày, hoặc kiểm trực tiếp.",
+      "related_kb_ids": [
+        "KB-424",
+        "KB-115"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không dùng KB-424 làm expected cho check này: vế per-field warning và nút '+ variable' nằm trong excluded_parts của claim."
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-artwork-191"
     }
-  ]
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-13-layer-config-image",
+      "core_capability_coverage": "Capability base có check ở CHK-001..CHK-053; capability mới: batch HD (CHK-054..CHK-057), HD theo nơi ảnh nằm (CHK-058), Global Option trong warning ImagenHub (CHK-059, CHK-060)."
+    },
+    {
+      "feature_id": "FEAT-13-layer-config-image",
+      "capability": "[CBS-079] Bật HD hàng loạt: limit, toast, API, undo step; tooltip cũ không còn (KB-420, KB-421, KB-422)",
+      "checks": [
+        "CHK-054",
+        "CHK-055",
+        "CHK-056",
+        "CHK-057"
+      ],
+      "covered": "STRONG trên staging cho CHK-054, CHK-055, CHK-057, nguồn dev, chưa có test case PASS. CHK-056 BASELINE + NEEDS_CONFIRMATION: route và status 422 chưa quan sát."
+    },
+    {
+      "feature_id": "FEAT-13-layer-config-image",
+      "capability": "[CBS-079] Bật HD theo nơi ảnh của layer nằm (KB-423)",
+      "checks": [
+        "CHK-058"
+      ],
+      "covered": "STRONG trên staging; vế layer cũ cần fixture có thể không còn."
+    },
+    {
+      "feature_id": "FEAT-13-layer-config-image",
+      "capability": "[CBS-079] Layer Global Option trong warning biến ImagenHub (KB-424)",
+      "checks": [
+        "CHK-059",
+        "CHK-060"
+      ],
+      "covered": "STRONG cho warning 'Some ImagenHub variables have no matching layer'; NONE cho per-field warning và nút '+ variable'."
+    },
+    {
+      "feature_id": "FEAT-13-layer-config-image",
+      "risk": "[CBS-079] Limit batch HD đặt khác được trên server",
+      "checks": [
+        "CHK-055",
+        "CHK-056"
+      ],
+      "covered": "Xác định limit là điều kiện chạy của check."
+    },
+    {
+      "feature_id": "FEAT-13-layer-config-image",
+      "risk": "[CBS-079] Production: KB-420..KB-424 shipped UNKNOWN",
+      "checks": [],
+      "covered": "không có check, mọi check mới chỉ áp cho staging"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "PERMISSION — phạm vi CBS-079",
+      "reason": "KB-420..KB-424 không có phát biểu về quyền. Câu hỏi role đang ở unknown_areas của profile; check mới ghi role unspecified và yêu cầu ghi lại role đã dùng."
+    },
+    {
+      "dimension": "REGRESSION — phạm vi CBS-079",
+      "reason": "KB-420..KB-424 có relation ADD, không đổi hành vi item base nào của feature. Shard không có item status KNOWN_DEFECT nên không có regression watch."
+    },
+    {
+      "dimension": "OUT_OF_SCOPE: endpoint import ảnh từ clipart",
+      "reason": "Vế endpoint nằm trong excluded_parts của KB-423, nguồn là ghi chú ngôi thứ ba; viết check sẽ phải tự đặt expected."
+    },
+    {
+      "dimension": "OUT_OF_SCOPE: ImagenHub cho Clipart layer, reference image và prompt của Text to Image, Multiple Outputs, Design format PDF",
+      "reason": "Các vế này là claim S0 hoặc excluded_parts, không có item trong shard để trace."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-079"
+  }
 }

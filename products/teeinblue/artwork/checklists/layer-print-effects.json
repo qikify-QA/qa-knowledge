@@ -2,7 +2,7 @@
   "feature_id": "FEAT-06-layer-print-effects",
   "feature_key": "layer-print-effects",
   "object_id": "artwork",
-  "checklist_version": "2",
+  "checklist_version": "13",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -334,6 +334,81 @@
         "CONF-004"
       ],
       "oq_id": "OQ-artwork-175"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-079] Border custom_shape: SDK vẽ border từ mask trên canvas, không có request tới server",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-425 chưa chốt; ghi lại role đã dùng)",
+        "state": "layer có border custom_shape, mask đọc được (được phục vụ có CORS)",
+        "environment": "staging; ghi build và ngày chạy (KB-425 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "trang có SDK render layer, desktop; ghi rõ trang đã dùng"
+      },
+      "precondition": "Fixture throwaway có layer border custom_shape; network capture bật. Xoá cache trình duyệt trước khi tải trang.",
+      "steps": [
+        "Mở trang render layer với network capture",
+        "Ghi border custom_shape có hiện trên layer không",
+        "Lọc network theo 'photo-border-masks', 'photo-borders/', 'image_effect'; ghi các request tìm thấy"
+      ],
+      "observation_point": "Border trên layer; request photo-border-masks, photo-borders/, /image_effect trong network log",
+      "expected_result": "Border custom_shape được vẽ. Không có POST photo-border-masks, không tải file pre-render photo-borders/, không có request /image_effect. Check không assert giá trị border size và không áp cho photo_border contour cut.",
+      "oracle": {
+        "kb_ids": [
+          "KB-425"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-425",
+        "KB-391"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle chỉ từ comment dev, chưa có test case PASS. Không dùng cho production khi shipped còn UNKNOWN."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "[CBS-079] Border custom_shape: không đọc được mask thì layer quay về request /image_effect",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-425 chưa chốt; ghi lại role đã dùng)",
+        "state": "layer có border custom_shape, mask không đọc được",
+        "environment": "staging; ghi build và ngày chạy (KB-425 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "trang có SDK render layer, desktop; ghi rõ trang đã dùng"
+      },
+      "precondition": "Như CHK-011. Trình duyệt test có network interception bỏ header CORS của response mask; thao tác chỉ ở phía client.",
+      "steps": [
+        "Cài interception bỏ header CORS của response mask",
+        "Mở trang render layer với network capture",
+        "Lọc network theo 'image_effect'; ghi URL và status của request"
+      ],
+      "observation_point": "Request /image_effect trong network log khi mask không đọc được",
+      "expected_result": "Layer gửi request /image_effect. Check không assert nội dung ảnh trả về.",
+      "oracle": {
+        "kb_ids": [
+          "KB-425"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-425"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nguồn nêu thiếu CORS là ví dụ; các nguyên nhân không đọc được mask khác chưa kiểm."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -346,16 +421,39 @@
         "CHK-010"
       ],
       "covered": "NONE + NEEDS_CONFIRMATION; CONF-004 (emboss) không bị chạm"
+    },
+    {
+      "feature_id": "FEAT-06-layer-print-effects",
+      "capability": "[CBS-079] Vẽ border custom_shape từ mask trên canvas, fallback /image_effect (KB-425)",
+      "checks": [
+        "CHK-011",
+        "CHK-012"
+      ],
+      "covered": "STRONG trên staging, nguồn dev, chưa có test case PASS"
+    },
+    {
+      "feature_id": "FEAT-06-layer-print-effects",
+      "risk": "[CBS-079] Production: KB-425 shipped UNKNOWN",
+      "checks": [],
+      "covered": "không có check, check mới chỉ áp cho staging"
     }
   ],
   "excluded_dimensions": [
     {
       "dimension": "NEGATIVE / PERMISSION / STATE_DATA / INTEGRATION / REGRESSION — phạm vi CBS-015 (KB-391)",
       "reason": "KB-391 chỉ là quan sát nội dung order design của group có photo_border contour cut (CHK-008); không có evidence input sai, quyền, persistence hay contract API. Không có item KNOWN_DEFECT nên không có regression watch; không có check STRONG/BASELINE mới nên không thêm check re-verify — CHK-008 tự ghi build."
+    },
+    {
+      "dimension": "PERMISSION — phạm vi CBS-079",
+      "reason": "KB-425 không có phát biểu về quyền. Câu hỏi role đang ở unknown_areas của profile; check mới ghi role unspecified và yêu cầu ghi lại role đã dùng."
+    },
+    {
+      "dimension": "BOUNDARY / STATE_DATA / REGRESSION — phạm vi CBS-079",
+      "reason": "KB-425 không nêu giới hạn hay persistence, không phát biểu kết quả của border size. KB-425 có relation ADD; shard không có item status KNOWN_DEFECT nên không có regression watch."
     }
   ],
   "last_updated": {
-    "date": "2026-10-30",
-    "ccr_ref": "CBS-015"
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-079"
   }
 }

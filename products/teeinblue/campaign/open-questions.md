@@ -422,3 +422,75 @@ Mỗi mục có 1 `oq_id` ổn định và đúng 1 `type` (`NEEDS_CONFIRMATION`
 ```json
 {"oq_id":"OQ-campaign-070","type":"OPEN_ISSUE","feature_id":"create-campaign-by-product-base","summary":"Metafield version đổi sau re-publish qua Update (KB-370) có liên hệ gì với tham số v trong URL SDK mà storefront dùng để tải payload campaign không — tức là sau Update storefront có nhận nội dung mới không? KB-370 chỉ ghi metafield version đổi và form tải đủ, chưa kiểm nội dung mới; phía sdk có quan sát URL ?v=1 vẫn trả bản cũ sau Update/Sync. Không suy ra 'Update làm storefront cập nhật' khi chưa có xác nhận.","kb_ids":["KB-370"]}
 ```
+
+## OQ-campaign-071 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-campaign-071", "type": "NEEDS_CONFIRMATION", "feature_id": "create-campaign-by-product-base", "summary": "Xác nhận khác biệt môi trường của Generate test design (KB-450): trên dev store control này có đúng là bị disable không, Production hành xử thế nào, và đặt order test rồi lấy design của order có phải cách thay thế đúng không. Nguồn hiện chỉ là ghi chú QA, chưa có người xác nhận rõ ràng. Liên quan OQ-campaign-020 (chức năng Generate test design chưa được khám phá).", "kb_ids": ["KB-450"], "related_checks": ["CHK-039"]}
+```
+
+## OQ-campaign-072 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-campaign-072", "type": "OPEN_ISSUE", "feature_id": "campaign-artwork-mockup-reflection", "summary": "Hành vi khi replace hoặc remove artwork của campaign by platform products và Boundless: ticket đã trả lời tới đâu và phần còn lại là gì. Trạng thái ship chưa rõ: theo Jira, TIB-5282 đang Re-open, PR chưa merge, xếp sprint tương lai (dữ liệu PR có thể cũ). Description ticket viết lại 2026-11-04 (vai trò người viết chưa xác định) có 11 acceptance criteria cho action Replace artwork mới, chưa qua QA nên chưa dùng làm expected. Hai nguồn không khớp ở phần replace. Dev, comment #54805, 2026-10-16: sau fix, replace thì mockup hiện artwork mới mà không cần đặt lại, remove hẳn thì mockup không còn artwork. Description 2026-11-04: remove artwork cũng gỡ layer khỏi mockup, đó là hành vi đúng, merchant phải mở từng mockup đặt lại; hướng giải quyết là action Replace artwork. Comment dev còn nói Boundless một artwork mỗi campaign, trong khi description và AC nói chung cho cả ba loại campaign, có trường hợp campaign nhiều artwork; vế này không nạp. Phần 11 AC chưa trả lời: người có thẩm quyền xác nhận AC là hành vi đích chưa, fix của dev có bị action Replace thay thế không, và Boundless có giới hạn một artwork mỗi campaign không. KB chưa có item và không check nào có expected về các hành vi này.", "kb_ids": ["KB-451"]}
+```
+
+## OQ-campaign-073 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-campaign-073", "type": "NEEDS_CONFIRMATION", "feature_id": "campaign-artwork-mockup-reflection", "summary": "Vế Add Artwork theo từng mockup (KB-451) có áp cho campaign Shopify và Etsy không. Nguồn dev chỉ nói Boundless, nên chưa có oracle cho hai loại này. Nếu có áp thì cần đọc lại KB-019.", "kb_ids": ["KB-451"]}
+```
+
+## OQ-campaign-074 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-campaign-074", "type": "NEEDS_CONFIRMATION", "feature_id": "campaign-artwork-mockup-reflection", "summary": "Mockup mang sẵn layer artwork nhờ Duplicate hoặc Import có phải ngoại lệ của chữ \"chỉ\" trong KB-451 không. Flow Boundless ghi Duplicate giữ layer artwork; KB-451 chưa phát biểu về trường hợp này.", "kb_ids": ["KB-451"], "related_checks": ["CHK-001"]}
+```
+
+## OQ-campaign-075 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-campaign-075", "type": "OPEN_ISSUE", "feature_id": "campaign-artwork-mockup-reflection", "summary": "KB chưa có điểm vào của feature: đường tạo campaign Boundless và mở editor của mockup. Flow Boundless và flow mockup editor có mô tả thao tác, nhưng chưa nạp vào KB nên profile chưa dùng làm entry point.", "kb_ids": ["KB-451"]}
+```
+
+## OQ-campaign-076 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-campaign-076", "type": "NEEDS_CONFIRMATION", "feature_id": "campaign-publication-history", "summary": "Việc chưa cắt độ dài và chưa lọc nội dung message của exception trong Publication History (KB-452) là chủ đích hay tạm thời. Nếu tạm thời thì giới hạn độ dài và quy tắc lọc dự kiến là gì. Dev mô tả trạng thái hiện tại bằng chữ \"chưa\", nên vế này chưa dùng làm expected.", "kb_ids": ["KB-452"], "related_checks": ["CHK-004"]}
+```
+
+## OQ-campaign-077 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-campaign-077", "type": "NEEDS_CONFIRMATION", "feature_id": "campaign-publication-history", "summary": "Dòng \"<thời gian> Published to Shopify\" của lượt thành công có phải message không. KB-452 ghi thành công không có message, flow publish sync ghi có dòng đó. CHK-001 ghi nguyên văn dòng này và chưa kết luận.", "kb_ids": ["KB-452"], "related_checks": ["CHK-001"]}
+```
+
+## OQ-campaign-078 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-campaign-078", "type": "OPEN_ISSUE", "feature_id": "campaign-publication-history", "summary": "Cách tạo một lượt publish lỗi của Campaign by Shopify trên staging. Chưa có cách nên CHK-002, CHK-003 chưa chạy được. Điểm vào Logs > Publication History có ở flow publish sync nhưng chưa nạp vào KB.", "kb_ids": ["KB-452"], "related_checks": ["CHK-002", "CHK-003", "CHK-004"]}
+```
+
+## OQ-campaign-079 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-campaign-079", "type": "OPEN_ISSUE", "feature_id": "campaign-publication-history", "summary": "Publication History của Campaign by Product Base có theo cùng quy tắc message như KB-452 không. KB-452 chỉ phát biểu cho Campaign by Shopify. Phần Boundless và Open platform product có trong comment dev TIB-5337 #55809 mục 9 nhưng chưa nạp vào KB.", "kb_ids": ["KB-452"]}
+```
+
+## OQ-campaign-080 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-campaign-080", "type": "NEEDS_CONFIRMATION", "feature_id": "campaign-artwork-mockup-reflection", "summary": "Cần người có quyền đọc Jira đối chiếu comment #54805 của TIB-5282, gồm câu về Add Artwork và câu 'Scope: Boundless campaigns only'. Chưa có người đối chiếu nên KB-451 đang là PROPOSED/LOW, không làm oracle; CHK-001, CHK-002 chưa có expected. Đối chiếu xong mới xét nâng KB-451.", "kb_ids": ["KB-451"], "related_checks": ["CHK-001", "CHK-002"]}
+```
+
+## OQ-campaign-081 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-campaign-081", "type": "NEEDS_CONFIRMATION", "feature_id": "campaign-publication-history", "summary": "Cần người có quyền đọc Jira đối chiếu comment #55809 của TIB-5337, gồm mục '4. Message' và mục '9. Phạm vi' (chỉ Campaign by Shopify). Chưa có người đối chiếu nên KB-452 đang là PROPOSED/LOW, không làm oracle; CHK-001, CHK-002, CHK-003 chưa có expected. Đối chiếu xong mới xét nâng KB-452.", "kb_ids": ["KB-452"], "related_checks": ["CHK-001", "CHK-002", "CHK-003"]}
+```
+
+## OQ-campaign-082 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-campaign-082", "type": "OPEN_ISSUE", "feature_id": "campaign-publication-history", "summary": "Lượt publish Campaign by Shopify qua MCP trên staging có dòng ở Edit Activities nhưng không có row trong Publication History, theo comment Jira TIB-5337 #55858 của QA và #55862 của dev, 2026-10-28; dev ghi để ticket sau. Nguồn là comment Jira, chưa xác minh trên hệ thống. Cần biết ticket nào xử lý luồng này. Tới lúc đó check của feature chỉ xét lượt publish từ portal, không báo bug vì thiếu row của lượt qua MCP.", "kb_ids": ["KB-452"]}
+```

@@ -3,6 +3,12 @@
   "feature_key": "editor-layer-workspace",
   "name": "Không gian làm việc chung của Editor (thêm layer, chọn layer, toolbar/action bar)",
   "user_goal": "Store owner thêm layer mới vào artwork và thao tác chọn/toolbar dùng chung trong canvas editor, độc lập với việc cấu hình chi tiết bên trong từng layer type.",
+  "user_goal_kb_refs": [
+    "KB-001",
+    "KB-042",
+    "KB-043"
+  ],
+  "stable_since_version": null,
   "actors": [
     {
       "role": "store owner / staff (sub=273, user_id=266, plan Blue (Test))",
@@ -49,6 +55,15 @@
         "KB-170",
         "KB-171",
         "KB-172"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-079] artwork editor — multi-select các layer có giá trị Shadow hoặc Photo Border khác nhau",
+      "precondition": "Selection không có layer customization type Linked; ở Artwork 2.0, chọn một group thì ẩn Photo Border (KB-429)",
+      "kb_refs": [
+        "KB-426",
+        "KB-427",
+        "KB-429"
       ]
     }
   ],
@@ -103,6 +118,22 @@
       "description": "Artwork không Group: layer ON hiển thị, layer tự ẩn không hiển thị, khớp giữa editor và buyer preview storefront; mắt layer ON không amber; toggle mắt từng layer đổi đúng cờ và PUT lưu đúng.",
       "kb_refs": [
         "KB-173"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-079] Sửa Shadow và Photo Border khi multi-select có giá trị khác nhau",
+      "description": "CONFIRMED_EXPECTED theo dev, staging, role chưa chốt, shipped UNKNOWN. Shadow: toggle hiện Off trừ khi mọi layer đều bật; color hiện đen, blur/X/Y rỗng, Display không chọn gì; đổi một thuộc tính chỉ ghi thuộc tính đó lên mọi layer, phần còn lại giữ theo từng layer. Photo Border: thuộc tính khác nhau hiện default; bật toggle Border ghi đè mọi giá trị đang hiện (type, color, size, display, line) lên mọi layer; đổi một thuộc tính chỉ đổi thuộc tính đó nhưng cũng bật border cho mọi layer đang chọn. Mỗi thay đổi Shadow hoặc Photo Border là 1 undo step cho mọi layer bị ảnh hưởng; ô số (X, Y, blur, border size) lưu theo từng phím, gõ \"12\" là 2 step.",
+      "kb_refs": [
+        "KB-426",
+        "KB-427",
+        "KB-428"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-079] Điều kiện ẩn Shadow, Photo Border, HD theo selection",
+      "description": "CONFIRMED_EXPECTED theo dev, staging, role chưa chốt, shipped UNKNOWN. Shadow, Photo Border, HD bị ẩn khi selection có layer customization type Linked. Layer replica của Global Template không có rule riêng. Artwork 2.0: chọn một group thì ẩn Photo Border, Shadow và HD vẫn hiện. Artwork 1.0 cùng rule, trừ Shadow trên paragraph chỉ có ở 2.0.",
+      "kb_refs": [
+        "KB-429"
       ]
     }
   ],
@@ -161,6 +192,42 @@
       "kb_refs": [
         "KB-172"
       ]
+    },
+    {
+      "from": "[MỚI, CBS-079] multi-select có giá trị Shadow khác nhau",
+      "to": "thuộc tính vừa đổi được ghi lên mọi layer, phần còn lại giữ theo từng layer",
+      "trigger": "đổi một thuộc tính Shadow",
+      "condition": "Staging; role chưa chốt; shipped UNKNOWN.",
+      "kb_refs": [
+        "KB-426"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-079] multi-select có giá trị Photo Border khác nhau, thuộc tính khác nhau hiện default",
+      "to": "mọi giá trị đang hiện (type, color, size, display, line) được ghi đè lên mọi layer",
+      "trigger": "bật toggle Border",
+      "condition": "Staging; role chưa chốt; shipped UNKNOWN.",
+      "kb_refs": [
+        "KB-427"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-079] multi-select có giá trị Photo Border khác nhau",
+      "to": "chỉ thuộc tính đó đổi, và border được bật cho mọi layer đang chọn",
+      "trigger": "đổi một thuộc tính Photo Border",
+      "condition": "Staging; role chưa chốt; shipped UNKNOWN.",
+      "kb_refs": [
+        "KB-427"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-079] selection không có layer customization type Linked",
+      "to": "Shadow, Photo Border, HD bị ẩn",
+      "trigger": "selection có layer customization type Linked",
+      "condition": "Staging; role chưa chốt; shipped UNKNOWN.",
+      "kb_refs": [
+        "KB-429"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -200,6 +267,58 @@
       "confirmation_source_type": "test_case",
       "kb_refs": [
         "KB-173"
+      ]
+    },
+    {
+      "statement": "Khi multi-select có giá trị Shadow khác nhau: toggle hiện Off trừ khi mọi layer đều bật; color hiện đen, blur/X/Y rỗng, Display không chọn gì. Đổi một thuộc tính chỉ ghi thuộc tính đó lên mọi layer, phần còn lại giữ theo từng layer.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, role chưa chốt, portal",
+      "shipped": "UNKNOWN",
+      "caveats": "Một nguồn xác nhận, chưa có test case.",
+      "confirmation_ref": "Jira TIB-5212 comment #55717 (dev), 2026-10-27",
+      "kb_refs": [
+        "KB-426"
+      ]
+    },
+    {
+      "statement": "Khi multi-select có giá trị Photo Border khác nhau: thuộc tính khác nhau hiện default. Bật toggle Border ghi đè mọi giá trị đang hiện (type, color, size, display, line) lên mọi layer. Đổi một thuộc tính chỉ đổi thuộc tính đó nhưng cũng bật border cho mọi layer đang chọn.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, role chưa chốt, portal",
+      "shipped": "UNKNOWN",
+      "caveats": "Một nguồn xác nhận, chưa có test case.",
+      "confirmation_ref": "Jira TIB-5212 comment #55717 (dev), 2026-10-27",
+      "kb_refs": [
+        "KB-427"
+      ]
+    },
+    {
+      "statement": "Mỗi thay đổi Shadow hoặc Photo Border là 1 undo step cho mọi layer bị ảnh hưởng. Ô số (X, Y, blur, border size) lưu theo từng phím, gõ \"12\" là 2 step.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, role chưa chốt, portal",
+      "shipped": "UNKNOWN",
+      "caveats": "Một nguồn xác nhận, chưa có test case. Câu nguồn viết \"Each change\" trong mục Shadow, Photo Border.",
+      "confirmation_ref": "Jira TIB-5212 comment #55717 (dev), 2026-10-27",
+      "kb_refs": [
+        "KB-428"
+      ]
+    },
+    {
+      "statement": "Shadow, Photo Border, HD bị ẩn khi selection có layer customization type Linked. Layer replica của Global Template không có rule riêng. Artwork 2.0: chọn một group thì ẩn Photo Border, Shadow và HD vẫn hiện. Artwork 1.0 cùng rule, trừ Shadow trên paragraph chỉ có ở 2.0.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, role chưa chốt, portal",
+      "shipped": "UNKNOWN",
+      "caveats": "Một nguồn xác nhận, chưa có test case. Nguồn viết \"the three fields\"; KB đọc là Shadow, Photo Border, HD.",
+      "confirmation_ref": "Jira TIB-5212 comment #55717 (dev), 2026-10-27",
+      "kb_refs": [
+        "KB-429"
       ]
     }
   ],
@@ -243,6 +362,16 @@
         "KB-172",
         "KB-173"
       ]
+    },
+    {
+      "role": "[MỚI, CBS-079] unspecified",
+      "capability": "scope.role của KB-426..KB-429 là 'unspecified' có chủ ý; KB không xác định role áp dụng và không có quan sát về quyền.",
+      "kb_refs": [
+        "KB-426",
+        "KB-427",
+        "KB-428",
+        "KB-429"
+      ]
     }
   ],
   "surface_mapping": {
@@ -271,6 +400,26 @@
         "item": "Artwork Editor 2.0 → mắt layer (không amber ở artwork không Group)",
         "kb_refs": [
           "KB-173"
+        ]
+      },
+      {
+        "item": "[MỚI, CBS-079] Shadow khi multi-select: toggle, color, blur/X/Y, Display",
+        "kb_refs": [
+          "KB-426",
+          "KB-428"
+        ]
+      },
+      {
+        "item": "[MỚI, CBS-079] Photo Border khi multi-select: toggle Border, type, color, size, display, line",
+        "kb_refs": [
+          "KB-427",
+          "KB-428"
+        ]
+      },
+      {
+        "item": "[MỚI, CBS-079] Ẩn Shadow, Photo Border, HD theo selection (layer Linked, group ở Artwork 2.0, Artwork 1.0)",
+        "kb_refs": [
+          "KB-429"
         ]
       }
     ],
@@ -310,6 +459,20 @@
         "KB-169",
         "KB-171"
       ]
+    },
+    {
+      "type": "feature",
+      "description": "[MỚI, CBS-079] Điều kiện ẩn HD ở KB-429 áp cho batch HD của FEAT-13-layer-config-image (KB-421 ở feature đó).",
+      "kb_refs": [
+        "KB-429"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "[MỚI, CBS-079] Layer customization type Linked ở KB-429 liên quan FEAT-05-layer-duplicate-link-copy (KB-045 ở feature đó).",
+      "kb_refs": [
+        "KB-429"
+      ]
     }
   ],
   "risks": [
@@ -334,11 +497,31 @@
       "kb_refs": [
         "KB-170"
       ]
+    },
+    {
+      "risk": "[MỚI, CBS-079] KB-426..KB-429 shipped UNKNOWN: Jira TIB-5212 Done nhưng chưa có ngày deploy production; dùng các item này để đánh giá production có thể cho kết quả sai.",
+      "kb_refs": [
+        "KB-426",
+        "KB-427",
+        "KB-428",
+        "KB-429"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-079] Bật toggle Border hoặc đổi một thuộc tính Photo Border khi multi-select ghi lên mọi layer đang chọn (KB-427): giá trị riêng của từng layer bị thay; test multi-select cần kiểm từng layer, không chỉ layer đầu.",
+      "kb_refs": [
+        "KB-427"
+      ]
     }
   ],
+  "environment_differences": [],
   "freshness": {
-    "observed_at": "2026-10-30",
+    "observed_at": "2026-11-06",
     "source_observed_on": "2026-10-16"
+  },
+  "last_updated": {
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-079"
   },
   "unknown_areas": [
     {
@@ -379,12 +562,20 @@
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-artwork-146"
+    },
+    {
+      "question": "[MỚI, CBS-079] Role áp dụng của KB-426..KB-429 là gì (owner, staff hay buyer), cho từng item?",
+      "why_it_matters": "scope.role của 4 item đang là 'unspecified' có chủ ý vì CCR ghi không rõ; checklist chưa biết chạy các item này với role nào.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-426",
+        "KB-427",
+        "KB-428",
+        "KB-429"
+      ],
+      "oq_id": "OQ-artwork-184"
     }
   ],
-  "last_updated": {
-    "date": "2026-10-30",
-    "ccr_ref": "CBS-006"
-  },
   "coverage_matrix": [
     {
       "feature_id": "FEAT-03-editor-layer-workspace",
@@ -468,9 +659,59 @@
         "KB-169",
         "KB-173"
       ]
+    },
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "layer": "portal",
+      "role": "unspecified",
+      "state": "[MỚI, CBS-079] multi-select Shadow và Photo Border có giá trị khác nhau, undo step",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-426",
+        "KB-427",
+        "KB-428"
+      ],
+      "basis": "nguồn dev, KB không kèm test case"
+    },
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "layer": "portal",
+      "role": "unspecified",
+      "state": "[MỚI, CBS-079] ẩn Shadow, Photo Border, HD theo selection, ở Artwork 2.0 và 1.0",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-429"
+      ],
+      "basis": "nguồn dev, KB không kèm test case"
+    },
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "layer": "portal",
+      "role": "unspecified",
+      "state": "[MỚI, CBS-079] toàn bộ item shipped UNKNOWN",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "KB-426",
+        "KB-427",
+        "KB-428",
+        "KB-429"
+      ],
+      "basis": "shipped UNKNOWN"
     }
   ],
-  "profile_conflicts": [],
+  "profile_conflicts": [
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "type": "CROSS_FEATURE_KB_REF_IN_BASE",
+      "detail": "Nội dung có sẵn (dependencies[0]) tham chiếu KB-049 — item thuộc FEAT-07-artwork-save-persist, không nằm trong kb.json của feature này. Giữ nguyên văn; không thêm tham chiếu mới tới item đó.",
+      "kb_refs": [
+        "KB-049"
+      ]
+    }
+  ],
   "profile_relationships": [
     {
       "from_feature_id": "FEAT-03-editor-layer-workspace",
@@ -510,6 +751,15 @@
       "note": "Buyer preview storefront của artwork không Group khớp editor.",
       "kb_refs": [
         "KB-173"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-03-editor-layer-workspace",
+      "to_feature_id": "FEAT-13-layer-config-image",
+      "relation": "related",
+      "note": "[MỚI, CBS-079] KB-429 ẩn HD theo selection; hành vi batch HD ở FEAT-13 (KB-421).",
+      "kb_refs": [
+        "KB-429"
       ]
     }
   ]

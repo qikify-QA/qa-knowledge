@@ -1,12 +1,12 @@
 # Object: Order (product: teeinblue) — Feature Profile Summary
-**Published context version:** 5
+**Published context version:** 6
 
-- **Env:** staging. Bootstrap 2026-09-13; cập nhật CBS-006 (TIB-5584) và CBS-011 (TIB-5558, action Hide) 2026-10-30.
-- **Nguồn:** phần lớn knowledge là `OBSERVED_CURRENT` từ bootstrap; item `CONFIRMED_EXPECTED` duy nhất là KB-182 (CBS-006, test case Testlane PASS, staging 2026-10-16) — chờ PO xác nhận vì đổi đầu ra fulfillment (OQ-order-020)
+- **Env:** staging. Bootstrap 2026-09-13; cập nhật CBS-006 (TIB-5584) và CBS-011 (TIB-5558, action Hide) 2026-10-30; CBS-074 (Edit Customization sau order, tracking từ provider) 2026-11-06.
+- **Nguồn:** phần lớn knowledge là `OBSERVED_CURRENT` từ bootstrap; item `CONFIRMED_EXPECTED` gồm KB-182, KB-238, KB-239, KB-392, từ test case Testlane PASS trên staging; KB-182 chờ PO xác nhận vì đổi đầu ra fulfillment (OQ-order-020)
 - **Actor coverage:** storefront = GUEST buyer only (no signed-in buyer tested); portal = owner (Linh explorer, sub=273) only (no non-owner/restricted role tested)
 - **Authoritative store: `linh-explorer-2.myshopify.com`** — NOT `linh-explorer.myshopify.com`. The latter has a known add-to-cart failure for this campaign that prevents completing a real order there; this KB should not be treated as verified for that store until its add-to-cart issue is investigated separately (see `OQ-order-013`).
-- **2/2 features covered** (`place-personalized-order-storefront`, `review-and-initiate-fulfillment-portal`). Neither is fully blocked.
-- **24 KB items** across the object: 0 HIGH confidence, 3 MEDIUM (corroborated by a separate prior observation on a different store), 21 LOW — all resting on exactly ONE order end-to-end (plus a second order used only to illustrate the sync conflict below).
+- **3 features** (`place-personalized-order-storefront`, `review-and-initiate-fulfillment-portal`, `edit-customization-after-order`). Hai feature đầu đã có coverage; `edit-customization-after-order` chưa có coverage xác nhận (item đều PROPOSED, check đều NEEDS_CONFIRMATION). Không feature nào bị chặn hoàn toàn.
+- **34 KB items** across the object: 0 HIGH, 7 MEDIUM, 27 LOW. 24 item bootstrap resting on exactly ONE order end-to-end (plus a second order used only to illustrate the sync conflict below).
 - **1 unresolved conflict spanning both features:** `OQ-order-001` — an order placed successfully at storefront checkout did not appear in the portal Orders list for 90+ minutes across all statuses/stores/a 30-day range; a second order did sync after an unverified user claim that a webhook configuration issue had been fixed. That claim has never been independently verified.
 
 ---
@@ -54,6 +54,8 @@
 4. "Confirm & Send to fulfill" **trên instance CHƯA connect POD (Printify)**: mở dialog review (không submit ngay), hiện prompt "Connect", chỉ 2 GraphQL query READ-ONLY chạy quanh click — KHÔNG có mutation/network call ra POD nào. **Phát hiện này CHỈ áp dụng cho trạng thái POD chưa connect** — nhánh đã connect hoàn toàn chưa quan sát (xem `OQ-order-012`)
 5. "Change status" dropdown hiện đúng 5 option (Ready/Sent/Fulfilled/Paused/Canceled) — chỉ quan sát danh sách, chưa test transition nào (xem `OQ-order-016`)
 
+**Khác biệt môi trường (KB-437, INFERRED/LOW, NOT_TESTABLE, mức Case):** chưa có lời xác nhận gốc: tracking từ provider không test được trên staging; fulfill tay trên Shopify đi đường khác, không thay được. CHK-P27 ghi skipped, verdict NOT_APPLICABLE. Production: không rõ (OQ-order-039).
+
 **Coverage:** portal (orders list, order-details, activity log, fulfill dialog POD-disconnected, change-status list) ✅ · fulfill với POD ĐÃ connect ❌ (unknown lớn nhất, rủi ro production thật) · change-status transition thực thi ❌ · Bulk Fulfill page ❌ (tồn tại ở sidebar, chưa mở) · non-owner/restricted role ❌ · DB cross-check ❌ (database observation bị tắt) · Edit/View customization ❌ · multi-item order ❌
 **Confidence:** LOW toàn bộ (1 order, 1 line item, 1 role, 1 environment)
 **Risks/Unknowns:**
@@ -74,6 +76,18 @@
 
 **Cập nhật CBS-015 (TIB-5633, Group nhiều layer):** Regenerate design trong order detail cho item có artwork Group ~250 layer tạo xong design mới (Item Activity log 'generated a new design'), không kẹt generating (KB-392, `CONFIRMED_EXPECTED`/MEDIUM, test case Testlane PASS staging 2026-10-29; PO chưa xác nhận ý định — OQ-order-030; chạy lại sau merge/production — OQ-order-029). Toast 'put your design in queue', việc Item Activity logs không có dòng 'is generating' riêng và việc order vẫn ở Ready sau Regenerate chỉ là quan sát (KB-393, `OBSERVED_CURRENT`/LOW, OQ-order-028). Checklist CHK-P24..CHK-P26 (CHK-P25, CHK-P26 NEEDS_CONFIRMATION). Render order design của Group nhiều layer nằm ở object `artwork` (feature `group-layer-order-design-render`).
 
+## edit-customization-after-order — Buyer mở Edit Customization sau khi đặt order
+
+**Surface:** storefront, Thank You page và Order status page; role buyer. Cần block Edit Customization đã có trên trang.
+
+- **Campaign Shopify product (KB-435, PROPOSED/LOW, đề xuất chưa xác minh):** theo test case, customizer mở với design editable ở cả hai trang. Bước lưu thay đổi và ghi đè artwork chưa có lượt chạy.
+- **Campaign by product base (KB-436, PROPOSED/LOW, đề xuất chưa xác minh):** theo test case, link vẫn hiện; click thì sang trang customize và báo "Your design does not support edit for now, contact shop owner". Lượt chạy chỉ ở Thank You page; hai nguồn chưa chốt (OQ-order-044).
+- **Checklist:** CHK-001..CHK-004 đều NEEDS_CONFIRMATION, oracle NONE: chỉ ghi nhận, chưa kết luận PASS/FAIL.
+- **Không dùng làm expected cho:** /cart (OQ-order-031), bước lưu (OQ-order-033), nút cùng tên ở Portal (OQ-order-011).
+- **Còn mở:** OQ-order-031..038, OQ-order-040..044.
+
+---
+
 ## Gaps ở cấp Object (áp dụng cho MỌI feature trên)
 
 | Gap | Ghi chú |
@@ -86,4 +100,4 @@
 | **Raw API/network payload** | Payload thô của POST /cart/add và của order-details GraphQL/REST chưa từng được capture — các KB item liên quan giữ LOW/INFERRED, không nâng cấp (`OQ-order-008`, `OQ-order-015`). |
 | **RBAC / non-owner / signed-in buyer** | Chưa test trên bất kỳ feature nào — storefront chỉ GUEST, portal chỉ owner (sub=273) (`OQ-order-006`, `OQ-order-009`). |
 | **'portal/fulfills' route & 'Bulk Fulfill'** | Không có route `/fulfills` riêng biệt được tìm thấy; "Bulk Fulfill" tồn tại ở sidebar flyout nhưng chưa mở — hành vi hoàn toàn unknown, không suy đoán từ flow order-details (`OQ-order-017`). |
-| **Checklist confidence nguồn** | 24 KB item nguồn: 0 HIGH, 3 MEDIUM, 21 LOW — theo nguyên tắc "một sample → luôn LOW", không dùng làm hard assertion. 33 check trong 2 checklist, 13/33 là `NEEDS_CONFIRMATION`. |
+| **Checklist confidence nguồn** | 34 KB item nguồn: 0 HIGH, 7 MEDIUM, 27 LOW — theo nguyên tắc "một sample → luôn LOW", không dùng làm hard assertion. 53 check trong 3 checklist, 28/53 là `NEEDS_CONFIRMATION`. |

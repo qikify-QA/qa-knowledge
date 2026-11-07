@@ -1,13 +1,14 @@
 # Object: Asset Category (product: teeinblue) — Feature Summary
+**Published context version:** 2
 
 Trạng thái hiện tại của object `asset-category`: 6 loại category asset (Clipart, Vector, Color, Additional Option, Map Style, Font Category) + luồng thêm item vào category + luồng bulk-upload zip.
 
 - **Environment:** staging. **Role đã test:** duy nhất `owner` ("Linh explorer" — định danh `sub=273` trong nội dung cũ; hạ tầng hiện dùng Sanctum cookie+XSRF, verify bằng `GET /api/user` → id=266). 1 organization/store duy nhất.
 - **4 feature có profile + checklist:** `asset-category-route-entity-clarification`, `asset-category-crud`, `asset-category-item-management`, `asset-category-bulk-upload`. Feature đầu tiên KHÔNG phải tính năng user-facing (xem ghi chú riêng).
-- **KB:** 41 item. 5 item dùng chung toàn object nằm ở `kb.json`; phần còn lại nằm trong `features/<feature-key>/kb.json`.
-- **Knowledge kind:** phần lớn `OBSERVED_CURRENT`; 6 item `CONFIRMED_EXPECTED` (KB-020, KB-022, KB-023, KB-026, KB-027, KB-033 — đều có PO xác nhận trực tiếp nội dung, ghi rõ trong statement); 1 item `INFERRED` (KB-019); 2 item `PROPOSED` là phía kỳ vọng của 2 conflict chưa ngã ngũ (KB-038, KB-040).
-- **Conflict chưa ngã ngũ:** 2 nhóm — `CFL-001` (khung diễn giải naming convention field `type`) và `CFL-002` (kỳ vọng `vector_category` vs giá trị thật `vector`). Xem `open-questions.md` (OQ-asset-category-006/007).
-- **Open question:** 29 mục trong `open-questions.md` (16 NEEDS_CONFIRMATION, 2 CONFLICT, 11 OPEN_ISSUE).
+- **KB:** 51 item. 5 item dùng chung toàn object nằm ở `kb.json`; phần còn lại nằm trong `features/<feature-key>/kb.json`.
+- **Knowledge kind:** phần lớn `OBSERVED_CURRENT`; 13 item `CONFIRMED_EXPECTED` (KB-020, KB-022, KB-023, KB-026, KB-027, KB-033 — đều có PO xác nhận trực tiếp nội dung, ghi rõ trong statement; KB-561..KB-567 theo lời dev, riêng KB-567 đang conflict); 2 item `INFERRED` (KB-019, KB-569); 2 item `PROPOSED` là phía kỳ vọng của 2 conflict chưa ngã ngũ (KB-038, KB-040).
+- **Conflict chưa ngã ngũ:** 3 nhóm — `CFL-001` (khung diễn giải naming convention field `type`) `CFL-002` (kỳ vọng `vector_category` vs giá trị thật `vector`) và `CFL-003` (cách tính cửa sổ daily limit). Xem `open-questions.md` (OQ-asset-category-006/007/031).
+- **Open question:** 40 mục trong `open-questions.md` (24 NEEDS_CONFIRMATION, 3 CONFLICT, 13 OPEN_ISSUE).
 
 ---
 
@@ -90,15 +91,21 @@ Portal layer: form field mapping ✅ chỉ Clipart, ❌ 5 loại còn lại · s
 4. Upload clipart item thật (PNG) qua dropzone — luồng 3 bước: presigned URL → PUT storage → `POST /api/cliparts/by-temporary-file` (KB-014). Ảnh vượt 64 megapixel chỉ hiện warning, KHÔNG bị chặn (KB-033).
 5. Upload vector item thật (SVG) qua dropzone — 1 bước `POST /api/cliparts/svg` multipart (KB-015); route chịu rate-limit `user_rate_limiter:clipart`, limit=4000 (KB-035).
 6. Negative đã quan sát: Vector nhận `.png` → 500 kèm stack trace + UI `[object Object]` (KB-032, known defect); Clipart nhận `.txt` → vẫn cấp presigned URL 201, bước sau chưa capture (KB-034).
+7. Cap clipart: theo dev, cap 300 có từ 2025, admin nâng được theo merchant, Open API áp cùng kiểm tra khi thêm clipart (KB-561); chạm cap ở `POST /cliparts` trả 422 (KB-562); zip bulk tạo category mới, file thừa bị skip kèm log, kết thúc done (KB-563). Số 300 là số tại thời điểm nguồn. Setup: key `clipart_max_per_category` (KB-564).
+8. Daily limit upload asset: theo dev, 1,000 layer image, 4,000 clipart, 1,000 clipart category mỗi 24h, dùng chung portal và Open API (KB-565). Setup để test 429: "… max attempts" ở admin panel, xong trả lại giá trị cũ (KB-566). Cách tính cửa sổ đang conflict, không làm oracle: KB-567 (lời dev), KB-568 (QA ghi nhận), OQ-asset-category-031.
+9. Kết quả dropzone: QA ghi nhận trong test case kết quả hiện bằng text, không thấy icon; chưa có người xác nhận (KB-560, OBSERVED_CURRENT/LOW, OQ-asset-category-030).
+
+**Khác biệt môi trường:** Horizon `NOT_TESTABLE` mức vế (KB-569, INFERRED/LOW, không làm oracle, OQ-asset-category-032).
 
 **Coverage:** quick-add Color/Additional Option/Map Style ✅ (9/9 sample) · Font full flow ✅ (1 sample) · Clipart upload PNG ✅ · Vector upload SVG ✅ (chỉ 1 sample cũ, chưa có sample thành công gần đây) · negative sai định dạng ✅ (2 sample, 1 là defect) · rate-limit ⚠️ PARTIAL (chỉ giá trị limit) · cross-tenant insert ❌ · insert thất bại (staff log) ❌
 **Confidence:** MEDIUM
-**Last updated:** 2026-09-26 (nội dung Add-new/Font/upload/negative: 2026-09-15; rate-limit 2 route upload: 2026-09-26)
+**Last updated:** 2026-11-07 (nội dung Add-new/Font/upload/negative: 2026-09-15; rate-limit 2 route upload: 2026-09-26; cap, daily limit, dropzone, Horizon: 2026-11-07)
 **Risks / Unknowns:**
 - Security: `insert_cliparts` là Hasura GraphQL table-level mutation gọi thẳng từ client bằng session portal thường, tự build `variables.objects` — chưa có sample cross-tenant (OQ-asset-category-017, severity MEDIUM)
 - Security: presigned storage URL tách rời JWT app, scope ký chỉ ràng buộc Host, chưa có negative test TTL (OQ-asset-category-018, severity MEDIUM)
 - Defect chờ triage: 500 lộ stack trace + UI `[object Object]` khi sai định dạng Vector (OQ-asset-category-020)
 - OQ-asset-category-014 (cơ chế Add new của Font chưa re-verify độc lập) · OQ-asset-category-015 (staff log khi insert lỗi) · OQ-asset-category-016 (Clipart `.txt` bước sau) · OQ-asset-category-019 (Map Style cần field cấu hình nào) · OQ-asset-category-021 (chưa có sample `.svg` thành công) · OQ-asset-category-022 (staff log thiếu ở 2/3 category mới) · OQ-asset-category-023 (chưa re-test 3 category gốc 6008/6009/6010)
+- OQ-asset-category-033..040: uploader layer image và mockup library phía thành công, zip vượt cap, nghĩa của "không có reset", ngày lên production, cap áp ở đâu, route ăn bộ đếm clipart, field "… max attempts" và account admin, phụ thuộc bước PUT của CHK-018, CHK-021..CHK-023.
 
 ---
 
@@ -128,7 +135,7 @@ Portal layer: form field mapping ✅ chỉ Clipart, ❌ 5 loại còn lại · s
 | **Data layer (DB)** | Không có verification ở tầng DB cho object này — mọi state delta chỉ dựa trên response API/GraphQL/DOM | OQ-asset-category-001 |
 | **Cross-role / cross-tenant** | Thiếu hoàn toàn trên cả 4 feature (chỉ 1 account khả dụng); dimension PERMISSION bị exclude ở cả 4 checklist. Đáng chú ý nhất ở FEAT-03 vì `insert_cliparts` gọi thẳng Hasura từ client | OQ-asset-category-002, OQ-asset-category-017 |
 | **Rate-limit window** | Chỉ verify giá trị limit qua header; window reset 24h và việc dùng chung counter giữa 6 loại category chưa verify runtime | OQ-asset-category-003, OQ-asset-category-011, OQ-asset-category-021 |
-| **Confirmation status** | Chỉ 6/41 KB item có nguồn thẩm quyền (PO xác nhận nội dung). Các item `OBSERVED_CURRENT` còn lại KHÔNG được đối xử như business rule đã confirm — nhiều PO-answer chỉ là uỷ quyền THỰC THI test, không phải xác nhận hành vi đúng | — |
-| **2 conflict chưa ngã ngũ** | `CFL-001` (khung diễn giải naming convention field `type`), `CFL-002` (kỳ vọng `vector_category` vs giá trị thật `vector`) — giữ cả 2 phía, không tự chọn | OQ-asset-category-006, OQ-asset-category-007 |
+| **Confirmation status** | Chỉ 13/51 KB item có nguồn thẩm quyền (PO hoặc dev xác nhận nội dung, riêng KB-567 đang conflict). Các item `OBSERVED_CURRENT` còn lại KHÔNG được đối xử như business rule đã confirm — nhiều PO-answer chỉ là uỷ quyền THỰC THI test, không phải xác nhận hành vi đúng | — |
+| **3 conflict chưa ngã ngũ** | `CFL-001` (khung diễn giải naming convention field `type`), `CFL-002` (kỳ vọng `vector_category` vs giá trị thật `vector`), `CFL-003` (cách tính cửa sổ daily limit) — giữ cả 2 phía, không tự chọn | OQ-asset-category-006, OQ-asset-category-007, OQ-asset-category-031 |
 | **KB bị hạ phạm vi** | KB-008 (form field: chỉ còn đúng cho Clipart), KB-010 (sidebar tree action buttons: UNVERIFIED), KB-012 (cơ chế Add new của Font: chưa re-verify độc lập) — KHÔNG ngang hàng với các KB đã network/DOM-verified đầy đủ, không dùng làm oracle | OQ-asset-category-009, OQ-asset-category-012, OQ-asset-category-014 |
 | **Global Option instance** | Ngoài phạm vi object này theo quyết định 2026-09-14 — đọc object `global-option` | OQ-asset-category-004, OQ-asset-category-005 |
