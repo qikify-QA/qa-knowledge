@@ -2,7 +2,7 @@
   "feature_id": "FEAT-ORDER-PORTAL-01",
   "feature_key": "review-and-initiate-fulfillment-portal",
   "object_id": "order",
-  "checklist_version": "4",
+  "checklist_version": "6",
   "checks": [
     {
       "check_id": "CHK-P01",
@@ -868,6 +868,41 @@
       "priority": "P2",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-order-029"
+    },
+    {
+      "check_id": "CHK-P27",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[CBS-074] Tracking từ provider (fulfilled theo tracking): env-blocked trên staging, không chạy",
+      "applicability": {
+        "role": "merchant (owner/staff)",
+        "state": "order được fulfilled theo tracking từ provider",
+        "environment": "không chạy trên staging (NOT_TESTABLE mức Case, verdict NOT_APPLICABLE, không tính là FAIL); production không rõ",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Môi trường test không có tracking từ provider. Fulfill tay trên Shopify đi đường khác nên không thay được.",
+      "steps": [
+        "Trên staging: không execute. Ghi Testlane skipped kèm lý do env-blocked: không có tracking từ provider, fulfill tay trên Shopify đi đường khác nên không thay được.",
+        "Kết luận verdict NOT_APPLICABLE, không tính là FAIL. Không dùng fulfill tay để thay case này."
+      ],
+      "observation_point": "Không có điểm quan sát trên staging. Phía production chưa có nguồn nên check chưa ghi bước chạy.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Trên production, tracking từ provider hoạt động thế nào? KB-437 ghi 'không rõ' vì nguồn không nói; CCR cũng không xác nhận phía production.",
+      "related_kb_ids": [
+        "KB-437"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Tracking từ provider không có lượt chạy nào trên staging; không suy hành vi từ fulfill tay trên Shopify"
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-order-039"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -935,6 +970,14 @@
         "CHK-P26"
       ],
       "coverage_status": "STRONG cho Regenerate item có artwork group phẳng ~250 layer trên staging tại build lượt PASS 2026-10-29 (CHK-P24); toast/log và re-verify là NONE"
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "risk": "[CBS-074] Tracking từ provider không test được trên môi trường test (KB-437, NOT_TESTABLE mức Case); phía production không rõ",
+      "covered_by_checks": [
+        "CHK-P27"
+      ],
+      "coverage_status": "NOT_APPLICABLE trên staging; production là gap NONE (CHK-P27)"
     }
   ],
   "excluded_dimensions": [
@@ -957,10 +1000,14 @@
     {
       "dimension": "NEGATIVE / BOUNDARY / PERMISSION / STATE_DATA / INTEGRATION — phạm vi CBS-015 (KB-392, KB-393)",
       "reason": "KB-392/KB-393 chỉ là Regenerate design của owner cho item có artwork group ~250 layer (CORE: CHK-P24, CHK-P25); không có evidence input sai, giới hạn, quyền khác owner, persistence hay contract API mới. Nội dung order design của artwork có group thuộc checklist artwork group-layer-order-design-render. Giới hạn auto-stop 30 phút và chia hàng đợi final-render / final-render-large không có KB item (nguồn không đủ, không có quan sát) — không viết check. Re-verify ở REGRESSION (CHK-P26); không có item KNOWN_DEFECT nên không có regression watch."
+    },
+    {
+      "dimension": "CORE / NEGATIVE / BOUNDARY / PERMISSION / STATE_DATA / REGRESSION — phạm vi CBS-074 (KB-437)",
+      "reason": "KB-437 chỉ phát biểu tracking từ provider không test được trên môi trường test (NOT_TESTABLE mức Case); không có item về hành vi tracking. CHK-P27 ghi cách biểu đạt env-blocked, không tạo check chạy được trên staging. Không có item KNOWN_DEFECT nên không có regression watch."
     }
   ],
   "last_updated": {
-    "date": "2026-10-30",
-    "ccr_ref": "CBS-015"
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-074"
   }
 }

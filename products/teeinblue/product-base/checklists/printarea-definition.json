@@ -1,6 +1,8 @@
 {
   "feature_id": "FEAT-04-printarea-definition",
   "feature_key": "printarea-definition",
+  "object_id": "product-base",
+  "checklist_version": "7",
   "checks": [
     {
       "check_id": "CHK-04-001",
@@ -510,6 +512,524 @@
       ],
       "priority": "P2",
       "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-04-017",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-077] DPI sửa inline: 71 và 301 bị chặn với message, không gửi mutation; 72 và 300 không bị chặn",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "sửa DPI inline",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Role merchant-owner, ở /products/{id}/edit của product base dùng để test, có ít nhất 1 print area, bật network capture.",
+      "steps": [
+        "Bấm vào ô DPI của print area; dialog Warning hiện thì bấm Got it",
+        "Nhập 71, xác nhận; ghi lại message và request",
+        "Nhập 301, xác nhận; ghi lại message và request",
+        "Nhập 72, xác nhận; ghi lại kết quả",
+        "Nhập 300, xác nhận; ghi lại kết quả"
+      ],
+      "observation_point": "Message ở ô DPI và request GraphQL sau mỗi lần xác nhận",
+      "expected_result": "Với 71 và 301: hiện message \"DPI must be a whole number from 72 to 300\", không gửi mutation. Với 72 và 300: không hiện message này.",
+      "oracle": {
+        "kb_ids": [
+          "KB-513"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-513",
+        "KB-032"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "DPI ngoài khoảng trước đây bị DB chặn mà UI không báo."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-04-018",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-077] DPI ở form New printarea: 71 và 301 bị chặn với message, không gửi mutation; 72 và 300 không bị chặn",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "tạo print area, nhập DPI",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Role merchant-owner, ở /products/{id}/edit của product base dùng để test, bật network capture.",
+      "steps": [
+        "Bấm New printarea, điền Fulfilled key và Display name",
+        "Nhập DPI 71, lưu; ghi lại message và request",
+        "Nhập DPI 301, lưu; ghi lại message và request",
+        "Nhập DPI 72, lưu; ghi lại kết quả",
+        "Lặp lại với DPI 300; ghi lại kết quả",
+        "Xoá các print area vừa tạo"
+      ],
+      "observation_point": "Message ở form và request GraphQL sau mỗi lần lưu",
+      "expected_result": "Với 71 và 301: hiện message \"DPI must be a whole number from 72 to 300\", không gửi mutation. Với 72 và 300: không hiện message này.",
+      "oracle": {
+        "kb_ids": [
+          "KB-513"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-513",
+        "KB-029"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-04-019",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-077] Gửi mutation thẳng với DPI ngoài 72–300: giá trị không được lưu",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "bỏ qua FE, mutation với DPI ngoài khoảng",
+        "environment": "staging",
+        "surface_or_device": "công cụ replay request"
+      },
+      "precondition": "Role merchant-owner, print area của product base dùng để test có DPI hợp lệ đã biết, có công cụ replay request.",
+      "steps": [
+        "Ghi lại DPI hiện tại của print area",
+        "Bắt request sửa DPI hợp lệ từ UI",
+        "Replay request đó với DPI 600",
+        "Đọc lại print area qua GraphQL hoặc reload trang"
+      ],
+      "observation_point": "Giá trị DPI của print area sau khi replay",
+      "expected_result": "DPI 600 không được lưu: print area vẫn giữ DPI trước khi replay. Check không assert dạng response.",
+      "oracle": {
+        "kb_ids": [
+          "KB-513"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-513",
+        "KB-031",
+        "KB-047"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Print area ghi từ client qua Hasura nên chặn ở FE chưa đủ; tầng BE cụ thể chưa rõ."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-04-020",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-077] File design export ghi resolution theo DPI của print area, trống thì 300, Width/Height của print area không đổi",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "print area có DPI 150, rồi DPI trống",
+        "environment": "staging",
+        "surface_or_device": "portal desktop, file design"
+      },
+      "precondition": "Role merchant-owner, product base dùng để test có print area và order có item dùng print area đó (flow orders-fulfillment). Đọc metadata file theo flow environment; với PDF đọc thêm khổ trang ở CHK-04-021.",
+      "steps": [
+        "Ghi lại Width/Height của print area",
+        "Đặt DPI 150, lưu",
+        "Ghi lại Width/Height sau khi lưu",
+        "Lấy file design PNG, JPG, PDF và thumbnail của print area, đọc resolution trong từng file",
+        "Xoá trống DPI, lưu",
+        "Lấy lại file design, đọc resolution"
+      ],
+      "observation_point": "Resolution trong metadata từng file; Width/Height của print area",
+      "expected_result": "DPI 150: file PNG, JPG, PDF và thumbnail ghi resolution 150. DPI trống: các file ghi resolution 300. Width/Height của print area không đổi sau khi đổi DPI.",
+      "oracle": {
+        "kb_ids": [
+          "KB-505"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-505",
+        "KB-509",
+        "KB-512"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Seller không chỉnh width/height cho khớp DPI thì file không đúng kích thước in thật."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-04-021",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-077] PDF DPI 150 giữ nguyên số pixel: khổ trang gấp đôi so với DPI 300",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "print area tạo tay, DPI 300 rồi 150, giữ nguyên Width/Height",
+        "environment": "staging",
+        "surface_or_device": "portal desktop, file PDF"
+      },
+      "precondition": "Như CHK-04-020. Print area không đến từ Printify import: vế đó pixel cũng giảm một nửa, xem CHK-04-026.",
+      "steps": [
+        "Đặt DPI 300, lưu, lấy file PDF, đọc khổ trang",
+        "Đặt DPI 150, không đổi Width/Height, lưu",
+        "Lấy lại file PDF, đọc khổ trang"
+      ],
+      "observation_point": "Khổ trang của file PDF ở hai lần",
+      "expected_result": "Khổ trang PDF ở DPI 150 gấp đôi khổ trang ở DPI 300 (ví dụ của dev: 336 pt → 672 pt).",
+      "oracle": {
+        "kb_ids": [
+          "KB-509"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-509",
+        "KB-505"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hạ DPI mà giữ nguyên pixel thì khổ in thật gấp đôi."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-04-022",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "[CBS-077] Print area có từ trước: DPI giữ trống, hiển thị 300 màu mờ, vẫn export 300 DPI",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "print area có trước đợt deploy DPI, dpi trống",
+        "environment": "staging",
+        "surface_or_device": "portal desktop, file design"
+      },
+      "precondition": "Có product base với print area tạo trước đợt deploy DPI, chưa ai sửa DPI, và order có item dùng print area đó. Check không sửa dữ liệu.",
+      "steps": [
+        "Mở /products/{id}/edit, xem ô DPI của print area",
+        "Đọc field dpi của print area qua GraphQL",
+        "Lấy file design của print area, đọc resolution"
+      ],
+      "observation_point": "Ô DPI trên UI, field dpi, resolution trong file design",
+      "expected_result": "Ô DPI hiển thị \"300\" màu mờ, field dpi vẫn trống, file design export 300 DPI.",
+      "oracle": {
+        "kb_ids": [
+          "KB-512"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-512",
+        "KB-505"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Print area cũ không được tự đổi DPI; mốc 'có từ trước' ở production chưa xác định."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-04-023",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[CBS-077] Import từ provider không có DPI trong API (như Printbelle): print area được DPI 300",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "import từ provider không có DPI",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Role merchant-owner, catalog Printbelle nạp được.",
+      "steps": [
+        "Mở /products, bấm Import product, chọn Printbelle",
+        "Import một sản phẩm của catalog",
+        "Mở /products/{id}/edit của product base vừa import",
+        "Đọc DPI của từng print area",
+        "Xoá product base vừa import"
+      ],
+      "observation_point": "Ô DPI của print area sau import",
+      "expected_result": "Print area của product base import có DPI 300.",
+      "oracle": {
+        "kb_ids": [
+          "KB-507"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-507",
+        "KB-508"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Seller phải tự sửa DPI theo file TIFF gốc."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-04-024",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "[CBS-077] Provider trả DPI ngoài khoảng: BE đổi về 300 trước popup Import, import không lỗi",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "import từ provider trả DPI ngoài khoảng",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Cần sản phẩm của provider có print area trả DPI ngoài khoảng (vd 600). Chưa tìm được sản phẩm như vậy thì ghi blocked, không ghi PASS.",
+      "steps": [
+        "Mở popup Import của sản phẩm đó, bật network capture",
+        "Đọc DPI trong response danh sách print area",
+        "Import print area",
+        "Mở /products/{id}/edit, đọc DPI của print area",
+        "Xoá dữ liệu vừa import"
+      ],
+      "observation_point": "DPI trong response cho popup Import, kết quả import, ô DPI sau import",
+      "expected_result": "Response cho popup Import trả DPI 300, import không lỗi, print area được DPI 300.",
+      "oracle": {
+        "kb_ids": [
+          "KB-508"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-508",
+        "KB-513"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE"
+    },
+    {
+      "check_id": "CHK-04-025",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[CBS-077] Ngưỡng 9000 px của Printify, Picanova/merchOne: vế DPI = 150",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "print area từ Printify, Picanova/merchOne có width hoặc height > 9000",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Cần sản phẩm của Printify hoặc Picanova/merchOne có width hoặc height gốc > 9000. Staging không lấy được size gốc provider nên check chỉ verify DPI, vế giảm size thuộc CHK-04-026.",
+      "steps": [
+        "Mở /products, bấm Import product, chọn Printify hoặc provider hiển thị merchOne",
+        "Import sản phẩm đã xác định có cạnh gốc > 9000",
+        "Mở /products/{id}/edit, đọc DPI của print area",
+        "Xoá dữ liệu vừa import"
+      ],
+      "observation_point": "Ô DPI của print area",
+      "expected_result": "Print area có width hoặc height gốc lớn hơn hẳn 9000 được DPI = 150.",
+      "oracle": {
+        "kb_ids": [
+          "KB-506"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Ngưỡng 9000 px chạy ở bước nào, và trên staging xác định sản phẩm nào có cạnh gốc > 9000 bằng cách nào khi không lấy được size gốc provider? Nguồn dev không nêu bước chạy; thiếu điều này thì chưa chọn được thao tác và dữ liệu để verify DPI = 150.",
+      "related_kb_ids": [
+        "KB-506",
+        "KB-504",
+        "KB-509",
+        "KB-500"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Catalog của merchOne và Printify có thể không nạp được trên staging.",
+        "Vế giảm size chưa kiểm được trên môi trường test."
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-product-base-046"
+    },
+    {
+      "check_id": "CHK-04-026",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-077] Vế giảm 1/2 size của ngưỡng 9000 px: NOT_APPLICABLE trên staging, không có expected",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "print area từ Printify, Picanova/merchOne có width hoặc height > 9000",
+        "environment": "không chạy trên staging (NOT_TESTABLE, verdict NOT_APPLICABLE); production chưa rõ",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Trên staging verdict là NOT_APPLICABLE, không tính FAIL: không lấy được size gốc provider (Printify không token, merchOne API 403). Chỉ chạy khi có cách lấy size gốc.",
+      "steps": [
+        "Lấy size gốc của sản phẩm từ provider",
+        "Import sản phẩm",
+        "So sánh Width/Height của print area với size gốc",
+        "Lặp lại với sản phẩm có cạnh gốc đúng bằng 9000 nếu có"
+      ],
+      "observation_point": "Size gốc của provider và Width/Height của print area sau import",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Vế \"giảm 1/2 size\" có thật sự không test được trên staging không, và phía production thế nào? Quyết định skip chỉ có ở ghi chú ngôi thứ ba; lời dev chỉ nói chưa tra được kích thước của 2 product vì cần token provider. Cần người có thẩm quyền xác nhận khác biệt môi trường và phía production, hoặc cấp cách lấy size gốc. Cần làm rõ thêm: test case ghi không có token Printify cho QA và dev, trong khi KB-502 ghi Printify dùng key của teeinblue.",
+      "related_kb_ids": [
+        "KB-504",
+        "KB-506",
+        "KB-509",
+        "KB-502"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Vế giảm một nửa kích thước chỉ có lời dev, chưa kiểm được trên môi trường test."
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-product-base-040"
+    },
+    {
+      "check_id": "CHK-04-027",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-077] Activity log khi đổi DPI: DPI trống ghi là 300",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "print area DPI trống, đổi sang 150 rồi xoá trống",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Role merchant-owner, print area của product base dùng để test có DPI trống, bật network capture.",
+      "steps": [
+        "Đổi DPI từ trống sang 150, lưu",
+        "Đọc bản ghi activity của thao tác: ở modal Logs nếu có hiện, nếu không thì ở request ghi activity trên network; ghi lại nơi đọc được",
+        "Xoá trống DPI, lưu",
+        "Đọc bản ghi activity của thao tác"
+      ],
+      "observation_point": "Nội dung bản ghi activity của hai thao tác",
+      "expected_result": "Đổi từ trống sang 150 ghi Changed dpi from \"300\" to \"150\". Xoá trống ghi \"150\" → \"300\".",
+      "oracle": {
+        "kb_ids": [
+          "KB-510"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-510",
+        "KB-036",
+        "KB-511"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chưa rõ log dpi có hiện ở modal Logs không; CHK-04-010 đang ghi modal chỉ có 4 loại sự kiện."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-04-028",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-077] Gap: activity log của DPI ghi vào log nào, không có expected",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "sửa print area, theo dõi request ghi activity",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Role merchant-owner, ở /products/{id}/edit của product base dùng để test, bật network capture. Check chỉ ghi quan sát.",
+      "steps": [
+        "Sửa Width bằng giá trị hợp lệ, ghi lại request ghi activity",
+        "Sửa DPI bằng giá trị hợp lệ, ghi lại request ghi activity",
+        "Thêm rồi xoá một print area, ghi lại request ghi activity"
+      ],
+      "observation_point": "Request ghi activity do browser gửi ở mỗi thao tác",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "\"Activity log do browser ghi qua GraphQL\" ở comment #56108 có phải log theo Product Base không, và REST /api/staff-activity-logs/printarea còn được gọi cho log staff không? Portal có 2 log tách biệt (KB-097): log staff toàn cục và log theo Product Base của modal Logs; lời dev (KB-511) không gọi tên log nào.",
+      "related_kb_ids": [
+        "KB-511",
+        "KB-035",
+        "KB-036",
+        "KB-510",
+        "KB-097"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Portal có 2 log tách biệt và lời dev không gọi tên log nào, nên chưa biết activity log của DPI ghi vào log nào."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-product-base-041"
     }
-  ]
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "core_capability_coverage": "13/13 capability của profile có check: 9 capability base giữ check cũ; khai báo DPI có CHK-04-017, CHK-04-018, CHK-04-019, CHK-04-022; export có CHK-04-020, CHK-04-021; nhận DPI khi import có CHK-04-023, CHK-04-024, CHK-04-025; activity log có CHK-04-027, CHK-04-028."
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "risk": "Vế giảm một nửa kích thước của ngưỡng 9000 px chưa kiểm được",
+      "covered": "CHK-04-026, NOT_APPLICABLE trên staging, expected để trống. Vế DPI ở CHK-04-025, chờ xác nhận cách chạy."
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "risk": "DPI không đổi kích thước pixel, khổ in sai nếu width/height không khớp",
+      "covered": "CHK-04-020, CHK-04-021."
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "risk": "Audit log không đáng tin, chưa rõ activity log của DPI ghi vào log nào",
+      "covered": "CHK-04-010, CHK-04-011 giữ nguyên; CHK-04-027 phủ nội dung log dpi; CHK-04-028 giữ câu hỏi log nào."
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "risk": "Các risk base: mutation lỗi im lặng, phạm vi _set, xoá không xác nhận, trùng Fulfilled key, dialog chưa dịch",
+      "covered": "Giữ nguyên ở CHK-04-005, CHK-04-013, CHK-04-004, CHK-04-006, CHK-04-007."
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "permission_coverage": "Không có check PERMISSION: phạm vi cột/hàng và cross-tenant vẫn ở CHK-04-013, chờ account thứ hai."
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "PERMISSION",
+      "reason": "KB-504..KB-513 không phát biểu về quyền theo role, chưa đăng nhập hay cross-tenant. Phạm vi _set và cross-tenant của base vẫn ở CHK-04-013 (dimension INTEGRATION), chờ account thứ hai."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-077"
+  }
 }

@@ -7,8 +7,8 @@ _Regenerated from `kb.json` (object-level + per-feature) and `checklists/*.json`
 | Type | Count |
 |---|---|
 | CONFLICT | 1 |
-| NEEDS_CONFIRMATION | 11 |
-| OPEN_ISSUE | 5 |
+| NEEDS_CONFIRMATION | 26 |
+| OPEN_ISSUE | 17 |
 
 ## OQ-order-001 — CONFLICT
 
@@ -190,4 +190,88 @@ Root cause (claimed webhook configuration fix) has never been independently veri
 
 ```json
 {"oq_id":"OQ-order-030","type":"NEEDS_CONFIRMATION","feature_id":"review-and-initiate-fulfillment-portal","summary":"PO xác nhận đây là hành vi đúng cho merchant và nhà in: Regenerate design của order item có artwork Group nhiều layer tạo xong design mới và không kẹt generating? KB-392 đến từ test case PASS, chưa có PO/business xác nhận ý định.","kb_ids":["KB-392"]}
+```
+
+## OQ-order-031 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-031", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "Trên /cart có đường sửa design không, theo SDK, loại campaign và toggle nào? 'Edit design' ở cart (SDK) và link Edit Customization sau order có phải cùng một feature không? KB-435 và KB-436 không phát biểu về /cart, không dùng làm expected cho /cart. Liên quan OQ-sdk-012.", "side_a": "Không có: ghi chú đề 2026-10-29 (tib-product-behaviors dòng 33); TC-TIB-7191 skipped (không có link hay property edit ở dòng parent); sdk KB-009 (OBSERVED_CURRENT, SDK v2, không tìm thấy đường edit từ cart).", "side_b": "Có: sdk KB-058 và translation KB-029 (modal 'Edit design' ở cart, SDK v1), sdk KB-057; flow storefront-sdk ghi Edit link trong cart của campaign product base.", "kb_ids": ["KB-435", "KB-436"]}
+```
+
+## OQ-order-032 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-032", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "Ở Order status page, campaign by product base có hiện link Edit Customization và báo không hỗ trợ edit giống Thank You page không? TC-TIB-982 chỉ chạy ở Thank You page; CHK-004 chờ câu trả lời này.", "kb_ids": ["KB-436"]}
+```
+
+## OQ-order-033 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-033", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "Sau khi customizer mở, buyer lưu thay đổi thì có ghi đè artwork của order không, và order item có nhận design mới không? TC-TIB-978 và TC-TIB-981 dừng ở mức design editable, TC-TIB-980 skipped. Ghi chú task Testlane TIB-042 nói artwork bị ghi đè; flow storefront-sdk chỉ ghi nút Update cart cập nhật customization.", "kb_ids": ["KB-435"]}
+```
+
+## OQ-order-034 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-034", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "Edit Customization có bị chặn theo fulfillment status không? Ghi chú task Testlane TIB-042 nêu đây là câu hỏi mở với PO/Dev và là rủi ro production, vì artwork bị ghi đè.", "kb_ids": ["KB-435"]}
+```
+
+## OQ-order-035 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-035", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "Classic customer accounts và New customer accounts có cùng nằm trong phạm vi của Edit Customization ở Order status page không? TC-TIB-981 không nói lượt chạy thuộc loại nào; flow storefront-sdk có ghi nhận link ở customer account mới, chưa có ghi nhận cho classic.", "kb_ids": ["KB-435", "KB-436"]}
+```
+
+## OQ-order-036 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-036", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "Order đặt trước khi bản này deploy có còn dùng được Edit Customization không? Ghi chú task Testlane TIB-042 còn để mở; ngày deploy cũng chưa rõ.", "kb_ids": ["KB-435", "KB-436"]}
+```
+
+## OQ-order-037 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-order-037", "type": "OPEN_ISSUE", "feature_id": "edit-customization-after-order", "summary": "Phạm vi surface của Edit Customization chưa chốt: KB-435 và KB-436 chỉ nói về Thank You page và Order status page, không khẳng định không có ở nơi khác. Nút cùng tên ở Portal vẫn thuộc OQ-order-011.", "kb_ids": ["KB-435", "KB-436"]}
+```
+
+## OQ-order-038 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-order-038", "type": "OPEN_ISSUE", "feature_id": "edit-customization-after-order", "summary": "Điều kiện để block Edit Customization render chưa rõ: do cấu hình block hay do loại store. Test case ghi block phải được thêm vào trang; flow storefront-sdk ghi store theo <TIB_STORE_URL> không render block, còn <TIB_SDK_V2> có link. Nhãn link cũng khác nhau giữa hai trang ('Customize', 'Customization edit link'), nên chưa dùng nhãn làm expected.", "kb_ids": ["KB-435", "KB-436"]}
+```
+
+## OQ-order-039 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-039", "type": "NEEDS_CONFIRMATION", "feature_id": "review-and-initiate-fulfillment-portal", "summary": "Người có thẩm quyền xác nhận hai phía của KB-437: staging có đúng là không test được tracking từ provider không (nguồn chỉ là ghi chú đề 2026-10-29, TC-TIB-7771 skipped cùng lý do, chưa có lời xác nhận gốc), và trên production tracking từ provider hoạt động thế nào (KB-437 ghi 'không rõ'; ngày deploy của ticket ngữ cảnh TIB-5439 cũng chưa rõ). CHK-P27 chờ câu trả lời này.", "kb_ids": ["KB-437"]}
+```
+
+## OQ-order-040 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-040", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "PO xác nhận đây là hành vi đúng: sau order, buyer của campaign Shopify product mở được customizer với design editable ở Thank You page và Order status page? KB-435 là đề xuất chưa xác minh: chỉ có test case PASS không ghi build và một dòng ghi chú, chưa có lời xác nhận gốc; đường này có thể đổi design của order đã đặt. CHK-001, CHK-002 chờ câu trả lời này.", "kb_ids": ["KB-435"]}
+```
+
+## OQ-order-041 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-order-041", "type": "OPEN_ISSUE", "feature_id": "edit-customization-after-order", "summary": "Chạy lại trên build hiện hành và trên production: TC-TIB-978, TC-TIB-981, TC-TIB-982 chạy 2026-08-27, không ghi build; ngày deploy chưa rõ. URL customize của staging đã đổi sau lượt chạy (flow storefront-sdk), nên chưa có lượt nào xác nhận design editable trên URL hiện hành; hành vi production của KB-435 và KB-436 chưa có lượt chạy.", "kb_ids": ["KB-435", "KB-436"]}
+```
+
+## OQ-order-042 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-order-042", "type": "OPEN_ISSUE", "feature_id": "edit-customization-after-order", "summary": "Message 'Your design does not support edit for now, contact shop owner' của KB-436 có đổi theo locale của buyer không? Knowledge translation chưa có item về customize page.", "kb_ids": ["KB-436"]}
+```
+
+## OQ-order-043 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-order-043", "type": "OPEN_ISSUE", "feature_id": "edit-customization-after-order", "summary": "Việc đổi host customize khi test trên staging có ở bảng bẫy của guide nhưng chưa có KB item environment_difference, nên profile feature này chưa có dòng environment_differences. Cần CCR riêng nếu muốn ghi nhận.", "kb_ids": ["KB-435", "KB-436"]}
+```
+
+## OQ-order-044 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-044", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "Với campaign by product base, hành vi đúng là gì? Hai nguồn chưa được chốt bằng lời xác nhận gốc. KB-436 ghi theo phía test case. CHK-003 chờ câu trả lời này.", "side_a": "Không có link: ghi chú đề 2026-10-29 (tib-product-behaviors dòng 33) ghi 'không có cho product base'; TC-TIB-7191 skipped ghi cùng ý.", "side_b": "Link vẫn hiện, click thì báo không hỗ trợ edit: TC-TIB-982 PASS 2026-08-27 không ghi build; ghi chú đề 2026-11-05 và mục #144 của ghi chú audit ghi theo phía này.", "kb_ids": ["KB-436"]}
 ```

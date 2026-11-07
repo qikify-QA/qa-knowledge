@@ -2,7 +2,7 @@
   "feature_id": "FEAT-12-layer-config-text",
   "feature_key": "layer-config-text",
   "object_id": "artwork",
-  "checklist_version": "2",
+  "checklist_version": "13",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -303,6 +303,46 @@
       "priority": "P3",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-artwork-136"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "[CBS-079] Paragraph vừa là buyer field vừa được populate: rỗng, chỉ khoảng trắng, xoá nội dung field nguồn — baseline một lượt, chưa xác nhận",
+      "applicability": {
+        "role": "buyer",
+        "state": "campaign có paragraph vừa là buyer field vừa được populate từ một field nguồn",
+        "environment": "staging; ghi build và ngày chạy (KB-416 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "storefront product page + order design"
+      },
+      "precondition": "Fixture throwaway như applicability; store cho phép order test.",
+      "steps": [
+        "Để paragraph rỗng; ghi preview; đặt 1 order test và ghi paragraph có render trong design không",
+        "Chỉ nhập khoảng trắng; ghi đã nhập vào field nào; ghi preview; đặt 1 order test và ghi design",
+        "Nhập nội dung vào field nguồn populate để paragraph nhận value, rồi xoá nội dung field nguồn; ghi value paragraph và preview",
+        "Ghi kết quả kèm build và ngày chạy"
+      ],
+      "observation_point": "Preview và order design ở từng nhánh; value của paragraph sau khi xoá nội dung field nguồn",
+      "expected_result": "Baseline một lượt (tháng 10/2026, record không ghi ngày chạy và build), không phải expected đã xác nhận: paragraph rỗng không render trong design, preview hiện default text; chỉ nhập khoảng trắng thì preview và design đều trống; xoá nội dung field nguồn populate thì value bị ghi đè thành rỗng và preview về default text. Lệch baseline là tín hiệu cần điều tra, không tự kết luận là bug.",
+      "oracle": {
+        "kb_ids": [
+          "KB-416"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Paragraph rỗng không render trong design, chỉ khoảng trắng thì preview và design trống, xoá nội dung field nguồn populate thì preview về default text. Đây có phải hành vi đúng không? Theo CCR, mô tả TIB-5538 ghi \"should fall back to its default text\", khác kết quả. Cần PO hoặc Dev xác nhận nguyên văn, có ngày, cho cả ba nhánh; hoặc test case PASS có ngày chạy và build.",
+      "related_kb_ids": [
+        "KB-416",
+        "KB-015"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Một lượt, mỗi nhánh một case, record không có build và ngày chạy; expected trong mô tả ticket khác kết quả. Không dùng làm oracle pass/fail."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-187"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -313,16 +353,28 @@
         "CHK-009"
       ],
       "covered": "BASELINE + NEEDS_CONFIRMATION (1 lần quan sát); câu hỏi nút 'Align' canvas toolbar nằm trong bước của CHK-009"
+    },
+    {
+      "feature_id": "FEAT-12-layer-config-text",
+      "risk": "[CBS-079] Paragraph vừa là buyer field vừa được populate: trạng thái rỗng, chỉ khoảng trắng, xoá nội dung field nguồn (KB-416)",
+      "checks": [
+        "CHK-010"
+      ],
+      "covered": "BASELINE + NEEDS_CONFIRMATION, một lượt; expected trong mô tả ticket khác kết quả"
     }
   ],
   "excluded_dimensions": [
     {
       "dimension": "NEGATIVE / BOUNDARY / PERMISSION / STATE_DATA / INTEGRATION / REGRESSION — phạm vi CBS-008",
       "reason": "KB-157 chỉ là quan sát cấu hình UI của layer Curve Text (không có input sai, giới hạn, quyền hay persistence ngoài giá trị align được lưu — đã nằm trong bước của CHK-009). Ảnh hưởng tới render nằm ở checklist text-color-sequence-render (CHK-010, CHK-016). KB-157 là item mới, không đổi hành vi item base và không phải KNOWN_DEFECT nên không có REGRESSION/regression watch."
+    },
+    {
+      "dimension": "PERMISSION / REGRESSION — phạm vi CBS-079",
+      "reason": "KB-416 chỉ quan sát hành vi buyer trên campaign, không có item về quyền. KB-416 có relation ADD, không đổi hành vi item base; shard không có item status KNOWN_DEFECT nên không có regression watch."
     }
   ],
   "last_updated": {
-    "date": "2026-10-26",
-    "ccr_ref": "CBS-008"
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-079"
   }
 }

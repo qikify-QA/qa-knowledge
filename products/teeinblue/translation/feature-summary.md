@@ -1,9 +1,9 @@
 # Object: Translation (product: teeinblue) — Feature Profile Summary
-**Published context version:** 2
+**Published context version:** 3
 
 Env: staging — role `owner` (account explore) on portal, `GUEST buyer` on storefront.
 
-**Mode:** Entire KB is `OBSERVED_CURRENT`/`OBSERVED_BASELINE`, except KB-011 (`INFERRED`) and KB-020/KB-021 (`PROPOSED`, unverified user annotation). **`CONFIRMED_EXPECTED`: KB-022, KB-023, KB-029 (CBS-001, test case PASS, chỉ staging build TIB-5352 — chưa release production, OQ-translation-023).** Object covers 2 user-facing sub-features plus 1 shared mechanism, across 3 feature profiles, all `CONDITIONAL_PASS`.
+**Mode:** Entire KB is `OBSERVED_CURRENT`/`OBSERVED_BASELINE`, except KB-011 (`INFERRED`), KB-020/KB-021 (`PROPOSED`, unverified user annotation), KB-039 (`PROPOSED`, điều kiện retry chưa rõ) and KB-040 (`PROPOSED`, entry DD.MM.YYYY, dd.MM.yyyy chưa xác nhận). **`CONFIRMED_EXPECTED`: KB-030..KB-038 (CBS-076, xem cuối mục Dynamic Translations); KB-022, KB-023, KB-029 (CBS-001, test case PASS, chỉ staging build TIB-5352 — chưa release production, OQ-translation-023).** Object covers 2 user-facing sub-features plus 1 shared mechanism, across 3 feature profiles, all `CONDITIONAL_PASS`.
 
 ## FEAT-01-05 — Product Page Content translation (`product-page-content-translation`)
 **Goal:** Merchant translates the app's static, built-in product-page UI strings (form labels, buttons, help text) so buyers see localized UI text.
@@ -44,6 +44,8 @@ A later, unverified user annotation (KB-020, KB-021 — `PROPOSED`) suggests the
 ---
 
 **CBS-001 (TIB-5352, staging):** dưới 1000 key dictionary nhúng trong HTML, từ 1000 key nạp qua `translations/<locale>.json` (KB-022); Save một locale không đổi locale khác (KB-023, cần PO xác nhận — OQ-translation-033); chuỗi form được dịch trên product page và modal 'Edit design' (KB-029). Endpoint public chưa rõ ranh giới cross-shop (OQ-translation-032).
+
+**CBS-076 (backfill, staging):** Import to Translation gợi ý key format của date layer từ Global Option như layer thường, mỗi format một lần; Global Option có Placeholder riêng hoặc không phải Date picker thì không gợi ý (KB-030, test case PASS). Theo comment dev: placeholder date picker tra dictionary bằng nguyên chuỗi format viết thường, entry một ký tự không khớp (KB-031). KB-040 (`PROPOSED`): entry DD.MM.YYYY, dd.MM.yyyy không áp dụng cho placeholder, chưa xác nhận — OQ-translation-042. Theo xác nhận của dev, chưa có test case: bản dịch nhập tay giữ khoảng trắng đầu/cuối, không áp cho tên Product base, Variants name (KB-032), Auto translate và bản dịch cũ vẫn ở dạng cắt (KB-035), ô chỉ chứa dấu cách là bản dịch thật (KB-036), thay đổi áp cho toàn bộ Save của trang (KB-037, PO cần xác nhận — OQ-translation-040); API translations lỗi hoặc quá 5 giây thì hiện chữ gốc (KB-033); prefix, suffix không còn trong LAYER_TRANSLATABLE_FIELDS (KB-034); Embed không có mã phiên bản (KB-038). KB-039 (`PROPOSED`): SDK thử lại 1 lần, chưa rõ điều kiện — OQ-translation-036. `scope.role` của KB-032..KB-039 chưa chốt — OQ-translation-034. Chưa rõ KB-032..KB-039 đã lên production chưa — OQ-translation-039. Flow dynamic-translations còn dòng trái KB-032 — OQ-translation-046. OQ-translation-001 vẫn mở.
 
 ## FEAT-02-04 — Language / locale switcher (`language-locale-switcher`)
 **Goal:** Merchant chooses which published language they're editing translations for (without changing portal UI language); buyer chooses which published language they browse the storefront in.

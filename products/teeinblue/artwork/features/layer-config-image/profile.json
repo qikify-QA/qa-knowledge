@@ -3,11 +3,14 @@
   "feature_key": "layer-config-image",
   "name": "Cấu hình layer — nhóm sidebar IMAGE (field/behavior riêng từng layer type)",
   "user_goal": "Store owner cấu hình field/behavior CHỈ thuộc riêng từng layer type trong nhóm sidebar IMAGE khi thêm layer trong artwork editor. Nhóm gồm 8 layer type: Static Image, Clipart Category›1, Clipart Category›Group, Photo Upload›Single, Photo Upload›Multiple, Text to Image (AI), Dynamic Clipart by Text›Manual, Dynamic Clipart by Text›Auto. Tách biệt khỏi cơ chế dùng chung (xem FEAT-04-layer-common-config) để 1 lần fix/thêm field cho 1 layer type chỉ cần đọc và sửa đúng phần nhỏ trong file này, không phải đọc lại toàn bộ layer-common-config cũ hay các nhóm sidebar khác. Tách biệt khỏi FEAT-19-clipart-category-storefront-behavior (buyer chọn/xem kết quả trên storefront) — CÙNG 2 layer sub-type Clipart Category›1/Group nhưng KHÁC actor và KHÁC user goal.",
-  "last_updated": {
-    "date": "2026-09-25",
-    "ccr_ref": "CBS-003",
-    "note": "3 dải freshness khác nhau trong feature này: (1) Static Image + 4 capability Dynamic Clipart by Text (Manual/Auto) — last observed 2026-09-10, KHÔNG re-verify ở bất kỳ run nào sau đó, kể cả run này; (2) 5 capability Clipart Category (1/Group) — structural, single field inventory, group field inventory + API schema, default-value mechanism + 3-way conflict, category-level settings — last observed 2026-09-21, KHÔNG re-verify trong run này; (3) Photo Upload›Single, Photo Upload›Multiple Uploads, Text to Image (AI) — MỞ RỘNG tại 2026-09-25 (CCR CBS-003): evidence mới GenAI provider-conditional field, '+ Variable' mechanism, Save & Close validation, API field naming + schema divergence, Beta badge absence, vai trò populate source/destination, cùng conflict CONF-CBS003-01 (personalization type, UNRESOLVED)."
-  },
+  "user_goal_kb_refs": [
+    "KB-006",
+    "KB-017",
+    "KB-018",
+    "KB-019",
+    "KB-083"
+  ],
+  "stable_since_version": null,
   "actors": [
     {
       "role": "store owner / staff (sub=273, user_id=266, plan Blue (Test))",
@@ -69,6 +72,14 @@
       "precondition": "Có quyền owner/staff truy cập module Clipart Category",
       "kb_refs": [
         "KB-091"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-079] artwork editor — chọn nhiều image layer khác ảnh, bật HD",
+      "precondition": "Selection có nhiều image layer khác ảnh. Config: limit mặc định 10 ảnh khác nhau mỗi lần bấm, trừ khi đặt khác trên server staging (KB-421); tên env MASTER_LARGE_BATCH_LIMIT theo KB-422, chưa xác nhận",
+      "kb_refs": [
+        "KB-421",
+        "KB-422"
       ]
     }
   ],
@@ -184,6 +195,29 @@
       "kb_refs": [
         "KB-021"
       ]
+    },
+    {
+      "name": "[MỚI, CBS-079] Bật HD hàng loạt cho nhiều image layer khác ảnh (batch HD)",
+      "description": "CONFIRMED_EXPECTED theo dev (KB-420, KB-421), staging, role chưa chốt, shipped UNKNOWN. Chọn nhiều image layer khác ảnh thì bật HD hàng loạt, tối đa 10 ảnh khác nhau mỗi lần bấm (mặc định 10 trừ khi đặt khác trên server staging). Vượt limit: toast info hiện trước, rồi toast lỗi tiêu đề \"Something went wrong!\". Mỗi lượt kiểm 2 giây có ít nhất một layer chuyển là 1 undo step, một Undo chỉ hoàn lượt mới nhất; tắt HD là 1 step. Build staging thay tooltip \"Selected layers use different images…\" (từ một fix cũ chỉ có trên staging, không còn là hành vi hiện tại) bằng batch HD. Chưa xác nhận (KB-422, OBSERVED_CURRENT/LOW, theo comment dev tự sinh từ diff, chưa kiểm): batch HD gọi POST /layer-images/create-master-large/batch nhận urls[]; quá MASTER_LARGE_BATCH_LIMIT (mặc định 10) ảnh thì trả 422 kèm thông báo limit, không queue gì, không layer nào đổi; layer đã ở HD không tính.",
+      "kb_refs": [
+        "KB-420",
+        "KB-421",
+        "KB-422"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-079] Bật HD theo nơi ảnh của layer nằm",
+      "description": "CONFIRMED_EXPECTED theo dev, staging, role chưa chốt, shipped UNKNOWN. HD phụ thuộc nơi ảnh của layer nằm, không phụ thuộc layer type: ảnh pick từ clipart category được copy vào image library nên bật HD được; HD chỉ disable với thông báo \"Cannot work with layers imported from clipart\" cho layer cũ còn trỏ thẳng vào clipart.",
+      "kb_refs": [
+        "KB-423"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-079] Layer Global Option được tính match trong warning biến ImagenHub",
+      "description": "CONFIRMED_EXPECTED theo dev, staging, role chưa chốt, shipped UNKNOWN. Ở warning \"Some ImagenHub variables have no matching layer\", layer Global Option được tính match qua title của chính Global Option. Per-field warning và nút \"+ variable\" chưa thuộc capability này, xem unknown_areas.",
+      "kb_refs": [
+        "KB-424"
+      ]
     }
   ],
   "state_transitions": [
@@ -204,10 +238,104 @@
       "kb_refs": [
         "KB-114"
       ]
+    },
+    {
+      "from": "[MỚI, CBS-079] nhiều image layer khác ảnh được chọn, số ảnh trong limit",
+      "to": "HD được bật hàng loạt; mỗi lượt kiểm 2 giây có ít nhất một layer chuyển là 1 undo step",
+      "trigger": "bật HD",
+      "condition": "Staging; role chưa chốt; shipped UNKNOWN. Vế layer đã ở HD không tính vào limit theo KB-422, chưa xác nhận.",
+      "kb_refs": [
+        "KB-421",
+        "KB-422"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-079] số ảnh khác nhau vượt limit",
+      "to": "toast info hiện trước, rồi toast lỗi tiêu đề \"Something went wrong!\"",
+      "trigger": "bật HD",
+      "condition": "Staging; role chưa chốt; shipped UNKNOWN. Vế API trả 422 kèm thông báo limit, không queue gì, không layer nào đổi theo KB-422, chưa xác nhận.",
+      "kb_refs": [
+        "KB-421",
+        "KB-422"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-079] đã có các lượt kiểm 2 giây chuyển layer sang HD",
+      "to": "chỉ lượt mới nhất được hoàn",
+      "trigger": "một lần Undo",
+      "condition": "Staging; role chưa chốt; shipped UNKNOWN.",
+      "kb_refs": [
+        "KB-421"
+      ]
     }
   ],
-  "confirmed_rules": [],
-  "observed_behavior": [],
+  "confirmed_rules": [
+    {
+      "rule": "Tooltip \"Selected layers use different images…\" đến từ một fix cũ chỉ có trên staging, không còn là hành vi hiện tại; build staging hiện tại thay nó bằng batch HD.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, role chưa chốt, portal",
+      "shipped": "UNKNOWN",
+      "caveats": "Một nguồn xác nhận, chưa có test case. Jira TIB-5212 Done, chưa có ngày deploy production.",
+      "confirmation_ref": "Jira TIB-5212 comment #55717 (dev), 2026-10-27",
+      "kb_refs": [
+        "KB-420"
+      ]
+    },
+    {
+      "rule": "Batch HD: chọn nhiều image layer khác ảnh thì bật HD hàng loạt, tối đa 10 ảnh khác nhau mỗi lần bấm (mặc định 10 trừ khi đặt khác trên server staging). Vượt limit: toast info hiện trước, rồi toast lỗi tiêu đề \"Something went wrong!\". Mỗi lượt kiểm 2 giây có ít nhất một layer chuyển là 1 undo step, một Undo chỉ hoàn lượt mới nhất; tắt HD là 1 step.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, role chưa chốt, portal",
+      "shipped": "UNKNOWN",
+      "caveats": "Một nguồn xác nhận, chưa có test case. Limit 10 là mặc định, đặt khác được trên server staging; không dùng 10 làm boundary production khi chưa có xác nhận.",
+      "confirmation_ref": "Jira TIB-5212 comment #55717 (dev), 2026-10-27",
+      "kb_refs": [
+        "KB-421"
+      ]
+    },
+    {
+      "rule": "HD phụ thuộc nơi ảnh của layer nằm, không phụ thuộc layer type: ảnh pick từ clipart category được copy vào image library nên bật HD được; HD chỉ disable với thông báo \"Cannot work with layers imported from clipart\" cho layer cũ còn trỏ thẳng vào clipart.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, role chưa chốt, portal",
+      "shipped": "UNKNOWN",
+      "caveats": "Một nguồn xác nhận, chưa có test case. Rule không nêu endpoint của bước import từ clipart.",
+      "confirmation_ref": "Jira TIB-5212 comment #55717 (dev), 2026-10-27",
+      "kb_refs": [
+        "KB-423"
+      ]
+    },
+    {
+      "rule": "Ở warning \"Some ImagenHub variables have no matching layer\", layer Global Option được tính match qua title của chính Global Option.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, role chưa chốt, portal",
+      "shipped": "UNKNOWN",
+      "caveats": "Một nguồn xác nhận, chưa có test case. Rule chỉ nói warning này; per-field warning và nút \"+ variable\" còn mở ở unknown_areas.",
+      "confirmation_ref": "Jira TIB-5465 comment #55232 (dev), 2026-10-21",
+      "kb_refs": [
+        "KB-424"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "[MỚI, CBS-079] Theo comment dev Jira TIB-5212 #54785 (2026-10-16, tự sinh từ branch diff, chưa kiểm trên hệ thống), batch HD gọi POST /layer-images/create-master-large/batch nhận urls[]; quá MASTER_LARGE_BATCH_LIMIT (mặc định 10) ảnh thì trả 422 kèm thông báo limit, không queue gì, không layer nào đổi; layer đã ở HD không tính.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "scope": "staging, role chưa chốt, portal+api",
+      "shipped": "UNKNOWN",
+      "kb_refs": [
+        "KB-422"
+      ]
+    }
+  ],
   "observed_validations": [
     {
       "input": "Save & Close artwork với layer clipart-category (single) chưa link category (customization_type unset)",
@@ -293,6 +421,17 @@
         "KB-124",
         "KB-125"
       ]
+    },
+    {
+      "role": "[MỚI, CBS-079] unspecified",
+      "capability": "scope.role của KB-420..KB-424 là 'unspecified' có chủ ý; KB không xác định role áp dụng và không có quan sát về quyền.",
+      "kb_refs": [
+        "KB-420",
+        "KB-421",
+        "KB-422",
+        "KB-423",
+        "KB-424"
+      ]
     }
   ],
   "surface_mapping": {
@@ -301,7 +440,10 @@
       "artwork editor — Bulk Edit dialog là ĐƯỜNG DUY NHẤT quan sát được để cấu hình layer Clipart Category (single/group) (KB-003)",
       "Portal — form tạo/sửa Clipart Category (Preview size/Thumbnail size/Display options/Custom class category-level/Show name on hover) (KB-009)",
       "[MỚI] artwork editor — config panel layer Multiple Uploads/Text to Image (AI): field GenAI service provider-conditional, '+ Variable' picker, personalization type (CONF-CBS003-01 UNRESOLVED)",
-      "[MỚI] artwork editor — config panel layer đích 'body' (photo): thứ tự accordion Populate Values đầu tiên khi làm populate destination"
+      "[MỚI] artwork editor — config panel layer đích 'body' (photo): thứ tự accordion Populate Values đầu tiên khi làm populate destination",
+      "[MỚI, CBS-079, KB-420, KB-421] artwork editor — batch HD khi chọn nhiều image layer khác ảnh: toast khi vượt limit, undo step",
+      "[MỚI, CBS-079, KB-423] artwork editor — HD disable với thông báo \"Cannot work with layers imported from clipart\" ở layer cũ còn trỏ thẳng vào clipart",
+      "[MỚI, CBS-079, KB-424] Warning \"Some ImagenHub variables have no matching layer\""
     ],
     "storefront": [
       "[POINTER — chi tiết đầy đủ ở FEAT-19-clipart-category-storefront-behavior] Personalization form widget (radiogroup thumbnail cho single-type / native select cho group-type), Preview modal, cart page cho layer clipart-category/group-clipart-categories — KHÔNG mô tả lại chi tiết ở đây để tránh trộn user-goal merchant-config vs buyer-facing.",
@@ -312,13 +454,15 @@
       "POST/PUT /api/artworks — key naming khác nhau single ('clipart') vs group ('grouped_clipart'); group có thêm 'form_placeholder', 'grouped_reposition' (KB-007)",
       "POST /api/clipart-categories — tạo category, body gồm clipart_thumbnail_size/clipart_max_width (KB-009)",
       "GET /api/layer-image-categories?type=clipart (trả [] rỗng) vs POST /api/graphql clipart_categories (trả 10 rows) — anomaly UNRESOLVED, xem CONF-API-CTX20260921-03-01",
-      "[MỚI] POST /api/artworks — Multiple Uploads: output_type/max_photos/multi_image_provider/multi_image_prompt; Text to Image: text_to_image_provider/form_label/text_to_image_prompt (KHÔNG có photo_editor/photo_replace); Photo Upload (destination): photo_editor/photo_replace + retrieval_value_enabled/retrieval_layer/retrieval_value — 1 sample/type, không có OpenAPI spec đối chiếu."
+      "[MỚI] POST /api/artworks — Multiple Uploads: output_type/max_photos/multi_image_provider/multi_image_prompt; Text to Image: text_to_image_provider/form_label/text_to_image_prompt (KHÔNG có photo_editor/photo_replace); Photo Upload (destination): photo_editor/photo_replace + retrieval_value_enabled/retrieval_layer/retrieval_value — 1 sample/type, không có OpenAPI spec đối chiếu.",
+      "[MỚI, CBS-079, KB-422] Chưa xác nhận: POST /layer-images/create-master-large/batch nhận urls[]; route ghi đúng như nguồn; 422 khi quá limit là nội dung nguồn, chưa kiểm"
     ],
+    "data": [],
     "code": [
       "bundle-registry: photo_editor/direct_upload_style/fit_mode/min_width/min_height (photo, chỉ ở photo), text_to_image_provider (text-to-image), multi_image_provider (multiple-uploads) — INFERRED.",
-      "[MỚI,, blocked] TIB-5326 (feature flag Beta cho Text to Image AI) không đóng được ở tầng code — code-config-explorer trả gate.decision=FAIL (không có product source repo teeinblue thật trên máy chạy run này)."
-    ],
-    "data": []
+      "[MỚI,, blocked] TIB-5326 (feature flag Beta cho Text to Image AI) không đóng được ở tầng code — code-config-explorer trả gate.decision=FAIL (không có product source repo teeinblue thật trên máy chạy run này).",
+      "[MỚI, CBS-079, KB-422] Chưa xác nhận: MASTER_LARGE_BATCH_LIMIT (mặc định 10)"
+    ]
   },
   "dependencies": [
     {
@@ -371,6 +515,14 @@
         "KB-119",
         "KB-120",
         "KB-124"
+      ]
+    },
+    {
+      "type": "config",
+      "description": "[MỚI, CBS-079] Ngưỡng batch HD phụ thuộc limit đặt ở server (mặc định 10, KB-421); tên env MASTER_LARGE_BATCH_LIMIT theo KB-422, chưa xác nhận; giá trị production chưa biết.",
+      "kb_refs": [
+        "KB-421",
+        "KB-422"
       ]
     }
   ],
@@ -489,8 +641,40 @@
         "KB-124",
         "KB-125"
       ]
+    },
+    {
+      "risk": "[MỚI, CBS-079] KB-420..KB-424 shipped UNKNOWN: Jira TIB-5212, TIB-5465 Done nhưng chưa có ngày deploy production; dùng các item này để đánh giá production có thể cho kết quả sai.",
+      "kb_refs": [
+        "KB-420",
+        "KB-421",
+        "KB-422",
+        "KB-423",
+        "KB-424"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-079] KB-422 dựa trên comment dev tự sinh từ branch diff, chưa kiểm trên hệ thống: route, env và 422 là nội dung nguồn, chưa có lượt quan sát nào; OBSERVED_CURRENT/LOW, không viết check coi đây là expected tới khi có xác nhận.",
+      "kb_refs": [
+        "KB-422"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-079] Limit batch HD đặt khác được trên server staging (KB-421): test boundary 10/11 ảnh cần biết giá trị đang đặt.",
+      "kb_refs": [
+        "KB-421"
+      ]
     }
   ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-11-06"
+  },
+  "last_updated": {
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-079",
+    "note": "3 dải freshness khác nhau trong feature này: (1) Static Image + 4 capability Dynamic Clipart by Text (Manual/Auto) — last observed 2026-09-10, KHÔNG re-verify ở bất kỳ run nào sau đó, kể cả run này; (2) 5 capability Clipart Category (1/Group) — structural, single field inventory, group field inventory + API schema, default-value mechanism + 3-way conflict, category-level settings — last observed 2026-09-21, KHÔNG re-verify trong run này; (3) Photo Upload›Single, Photo Upload›Multiple Uploads, Text to Image (AI) — MỞ RỘNG tại 2026-09-25 (CCR CBS-003): evidence mới GenAI provider-conditional field, '+ Variable' mechanism, Save & Close validation, API field naming + schema divergence, Beta badge absence, vai trò populate source/destination, cùng conflict CONF-CBS003-01 (personalization type, UNRESOLVED).",
+    "delta_note": "[CBS-079] Thêm dải thứ 4: KB-420, KB-421, KB-423, KB-424 là xác nhận của dev (2026-10-21 tới 2026-10-27), không phải quan sát; KB-422 là comment dev tự sinh từ diff (2026-10-16), chưa kiểm. Ba dải trên không re-verify ở CBS-079."
+  },
   "unknown_areas": [
     {
       "question": "text_to_image_provider vs multi_image_provider — 2 field cùng mục đích (chọn GenAI service) nhưng key JSON khác nhau theo bundle-registry (INFERRED) — chưa xác nhận qua PUT body thật.",
@@ -579,6 +763,37 @@
     {
       "question": "[MỚI] Text to Image (AI) có được offer làm Populate Content source ở cấu hình/thời điểm khác hay không — hiện chỉ có 1 sample phủ định (KB-007, dropdown chỉ offer Multiple Uploads).",
       "why_it_matters": "Không đủ để viết test case khẳng định 'Text to Image không bao giờ là nguồn hợp lệ' — cần re-test sau khi save artwork hoặc với artwork khác."
+    },
+    {
+      "question": "[MỚI, CBS-079] KB-424 chỉ nói warning \"Some ImagenHub variables have no matching layer\". Per-field warning và nút \"+ variable\" có nhận title của layer Global Option không?",
+      "why_it_matters": "Jira TIB-5465 comment #55232 của dev (2026-10-21) ghi cùng rule match áp cho per-field warning ở ImagenHub template field và prompt field Gen AI / Text to Image; ghi chú QA (audit #40, không có câu của dev, không nạp vào KB) lại ghi per-field warning và nút \"+ variable\" không nhận title của layer Global Option mà lấy layer name, và lỗi có cả trên prod. Hai phía ngược chiều nên checklist chưa có oracle. Cần Dev xác nhận nguyên văn, có ngày, hoặc kiểm trực tiếp cả per-field warning và nút \"+ variable\" với layer Global Option.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-424"
+      ],
+      "oq_id": "OQ-artwork-191"
+    },
+    {
+      "question": "[MỚI, CBS-079] Role áp dụng của KB-420..KB-424 là gì (owner, staff hay buyer), cho từng item?",
+      "why_it_matters": "scope.role của 5 item đang là 'unspecified' có chủ ý vì CCR ghi không rõ; checklist chưa biết chạy các item này với role nào.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-420",
+        "KB-421",
+        "KB-422",
+        "KB-423",
+        "KB-424"
+      ],
+      "oq_id": "OQ-artwork-184"
+    },
+    {
+      "question": "[MỚI, CBS-079] KB-422: route POST /layer-images/create-master-large/batch, env MASTER_LARGE_BATCH_LIMIT (mặc định 10) và status 422 khi quá limit có đúng trên build hiện tại không?",
+      "why_it_matters": "Nguồn là comment Jira TIB-5212 #54785 (2026-10-16) tự sinh từ branch diff, chưa kiểm trên hệ thống; comment #55717 không phát biểu lại các điểm này, nên checklist chưa có oracle STRONG. Cần Dev xác nhận nguyên văn, có ngày; hoặc test case PASS có build; hoặc operator yêu cầu explore cho claim này.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-422"
+      ],
+      "oq_id": "OQ-artwork-192"
     }
   ],
   "coverage_matrix": [
@@ -685,6 +900,108 @@
       "environment": "staging",
       "covered": false,
       "note": "Runtime evidence tồn tại qua staff-authenticated Live Preview proxy (KHÔNG guest thật) và owner nội dung chính = FEAT-09 (sdk) — xem coverage_matrix của FEAT-09-genai-personalization-runtime. TIB-5188 hoàn toàn chưa test ở bất kỳ role nào; 'Duplicate & Share' không tìm thấy ở 2 bề mặt."
+    },
+    {
+      "feature_id": "FEAT-13-layer-config-image",
+      "layer": "portal",
+      "role": "unspecified",
+      "state": "[MỚI, CBS-079] batch HD: limit, toast, undo step; tooltip cũ không còn",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-420",
+        "KB-421"
+      ],
+      "basis": "nguồn dev, KB không kèm test case"
+    },
+    {
+      "feature_id": "FEAT-13-layer-config-image",
+      "layer": "api",
+      "role": "unspecified",
+      "state": "[MỚI, CBS-079] POST /layer-images/create-master-large/batch, 422 khi quá limit",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-422"
+      ],
+      "basis": "comment dev tự sinh từ diff, chưa kiểm; chưa có status quan sát"
+    },
+    {
+      "feature_id": "FEAT-13-layer-config-image",
+      "layer": "portal",
+      "role": "unspecified",
+      "state": "[MỚI, CBS-079] HD với ảnh pick từ clipart category và layer cũ trỏ thẳng vào clipart",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-423"
+      ],
+      "basis": "nguồn dev, KB không kèm test case"
+    },
+    {
+      "feature_id": "FEAT-13-layer-config-image",
+      "layer": "portal",
+      "role": "unspecified",
+      "state": "[MỚI, CBS-079] warning \"Some ImagenHub variables have no matching layer\" với layer Global Option",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-424"
+      ],
+      "basis": "nguồn dev, KB không kèm test case"
+    },
+    {
+      "feature_id": "FEAT-13-layer-config-image",
+      "layer": "portal",
+      "role": "unspecified",
+      "state": "[MỚI, CBS-079] per-field warning và nút \"+ variable\" với layer Global Option",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-424"
+      ],
+      "basis": "chưa có oracle, xem unknown_areas"
+    },
+    {
+      "feature_id": "FEAT-13-layer-config-image",
+      "layer": "portal+api",
+      "role": "unspecified",
+      "state": "[MỚI, CBS-079] toàn bộ item shipped UNKNOWN",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "KB-420",
+        "KB-421",
+        "KB-422",
+        "KB-423",
+        "KB-424"
+      ],
+      "basis": "shipped UNKNOWN"
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "feature_id": "FEAT-13-layer-config-image",
+      "type": "CROSS_FEATURE_KB_REF_IN_BASE",
+      "detail": "Nội dung có sẵn tham chiếu KB-002, KB-004, KB-005, KB-008, KB-010, KB-011, KB-012, KB-045, KB-046, KB-047, KB-048, KB-096, KB-101, KB-118, KB-119, KB-120 — các item này không nằm trong kb.json của feature này. Giữ nguyên văn; không thêm tham chiếu mới tới các item đó. risks index 8 của base có kb_refs rỗng, giữ nguyên.",
+      "kb_refs": [
+        "KB-002",
+        "KB-004",
+        "KB-005",
+        "KB-008",
+        "KB-010",
+        "KB-011",
+        "KB-012",
+        "KB-045",
+        "KB-046",
+        "KB-047",
+        "KB-048",
+        "KB-096",
+        "KB-101",
+        "KB-118",
+        "KB-119",
+        "KB-120"
+      ]
     }
   ],
   "profile_relationships": [
@@ -711,6 +1028,15 @@
       "to_feature_id": "FEAT-11-populate-values",
       "relation": "related_feature (Multiple Uploads = possible source layer, Photo Upload Single = possible destination layer for Populate Content)",
       "note": "[MỚI] Token enumeration ({{input.1..N}}/{{output}}) phụ thuộc Maximum photos cấu hình ở FEAT-13; cơ chế populate đầy đủ (cross-layer propagation flagship, confidence HIGH) thuộc FEAT-11 (canon, đã tồn tại) — feature này chỉ mô tả vai trò source/destination CỦA layer type, không lặp lại narrative đầy đủ."
+    },
+    {
+      "from_feature_id": "FEAT-13-layer-config-image",
+      "to_feature_id": "FEAT-03-editor-layer-workspace",
+      "relation": "related",
+      "note": "[MỚI, CBS-079] Điều kiện ẩn HD theo selection nằm ở KB-429 của FEAT-03; batch HD của feature này (KB-421) chịu điều kiện đó.",
+      "kb_refs": [
+        "KB-421"
+      ]
     }
   ]
 }

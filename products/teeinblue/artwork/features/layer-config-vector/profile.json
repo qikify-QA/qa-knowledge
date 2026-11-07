@@ -3,11 +3,11 @@
   "feature_key": "layer-config-vector",
   "name": "Cấu hình layer — nhóm sidebar VECTOR (field/behavior riêng từng layer type)",
   "user_goal": "Store owner cấu hình field/behavior CHỈ thuộc riêng từng layer type trong nhóm sidebar VECTOR khi thêm layer trong artwork editor. Nhóm gồm 3 layer type: Static Vector, Vector Category, Vector Upload. Tách biệt khỏi cơ chế dùng chung (xem FEAT-04-layer-common-config) để 1 lần fix/thêm field cho 1 layer type chỉ cần đọc và sửa đúng phần nhỏ trong file này, không phải đọc lại toàn bộ layer-common-config cũ hay các nhóm sidebar khác.",
-  "last_updated": {
-    "date": "2026-09-26",
-    "ccr_ref": "CBS-004",
-    "note": "2 dải freshness trong feature này: (1) Static Vector (ngoại lệ Custom class)/Vector Category/baseline field 'Upload editor' của Vector Upload — last observed 2026-09-10, KHÔNG re-verify trong run này. (2) Rate-limit middleware của Static Vector (POST /api/layer-images/svg) và Vector Upload (POST vector-upload + upload-error-logs) — MỚI tại 2026-09-26 (CCR CBS-004), evidence 2 nguồn độc lập (API trực tiếp + UI/network capture qua portal-explorer dispatch #2)."
-  },
+  "user_goal_kb_refs": [
+    "KB-022",
+    "KB-023"
+  ],
+  "stable_since_version": null,
   "actors": [
     {
       "role": "store owner / staff (sub=273, user_id=266, plan Blue (Test))",
@@ -24,6 +24,14 @@
         "KB-126",
         "KB-127",
         "KB-128"
+      ]
+    },
+    {
+      "role": "[MỚI, CBS-079] merchant (owner/staff)",
+      "permission_observed": "KB-417, KB-418 ghi scope role 'merchant (owner/staff)'; KB không có quan sát về quyền.",
+      "kb_refs": [
+        "KB-417",
+        "KB-418"
       ]
     }
   ],
@@ -51,6 +59,20 @@
         "KB-126",
         "KB-127"
       ]
+    },
+    {
+      "path": "[MỚI, CBS-079] artwork editor — + Layer > VECTOR > Static Vector, upload file .svg rồi chọn file đó trong danh sách vector",
+      "precondition": "Có file .svg để upload; KB-417 không nêu setup riêng khác",
+      "kb_refs": [
+        "KB-417"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-079] Order của artwork có layer static-vector, Design format SVG",
+      "precondition": "Artwork chỉ có layer static-vector; lưu Design format SVG khi artwork còn raster layer trả HTTP 400 (quan sát một lượt)",
+      "kb_refs": [
+        "KB-418"
+      ]
     }
   ],
   "capabilities": [
@@ -76,6 +98,20 @@
         "KB-023",
         "KB-126",
         "KB-127"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-079] Tạo layer static-vector từ file .svg upload — chỉ quan sát",
+      "description": "OBSERVED_CURRENT/LOW, một lượt Testlane TC-TIB-5705 (staging, 2026-10-14, record không ghi build): upload file .svg qua + Layer > VECTOR > Static Vector rồi chọn file đó trong danh sách vector thì layer type static-vector được tạo, render trên canvas và còn sau khi reload editor. Chưa có người xác nhận đây là hành vi đúng, không dùng làm oracle, xem unknown_areas.",
+      "kb_refs": [
+        "KB-417"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-079] Design format của artwork có layer static-vector — chỉ quan sát",
+      "description": "OBSERVED_CURRENT/LOW, một lượt Testlane TC-TIB-5710 (staging, 2026-10-14, record không ghi build; render do người chạy xem bằng mắt): artwork chỉ có layer static-vector, Design format SVG thì order ra file design .svg; với format mặc định PNG_RGB, các order SVG trước đó báo \"Line item cannot generate design\"; lưu Design format SVG khi artwork còn raster layer trả HTTP 400. Giá trị SVG được người chạy chọn theo tên, chưa có xác nhận đây là format đúng duy nhất; không dùng làm oracle, xem unknown_areas.",
+      "kb_refs": [
+        "KB-418"
       ]
     }
   ],
@@ -106,6 +142,15 @@
       "kb_refs": [
         "KB-128"
       ]
+    },
+    {
+      "from": "[MỚI, CBS-079] file .svg đã upload nằm trong danh sách vector",
+      "to": "layer type static-vector được tạo, render trên canvas, còn sau khi reload editor",
+      "trigger": "chọn file đó trong danh sách vector",
+      "condition": "OBSERVED_CURRENT/LOW, một lượt TC-TIB-5705, staging; không làm oracle",
+      "kb_refs": [
+        "KB-417"
+      ]
     }
   ],
   "confirmed_rules": [],
@@ -116,6 +161,28 @@
         "KB-126",
         "KB-127",
         "KB-128"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-079] Upload file .svg qua + Layer > VECTOR > Static Vector rồi chọn file đó trong danh sách vector: layer type static-vector được tạo, render trên canvas và còn sau khi reload editor. Chưa có người xác nhận đây là hành vi đúng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "scope": "staging, merchant (owner/staff), portal, một lượt TC-TIB-5705, 2026-10-14, record không ghi build",
+      "shipped": "UNKNOWN",
+      "kb_refs": [
+        "KB-417"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-079] Artwork chỉ có layer static-vector, Design format SVG thì order ra file design .svg. Render do người chạy xem bằng mắt; giá trị SVG được người chạy chọn theo tên, chưa có xác nhận đây là format đúng duy nhất.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "scope": "staging, merchant (owner/staff), portal+render, một lượt TC-TIB-5710, 2026-10-14, record không ghi build",
+      "shipped": "UNKNOWN",
+      "kb_refs": [
+        "KB-418"
       ]
     }
   ],
@@ -136,6 +203,26 @@
       "rule_confidence": "LOW",
       "kb_refs": [
         "KB-127"
+      ]
+    },
+    {
+      "input": "[MỚI, CBS-079] Các order SVG trước đó, với Design format mặc định PNG_RGB",
+      "message_verbatim": "Line item cannot generate design",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "KB-418"
+      ]
+    },
+    {
+      "input": "[MỚI, CBS-079] Lưu Design format SVG khi artwork còn raster layer",
+      "message_verbatim": null,
+      "observed_response": "HTTP 400",
+      "note": "KB không ghi thông báo lỗi.",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "KB-418"
       ]
     }
   ],
@@ -163,7 +250,9 @@
     "portal": [
       "artwork editor — config panel của các layer type nhóm VECTOR",
       "[MỚI] '+ Layer' > Vector > 'Static Vector' > tab 'Upload a vector'",
-      "[MỚI] Live Preview widget — field personalization 'OPT vector-upload' (staff-authenticated proxy, KHÔNG phải guest thật)"
+      "[MỚI] Live Preview widget — field personalization 'OPT vector-upload' (staff-authenticated proxy, KHÔNG phải guest thật)",
+      "[MỚI, CBS-079] + Layer > VECTOR > Static Vector, danh sách vector, canvas sau khi reload editor (KB-417, quan sát)",
+      "[MỚI, CBS-079] Design format SVG và PNG_RGB của artwork (KB-418, quan sát)"
     ],
     "storefront": [],
     "api": [
@@ -171,10 +260,12 @@
       "[MỚI] POST /api/merchant/{platform}/upload-error-logs (KB-127, rate-limit 6/phút, client tự gọi khi vector-upload lỗi 500)",
       "[MỚI] POST /api/layer-images/svg (KB-128, rate-limit 1000/24h, resource layer_image — KHÁC /api/cliparts/svg)"
     ],
+    "data": [
+      "[MỚI, CBS-079] File design .svg của order từ artwork chỉ có layer static-vector (KB-418, quan sát)"
+    ],
     "code": [
       "bundle-registry: key `clipart` dùng chung cho vector-category/clipart-category/font/color; tz['vector-upload'] không liệt kê enum image_cropper/image_placement — INFERRED."
-    ],
-    "data": []
+    ]
   },
   "dependencies": [
     {
@@ -248,8 +339,25 @@
       "kb_refs": [
         "KB-128"
       ]
+    },
+    {
+      "risk": "[MỚI, CBS-079] KB-417, KB-418 mỗi item chỉ có một lượt chạy, record không có build, shipped UNKNOWN; render của KB-418 xem bằng mắt. Không viết check coi các kết quả này là expected, và không suy SVG là format đúng duy nhất, tới khi có xác nhận.",
+      "kb_refs": [
+        "KB-417",
+        "KB-418"
+      ]
     }
   ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-10-14"
+  },
+  "last_updated": {
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-079",
+    "note": "2 dải freshness trong feature này: (1) Static Vector (ngoại lệ Custom class)/Vector Category/baseline field 'Upload editor' của Vector Upload — last observed 2026-09-10, KHÔNG re-verify trong run này. (2) Rate-limit middleware của Static Vector (POST /api/layer-images/svg) và Vector Upload (POST vector-upload + upload-error-logs) — MỚI tại 2026-09-26 (CCR CBS-004), evidence 2 nguồn độc lập (API trực tiếp + UI/network capture qua portal-explorer dispatch #2).",
+    "delta_note": "[CBS-079] Thêm dải thứ 3: KB-417, KB-418 quan sát 2026-10-14 (TC-TIB-5705, TC-TIB-5710). Hai dải trên không re-verify ở CBS-079."
+  },
   "unknown_areas": [
     {
       "question": "Static Vector — chưa có per-type DOM dump riêng xác nhận field DESIGN SETTINGS cụ thể ngoài việc thiếu Custom class.",
@@ -274,6 +382,24 @@
     {
       "question": "[MỚI] Cột 'Prod' trong CCR CBS-004 (vd vector-upload Prod=20/phút theo CCR) — hoàn toàn KHÔNG verify trong run này theo chỉ thị operator (chỉ verify staging).",
       "why_it_matters": "KHÔNG thể so sánh hành vi staging vs production; KHÔNG dùng giá trị Prod của CCR làm oracle cho tới khi có run riêng verify production (nếu chính sách cho phép)."
+    },
+    {
+      "question": "[MỚI, CBS-079] Upload .svg qua Static Vector tạo layer static-vector, render trên canvas và còn sau khi reload editor, quan sát một lượt ngày 2026-10-14. Đây có phải hành vi đúng không?",
+      "why_it_matters": "KB-417 chỉ có một lượt, record không có build, nên checklist chưa có oracle. Cần PO hoặc Dev xác nhận nguyên văn, có ngày; hoặc build của lượt chạy TC-TIB-5705.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-417"
+      ],
+      "oq_id": "OQ-artwork-188"
+    },
+    {
+      "question": "[MỚI, CBS-079] Artwork chỉ có static-vector ra design .svg với Design format SVG, báo \"Line item cannot generate design\" với PNG_RGB, và lưu SVG khi còn raster layer trả HTTP 400, quan sát một lượt ngày 2026-10-14. Đây có phải hành vi đúng không, và SVG có phải format đúng duy nhất cho artwork này không?",
+      "why_it_matters": "Giá trị SVG được người chạy chọn theo tên, nên checklist chưa có oracle cho Design format. Cần PO hoặc Dev xác nhận nguyên văn, có ngày, nêu các format hợp lệ; hoặc build của lượt chạy TC-TIB-5710.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-418"
+      ],
+      "oq_id": "OQ-artwork-189"
     }
   ],
   "coverage_matrix": [
@@ -333,6 +459,59 @@
         "KB-128"
       ],
       "note": "Giá trị LIMIT/reset covered; behavior remaining KHÔNG covered — CONF-CBS004-001 UNRESOLVED."
+    },
+    {
+      "feature_id": "FEAT-14-layer-config-vector",
+      "layer": "portal",
+      "role": "merchant (owner/staff)",
+      "state": "[MỚI, CBS-079] upload .svg qua Static Vector, layer static-vector còn sau reload",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-417"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt 2026-10-14; chưa có oracle"
+    },
+    {
+      "feature_id": "FEAT-14-layer-config-vector",
+      "layer": "portal+render",
+      "role": "merchant (owner/staff)",
+      "state": "[MỚI, CBS-079] Design format SVG và PNG_RGB của artwork có layer static-vector",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-418"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt 2026-10-14, render xem bằng mắt; chưa có oracle"
+    },
+    {
+      "feature_id": "FEAT-14-layer-config-vector",
+      "layer": "portal+render",
+      "role": "any",
+      "state": "[MỚI, CBS-079] upload .svg và Design format của static-vector",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "KB-417",
+        "KB-418"
+      ],
+      "basis": "shipped UNKNOWN"
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "feature_id": "FEAT-14-layer-config-vector",
+      "type": "CROSS_FEATURE_KB_REF_IN_BASE",
+      "detail": "Nội dung có sẵn (actors[0], entry_points[0], capabilities[0], permissions[0], dependencies[0], risks[0], risks[2]) tham chiếu KB-002, KB-004, KB-005, KB-008, KB-010, KB-011, KB-012 — item thuộc FEAT-04-layer-common-config, không nằm trong kb.json của feature này. Giữ nguyên văn; không thêm tham chiếu mới tới các item đó.",
+      "kb_refs": [
+        "KB-002",
+        "KB-004",
+        "KB-005",
+        "KB-008",
+        "KB-010",
+        "KB-011",
+        "KB-012"
+      ]
     }
   ],
   "profile_relationships": [
@@ -347,6 +526,24 @@
       "to_feature_id": "asset-category-crud / asset-category-item-management (object asset-category)",
       "relation": "related_feature (cross-object, cùng CCR CBS-004 — dùng chung cơ chế rate-limit middleware nhưng route/resource khác nhau)",
       "note": "[MỚI] POST /api/layer-images/svg (Static Vector, feature này) KHÁC route với POST /api/cliparts/svg (Clipart item, object asset-category) — 2 route riêng biệt cho 2 resource (layer_image vs clipart), KHÔNG gộp. Xem asset-category/features/asset-category-item-management/profile.json cho phần clipart."
+    },
+    {
+      "from_feature_id": "FEAT-14-layer-config-vector",
+      "to_feature_id": "FEAT-03-editor-layer-workspace",
+      "relation": "related",
+      "note": "[MỚI, CBS-079] KB-417 (upload .svg qua + Layer) liên quan KB-048 của FEAT-03 (thư viện Vector rỗng chặn thêm layer nhóm VECTOR).",
+      "kb_refs": [
+        "KB-417"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-14-layer-config-vector",
+      "to_feature_id": "FEAT-07-artwork-save-persist",
+      "relation": "related",
+      "note": "[MỚI, CBS-079] KB-418 (lưu Design format) liên quan KB-053 của FEAT-07 (field cấp artwork trong PUT body).",
+      "kb_refs": [
+        "KB-418"
+      ]
     }
   ]
 }

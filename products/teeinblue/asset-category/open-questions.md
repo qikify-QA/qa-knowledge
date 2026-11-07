@@ -15,7 +15,7 @@
 ## OQ-asset-category-003 — OPEN_ISSUE
 
 ```json
-{"oq_id": "OQ-asset-category-003", "type": "OPEN_ISSUE", "feature_id": "_object-level", "summary": "Rate-limit của các route asset-category chỉ được verify ở mức GIÁ TRỊ limit đọc từ header (user_rate_limiter:clipart = 4000, user_rate_limiter:clipart_category = 1000 — KB-035/KB-036). Chưa verify runtime window reset 24h, và chưa biết 6 loại category (clipart/vector/color/additional_option/map/font) có dùng CHUNG counter clipart_category hay mỗi loại một counter riêng."}
+{"oq_id":"OQ-asset-category-003","type":"OPEN_ISSUE","feature_id":"_object-level","summary":"Rate-limit của các route asset-category chỉ được verify ở mức GIÁ TRỊ limit đọc từ header (user_rate_limiter:clipart = 4000, user_rate_limiter:clipart_category = 1000 — KB-035/KB-036). Chưa verify runtime window reset 24h, và chưa biết 6 loại category (clipart/vector/color/additional_option/map/font) có dùng CHUNG counter clipart_category hay mỗi loại một counter riêng. Lời dev về daily limit nay có ở KB-565; mốc cửa sổ đang conflict ở KB-567, KB-568 (OQ-asset-category-031), runtime vẫn chưa verify."}
 ```
 
 ## OQ-asset-category-004 — NEEDS_CONFIRMATION
@@ -147,7 +147,7 @@
 ## OQ-asset-category-025 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id": "OQ-asset-category-025", "type": "NEEDS_CONFIRMATION", "feature_id": "asset-category-bulk-upload", "summary": "Chỉ test 1 zip có đúng 1 top-level folder duy nhất ('valid-images 2'), không có folder con lồng nhau và không trùng tên category đã tồn tại. Hành vi với cấu trúc folder phức tạp hơn (nested) hoặc tên top-level folder trùng category đã có (tạo mới, merge, hay lỗi?) hoàn toàn chưa biết. Cần chạy thêm sample hoặc PO/Dev xác nhận business rule. Liên quan: CHK-009 (asset-category-bulk-upload), KB-016."}
+{"oq_id":"OQ-asset-category-025","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-bulk-upload","summary":"Chỉ test 1 zip có đúng 1 top-level folder duy nhất ('valid-images 2'), không có folder con lồng nhau và không trùng tên category đã tồn tại. Theo KB-563, zip bulk luôn tạo category mới từ folder. Còn mở: cấu trúc folder lồng nhau xử lý thế nào, và tên top-level folder trùng category đã có thì tạo mới trùng tên hay lỗi. Cần chạy thêm sample hoặc PO/Dev xác nhận business rule. Liên quan: CHK-009 (asset-category-bulk-upload), KB-016, KB-563."}
 ```
 
 ## OQ-asset-category-026 — NEEDS_CONFIRMATION
@@ -159,7 +159,7 @@
 ## OQ-asset-category-027 — OPEN_ISSUE
 
 ```json
-{"oq_id": "OQ-asset-category-027", "type": "OPEN_ISSUE", "feature_id": "asset-category-bulk-upload", "summary": "Giới hạn bulk-upload zip đã xác định được GIÁ TRỊ cho plan Blue (2GB/10 file, KB-022, PO xác nhận là tuỳ plan), nhưng CHƯA biết server có thực sự ENFORCE con số đó hay không: không có sample vượt ngưỡng (>2GB hoặc >10 file) trong bất kỳ đợt quan sát nào — chỉ có banner tĩnh, 1 zip nhỏ hợp lệ và 1 file sai mimetype. Giới hạn của các plan khác ngoài Blue cũng chưa verify. Ghi chú KB cũ (512MB/2 file) không bị xoá vì có thể đúng cho 1 plan khác."}
+{"oq_id":"OQ-asset-category-027","type":"OPEN_ISSUE","feature_id":"asset-category-bulk-upload","summary":"Giới hạn bulk-upload zip đã xác định được GIÁ TRỊ cho plan Blue (2GB/10 file, KB-022, PO xác nhận là tuỳ plan), nhưng CHƯA biết server có thực sự ENFORCE con số đó hay không: không có sample vượt ngưỡng (>2GB hoặc >10 file) trong bất kỳ đợt quan sát nào — chỉ có banner tĩnh, 1 zip nhỏ hợp lệ và 1 file sai mimetype. Giới hạn của các plan khác ngoài Blue cũng chưa verify. Ghi chú KB cũ (512MB/2 file) không bị xoá vì có thể đúng cho 1 plan khác. Chưa rõ \"max 10 files at a time\" của KB-022 đếm zip hay đếm file trong zip; nếu đếm file trong zip thì cap của KB-561 không chạm được bằng zip ở plan Blue, và CHK-020 (asset-category-item-management) chỉ dựng được khi cap rất nhỏ. Liên quan: KB-563."}
 ```
 
 ## OQ-asset-category-028 — OPEN_ISSUE
@@ -172,4 +172,70 @@
 
 ```json
 {"oq_id": "OQ-asset-category-029", "type": "OPEN_ISSUE", "feature_id": "asset-category-bulk-upload", "summary": "Chỉ test 1 định dạng sai (.txt) cho input 'Upload zip' và nhận 422 'The selected mimetype is invalid.' (KB-025). Chưa rõ các định dạng sai khác (.rar, .7z, .tar.gz) có nhận cùng status/message hay có case đặc biệt (ví dụ client-side accept nhưng server reject theo cách khác)."}
+```
+
+## OQ-asset-category-030 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-asset-category-030","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"Icon ở kết quả dropzone upload bị ẩn có phải chủ đích không? Test case ghi nhận không thấy icon, kết quả hiện bằng text, nhưng QA plan của dev ở TIB-5544 vẫn nói green check và red error mark. Cần PO hoặc dev xác nhận kết quả mong đợi là text không kèm icon, hay icon phải hiện. Liên quan: KB-560, CHK-024, CHK-025."}
+```
+
+## OQ-asset-category-031 — CONFLICT
+
+```json
+{"oq_id":"OQ-asset-category-031","type":"CONFLICT","feature_id":"asset-category-item-management","summary":"Cửa sổ daily limit upload asset tính thế nào: từ lượt upload đầu tiên hay cửa sổ trượt 24h UTC? Lượt upload của ảnh đã xoá có được đếm không, và mốc Wait until tính từ đâu? KB-567 và KB-568 đang UNRESOLVED (conflict_group CFL-003), không bên nào là oracle. Cần PO hoặc dev xác nhận. Liên quan: CHK-023; item-management CHK-017 và crud CHK-018 có thể đổi theo câu trả lời.","side_a":"Dev phát biểu ở Jira TIB-5536 comment #55888 (2026-10-28): cửa sổ daily limit tính \"per 24 h from the first upload\" (KB-567).","side_b":"QA ghi nhận trong test case (2026-10-29): cửa sổ trượt 24h UTC, đếm cả ảnh đã xoá, mốc Wait until bằng lượt upload cũ nhất cộng 24h; chưa có người xác nhận, test case không đo mốc này (KB-568)."}
+```
+
+## OQ-asset-category-032 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-asset-category-032","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"QA không truy cập được Horizon trên môi trường test, test case ghi /horizon trả 404 và bỏ vế Horizon; lời \"user confirmed\" trong test case là ghi chú ngôi thứ ba, phía production không rõ. Cần PO hoặc dev xác nhận bỏ vế Horizon, verify UI và API là cách test được chấp nhận, và cho biết job failed, queued kiểm được thế nào trên production. Liên quan: KB-569, CHK-026."}
+```
+
+## OQ-asset-category-033 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-asset-category-033","type":"OPEN_ISSUE","feature_id":"asset-category-item-management","summary":"Kết quả thành công ở uploader layer image và mockup library hiển thị thế nào? Test case chỉ có ghi nhận phía lỗi của hai uploader này (KB-560); không suy từ dropzone clipart sang được, nên chưa có căn cứ viết check cho phía thành công."}
+```
+
+## OQ-asset-category-034 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-asset-category-034","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"PO có chấp nhận việc zip vượt cap vẫn kết thúc done, file thừa chỉ để lại dòng log Failed không? Merchant có thấy cảnh báo nào ngoài log không? Hiện chỉ có lời dev (KB-563), chưa có quyết định của PO. Liên quan: CHK-020."}
+```
+
+## OQ-asset-category-035 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-asset-category-035","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"\"Không có reset\" của KB-565 nghĩa là không có thao tác reset bộ đếm để test, hay nghĩa khác? Câu của dev trả lời câu hỏi \"is there a way to reset them for testing?\"; người đọc có thể hiểu nhầm là cửa sổ không hết hạn. Vế này chưa có check. Cần dev xác nhận."}
+```
+
+## OQ-asset-category-036 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-asset-category-036","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"Các hành vi của KB-560..KB-569 (cap clipart, daily limit dùng chung, dropzone, Horizon) đã lên production chưa, từ ngày nào? Ticket Done nhưng chưa rõ ngày deploy; comment Jira chỉ dẫn lời \"deploy\", không nêu môi trường; test case không ghi build. Cần dev xác nhận. Liên quan: CHK-018..CHK-026."}
+```
+
+## OQ-asset-category-037 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-asset-category-037","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"Cap clipart áp đúng ở đâu? \"Manual upload\" và \"SVG upload\" trong lời dev không nêu route; CHK-019 hiểu là dropzone /cliparts và /vectors. Quick-add Color/Additional Option/Map Style (KB-017), Font (KB-031), clone (KB-005, KB-006) có chịu cap không? Portal trả status và lỗi gì khi chạm cap? Cần dev xác nhận. Liên quan: KB-561, CHK-019."}
+```
+
+## OQ-asset-category-038 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-asset-category-038","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"Những route nào ăn vào bộ đếm clipart? CHK-022 giả định POST /api/cliparts/svg và POST /cliparts của Open API cùng bộ đếm; POST /api/cliparts/by-temporary-file (KB-014), /api/cliparts/font (KB-031) và zip bulk chưa rõ. Capture 429 của KB-568 thuộc bộ đếm nào cũng chưa rõ. Tăng \"… max attempts\" có cho lại lượt upload ngay không cũng chưa có nguồn. Cần dev xác nhận. Liên quan: KB-565, CHK-022."}
+```
+
+## OQ-asset-category-039 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-asset-category-039","type":"OPEN_ISSUE","feature_id":"asset-category-item-management","summary":"Tên đầy đủ của field \"… max attempts\" cho từng bộ đếm là gì, và QA vào admin panel bằng account nào? Guide chưa có biến env cho account admin; CHK-018..CHK-023 cần quyền này. CHK-015 và crud CHK-017 đang assert 4000, 1000 nên có thể lệch nếu \"… max attempts\" của account test đã đổi. Liên quan: KB-564, KB-566."}
+```
+
+## OQ-asset-category-040 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-asset-category-040","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"CHK-018, CHK-021, CHK-022, CHK-023 cần bước PUT lên upload_url của Open API, trong khi host của bước này chưa được xác nhận (OQ-open-api-001 ở object open-api). Các check này chỉ ghi nhận cho tới khi host có kết luận. Cần dev xác nhận host của bước PUT."}
 ```

@@ -1,6 +1,8 @@
 {
   "feature_id": "FEAT-01-product-base-browse",
   "feature_key": "product-base-browse",
+  "object_id": "product-base",
+  "checklist_version": "7",
   "checks": [
     {
       "check_id": "CHK-01-001",
@@ -505,6 +507,250 @@
       "risk_refs": [],
       "priority": "P3",
       "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-01-017",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-077] Printful, ShineOn là nhóm merchant tự nhập key ở Extras → Fulfillments (vế Picanova chờ OQ-product-base-037)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "provider nhóm merchant tự nhập key",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Đã đăng nhập portal với role merchant-owner. Check chỉ xem chỗ nhập key, không lưu key. Vế Picanova chờ OQ-product-base-037: không phán theo tên Picanova, UI có thể hiện merchOne.",
+      "steps": [
+        "Mở Extras → Fulfillments",
+        "Tìm lần lượt Printful, ShineOn",
+        "Với mỗi provider, mở phần kết nối và xem có chỗ để merchant nhập key không; không lưu thay đổi",
+        "Chỉ ghi nhận, không phán: tên đang hiển thị của provider Picanova (có thể là merchOne) và provider đó có chỗ nhập key không"
+      ],
+      "observation_point": "Chỗ nhập key của Printful, ShineOn ở Extras → Fulfillments",
+      "expected_result": "Printful và ShineOn đều có chỗ để merchant tự nhập key ở Extras → Fulfillments.",
+      "oracle": {
+        "kb_ids": [
+          "KB-501"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-501",
+        "KB-500"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Check không kết luận catalog dùng key nào theo trạng thái đã nhập key: lời dev chia theo provider."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-product-base-037"
+    },
+    {
+      "check_id": "CHK-01-018",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-077] Merchant không kích hoạt được lỗi key của Merchize, MarketPrint, Printify, Shirtee, Printbelle từ UI (không gồm CustomCat)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "provider nhóm dùng key teeinblue, key trong .env staging đúng",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Role merchant-owner. DEV xác nhận key của các provider này trong .env staging đang đúng, không có lượt đổi key nào đang chạy. Không nhập key vào dialog Connect API: hành vi khi nhập key chưa có xác nhận nên nằm ngoài check. CustomCat thuộc CHK-01-019.",
+      "steps": [
+        "Mở /products, bấm Import product, bật network capture",
+        "Chọn lần lượt Merchize, MarketPrint, Printify, Shirtee, Printbelle; provider không có trong modal thì ghi lại",
+        "Với mỗi provider, chờ catalog nạp và chuyển trang nếu có nhiều trang",
+        "Ghi lại dialog của provider đang hiện Connect API hay API Connected; trạng thái này chỉ để ghi nhận, không chia expected theo nó"
+      ],
+      "observation_point": "Toast trong modal Import product và response của GET /api/fulfillments/{id}/catalogs cho từng provider",
+      "expected_result": "Các thao tác ở bước 2 và 3 không sinh lỗi key của Merchize, MarketPrint, Printify, Shirtee, Printbelle.",
+      "oracle": {
+        "kb_ids": [
+          "KB-502"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-502",
+        "KB-503",
+        "KB-015"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lấy trạng thái Connect API làm điều kiện chọn key là rule chưa có xác nhận.",
+        "Lỗi do key trong .env staging không phải lỗi do thao tác của merchant: đối chiếu với DEV trước khi ghi kết quả."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-01-019",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[CBS-077] Gap: key CustomCat do merchant hay teeinblue giữ, chưa xác nhận, không có expected",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "provider CustomCat",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Role merchant-owner. Check chỉ ghi quan sát, không phán kết quả cho tới khi có trả lời về chủ key.",
+      "steps": [
+        "Mở Extras → Fulfillments, tìm CustomCat, ghi lại có chỗ nhập key không; không lưu thay đổi",
+        "Mở /products, bấm Import product, chọn CustomCat",
+        "Ghi lại dialog đang hiện gì, catalog có nạp không, toast nếu có"
+      ],
+      "observation_point": "Chỗ nhập key của CustomCat, toast và catalog ở modal Import product",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Key CustomCat do ai giữ, merchant hay teeinblue? Trong comment dev, dòng Invalid CustomCat key nằm dưới mục các provider dùng key teeinblue, nhưng toast [CustomCat] Access denied, check the API key in Extras/Fulfillments của chính dòng đó bảo kiểm key ở Extras/Fulfillments, và test case ghi key owner chưa rõ. Cần PO hoặc dev xác nhận.",
+      "related_kb_ids": [
+        "KB-514"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chủ key CustomCat chưa chốt; check chỉ ghi quan sát cho tới khi có trả lời."
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-product-base-039"
+    },
+    {
+      "check_id": "CHK-01-020",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-077] Baseline: chọn MERCHONE ở Import product, toast [merchOne] và field provider là picanova; tên hiển thị và route là ghi nhận riêng",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "chọn MERCHONE, catalog của provider trả lỗi",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Role merchant-owner, bật network capture. Hành vi mới có một lượt ghi nhận trong state catalog của provider trả lỗi.",
+      "steps": [
+        "Mở /products, bấm Import product",
+        "Chọn MERCHONE",
+        "Ghi lại toast",
+        "Đọc field provider trong body",
+        "Ghi lại tên hiển thị của provider",
+        "Nếu gặp route của provider thì ghi lại route và nơi thấy; không kỳ vọng route xuất hiện ở thao tác chọn MERCHONE"
+      ],
+      "observation_point": "Toast và field provider trong body khi chọn MERCHONE; tên hiển thị của provider; route nếu gặp",
+      "expected_result": "Theo một lượt ghi nhận trên staging, chưa có xác nhận: chọn MERCHONE khi catalog của provider trả lỗi thì toast \"Something went wrong!\" kèm [merchOne] 401 Unauthorized, field provider trong body là \"picanova\". Test case cũng ghi riêng tên hiển thị của provider là merchOne và route là /fulfillments/picanova; route không gắn với thao tác chọn MERCHONE. Kết quả khác ghi nhận này thì ghi lại để điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "KB-500"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "merchOne và Picanova có phải một provider không, và tên hiển thị merchOne có phải kết quả đổi tên chủ đích không? KB-500 chỉ là ghi nhận của QA ở một lượt staging, không ghi build. Cần PO hoặc dev xác nhận nguyên văn kèm ngày, hoặc test case PASS có ghi build.",
+      "related_kb_ids": [
+        "KB-500",
+        "KB-501",
+        "KB-006",
+        "KB-015"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Coi hai tên là một provider khi chưa xác nhận có thể làm lệch test case theo provider."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-product-base-037"
+    },
+    {
+      "check_id": "CHK-01-021",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-077] Baseline: catalog Shirtee, Printbelle khi key trong .env staging sai, trên account chưa connect fulfillment",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account chưa connect fulfillment, key provider trong .env staging bị đổi sai",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Cần DEV đổi key Shirtee và Printbelle thành sai trong .env staging và đổi lại sau khi chạy; staging dùng chung nên báo trước. Account role merchant-owner chưa connect fulfillment nào (dialog hiện \"Connect API\", không phải \"API Connected\").",
+      "steps": [
+        "Xác nhận với DEV key đã được đổi",
+        "Mở /products, bấm Import product, bật network capture",
+        "Chọn Shirtee, ghi lại status của GET /api/fulfillments/{id}/catalogs và toast",
+        "Chọn Printbelle, ghi lại status và toast",
+        "Báo DEV đổi lại key"
+      ],
+      "observation_point": "Status của GET /api/fulfillments/{id}/catalogs và toast của từng provider",
+      "expected_result": "Theo một lượt ghi nhận trên staging, chưa có xác nhận: GET /api/fulfillments/{id}/catalogs của hai provider trả 400, toast [Shirtee] Invalid Api key và [Printbelle] User does not exist or incorrect password. Kết quả này chỉ nói về state của check, không suy ra được rule theo trạng thái đã nhập key.",
+      "oracle": {
+        "kb_ids": [
+          "KB-503"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Rule \"provider chưa nhập key dùng key teeinblue, merchant đã nhập key thì dùng key merchant\" có đúng không, và áp cho provider nào? Rule chỉ có ở ghi chú ngôi thứ ba; comment dev chia theo nhóm provider, không theo trạng thái đã nhập key. KB-503 chỉ là quan sát trên account chưa connect. Cần dev hoặc PO chốt cách chia và danh sách provider, gồm việc Picanova/merchOne thuộc nhóm merchant nhập key trong khi test case ghi API key trong .env của merchOne trả 403.",
+      "related_kb_ids": [
+        "KB-503",
+        "KB-501",
+        "KB-502",
+        "KB-015"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lấy quan sát trên account chưa connect làm rule theo trạng thái đã nhập key sẽ cho expected chưa có xác nhận."
+      ],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-product-base-038"
     }
-  ]
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "core_capability_coverage": "11/11 capability của profile có check: 9 capability base giữ check cũ; nạp catalog theo nhóm giữ key có CHK-01-017, CHK-01-018, CHK-01-019; báo lỗi catalog có CHK-01-020, CHK-01-021."
+    },
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "risk": "Lấy quan sát trên account chưa connect làm rule theo trạng thái đã nhập key",
+      "covered": "Không check nào assert rule này. CHK-01-021 giữ câu hỏi; nhánh account đã nhập key chưa có check."
+    },
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "risk": "Chủ key CustomCat chưa chốt",
+      "covered": "CHK-01-019, expected để trống. CustomCat không nằm trong CHK-01-018."
+    },
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "risk": "Tên merchOne và Picanova chưa xác nhận là một provider",
+      "covered": "CHK-01-020, baseline chờ xác nhận. Vế Picanova của CHK-01-017 chờ cùng câu trả lời."
+    },
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "risk": "CONF-001 cursor stale, provider list không đồng nhất, tên trang không nhất quán",
+      "covered": "Giữ nguyên ở CHK-01-012, CHK-01-014, CHK-01-015."
+    },
+    {
+      "feature_id": "FEAT-01-product-base-browse",
+      "permission_coverage": "Không có check PERMISSION: chỉ một role được quan sát."
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "PERMISSION",
+      "reason": "Base chỉ quan sát một role (KB-064), và KB-500..KB-503 không phát biểu về quyền theo role, chưa đăng nhập hay cross-tenant. Không có căn cứ dựng check nếu không bịa expected."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-077"
+  }
 }

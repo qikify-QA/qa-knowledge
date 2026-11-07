@@ -1,13 +1,13 @@
 # Open Questions — Translation
 
-Mỗi mục dưới đây là 1 entry độc lập với `oq_id` ổn định (không đổi số khi resolve mục khác). Nguồn: 1 conflict thật từ kb bootstrap (`kb_version 1`, `CTX-20260921-02`), các checklist item `NEEDS_CONFIRMATION` trên cả 3 checklist, và các gap object-wide chưa được checklist nào bao phủ.
+Mỗi mục dưới đây là 1 entry độc lập với `oq_id` ổn định (không đổi số khi resolve mục khác). Nguồn: 1 conflict thật từ kb bootstrap (`kb_version 1`), các checklist item `NEEDS_CONFIRMATION` trên cả 3 checklist, và các gap object-wide chưa được checklist nào bao phủ.
 
 | Loại | Số lượng |
 |---|---|
 | CONFLICT | 1 |
-| NEEDS_CONFIRMATION | 24 |
-| OPEN_ISSUE | 8 |
-| **Tổng** | **33** |
+| NEEDS_CONFIRMATION | 35 |
+| OPEN_ISSUE | 10 |
+| **Tổng** | **46** |
 
 ## OQ-translation-001 — CONFLICT
 
@@ -192,7 +192,7 @@ Mỗi mục dưới đây là 1 entry độc lập với `oq_id` ổn định (k
 ## OQ-translation-031 — OPEN_ISSUE
 
 ```json
-{"oq_id": "OQ-translation-031", "type": "OPEN_ISSUE", "feature_id": "dynamic-translations", "summary": "CCR CBS-001: các hành vi Dev mô tả trong comment Jira TIB-5352 nhưng chưa verify — API trả đúng dictionary cho locale có mã vùng viết hoa (trước 404); xoá locale lẻ/bulk save → bản dịch trên Shopify cập nhật lại; đổi ngôn ngữ chính → storefront đồng bộ lại; embed ngoài Shopify vẫn gọi API, không có version; known issue không sửa: so khớp hoa/thường mã ngôn ngữ khi ghi metafield, shop inactive/thiếu quyền không tự sync lại. Các test case liên quan (TC-TIB-013/018/019/020/022) blocked. Cần nguồn: test case PASS trên build có thay đổi, hoặc xác nhận Dev/PO trích nguyên văn được chấp nhận."}
+{"oq_id": "OQ-translation-031", "type": "OPEN_ISSUE", "feature_id": "dynamic-translations", "summary": "CCR CBS-001: các hành vi Dev mô tả trong comment Jira TIB-5352 nhưng chưa verify — API trả đúng dictionary cho locale có mã vùng viết hoa (trước 404); xoá locale lẻ/bulk save → bản dịch trên Shopify cập nhật lại; đổi ngôn ngữ chính → storefront đồng bộ lại; embed ngoài Shopify vẫn gọi API, không có version (vế này đã có xác nhận Dev ở KB-038, chưa có test case); known issue không sửa: so khớp hoa/thường mã ngôn ngữ khi ghi metafield, shop inactive/thiếu quyền không tự sync lại. Các test case liên quan (TC-TIB-013/018/019/020/022) blocked. Cần nguồn: test case PASS trên build có thay đổi, hoặc xác nhận Dev/PO trích nguyên văn được chấp nhận."}
 ```
 
 ## OQ-translation-032 — NEEDS_CONFIRMATION
@@ -205,4 +205,82 @@ Mỗi mục dưới đây là 1 entry độc lập với `oq_id` ổn định (k
 
 ```json
 {"oq_id": "OQ-translation-033", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "PO xác nhận Save ở một locale không làm thay đổi bản dịch của các locale khác (KB-023) là hành vi mong muốn. Kết hợp với việc Save thay toàn bộ tập bản dịch (KB-012), nếu sai sẽ mất bản dịch — check P1 CHK-016 dùng KB-023 làm oracle duy nhất.", "kb_ids": ["KB-023", "KB-012"]}
+```
+
+## OQ-translation-034 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-034", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "scope.role của KB-032..KB-039 đang là 'unspecified' vì nguồn không nêu role. Cần chốt role áp dụng cho từng item (owner, staff, buyer) (checklist ref: CHK-044).", "kb_ids": ["KB-032", "KB-033", "KB-034", "KB-035", "KB-036", "KB-037", "KB-038", "KB-039"]}
+```
+
+## OQ-translation-035 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-035", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "Thao tác Save của Dynamic Translations có gồm thêm, sửa, xoá ngôn ngữ và lưu tên ngôn ngữ không. Comment dev Jira TIB-5585 #55043 (2026-10-19) liệt kê các thao tác này; ghi chú QA 2026-10-30 nói Portal không có UI thêm, đổi tên, xoá ngôn ngữ. Ghi chú QA không đủ nguồn nên chưa nạp; KB-037 chỉ nêu xoá dòng dịch và mọi nền tảng. Cần Dev/PO chốt (checklist ref: CHK-038).", "kb_ids": ["KB-037"]}
+```
+
+## OQ-translation-036 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-036", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "Điều kiện thử lại của SDK khi fetch translations lỗi: dev viết 'SDK chỉ thử lại đúng 1 lần' nhưng không nêu điều kiện; object sdk quan sát retry lazy, không retry trong một lần load trang (sdk KB-057) và đang mở OQ-sdk-053. KB-039 giữ PROPOSED tới khi Dev xác nhận (checklist ref: CHK-043).", "kb_ids": ["KB-039"]}
+```
+
+## OQ-translation-037 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-037", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "Import to Translation: Placeholder riêng của Global Option không được gợi ý, trong khi Placeholder của layer thường có. Testlane TC-TIB-8308 ghi đây là quan sát chưa có expected. Cần xác nhận có phải hành vi đúng không (checklist ref: CHK-028).", "kb_ids": ["KB-030"]}
+```
+
+## OQ-translation-038 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-038", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "Bản dịch đưa vào qua Import file rồi Save có giữ khoảng trắng đầu/cuối không. Comment dev TIB-5585 chỉ nêu luồng này là vùng cần soi, KB-032 chỉ nói bản dịch nhập tay (checklist ref: CHK-039).", "kb_ids": ["KB-032"]}
+```
+
+## OQ-translation-039 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-translation-039", "type": "OPEN_ISSUE", "feature_id": "dynamic-translations", "summary": "Chưa rõ thay đổi của TIB-5585, TIB-5414, TIB-5352 đã lên production hay chưa: Jira Done nhưng nguồn không có build hay ngày deploy. KB-032..KB-039 chỉ phát biểu theo lời dev, chưa có căn cứ về production.", "kb_ids": ["KB-032", "KB-033", "KB-034", "KB-035", "KB-036", "KB-037", "KB-038", "KB-039"]}
+```
+
+## OQ-translation-040 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-040", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "PO xác nhận ý định của KB-037: thay đổi giữ khoảng trắng áp cho toàn bộ Save của trang Dynamic Translations, gồm xoá dòng dịch. Save thay cả tập entry của locale (KB-012) nên đây là vùng mất dữ liệu; CHK-036 (P1) lấy KB-037 làm oracle duy nhất, chưa có test case PASS.", "kb_ids": ["KB-037", "KB-012"]}
+```
+
+## OQ-translation-041 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-041", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "KB-030: chưa kiểm popup với đúng key dd.mm.yyyy khi key chưa tồn tại (đã kiểm cùng luồng bằng dd/mm/yyyy). Trên production mới kiểm một phần: chưa kiểm Add to translation rồi Save của key từ Global Option, Global Option có Placeholder riêng, Global Option không phải Date picker.", "kb_ids": ["KB-030"]}
+```
+
+## OQ-translation-042 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-042", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "KB-040 (PROPOSED): entry DD.MM.YYYY, dd.MM.yyyy có áp dụng cho placeholder date picker không. KB-040 chỉ dựa vào Testlane TC-TIB-8314, case không ghi ngày chạy và build, và chưa có căn cứ riêng trên production. Comment dev Jira TIB-5608 #56400 viết trước khi code, còn để ngỏ việc nhận thêm các key này. Cần ngày chạy, build của case và quyết định cuối của Dev (checklist ref: CHK-030).", "kb_ids": ["KB-040"]}
+```
+
+## OQ-translation-043 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-043", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "Sau KB-034, prefix và suffix còn tác dụng gì với dictionary và buyer: entry prefix, suffix đã lưu có còn hiện ở Portal không, storefront preview hiện chữ gốc hay bản dịch. Nguồn ghi portal chỉ nhận thay đổi khi bump submodule SDK, chưa rõ thời điểm.", "kb_ids": ["KB-034"]}
+```
+
+## OQ-translation-044 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-044", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "Ô dịch chỉ chứa dấu cách (KB-036) có được tính vào ngưỡng số key đã dịch của KB-022 không. KB-022 không tính key có giá trị rỗng, nhưng chưa nguồn nào nói về giá trị toàn dấu cách.", "kb_ids": ["KB-036", "KB-022"]}
+```
+
+## OQ-translation-045 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-translation-045", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "Ba cách đọc của checklist chưa có nguồn xác nhận: CHK-029 hiểu 'single-letter entry' là key d, m, y; CHK-037 hiểu 'nền tảng khác' là instance Boundless; CHK-042 hiểu 'Embed' là kênh nhúng ngoài Shopify và 'mã phiên bản' là tham số v hoặc translation_version. Cần Dev xác nhận.", "kb_ids": ["KB-031", "KB-037", "KB-038"]}
+```
+
+## OQ-translation-046 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-translation-046", "type": "OPEN_ISSUE", "feature_id": "dynamic-translations", "summary": "Flow _flows/dynamic-translations.md dòng 28 (mục Hành vi đã xác nhận) ghi value bị trim 2 đầu khi save, trái KB-032. CBS-076 không có khối C nên flow chưa được sửa; người đọc flow đang thấy hai điều ngược nhau. Cần một CCR có khối C cập nhật dòng này.", "kb_ids": ["KB-032"]}
 ```

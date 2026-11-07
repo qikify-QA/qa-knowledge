@@ -1,8 +1,8 @@
 # Object: SDK (product: teeinblue) — Feature Profile Summary
-**Published context version:** 13
+**Published context version:** 14
 
-- **Environment:** staging. Kiến thức trong object này phần lớn là `OBSERVED_CURRENT` baseline; **`CONFIRMED_EXPECTED` chỉ có KB-053, KB-058 (CBS-001, chỉ staging build TIB-5352) và KB-061 (CBS-003, open-platform callback, chỉ trường hợp 1 artwork), KB-181 (CBS-006, buyer preview theo effective visibility của Group, chỉ staging 2026-10-16), KB-320, KB-322..KB-326 (CBS-009, gallery lọc media theo variant, staging 2026-10-22 trước khi code merge), KB-350, KB-352 (CBS-013, shape response campaigns/{id}.json khi gọi với tham số v mới, staging 2026-10-28 trước khi code merge)**; KB-318 (CBS-009) cũng là CONFIRMED_EXPECTED nhưng đang UNRESOLVED vì conflict với KB-025, KB-056/KB-060 là `INFERRED`, chưa có nguồn thẩm quyền nào xác nhận business rule.
-- **Feature hiện có (4):** `storefront-buyer-facing`, `product-page-settings-config`, `genai-personalization-runtime`, `open-platform-customization-callback` — mỗi feature có `features/<key>/{kb.json,profile.json}` và `checklists/<key>.json`. 4 feature KHÔNG phải tín hiệu coverage đủ ở cấp object (xem `open-questions.md` OQ-sdk-002).
+- **Environment:** staging. Kiến thức trong object này phần lớn là `OBSERVED_CURRENT` baseline; **`CONFIRMED_EXPECTED` chỉ có KB-053, KB-058 (CBS-001, chỉ staging build TIB-5352) và KB-061 (CBS-003, open-platform callback, chỉ trường hợp 1 artwork), KB-181 (CBS-006, buyer preview theo effective visibility của Group, chỉ staging 2026-10-16), KB-320, KB-322..KB-326 (CBS-009, gallery lọc media theo variant, staging 2026-10-22 trước khi code merge), KB-350, KB-352 (CBS-013, shape response campaigns/{id}.json khi gọi với tham số v mới, staging 2026-10-28 trước khi code merge), KB-408, KB-413..KB-455 (CBS-081, nguồn comment dev, shipped chưa rõ, production chưa xác nhận)**; KB-318 (CBS-009) cũng là CONFIRMED_EXPECTED nhưng đang UNRESOLVED vì conflict với KB-025, KB-056/KB-060 là `INFERRED`, chưa có nguồn thẩm quyền nào xác nhận business rule.
+- **Feature hiện có (6):** `storefront-buyer-facing`, `product-page-settings-config`, `genai-personalization-runtime`, `open-platform-customization-callback`, `form-artwork-navigation`, `required-addon-validation` — mỗi feature có `features/<key>/{kb.json,profile.json}` và `checklists/<key>.json`. 6 feature KHÔNG phải tín hiệu coverage đủ ở cấp object (xem `open-questions.md` OQ-sdk-002).
 - **Actor đã test:** `guest` (storefront, không login) trên 2 store — store1 (instance 609, `linh-explorer.myshopify.com`) và store2 (instance 613, `linh-explorer-2.myshopify.com`); `owner` (portal: multi-store launch + inventory config `/product-page-settings`); và staff-authenticated Live Preview widget dùng làm proxy cho buyer ở `genai-personalization-runtime`. **Chưa test buyer đã login, chưa test role portal khác owner, chưa test guest session thật cho luồng GenAI.**
 - **⚠ Conflict P1 ảnh hưởng 2 feature (UNRESOLVED):** SDK version thực sự đang serve cho từng store mâu thuẫn giữa 3 nguồn evidence (baseline 2026-09-12 "store1 = SDK v1" vs portal API `sdk_version=2` cho cả 2 instance + storefront runtime re-check 2026-09-21 cho thấy cả 2 store serve `app-v2.js`). Đọc đầy đủ 3 phía ở `open-questions.md` OQ-sdk-001 (conflict_group `CFL-004`) **trước khi** dùng bất kỳ capability/check phân biệt v1/v2 theo store làm oracle.
 
@@ -11,6 +11,7 @@
 ## storefront-buyer-facing
 
 **Goal:** Buyer/guest xem và tương tác với sản phẩm của 1 campaign đã publish trên storefront — vượt password-gate, xem trang sản phẩm, personalize (kể cả draft cá nhân hoá đệm tạm ở client), preview mockup, add-to-cart, cart.
+**Cập nhật CBS-081:** popup cross-sell tự chọn variant còn hàng đầu tiên, xử lý tổ hợp option không tồn tại và variant hết hàng do khách chọn, không ảnh hưởng form chính (KB-408, KB-420, KB-421, KB-452..KB-454, TIB-5418). Thông báo 429 cho buyer: chỉ hiện message, thứ tự route khi upload, cách đọc Retry-After, nhánh rate limit của provider (KB-418, KB-419, KB-447..KB-451, TIB-5539). Các item này là `CONFIRMED_EXPECTED`/MEDIUM theo comment dev, shipped chưa rõ (OQ-sdk-117, OQ-sdk-118). KB-409..KB-412 là `INFERRED`/LOW, khác biệt môi trường, không làm oracle: Strava, `photo_endpoint=snap`, host production của photo-api và cdn, network timing (OQ-sdk-103..OQ-sdk-106). Checklist CHK-101..CHK-116.
 **Cập nhật CBS-006 (TIB-5584, staging 2026-10-16):** buyer preview không vẽ nội dung Group ẩn, khớp canvas editor (KB-181, `CONFIRMED_EXPECTED`/MEDIUM). **Known defect (output hiện tại, không phải hành vi đúng):** field required trong Group ẩn vẫn chặn Add to cart (KB-179, BUG-321..324) và field của layer con trong Group ẩn vẫn có trong form (KB-180, BUG-321); Testlane hiện ghi passed nhưng không có lần chạy lại có ngày. Checklist CHK-052..CHK-056 (CHK-052/053 là defect watch); OQ-sdk-068..072.
 
 **Entry points:**
@@ -135,6 +136,7 @@ portal owner, 2 store (609/613) ✅ · UI inventory 67/67 control ✅ (giá tr�
 ## genai-personalization-runtime
 
 **Goal:** Buyer upload ảnh (Multiple Uploads) hoặc nhập prompt (Text to Image AI) trên layer GenAI của artwork, bấm Generate, và nhận ảnh do 3rd-party GenAI (Gemini/OpenAI/Flux/ImagenHub) sinh ra — companion 1-1 với feature `layer-config-image` của object `artwork` (nơi seller cấu hình các field này).
+**Cập nhật CBS-081 (TIB-5583):** prompt variable không còn lấy giá trị từ artwork template selector, chỉ layer Text, Additional Option, JSON List điền được; seller đã viết prompt theo giá trị đã dịch phải đổi sang giá trị gốc (KB-415, KB-436, `CONFIRMED_EXPECTED`/MEDIUM theo comment dev, shipped chưa rõ, OQ-sdk-119). Checklist CHK-024..CHK-026.
 
 **Entry points:**
 - Widget personalization trên storefront PDP thật (CHƯA test được — xem caveat) tại layer Multiple Uploads / Text to Image (AI)
@@ -173,11 +175,35 @@ portal owner, 2 store (609/613) ✅ · UI inventory 67/67 control ✅ (giá tr�
 - **Chưa xác nhận (INFERRED):** hành vi với 2+ artwork, thứ tự, artwork lỗi (KB-062, OQ-sdk-058, OQ-sdk-059); bảng đuôi file ngoài `rgb` (KB-063, OQ-sdk-060); nhánh `window.parent.postMessage` khi chạy trong iframe và danh sách key payload (KB-064, OQ-sdk-061). CHK-002..CHK-005 là NEEDS_CONFIRMATION.
 - **Ngoài phạm vi:** kiểm soát truy cập design URL chưa có kết luận (OQ-sdk-065). Bundle theme-embed `app-v1.js` không chứa callback này (KB-065, một lần grep, LOW); `app-v2.js` chưa kiểm và chưa rõ là phạm vi chủ đích hay thiếu sót — xem OQ-sdk-062..064 ở `storefront-buyer-facing`.
 
+## form-artwork-navigation
+
+**Goal:** Merchant bật/tắt và đặt tên menu navigation riêng cho từng Product Base trong campaign; buyer trên storefront thấy thanh nav, tiêu đề section và pill gallery đúng theo cài đặt của Product Base của variant đang chọn.
+
+**Nguồn:** KB-413, KB-414, KB-422..KB-435, `CONFIRMED_EXPECTED`/MEDIUM theo comment dev TIB-5349 (2026-09-30). PR còn mở lúc comment được viết, build và ngày deploy chưa rõ (OQ-sdk-115). Checklist CHK-001..CHK-013.
+
+**Điểm chính:** toggle và tên menu lưu theo từng Product Base, ô tên tự lưu khi rời ô hoặc bấm Enter, giới hạn 255 ký tự (KB-414, KB-431). Cách render tên trên nav và pill (KB-422, KB-423, KB-429). Product Base mới thêm vào campaign có sẵn có nav mặc định tắt (KB-425). Addon product, cross-sell, nút Personalize không có nav (KB-426). Dịch tên menu phải dùng nguyên chuỗi làm key (KB-432, KB-433).
+
+**Rủi ro/Chưa rõ:** cache được xoá ngay theo KB-427, KB-435 nhưng URL `?v=1` từng trả bản cũ ở các thao tác khác: CHK-012, CHK-013 chưa có oracle (OQ-sdk-112, OQ-sdk-113). Cách ô tên xử lý khi nhập quá 255 ký tự chưa rõ (OQ-sdk-122).
+
+---
+
+## required-addon-validation
+
+**Goal:** Đơn có sản phẩm chính yêu cầu add-on không hoàn tất được khi thiếu hoặc không đủ add-on: Function chặn ở Checkout, SDK chặn Add to cart ở store đã bật, và buyer thấy thông báo tương ứng.
+
+**Nguồn:** KB-416, KB-417, KB-437..KB-446, KB-455, `CONFIRMED_EXPECTED`/MEDIUM theo comment dev TIB-5510 (2026-10-19 đến 2026-11-02), build và ngày deploy chưa rõ (OQ-sdk-116). Checklist CHK-001..CHK-012.
+
+**Điểm chính:** Function kiểm từng add-on variant trong `_tib_addon_variant`, thiếu 1 add-on hoặc không đủ số lượng thì checkout bị chặn, cả hai trường hợp dùng chung một message, chỉ có tiếng Anh (KB-416, KB-417, KB-440, KB-441). Validation áp dụng cho mọi merchant (KB-455), nhưng phạm vi này có còn đúng với chặn ATC ở SDK hay không chưa rõ (OQ-sdk-125). Chặn ATC ở SDK mặc định tắt, bật theo từng store bằng biến trong `theme.liquid` (KB-443, KB-444). Portal mục Addon Charge có 2 key dịch, thứ tự fallback ở KB-445, KB-446. Dynamic Translations không dùng cho message hệ thống của SDK (KB-437).
+
+**Rủi ro/Chưa rõ:** điều kiện để rule Checkout chạy chưa có trong KB, nên Checkout không chặn thì chưa kết luận được là bug (OQ-sdk-114). Hành vi ở store chưa bật snippet và ở tab cũ chưa chốt (OQ-sdk-107, OQ-sdk-109). Tên property đối chiếu child line lệch với KB-009 (OQ-sdk-110). PO chưa xác nhận ý định chặn ở Checkout (OQ-sdk-120).
+
+---
+
 ## Gaps ở cấp Object (áp dụng cho toàn bộ object `sdk`)
 
 | Gap | Ghi chú |
 |---|---|
-| **Phạm vi object chưa chắc đủ** (OQ-sdk-002) | Chỉ 3 feature được profile hoá; không rõ SDK còn bề mặt nào khác chưa vào scope — cần qa-context-scope-planner xác nhận. |
+| **Phạm vi object chưa chắc đủ** (OQ-sdk-002) | Chỉ 6 feature được profile hoá; không rõ SDK còn bề mặt nào khác chưa vào scope — cần qa-context-scope-planner xác nhận. |
 | **Data layer (DB)** (OQ-sdk-003) | NOT_OBSERVED hoàn toàn — mọi state chỉ dựa trên response API/localStorage/DOM. |
 | **(P1) `CFL-004` UNRESOLVED** (OQ-sdk-001) | Baseline 2026-09-12 (store1=v1) mâu thuẫn evidence 2026-09-21 (portal API + storefront runtime cho thấy cả 2 store đều v2). Implicate trực tiếp KB-004/005/007/010/011. Cần evidence độc lập (deploy log, re-run cách vài ngày) trước khi resolve. |
 | **`CFL-005` UNRESOLVED** (OQ-sdk-024) | `config_registry` schema (~38 key) vs `.config` thực tế (~27 key) gần như không trùng nhau — cần code-config-explorer. |
@@ -194,4 +220,4 @@ portal owner, 2 store (609/613) ✅ · UI inventory 67/67 control ✅ (giá tr�
 | **GenAI: add-to-cart/checkout** (OQ-sdk-042) | Hoàn toàn không chạm tới được — Live Preview không có product/campaign/cart context. |
 | **Companion conflict ở object khác** (OQ-sdk-007) | Feature companion `layer-config-image` bên object `artwork` đang có 1 conflict UNRESOLVED cần authority quyết định — nêu để downstream đọc `genai-personalization-runtime` biết. |
 
-**Trạng thái tổng quát:** object `sdk` có 3 feature nhưng vẫn ở giai đoạn coverage sớm — 5 conflict UNRESOLVED (nổi bật là `CFL-004`, implicate trực tiếp dữ liệu v1/v2 đã dùng và trụ cột add-to-cart), toàn bộ data layer, write-path config, guest session thật cho luồng GenAI, và nhiều biến thiên phổ biến (device, locale, logged-in, role) chưa được chạm tới. Danh sách đầy đủ 43 open question ở `open-questions.md`.
+**Trạng thái tổng quát:** object `sdk` có 6 feature nhưng vẫn ở giai đoạn coverage sớm — 5 conflict UNRESOLVED (nổi bật là `CFL-004`, implicate trực tiếp dữ liệu v1/v2 đã dùng và trụ cột add-to-cart), toàn bộ data layer, write-path config, guest session thật cho luồng GenAI, và nhiều biến thiên phổ biến (device, locale, logged-in, role) chưa được chạm tới. Danh sách đầy đủ 43 open question ở `open-questions.md`.

@@ -3,10 +3,13 @@
   "feature_key": "layer-config-text",
   "name": "Cấu hình layer — nhóm sidebar TEXT (field/behavior riêng từng layer type)",
   "user_goal": "Store owner cấu hình field/behavior CHỈ thuộc riêng từng layer type trong nhóm sidebar TEXT khi thêm layer trong artwork editor. Nhóm gồm 6 layer type: Single-line Text, Curve Text, Paragraph›Normal, Paragraph›Custom Shape, Other›Warp Text, Other›Spiral Text. Tách biệt khỏi cơ chế dùng chung (xem FEAT-04-layer-common-config) để 1 lần fix/thêm field cho 1 layer type chỉ cần đọc và sửa đúng phần nhỏ trong file này, không phải đọc lại toàn bộ layer-common-config cũ hay các nhóm sidebar khác.",
-  "last_updated": {
-    "date": "2026-10-26",
-    "ccr_ref": "CBS-008"
-  },
+  "user_goal_kb_refs": [
+    "KB-013",
+    "KB-014",
+    "KB-015",
+    "KB-016"
+  ],
+  "stable_since_version": null,
   "actors": [
     {
       "role": "store owner / staff (sub=273, user_id=266, plan Blue (Test))",
@@ -22,6 +25,13 @@
       "kb_refs": [
         "KB-157"
       ]
+    },
+    {
+      "role": "[MỚI, CBS-079] buyer (storefront)",
+      "permission_observed": "KB-416 ghi scope role 'buyer'; KB không có quan sát về quyền.",
+      "kb_refs": [
+        "KB-416"
+      ]
     }
   ],
   "entry_points": [
@@ -32,6 +42,13 @@
         "KB-002",
         "KB-004",
         "KB-005"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-079] Storefront — campaign có paragraph vừa là buyer field vừa được populate",
+      "precondition": "Campaign có layer paragraph vừa là buyer field vừa được populate từ một field nguồn",
+      "kb_refs": [
+        "KB-416"
       ]
     }
   ],
@@ -83,9 +100,26 @@
       "kb_refs": [
         "KB-157"
       ]
+    },
+    {
+      "name": "[MỚI, CBS-079] Paragraph vừa là buyer field vừa được populate — trạng thái rỗng, chỉ khoảng trắng, xoá nội dung field nguồn — chỉ quan sát",
+      "description": "OBSERVED_CURRENT/LOW, một lượt Testlane task TIB-198 tháng 10/2026 (TC-TIB-5719, TC-TIB-5725, TC-TIB-5760; staging, record không ghi ngày chạy và build), mỗi nhánh một case: paragraph rỗng không render trong design, preview hiện default text; chỉ nhập khoảng trắng thì preview và design đều trống; xoá nội dung field nguồn populate thì value bị ghi đè thành rỗng và preview về default text. Chưa có người xác nhận đây là hành vi đúng, không dùng làm oracle, xem unknown_areas.",
+      "kb_refs": [
+        "KB-416"
+      ]
     }
   ],
-  "state_transitions": [],
+  "state_transitions": [
+    {
+      "from": "[MỚI, CBS-079] paragraph vừa là buyer field vừa được populate, field nguồn populate có nội dung",
+      "to": "value của paragraph bị ghi đè thành rỗng, preview về default text",
+      "trigger": "xoá nội dung field nguồn populate",
+      "condition": "OBSERVED_CURRENT/LOW, một case (TC-TIB-5760), staging; không làm oracle",
+      "kb_refs": [
+        "KB-416"
+      ]
+    }
+  ],
   "confirmed_rules": [],
   "observed_behavior": [
     {
@@ -95,6 +129,17 @@
       "scope": "staging, merchant-owner instance 520, Artwork 2.0, 2026-10-22, build hash không rõ",
       "kb_refs": [
         "KB-157"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-079] Trên campaign có paragraph vừa là buyer field vừa được populate, quan sát thấy: paragraph rỗng không render trong design, preview hiện default text; chỉ nhập khoảng trắng thì preview và design đều trống; xoá nội dung field nguồn populate thì value bị ghi đè thành rỗng và preview về default text. Chưa có người xác nhận đây là hành vi đúng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "scope": "staging, buyer, storefront, lượt chạy task TIB-198 tháng 10/2026, record không ghi ngày chạy và build",
+      "shipped": "UNKNOWN",
+      "kb_refs": [
+        "KB-416"
       ]
     }
   ],
@@ -123,12 +168,14 @@
       "artwork editor — config panel của các layer type nhóm TEXT",
       "[MỚI, CBS-008] Artwork Editor (Artwork 2.0) — layer Curve Text: không có tuỳ chọn căn lề text, layer lưu align center (KB-157)"
     ],
-    "storefront": [],
+    "storefront": [
+      "[MỚI, CBS-079] Preview và design của paragraph vừa là buyer field vừa được populate: rỗng, chỉ khoảng trắng, xoá nội dung field nguồn (KB-416, quan sát)"
+    ],
     "api": [],
+    "data": [],
     "code": [
       "bundle-registry: right_to_left_enabled (không thuộc warp-text), inner_radius/direction (spiral-text), vertical_offset (paragraph/shape-text), url/shape_url (shape-text) — INFERRED, chưa cross-check API/DB."
-    ],
-    "data": []
+    ]
   },
   "dependencies": [
     {
@@ -150,6 +197,13 @@
       "kb_refs": [
         "KB-015",
         "KB-016"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "[MỚI, CBS-079] Quan sát paragraph KB-416 phụ thuộc cấu hình populate của layer; cơ chế populate thuộc FEAT-11-populate-values.",
+      "kb_refs": [
+        "KB-416"
       ]
     }
   ],
@@ -181,10 +235,21 @@
       "kb_refs": [
         "KB-157"
       ]
+    },
+    {
+      "risk": "[MỚI, CBS-079] KB-416 chỉ có một lượt, mỗi nhánh một case, record không có build và ngày chạy, shipped UNKNOWN; expected trong mô tả ticket khác kết quả. Không viết check coi ba nhánh này là expected tới khi có xác nhận.",
+      "kb_refs": [
+        "KB-416"
+      ]
     }
   ],
+  "environment_differences": [],
   "freshness": {
     "observed_at": "2026-10-26"
+  },
+  "last_updated": {
+    "date": "2026-11-06",
+    "ccr_ref": "CBS-079"
   },
   "unknown_areas": [
     {
@@ -220,6 +285,15 @@
         "KB-157"
       ],
       "oq_id": "OQ-artwork-137"
+    },
+    {
+      "question": "[MỚI, CBS-079] Paragraph rỗng không render trong design, chỉ khoảng trắng thì preview và design trống, xoá nội dung field nguồn populate thì preview về default text. Đây có phải hành vi đúng không?",
+      "why_it_matters": "TC-TIB-5719, 5725, 5760 passed với các kết quả trên nhưng record không có build, không ghi ngày chạy; theo CCR, mô tả TIB-5538 ghi \"should fall back to its default text\", khác kết quả. Checklist chưa có oracle. Cần PO hoặc Dev xác nhận nguyên văn, có ngày, cho cả ba nhánh; hoặc test case PASS có ngày chạy và build.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-416"
+      ],
+      "oq_id": "OQ-artwork-187"
     }
   ],
   "coverage_matrix": [
@@ -276,6 +350,30 @@
       "kb_refs": [
         "KB-157"
       ]
+    },
+    {
+      "feature_id": "FEAT-12-layer-config-text",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[MỚI, CBS-079] paragraph vừa là buyer field vừa được populate: rỗng, chỉ khoảng trắng, xoá nội dung field nguồn",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-416"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt tháng 10/2026; chưa có oracle"
+    },
+    {
+      "feature_id": "FEAT-12-layer-config-text",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[MỚI, CBS-079] paragraph vừa là buyer field vừa được populate",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "KB-416"
+      ],
+      "basis": "shipped UNKNOWN"
     }
   ],
   "profile_conflicts": [
@@ -317,6 +415,15 @@
       "note": "[MỚI, CBS-008] KB-042 (canvas toolbar của layer nhóm text có Align) chưa được đối chiếu với KB-157; chưa rõ 'Align' là căn vị trí layer hay căn lề text.",
       "kb_refs": [
         "KB-157"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-12-layer-config-text",
+      "to_feature_id": "FEAT-11-populate-values",
+      "relation": "related (paragraph vừa là buyer field vừa được populate)",
+      "note": "[MỚI, CBS-079] KB-416 quan sát hành vi preview và design của paragraph được populate; cơ chế populate thuộc FEAT-11, quan sát này không thêm item vào FEAT-11.",
+      "kb_refs": [
+        "KB-416"
       ]
     }
   ]

@@ -1097,3 +1097,75 @@
 ```json
 {"oq_id":"OQ-artwork-183","type":"OPEN_ISSUE","feature_id":"text-color-sequence-render","summary":"Chạy lại sau merge/production: lượt chạy Testlane TIB-230 (staging 2026-10-22 14:20) diễn ra trước khi PR teeinblue-api #4044 merge (2026-10-22 15:44), chỉ trên font thay thế (Dancing Script/Roboto/Heebo); ngày ship production chưa xác nhận. Cần chạy lại trên build đã merge (staging) và production cho Locate Artwork và Order Design PNG (có số đo), rồi gửi CCR mới.","kb_ids":["KB-146","KB-147","KB-148","KB-149","KB-150","KB-151","KB-152","KB-153","KB-155","KB-156","KB-154","KB-404","KB-406","KB-412","KB-413","KB-414"]}
 ```
+
+## OQ-artwork-184 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-184","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Role áp dụng của KB-420..KB-429 là gì (owner, staff hay buyer), cho từng item? scope.role đang là \"unspecified\" vì CCR ghi không rõ, checklist chưa biết chạy các item này với role nào. Câu hỏi chung cho ba feature: layer-config-image (KB-420..KB-424, CHK-054..CHK-059), layer-print-effects (KB-425, CHK-011, CHK-012), editor-layer-workspace (KB-426..KB-429, CHK-019..CHK-023).","kb_ids":["KB-420","KB-421","KB-422","KB-423","KB-424","KB-425","KB-426","KB-427","KB-428","KB-429"]}
+```
+
+## OQ-artwork-185 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-185","type":"OPEN_ISSUE","feature_id":"layer-config-image","summary":"KB-415..KB-429 chưa biết build và ngày deploy production. TIB-5212, TIB-5465, TIB-5516 là Done trên Jira, Done không chứng minh đã lên production; bản đối chiếu không ghi status của TIB-5512, TIB-5534, TIB-5538, TIB-5539. Trong lúc đó các item chỉ dùng cho staging. Áp cho bảy feature có item mới của CBS-079, không riêng layer-config-image.","kb_ids":["KB-415","KB-416","KB-417","KB-418","KB-419","KB-420","KB-421","KB-422","KB-423","KB-424","KB-425","KB-426","KB-427","KB-428","KB-429"]}
+```
+
+## OQ-artwork-186 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-186","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-others","summary":"Calendar giữ default typography Heebo/regular có phải giá trị đúng không? TC-TIB-4853 và actual của TC-TIB-4858 ghi Heebo, expected của TC-TIB-4858 ghi Heebo chuyển Roboto. Cần PO hoặc Dev xác nhận nguyên văn, có ngày; hoặc test case PASS có build.","kb_ids":["KB-415"]}
+```
+
+## OQ-artwork-187 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-187","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-text","summary":"PO xác nhận: ba nhánh của KB-416 có phải hành vi đúng không — paragraph rỗng không render trong design, chỉ khoảng trắng thì preview và design trống, xoá field nguồn populate thì preview về default text? Theo CCR, mô tả TIB-5538 ghi \"should fall back to its default text\", khác kết quả. Rủi ro cao vì ảnh hưởng nội dung design của buyer.","kb_ids":["KB-416"]}
+```
+
+## OQ-artwork-188 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-188","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-vector","summary":"Upload .svg qua Static Vector tạo layer static-vector và còn sau reload có phải hành vi đúng không? Mới có một lượt chạy (TC-TIB-5705, 2026-10-14), record không ghi build.","kb_ids":["KB-417"]}
+```
+
+## OQ-artwork-189 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-189","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-vector","summary":"PO xác nhận: các kết quả Design format của KB-418 có đúng không (chỉ static-vector + SVG ra file .svg; PNG_RGB báo \"Line item cannot generate design\"; lưu SVG khi còn raster layer trả HTTP 400), và SVG có phải format đúng duy nhất cho artwork chỉ có static-vector không?","kb_ids":["KB-418"]}
+```
+
+## OQ-artwork-190 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-190","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-maps-astronomy","summary":"Strava trong Route Maps (strava-upload) có thật sự không chạy được trên môi trường test không, lý do là gì, và production hoạt động thế nào? Nguồn của KB-419 chỉ là ghi chú ngôi thứ ba.","kb_ids":["KB-419"]}
+```
+
+## OQ-artwork-191 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-191","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Per-field warning và nút \"+ variable\" có nhận title của layer Global Option không? Comment dev #55232 của TIB-5465 nói cùng rule match; ghi chú QA audit #40 nói không nhận và lỗi có cả trên production. KB-424 chỉ phát biểu về warning \"Some ImagenHub variables have no matching layer\".","kb_ids":["KB-424"]}
+```
+
+## OQ-artwork-192 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-192","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Route POST /layer-images/create-master-large/batch, env MASTER_LARGE_BATCH_LIMIT (mặc định 10) và status 422 khi quá limit có đúng trên build hiện tại không? Nguồn là comment #54785 của TIB-5212 tự sinh từ branch diff, chưa kiểm trên hệ thống; comment #55717 không phát biểu lại các điểm này. Cần Dev xác nhận nguyên văn, có ngày; hoặc test case PASS có build.","kb_ids":["KB-422"]}
+```
+
+## OQ-artwork-193 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-193","type":"NEEDS_CONFIRMATION","feature_id":"editor-layer-workspace","summary":"PO xác nhận ý định của KB-427: khi multi-select có giá trị Photo Border khác nhau, bật toggle Border thay các giá trị riêng của mọi layer đang chọn, và đổi một thuộc tính cũng bật border cho cả selection. Liên quan CHK-020.","kb_ids":["KB-427"]}
+```
+
+## OQ-artwork-194 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-194","type":"NEEDS_CONFIRMATION","feature_id":"editor-layer-workspace","summary":"Rule \"chọn một group: ẩn Photo Border, Shadow và HD vẫn hiện\" của KB-429 có áp cho Group đang ẩn không? KB-429 không nêu trạng thái group; KB-170 quan sát Group ẩn chỉ còn mục Align, expected của trường hợp đó chưa chốt. CHK-022 chỉ kiểm Group hiện, chưa check nào assert Group ẩn.","kb_ids":["KB-429","KB-170"]}
+```
+
+## OQ-artwork-195 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-195","type":"NEEDS_CONFIRMATION","feature_id":"layer-print-effects","summary":"Sau khi bỏ file pre-render của border custom_shape, order design (print file) lấy border từ đâu, và border size có đúng không? Comment #53942 chỉ nói SDK vẽ trên canvas; scope.surface của KB-425 ghi \"render\" chung, CHK-011, CHK-012 không kiểm print file. Nếu print file đổi đường xử lý thì KB-425 phải lên impact HIGH.","kb_ids":["KB-425"]}
+```
