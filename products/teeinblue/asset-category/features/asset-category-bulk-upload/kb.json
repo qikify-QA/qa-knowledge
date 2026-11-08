@@ -12,21 +12,21 @@
       "object_state": "trước upload có 5 job cũ từ session trước; zip 1 top-level folder hợp lệ ('valid-images 2')"
     },
     "last_updated": {
-      "date": "2026-09-14",
-      "ccr_ref": "bootstrap"
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
     },
     "related_kb_ids": [
-      "KB-022",
-      "KB-026",
-      "KB-027",
-      "KB-028"
+      "asset-category/asset-category-bulk-upload#KB-022",
+      "asset-category/asset-category-bulk-upload#KB-026",
+      "asset-category/asset-category-bulk-upload#KB-027",
+      "asset-category/_object-level#KB-028"
     ]
   },
   {
     "kb_id": "KB-022",
     "topic": "Giới hạn bulk-upload zip cho plan Blue = 2GB / 10 file, theo banner tĩnh phía client",
     "statement": "Trên trang /cliparts/bulk-upload ở role owner/staging (plan 'Blue (Test)'), banner ghi đúng 'Limit max 2GB per zip and can only process max 10 files at a time.'. Không có endpoint API nào trong 14 operation đã map trả về hoặc cấu hình con số 2GB/10-file này — đây là banner TĨNH phía client, không phải giá trị đọc từ server config. Nguồn thẩm quyền: PO xác nhận (2026-09-14) giới hạn TUỲ THEO PLAN, và với plan Blue thì đúng bằng banner UI hiện tại (2GB/10 file). ĐẶC THÙ CHO PLAN BLUE — không phải giá trị cứng toàn cục; các plan khác chưa verify. Chưa test biên (>2GB hoặc >10 file) nên chưa biết server có thực sự enforce.",
-    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "knowledge_kind": "INFERRED",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
@@ -35,12 +35,18 @@
       "object_state": "trang /cliparts/bulk-upload, chưa upload gì"
     },
     "last_updated": {
-      "date": "2026-09-14",
-      "ccr_ref": "bootstrap"
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
     },
     "related_kb_ids": [
-      "KB-016",
-      "KB-025"
+      "asset-category/asset-category-bulk-upload#KB-016",
+      "asset-category/asset-category-bulk-upload#KB-025"
+    ],
+    "reference_issues": [
+      {
+        "reason": "missing_authority",
+        "oq_id": "OQ-asset-category-046"
+      }
     ]
   },
   {
@@ -56,19 +62,19 @@
       "object_state": "trang bulk-upload, chưa upload gì, chọn file .txt"
     },
     "last_updated": {
-      "date": "2026-09-14",
-      "ccr_ref": "bootstrap"
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
     },
     "related_kb_ids": [
-      "KB-016",
-      "KB-022"
+      "asset-category/asset-category-bulk-upload#KB-016",
+      "asset-category/asset-category-bulk-upload#KB-022"
     ]
   },
   {
     "kb_id": "KB-026",
     "topic": "Zip hợp lệ nhưng không chứa ảnh -> job kết thúc Error, không tạo category rỗng",
     "statement": "Khi upload 1 file zip hợp lệ ('invalid-content-no-images.zip', chỉ chứa readme.txt) qua /cliparts/bulk-upload ở role owner/staging: lúc upload, POST .../complete trả 200 với status trung gian {value:2, description:'Extracting'}; khoảng 34 phút sau, GET /api/clipart-category-bulk-uploads/{jobId} cho trạng thái CUỐI CÙNG status={value:4, description:'Error'}, clipart_category_id=null (KHÔNG tạo category nào), log 4 dòng kết thúc 'Error - No valid entries found'. Nguồn thẩm quyền: PO xác nhận (2026-09-14) 'upload thành công nhưng unzip sẽ báo không chứa ảnh nào'.",
-    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "knowledge_kind": "INFERRED",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
@@ -77,20 +83,26 @@
       "object_state": "zip hợp lệ (dung lượng/format zip đúng) nhưng không chứa file ảnh hợp lệ nào"
     },
     "last_updated": {
-      "date": "2026-09-15",
-      "ccr_ref": "bootstrap"
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
     },
     "related_kb_ids": [
-      "KB-016",
-      "KB-027"
+      "asset-category/asset-category-bulk-upload#KB-016",
+      "asset-category/asset-category-bulk-upload#KB-027"
+    ],
+    "reference_issues": [
+      {
+        "reason": "missing_authority",
+        "oq_id": "OQ-asset-category-047"
+      }
     ]
   },
   {
     "kb_id": "KB-027",
     "topic": "Danh sách status job bulk-upload: Uploading / Extracting / delayed / Done / Error",
     "statement": "Danh sách status của job bulk-upload theo PO xác nhận (2026-09-14): Uploading, Extracting, delayed, Done, Error. Chỉ 2/5 status có network evidence TRỰC TIẾP: Extracting (value=2, ở response POST .../complete) và Error (value=4, ở GET job detail sau ~34 phút) — xem KB-026. 3/5 status còn lại (Uploading, delayed, Done) chỉ dựa vào PO-answer và quan sát UI (bảng 'All uploads' hiển thị text 'Done'/'Error' của job cũ), KHÔNG network-verified trực tiếp — KHÔNG coi cả 5 status ngang hàng về độ tin cậy.",
-    "knowledge_kind": "CONFIRMED_EXPECTED",
-    "confidence": "MEDIUM",
+    "knowledge_kind": "INFERRED",
+    "confidence": "LOW",
     "scope": {
       "environment": "staging",
       "role": "owner (Linh explorer, sub=273)",
@@ -98,12 +110,18 @@
       "object_state": "bảng All uploads trên /cliparts/bulk-upload, nhiều job cũ + mới"
     },
     "last_updated": {
-      "date": "2026-09-15",
-      "ccr_ref": "bootstrap"
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
     },
     "related_kb_ids": [
-      "KB-026",
-      "KB-016"
+      "asset-category/asset-category-bulk-upload#KB-026",
+      "asset-category/asset-category-bulk-upload#KB-016"
+    ],
+    "reference_issues": [
+      {
+        "reason": "missing_authority",
+        "oq_id": "OQ-asset-category-048"
+      }
     ]
   }
 ]

@@ -4,11 +4,11 @@
   "name": "Approve submission để có B2B company dùng được và báo cho Shopify Flow",
   "user_goal": "Khi merchant Approve một submission, buyer có B2B company dùng được trên Shopify: Portal tự tạo company nếu submission chưa có `company_id`, hoặc chỉ xác nhận company đã tạo lúc submit; Shopify Flow trigger \"company approved\" báo cho automation của merchant, và merchant được báo khi company chưa setup xong hoặc không tìm thấy customer.",
   "user_goal_kb_refs": [
-    "KB-018",
-    "KB-019",
-    "KB-020",
-    "KB-022",
-    "KB-025"
+    "company-submissions/approve-company-creation#KB-018",
+    "company-submissions/approve-company-creation#KB-019",
+    "company-submissions/approve-company-creation#KB-020",
+    "company-submissions/approve-company-creation#KB-022",
+    "company-submissions/approve-company-creation#KB-025"
   ],
   "stable_since_version": "v1",
   "actors": [
@@ -16,26 +16,26 @@
       "role": "merchant (Portal)",
       "permission_observed": "Bấm \"Approve company\" trên trang chi tiết submission; tự hoàn tất contact / role / catalog trên Shopify khi setup chưa xong. Role cụ thể được phép Approve chưa được tài liệu nêu.",
       "kb_refs": [
-        "KB-005",
-        "KB-018",
-        "KB-021"
+        "company-submissions/submission-review-and-decision#KB-005",
+        "company-submissions/approve-company-creation#KB-018",
+        "company-submissions/approve-company-creation#KB-021"
       ]
     },
     {
       "role": "system (Shopify Flow / automation của merchant)",
       "permission_observed": "Nhận trigger `duos-approve-company` lúc Approve với payload Submission + `customer_id` của Main Contact; Flow chưa được mở trên staging 08/10/2026.",
       "kb_refs": [
-        "KB-022",
-        "KB-023",
-        "KB-P-006"
+        "company-submissions/approve-company-creation#KB-022",
+        "company-submissions/approve-company-creation#KB-023",
+        "_product-level#KB-P-006"
       ]
     },
     {
       "role": "buyer",
       "permission_observed": "Được gán làm Main contact (Shopify role Location admin) kèm role Admin của app theo ticket; quan sát cũ thấy nhận email \"B2B account created\" qua Shopify Flow.",
       "kb_refs": [
-        "KB-019",
-        "KB-032"
+        "company-submissions/approve-company-creation#KB-019",
+        "company-submissions/approve-company-creation#KB-032"
       ]
     }
   ],
@@ -44,15 +44,15 @@
       "path": "Trang chi tiết submission → nút \"Approve company\"",
       "precondition": "Submission có status khác `completed`.",
       "kb_refs": [
-        "KB-005",
-        "KB-018"
+        "company-submissions/submission-review-and-decision#KB-005",
+        "company-submissions/approve-company-creation#KB-018"
       ]
     },
     {
       "path": "Shopify Flow trigger \"company approved\" (`duos-approve-company`)",
       "precondition": "Merchant có workflow dùng trigger này; chỉ bắn khi Approve.",
       "kb_refs": [
-        "KB-022"
+        "company-submissions/approve-company-creation#KB-022"
       ]
     }
   ],
@@ -61,59 +61,59 @@
       "name": "Chọn nhánh Approve theo `company_id`",
       "description": "Trước khi Approve, Portal tải lại submission: có `company_id` → chỉ bắn Flow trigger rồi set `completed`; không có (kể cả `failed` không có `company_id`, và submission bị `rate_limited`) → luồng cũ, Portal tự tạo company. Portal không đọc cờ `enable_company_creation_on_submit`.",
       "kb_refs": [
-        "KB-018",
-        "KB-028"
+        "company-submissions/approve-company-creation#KB-018",
+        "company-submissions/approve-company-creation#KB-028"
       ]
     },
     {
       "name": "Tạo company ở luồng Approve cũ",
       "description": "Theo ticket, luồng cũ tạo company và gán customer làm Main contact (Location admin) kèm role Admin của app; matching customer chạy lúc Approve; customer thuộc company khác phải báo `customer_in_other_company`. Khi bước gán contact lỗi, company có thể không có contact (chưa chốt) — bug mở ở customer-matching.",
       "kb_refs": [
-        "KB-019",
-        "KB-030",
-        "KB-036",
-        "KB-042",
-        "KB-043"
+        "company-submissions/approve-company-creation#KB-019",
+        "company-submissions/approve-company-creation#KB-030",
+        "company-submissions/customer-matching#KB-036",
+        "company-submissions/customer-matching#KB-042",
+        "company-submissions/customer-matching#KB-043"
       ]
     },
     {
       "name": "Xác nhận company đã tạo lúc submit",
       "description": "Nhánh có `company_id` tìm lại customer theo email/phone gốc: không thấy → toast, không bắn trigger, giữ status; bắn trigger lỗi → `failed` kèm `trigger_failed`, Approve lại chỉ bắn lại trigger. Đổi email customer trên Shopify admin làm submission kẹt Pending.",
       "kb_refs": [
-        "KB-018",
-        "KB-025",
-        "KB-026",
-        "KB-031"
+        "company-submissions/approve-company-creation#KB-018",
+        "company-submissions/approve-company-creation#KB-025",
+        "company-submissions/approve-company-creation#KB-026",
+        "company-submissions/approve-company-creation#KB-031"
       ]
     },
     {
       "name": "Báo Shopify Flow khi company được duyệt",
       "description": "Trigger `duos-approve-company` chỉ bắn lúc Approve (không bắn lúc submit kể cả cờ bật), payload giống nhau ở hai nhánh; luồng cũ không kiểm tra kết quả trigger và luôn set `completed`. Staging cũ thấy 1 run Flow và email \"B2B account created\" gửi qua Flow.",
       "kb_refs": [
-        "KB-022",
-        "KB-023",
-        "KB-027",
-        "KB-024",
-        "KB-032"
+        "company-submissions/approve-company-creation#KB-022",
+        "company-submissions/approve-company-creation#KB-023",
+        "company-submissions/approve-company-creation#KB-027",
+        "company-submissions/approve-company-creation#KB-024",
+        "company-submissions/approve-company-creation#KB-032"
       ]
     },
     {
       "name": "Báo setup chưa hoàn tất",
       "description": "Banner vàng `setup_incomplete` chỉ hiện khi có cả `company_id` lẫn `company_creation_error`, trước và sau Approve, đóng được, không lộ error thô; hệ thống không tự hoàn tất — merchant tự làm trên Shopify.",
       "kb_refs": [
-        "KB-020",
-        "KB-021",
-        "KB-034",
-        "KB-P-020"
+        "company-submissions/approve-company-creation#KB-020",
+        "company-submissions/approve-company-creation#KB-021",
+        "company-submissions/approve-company-creation#KB-034",
+        "_product-level#KB-P-020"
       ]
     },
     {
       "name": "Phản hồi sau Approve",
       "description": "Staging cũ: toast \"Company submisison approved\" (sai chính tả) và banner \"B2B company created\" trỏ tới company; có nghi lỗi Approve submission Failed không có `company_id` không làm gì.",
       "kb_refs": [
-        "KB-033",
-        "KB-016",
-        "KB-029"
+        "company-submissions/approve-company-creation#KB-033",
+        "company-submissions/submission-review-and-decision#KB-016",
+        "company-submissions/approve-company-creation#KB-029"
       ]
     }
   ],
@@ -124,9 +124,9 @@
       "trigger": "Approve (luồng cũ: Portal tạo company, bắn trigger)",
       "condition": "Không kiểm tra kết quả trigger; customer thuộc company khác phải báo `customer_in_other_company` và không tạo company.",
       "kb_refs": [
-        "KB-018",
-        "KB-027",
-        "KB-042"
+        "company-submissions/approve-company-creation#KB-018",
+        "company-submissions/approve-company-creation#KB-027",
+        "company-submissions/customer-matching#KB-042"
       ]
     },
     {
@@ -135,9 +135,9 @@
       "trigger": "Approve (chỉ bắn trigger)",
       "condition": "Tìm lại được customer theo email/phone gốc và trigger bắn thành công.",
       "kb_refs": [
-        "KB-018",
-        "KB-025",
-        "KB-026"
+        "company-submissions/approve-company-creation#KB-018",
+        "company-submissions/approve-company-creation#KB-025",
+        "company-submissions/approve-company-creation#KB-026"
       ]
     },
     {
@@ -146,8 +146,8 @@
       "trigger": "Approve",
       "condition": "Không tìm thấy customer: toast \"Could not find the customer for this submission in Shopify. The company approved trigger was not fired.\", không bắn trigger.",
       "kb_refs": [
-        "KB-025",
-        "KB-031"
+        "company-submissions/approve-company-creation#KB-025",
+        "company-submissions/approve-company-creation#KB-031"
       ]
     },
     {
@@ -156,7 +156,7 @@
       "trigger": "Approve",
       "condition": "Bắn trigger lỗi.",
       "kb_refs": [
-        "KB-026"
+        "company-submissions/approve-company-creation#KB-026"
       ]
     },
     {
@@ -165,8 +165,8 @@
       "trigger": "Approve lại",
       "condition": "Approve lại chỉ bắn lại trigger.",
       "kb_refs": [
-        "KB-026",
-        "KB-018"
+        "company-submissions/approve-company-creation#KB-026",
+        "company-submissions/approve-company-creation#KB-018"
       ]
     },
     {
@@ -175,8 +175,8 @@
       "trigger": "Approve",
       "condition": "Đi luồng cũ — Portal tự tạo company.",
       "kb_refs": [
-        "KB-028",
-        "KB-018"
+        "company-submissions/approve-company-creation#KB-028",
+        "company-submissions/approve-company-creation#KB-018"
       ]
     },
     {
@@ -185,8 +185,8 @@
       "trigger": "Approve trên store bật cờ",
       "condition": "Known issue đang mở (PUT 200, không toast, không tạo company) — regression watch.",
       "kb_refs": [
-        "KB-018",
-        "KB-029"
+        "company-submissions/approve-company-creation#KB-018",
+        "company-submissions/approve-company-creation#KB-029"
       ]
     }
   ],
@@ -196,7 +196,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-018"
+        "company-submissions/approve-company-creation#KB-018"
       ]
     },
     {
@@ -204,7 +204,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-020"
+        "company-submissions/approve-company-creation#KB-020"
       ]
     },
     {
@@ -212,7 +212,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-021"
+        "company-submissions/approve-company-creation#KB-021"
       ]
     },
     {
@@ -220,7 +220,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-022"
+        "company-submissions/approve-company-creation#KB-022"
       ]
     },
     {
@@ -228,7 +228,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-023"
+        "company-submissions/approve-company-creation#KB-023"
       ]
     },
     {
@@ -236,7 +236,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-025"
+        "company-submissions/approve-company-creation#KB-025"
       ]
     },
     {
@@ -244,7 +244,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-026"
+        "company-submissions/approve-company-creation#KB-026"
       ]
     },
     {
@@ -252,7 +252,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-027"
+        "company-submissions/approve-company-creation#KB-027"
       ]
     },
     {
@@ -260,7 +260,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-028"
+        "company-submissions/approve-company-creation#KB-028"
       ]
     }
   ],
@@ -270,7 +270,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-024"
+        "company-submissions/approve-company-creation#KB-024"
       ],
       "status": "CURRENT_STATE"
     },
@@ -279,7 +279,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-031"
+        "company-submissions/approve-company-creation#KB-031"
       ],
       "status": "CURRENT_STATE"
     },
@@ -288,7 +288,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-032"
+        "company-submissions/approve-company-creation#KB-032"
       ],
       "status": "CURRENT_STATE"
     },
@@ -297,7 +297,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-033"
+        "company-submissions/approve-company-creation#KB-033"
       ],
       "status": "CURRENT_STATE"
     }
@@ -307,14 +307,14 @@
     {
       "statement": "Company tạo khi Approve (luồng cũ) gán customer làm Main contact với Shopify role Location admin kèm role Admin của app — theo ticket, chưa có rule đang hiệu lực.",
       "kb_refs": [
-        "KB-019"
+        "company-submissions/approve-company-creation#KB-019"
       ]
     },
     {
       "statement": "Role nào của merchant được Approve submission chưa được tài liệu nêu.",
       "kb_refs": [
-        "KB-018",
-        "KB-005"
+        "company-submissions/approve-company-creation#KB-018",
+        "company-submissions/submission-review-and-decision#KB-005"
       ]
     }
   ],
@@ -323,28 +323,28 @@
       {
         "item": "Nút \"Approve company\" trên trang chi tiết submission",
         "kb_refs": [
-          "KB-005",
-          "KB-018"
+          "company-submissions/submission-review-and-decision#KB-005",
+          "company-submissions/approve-company-creation#KB-018"
         ]
       },
       {
         "item": "Toast \"Could not find the customer for this submission in Shopify. The company approved trigger was not fired.\"",
         "kb_refs": [
-          "KB-025",
-          "KB-031"
+          "company-submissions/approve-company-creation#KB-025",
+          "company-submissions/approve-company-creation#KB-031"
         ]
       },
       {
         "item": "Banner vàng `setup_incomplete` (\"Company created, but setup could not be completed…\")",
         "kb_refs": [
-          "KB-020"
+          "company-submissions/approve-company-creation#KB-020"
         ]
       },
       {
         "item": "Toast \"Company submisison approved\" và banner \"B2B company created\" (hiện trạng staging cũ)",
         "kb_refs": [
-          "KB-033",
-          "KB-016"
+          "company-submissions/approve-company-creation#KB-033",
+          "company-submissions/submission-review-and-decision#KB-016"
         ]
       }
     ],
@@ -353,14 +353,14 @@
       {
         "item": "Request `PUT` khi Approve (route chưa có trong KB; known issue thấy trả 200 mà không làm gì)",
         "kb_refs": [
-          "KB-029"
+          "company-submissions/approve-company-creation#KB-029"
         ]
       },
       {
         "item": "Shopify Flow trigger `duos-approve-company`, payload Submission {id, data, formattedData, submittedEmail, createdAt} + `customer_id` của Main Contact",
         "kb_refs": [
-          "KB-022",
-          "KB-023"
+          "company-submissions/approve-company-creation#KB-022",
+          "company-submissions/approve-company-creation#KB-023"
         ]
       }
     ],
@@ -368,18 +368,18 @@
       {
         "item": "Submission `company_id`, `company_creation_error` (`rate_limited`, `trigger_failed`?), status",
         "kb_refs": [
-          "KB-018",
-          "KB-020",
-          "KB-026",
-          "KB-028"
+          "company-submissions/approve-company-creation#KB-018",
+          "company-submissions/approve-company-creation#KB-020",
+          "company-submissions/approve-company-creation#KB-026",
+          "company-submissions/approve-company-creation#KB-028"
         ]
       },
       {
         "item": "Shopify Company + Location + Main contact (Location admin) + role Admin của app",
         "kb_refs": [
-          "KB-019",
-          "KB-P-012",
-          "KB-P-013"
+          "company-submissions/approve-company-creation#KB-019",
+          "_product-level#KB-P-012",
+          "_product-level#KB-P-013"
         ]
       }
     ],
@@ -391,8 +391,8 @@
       "relation": "invoked_from",
       "note": "Approve được gọi từ trang chi tiết submission; status hiển thị ở màn duyệt.",
       "kb_refs": [
-        "KB-005",
-        "KB-002"
+        "company-submissions/submission-review-and-decision#KB-005",
+        "company-submissions/submission-review-and-decision#KB-002"
       ]
     },
     {
@@ -400,8 +400,8 @@
       "relation": "uses",
       "note": "Luồng cũ chạy matching customer lúc Approve; lỗi `customer_in_other_company`.",
       "kb_refs": [
-        "KB-036",
-        "KB-042"
+        "company-submissions/customer-matching#KB-036",
+        "company-submissions/customer-matching#KB-042"
       ]
     },
     {
@@ -409,9 +409,9 @@
       "relation": "state_source",
       "note": "`company_id` / `company_creation_error` / `rate_limited` do job lúc submit ghi quyết định nhánh Approve và banner setup_incomplete.",
       "kb_refs": [
-        "KB-018",
-        "KB-028",
-        "KB-054"
+        "company-submissions/approve-company-creation#KB-018",
+        "company-submissions/approve-company-creation#KB-028",
+        "company-submissions/auto-company-creation-on-submit#KB-054"
       ]
     },
     {
@@ -419,8 +419,8 @@
       "relation": "emits_to",
       "note": "Email \"B2B account created\" và cấu hình mục B2B submission thuộc object notifications; object này chỉ sở hữu việc bắn trigger khi Approve.",
       "kb_refs": [
-        "KB-032",
-        "KB-022"
+        "company-submissions/approve-company-creation#KB-032",
+        "company-submissions/approve-company-creation#KB-022"
       ]
     },
     {
@@ -428,7 +428,7 @@
       "relation": "feeds",
       "note": "Company tạo ra (Main contact Location admin + role Admin của app) là đầu vào cho các tính năng phân quyền member.",
       "kb_refs": [
-        "KB-019"
+        "company-submissions/approve-company-creation#KB-019"
       ]
     }
   ],
@@ -438,7 +438,7 @@
       "knowledge_kind": "INFERRED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-019"
+        "company-submissions/approve-company-creation#KB-019"
       ],
       "note": "Chỉ ticket / câu tổng quan; chưa có rule đang hiệu lực cho các bước tạo của luồng cũ."
     },
@@ -448,7 +448,7 @@
       "confidence": "LOW",
       "status": "KNOWN_DEFECT",
       "kb_refs": [
-        "KB-029"
+        "company-submissions/approve-company-creation#KB-029"
       ],
       "note": "Nghi lỗi đang mở — regression watch; mâu thuẫn rule chọn nhánh theo `company_id`."
     },
@@ -457,7 +457,7 @@
       "knowledge_kind": "INFERRED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-030"
+        "company-submissions/approve-company-creation#KB-030"
       ],
       "note": "Chưa chốt lỗi hay chấp nhận (task Testlane GAP-23)."
     },
@@ -466,7 +466,7 @@
       "knowledge_kind": "INFERRED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-034"
+        "company-submissions/approve-company-creation#KB-034"
       ],
       "note": "Chưa chốt (task Testlane GAP-28)."
     },
@@ -475,7 +475,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-027"
+        "company-submissions/approve-company-creation#KB-027"
       ]
     },
     {
@@ -483,8 +483,8 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-031",
-        "KB-025"
+        "company-submissions/approve-company-creation#KB-031",
+        "company-submissions/approve-company-creation#KB-025"
       ]
     },
     {
@@ -492,8 +492,8 @@
       "knowledge_kind": "INFERRED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-061",
-        "KB-018"
+        "company-submissions/auto-company-creation-on-submit#KB-061",
+        "company-submissions/approve-company-creation#KB-018"
       ]
     },
     {
@@ -502,8 +502,8 @@
       "confidence": "LOW",
       "status": "KNOWN_DEFECT",
       "kb_refs": [
-        "KB-043",
-        "KB-042"
+        "company-submissions/customer-matching#KB-043",
+        "company-submissions/customer-matching#KB-042"
       ]
     }
   ],
@@ -512,10 +512,10 @@
       "question": "Trên store bật cờ, Approve một submission `failed` không có `company_id` trả `PUT` 200 nhưng không toast, vẫn Failed và không tạo company — đây là lỗi (Dev FE đã chốt nhánh này phải đi luồng cũ) và có liên quan phone \"+84\" thiếu số (BUG-210) không?",
       "why_it_matters": "Nghi lỗi chưa log bug; check nhánh failed không có `company_id` chỉ STRONG theo rule, hiện trạng lệch.",
       "kb_refs": [
-        "KB-029",
-        "KB-018",
-        "KB-005",
-        "KB-017"
+        "company-submissions/approve-company-creation#KB-029",
+        "company-submissions/approve-company-creation#KB-018",
+        "company-submissions/submission-review-and-decision#KB-005",
+        "company-submissions/submission-review-and-decision#KB-017"
       ],
       "oq_id": "OQ-company-submissions-010"
     },
@@ -523,8 +523,8 @@
       "question": "Ở luồng Approve cũ, khi bước gán contact lỗi thì company được tạo nhưng không có contact, submission vẫn `completed` và không banner — đây là lỗi cần sửa hay hành vi được chấp nhận (task Testlane GAP-23)?",
       "why_it_matters": "Không có expected cho kết quả Approve khi gán contact lỗi.",
       "kb_refs": [
-        "KB-030",
-        "KB-043"
+        "company-submissions/approve-company-creation#KB-030",
+        "company-submissions/customer-matching#KB-043"
       ],
       "oq_id": "OQ-company-submissions-011"
     },
@@ -532,9 +532,9 @@
       "question": "Submission đang `setup_incomplete` mà chưa được gán contact thì Approve có báo `customer_not_found` (không bắn trigger) không (task Testlane GAP-28)?",
       "why_it_matters": "Giao giữa banner setup_incomplete và nhánh không tìm thấy customer chưa có kết quả mong đợi.",
       "kb_refs": [
-        "KB-034",
-        "KB-020",
-        "KB-025"
+        "company-submissions/approve-company-creation#KB-034",
+        "company-submissions/approve-company-creation#KB-020",
+        "company-submissions/approve-company-creation#KB-025"
       ],
       "oq_id": "OQ-company-submissions-012"
     },
@@ -542,8 +542,8 @@
       "question": "Khi merchant đổi email customer trên Shopify admin làm submission kẹt Pending, PO chấp nhận giới hạn này hay cần đường gỡ trong app (task Testlane GAP-29)?",
       "why_it_matters": "Không có expected cho case hồi phục.",
       "kb_refs": [
-        "KB-031",
-        "KB-025"
+        "company-submissions/approve-company-creation#KB-031",
+        "company-submissions/approve-company-creation#KB-025"
       ],
       "oq_id": "OQ-company-submissions-013"
     },
@@ -551,10 +551,10 @@
       "question": "Trigger `duos-approve-company` và email \"B2B account created\" hoạt động thế nào trên build hiện tại (Flow chưa mở trên staging 08/10/2026), nội dung email là gì và có gửi khi workflow tắt không?",
       "why_it_matters": "Tầng Shopify Flow chỉ dựa Jira/Dev và quan sát test case cũ không ghi ngày.",
       "kb_refs": [
-        "KB-022",
-        "KB-023",
-        "KB-024",
-        "KB-032"
+        "company-submissions/approve-company-creation#KB-022",
+        "company-submissions/approve-company-creation#KB-023",
+        "company-submissions/approve-company-creation#KB-024",
+        "company-submissions/approve-company-creation#KB-032"
       ],
       "oq_id": "OQ-company-submissions-014"
     },
@@ -562,10 +562,10 @@
       "question": "Luồng Approve cũ (submission không có `company_id`) có đúng như Dev mô tả trên build hiện tại không, `trigger_failed` là giá trị của `company_creation_error` hay trạng thái riêng, và merchant chọn payment term cho company trước hay sau Approve (Jira DUOS-230)?",
       "why_it_matters": "Chưa có store tắt cờ để kiểm luồng cũ; nơi ghi `trigger_failed` ảnh hưởng điều kiện banner setup_incomplete; payment term là câu hỏi PO chưa trả lời.",
       "kb_refs": [
-        "KB-018",
-        "KB-026",
-        "KB-027",
-        "KB-030"
+        "company-submissions/approve-company-creation#KB-018",
+        "company-submissions/approve-company-creation#KB-026",
+        "company-submissions/approve-company-creation#KB-027",
+        "company-submissions/approve-company-creation#KB-030"
       ],
       "oq_id": "OQ-company-submissions-015"
     },
@@ -573,7 +573,7 @@
       "question": "Approve luồng cũ có thực sự gán customer làm Main contact (Location admin) kèm role Admin của app như Jira DUOS-425 mô tả không?",
       "why_it_matters": "Chỉ dựa ticket / câu tổng quan QA, chưa có rule đang hiệu lực.",
       "kb_refs": [
-        "KB-019"
+        "company-submissions/approve-company-creation#KB-019"
       ],
       "oq_id": "OQ-company-submissions-005"
     },
@@ -581,8 +581,8 @@
       "question": "Approve submission bị `rate_limited` đi luồng cũ cụ thể thế nào (có chạy matching, có bắn trigger, banner gì)?",
       "why_it_matters": "Tài liệu chỉ nói \"đi luồng cũ\", không đủ chi tiết để viết kết quả của Approve sau rate limit.",
       "kb_refs": [
-        "KB-028",
-        "KB-056"
+        "company-submissions/approve-company-creation#KB-028",
+        "company-submissions/auto-company-creation-on-submit#KB-056"
       ],
       "oq_id": "OQ-company-submissions-028"
     }
@@ -593,8 +593,8 @@
     "basis": "Ngày nguồn mới nhất / sớm nhất trong các KB item được tham chiếu (ngày quyết định PO/Dev, ngày cập nhật Jira, ngày quan sát staging); không có quan sát runtime trong lần chạy này."
   },
   "last_updated": {
-    "date": "2026-10-09",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "coverage_matrix": [
     {
@@ -731,7 +731,7 @@
       "to": "submission-review-and-decision",
       "relation": "INVOKED_FROM",
       "kb_refs": [
-        "KB-005"
+        "company-submissions/submission-review-and-decision#KB-005"
       ]
     },
     {
@@ -739,8 +739,8 @@
       "to": "customer-matching",
       "relation": "USES",
       "kb_refs": [
-        "KB-036",
-        "KB-042"
+        "company-submissions/customer-matching#KB-036",
+        "company-submissions/customer-matching#KB-042"
       ]
     },
     {
@@ -748,8 +748,8 @@
       "to": "auto-company-creation-on-submit",
       "relation": "STATE_DEPENDS_ON",
       "kb_refs": [
-        "KB-018",
-        "KB-028"
+        "company-submissions/approve-company-creation#KB-018",
+        "company-submissions/approve-company-creation#KB-028"
       ]
     },
     {
@@ -757,8 +757,8 @@
       "to": "notifications/flow-email-triggers",
       "relation": "EMITS_TO",
       "kb_refs": [
-        "KB-022",
-        "KB-032"
+        "company-submissions/approve-company-creation#KB-022",
+        "company-submissions/approve-company-creation#KB-032"
       ]
     }
   ]

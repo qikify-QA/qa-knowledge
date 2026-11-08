@@ -197,3 +197,70 @@ Tổng: 13 mục (NEEDS_CONFIRMATION/CONFLICT/OPEN_ISSUE). Sinh từ bootstrap D
 }
 ```
 
+```json
+{"oq_id":"OQ-variant-swatches-014","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"Confirm the live tooltip/helper text shown when selecting \"Variant image dropdown\" in the Swatch type dropdown — is it exactly \"Automatically assigns the existing variant images\" (matching the pattern of \"Variant color dropdown\"'s confirmed tooltip), or does it differ?"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-015","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-016 “[Regression watch] Custom color dropdown configured swatch does not render as a visual swatch on storefront” của feature variant-swatches. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-016","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-017 “[Regression watch] Custom image dropdown configured swatch does not render as a visual swatch on storefront” của feature variant-swatches. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-017","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-018 “[Regression watch] Configured-but-broken variant value is visually indistinguishable from a never-configured value” của feature variant-swatches. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-018","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-019 “[Regression watch] App's own offer widget (Wholesale) also renders configured swatch values as plain text, not swatches” của feature variant-swatches. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-019","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"Does the Portal \"Variant swatches\" page (and its Setting Variant Option sub-page) have any role/permission restriction beyond general Portal access — e.g. can every staff account that can log into Portal also edit swatch config, or is there a read-only/limited role?"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-020","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"What is the actual \"Previous\"/\"Next\" button and row-count behavior once a store has more than 20 variant options (at the 20/21-row boundary) — does pagination actually page as documented?"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-021","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"What happens when a merchant enters a malformed HEX value (e.g. missing '#', wrong length, non-hex characters) into the Custom color dropdown's HEX textbox and attempts to save — is there client-side/server-side validation, an error message, or does it save as-is?"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-022","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"What file formats and maximum file size are accepted by the \"Choose File\"/\"Add image\" control in the Custom image dropdown's per-value rows, and what happens when an unsupported format or oversized file is uploaded?"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-023","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"What does the app show when a merchant (or anyone with Portal access) navigates directly to /apps/<app-slug>/variant-swatches/setting/<OptionName> for an OptionName that was never synced/doesn't exist on this store — a 404, an empty page, a redirect, or something else?"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-024","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-027 “Saved swatch configuration (HEX value) persists after a full page reload” của feature variant-swatches. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-025","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"Once a store's variant option table is already populated, is there still a way to re-sync (e.g. does the \"Sync variants\" button/action remain available to pull newly added Shopify variants/values), or is sync a one-time-only action tied to the empty state?"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-026","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"If a merchant changes a variant option's swatch type after an offer using that option is already live on the storefront, does the storefront update immediately, or does it require a resync/republish?"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-027","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"Once the storefront swatch-rendering defect (KB-022) is fixed, does Quantity Break's \"Hide theme variant picker\" checkbox correctly hand off rendering to this feature's own swatch widget, or does another gap exist in that handoff?"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-028","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"Do the per-item inline variant-picker dropdowns rendered by Quantity Break's \"Allow customers to choose different variants for each item\" checkbox (on a product with real variants) actually read and apply this feature's swatch configuration (color/image), or do they always fall back to plain native dropdowns regardless of configured swatch type?"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-029","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"Does \"Variant color dropdown\" \"Variant image dropdown\" (the 2 auto-source swatch types, pulling directly from Shopify's own native variant color/image data) actually render as a visual swatch on the storefront when a product has genuine Shopify-native variant color/image data configured, or does it share the same rendering defect confirmed for \"Custom color dropdown\" \"Custom image dropdown\" (KB-022)?"}
+```
+
+```json
+{"oq_id":"OQ-variant-swatches-030","type":"NEEDS_CONFIRMATION","feature_id":"variant-swatches","summary":"Is the swatch configuration's scope confirmed to be global per variant-option name (one config applies to every product sharing that option name, no per-product override), or could an undocumented per-product override exist?"}
+```

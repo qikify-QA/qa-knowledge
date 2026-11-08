@@ -25,7 +25,7 @@
           "expected_result": "Toàn bộ 5 bước network thành công; job đạt status.value=3/status.description='Done'; hệ thống tự tạo 1 category mới (tên = tên top-level folder trong zip) chứa các clipart item, log ghi 'N/N Success enqueue'. Đây là baseline từ 1 sample thành công (KB-016, 1 sample, confidence LOW) - chưa tổng quát hoá cho mọi kích thước/cấu trúc zip.",
           "oracle": {
             "kb_ids": [
-              "KB-016"
+              "asset-category/asset-category-bulk-upload#KB-016"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -55,7 +55,7 @@
           "expected_result": "Danh sách job cũ hiển thị đầy đủ, không bị mutate chỉ vì mở trang xem.",
           "oracle": {
             "kb_ids": [
-              "KB-016"
+              "asset-category/asset-category-bulk-upload#KB-016"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -84,7 +84,7 @@
           "expected_result": "Banner hiển thị đúng nguyên văn nội dung quan sát trong đợt quan sát 2026-09-10: 'Limit max 2GB per zip and can only process max 10 files at a time.' Đây chỉ là quan sát TEXT UI hiện tại, KHÔNG phải xác nhận đây là giới hạn thật thi hành phía server (xem CHK-004 cho phần verify server-side).",
           "oracle": {
             "kb_ids": [
-              "KB-016"
+              "asset-category/asset-category-bulk-upload#KB-016"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -116,7 +116,7 @@
           "expected_result": "CONFIRMED (PO 2026-09-14, giới hạn bulk-upload zip (KB-022) resolution_update=RESOLVED_PLAN_DEPENDENT; KB-022): với plan Blue (Test, plan hiện tại của Linh explorer), giới hạn ĐÚNG là banner text hiện tại 'Limit max 2GB per zip and can only process max 10 files at a time.' Giá trị này KHÔNG phải hằng số cứng toàn cục - các plan khác CHƯA verify, có thể khác. KHÔNG dùng check này để khẳng định giới hạn server-side thực sự ENFORCE đúng con số banner ghi - đó là phạm vi CHK-005/phần server-enforcement của giới hạn bulk-upload chưa test biên (vẫn NEEDS_CONFIRMATION, chưa test biên qua API, KHÔNG bị đụng trong các đợt quan sát đã có).",
           "oracle": {
             "kb_ids": [
-              "KB-022"
+              "asset-category/asset-category-bulk-upload#KB-022"
             ],
             "oracle_strength": "STRONG"
           },
@@ -177,7 +177,7 @@
           "expected_result": "Hành vi quan sát được, network-verified, CHƯA có business confirmation (KB-025 hạ từ CONFIRMED_EXPECTED xuống OBSERVED_CURRENT bởi quá trình chuẩn hoá KB - po_answer chỉ là uỷ quyền thực thi, KHÔNG phải xác nhận hành vi đúng): POST /api/clipart-category-bulk-uploads/users/{userId}/start trả 422 {message: 'The selected mimetype is invalid.', errors: {mimetype: [...]}} - server reject, không tạo job. 1 sample network-verified. Lệch khỏi hành vi này khi retest = cần điều tra, không tự động coi là bug.",
           "oracle": {
             "kb_ids": [
-              "KB-025"
+              "asset-category/asset-category-bulk-upload#KB-025"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -207,7 +207,7 @@
           "expected_result": "CONFIRMED (PO 2026-09-14 'Upload thành công nhưng unzip sẽ báo không chứa ảnh nào'; KB-026, đợt quan sát 2026-09-14): lúc upload, POST.../complete trả 200 với status trung gian {value:2, description:'Extracting'}; ~34 phút sau, GET job detail xác nhận TRẠNG THÁI CUỐI: status={value:4, description:'Error'}, clipart_category_id=null (KHÔNG tạo category nào), log kết thúc 'Error - No valid entries found'.",
           "oracle": {
             "kb_ids": [
-              "KB-026"
+              "asset-category/asset-category-bulk-upload#KB-026"
             ],
             "oracle_strength": "STRONG"
           },
@@ -238,7 +238,7 @@
           "expected_result": "Danh sách status theo PO: Uploading, Extracting, delayed, Done, Error. đợt quan sát 2026-09-14 (KB-027): CHỈ 2/5 status có network evidence TRỰC TIẾP - Extracting (value=2, POST.../complete lúc upload) và Error (value=4, GET job detail sau ~34 phút). 3/5 status còn lại (Uploading, delayed, Done) CHỈ dựa vào PO-answer + quan sát UI (bảng hiển thị text 'Done'/'Error' từ job cũ) - KHÔNG network-verified trực tiếp trong các đợt quan sát đã có. oracle_strength giữ BASELINE (không STRONG) vì độ tin cậy evidence KHÔNG đồng đều giữa 5 status - không coi cả 5 ngang hàng.",
           "oracle": {
             "kb_ids": [
-              "KB-027"
+              "asset-category/asset-category-bulk-upload#KB-027"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -298,7 +298,7 @@
           "expected_result": "OBSERVED (KB-028, đợt quan sát 2026-09-14): presigned URL cho bước PUT bulk-zip (POST.../bulk-uploads/users/{userId}/start) có X-Amz-Expires=600 (TTL 10 phút); X-Amz-SignedHeaders=host (scope ký CHỈ ràng buộc Host header, không ràng buộc content-type/content-length). Host=oe-cdn.sgp1.digitaloceanspaces.com, path UUID/hash-based, không đoán được resource khác. KHÔNG có finding bảo mật nghiêm trọng nào cần escalate thêm trong các đợt quan sát đã có - TTL 10 phút hợp lý cho use-case presigned upload.",
           "oracle": {
             "kb_ids": [
-              "KB-028"
+              "asset-category/_object-level#KB-028"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -380,5 +380,9 @@
     {
       "note": "asset-category-item-management::CHK-011 dùng chung KB-028 (TTL/scope presigned URL) với CHK-010 của checklist này - GIỮ 2 check riêng (2 feature/luồng upload khác nhau: item đơn lẻ vs bulk-zip), KHÔNG nhân đôi phân tích, mỗi check ghi rõ note dedupe trỏ sang check kia."
     }
-  ]
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
 }

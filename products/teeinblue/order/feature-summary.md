@@ -1,5 +1,5 @@
 # Object: Order (product: teeinblue) — Feature Profile Summary
-**Published context version:** 8
+**Published context version:** 9
 
 - **Env:** staging. Bootstrap 2026-09-13; cập nhật CBS-006 (TIB-5584) và CBS-011 (TIB-5558, action Hide) 2026-10-30; CBS-074 (Edit Customization sau order, tracking từ provider) 2026-11-06; CBS-096 (import đơn Shopify với customization_id sai định dạng, order design ảnh AI, order design vector) 2026-11-07.
 - **Nguồn:** phần lớn knowledge là `OBSERVED_CURRENT` từ bootstrap; item `CONFIRMED_EXPECTED` gồm KB-182, KB-238, KB-239, KB-392, từ test case Testlane PASS trên staging; KB-182 chờ PO xác nhận vì đổi đầu ra fulfillment (OQ-order-020)

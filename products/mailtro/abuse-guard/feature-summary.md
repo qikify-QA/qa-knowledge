@@ -1,5 +1,5 @@
 # Security & Abuse guard (BE, MTRO-92) — giới hạn lạm dụng truy cập, kiểm nội dung, tự dừng gửi/trạng thái workspace, màn staff, an toàn mail giao dịch
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** Mailtro · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-08
 

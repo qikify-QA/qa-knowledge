@@ -27,7 +27,7 @@
       "expected_result": "Nút Add new disabled khi input liền kề rỗng; enabled khi có giá trị; click gửi GraphQL mutation insert_cliparts tới /v1/graphql, trả 200 kèm item mới - đúng nhất quán ở CẢ 2 NHÓM category độc lập: (a) category CŨ 6012/6013/6014, tồn tại từ trước đợt quan sát đó (verify 3/3 loại); (b) category MỚI TẠO TRONG RUN NÀY 6021/6022/6023 (verify 3/3 loại - đợt review trước bổ sung, xem KB-011/). Tổng 6/6 sample thành công, không có request nào lỗi/treo ở tầng network.",
       "oracle": {
         "kb_ids": [
-          "KB-011"
+          "asset-category/asset-category-item-management#KB-011"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -56,19 +56,21 @@
         "So sánh kết quả cả 3 nhóm."
       ],
       "observation_point": "DOM button state + network insert_cliparts (nếu gửi được) ở cả 3 nhóm category",
-      "expected_result": "CONFIRMED (PO 2026-09-14, open-issue \"Add new disabled\" (KB-023) resolution_update=RESOLVED_NOT_A_BUG; KB-023, đợt quan sát 2026-09-14, 6/6 sample HIGH confidence + 6/6 sample cũ đợt quan sát 2026-09-10 = tổng 12/12 sample xuyên suốt 2 đợt quan sát độc lập): nút Add new disabled=true khi input liền kề (hex color/item name/map style option name) rỗng - ĐÂY LÀ VALIDATE PHÍA CLIENT THUẦN, THIẾT KẾ ĐÚNG: khi input rỗng, gõ giá trị KHÔNG gọi bất kỳ request insert/mutation nào (chỉ GraphQL list polling nền có sẵn từ trước, mapped=0); chỉ khi điền giá trị rồi bấm Add new, GraphQL mutation insert_cliparts mới được gửi, LUÔN thành công (200). Bug cũ 'disabled vĩnh viễn' ghi trong KB legacy 'ui-inconsistencies' mục 1 (category gốc 6008/6009/6010) được đánh dấu DEPRECATED/SUPERSEDED bởi finding này (KHÔNG xoá, giữ để truy vết lịch sử). Category gốc 6008/6009/6010 CHƯA được re-test TRỰC TIẾP trong bất kỳ đợt quan sát nào, nhưng PO đã xác nhận rõ đây LÀ cơ chế thiết kế chung ('phải nhập map url/color/option TRƯỚC thì nút Add new mới enable') - KHÔNG cần re-test category gốc riêng để đóng open-issue này.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [
-          "KB-023"
+          "asset-category/asset-category-item-management#KB-023"
         ],
-        "oracle_strength": "STRONG"
+        "oracle_strength": "NONE"
       },
-      "status": "READY",
+      "status": "NEEDS_CONFIRMATION",
       "risk_refs": [
         "OQ-asset-category-023"
       ],
       "priority": "P1",
-      "automation_suitability": "HYBRID"
+      "automation_suitability": "HYBRID",
+      "observation_guidance": "CONFIRMED (PO 2026-09-14, open-issue \"Add new disabled\" (KB-023) resolution_update=RESOLVED_NOT_A_BUG; KB-023, đợt quan sát 2026-09-14, 6/6 sample HIGH confidence + 6/6 sample cũ đợt quan sát 2026-09-10 = tổng 12/12 sample xuyên suốt 2 đợt quan sát độc lập): nút Add new disabled=true khi input liền kề (hex color/item name/map style option name) rỗng - ĐÂY LÀ VALIDATE PHÍA CLIENT THUẦN, THIẾT KẾ ĐÚNG: khi input rỗng, gõ giá trị KHÔNG gọi bất kỳ request insert/mutation nào (chỉ GraphQL list polling nền có sẵn từ trước, mapped=0); chỉ khi điền giá trị rồi bấm Add new, GraphQL mutation insert_cliparts mới được gửi, LUÔN thành công (200). Bug cũ 'disabled vĩnh viễn' ghi trong KB legacy 'ui-inconsistencies' mục 1 (category gốc 6008/6009/6010) được đánh dấu DEPRECATED/SUPERSEDED bởi finding này (KHÔNG xoá, giữ để truy vết lịch sử). Category gốc 6008/6009/6010 CHƯA được re-test TRỰC TIẾP trong bất kỳ đợt quan sát nào, nhưng PO đã xác nhận rõ đây LÀ cơ chế thiết kế chung ('phải nhập map url/color/option TRƯỚC thì nút Add new mới enable') - KHÔNG cần re-test category gốc riêng để đóng open-issue này.",
+      "oq_id": "OQ-asset-category-052"
     },
     {
       "check_id": "CHK-003",
@@ -91,7 +93,7 @@
       "expected_result": null,
       "oracle": {
         "kb_ids": [
-          "KB-012"
+          "asset-category/asset-category-item-management#KB-012"
         ],
         "oracle_strength": "NONE"
       },
@@ -125,7 +127,7 @@
       "expected_result": "Hành vi quan sát được, network-verified, CHƯA có business confirmation (KB-031 hạ từ CONFIRMED_EXPECTED xuống OBSERVED_CURRENT bởi quá trình chuẩn hoá KB - po_answer chỉ là uỷ quyền thực thi, KHÔNG phải xác nhận hành vi đúng): chọn 1 font có sẵn (vd 'Bebas Neue', từ Upload Fonts) trong modal 'Select a font', bấm Select -> mutation thật là POST /api/cliparts/font (201) - API KHÁC HẲN API tạo category (/api/clipart-categories). Request body {name, url: 'users/{userId}/fonts/<file>.woff2' (path font GỐC), clipart_category_id, position}; response {name, url: 'users/{userId}/cliparts/<category_id>/<file>.woff2' (path MỚI, đổi prefix), thumbnail, id}. Server COPY file font gốc sang storage riêng của category, tạo 1 record 'clipart' đại diện cho font đó, KHÔNG di chuyển/tham chiếu trực tiếp file gốc. 1 sample duy nhất, network-verified - chưa test edge case (font trùng tên, xoá font gốc sau khi copy). Lệch khỏi hành vi này khi retest = cần điều tra, không tự động coi là bug.",
       "oracle": {
         "kb_ids": [
-          "KB-031"
+          "asset-category/asset-category-item-management#KB-031"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -157,7 +159,7 @@
       "expected_result": "Portal gọi tiếp POST /api/staff-activity-logs/clipart, trả 201, cho cả 3 loại đã test (Color/Additional Option/Map Style).",
       "oracle": {
         "kb_ids": [
-          "KB-013"
+          "asset-category/asset-category-item-management#KB-013"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -216,7 +218,7 @@
       "expected_result": "Cả 3 request thành công, bước cuối trả 201 kèm id item mới; UI hiện 'Your file is uploaded, we are generating file preview, reload after few minutes'.",
       "oracle": {
         "kb_ids": [
-          "KB-014"
+          "asset-category/asset-category-item-management#KB-014"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -246,7 +248,7 @@
       "expected_result": "Trả 201 kèm name, url (.svg), thumbnail (_thumbnail.webp), id item mới.",
       "oracle": {
         "kb_ids": [
-          "KB-015"
+          "asset-category/asset-category-item-management#KB-015"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -277,7 +279,7 @@
       "expected_result": "OBSERVED (KB-034, đợt quan sát 2026-09-14): POST /api/users/{userId}/temporary-files/upload-url vẫn trả 201 dù mimetype thực = text/plain - server KHÔNG validate mimetype ở bước NÀY. KHÔNG có entry PUT lên storage hay POST /api/cliparts/by-temporary-file nào được capture trong network capture của đợt quan sát đó - CHƯA XÁC NHẬN được liệu 1 clipart item 'giả' (non-image) có thực sự được tạo ra hay bị chặn ở bước sau. KHÔNG kết luận validate đủ hay thiếu.",
       "oracle": {
         "kb_ids": [
-          "KB-034"
+          "asset-category/asset-category-item-management#KB-034"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -343,8 +345,8 @@
       "expected_result": "OBSERVED (KB-028, đợt quan sát 2026-09-14): presigned URL cho bước upload item đơn lẻ (POST /api/users/{userId}/temporary-files/upload-url) có X-Amz-Expires=300 (TTL 5 phút); X-Amz-SignedHeaders=host (scope ký CHỈ ràng buộc Host, không ràng buộc content-type/content-length). Host=oe-cdn.sgp1.digitaloceanspaces.com, path UUID/hash-based. Dữ liệu NÀY DÙNG CHUNG với asset-category-bulk-upload::CHK-010 (cùng KB-028, khác TTL: item=300s vs bulk-zip=600s) - xem checklist đó để tránh trùng lặp phân tích, đây chỉ là instance riêng cho luồng upload đơn lẻ (khác endpoint). KHÔNG có finding bảo mật nghiêm trọng mới cần escalate.",
       "oracle": {
         "kb_ids": [
-          "KB-018",
-          "KB-028"
+          "asset-category/_object-level#KB-018",
+          "asset-category/_object-level#KB-028"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -404,17 +406,19 @@
         "Quan sát response lỗi (nếu có) và message giới hạn hiển thị trên UI (nếu có banner)."
       ],
       "observation_point": "UI banner giới hạn (nếu có) + response khi vượt ngưỡng",
-      "expected_result": "CONFIRMED (PO 2026-09-14 'warning 64 megapixels (w*h) nhưng thực tế thì không giới hạn'; KB-033, đợt quan sát 2026-09-14): upload ảnh PNG 8100x8100px (65.6MP, vượt 64MP) vào category Clipart - UI hiển thị warning 'Your file exceeds 64 megapixels (width * height)' NHƯNG luồng upload vẫn tiếp tục và HOÀN TẤT THÀNH CÔNG: POST /api/users/{userId}/temporary-files/upload-url (201) -> POST /api/cliparts/by-temporary-file (201, item mới tạo). Server KHÔNG có validate kích thước chặn ở API layer trong sample này. 1 sample duy nhất - chưa test file lớn hơn nữa hoặc dung lượng byte lớn (khác megapixel).",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [
-          "KB-033"
+          "asset-category/asset-category-item-management#KB-033"
         ],
-        "oracle_strength": "STRONG"
+        "oracle_strength": "NONE"
       },
-      "status": "READY",
+      "status": "NEEDS_CONFIRMATION",
       "risk_refs": [],
       "priority": "P2",
-      "automation_suitability": "HYBRID"
+      "automation_suitability": "HYBRID",
+      "observation_guidance": "CONFIRMED (PO 2026-09-14 'warning 64 megapixels (w*h) nhưng thực tế thì không giới hạn'; KB-033, đợt quan sát 2026-09-14): upload ảnh PNG 8100x8100px (65.6MP, vượt 64MP) vào category Clipart - UI hiển thị warning 'Your file exceeds 64 megapixels (width * height)' NHƯNG luồng upload vẫn tiếp tục và HOÀN TẤT THÀNH CÔNG: POST /api/users/{userId}/temporary-files/upload-url (201) -> POST /api/cliparts/by-temporary-file (201, item mới tạo). Server KHÔNG có validate kích thước chặn ở API layer trong sample này. 1 sample duy nhất - chưa test file lớn hơn nữa hoặc dung lượng byte lớn (khác megapixel).",
+      "oq_id": "OQ-asset-category-053"
     },
     {
       "check_id": "CHK-014",
@@ -437,7 +441,7 @@
       "expected_result": "GHI NHẬN KNOWN-ISSUE/DEFECT (KB-032, đợt quan sát 2026-09-14, 1 sample), KHÔNG phải 1 rule pass/fail thông thường - TUYỆT ĐỐI KHÔNG viết 'phải trả 500' như hành vi ĐÚNG: hiện tại POST /api/cliparts/svg trả 500 kèm {message: 'Vector file is not a SVG', exception: 'Exception', file: '/var/www/html/app/Http/Controllers/ClipartController.php', line: 352, trace: [...]}. Việc CHẶN sai định dạng là ĐÚNG ý đồ nghiệp vụ, nhưng cách implement (mã lỗi 500 thay vì 4xx có message rõ ràng, và lộ FULL stack trace + đường dẫn file nội bộ server) là DEFECT cần dev sửa. Đồng thời UI hiển thị lỗi dạng text '[object Object]' (broken error rendering) - người dùng KHÔNG đọc được message thật. 2 defect: (1) UI '[object Object]' - defect thường; (2) information disclosure qua verbose error 500 - đã mở open question OQ-asset-category-020 (severity LOW-MEDIUM), CHỜ authority (PO/Dev) quyết định mở/escalate và dev fix/triage.",
       "oracle": {
         "kb_ids": [
-          "KB-032"
+          "asset-category/asset-category-item-management#KB-032"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -472,7 +476,7 @@
       "expected_result": "[OBSERVED_CURRENT, CBS-004, 3 sample (3x422 liên tiếp thiếu field 'file'), 1 nguồn (API trực tiếp)] x-ratelimit-limit=4000, giữ nguyên qua 3 lần gọi liên tiếp. Giá trị rate-limit này là quan sát mới tại 2026-09-26; route/UI entry point đã biết từ 2026-09-14 (xem CHK-014). Hành vi HIỆN TẠI trên staging, KHÔNG CONFIRMED_EXPECTED. KHÔNG có sample 201 (upload.svg hợp lệ thành công) để đối chứng behavior remaining — chưa từng có sample.svg upload thành công thật trong toàn bộ evidence (xem unknown_areas CHK-008/CHK-014, và CHK-017).",
       "oracle": {
         "kb_ids": [
-          "KB-035"
+          "asset-category/_object-level#KB-035"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -504,7 +508,7 @@
       "expected_result": "[OBSERVED_CURRENT, CBS-004, 3 sample (3x422 liên tiếp trong vài giây), 1 nguồn (API trực tiếp)] KHÔNG có bất kỳ header x-ratelimit-* nào trong response, KHÔNG bị 429/403 — nhất quán với claim CCR CBS-004 'endpoint này không có rate-limit middleware riêng' TRONG PHẠM VI MẪU NHỎ ĐÃ TEST. TUYỆT ĐỐI KHÔNG khẳng định 'endpoint này an toàn tuyệt đối trước abuse' hay 'không bao giờ bị giới hạn' — mẫu chỉ 3 request/vài giây, KHÔNG loại trừ khả năng có WAF/CDN chặn ở ngưỡng cao hơn chưa quan sát được. ",
       "oracle": {
         "kb_ids": [
-          "KB-037"
+          "asset-category/_object-level#KB-037"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -569,17 +573,17 @@
       "expected_result": "Theo dev: POST /cliparts trả 422 trên category_id với message dạng \"The category allows up to <cap> items\", trong đó <cap> là cap thực tế của account test.",
       "oracle": {
         "kb_ids": [
-          "KB-561",
-          "KB-562"
+          "asset-category/asset-category-item-management#KB-561",
+          "asset-category/asset-category-item-management#KB-562"
         ],
         "oracle_strength": "STRONG"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Bước PUT lên upload_url của Open API đi qua host chưa xác nhận: host này có phải host hợp lệ của môi trường staging không? CHK-018, CHK-021, CHK-022 cần bước này nên chỉ ghi nhận tới khi có kết luận. Cần dev xác nhận.",
       "related_kb_ids": [
-        "KB-561",
-        "KB-562",
-        "KB-564"
+        "asset-category/asset-category-item-management#KB-561",
+        "asset-category/asset-category-item-management#KB-562",
+        "asset-category/asset-category-item-management#KB-564"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -612,16 +616,16 @@
       "expected_result": "Theo dev, cap có ở manual upload và SVG upload của portal: số item của từng category không vượt cap thực tế của account test. Nguồn không nêu status hay cách UI báo lỗi ở hai luồng này nên hai phần đó không chấm.",
       "oracle": {
         "kb_ids": [
-          "KB-561"
+          "asset-category/asset-category-item-management#KB-561"
         ],
         "oracle_strength": "STRONG"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Cap clipart áp đúng ở đâu? \"Manual upload\" và \"SVG upload\" trong lời dev có phải dropzone /cliparts và /vectors không, và portal trả status, lỗi gì khi chạm cap? Cần dev xác nhận.",
       "related_kb_ids": [
-        "KB-561",
-        "KB-562",
-        "KB-564"
+        "asset-category/asset-category-item-management#KB-561",
+        "asset-category/asset-category-item-management#KB-562",
+        "asset-category/asset-category-item-management#KB-564"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -655,17 +659,17 @@
       "expected_result": "Theo dev: zip bulk upload tạo category mới từ các folder trong zip; cap áp cho từng category mới; file thừa bị skip, mỗi file một dòng log dạng \"Failed - <path> - The category allows up to <cap> items\", trong đó <cap> là cap thực tế của account test; bulk upload kết thúc ở trạng thái done.",
       "oracle": {
         "kb_ids": [
-          "KB-563"
+          "asset-category/asset-category-item-management#KB-563"
         ],
         "oracle_strength": "STRONG"
       },
       "status": "READY",
       "open_question_draft": null,
       "related_kb_ids": [
-        "KB-561",
-        "KB-563",
-        "KB-564",
-        "KB-569"
+        "asset-category/asset-category-item-management#KB-561",
+        "asset-category/asset-category-item-management#KB-563",
+        "asset-category/asset-category-item-management#KB-564",
+        "asset-category/asset-category-item-management#KB-569"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -698,17 +702,17 @@
       "expected_result": "Theo dev, admin nâng được cap theo merchant: sau khi nâng, category nhận thêm clipart tới cap mới. Khi chạm cap mới, POST /cliparts trả 422 trên category_id với message dạng \"The category allows up to <cap> items\", trong đó <cap> là cap mới.",
       "oracle": {
         "kb_ids": [
-          "KB-561",
-          "KB-562"
+          "asset-category/asset-category-item-management#KB-561",
+          "asset-category/asset-category-item-management#KB-562"
         ],
         "oracle_strength": "STRONG"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Bước PUT lên upload_url của Open API đi qua host chưa xác nhận: host này có phải host hợp lệ của môi trường staging không? CHK-018, CHK-021, CHK-022 cần bước này nên chỉ ghi nhận tới khi có kết luận. Cần dev xác nhận.",
       "related_kb_ids": [
-        "KB-561",
-        "KB-562",
-        "KB-564"
+        "asset-category/asset-category-item-management#KB-561",
+        "asset-category/asset-category-item-management#KB-562",
+        "asset-category/asset-category-item-management#KB-564"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -743,18 +747,18 @@
       "expected_result": "Baseline, chưa có nguồn xác nhận hai route này cùng một bộ đếm: sau khi một bề mặt đã nhận 429, lần gọi tiếp theo ở bề mặt còn lại cũng trả 429, theo cả hai chiều. Message, retry-after và mốc Wait until không chấm ở check này. Lệch thì cần điều tra, chưa kết luận là bug.",
       "oracle": {
         "kb_ids": [
-          "KB-035",
-          "KB-565",
-          "KB-566"
+          "asset-category/_object-level#KB-035",
+          "asset-category/asset-category-item-management#KB-565",
+          "asset-category/asset-category-item-management#KB-566"
         ],
         "oracle_strength": "BASELINE"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Những route nào ăn vào bộ đếm clipart: POST /api/cliparts/svg và POST /cliparts của Open API có cùng bộ đếm không? Tăng \"… max attempts\" sau khi đã chạm limit có cho lại lượt upload không? Bước PUT lên upload_url của Open API đi qua host chưa xác nhận: host này có phải host hợp lệ của môi trường staging không? Cần dev xác nhận.",
       "related_kb_ids": [
-        "KB-035",
-        "KB-565",
-        "KB-566"
+        "asset-category/_object-level#KB-035",
+        "asset-category/asset-category-item-management#KB-565",
+        "asset-category/asset-category-item-management#KB-566"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -795,10 +799,10 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Cửa sổ daily limit upload asset tính thế nào: từ lượt upload đầu tiên hay cửa sổ trượt 24h UTC? Lượt upload của ảnh đã xoá có được đếm không, và mốc Wait until tính từ đâu? Cần PO hoặc dev xác nhận.",
       "related_kb_ids": [
-        "KB-565",
-        "KB-566",
-        "KB-567",
-        "KB-568"
+        "asset-category/asset-category-item-management#KB-565",
+        "asset-category/asset-category-item-management#KB-566",
+        "asset-category/asset-category-item-management#KB-567",
+        "asset-category/asset-category-item-management#KB-568"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -831,15 +835,15 @@
       "expected_result": "Baseline theo ghi nhận của QA trong test case, chưa có người xác nhận: preview thành công kết thúc bằng text \"Your file is uploaded, we are generating file preview…\"; lỗi hiện bằng text đỏ. Có hay không có icon không chấm ở check này. Lệch thì cần điều tra, chưa kết luận là bug.",
       "oracle": {
         "kb_ids": [
-          "KB-560"
+          "asset-category/asset-category-item-management#KB-560"
         ],
         "oracle_strength": "BASELINE"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Icon ở kết quả dropzone upload bị ẩn có phải chủ đích không: kết quả mong đợi là text không kèm icon, hay icon phải hiện? Cần PO hoặc dev xác nhận.",
       "related_kb_ids": [
-        "KB-014",
-        "KB-560"
+        "asset-category/asset-category-item-management#KB-014",
+        "asset-category/asset-category-item-management#KB-560"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -872,14 +876,14 @@
       "expected_result": "Baseline theo ghi nhận của QA trong test case, chưa có người xác nhận: lỗi hiện bằng text đỏ ở cả hai uploader. Có hay không có icon không chấm ở check này. Lệch thì cần điều tra, chưa kết luận là bug.",
       "oracle": {
         "kb_ids": [
-          "KB-560"
+          "asset-category/asset-category-item-management#KB-560"
         ],
         "oracle_strength": "BASELINE"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Icon ở kết quả dropzone upload bị ẩn có phải chủ đích không: kết quả mong đợi là text không kèm icon, hay icon phải hiện? Cần PO hoặc dev xác nhận.",
       "related_kb_ids": [
-        "KB-560"
+        "asset-category/asset-category-item-management#KB-560"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -914,7 +918,7 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Bỏ vế Horizon, verify UI và API có phải cách test được chấp nhận không, và job failed, queued kiểm được thế nào trên production? Cần PO hoặc dev xác nhận.",
       "related_kb_ids": [
-        "KB-569"
+        "asset-category/asset-category-item-management#KB-569"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -947,15 +951,15 @@
       "expected_result": "Baseline theo mô tả dev tự sinh từ branch diff (TIB-5350, PR teeinblue-api #3836), chưa quan sát trên hệ thống và chưa có người xác nhận: thumbnail hiện đúng hình đã mask (nửa phải hình tròn đỏ), không hiện outer bounding shape (hình vuông đỏ). Lệch thì cần điều tra, chưa kết luận là bug.",
       "oracle": {
         "kb_ids": [
-          "KB-640"
+          "asset-category/asset-category-item-management#KB-640"
         ],
         "oracle_strength": "BASELINE"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Thumbnail của clipart SVG có clip-path lồng qua nhiều <clipPath> có hiện đúng hình đã mask, không hiện outer bounding shape không? Nguồn hiện chỉ là mô tả dev tự sinh từ branch diff (TIB-5350, PR teeinblue-api #3836, 2026-09-23); mục test đề xuất chưa tick, ghi chú QA-3395 TC-01, TC-02 không có id test case hay build. \"SVG clipart\" có phải item upload qua dropzone /vectors không? Cần một test_case PASS có id test case Testlane và build/ngày chạy, hoặc PO/Dev xác nhận.",
       "related_kb_ids": [
-        "KB-640",
-        "KB-015"
+        "asset-category/asset-category-item-management#KB-640",
+        "asset-category/asset-category-item-management#KB-015"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -1150,7 +1154,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-07",
-    "ccr_ref": "CBS-099"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   }
 }

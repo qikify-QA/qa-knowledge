@@ -1,5 +1,5 @@
 # Object: Image Library (product: teeinblue) — Feature Summary
-**Published context version:** 1
+**Published context version:** 2
 
 - **Object:** hai thư viện ảnh dùng chung của merchant: **image layer library** (ảnh cho layer Static Image của artwork) và **mockup layer library** (ảnh mockup gán cho product base). Đây là hai tập dữ liệu riêng, category cũng riêng; chúng chỉ dùng chung cơ chế upload, polling trạng thái xử lý và dialog xác nhận (KB-005, KB-006, KB-008, KB-009).
 - **Không có trang Image Library độc lập:** sidebar và router của portal không có mục hay route nào cho thư viện ảnh (KB-001). Nút "TIB Library" trên danh sách Artworks là thư viện **artwork template** công khai, không thuộc object này (KB-002). Điểm vào thật (KB-003):

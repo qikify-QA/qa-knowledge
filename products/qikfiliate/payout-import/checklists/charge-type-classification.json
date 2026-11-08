@@ -22,7 +22,7 @@
       "expected_result": "Dòng được phân loại vào nhánh Recurring/First-month (phí subscription định kỳ bình thường).",
       "oracle": {
         "kb_ids": [
-          "KB-005"
+          "payout-import/charge-type-classification#KB-005"
         ],
         "oracle_strength": "STRONG"
       },
@@ -52,8 +52,8 @@
       "expected_result": "Dòng phân loại vào nhánh Usage-charge; charge_id có dạng gid://shopify/AppUsageRecord/....",
       "oracle": {
         "kb_ids": [
-          "KB-006",
-          "KB-007"
+          "payout-import/charge-type-classification#KB-006",
+          "payout-import/charge-type-classification#KB-007"
         ],
         "oracle_strength": "STRONG"
       },
@@ -83,8 +83,8 @@
       "expected_result": "Dòng bị loại hoàn toàn — KHÔNG tạo Conversion, không tính hoa hồng. Đây là quyết định nghiệp vụ có chủ đích, được lập trình rõ ràng, không phải sót.",
       "oracle": {
         "kb_ids": [
-          "KB-008",
-          "KB-009"
+          "payout-import/charge-type-classification#KB-008",
+          "payout-import/charge-type-classification#KB-009"
         ],
         "oracle_strength": "STRONG"
       },
@@ -114,7 +114,7 @@
       "expected_result": "Mọi biến thể casing của 'usage'/'one-time' đều được nhận diện đúng — match không phân biệt hoa/thường, không so khớp chính xác toàn bộ chuỗi.",
       "oracle": {
         "kb_ids": [
-          "KB-002"
+          "payout-import/charge-type-classification#KB-002"
         ],
         "oracle_strength": "STRONG"
       },
@@ -141,7 +141,7 @@
         "Kiểm tra nhánh xử lý thực tế được áp dụng."
       ],
       "observation_point": "Nhánh phân loại thực tế.",
-      "expected_result": "CHƯA CÓ oracle — tài liệu mô tả 2 điều kiện match độc lập (chứa 'usage' → usage-charge; chứa 'one-time' → loại bỏ) nhưng không nêu thứ tự ưu tiên/điều kiện loại trừ khi cả 2 cùng khớp.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [],
         "oracle_strength": "NONE"
@@ -150,7 +150,9 @@
       "open_question_draft": "Khi 1 giá trị Charge Type chứa CẢ chuỗi con 'usage' và 'one-time', hệ thống ưu tiên nhánh nào (loại bỏ hoàn toàn hay vẫn tính usage-charge)? Cần đọc thứ tự điều kiện if/else thật trong code hoặc hỏi dev — hiện case này hoàn toàn giả định, chưa quan sát được dữ liệu thật dạng này.",
       "risk_refs": [],
       "priority": "P2",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "observation_guidance": "CHƯA CÓ oracle — tài liệu mô tả 2 điều kiện match độc lập (chứa 'usage' → usage-charge; chứa 'one-time' → loại bỏ) nhưng không nêu thứ tự ưu tiên/điều kiện loại trừ khi cả 2 cùng khớp.",
+      "oq_id": "OQ-payout-import-060"
     },
     {
       "check_id": "CHK-CTC-006",
@@ -173,8 +175,8 @@
       "expected_result": "Category vẫn là 'App revenue' dù là dòng refund/downgrade — không có cột/flag 'is refund' riêng; cơ chế phân loại charge_type không dựa vào Category để phát hiện refund.",
       "oracle": {
         "kb_ids": [
-          "KB-010",
-          "KB-011"
+          "payout-import/charge-type-classification#KB-010",
+          "payout-import/charge-type-classification#KB-011"
         ],
         "oracle_strength": "STRONG"
       },
@@ -201,7 +203,7 @@
         "Kiểm tra nhánh phân loại thực tế."
       ],
       "observation_point": "Nhánh phân loại thực tế cho chuỗi mới.",
-      "expected_result": "HÀNH VI HIỆN TẠI (known defect, P1 — rủi ro tài chính âm thầm): chuỗi mới không khớp 2 từ khoá hiện có sẽ TỰ ĐỘNG rơi vào nhánh Recurring/First-month (vì logic chỉ kiểm tra có/không chứa 2 từ khoá, không có nhánh 'unknown'). Đây là hệ quả tất yếu của cơ chế match chuỗi con hiện tại, không phải lỗi cần fix ngay, nhưng PHẢI theo dõi mỗi khi Shopify đổi cách đặt tên charge_type.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [],
         "oracle_strength": "NONE"
@@ -212,7 +214,9 @@
         "KB-014"
       ],
       "priority": "P1",
-      "automation_suitability": "SUITABLE"
+      "automation_suitability": "SUITABLE",
+      "observation_guidance": "HÀNH VI HIỆN TẠI (known defect, P1 — rủi ro tài chính âm thầm): chuỗi mới không khớp 2 từ khoá hiện có sẽ TỰ ĐỘNG rơi vào nhánh Recurring/First-month (vì logic chỉ kiểm tra có/không chứa 2 từ khoá, không có nhánh 'unknown'). Đây là hệ quả tất yếu của cơ chế match chuỗi con hiện tại, không phải lỗi cần fix ngay, nhưng PHẢI theo dõi mỗi khi Shopify đổi cách đặt tên charge_type.",
+      "oq_id": "OQ-payout-import-061"
     },
     {
       "check_id": "CHK-CTC-008",
@@ -231,7 +235,7 @@
         "Kiểm tra log hệ thống/application log có cảnh báo nào không."
       ],
       "observation_point": "Log hệ thống sau khi import dòng charge_type lạ.",
-      "expected_result": "HÀNH VI HIỆN TẠI (known defect — observability gap): không có log cảnh báo nào được sinh ra cho charge_type lạ chưa từng thấy, kể cả khi nó rơi vào nhánh mặc định (CHK-CTC-007). Nếu phát hiện log cảnh báo xuất hiện, đó là thay đổi hành vi cần xác nhận lại.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [],
         "oracle_strength": "NONE"
@@ -242,7 +246,9 @@
         "KB-015"
       ],
       "priority": "P2",
-      "automation_suitability": "SUITABLE"
+      "automation_suitability": "SUITABLE",
+      "observation_guidance": "HÀNH VI HIỆN TẠI (known defect — observability gap): không có log cảnh báo nào được sinh ra cho charge_type lạ chưa từng thấy, kể cả khi nó rơi vào nhánh mặc định (CHK-CTC-007). Nếu phát hiện log cảnh báo xuất hiện, đó là thay đổi hành vi cần xác nhận lại.",
+      "oq_id": "OQ-payout-import-062"
     },
     {
       "check_id": "CHK-CTC-009",
@@ -261,7 +267,7 @@
         "Kiểm tra cơ chế cap/tính hoa hồng thực tế được áp dụng."
       ],
       "observation_point": "Cơ chế cap thực tế (UsageCommissionCapper vs cơ chế recurring refund thông thường).",
-      "expected_result": "HÀNH VI HIỆN TẠI (known defect, P1 — rủi ro tài chính): dòng đi qua UsageCommissionCapper (nhánh usage) thay vì nhánh recurring như refund/downgrade thông thường, do cơ chế match chuỗi con không phân biệt được ngữ cảnh refund. Sai định tuyến KHÔNG gây crash, chỉ ra sai số tiền — khó phát hiện qua kiểm tra thông thường (xem CHK-CTC-010).",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [],
         "oracle_strength": "NONE"
@@ -272,7 +278,9 @@
         "KB-016"
       ],
       "priority": "P1",
-      "automation_suitability": "SUITABLE"
+      "automation_suitability": "SUITABLE",
+      "observation_guidance": "HÀNH VI HIỆN TẠI (known defect, P1 — rủi ro tài chính): dòng đi qua UsageCommissionCapper (nhánh usage) thay vì nhánh recurring như refund/downgrade thông thường, do cơ chế match chuỗi con không phân biệt được ngữ cảnh refund. Sai định tuyến KHÔNG gây crash, chỉ ra sai số tiền — khó phát hiện qua kiểm tra thông thường (xem CHK-CTC-010).",
+      "oq_id": "OQ-payout-import-063"
     },
     {
       "check_id": "CHK-CTC-010",
@@ -294,7 +302,7 @@
       "expected_result": "HÀNH VI HIỆN TẠI (known defect tổng quát, dùng làm regression watch toàn diện): Str::contains(Str::lower($charge_type), 'usage'/'one-time') là cơ chế duy nhất; Shopify tự tuyên bố KHÔNG cam kết ổn định giá trị/cột export này. Sai định tuyến không crash, chỉ ra sai số tiền hoa hồng, rất khó phát hiện qua kiểm tra thông thường. Đây là rủi ro 'âm thầm nhất trong toàn hệ thống' theo đánh giá của chính tài liệu nguồn — bắt buộc re-run bộ check này sau MỖI lần thay đổi format file payout từ Shopify.",
       "oracle": {
         "kb_ids": [
-          "KB-013"
+          "payout-import/charge-type-classification#KB-013"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -327,7 +335,7 @@
         "Đối chiếu rate (percentage vs usage_percentage) và cơ chế cap (per-row vs lifetime) thực tế dùng cho dòng đó."
       ],
       "observation_point": "Literal Charge Type thật + nhánh phân loại + rate/cơ chế cap thực tế áp dụng.",
-      "expected_result": "CHƯA CÓ oracle — nếu Shopify dùng literal KHÔNG chứa 'usage' (ví dụ generic 'App refund') cho dòng này, dòng sẽ bị định tuyến NHẦM vào nhánh recurring/first-month (sai rate: percentage thay vì usage_percentage; sai cơ chế cap: per-row thay vì lifetime) theo suy luận từ cơ chế hiện tại — nhưng đây là rủi ro thiết kế CHƯA xác nhận bằng dữ liệu thật, và PO chưa xác nhận hành vi mong muốn. KHÔNG dùng suy luận này làm oracle pass/fail cho tới khi có dữ liệu thật + xác nhận PO.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [],
         "oracle_strength": "NONE"
@@ -338,7 +346,9 @@
         "KB-018"
       ],
       "priority": "P1",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "observation_guidance": "CHƯA CÓ oracle — nếu Shopify dùng literal KHÔNG chứa 'usage' (ví dụ generic 'App refund') cho dòng này, dòng sẽ bị định tuyến NHẦM vào nhánh recurring/first-month (sai rate: percentage thay vì usage_percentage; sai cơ chế cap: per-row thay vì lifetime) theo suy luận từ cơ chế hiện tại — nhưng đây là rủi ro thiết kế CHƯA xác nhận bằng dữ liệu thật, và PO chưa xác nhận hành vi mong muốn. KHÔNG dùng suy luận này làm oracle pass/fail cho tới khi có dữ liệu thật + xác nhận PO.",
+      "oq_id": "OQ-payout-import-064"
     },
     {
       "check_id": "CHK-CTC-012",
@@ -357,7 +367,7 @@
         "Kiểm tra nhánh phân loại hoặc lỗi validate phát sinh."
       ],
       "observation_point": "Kết quả xử lý dòng có Charge Type rỗng.",
-      "expected_result": "CHƯA CÓ oracle — tài liệu không mô tả hành vi khi Charge Type rỗng/null (chỉ mô tả hành vi khi có giá trị và match/không match từ khoá).",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [],
         "oracle_strength": "NONE"
@@ -366,7 +376,9 @@
       "open_question_draft": "Khi cột Charge Type của 1 dòng rỗng/null, hệ thống phân loại dòng đó vào nhánh nào, hay fail validate và skip (tương tự cơ chế thiếu field bắt buộc khác ở payout-csv-upload)? Cần dev xác nhận Str::contains(null, ...) không gây lỗi runtime và hành vi thực tế là gì.",
       "risk_refs": [],
       "priority": "P2",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "observation_guidance": "CHƯA CÓ oracle — tài liệu không mô tả hành vi khi Charge Type rỗng/null (chỉ mô tả hành vi khi có giá trị và match/không match từ khoá).",
+      "oq_id": "OQ-payout-import-065"
     },
     {
       "check_id": "CHK-CTC-013",
@@ -385,7 +397,7 @@
         "Kiểm tra tập giá trị thực tế xuất hiện ở cột Category."
       ],
       "observation_point": "Tập giá trị Category quan sát được qua nhiều mẫu file.",
-      "expected_result": "CHƯA CÓ oracle — KB-011 chỉ xác nhận Category giữ 'App revenue' kể cả với refund, KHÔNG xác nhận đây là giá trị DUY NHẤT có thể xuất hiện ở cột này; không suy enum từ 1 giá trị đã thấy.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [],
         "oracle_strength": "NONE"
@@ -394,7 +406,9 @@
       "open_question_draft": "Cột Category của file payout Shopify có những giá trị nào khác ngoài 'App revenue'? Nếu có giá trị khác, cơ chế phân loại charge_type có bị ảnh hưởng không?",
       "risk_refs": [],
       "priority": "P3",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "observation_guidance": "CHƯA CÓ oracle — KB-011 chỉ xác nhận Category giữ 'App revenue' kể cả với refund, KHÔNG xác nhận đây là giá trị DUY NHẤT có thể xuất hiện ở cột này; không suy enum từ 1 giá trị đã thấy.",
+      "oq_id": "OQ-payout-import-066"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -465,5 +479,9 @@
       "dimension": "INTEGRATION",
       "reason": "Không có cross-surface portal/storefront/API; việc feature này được 2 feature khác (payout-csv-upload, populate-reconcile-late-data) tái sử dụng là quan hệ DEPENDS_ON/SUPPORTS giữa feature, không phải ranh giới tích hợp cross-surface cần check riêng."
     }
-  ]
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
 }

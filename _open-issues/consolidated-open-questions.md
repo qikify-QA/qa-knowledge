@@ -2,7 +2,7 @@
 
 File này được SINH TỰ ĐỘNG bởi `scripts/generate-manifest.mjs` từ `open-questions.md` của từng object (§5a) — KHÔNG sửa tay. Nội dung từng câu hỏi nằm ở file của object (link ở cột Object); thêm/sửa/resolve ở đó rồi chạy lại script.
 
-Tổng: 3404 open question đang mở trên 72 object (175 conflict · 2111 cần xác nhận · 1118 open issue).
+Tổng: 3999 open question đang mở trên 72 object (177 conflict · 2703 cần xác nhận · 1119 open issue).
 
 ## Duos B2B QA context
 
@@ -67,46 +67,46 @@ Tổng: 3404 open question đang mở trên 72 object (175 conflict · 2111 cầ
 
 | Object | Conflict | Cần xác nhận | Open issue | Tổng |
 |---|---:|---:|---:|---:|
-| [ai-offer-creation](../products/qik-volume/ai-offer-creation/open-questions.md) | 0 | 6 | 0 | 6 |
-| [analytics](../products/qik-volume/analytics/open-questions.md) | 0 | 8 | 0 | 8 |
-| [ask-for-review](../products/qik-volume/ask-for-review/open-questions.md) | 0 | 6 | 0 | 6 |
-| [discount-offers](../products/qik-volume/discount-offers/open-questions.md) | 12 | 69 | 24 | 105 |
+| [ai-offer-creation](../products/qik-volume/ai-offer-creation/open-questions.md) | 0 | 12 | 0 | 12 |
+| [analytics](../products/qik-volume/analytics/open-questions.md) | 0 | 9 | 0 | 9 |
+| [ask-for-review](../products/qik-volume/ask-for-review/open-questions.md) | 0 | 12 | 0 | 12 |
+| [discount-offers](../products/qik-volume/discount-offers/open-questions.md) | 12 | 71 | 24 | 107 |
 | [onboarding-dashboard](../products/qik-volume/onboarding-dashboard/open-questions.md) | 2 | 8 | 3 | 13 |
-| [translate-offers](../products/qik-volume/translate-offers/open-questions.md) | 0 | 11 | 0 | 11 |
-| [translate-portal](../products/qik-volume/translate-portal/open-questions.md) | 0 | 13 | 0 | 13 |
-| [variant-swatches](../products/qik-volume/variant-swatches/open-questions.md) | 0 | 13 | 0 | 13 |
+| [translate-offers](../products/qik-volume/translate-offers/open-questions.md) | 0 | 21 | 0 | 21 |
+| [translate-portal](../products/qik-volume/translate-portal/open-questions.md) | 0 | 26 | 0 | 26 |
+| [variant-swatches](../products/qik-volume/variant-swatches/open-questions.md) | 0 | 30 | 0 | 30 |
 
 ## Qikfiliate QA context
 
 | Object | Conflict | Cần xác nhận | Open issue | Tổng |
 |---|---:|---:|---:|---:|
-| [admin-console](../products/qikfiliate/admin-console/open-questions.md) | 0 | 15 | 0 | 15 |
-| [affiliate-account](../products/qikfiliate/affiliate-account/open-questions.md) | 2 | 37 | 0 | 39 |
-| [affiliate-level](../products/qikfiliate/affiliate-level/open-questions.md) | 0 | 22 | 2 | 24 |
-| [commission-calculation](../products/qikfiliate/commission-calculation/open-questions.md) | 2 | 51 | 4 | 57 |
-| [commission-rate-card](../products/qikfiliate/commission-rate-card/open-questions.md) | 0 | 23 | 4 | 27 |
-| [conversion-ledger](../products/qikfiliate/conversion-ledger/open-questions.md) | 0 | 21 | 1 | 22 |
-| [customer-shop](../products/qikfiliate/customer-shop/open-questions.md) | 0 | 9 | 1 | 10 |
-| [integration-api](../products/qikfiliate/integration-api/open-questions.md) | 0 | 27 | 8 | 35 |
-| [invoice-payout](../products/qikfiliate/invoice-payout/open-questions.md) | 1 | 29 | 2 | 32 |
-| [payment-method](../products/qikfiliate/payment-method/open-questions.md) | 0 | 15 | 3 | 18 |
-| [payout-import](../products/qikfiliate/payout-import/open-questions.md) | 1 | 38 | 20 | 59 |
-| [program](../products/qikfiliate/program/open-questions.md) | 0 | 14 | 2 | 16 |
-| [referral-attribution](../products/qikfiliate/referral-attribution/open-questions.md) | 0 | 13 | 0 | 13 |
+| [admin-console](../products/qikfiliate/admin-console/open-questions.md) | 0 | 30 | 0 | 30 |
+| [affiliate-account](../products/qikfiliate/affiliate-account/open-questions.md) | 2 | 76 | 0 | 78 |
+| [affiliate-level](../products/qikfiliate/affiliate-level/open-questions.md) | 0 | 44 | 2 | 46 |
+| [commission-calculation](../products/qikfiliate/commission-calculation/open-questions.md) | 2 | 109 | 4 | 115 |
+| [commission-rate-card](../products/qikfiliate/commission-rate-card/open-questions.md) | 0 | 24 | 4 | 28 |
+| [conversion-ledger](../products/qikfiliate/conversion-ledger/open-questions.md) | 0 | 42 | 1 | 43 |
+| [customer-shop](../products/qikfiliate/customer-shop/open-questions.md) | 0 | 20 | 1 | 21 |
+| [integration-api](../products/qikfiliate/integration-api/open-questions.md) | 0 | 57 | 8 | 65 |
+| [invoice-payout](../products/qikfiliate/invoice-payout/open-questions.md) | 1 | 31 | 2 | 34 |
+| [payment-method](../products/qikfiliate/payment-method/open-questions.md) | 0 | 16 | 3 | 19 |
+| [payout-import](../products/qikfiliate/payout-import/open-questions.md) | 1 | 79 | 20 | 100 |
+| [program](../products/qikfiliate/program/open-questions.md) | 0 | 15 | 2 | 17 |
+| [referral-attribution](../products/qikfiliate/referral-attribution/open-questions.md) | 0 | 26 | 0 | 26 |
 
 ## Teeinblue QA context
 
 | Object | Conflict | Cần xác nhận | Open issue | Tổng |
 |---|---:|---:|---:|---:|
 | [account-security](../products/teeinblue/account-security/open-questions.md) | 1 | 32 | 24 | 57 |
-| [artwork](../products/teeinblue/artwork/open-questions.md) | 25 | 243 | 79 | 347 |
-| [asset-category](../products/teeinblue/asset-category/open-questions.md) | 3 | 29 | 13 | 45 |
-| [campaign](../products/teeinblue/campaign/open-questions.md) | 0 | 59 | 23 | 82 |
-| [font](../products/teeinblue/font/open-questions.md) | 0 | 17 | 2 | 19 |
-| [global-option](../products/teeinblue/global-option/open-questions.md) | 5 | 32 | 16 | 53 |
+| [artwork](../products/teeinblue/artwork/open-questions.md) | 25 | 346 | 79 | 450 |
+| [asset-category](../products/teeinblue/asset-category/open-questions.md) | 3 | 37 | 13 | 53 |
+| [campaign](../products/teeinblue/campaign/open-questions.md) | 0 | 71 | 23 | 94 |
+| [font](../products/teeinblue/font/open-questions.md) | 2 | 41 | 3 | 46 |
+| [global-option](../products/teeinblue/global-option/open-questions.md) | 5 | 53 | 16 | 74 |
 | [image-library](../products/teeinblue/image-library/open-questions.md) | 5 | 13 | 19 | 37 |
 | [open-api](../products/teeinblue/open-api/open-questions.md) | 1 | 46 | 9 | 56 |
-| [order](../products/teeinblue/order/open-questions.md) | 1 | 29 | 23 | 53 |
-| [product-base](../products/teeinblue/product-base/open-questions.md) | 2 | 31 | 17 | 50 |
-| [sdk](../products/teeinblue/sdk/open-questions.md) | 8 | 120 | 58 | 186 |
-| [translation](../products/teeinblue/translation/open-questions.md) | 1 | 35 | 10 | 46 |
+| [order](../products/teeinblue/order/open-questions.md) | 1 | 43 | 23 | 67 |
+| [product-base](../products/teeinblue/product-base/open-questions.md) | 2 | 84 | 17 | 103 |
+| [sdk](../products/teeinblue/sdk/open-questions.md) | 8 | 151 | 58 | 217 |
+| [translation](../products/teeinblue/translation/open-questions.md) | 1 | 51 | 10 | 62 |

@@ -494,3 +494,51 @@ Mỗi mục có 1 `oq_id` ổn định và đúng 1 `type` (`NEEDS_CONFIRMATION`
 ```json
 {"oq_id": "OQ-campaign-082", "type": "OPEN_ISSUE", "feature_id": "campaign-publication-history", "summary": "Lượt publish Campaign by Shopify qua MCP trên staging có dòng ở Edit Activities nhưng không có row trong Publication History, theo comment Jira TIB-5337 #55858 của QA và #55862 của dev, 2026-10-28; dev ghi để ticket sau. Nguồn là comment Jira, chưa xác minh trên hệ thống. Cần biết ticket nào xử lý luồng này. Tới lúc đó check của feature chỉ xét lượt publish từ portal, không báo bug vì thiếu row của lượt qua MCP.", "kb_ids": ["KB-452"]}
 ```
+
+```json
+{"oq_id":"OQ-campaign-083","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-009 “NEEDS_CONFIRMATION: UI có thực sự hiển thị lỗi (toast/inline) cho user khi validation title rỗng thất bại hay không” của feature create-campaign-by-product-base. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-campaign-084","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-010 “NEEDS_CONFIRMATION: giới hạn min/max length, ký tự đặc biệt, và uniqueness của Campaign title” của feature create-campaign-by-product-base. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-campaign-085","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-011 “NEEDS_CONFIRMATION: hành vi Save Listing info với dữ liệu thật (Type/Vendor/Tags/Thumbnail) thay vì chỉ Cancel” của feature create-campaign-by-product-base. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-campaign-086","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-012 “NEEDS_CONFIRMATION: role khác owner thao tác create/select/assign/edit-listing-info/publish trên flow này” của feature create-campaign-by-product-base. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-campaign-087","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-013 “NEEDS_CONFIRMATION: enforcement cross-tenant ở tầng API cho publish endpoint (instance_id ngoài phạm vi caller)” của feature create-campaign-by-product-base. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-campaign-088","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-014 “NEEDS_CONFIRMATION: trạng thái campaign có được giữ đúng sau khi hard reload (F5) trang edit” của feature create-campaign-by-product-base. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-campaign-089","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-016 “NEEDS_CONFIRMATION: hành vi khi publish thất bại/partial (mockup xử lý bất đồng bộ lỗi)” của feature create-campaign-by-product-base. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-campaign-090","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-shopify","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-011 “NEEDS_CONFIRMATION: validation 'No mockup' có tổng quát hoá đúng cho sản phẩm nhiều variant Shopify thật không” của feature create-campaign-by-shopify. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-campaign-091","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-shopify","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-012 “NEEDS_CONFIRMATION: hành vi toggle 'Connect artworks with Shopify variants' khi bật (mặc định OFF, chưa test)” của feature create-campaign-by-shopify. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-campaign-092","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-shopify","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-013 “NEEDS_CONFIRMATION: role khác owner thao tác create/select/assign/upload/publish/unpublish trên flow này” của feature create-campaign-by-shopify. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-campaign-093","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-shopify","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-014 “NEEDS_CONFIRMATION: cross-tenant access tới platform-product endpoints” của feature create-campaign-by-shopify. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-campaign-094","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-shopify","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-016 “NEEDS_CONFIRMATION: platform-product có action 'Delete' tương đương campaign hay chỉ có 'Unpublish' (archival-only)” của feature create-campaign-by-shopify. current_behavior_only"}
+```

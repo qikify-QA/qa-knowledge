@@ -1,5 +1,5 @@
 # Admin panel nội bộ (Filament): đăng nhập Slack + Shield role, Shops, Orders retry, Box, analytics/export, activity log, Embedded Version, job/queue
-**Published context version:** 2
+**Published context version:** 3
 
 **Product:** mysbox · **Object:** `admin-panel` · **Mode:** REFRESH (trên nền DOC_BOOTSTRAP v1) · **Environment:** documented + staging · **Published:** 2026-10-17
 

@@ -326,3 +326,87 @@ _Tổng hợp từ `kb.json` (conflicts, tagged qua `conflict_group`), `features
 ```json
 {"oq_id": "OQ-global-option-053", "type": "NEEDS_CONFIRMATION", "feature_id": "global-option-instance-management", "summary": "KB-723, KB-724, KB-728 có shipped UNKNOWN; mọi item CBS-100 chỉ có nguồn staging. TIB-5561 và TIB-5470 đã lên production chưa?", "kb_ids": ["KB-723", "KB-724", "KB-728"]}
 ```
+
+```json
+{"oq_id":"OQ-global-option-054","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Cần nguồn thẩm quyền để xác nhận global-option/artwork-personalization-global-option-link#KB-029. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-global-option-055","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-001 “Gắn 1 layer artwork tới 1 Global Option có sẵn qua 'Use an existing global option'” của feature artwork-personalization-global-option-link. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-global-option-056","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-003 “Gắn artwork (có layer trỏ Global Option) vào printarea của campaign — response giữ nguyên customization_type/global_option” của feature artwork-personalization-global-option-link. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-global-option-057","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-004 “[BUSINESS RULE CONFIRMED — chỉ phần STRUCTURAL] Chia sẻ giá trị personalize của 1 Global Option qua nhiều layer/artwork/printarea — buyer personalize 1 lần, áp dụng mọi nơi dùng option đó” của feature artwork-personalization-global-option-link. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-global-option-058","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-005 “[GAP — pixel-level CHƯA verify] Nội dung thực tế của 2 file thiết kế ('_tib_design_link_1' front, '_tib_design_link_2' back) có chứa đúng giá trị buyer đã nhập cho CẢ HAI printarea hay không” của feature artwork-personalization-global-option-link. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-global-option-059","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-006 “[GAP — chưa test trực tiếp] 2 field storefront SỐNG ĐỒNG THỜI cùng trỏ 1 Global Option có live-sync giá trị cho nhau hay không (khác same-field rehydration-on-reload)” của feature artwork-personalization-global-option-link. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-global-option-060","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-010 “[CONFLICT-SF-01, UNRESOLVED] localStorage mechanism khác nhau theo Global Option type: type=text dùng 'teeinblue-global-options'+'teeinblue-customizations' (khoá theo option id); type=text-to-image dùng 'teeinblue-text-to-image-gen-state' (khoá theo layer id)” của feature artwork-personalization-global-option-link. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-global-option-061","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-013 “[GAP, không khẳng định bug/design] Preview/mockup (product-page mockup frame, in-portal PREVIEW modal, cart-page line-item thumbnail) LUÔN hiển thị khung trắng trống, kể cả sau generate/add-to-cart thành công” của feature artwork-personalization-global-option-link. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-global-option-062","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-014 “Quan hệ giữa data.required của Global Option (KB-019) và layer.required của artwork layer trỏ tới nó (KB-020) CHƯA xác định” của feature artwork-personalization-global-option-link. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-global-option-063","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-015 “[CFL-01, cross-object với artwork] Personalization Settings của layer text-to-image hiển thị 2 hay 3 radio option (có/không có 'No personalization')?” của feature artwork-personalization-global-option-link. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-global-option-064","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-016 “[CFL-03] campaign.status=0 có thực sự nghĩa 'draft/chưa publish' hay không, khi UI hiển thị 'Published on current store' và storefront độc lập reachable/buyable xuyên suốt 3 round” của feature artwork-personalization-global-option-link. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-global-option-065","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-017 “Giá trị field storefront gắn Global Option rehydrate đúng sau khi buyer điền + reload trang (same-field, không phải cross-field)” của feature artwork-personalization-global-option-link. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-global-option-066","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-018 “Smoke test end-to-end: layer trỏ Global Option (portal) -> hiển thị đúng trên storefront form -> (nếu text-to-image) generate ảnh -> add-to-cart -> cart line item shape đúng” của feature artwork-personalization-global-option-link. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-global-option-067","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-019 “Vai trò khác GUEST (buyer đăng nhập, cross-tenant) và vai trò khác owner (portal non-owner) hoàn toàn CHƯA test cho toàn bộ capability này” của feature artwork-personalization-global-option-link. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-global-option-068","type":"NEEDS_CONFIRMATION","feature_id":"artwork-personalization-global-option-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-020 “Ảnh hưởng khi SỬA hoặc XOÁ 1 Global Option SAU KHI đã được layer/artwork/campaign tham chiếu (live-reference vs deep-copy snapshot) — hoàn toàn CHƯA test” của feature artwork-personalization-global-option-link. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-global-option-069","type":"NEEDS_CONFIRMATION","feature_id":"global-option-instance-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-01-012 “[CFL-02, UNRESOLVED] Category field (generic) hiển thị 'Uncategorized'(list)/'No category'(create) với global_option_category_id=null — default value đang bị tranh chấp” của feature global-option-instance-management. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-global-option-070","type":"NEEDS_CONFIRMATION","feature_id":"global-option-instance-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-01-013 “Icon action 'Update campaign' (rocket) chỉ render khi Used>0 — hành vi/endpoint thật khi bấm HOÀN TOÀN chưa test” của feature global-option-instance-management. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-global-option-071","type":"NEEDS_CONFIRMATION","feature_id":"global-option-instance-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-01-015 “[INFERRED, không đủ oracle] Category picker RIÊNG cho type 'Additional Option' liệt kê category thật còn sót từ object asset-category cũ — quan hệ schema/FK CHƯA xác nhận” của feature global-option-instance-management. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-global-option-072","type":"NEEDS_CONFIRMATION","feature_id":"global-option-instance-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-01-016 “[INFERRED, không đủ oracle] Category picker RIÊNG cho type 'Vector Category' tái dùng component clipart, lưu dưới key 'clipart' — quan hệ schema/FK CHƯA xác nhận” của feature global-option-instance-management. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-global-option-073","type":"NEEDS_CONFIRMATION","feature_id":"global-option-instance-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-01-018 “[security, chưa test] Server có validate header client-supplied 'x-acting-user-id' đối chiếu session/tenant thật, hay tin tưởng nguyên trạng giá trị client gửi?” của feature global-option-instance-management. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-global-option-074","type":"NEEDS_CONFIRMATION","feature_id":"global-option-instance-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-01-019 “[security, chưa test] GraphQL query 'getData' cho phép client tự set where/order_by/offset/limit — khả năng đọc dữ liệu cross-tenant nếu 'where' bị sửa thủ công” của feature global-option-instance-management. missing_or_unresolved_oracle"}
+```

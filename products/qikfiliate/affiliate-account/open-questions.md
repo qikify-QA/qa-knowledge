@@ -346,3 +346,159 @@
   "summary": "Khảo sát 4 câu (riêng Koin) lưu dạng JSON vào User.survey, và dữ liệu đó hiển thị đúng khi admin mở Edit. Oracle của cả 2 check dựa trên KB-017, derivation=code_artifact — theo phanh derivation không đủ làm oracle STRONG. Cần nguồn mạnh hơn (spec_doc/po_dev_confirm/test_case PASS) xác nhận đây là hành vi đúng theo chủ đích, không chỉ đọc code."
 }
 ```
+
+```json
+{"oq_id":"OQ-affiliate-account-040","type":"NEEDS_CONFIRMATION","feature_id":"admin-affiliate-review","summary":"[object Object]"}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-041","type":"NEEDS_CONFIRMATION","feature_id":"admin-affiliate-review","summary":"Oracle STRONG cua check 'CHK-REVIEW-003' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-042","type":"NEEDS_CONFIRMATION","feature_id":"admin-affiliate-review","summary":"Oracle STRONG cua check 'CHK-REVIEW-004' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-043","type":"NEEDS_CONFIRMATION","feature_id":"admin-affiliate-review","summary":"Oracle STRONG cua check 'CHK-REVIEW-008' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-044","type":"NEEDS_CONFIRMATION","feature_id":"admin-affiliate-review","summary":"Oracle STRONG cua check 'CHK-REVIEW-009' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-045","type":"NEEDS_CONFIRMATION","feature_id":"admin-affiliate-review","summary":"PO/Dev xác nhận: admin có một cổng duyệt tay bắt buộc cho MỌI affiliate mới (không chỉ re-approve sau disapprove), hay status=approved được set tự động ngay khi affiliate tự verify email? Đây là OQ-affiliate-account-001, trùng với CHK-EVAA-007 của checklist email-verification-and-auto-approval."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-046","type":"NEEDS_CONFIRMATION","feature_id":"admin-affiliate-review","summary":"Admin có được phép/khuyến khích set tay email_verified_at qua form Edit rồi Approve không, hay đây là lối tắt chưa được code chặn và không nên dùng? Cần PO/Ops xác nhận quy trình chuẩn."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-047","type":"NEEDS_CONFIRMATION","feature_id":"admin-affiliate-review","summary":"disapproved_reason có giới hạn độ dài tối đa hay ràng buộc ký tự (vd chặn HTML/script) nào không? Cần PO/Dev xác nhận, đặc biệt vì nội dung này được chèn thẳng vào email gửi affiliate."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-048","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-dashboard-overview","summary":"Oracle STRONG cua check 'CHK-DASH-002' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-049","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-dashboard-overview","summary":"Các bảng trong dashboard (Conversions, Customers, Invoices, Links) có phân trang/giới hạn số dòng/bộ lọc nào không? Cần đối chiếu với checklist của object program/conversion-ledger/customer-shop/invoice-payout khi có, hoặc hỏi PO/Dev nếu chưa batch nào xử lý các object đó."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-050","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-email-notifications","summary":"Oracle STRONG cua check 'CHK-NOTIF-002' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-051","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-email-notifications","summary":"Trigger cụ thể (hành động nào kích hoạt) và nội dung của email 'Đặt lại mật khẩu' là gì? Cần PO/Dev xác nhận để viết expected_result."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-052","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-email-notifications","summary":"Nội dung đầy đủ (wording, branding) của email 'Xác thực email' là gì, ngoài việc chứa link xác thực? Cần PO/Dev xác nhận."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-053","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-email-notifications","summary":"Kênh Slack #affiliate có bắn thông báo khi có yêu cầu thanh toán mới không? Nếu có, cần nối với KB tương ứng ở object/feature payout; nếu batch khác đã xử lý, nối checklist qua knowledge-diff-analyzer."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-054","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-login-access-control","summary":"Oracle STRONG cua check 'CHK-LOGIN-001' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-055","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-login-access-control","summary":"Oracle STRONG cua check 'CHK-LOGIN-002' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-056","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-login-access-control","summary":"PO/Dev xác nhận: sau khi admin đổi status sang Disapproved, POST /login của affiliate trả 200 (vào được dashboard, chỉ chặn hasApproved) hay trả 403 \"Your account has not approved.\"? 2 tài liệu cùng version v1, cùng generated_at, không có version drift để chọn bên — đây là ranh giới PERMISSION, không được chọn phía khi chưa có xác nhận."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-057","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-login-access-control","summary":"Xác nhận: API login (routes/api.php) dùng JWT (JWTSubject, middleware auth:api+verified) và web dashboard dùng session Laravel thường (Authenticatable+MustVerifyEmail) — đúng theo quan sát từ code (`qikfiliate/Domain Entities`/`qikfiliate/dashboard - overview`) không? Cần PO/Dev xác nhận trước khi dùng làm cơ sở thiết kế automation test (token vs cookie)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-058","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-profile-maintenance","summary":"Oracle STRONG cua check 'CHK-PROFILE-005' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-059","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-profile-maintenance","summary":"Oracle STRONG cua check 'CHK-PROFILE-006' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-060","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-profile-maintenance","summary":"Oracle STRONG cua check 'CHK-PROFILE-007' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-061","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-profile-maintenance","summary":"Khi admin sửa name/email/ref/company/job trên form Edit, có áp lại cùng validate như lúc signup (unique email/ref, format) không, hay admin sửa tự do hoàn toàn? Cần PO/Dev xác nhận."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-062","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-signup","summary":"Oracle STRONG cua check 'CHK-SIGNUP-001' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-063","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-signup","summary":"Oracle STRONG cua check 'CHK-SIGNUP-004' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-064","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-signup","summary":"Oracle STRONG cua check 'CHK-SIGNUP-008' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-065","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-signup","summary":"Ngoài blocklist từ khoá và rule prefix `app`, `ref` có ràng buộc độ dài tối đa/tối thiểu, charset (unicode, ký tự đặc biệt), hay phân biệt hoa-thường nào không? Cần PO/Dev xác nhận vì `ref` nằm trong URL giới thiệu công khai."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-066","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-signup","summary":"Password policy của signup có yêu cầu nào ngoài 'tối thiểu 6 ký tự' (bắt buộc chữ+số, ký tự đặc biệt, chặn password phổ biến) không? Cần PO/Dev xác nhận."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-067","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-signup","summary":"POST /register trả về status code và body gì khi signup thành công, và khi validate fail (field-level error format)? Cần PO/Dev xác nhận response contract."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-068","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-signup","summary":"Thông báo lỗi cụ thể hiển thị cho người dùng khi `ref` bị blocklist chặn là gì? Cần PO/Dev xác nhận để kiểm UX báo lỗi."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-069","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-signup","summary":"Route POST /register có áp captcha hay rate-limit chống spam/bot ở tầng request nào không (ngoài rate-limit resend email xác thực)? Cần PO/Dev xác nhận."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-070","type":"NEEDS_CONFIRMATION","feature_id":"email-verification-and-auto-approval","summary":"Oracle STRONG cua check 'CHK-EVAA-001' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-071","type":"NEEDS_CONFIRMATION","feature_id":"email-verification-and-auto-approval","summary":"Oracle STRONG cua check 'CHK-EVAA-005' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-072","type":"NEEDS_CONFIRMATION","feature_id":"email-verification-and-auto-approval","summary":"Oracle STRONG cua check 'CHK-EVAA-006' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-073","type":"NEEDS_CONFIRMATION","feature_id":"email-verification-and-auto-approval","summary":"PO/Dev xác nhận: status=approved được set tự động ngay trong request verify email, hay vẫn có một cổng duyệt tay admin bắt buộc cho MỌI affiliate mới (không chỉ re-approve sau disapprove)? Đây là OQ-affiliate-account-001, ảnh hưởng trực tiếp tới việc affiliate mới verify email có login/hoạt động được ngay hay còn chờ admin."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-074","type":"NEEDS_CONFIRMATION","feature_id":"email-verification-and-auto-approval","summary":"Link xác thực email có thời hạn (TTL) bao lâu? Click lại 1 link đã dùng thì hệ thống xử lý thế nào (thành công im lặng, lỗi, hay vô hiệu)? Cần PO/Dev xác nhận."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-075","type":"NEEDS_CONFIRMATION","feature_id":"email-verification-and-auto-approval","summary":"Khi link xác thực bị chỉnh sửa (chữ ký số không hợp lệ), hệ thống trả về response/message gì? Cần PO/Dev xác nhận để viết oracle cho case bảo mật này."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-076","type":"NEEDS_CONFIRMATION","feature_id":"new-affiliate-bonus","summary":"Oracle STRONG cua check 'CHK-BONUS-001' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm). Dong thoi, oracle nay con trace toi kb_id (KB-006) co confirmation_source.derivation=code_artifact, vi pham them luat 'phanh derivation' (STRONG chi hop le khi MOI oracle kb_id la CONFIRMED_EXPECTED va derivation=prose)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-077","type":"NEEDS_CONFIRMATION","feature_id":"new-affiliate-bonus","summary":"Oracle STRONG cua check 'CHK-BONUS-005' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm). Dong thoi, oracle nay con trace toi kb_id (KB-006) co confirmation_source.derivation=code_artifact, vi pham them luat 'phanh derivation' (STRONG chi hop le khi MOI oracle kb_id la CONFIRMED_EXPECTED va derivation=prose)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-account-078","type":"NEEDS_CONFIRMATION","feature_id":"new-affiliate-bonus","summary":"Giá trị thật của config('admin.affiliate_reward.koin') (time/paid_user/bonus) trên môi trường target là bao nhiêu? Nếu config không tồn tại/bị xoá, luồng thưởng xử lý thế nào (bỏ qua hoàn toàn hay lỗi)? Cần PO/Dev xác nhận trước khi viết test case số liệu cụ thể."}
+```

@@ -1,5 +1,5 @@
 # Tasks — yêu cầu generate (/process), vòng đời task, ảnh output và Task History
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** ImagenHub · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-08
 

@@ -1,5 +1,5 @@
 # B2B Registration (phía form) — form builder ở Portal và form đăng ký trên storefront, regex theo field, chống spam (reCAPTCHA v3, rate limit IP), EU VAT validation
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** Duos B2B · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-09
 

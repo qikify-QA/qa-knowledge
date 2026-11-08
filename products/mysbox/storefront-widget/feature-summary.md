@@ -1,5 +1,5 @@
 # Storefront widget: theme app embed + app block, Style Settings, Content & Translation, custom CSS/JS, dữ liệu storefront (metafield vs app proxy)
-**Published context version:** 2
+**Published context version:** 3
 
 **Product:** mysbox · **Object:** `storefront-widget` · **Mode:** REFRESH (trên nền DOC_BOOTSTRAP v1) · **Environment:** documented + staging · **Published:** 2026-10-17
 

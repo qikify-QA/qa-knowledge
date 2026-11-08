@@ -1,5 +1,5 @@
 # Auth & Token lifecycle — offline token expiring / legacy, phát hiện token chết & reconnect, job refresh / migrate, re-auth khi mở app, uninstall / reinstall, admin panel 'Token and scopes'
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** Duos B2B · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-09
 

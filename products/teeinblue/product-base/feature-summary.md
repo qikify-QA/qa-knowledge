@@ -1,5 +1,5 @@
 # Object: Product Base (product: teeinblue) — Feature Profile Summary
-**Published context version:** 8
+**Published context version:** 9
 
 - **Phạm vi đã kiểm thử:** role `owner` (Linh explorer, sub=273), 1 organization, store `linh-explorer.myshopify.com`, environment staging. Chưa có evidence cho role khác (không có tài khoản thứ 2 để test permission/cross-tenant).
 - **9/9 feature có profile:** product-base-browse, product-base-create, product-base-identity, printarea-definition, variant-catalog, variant-add-to-campaigns, mockup-attachment, product-base-lifecycle, product-base-campaign-link. Confidence tổng thể object: MEDIUM. `product-base-campaign-link` là feature yếu nhất (confidence LOW, gần như không có bằng chứng cho đường ghi dữ liệu).

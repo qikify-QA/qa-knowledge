@@ -4,12 +4,12 @@
   "name": "Phát hiện token chết và yêu cầu merchant reconnect",
   "user_goal": "Khi token Shopify của một shop không còn dùng được, hệ thống nhận ra theo loại token, chặn trước khi gọi Shopify, đánh dấu shop cần re-auth và báo merchant reconnect bằng email (kể cả khi shop đóng lâu rồi mở lại), để merchant khôi phục kết nối của app.",
   "user_goal_kb_refs": [
-    "KB-001",
-    "KB-002",
-    "KB-003",
-    "KB-004",
-    "KB-005",
-    "KB-009"
+    "auth-token/dead-token-detection-and-reconnect#KB-001",
+    "auth-token/dead-token-detection-and-reconnect#KB-002",
+    "auth-token/dead-token-detection-and-reconnect#KB-003",
+    "auth-token/dead-token-detection-and-reconnect#KB-004",
+    "auth-token/dead-token-detection-and-reconnect#KB-005",
+    "auth-token/dead-token-detection-and-reconnect#KB-009"
   ],
   "stable_since_version": "v1",
   "actors": [
@@ -17,19 +17,19 @@
       "role": "system (backend: lớp token trước mỗi call Shopify, webhook)",
       "permission_observed": "Theo rule Jira DUOS-399: xác định token chết, chặn trước khi gọi Shopify, set `Re-auth Required At`, gửi email reconnect và email reopen. Chưa có quan sát runtime.",
       "kb_refs": [
-        "KB-003",
-        "KB-004",
-        "KB-005",
-        "KB-009"
+        "auth-token/dead-token-detection-and-reconnect#KB-003",
+        "auth-token/dead-token-detection-and-reconnect#KB-004",
+        "auth-token/dead-token-detection-and-reconnect#KB-005",
+        "auth-token/dead-token-detection-and-reconnect#KB-009"
       ]
     },
     {
       "role": "merchant",
       "permission_observed": "Nhận email reconnect / reopen và reconnect app; thao tác reconnect cụ thể và nội dung email chưa được tài liệu nêu (template còn là bản nháp).",
       "kb_refs": [
-        "KB-005",
-        "KB-006",
-        "KB-016"
+        "auth-token/dead-token-detection-and-reconnect#KB-005",
+        "auth-token/dead-token-detection-and-reconnect#KB-006",
+        "auth-token/dead-token-detection-and-reconnect#KB-016"
       ]
     }
   ],
@@ -38,26 +38,26 @@
       "path": "Lớp token trước mỗi lần app chuẩn bị gọi Shopify Admin API cho shop",
       "precondition": "Token của shop đã chết (expiring: `Refresh Token Expires At` < hiện tại; legacy: từ 01/01/2027).",
       "kb_refs": [
-        "KB-001",
-        "KB-002",
-        "KB-003"
+        "auth-token/dead-token-detection-and-reconnect#KB-001",
+        "auth-token/dead-token-detection-and-reconnect#KB-002",
+        "auth-token/dead-token-detection-and-reconnect#KB-003"
       ]
     },
     {
       "path": "Webhook `shop-update` khi shop chuyển từ trạng thái đóng (frozen/cancelled/fraudulent/paused) sang active",
       "precondition": "Token đã chết tại thời điểm shop mở lại; shop chưa uninstall.",
       "kb_refs": [
-        "KB-009",
-        "KB-012"
+        "auth-token/dead-token-detection-and-reconnect#KB-009",
+        "auth-token/dead-token-detection-and-reconnect#KB-012"
       ]
     },
     {
       "path": "Email reconnect / email reopen gửi tới merchant",
       "precondition": "Shop vừa bị xác định token chết hoặc vừa mở lại với token chết.",
       "kb_refs": [
-        "KB-005",
-        "KB-009",
-        "KB-016"
+        "auth-token/dead-token-detection-and-reconnect#KB-005",
+        "auth-token/dead-token-detection-and-reconnect#KB-009",
+        "auth-token/dead-token-detection-and-reconnect#KB-016"
       ]
     }
   ],
@@ -66,53 +66,53 @@
       "name": "Xác định token chết theo loại token",
       "description": "Token expiring chết khi `Refresh Token Expires At` nhỏ hơn hiện tại; token legacy chết từ 01/01/2027. Các tình huống chết khác của token legacy (migrate thành công, uninstall) và mốc Shopify 01/01/2027 chỉ có trong tóm tắt QA, chưa xác nhận.",
       "kb_refs": [
-        "KB-001",
-        "KB-002",
-        "KB-008",
-        "KB-056"
+        "auth-token/dead-token-detection-and-reconnect#KB-001",
+        "auth-token/dead-token-detection-and-reconnect#KB-002",
+        "auth-token/dead-token-detection-and-reconnect#KB-008",
+        "auth-token/_object-level#KB-056"
       ]
     },
     {
       "name": "Chặn gọi Shopify và đánh dấu shop cần re-auth",
       "description": "Khi token chết app tự chặn trước khi gọi Shopify (không đợi 401 thật) và set `Re-auth Required At`. Phạm vi các luồng bị dừng (sync, quote, credit, Flow, bulk) chỉ có trong tóm tắt QA.",
       "kb_refs": [
-        "KB-003",
-        "KB-004",
-        "KB-014",
-        "KB-015"
+        "auth-token/dead-token-detection-and-reconnect#KB-003",
+        "auth-token/dead-token-detection-and-reconnect#KB-004",
+        "auth-token/dead-token-detection-and-reconnect#KB-014",
+        "auth-token/dead-token-detection-and-reconnect#KB-015"
       ]
     },
     {
       "name": "Báo merchant reconnect ngay",
       "description": "Gửi email reconnect cho merchant ngay khi token chết; nội dung, người nhận, ngôn ngữ và tần suất gửi lặp chưa được chốt.",
       "kb_refs": [
-        "KB-005",
-        "KB-016"
+        "auth-token/dead-token-detection-and-reconnect#KB-005",
+        "auth-token/dead-token-detection-and-reconnect#KB-016"
       ]
     },
     {
       "name": "Email reopen khi shop đóng rồi mở lại với token chết",
       "description": "Qua webhook `shop-update` khi shop đóng → active và token đã chết; gửi đúng 1 lần; áp cả development store; bỏ qua shop đã uninstall hoặc vẫn đóng; shop đóng dưới 90 ngày thì token còn sống, app không làm gì.",
       "kb_refs": [
-        "KB-009",
-        "KB-010",
-        "KB-011",
-        "KB-012",
-        "KB-013"
+        "auth-token/dead-token-detection-and-reconnect#KB-009",
+        "auth-token/dead-token-detection-and-reconnect#KB-010",
+        "auth-token/dead-token-detection-and-reconnect#KB-011",
+        "auth-token/dead-token-detection-and-reconnect#KB-012",
+        "auth-token/dead-token-detection-and-reconnect#KB-013"
       ]
     },
     {
       "name": "Phân biệt lỗi 401 đơn thuần với token chết",
       "description": "Theo tóm tắt QA (chưa xác nhận): 401 khi shop bị freeze/close giữa lúc job chạy mà token vẫn hợp lệ chỉ làm job fail và retry, không gửi email reconnect.",
       "kb_refs": [
-        "KB-007"
+        "auth-token/dead-token-detection-and-reconnect#KB-007"
       ]
     },
     {
       "name": "Gỡ cờ re-auth sau khi reconnect",
       "description": "Theo tóm tắt QA (chưa xác nhận): reconnect thành công tự clear `Re-auth Required At`.",
       "kb_refs": [
-        "KB-006"
+        "auth-token/dead-token-detection-and-reconnect#KB-006"
       ]
     }
   ],
@@ -123,7 +123,7 @@
       "trigger": "Thời điểm hiện tại vượt `Refresh Token Expires At`",
       "condition": "Shop dùng token expiring",
       "kb_refs": [
-        "KB-001"
+        "auth-token/dead-token-detection-and-reconnect#KB-001"
       ]
     },
     {
@@ -132,7 +132,7 @@
       "trigger": "Tới 01/01/2027",
       "condition": "Shop vẫn dùng token legacy",
       "kb_refs": [
-        "KB-002"
+        "auth-token/dead-token-detection-and-reconnect#KB-002"
       ]
     },
     {
@@ -141,9 +141,9 @@
       "trigger": "App phát hiện token chết trước khi gọi Shopify",
       "condition": "—",
       "kb_refs": [
-        "KB-003",
-        "KB-004",
-        "KB-005"
+        "auth-token/dead-token-detection-and-reconnect#KB-003",
+        "auth-token/dead-token-detection-and-reconnect#KB-004",
+        "auth-token/dead-token-detection-and-reconnect#KB-005"
       ]
     },
     {
@@ -152,10 +152,10 @@
       "trigger": "Webhook `shop-update`",
       "condition": "Shop chưa uninstall; áp cả development store",
       "kb_refs": [
-        "KB-009",
-        "KB-010",
-        "KB-011",
-        "KB-012"
+        "auth-token/dead-token-detection-and-reconnect#KB-009",
+        "auth-token/dead-token-detection-and-reconnect#KB-010",
+        "auth-token/dead-token-detection-and-reconnect#KB-011",
+        "auth-token/dead-token-detection-and-reconnect#KB-012"
       ]
     },
     {
@@ -164,7 +164,7 @@
       "trigger": "Shop mở lại",
       "condition": "App không cần làm gì",
       "kb_refs": [
-        "KB-013"
+        "auth-token/dead-token-detection-and-reconnect#KB-013"
       ]
     },
     {
@@ -173,7 +173,7 @@
       "trigger": "Merchant reconnect thành công",
       "condition": "Chỉ theo tóm tắt QA, chưa xác nhận",
       "kb_refs": [
-        "KB-006"
+        "auth-token/dead-token-detection-and-reconnect#KB-006"
       ]
     }
   ],
@@ -183,7 +183,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-001"
+        "auth-token/dead-token-detection-and-reconnect#KB-001"
       ]
     },
     {
@@ -191,7 +191,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-002"
+        "auth-token/dead-token-detection-and-reconnect#KB-002"
       ]
     },
     {
@@ -199,7 +199,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-003"
+        "auth-token/dead-token-detection-and-reconnect#KB-003"
       ]
     },
     {
@@ -207,7 +207,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-004"
+        "auth-token/dead-token-detection-and-reconnect#KB-004"
       ]
     },
     {
@@ -215,7 +215,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-005"
+        "auth-token/dead-token-detection-and-reconnect#KB-005"
       ]
     },
     {
@@ -223,7 +223,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-009"
+        "auth-token/dead-token-detection-and-reconnect#KB-009"
       ]
     },
     {
@@ -231,7 +231,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-010"
+        "auth-token/dead-token-detection-and-reconnect#KB-010"
       ]
     },
     {
@@ -239,7 +239,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-011"
+        "auth-token/dead-token-detection-and-reconnect#KB-011"
       ]
     },
     {
@@ -247,7 +247,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-012"
+        "auth-token/dead-token-detection-and-reconnect#KB-012"
       ]
     },
     {
@@ -255,7 +255,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-013"
+        "auth-token/dead-token-detection-and-reconnect#KB-013"
       ]
     }
   ],
@@ -265,8 +265,8 @@
     {
       "statement": "Rule không nêu role hay tiến trình nào thực hiện việc xác định token chết; chặn call, set cờ và gửi email là hành vi hệ thống. Ma trận actor của token lifecycle đang chờ PO/Dev xác nhận.",
       "kb_refs": [
-        "KB-001",
-        "KB-002"
+        "auth-token/dead-token-detection-and-reconnect#KB-001",
+        "auth-token/dead-token-detection-and-reconnect#KB-002"
       ]
     }
   ],
@@ -277,13 +277,13 @@
       {
         "item": "Shopify Admin API: app chặn trước khi gọi khi token chết",
         "kb_refs": [
-          "KB-003"
+          "auth-token/dead-token-detection-and-reconnect#KB-003"
         ]
       },
       {
         "item": "Webhook `shop-update` (shop đóng → active) kích hoạt email reopen",
         "kb_refs": [
-          "KB-009"
+          "auth-token/dead-token-detection-and-reconnect#KB-009"
         ]
       }
     ],
@@ -291,14 +291,14 @@
       {
         "item": "Field `Refresh Token Expires At` của shop (điều kiện chết của token expiring)",
         "kb_refs": [
-          "KB-001"
+          "auth-token/dead-token-detection-and-reconnect#KB-001"
         ]
       },
       {
         "item": "Field `Re-auth Required At` (cờ shop cần re-auth)",
         "kb_refs": [
-          "KB-004",
-          "KB-006"
+          "auth-token/dead-token-detection-and-reconnect#KB-004",
+          "auth-token/dead-token-detection-and-reconnect#KB-006"
         ]
       }
     ],
@@ -307,15 +307,15 @@
       {
         "item": "Email reconnect khi token chết (template bản nháp)",
         "kb_refs": [
-          "KB-005",
-          "KB-016"
+          "auth-token/dead-token-detection-and-reconnect#KB-005",
+          "auth-token/dead-token-detection-and-reconnect#KB-016"
         ]
       },
       {
         "item": "Email reopen khi shop mở lại với token chết (đúng 1 lần)",
         "kb_refs": [
-          "KB-009",
-          "KB-010"
+          "auth-token/dead-token-detection-and-reconnect#KB-009",
+          "auth-token/dead-token-detection-and-reconnect#KB-010"
         ]
       }
     ]
@@ -326,9 +326,9 @@
       "relation": "constrained_by",
       "note": "Shop uninstall khi đang chờ reconnect bị soft-delete, clear `Re-auth Required At` và không còn nhận email reconnect; luồng reopen bỏ qua shop đã uninstall.",
       "kb_refs": [
-        "KB-043",
-        "KB-044",
-        "KB-012"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-043",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-044",
+        "auth-token/dead-token-detection-and-reconnect#KB-012"
       ]
     },
     {
@@ -336,9 +336,9 @@
       "relation": "related",
       "note": "Refresh định kỳ và migrate legacy giữ token không rơi vào trạng thái chết; theo tóm tắt QA, migrate thành công huỷ token legacy cũ.",
       "kb_refs": [
-        "KB-018",
-        "KB-023",
-        "KB-008"
+        "auth-token/token-refresh-and-legacy-migration#KB-018",
+        "auth-token/token-refresh-and-legacy-migration#KB-023",
+        "auth-token/dead-token-detection-and-reconnect#KB-008"
       ]
     },
     {
@@ -346,7 +346,7 @@
       "relation": "read_by",
       "note": "Admin panel hiển thị `Re-auth Required At` của shop.",
       "kb_refs": [
-        "KB-046"
+        "auth-token/admin-token-and-scopes#KB-046"
       ]
     },
     {
@@ -354,8 +354,8 @@
       "relation": "referenced_by",
       "note": "Email reconnect / reopen thuộc tính năng này; object notifications chỉ tham chiếu.",
       "kb_refs": [
-        "KB-005",
-        "KB-016"
+        "auth-token/dead-token-detection-and-reconnect#KB-005",
+        "auth-token/dead-token-detection-and-reconnect#KB-016"
       ]
     },
     {
@@ -363,8 +363,8 @@
       "relation": "impacts",
       "note": "Theo tóm tắt QA (chưa xác nhận), mọi call Shopify Admin API đi qua lớp token và token chết làm các luồng này dừng tới khi reconnect.",
       "kb_refs": [
-        "KB-014",
-        "KB-015"
+        "auth-token/dead-token-detection-and-reconnect#KB-014",
+        "auth-token/dead-token-detection-and-reconnect#KB-015"
       ]
     }
   ],
@@ -374,10 +374,10 @@
       "knowledge_kind": "INFERRED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-015",
-        "KB-014",
-        "KB-004",
-        "KB-005"
+        "auth-token/dead-token-detection-and-reconnect#KB-015",
+        "auth-token/dead-token-detection-and-reconnect#KB-014",
+        "auth-token/dead-token-detection-and-reconnect#KB-004",
+        "auth-token/dead-token-detection-and-reconnect#KB-005"
       ]
     },
     {
@@ -385,8 +385,8 @@
       "knowledge_kind": "INFERRED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-007",
-        "KB-003"
+        "auth-token/dead-token-detection-and-reconnect#KB-007",
+        "auth-token/dead-token-detection-and-reconnect#KB-003"
       ]
     },
     {
@@ -394,8 +394,8 @@
       "knowledge_kind": "INFERRED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-016",
-        "KB-005"
+        "auth-token/dead-token-detection-and-reconnect#KB-016",
+        "auth-token/dead-token-detection-and-reconnect#KB-005"
       ]
     },
     {
@@ -403,7 +403,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-057"
+        "auth-token/_object-level#KB-057"
       ],
       "status": "KNOWN_DEFECT"
     }
@@ -413,8 +413,8 @@
       "question": "Merchant reconnect cụ thể bằng thao tác nào, và reconnect thành công có tự clear `Re-auth Required At` không?",
       "why_it_matters": "Không xác định được điểm kết thúc của trạng thái chờ reconnect; mệnh đề clear cờ chỉ có trong tóm tắt QA.",
       "kb_refs": [
-        "KB-006",
-        "KB-004"
+        "auth-token/dead-token-detection-and-reconnect#KB-006",
+        "auth-token/dead-token-detection-and-reconnect#KB-004"
       ],
       "oq_id": "OQ-auth-token-011"
     },
@@ -422,7 +422,7 @@
       "question": "Khi Shopify trả 401 đơn thuần lúc shop bị freeze/close giữa lúc job chạy (token vẫn hợp lệ), job có chỉ fail và retry, không set cờ và không gửi email reconnect không?",
       "why_it_matters": "Phân biệt 401 thường với token chết quyết định có gửi email/gắn cờ hay không; chưa có rule active.",
       "kb_refs": [
-        "KB-007"
+        "auth-token/dead-token-detection-and-reconnect#KB-007"
       ],
       "oq_id": "OQ-auth-token-002"
     },
@@ -430,8 +430,8 @@
       "question": "Token legacy có đúng chỉ chết ở 3 tình huống (migrate thành công, shop uninstall, từ 01/01/2027), và re-authorize có thật không huỷ token legacy cũ?",
       "why_it_matters": "Quyết định điều kiện chết của token legacy ngoài mốc 2027; chỉ có trong tóm tắt QA.",
       "kb_refs": [
-        "KB-008",
-        "KB-002"
+        "auth-token/dead-token-detection-and-reconnect#KB-008",
+        "auth-token/dead-token-detection-and-reconnect#KB-002"
       ],
       "oq_id": "OQ-auth-token-002"
     },
@@ -439,8 +439,8 @@
       "question": "Mọi call Shopify Admin API của Duos (sync catalog, company, order, quote → order, Flow action, bulk) có đều đi qua lớp token, và khi token chết thì tất cả đều dừng tới khi reconnect?",
       "why_it_matters": "Xác định phạm vi regression khi token chết; chỉ có trong tóm tắt QA.",
       "kb_refs": [
-        "KB-014",
-        "KB-015"
+        "auth-token/dead-token-detection-and-reconnect#KB-014",
+        "auth-token/dead-token-detection-and-reconnect#KB-015"
       ],
       "oq_id": "OQ-auth-token-012"
     },
@@ -448,9 +448,9 @@
       "question": "Email reconnect và email reopen có tiêu đề, nội dung, người nhận và ngôn ngữ nào?",
       "why_it_matters": "Rule chỉ nói có gửi email; template email reconnect còn là bản nháp.",
       "kb_refs": [
-        "KB-005",
-        "KB-009",
-        "KB-016"
+        "auth-token/dead-token-detection-and-reconnect#KB-005",
+        "auth-token/dead-token-detection-and-reconnect#KB-009",
+        "auth-token/dead-token-detection-and-reconnect#KB-016"
       ],
       "oq_id": "OQ-auth-token-005"
     },
@@ -458,8 +458,8 @@
       "question": "Ở luồng thường (không phải shop mở lại), email reconnect gửi một lần hay gửi lặp mỗi lần job/call phát hiện token chết?",
       "why_it_matters": "Rule \"đúng 1 lần\" chỉ nói cho email reopen.",
       "kb_refs": [
-        "KB-005",
-        "KB-010"
+        "auth-token/dead-token-detection-and-reconnect#KB-005",
+        "auth-token/dead-token-detection-and-reconnect#KB-010"
       ],
       "oq_id": "OQ-auth-token-005"
     },
@@ -467,8 +467,8 @@
       "question": "Khi refresh thất bại do lỗi tạm thời (mạng, Shopify 5xx), app retry mấy lần, có gắn cờ `Re-auth Required At` hay gửi email reconnect không?",
       "why_it_matters": "Không phân biệt được expected giữa lỗi tạm thời và token chết.",
       "kb_refs": [
-        "KB-003",
-        "KB-005"
+        "auth-token/dead-token-detection-and-reconnect#KB-003",
+        "auth-token/dead-token-detection-and-reconnect#KB-005"
       ],
       "oq_id": "OQ-auth-token-005"
     },
@@ -476,8 +476,8 @@
       "question": "Mốc 01/01/2027 Shopify bắt buộc token expiring và từ chối token legacy (trả 401) có còn đúng không?",
       "why_it_matters": "Mốc này là điều kiện chết của token legacy; câu về phía Shopify chỉ có trong tóm tắt QA.",
       "kb_refs": [
-        "KB-056",
-        "KB-002"
+        "auth-token/_object-level#KB-056",
+        "auth-token/dead-token-detection-and-reconnect#KB-002"
       ],
       "oq_id": "OQ-auth-token-002"
     },
@@ -485,8 +485,8 @@
       "question": "Tiến trình hay role nào chịu trách nhiệm xác định token chết, và có ràng buộc role nào cho các hành vi này không?",
       "why_it_matters": "Rule không nêu actor; cần cho ma trận role/actor của token lifecycle.",
       "kb_refs": [
-        "KB-001",
-        "KB-002"
+        "auth-token/dead-token-detection-and-reconnect#KB-001",
+        "auth-token/dead-token-detection-and-reconnect#KB-002"
       ],
       "oq_id": "OQ-auth-token-001"
     },
@@ -494,7 +494,7 @@
       "question": "BUG-36 (gắn TC-DUOS-001, trạng thái \"open?\") là lỗi gì, thuộc hành vi token nào (phát hiện token chết, refresh/migrate, re-auth khi mở app, uninstall/reinstall hay admin panel), còn mở hay đã fix?",
       "why_it_matters": "Nếu lỗi chạm hành vi của tính năng này thì check theo rule tương ứng cần theo dõi regression; test case liên quan đang passed nên không phải bằng chứng PASS.",
       "kb_refs": [
-        "KB-057"
+        "auth-token/_object-level#KB-057"
       ],
       "oq_id": "OQ-auth-token-003"
     }
@@ -505,8 +505,8 @@
     "basis": "Ngày nguồn mới nhất trong các KB item được tham chiếu (ngày cập nhật Jira trong rule, ngày phân tích QA, ngày cập nhật danh sách lỗi); không có quan sát runtime trong lần chạy này."
   },
   "last_updated": {
-    "date": "2026-10-09",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "coverage_matrix": [
     {
@@ -643,8 +643,8 @@
       "to": "uninstall-reinstall-token-cleanup",
       "relation": "CONSTRAINED_BY",
       "kb_refs": [
-        "KB-043",
-        "KB-044"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-043",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-044"
       ]
     },
     {
@@ -652,8 +652,8 @@
       "to": "token-refresh-and-legacy-migration",
       "relation": "RELATED_TO",
       "kb_refs": [
-        "KB-018",
-        "KB-023"
+        "auth-token/token-refresh-and-legacy-migration#KB-018",
+        "auth-token/token-refresh-and-legacy-migration#KB-023"
       ]
     },
     {
@@ -661,7 +661,7 @@
       "to": "admin-token-and-scopes",
       "relation": "READ_BY",
       "kb_refs": [
-        "KB-046"
+        "auth-token/admin-token-and-scopes#KB-046"
       ]
     }
   ]

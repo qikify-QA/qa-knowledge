@@ -283,3 +283,7 @@
   "summary": "Không thể tạo 2 dòng ProgramCommission cho cùng 1 cặp (Program, Level). Oracle STRONG của check 'CHK-012' hiện chỉ dựa trên KB item nguồn dev_doc (toàn bộ KB của run này không có spec_doc/po_dev_confirm/test_case nào). Hệ thống có thực sự chặn/từ chối việc tạo dòng ProgramCommission thứ 2 cho cùng 1 cặp (Program, Level) không (ví dụ qua unique constraint trên program_id+level_id), hay chỉ là suy luận từ đọc code/schema chưa được test case xác nhận?"
 }
 ```
+
+```json
+{"oq_id":"OQ-commission-rate-card-028","type":"NEEDS_CONFIRMATION","feature_id":"rate-card-configuration","summary":"[object Object]"}
+```

@@ -92,3 +92,63 @@
   "summary": "Bất kỳ admin nào đều thực hiện được việc lưu Embedded Version mà không cần phê duyệt/quyền đặc biệt. Oracle STRONG cua check 'CHK-005' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."
 }
 ```
+
+```json
+{"oq_id":"OQ-admin-console-016","type":"NEEDS_CONFIRMATION","feature_id":"admin-home-dashboard","summary":"Khi tổng số sự kiện customer thực tế ít hơn 10, bảng trên trang chủ admin hiển thị bao nhiêu dòng (ít hơn 10, hay có placeholder)? Và '10' là cố định hay cấu hình được?"}
+```
+
+```json
+{"oq_id":"OQ-admin-console-017","type":"NEEDS_CONFIRMATION","feature_id":"admin-home-dashboard","summary":"Cơ chế đăng nhập/cấp tài khoản admin panel là gì (route, ai cấp, session/TTL, 2FA), và truy cập '/admin' khi không đủ quyền/chưa đăng nhập trả về hành vi nào?"}
+```
+
+```json
+{"oq_id":"OQ-admin-console-018","type":"NEEDS_CONFIRMATION","feature_id":"admin-home-dashboard","summary":"5 ô số liệu tổng trên trang chủ admin đếm trên phạm vi nào — có tính record đã soft-delete (customer), affiliate Disapproved, invoice đã cancel hay không?"}
+```
+
+```json
+{"oq_id":"OQ-admin-console-019","type":"NEEDS_CONFIRMATION","feature_id":"data-maintenance-commands","summary":"Oracle STRONG cua check 'CHK-001' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-admin-console-020","type":"NEEDS_CONFIRMATION","feature_id":"data-maintenance-commands","summary":"Oracle STRONG cua check 'CHK-002' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-admin-console-021","type":"NEEDS_CONFIRMATION","feature_id":"data-maintenance-commands","summary":"Oracle STRONG cua check 'CHK-004' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-admin-console-022","type":"NEEDS_CONFIRMATION","feature_id":"data-maintenance-commands","summary":"Khi người chạy từ chối/huỷ prompt xác nhận của `conversion-type:update`, lệnh có đảm bảo không đổi gì (exit sạch) không, hay có khả năng đã ghi một phần trước khi bị huỷ?"}
+```
+
+```json
+{"oq_id":"OQ-admin-console-023","type":"NEEDS_CONFIRMATION","feature_id":"data-maintenance-commands","summary":"`user-level:update` có HẠ bậc affiliate không hay chỉ nâng bậc, và affiliate đang is_vip=true có bị lệnh này ghi đè level không?"}
+```
+
+```json
+{"oq_id":"OQ-admin-console-024","type":"NEEDS_CONFIRMATION","feature_id":"data-maintenance-commands","summary":"4 console command bảo trì có để lại log/audit (ai chạy, lúc nào, bao nhiêu dòng bị đổi) không, và có chạy được trên production mà không cần phê duyệt không?"}
+```
+
+```json
+{"oq_id":"OQ-admin-console-025","type":"NEEDS_CONFIRMATION","feature_id":"data-maintenance-commands","summary":"Lệnh `tapfiliate:sync` còn tồn tại trong codebase (còn chạy được) hay đã bị xoá? Nếu còn, chạy nhầm có nhập dữ liệu cũ vào hệ thống tiền không?"}
+```
+
+```json
+{"oq_id":"OQ-admin-console-026","type":"NEEDS_CONFIRMATION","feature_id":"data-maintenance-commands","summary":"`conversion-type:update` có tính lại amount/percentage của Conversion theo rate card khi đổi type không, hay chỉ sửa đúng cột type và giữ nguyên số tiền cũ?"}
+```
+
+```json
+{"oq_id":"OQ-admin-console-027","type":"NEEDS_CONFIRMATION","feature_id":"embedded-version-cache-bust","summary":"Form Embedded Version có validate định dạng giá trị nhập không, hay nhận chuỗi bất kỳ như tài liệu hedge nêu ('thường dùng timestamp hoặc số phiên bản')?"}
+```
+
+```json
+{"oq_id":"OQ-admin-console-028","type":"NEEDS_CONFIRMATION","feature_id":"embedded-version-cache-bust","summary":"Ô nhập Embedded Version có giới hạn độ dài hoặc ràng buộc ký tự nào không (ví dụ chặn HTML/script để tránh lưu giá trị gây lỗi phía SPA)?"}
+```
+
+```json
+{"oq_id":"OQ-admin-console-029","type":"NEEDS_CONFIRMATION","feature_id":"embedded-version-cache-bust","summary":"Oracle STRONG cua check 'CHK-005' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-admin-console-030","type":"NEEDS_CONFIRMATION","feature_id":"embedded-version-cache-bust","summary":"Sau khi lưu, giá trị Embedded Version có được hiển thị lại đúng trong ô nhập khi admin tải lại trang quản trị không (persist & redisplay), hay ô luôn trống chờ nhập mới?"}
+```

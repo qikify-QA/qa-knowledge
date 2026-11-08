@@ -224,3 +224,91 @@
   "summary": "Tắt is_vip (true→false) khôi phục lại tính Level theo công thức total_paid_customers từ lần import tiếp theo. Oracle dựa trên KB-001, derivation=code_artifact — theo phanh derivation không đủ làm oracle STRONG. Cần xác nhận từ nguồn mạnh hơn."
 }
 ```
+
+```json
+{"oq_id":"OQ-affiliate-level-025","type":"NEEDS_CONFIRMATION","feature_id":"level-definition-management","summary":"Oracle STRONG cua check 'CHK-DEFLEVEL-004' hien trace toi kb_id (KB-002) co confirmation_source.derivation=code_artifact (suy ra tu doc code/schema, khong phai phat bieu nghiep vu tuong minh). Theo luat 'phanh derivation' cua C5, STRONG chi hop le khi MOI oracle kb_id deu CONFIRMED_EXPECTED va derivation=prose. Ha xuong BASELINE cho toi khi PO/Dev xac nhan hanh vi nay dung la chu y thiet ke, khong phai tac dung phu cua viec doc code."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-026","type":"NEEDS_CONFIRMATION","feature_id":"level-definition-management","summary":"Oracle STRONG cua check 'CHK-DEFLEVEL-005' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-027","type":"NEEDS_CONFIRMATION","feature_id":"level-definition-management","summary":"Oracle STRONG cua check 'CHK-DEFLEVEL-006' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-028","type":"NEEDS_CONFIRMATION","feature_id":"level-definition-management","summary":"Sửa min_paid_customers hoặc xoá 1 Level đang được affiliate dùng thì ảnh hưởng gì (level affiliate có tự đổi, Conversion cũ có bị ảnh hưởng, rate card của Level đó đi đâu)? Cần PO/Dev xác nhận."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-029","type":"NEEDS_CONFIRMATION","feature_id":"level-definition-management","summary":"Lệnh CLI `user-level:update` (chạy để nâng bậc affiliate hiện tại ngay sau khi thêm Level mới) có HẠ bậc hay ghi đè affiliate đang is_vip=true không? Cần nối với shard admin-console/data-maintenance-commands qua knowledge-diff-analyzer/orchestrator, hoặc hỏi PO/Dev trực tiếp."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-030","type":"NEEDS_CONFIRMATION","feature_id":"level-progression","summary":"Oracle STRONG cua check 'CHK-LEVEL-001' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-031","type":"NEEDS_CONFIRMATION","feature_id":"level-progression","summary":"Oracle STRONG cua check 'CHK-LEVEL-002' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-032","type":"NEEDS_CONFIRMATION","feature_id":"level-progression","summary":"Oracle STRONG cua check 'CHK-LEVEL-003' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-033","type":"NEEDS_CONFIRMATION","feature_id":"level-progression","summary":"Oracle STRONG cua check 'CHK-LEVEL-006' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-034","type":"NEEDS_CONFIRMATION","feature_id":"level-progression","summary":"Oracle STRONG cua check 'CHK-LEVEL-007' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-035","type":"NEEDS_CONFIRMATION","feature_id":"level-progression","summary":"Oracle STRONG cua check 'CHK-LEVEL-009' hien trace toi kb_id (KB-020) co confirmation_source.derivation=code_artifact (suy ra tu doc code/schema, khong phai phat bieu nghiep vu tuong minh). Theo luat 'phanh derivation' cua C5, STRONG chi hop le khi MOI oracle kb_id deu CONFIRMED_EXPECTED va derivation=prose. Ha xuong BASELINE cho toi khi PO/Dev xac nhan hanh vi nay dung la chu y thiet ke, khong phai tac dung phu cua viec doc code."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-036","type":"NEEDS_CONFIRMATION","feature_id":"level-progression","summary":"Cấu hình Level THẬT đang chạy cho brand koin (bao nhiêu bậc, ngưỡng min_paid_customers cụ thể) là gì? Cần tra trực tiếp hoặc PO/Dev xác nhận trước khi viết test case có số liệu cụ thể (ngoài CHK-LEVEL-003/004 đã viết tham số hoá)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-037","type":"NEEDS_CONFIRMATION","feature_id":"level-progression","summary":"Khi 2 Level được cấu hình TRÙNG min_paid_customers, Level nào được chọn (theo level_index, id, hay thứ tự tạo)? Cần PO/Dev xác nhận — đây là lỗi cấu hình dễ xảy ra ở màn hình Level."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-038","type":"NEEDS_CONFIRMATION","feature_id":"level-progression","summary":"Khi level=0 (không Level nào thoả điều kiện), bước tra ProgramCommission tiếp theo xử lý thế nào — có Level với level_index=0 nhận dòng đó, hay dòng import bị lỗi tương tự case VIP thiếu level? Cần PO/Dev xác nhận."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-039","type":"NEEDS_CONFIRMATION","feature_id":"level-progression","summary":"Ngoài việc tạo affiliate bằng form tay (level mặc định=1) và is_vip=true (ghim level), có đường nào khác (API, lệnh CLI, màn hình khác) có thể ghi đè field level của affiliate không VIP không? Cần PO/Dev xác nhận để đảm bảo công thức tự tính không bị bỏ qua ngoài ý muốn."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-040","type":"NEEDS_CONFIRMATION","feature_id":"vip-level-override","summary":"Oracle STRONG cua check 'CHK-VIP-001' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-041","type":"NEEDS_CONFIRMATION","feature_id":"vip-level-override","summary":"Oracle STRONG cua check 'CHK-VIP-005' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-042","type":"NEEDS_CONFIRMATION","feature_id":"vip-level-override","summary":"KB item KB-007 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-VIP-006' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-043","type":"NEEDS_CONFIRMATION","feature_id":"vip-level-override","summary":"KB item KB-008 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-VIP-007' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-044","type":"NEEDS_CONFIRMATION","feature_id":"vip-level-override","summary":"Form User có validate required_if chặn admin bật is_vip=ON mà bỏ trống level không? Đây là ranh giới giữa 'lỗi cấu hình người dùng' và 'thiếu validate' — quyết định KB-007 có nên fix ở tầng form hay không. Cần PO/Dev xác nhận."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-045","type":"NEEDS_CONFIRMATION","feature_id":"vip-level-override","summary":"Khi admin set tay level cho affiliate VIP, hệ thống có kiểm giá trị đó phải tồn tại trong bảng Level không? Thiếu rate card cho 1 cặp (Program, Level) gây lỗi import — cần PO/Dev xác nhận."}
+```
+
+```json
+{"oq_id":"OQ-affiliate-level-046","type":"NEEDS_CONFIRMATION","feature_id":"vip-level-override","summary":"[object Object]"}
+```

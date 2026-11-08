@@ -1,5 +1,5 @@
 # Object: Artwork (product: teeinblue) — Feature Profile Summary
-**Published context version:** 20
+**Published context version:** 21
 
 
 - **31 features.** Đa số item là `OBSERVED_CURRENT`. Item `CONFIRMED_EXPECTED` của object đến từ CBS-006 (TIB-5584, effective visibility của layer Group): nguồn là test case Testlane PASS hoặc QA plan của dev, chỉ trên staging 2026-10-16 — TIB-5584 chưa xác nhận đã ship production, chưa chạy lại sau khi đủ PR merge (OQ-artwork-144). CBS-011 (TIB-5558, action Hide trong Conditional Setting) thêm KB-221, KB-222, KB-224, KB-227 (đang conflict), KB-228, KB-229 là `CONFIRMED_EXPECTED`/MEDIUM theo test case Testlane PASS trên staging 2026-10-28, chạy trước khi 6 PR của TIB-5558 merge; TIB-5558 chưa xác nhận đã ship production.

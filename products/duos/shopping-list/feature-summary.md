@@ -1,5 +1,5 @@
 # B2B Shopping List — list đã lưu, gửi duyệt / duyệt theo role, re-approval sau order, lưu sản phẩm / cart vào list, list do merchant quản lý / tạo hộ, reminder re-order
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** Duos B2B · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-09
 

@@ -10,3 +10,4 @@
 - 2026-10-17 (`bootstrap`, REFRESH) — resell-setup-and-eligibility:CHK-034 — added oracle —→BASELINE: Hành vi mới quan sát KB-079 (LOW): trạng thái đơn sau khi khách mở hết box không buyback.
 - 2026-10-17 (`bootstrap`, REFRESH) — thêm 7 open question: OQ-resell-refund-credit-096, OQ-resell-refund-credit-097, OQ-resell-refund-credit-098, OQ-resell-refund-credit-099, OQ-resell-refund-credit-100, OQ-resell-refund-credit-101, OQ-resell-refund-credit-102.
 - 2026-10-17 (`bootstrap`, REFRESH) — ghi chú quan sát staging (staging_observation) vào open question đang mở, không resolve: OQ-resell-refund-credit-011, OQ-resell-refund-credit-052, OQ-resell-refund-credit-056.
+- 2026-11-08 (maintenance-2026-11-08) — Chuẩn hoá reference theo namespace; sửa OQ và phân loại oracle/expected theo nguồn hiện có. Không xác nhận thêm requirement hoặc thay đổi hành vi sản phẩm.

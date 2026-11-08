@@ -8,7 +8,7 @@
       "role": "system/engine (không gắn qua UI)",
       "permission_observed": "Tính amount cho mọi Conversion type=\"recurring\" theo công thức rate/cap/rounding.",
       "kb_refs": [
-        "KB-001"
+        "commission-calculation/recurring-commission#KB-001"
       ]
     }
   ],
@@ -17,8 +17,8 @@
       "path": "Pipeline tính hoa hồng — áp dụng khi commission-decision-flow đã xếp 1 dòng payout vào nhánh recurring/first-month và dòng đó KHÔNG phải first-month",
       "precondition": "charge_type đã được commission-decision-flow phân loại vào nhánh recurring/first-month; Customer::isFirstMonth = false cho dòng này (xem first-month-commission).",
       "kb_refs": [
-        "KB-001",
-        "KB-008"
+        "commission-calculation/recurring-commission#KB-001",
+        "commission-calculation/recurring-commission#KB-008"
       ]
     }
   ],
@@ -27,25 +27,25 @@
       "name": "Tính số tiền hoa hồng recurring từ partner_share",
       "description": "rate = ProgramCommission.percentage / 100 (KB-001). amount_raw = partner_share × rate (KB-002). max = maximum_amount × 12 nếu charge_type chứa \"yearly\" (vì Shopify tính phí 1 lần cho cả 12 tháng thay vì hàng tháng), ngược lại max = maximum_amount (KB-003). amount = clamp(amount_raw, max) — hàm clamp (tên thật trong code calculateRecurringAffiliateShare): nếu max==0 trả nguyên giá trị (không giới hạn); nếu đầu vào >=0 trả về min(giá_trị, |max|) (KB-004). Ví dụ minh hoạ clamp không cap và bị cap: KB-007 (EXAMPLE_ONLY, không tự suy thêm quy tắc).",
       "kb_refs": [
-        "KB-001",
-        "KB-002",
-        "KB-003",
-        "KB-004",
-        "KB-007"
+        "commission-calculation/recurring-commission#KB-001",
+        "commission-calculation/recurring-commission#KB-002",
+        "commission-calculation/recurring-commission#KB-003",
+        "commission-calculation/recurring-commission#KB-004",
+        "commission-calculation/recurring-commission#KB-007"
       ]
     },
     {
       "name": "Ghi nhận percentage hiệu lực thực tế lên Conversion",
       "description": "percentage lưu lại trên Conversion được tính ngược nếu là yearly, ngược lại bằng rate gốc; field này được gọi là \"% hiệu lực thực tế\" — khi dòng bị cap, percentage lưu lại KHÁC với percentage cấu hình gốc trong ProgramCommission.",
       "kb_refs": [
-        "KB-005"
+        "commission-calculation/recurring-commission#KB-005"
       ]
     },
     {
       "name": "Phân loại Conversion type=\"recurring\"",
       "description": "Conversion sinh ra từ nhánh này có type = \"recurring\".",
       "kb_refs": [
-        "KB-006"
+        "commission-calculation/recurring-commission#KB-006"
       ]
     }
   ],
@@ -56,8 +56,8 @@
       "trigger": "clamp(amount_raw, max)",
       "condition": "max = maximum_amount × 12 nếu charge_type chứa \"yearly\", ngược lại = maximum_amount",
       "kb_refs": [
-        "KB-003",
-        "KB-004"
+        "commission-calculation/recurring-commission#KB-003",
+        "commission-calculation/recurring-commission#KB-004"
       ]
     }
   ],
@@ -65,37 +65,37 @@
     {
       "statement": "rate = ProgramCommission.percentage / 100",
       "kb_refs": [
-        "KB-001"
+        "commission-calculation/recurring-commission#KB-001"
       ]
     },
     {
       "statement": "amount_raw = partner_share × rate",
       "kb_refs": [
-        "KB-002"
+        "commission-calculation/recurring-commission#KB-002"
       ]
     },
     {
       "statement": "max = maximum_amount × 12 nếu charge_type chứa \"yearly\" (phí 1 lần cho 12 tháng), ngược lại max = maximum_amount",
       "kb_refs": [
-        "KB-003"
+        "commission-calculation/recurring-commission#KB-003"
       ]
     },
     {
       "statement": "amount = clamp(amount_raw, max); max==0 => không giới hạn; đầu vào >=0 => min(giá_trị, |max|)",
       "kb_refs": [
-        "KB-004"
+        "commission-calculation/recurring-commission#KB-004"
       ]
     },
     {
       "statement": "percentage lưu trên Conversion = % hiệu lực thực tế (tính ngược nếu yearly, ngược lại = rate gốc); khác rate cấu hình gốc khi bị cap",
       "kb_refs": [
-        "KB-005"
+        "commission-calculation/recurring-commission#KB-005"
       ]
     },
     {
       "statement": "Conversion sinh từ nhánh này có type = \"recurring\"",
       "kb_refs": [
-        "KB-006"
+        "commission-calculation/recurring-commission#KB-006"
       ]
     }
   ],
@@ -115,19 +115,19 @@
     {
       "dependency": "commission-decision-flow: phạm vi charge_type nào được coi là \"recurring/first-month\" (không chứa \"usage\") do nhánh quyết định flow xác định — tranh chấp OQ-commission-calculation-006 ảnh hưởng trực tiếp input của feature này.",
       "kb_refs": [
-        "KB-008"
+        "commission-calculation/recurring-commission#KB-008"
       ]
     },
     {
       "dependency": "refund-and-downgrade-adjustment: dùng chung hàm clamp(new, max) khi amount âm (clawback 2 chiều) — nhánh âm được xử lý riêng ở feature đó.",
       "kb_refs": [
-        "KB-004"
+        "commission-calculation/recurring-commission#KB-004"
       ]
     },
     {
       "dependency": "first-month-commission: feature này CHỈ áp dụng khi Customer::isFirstMonth = false cho dòng đang xét.",
       "kb_refs": [
-        "KB-001"
+        "commission-calculation/recurring-commission#KB-001"
       ]
     }
   ],
@@ -135,15 +135,15 @@
     {
       "risk": "Phạm vi áp dụng công thức recurring cho dòng \"one-time\" đang mâu thuẫn nguồn (OQ-commission-calculation-006) — rủi ro tính sai nhánh (áp công thức recurring cho dòng one-time, hoặc ngược lại) nếu PO/dev không xác nhận trước khi viết expected result.",
       "kb_refs": [
-        "KB-008"
+        "commission-calculation/recurring-commission#KB-008"
       ]
     },
     {
       "risk": "6/8 KB CONFIRMED_EXPECTED của feature này chỉ có 1 nguồn độc lập (`qikfiliate/commision - recurring & first month`) trong phạm vi được giao -> confidence MEDIUM, chưa đạt HIGH do thiếu corroboration độc lập thứ 2.",
       "kb_refs": [
-        "KB-001",
-        "KB-002",
-        "KB-006"
+        "commission-calculation/recurring-commission#KB-001",
+        "commission-calculation/recurring-commission#KB-002",
+        "commission-calculation/recurring-commission#KB-006"
       ]
     }
   ],
@@ -158,8 +158,8 @@
     }
   ],
   "last_updated": {
-    "date": "2026-10-05",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "profile_relationships": [
     {

@@ -1,5 +1,5 @@
 # Object: Font (product: teeinblue) — Feature Profile Summary
-**Published context version:** 2
+**Published context version:** 3
 
 - **Object:** Font (entity `custom_fonts`, trang `/fonts`, menu Assets > Upload Fonts) — riêng biệt với `font_category` (`/font-categories`, object khác, ngoài phạm vi tài liệu này). Xem KB-019.
 - **Environment quan sát:** staging, store `linh-explorer.myshopify.com`.

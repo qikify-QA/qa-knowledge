@@ -1,5 +1,5 @@
 # Tự động hoá và tăng trưởng: Shopify Flow, share unboxing [staging], recent pulls, banner [staging], email/thông báo, affiliate Qikfiliate, BigQuery partner sync
-**Published context version:** 2
+**Published context version:** 3
 
 **Product:** mysbox · **Object:** `automation-growth` · **Mode:** REFRESH (trên nền DOC_BOOTSTRAP v1) · **Environment:** documented + staging · **Published:** 2026-10-17
 

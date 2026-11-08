@@ -269,3 +269,35 @@
 ```json
 {"oq_id": "OQ-asset-category-045", "type": "NEEDS_CONFIRMATION", "feature_id": "asset-category-item-management", "summary": "teeinblue-api có chuẩn hoá `name` của clipart khi lưu không? Theo comment dev TIB-5412 (2026-09-23), fix so khớp tên của Dynamic Clipart by Text chỉ ở teeinblue-sdk, việc chuẩn hoá name ở API để ngoài PR như follow-up tuỳ chọn; câu hỏi follow-up của QA và câu hỏi render server-side chưa có trả lời, không ai xác nhận. Claim này không được nạp vào KB (CBS-099 CLAIM-02). Cần Dev/PO xác nhận hành vi lưu name hiện tại và có follow-up hay không."}
 ```
+
+```json
+{"oq_id":"OQ-asset-category-046","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-bulk-upload","summary":"Cần nguồn thẩm quyền để xác nhận asset-category/asset-category-bulk-upload#KB-022. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-asset-category-047","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-bulk-upload","summary":"Cần nguồn thẩm quyền để xác nhận asset-category/asset-category-bulk-upload#KB-026. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-asset-category-048","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-bulk-upload","summary":"Cần nguồn thẩm quyền để xác nhận asset-category/asset-category-bulk-upload#KB-027. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-asset-category-049","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-crud","summary":"Cần nguồn thẩm quyền để xác nhận asset-category/asset-category-crud#KB-020. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-asset-category-050","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"Cần nguồn thẩm quyền để xác nhận asset-category/asset-category-item-management#KB-023. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-asset-category-051","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"Cần nguồn thẩm quyền để xác nhận asset-category/asset-category-item-management#KB-033. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-asset-category-052","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-002 “Bug 'Add new disabled vĩnh viễn' - RESOLVED_NOT_A_BUG (open-issue \"Add new disabled\" (KB-023), PO xác nhận là thiết kế)” của feature asset-category-item-management. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-asset-category-053","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-013 “Giới hạn dung lượng tối đa cho 1 file PNG/SVG khi upload đơn lẻ - CONFIRMED: warning 64MP không chặn cứng” của feature asset-category-item-management. insufficient_authority"}
+```

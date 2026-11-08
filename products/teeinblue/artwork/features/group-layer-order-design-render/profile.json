@@ -4,11 +4,11 @@
   "name": "Render order design cho artwork có Group layer (Artwork 2.0)",
   "user_goal": "Là merchant (store owner/staff), nhận order design (print file) hoàn tất và đúng cho order tạo từ Artwork 2.0 có Group layer — kể cả group chứa nhiều layer (~250), group có mask, group lồng nhau, group có layer con tắt visible: order design generate hoàn tất (design 'Completed'), không bị auto-stop/timeout, không kẹt 'Generating', và nội dung render đúng (đúng vị trí, đúng mask, đúng visibility).",
   "user_goal_kb_refs": [
-    "KB-380",
-    "KB-382",
-    "KB-387",
-    "KB-388",
-    "KB-389"
+    "artwork/group-layer-order-design-render#KB-380",
+    "artwork/group-layer-order-design-render#KB-382",
+    "artwork/group-layer-order-design-render#KB-387",
+    "artwork/group-layer-order-design-render#KB-388",
+    "artwork/group-layer-order-design-render#KB-389"
   ],
   "stable_since_version": null,
   "actors": [
@@ -16,19 +16,19 @@
       "role": "merchant-owner (store owner/staff, instance 520 nprice1)",
       "permission_observed": "Xem trạng thái order item, Item Activity logs và order design PNG của order tạo từ campaign dùng Artwork 2.0 có Group layer trong lượt chạy test 2026-10-29 (staging). Không thử role khác nên chưa biết ranh giới quyền.",
       "kb_refs": [
-        "KB-380",
-        "KB-381",
-        "KB-382",
-        "KB-387",
-        "KB-388",
-        "KB-389"
+        "artwork/group-layer-order-design-render#KB-380",
+        "artwork/group-layer-order-design-render#KB-381",
+        "artwork/group-layer-order-design-render#KB-382",
+        "artwork/group-layer-order-design-render#KB-387",
+        "artwork/group-layer-order-design-render#KB-388",
+        "artwork/group-layer-order-design-render#KB-389"
       ]
     },
     {
       "role": "guest-buyer (storefront nprice1) — nhập text personalize",
       "permission_observed": "Nhập chuỗi text dài cho layer text căn giữa trên storefront; giá trị này là đầu vào của order design (KB-386, quan sát). Không có khác biệt quyền nào được quan sát.",
       "kb_refs": [
-        "KB-386"
+        "artwork/group-layer-order-design-render#KB-386"
       ]
     }
   ],
@@ -37,26 +37,26 @@
       "path": "portal: order detail → order item → Item Activity logs (dòng 'is generating a design' → 'has generated a new design'; trạng thái design 'Completed' / 'Generating')",
       "precondition": "Order đã được tạo từ campaign dùng Artwork 2.0 có Group layer; staging instance 520 (nprice1); TIB-5633 shipped UNKNOWN, production chưa xác nhận.",
       "kb_refs": [
-        "KB-380",
-        "KB-381"
+        "artwork/group-layer-order-design-render#KB-380",
+        "artwork/group-layer-order-design-render#KB-381"
       ]
     },
     {
       "path": "api: order design PNG (12000x6000, printarea AOP) của order item",
       "precondition": "Order design của item đã generate xong.",
       "kb_refs": [
-        "KB-382",
-        "KB-383",
-        "KB-387",
-        "KB-388",
-        "KB-389"
+        "artwork/group-layer-order-design-render#KB-382",
+        "artwork/group-layer-order-design-render#KB-383",
+        "artwork/group-layer-order-design-render#KB-387",
+        "artwork/group-layer-order-design-render#KB-388",
+        "artwork/group-layer-order-design-render#KB-389"
       ]
     },
     {
       "path": "storefront: product page — buyer nhập text cho layer text căn giữa của artwork group ~250 layer, rồi đặt order",
       "precondition": "Campaign dùng artwork có group ~250 layer kèm layer text; quan sát một lượt.",
       "kb_refs": [
-        "KB-386"
+        "artwork/group-layer-order-design-render#KB-386"
       ]
     }
   ],
@@ -65,59 +65,59 @@
       "name": "Generate order design hoàn tất cho artwork có group phẳng nhiều layer (~250) — design 'Completed', không auto-stop/timeout, không kẹt 'Generating'",
       "description": "CONFIRMED_EXPECTED/MEDIUM (KB-380; Testlane TC-TIB-7614, TC-TIB-7616 PASS, staging, chạy 2026-10-29, build hash không rõ, shipped UNKNOWN): với Artwork 2.0 có 1 group phẳng không mask chứa ~250 layer ảnh nhỏ trải printarea AOP 12000x6000 (1 artwork, 1 order), order design generate hoàn tất (trạng thái design 'Completed'), không có trạng thái auto-stop/timeout ('Generation stopped'/lỗi timeout) và không kẹt ở 'Generating'. Rule KHÔNG phát biểu thời gian generate hay ngưỡng thời gian, và KHÔNG phát biểu trạng thái order item sau khi generate. Số đo thời gian và trạng thái order item sau generate của lượt chạy (KB-381) chỉ là OBSERVED_CURRENT/LOW, không phải SLA hay oracle — xem observed_behavior.",
       "kb_refs": [
-        "KB-380",
-        "KB-381"
+        "artwork/group-layer-order-design-render#KB-380",
+        "artwork/group-layer-order-design-render#KB-381"
       ]
     },
     {
       "name": "Order design của group phẳng giống hệt pixel bản ungroup tương đương",
       "description": "CONFIRMED_EXPECTED/MEDIUM (KB-382; TC-TIB-7615 PASS, staging 2026-10-29): order design PNG 12000x6000 của artwork có group phẳng ~250 layer ảnh giống hệt (0 pixel khác) design của artwork tương đương có cùng các layer để rời (ungroup), cùng vị trí và kích thước layer — đối chiếu trên 1 cặp fixture.",
       "kb_refs": [
-        "KB-382"
+        "artwork/group-layer-order-design-render#KB-382"
       ]
     },
     {
       "name": "Layer con tràn box group (shadow, xoay) hiện đủ trong vùng in — group nhỏ",
       "description": "CONFIRMED_EXPECTED/MEDIUM (KB-383; TC-TIB-7617, TC-TIB-7618 PASS, staging 2026-10-29): với group 4 layer có layer con sát mép mang shadow (offset ±120, blur 60) hoặc xoay (30°/-20°) tràn ra ngoài box, trong vùng in order design hiện đủ phần shadow (mềm, không bị cắt cứng) và layer xoay không mất góc/cạnh. Chỉ group nhỏ (4 layer); group ~250 layer có layer tràn box chưa kiểm. Chỉ quan sát, chưa xác nhận (OBSERVED_CURRENT/LOW): phần shadow vượt ra ngoài printarea bị cắt theo printarea (KB-384); hướng shadow theo offset khai báo, kiểm bằng mắt, không có bản trước fix để so (KB-385).",
       "kb_refs": [
-        "KB-383",
-        "KB-384",
-        "KB-385"
+        "artwork/group-layer-order-design-render#KB-383",
+        "artwork/group-layer-order-design-render#KB-384",
+        "artwork/group-layer-order-design-render#KB-385"
       ]
     },
     {
       "name": "Group có mask Rectangle: order design chỉ hiện phần nằm trong mask",
       "description": "CONFIRMED_EXPECTED/MEDIUM (KB-387; TC-TIB-7622, TC-TIB-7624 PASS, staging 2026-10-29): group có mask Rectangle (60%x60%) chứa ~250 layer ảnh cho order design PNG chỉ hiện phần nằm trong mask, phần ngoài mask trong suốt hoàn toàn, 0 pixel của layer con lọt ra ngoài mask; phần trong mask giống design của group phẳng không mask tương ứng. Chỉ mask Rectangle; mask circle/custom shape và order design PDF của group có mask chưa kiểm.",
       "kb_refs": [
-        "KB-387"
+        "artwork/group-layer-order-design-render#KB-387"
       ]
     },
     {
       "name": "Group lồng nhau: render đúng vị trí trên order design, không layer dịch chỗ so với group phẳng",
       "description": "CONFIRMED_EXPECTED/MEDIUM (KB-388; TC-TIB-7623 PASS, staging 2026-10-29): với group cha chứa 1 group con chứa 250 layer ảnh, group lồng nhau render đúng vị trí trên order design, không lỗi layout: vị trí layer trong group con đúng như khai báo tương đối với group cha, không có layer nào dịch chỗ so với design của group phẳng tương đương. Chưa kiểm trường hợp layer phân bố ở cả 2 cấp group.",
       "kb_refs": [
-        "KB-388"
+        "artwork/group-layer-order-design-render#KB-388"
       ]
     },
     {
       "name": "Layer con tắt visible trong group đang hiện: order design vắng đúng các layer đó",
       "description": "CONFIRMED_EXPECTED/MEDIUM (KB-389; TC-TIB-7625 PASS, staging 2026-10-29): với group đang hiện chứa 250 layer ảnh trong đó 20 layer con tắt cờ visible của chính nó, order design PNG vắng đúng 20 layer đó, 230 layer còn lại hiện, 0 pixel dư. Không bao gồm trường hợp group cha bị ẩn hay visibility theo điều kiện (quy tắc effective visibility thuộc feature group-layer-effective-visibility).",
       "kb_refs": [
-        "KB-389"
+        "artwork/group-layer-order-design-render#KB-389"
       ]
     },
     {
       "name": "Text dài do buyer nhập trong artwork group ~250 layer — chỉ quan sát",
       "description": "OBSERVED_CURRENT/LOW (KB-386; TC-TIB-7619, 1 lượt staging 2026-10-29): với layer text căn giữa được buyer nhập chuỗi dài trên storefront, order design 12000x6000 hiển thị text bắt đầu ở x=11699, phần vượt mép printarea bị cắt theo printarea, không có chữ bị cắt trong vùng in, 250 ô ảnh còn nguyên. Text render cao ~22px trong khi cỡ khai báo 601 — chưa xác định đúng hay lỗi; chưa xác định text có thực sự tràn box group. Lượt chạy này không chứng minh canvas group nới ra bao trọn text tràn box. Không dùng làm oracle.",
       "kb_refs": [
-        "KB-386"
+        "artwork/group-layer-order-design-render#KB-386"
       ]
     },
     {
       "name": "Order design cho artwork canvas lớn sát ngưỡng route-large — chỉ quan sát, route-large chưa kích hoạt",
       "description": "OBSERVED_CURRENT/LOW (KB-390; TC-TIB-7631, 1 lượt staging 2026-10-29): artwork canvas 15000x9900 (148,5 Mpx, sát ngưỡng route-large 150 Mpx) gắn campaign có printarea 12000x6000 (72 Mpx, artwork được scale vào printarea): order design generate xong, không lỗi (trạng thái item quan sát được ghi ở observed_behavior). Đường route-large (hàng đợi final-render-large) chưa được kích hoạt vì printarea chỉ 72 Mpx; hành vi route-large chưa kiểm; chưa rõ ngưỡng 150 Mpx đo trên canvas artwork hay printarea. Không dùng làm oracle.",
       "kb_refs": [
-        "KB-390"
+        "artwork/group-layer-order-design-render#KB-390"
       ]
     }
   ],
@@ -128,7 +128,7 @@
       "trigger": "order được tạo",
       "condition": "CONFIRMED_EXPECTED/MEDIUM (KB-380): không có trạng thái auto-stop/timeout, không kẹt 'Generating'. Trạng thái order item sau generate và thời gian chuyển trạng thái không thuộc rule (chỉ là quan sát ở KB-381).",
       "kb_refs": [
-        "KB-380"
+        "artwork/group-layer-order-design-render#KB-380"
       ]
     },
     {
@@ -137,7 +137,7 @@
       "trigger": "order được tạo",
       "condition": "OBSERVED_CURRENT/LOW (KB-390), 1 lượt; route-large chưa được kích hoạt",
       "kb_refs": [
-        "KB-390"
+        "artwork/group-layer-order-design-render#KB-390"
       ]
     }
   ],
@@ -150,7 +150,7 @@
       "caveats": "Rule không phát biểu thời gian generate hay ngưỡng thời gian nào, và không phát biểu trạng thái order item sau khi generate; số đo giây của lượt chạy, ngưỡng 1–2 phút và trạng thái order item sau generate không thuộc rule (KB-381, OBSERVED). 1 artwork, 1 order; test-executor [AI] chạy 1 lượt.",
       "confirmation_ref": "Testlane TC-TIB-7614, TC-TIB-7616 PASS (task TIB-268, Jira TIB-5633), chạy 2026-10-29",
       "kb_refs": [
-        "KB-380"
+        "artwork/group-layer-order-design-render#KB-380"
       ]
     },
     {
@@ -161,7 +161,7 @@
       "caveats": "Đối chiếu trên 1 cặp fixture; chỉ PNG.",
       "confirmation_ref": "Testlane TC-TIB-7615 PASS (task TIB-268, Jira TIB-5633), chạy 2026-10-29",
       "kb_refs": [
-        "KB-382"
+        "artwork/group-layer-order-design-render#KB-382"
       ]
     },
     {
@@ -172,7 +172,7 @@
       "caveats": "Chỉ group nhỏ (4 layer); group ~250 layer có layer tràn box chưa kiểm. Phần shadow ngoài printarea (KB-384) và hướng shadow (KB-385) chỉ là quan sát, không thuộc rule.",
       "confirmation_ref": "Testlane TC-TIB-7617, TC-TIB-7618 PASS (task TIB-268, Jira TIB-5633), chạy 2026-10-29",
       "kb_refs": [
-        "KB-383"
+        "artwork/group-layer-order-design-render#KB-383"
       ]
     },
     {
@@ -183,7 +183,7 @@
       "caveats": "Chỉ mask Rectangle; mask circle/custom shape và order design PDF của group có mask chưa kiểm.",
       "confirmation_ref": "Testlane TC-TIB-7622, TC-TIB-7624 PASS (task TIB-268, Jira TIB-5633), chạy 2026-10-29",
       "kb_refs": [
-        "KB-387"
+        "artwork/group-layer-order-design-render#KB-387"
       ]
     },
     {
@@ -194,7 +194,7 @@
       "caveats": "Chưa kiểm layer phân bố ở cả 2 cấp group.",
       "confirmation_ref": "Testlane TC-TIB-7623 PASS (task TIB-268, Jira TIB-5633), chạy 2026-10-29",
       "kb_refs": [
-        "KB-388"
+        "artwork/group-layer-order-design-render#KB-388"
       ]
     },
     {
@@ -205,7 +205,7 @@
       "caveats": "Không bao gồm group cha bị ẩn hay visibility theo điều kiện.",
       "confirmation_ref": "Testlane TC-TIB-7625 PASS (task TIB-268, Jira TIB-5633), chạy 2026-10-29",
       "kb_refs": [
-        "KB-389"
+        "artwork/group-layer-order-design-render#KB-389"
       ]
     }
   ],
@@ -216,7 +216,7 @@
       "confidence": "LOW",
       "observed_count": null,
       "kb_refs": [
-        "KB-381"
+        "artwork/group-layer-order-design-render#KB-381"
       ]
     },
     {
@@ -225,7 +225,7 @@
       "confidence": "LOW",
       "observed_count": null,
       "kb_refs": [
-        "KB-384"
+        "artwork/group-layer-order-design-render#KB-384"
       ]
     },
     {
@@ -234,7 +234,7 @@
       "confidence": "LOW",
       "observed_count": null,
       "kb_refs": [
-        "KB-385"
+        "artwork/group-layer-order-design-render#KB-385"
       ]
     },
     {
@@ -243,7 +243,7 @@
       "confidence": "LOW",
       "observed_count": null,
       "kb_refs": [
-        "KB-386"
+        "artwork/group-layer-order-design-render#KB-386"
       ]
     },
     {
@@ -252,7 +252,7 @@
       "confidence": "LOW",
       "observed_count": null,
       "kb_refs": [
-        "KB-390"
+        "artwork/group-layer-order-design-render#KB-390"
       ]
     }
   ],
@@ -262,7 +262,7 @@
       "role": "merchant-owner (store owner/staff, instance 520 nprice1)",
       "note": "Chỉ role này được dùng trong lượt chạy; không có ranh giới quyền nào được kiểm.",
       "kb_refs": [
-        "KB-380"
+        "artwork/group-layer-order-design-render#KB-380"
       ]
     }
   ],
@@ -271,8 +271,8 @@
       {
         "path": "Order detail → Item Activity logs của order item: 'is generating a design' → 'has generated a new design' (nguồn mốc của số đo thời gian, quan sát); trạng thái design 'Completed' / 'Generating'",
         "kb_refs": [
-          "KB-380",
-          "KB-381"
+          "artwork/group-layer-order-design-render#KB-380",
+          "artwork/group-layer-order-design-render#KB-381"
         ]
       }
     ],
@@ -280,7 +280,7 @@
       {
         "path": "Product page: buyer nhập text cho layer text căn giữa trong artwork group ~250 layer (đầu vào order design, quan sát)",
         "kb_refs": [
-          "KB-386"
+          "artwork/group-layer-order-design-render#KB-386"
         ]
       }
     ],
@@ -288,33 +288,33 @@
       {
         "path": "Generate order design của order item (artwork có Group layer) — hoàn tất, không timeout",
         "kb_refs": [
-          "KB-380",
-          "KB-381",
-          "KB-390"
+          "artwork/group-layer-order-design-render#KB-380",
+          "artwork/group-layer-order-design-render#KB-381",
+          "artwork/group-layer-order-design-render#KB-390"
         ]
       },
       {
         "path": "Order design PNG 12000x6000 (printarea AOP): parity group/ungroup, layer tràn box, mask Rectangle, group lồng nhau, layer con tắt visible",
         "kb_refs": [
-          "KB-382",
-          "KB-383",
-          "KB-384",
-          "KB-385",
-          "KB-387",
-          "KB-388",
-          "KB-389"
+          "artwork/group-layer-order-design-render#KB-382",
+          "artwork/group-layer-order-design-render#KB-383",
+          "artwork/group-layer-order-design-render#KB-384",
+          "artwork/group-layer-order-design-render#KB-385",
+          "artwork/group-layer-order-design-render#KB-387",
+          "artwork/group-layer-order-design-render#KB-388",
+          "artwork/group-layer-order-design-render#KB-389"
         ]
       },
       {
         "path": "Order design PNG với text dài trong group ~250 layer (quan sát)",
         "kb_refs": [
-          "KB-386"
+          "artwork/group-layer-order-design-render#KB-386"
         ]
       },
       {
         "path": "Route-large (hàng đợi final-render-large, ngưỡng 150 Mpx) — chưa được kích hoạt trong lượt chạy",
         "kb_refs": [
-          "KB-390"
+          "artwork/group-layer-order-design-render#KB-390"
         ]
       }
     ],
@@ -325,26 +325,26 @@
     {
       "description": "Item Activity logs, trạng thái order item và Regenerate của order item hiển thị ở object order (feature review-and-initiate-fulfillment-portal; order KB-019 mô tả chuỗi log sau khi tạo order, order KB-392 mô tả Regenerate cho item có artwork group ~250 layer).",
       "kb_refs": [
-        "KB-380",
-        "KB-381"
+        "artwork/group-layer-order-design-render#KB-380",
+        "artwork/group-layer-order-design-render#KB-381"
       ]
     },
     {
       "description": "Việc layer con tắt visible vắng khỏi order design gắn với quy tắc effective visibility của Group (artwork, feature group-layer-effective-visibility, KB-158) và print file theo Group ẩn ở order (KB-182); item ở đây chỉ phủ layer con tắt cờ của chính nó trong group đang hiện.",
       "kb_refs": [
-        "KB-389"
+        "artwork/group-layer-order-design-render#KB-389"
       ]
     },
     {
       "description": "Group có mask (mask Rectangle) là cấu hình group thuộc artwork, feature group-layer-effective-visibility (related KB-163).",
       "kb_refs": [
-        "KB-387"
+        "artwork/group-layer-order-design-render#KB-387"
       ]
     },
     {
       "description": "Text dài trên order design phụ thuộc giá trị buyer nhập trên storefront (sdk, feature storefront-buyer-facing).",
       "kb_refs": [
-        "KB-386"
+        "artwork/group-layer-order-design-render#KB-386"
       ]
     }
   ],
@@ -352,48 +352,48 @@
     {
       "description": "Mọi item đến từ 1 lượt chạy test của agent trên staging 2026-10-29, mỗi hành vi 1 fixture; build hash không rõ, production chưa xác nhận (shipped UNKNOWN). Không dùng confirmed_rules làm expected cho production hay build sau merge khi chưa chạy lại có ngày + build.",
       "kb_refs": [
-        "KB-380",
-        "KB-382",
-        "KB-383",
-        "KB-387",
-        "KB-388",
-        "KB-389"
+        "artwork/group-layer-order-design-render#KB-380",
+        "artwork/group-layer-order-design-render#KB-382",
+        "artwork/group-layer-order-design-render#KB-383",
+        "artwork/group-layer-order-design-render#KB-387",
+        "artwork/group-layer-order-design-render#KB-388",
+        "artwork/group-layer-order-design-render#KB-389"
       ]
     },
     {
       "description": "Chưa có ngưỡng thời gian được xác nhận cho generate order design của artwork có group nhiều layer. Check dùng số đo của lượt chạy (~33–68s) hoặc ngưỡng 1–2 phút làm pass/fail sẽ không có nền; chỉ kiểm 'hoàn tất (design Completed), không auto-stop/timeout, không kẹt Generating' theo KB-380. Trạng thái order item sau generate (KB-381) chỉ là quan sát, không dùng làm pass/fail.",
       "kb_refs": [
-        "KB-381",
-        "KB-380"
+        "artwork/group-layer-order-design-render#KB-381",
+        "artwork/group-layer-order-design-render#KB-380"
       ]
     },
     {
       "description": "Shadow vượt printarea bị cắt (KB-384) và hướng shadow (KB-385) chỉ là quan sát; không suy rule KB-383 (hiện đủ trong vùng in) sang phần ngoài printarea hay vị trí shadow.",
       "kb_refs": [
-        "KB-384",
-        "KB-385",
-        "KB-383"
+        "artwork/group-layer-order-design-render#KB-384",
+        "artwork/group-layer-order-design-render#KB-385",
+        "artwork/group-layer-order-design-render#KB-383"
       ]
     },
     {
       "description": "Text cỡ khai báo 601 render cao ~22px trên order design (KB-386) có thể là lỗi chưa được nhận diện; check text trong group không có oracle về cỡ chữ và việc canvas group nới ra bao text tràn box.",
       "kb_refs": [
-        "KB-386"
+        "artwork/group-layer-order-design-render#KB-386"
       ]
     },
     {
       "description": "Route-large (ngưỡng 150 Mpx) chưa từng được kích hoạt; artwork/printarea đủ lớn có thể đi đường render khác chưa kiểm.",
       "kb_refs": [
-        "KB-390"
+        "artwork/group-layer-order-design-render#KB-390"
       ]
     },
     {
       "description": "Phạm vi chưa kiểm của các rule: group ~250 layer có layer tràn box (KB-383), mask circle/custom shape và order design PDF của group có mask (KB-387), layer phân bố ở 2 cấp group (KB-388), group cha ẩn / visibility theo điều kiện (KB-389). Không suy rule sang các trường hợp này.",
       "kb_refs": [
-        "KB-383",
-        "KB-387",
-        "KB-388",
-        "KB-389"
+        "artwork/group-layer-order-design-render#KB-383",
+        "artwork/group-layer-order-design-render#KB-387",
+        "artwork/group-layer-order-design-render#KB-388",
+        "artwork/group-layer-order-design-render#KB-389"
       ]
     }
   ],
@@ -402,8 +402,8 @@
     "source_observed_on": "2026-10-29"
   },
   "last_updated": {
-    "date": "2026-10-30",
-    "ccr_ref": "CBS-015"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "unknown_areas": [
     {
@@ -411,7 +411,7 @@
       "why_it_matters": "Số đo hiện có (~33–68s) chỉ đo 1 lần/fixture bằng log Item Activity, không có baseline trước fix; ngưỡng 1–2 phút chưa có nguồn thẩm quyền — check thời gian không có oracle. Trạng thái order item sau generate chỉ có ở actualResult, expectedResult không khẳng định — check trạng thái item không có oracle.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-381"
+        "artwork/group-layer-order-design-render#KB-381"
       ],
       "oq_id": "OQ-artwork-165"
     },
@@ -420,7 +420,7 @@
       "why_it_matters": "Chỉ có ở kết quả chạy TC-TIB-7617, expected result không khẳng định; check shadow ngoài printarea không có oracle.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-384"
+        "artwork/group-layer-order-design-render#KB-384"
       ],
       "oq_id": "OQ-artwork-166"
     },
@@ -429,7 +429,7 @@
       "why_it_matters": "TC-TIB-7620 kiểm bằng mắt, offset fixture khác test data, không có bản trước fix — chưa đủ làm oracle vị trí shadow.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-385"
+        "artwork/group-layer-order-design-render#KB-385"
       ],
       "oq_id": "OQ-artwork-167"
     },
@@ -438,7 +438,7 @@
       "why_it_matters": "TC-TIB-7619 không chứng minh được đường nới canvas cho text tràn box; check text trong group không có oracle.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-386"
+        "artwork/group-layer-order-design-render#KB-386"
       ],
       "oq_id": "OQ-artwork-168"
     },
@@ -447,7 +447,7 @@
       "why_it_matters": "Route-large chưa được kích hoạt (printarea 72 Mpx); cần fixture printarea đủ lớn để kiểm trước khi viết check.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-390"
+        "artwork/group-layer-order-design-render#KB-390"
       ],
       "oq_id": "OQ-artwork-169"
     },
@@ -456,17 +456,17 @@
       "why_it_matters": "shipped UNKNOWN, ngày deploy production không rõ; confirmed_rules chỉ áp cho staging tới khi chạy lại có ngày + build.",
       "type": "OPEN_ISSUE",
       "kb_refs": [
-        "KB-380",
-        "KB-381",
-        "KB-382",
-        "KB-383",
-        "KB-384",
-        "KB-385",
-        "KB-386",
-        "KB-387",
-        "KB-388",
-        "KB-389",
-        "KB-390"
+        "artwork/group-layer-order-design-render#KB-380",
+        "artwork/group-layer-order-design-render#KB-381",
+        "artwork/group-layer-order-design-render#KB-382",
+        "artwork/group-layer-order-design-render#KB-383",
+        "artwork/group-layer-order-design-render#KB-384",
+        "artwork/group-layer-order-design-render#KB-385",
+        "artwork/group-layer-order-design-render#KB-386",
+        "artwork/group-layer-order-design-render#KB-387",
+        "artwork/group-layer-order-design-render#KB-388",
+        "artwork/group-layer-order-design-render#KB-389",
+        "artwork/group-layer-order-design-render#KB-390"
       ],
       "oq_id": "OQ-artwork-170"
     },
@@ -475,10 +475,10 @@
       "why_it_matters": "Rule hiện có chỉ phủ đúng fixture đã chạy; check cho các trường hợp này không có oracle.",
       "type": "OPEN_ISSUE",
       "kb_refs": [
-        "KB-383",
-        "KB-387",
-        "KB-388",
-        "KB-389"
+        "artwork/group-layer-order-design-render#KB-383",
+        "artwork/group-layer-order-design-render#KB-387",
+        "artwork/group-layer-order-design-render#KB-388",
+        "artwork/group-layer-order-design-render#KB-389"
       ],
       "oq_id": "OQ-artwork-171"
     }
@@ -492,7 +492,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-380"
+        "artwork/group-layer-order-design-render#KB-380"
       ],
       "basis": "CONFIRMED_EXPECTED/MEDIUM; 1 lượt 2026-10-29"
     },
@@ -504,7 +504,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-381"
+        "artwork/group-layer-order-design-render#KB-381"
       ],
       "basis": "chỉ có số đo 1 lần/fixture (OBSERVED_CURRENT/LOW); chưa có ngưỡng xác nhận"
     },
@@ -516,7 +516,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-382"
+        "artwork/group-layer-order-design-render#KB-382"
       ],
       "basis": "CONFIRMED_EXPECTED/MEDIUM; 1 cặp fixture"
     },
@@ -528,9 +528,9 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-383",
-        "KB-384",
-        "KB-385"
+        "artwork/group-layer-order-design-render#KB-383",
+        "artwork/group-layer-order-design-render#KB-384",
+        "artwork/group-layer-order-design-render#KB-385"
       ],
       "basis": "KB-383 CONFIRMED_EXPECTED/MEDIUM; KB-384, KB-385 OBSERVED_CURRENT/LOW"
     },
@@ -542,7 +542,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-383"
+        "artwork/group-layer-order-design-render#KB-383"
       ]
     },
     {
@@ -553,7 +553,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-387"
+        "artwork/group-layer-order-design-render#KB-387"
       ],
       "basis": "CONFIRMED_EXPECTED/MEDIUM; 1 lượt"
     },
@@ -565,7 +565,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-387"
+        "artwork/group-layer-order-design-render#KB-387"
       ]
     },
     {
@@ -576,7 +576,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-388"
+        "artwork/group-layer-order-design-render#KB-388"
       ],
       "basis": "CONFIRMED_EXPECTED/MEDIUM; 1 lượt"
     },
@@ -588,7 +588,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-388"
+        "artwork/group-layer-order-design-render#KB-388"
       ]
     },
     {
@@ -599,7 +599,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-389"
+        "artwork/group-layer-order-design-render#KB-389"
       ],
       "basis": "CONFIRMED_EXPECTED/MEDIUM; 1 lượt"
     },
@@ -611,7 +611,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-389"
+        "artwork/group-layer-order-design-render#KB-389"
       ]
     },
     {
@@ -622,7 +622,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-386"
+        "artwork/group-layer-order-design-render#KB-386"
       ],
       "basis": "OBSERVED_CURRENT/LOW; chưa có oracle"
     },
@@ -634,7 +634,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-386"
+        "artwork/group-layer-order-design-render#KB-386"
       ]
     },
     {
@@ -645,7 +645,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-390"
+        "artwork/group-layer-order-design-render#KB-390"
       ],
       "basis": "OBSERVED_CURRENT/LOW; route-large chưa kích hoạt"
     },
@@ -657,7 +657,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-390"
+        "artwork/group-layer-order-design-render#KB-390"
       ]
     },
     {
@@ -677,12 +677,12 @@
       "environment": "production",
       "covered": false,
       "kb_refs": [
-        "KB-380",
-        "KB-382",
-        "KB-383",
-        "KB-387",
-        "KB-388",
-        "KB-389"
+        "artwork/group-layer-order-design-render#KB-380",
+        "artwork/group-layer-order-design-render#KB-382",
+        "artwork/group-layer-order-design-render#KB-383",
+        "artwork/group-layer-order-design-render#KB-387",
+        "artwork/group-layer-order-design-render#KB-388",
+        "artwork/group-layer-order-design-render#KB-389"
       ],
       "basis": "shipped UNKNOWN"
     }
@@ -696,8 +696,8 @@
       "relationship": "design_status_surfaced_in (cross-object: order)",
       "description": "Item Activity logs (order KB-019), trạng thái order item và Regenerate design (order KB-392) của order item hiển thị ở order detail; render order design thuộc feature này.",
       "kb_refs": [
-        "KB-380",
-        "KB-381"
+        "artwork/group-layer-order-design-render#KB-380",
+        "artwork/group-layer-order-design-render#KB-381"
       ]
     },
     {
@@ -707,8 +707,8 @@
       "relationship": "applies_rule_owned_by",
       "description": "Layer con tắt visible vắng khỏi order design (KB-389) gắn với quy tắc effective visibility của Group (KB-158); mask của group (KB-387, related KB-163).",
       "kb_refs": [
-        "KB-389",
-        "KB-387"
+        "artwork/group-layer-order-design-render#KB-389",
+        "artwork/group-layer-order-design-render#KB-387"
       ]
     },
     {
@@ -718,7 +718,7 @@
       "relationship": "related (cùng ticket TIB-5633)",
       "description": "Order design của group có photo_border contour cut được ghi ở feature layer-print-effects (KB-391, quan sát); số đo thời gian của fixture đó nằm trong KB-381.",
       "kb_refs": [
-        "KB-381"
+        "artwork/group-layer-order-design-render#KB-381"
       ]
     },
     {
@@ -728,7 +728,7 @@
       "relationship": "receives_input_from (cross-object: sdk)",
       "description": "Text buyer nhập trên storefront là đầu vào order design (KB-386); popup Preview storefront của sản phẩm có group ~250 layer ghi ở sdk (KB-394, quan sát).",
       "kb_refs": [
-        "KB-386"
+        "artwork/group-layer-order-design-render#KB-386"
       ]
     }
   ]

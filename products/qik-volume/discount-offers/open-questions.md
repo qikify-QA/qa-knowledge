@@ -1893,3 +1893,11 @@ Tổng: 105 mục (CONFLICT 12 · OPEN_ISSUE 24 · NEEDS_CONFIRMATION 69). Sinh 
   "check_ids": []
 }
 ```
+
+```json
+{"oq_id":"OQ-discount-offers-106","type":"NEEDS_CONFIRMATION","feature_id":"wholesale-pricing-offer","summary":"Cần xác định KB đích cho các reference của wholesale-pricing-offer: KB-WPO-057. Chưa có đích duy nhất; các ref được tách khỏi liên kết đang hoạt động, không dùng chúng làm căn cứ kết luận."}
+```
+
+```json
+{"oq_id":"OQ-discount-offers-107","type":"NEEDS_CONFIRMATION","feature_id":"wholesale-pricing-offer","summary":"Cần xác định KB đích cho các reference của wholesale-pricing-offer: KB-WPO-076. Chưa có đích duy nhất; các ref được tách khỏi liên kết đang hoạt động, không dùng chúng làm căn cứ kết luận."}
+```

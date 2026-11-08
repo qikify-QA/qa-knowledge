@@ -1,5 +1,5 @@
 # Email preferences — preference page cho người nhận chọn loại email, gắn vào campaign/automation
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** Mailtro · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-08
 

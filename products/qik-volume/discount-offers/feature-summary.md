@@ -1,5 +1,5 @@
 # Discount Offers (Quantity Break / Multibuy / Wholesale Pricing — stacking & shared settings layer)
-**Published context version:** 2
+**Published context version:** 3
 
 **Product:** qik-volume · **Object:** `discount-offers` · **Mode:** REFRESH (trên nền DOC_BOOTSTRAP v1) · **Environment:** documented + staging · **Published:** 2026-10-18
 

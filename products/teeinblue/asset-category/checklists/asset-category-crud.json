@@ -25,7 +25,7 @@
           "expected_result": "Request gửi type='clipart_category', response trả 201 kèm id category mới (lưu ý: response type có thể lệch với request - xem CHK-011).",
           "oracle": {
             "kb_ids": [
-              "KB-003"
+              "asset-category/asset-category-crud#KB-003"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -55,7 +55,7 @@
           "expected_result": "Cùng 1 endpoint POST /api/clipart-categories dùng chung, phân biệt bằng field `type` (giá trị riêng theo từng loại, KHÔNG theo quy tắc hậu tố cố định - xem CHK-011): additional_option='additional_option', map='map', font_category='font_category' - cả 3 loại này network-verified đầy đủ, response trả 201. Color: type='color_category' CHỈ xác nhận GIÁN TIẾP qua GET detail/clone (KB-003) - KHÔNG có network evidence trực tiếp cho chính request POST create trong các đợt quan sát đã có (chỉ xác nhận object_state qua DOM, category_id 6021 xuất hiện sau khi bấm Create), không tính vào phần network-verified của check này.",
           "oracle": {
             "kb_ids": [
-              "KB-003"
+              "asset-category/asset-category-crud#KB-003"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -85,7 +85,7 @@
           "expected_result": "Trả 200, tên cập nhật; response category Clipart có field updated_at (ISO 8601). chỉ Clipart (6015) và Font (6027) có network PUT đầy đủ theo KB-004 đợt review trước - Vector (6025) và Color (6021) đổi tên thành công theo DOM/screenshot nhưng network capture chính thức KHÔNG chứa entry PUT thật (chỉ 1 GraphQL query nền), nên KHÔNG dùng làm sample network-verified cho check này. Không suy quy luật cho Vector/Color/Additional Option/Map Style.",
           "oracle": {
             "kb_ids": [
-              "KB-004"
+              "asset-category/asset-category-crud#KB-004"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -114,7 +114,7 @@
           "expected_result": "Trả 201, tên bản sao = '<tên gốc> copy'. Color clone có 1 điểm không nhất quán trong nguồn upstream - network capture khai báo chính thức là network capture gốc (không chứa POST clone) nhưng nội dung response clone thực tế nằm trong network capture gốc (KB-005 flag inconsistency, không tự sửa nguồn).",
           "oracle": {
             "kb_ids": [
-              "KB-005"
+              "asset-category/asset-category-crud#KB-005"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -144,7 +144,7 @@
           "expected_result": "Item con mới xuất hiện trong category clone (cùng tên, khác id) - hành vi deep-copy. Sample Color chưa verify item con qua GraphQL, không tổng quát hoá cho loại đó.",
           "oracle": {
             "kb_ids": [
-              "KB-006"
+              "asset-category/asset-category-crud#KB-006"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -174,7 +174,7 @@
           "expected_result": "Trả 204 No Content, category biến mất khỏi danh sách. Chỉ xác nhận cho category CLONE (rỗng hoặc item được deep-copy) - không phải category gốc có dữ liệu thật lâu năm (xem CHK-010). chỉ Clipart và Color có raw DELETE 204 network-verified theo KB-007 đợt review trước - Vector/Font xoá thành công nhưng chỉ xác nhận post-hoc (không raw DELETE capture), không dùng cho check này.",
           "oracle": {
             "kb_ids": [
-              "KB-007"
+              "asset-category/asset-category-crud#KB-007"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -204,7 +204,7 @@
           "expected_result": "Preview size dropdown đang chọn 500px; Thumbnail size dropdown đang chọn 100px; 5 Display option (Thumbnail Images đang chọn/mặc định). KB-008 bị HẠ PHẠM VI trong đợt review trước - CHỈ Clipart được re-verify qua evidence chính thức (ảnh đọc lại trực tiếp: ảnh evidence gốc = evidence chính thức của evidence gốc). Claim về Vector/Color/Additional Option/Map Style/Font (range Preview 100-1600px, Thumbnail 100/300/500px, số Display option riêng) KHÔNG re-verify được (4/4 evidence gốc trỏ evidence không hợp lệ/không tồn tại) - KHÔNG dùng check này để khẳng định field cho 5 loại còn lại, xem kb.json KB-008.unknowns.",
           "oracle": {
             "kb_ids": [
-              "KB-008"
+              "asset-category/asset-category-crud#KB-008"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -265,7 +265,7 @@
           "expected_result": "Server trả 422 {message: 'The name field is required.', errors: {name: [...]}} - không tạo category rỗng tên. KB-029 là OBSERVED_CURRENT (không có nguồn thẩm quyền xác nhận, 1 sample, chỉ test trên Clipart) - KHÔNG có PO/spec xác nhận riêng cho phần này, nên dù hành vi rất chuẩn (422 required-field là REST convention thông thường), oracle_strength giữ ở BASELINE thay vì STRONG để không tự nâng OBSERVED_CURRENT thành CONFIRMED_EXPECTED khi chưa có nguồn thẩm quyền (contract §2 rule 1). Không suy rộng ra loại category khác chưa test.",
           "oracle": {
             "kb_ids": [
-              "KB-029"
+              "asset-category/asset-category-crud#KB-029"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -298,7 +298,7 @@
           "expected_result": "Hành vi quan sát được, network-verified, CHƯA có business confirmation (KB-024 hạ từ CONFIRMED_EXPECTED xuống OBSERVED_CURRENT bởi quá trình chuẩn hoá KB - po_answer 'chạy thật' là PO ủy quyền thực thi, KHÔNG phải xác nhận hành vi đúng): DELETE /api/clipart-categories/{id} trả 204 No Content dù category có 1 item con thật (id clipart=41800) - KHÔNG bị chặn, KHÔNG có warning/error body, KHÔNG cascade lỗi. Category biến mất khỏi list. 1 sample duy nhất, network-verified. Lệch khỏi hành vi này khi retest = cần điều tra, không tự động coi là bug.",
           "oracle": {
             "kb_ids": [
-              "KB-024"
+              "asset-category/asset-category-crud#KB-024"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -330,8 +330,8 @@
           "expected_result": "[UPDATED, đợt quan sát 2026-09-14] PHẦN HẸP đã CONFIRMED qua KB-020 (PO 'B đúng', 2026-09-14): giá trị type='clipart' (không hậu tố _category) ổn định qua CẢ create VÀ clone cho Clipart (2 sample network-verified độc lập, evidence gốc/002). NHƯNG khung diễn giải RỘNG của câu hỏi gốc ('chỉ 1/6 loại - Clipart - bị mất hậu tố, chỉ lộ ra lúc Clone') KHÔNG được evidence rộng hơn xác nhận - bị phản bác bởi CFL-001: thực tế 4/6 loại (clipart/vector/additional_option/map) đều KHÔNG có hậu tố NGAY TỪ LÚC CREATE, chỉ 2/6 loại (color_category/font_category) CÓ hậu tố; KHÔNG có sample nào cho thấy Clone tự đổi type ở bất kỳ loại nào (clone luôn giữ nguyên type mà create đã trả). Đây là vấn đề naming-convention không nhất quán trên NHIỀU loại category, KHÔNG PHẢI lỗi riêng của Clipart hay riêng của thao tác Clone. Liên hệ trực tiếp CFL-002 (Vector type='vector' cũng thuộc nhóm 4/6 loại không hậu tố, cùng root cause khả dĩ). TUYỆT ĐỐI KHÔNG kết luận 'chỉ Clipart bị lỗi' là fact đã chốt - CFL-001 và CFL-002 vẫn UNRESOLVED, cần authority (PO/Dev) quyết định khung diễn giải cuối trước khi đóng.",
           "oracle": {
             "kb_ids": [
-              "KB-003",
-              "KB-020"
+              "asset-category/asset-category-crud#KB-003",
+              "asset-category/asset-category-crud#KB-020"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -366,7 +366,7 @@
           "expected_result": "Hành vi quan sát được, network-verified, CHƯA có business confirmation (KB-030 hạ từ CONFIRMED_EXPECTED xuống OBSERVED_CURRENT bởi quá trình chuẩn hoá KB - po_answer 'tự chạy test' là PO ủy quyền thực thi, KHÔNG phải xác nhận hành vi đúng): toàn bộ thao tác quan sát thành công cho cả 3 loại (đợt quan sát 2026-09-14, 3 category): POST create (201, type giữ đúng theo loại: additional_option/map/font_category), PUT edit (200, tên đổi đúng, type KHÔNG có trong request body PUT/không đổi được qua PUT), POST clone (201, type GIỮ NGUYÊN y hệt bản gốc - không gặp hiện tượng mất hậu tố như Clipart ở CFL-001/KB-020), DELETE (204) cho cả bản gốc (kể cả Font category có item con thật, cascade OK, không cần xoá item con trước) và bản clone. KHÔNG có modal confirm khi Clone (chỉ Delete mới có modal). Lệch khỏi hành vi này khi retest = cần điều tra, không tự động coi là bug.",
           "oracle": {
             "kb_ids": [
-              "KB-030"
+              "asset-category/asset-category-crud#KB-030"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -398,8 +398,8 @@
           "expected_result": "Hành vi quan sát được, network-verified, CHƯA có business confirmation (KB-021 hạ từ CONFIRMED_EXPECTED xuống OBSERVED_CURRENT bởi quá trình chuẩn hoá KB - po_answer 'tự tạo test-data và chạy test' là PO ủy quyền thực thi, KHÔNG phải xác nhận hành vi đúng): request VÀ response đều có field `type`='vector' - KHÔNG có hậu tố '_category'. Giá trị này TRÙNG KHỚP KB-003 cũ (đợt quan sát 2026-09-10), củng cố đây là giá trị quan sát ổn định qua 2 đợt quan sát độc lập (nhưng vẫn BASELINE, không phải business-confirmed). LƯU Ý: literal action_needed gốc của yêu cầu test gốc ghi kỳ vọng type='vector_category' - conflict CFL-002 (PO literal vs giá trị thật quan sát) vẫn giữ UNRESOLVED - liên hệ CFL-001 (cùng root cause: Vector thuộc nhóm 4/6 loại không hậu tố ngay từ create). Lệch khỏi hành vi này khi retest = cần điều tra, không tự động coi là bug.",
           "oracle": {
             "kb_ids": [
-              "KB-003",
-              "KB-021"
+              "asset-category/asset-category-crud#KB-003",
+              "asset-category/asset-category-crud#KB-021"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -431,7 +431,7 @@
           "expected_result": null,
           "oracle": {
             "kb_ids": [
-              "KB-010"
+              "asset-category/asset-category-crud#KB-010"
             ],
             "oracle_strength": "NONE"
           },
@@ -464,7 +464,7 @@
           "expected_result": "KB-009 được VIẾT LẠI theo evidence hợp lệ đợt review trước - Clipart và Vector gửi display_type='image'; Additional Option, Map Style, Font gửi display_type='radio' (5 sample network-verified qua operation API tương ứng). Claim gốc 'display_type=radio cho Color' đã bị GỠ BỎ vì dựa trên evidence đã bị loại trừ - Color KHÔNG có network evidence cho chính request CREATE trong các đợt quan sát đã có, display_type mặc định của Color KHÔNG được xác nhận.",
           "oracle": {
             "kb_ids": [
-              "KB-009"
+              "asset-category/asset-category-crud#KB-009"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -495,7 +495,7 @@
           "expected_result": "OBSERVED (1 sample, đợt quan sát 2026-09-14, KB-029): server trả 201, KHÔNG chặn tên trùng. Đây là QUAN SÁT hiện tại (OBSERVED_CURRENT), TUYỆT ĐỐI KHÔNG coi 'server cho phép trùng tên' là 1 rule đã chốt PASS - PO CHƯA xác nhận đây là hành vi mong đợi (data-integrity by design) hay cần fix (thêm validate unique name). Nếu retest lệch khỏi 201 (server bắt đầu chặn), đó là thay đổi hành vi cần ghi nhận lại, không tự kết luận là fix hay regression.",
           "oracle": {
             "kb_ids": [
-              "KB-029"
+              "asset-category/asset-category-crud#KB-029"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -529,7 +529,7 @@
           "expected_result": "[OBSERVED_CURRENT, CBS-004, 3 sample (3x422 liên tiếp thiếu field bắt buộc), 1 nguồn (API trực tiếp, không có UI-driven song song trong các đợt quan sát đã có)] x-ratelimit-limit=1000, giữ nguyên qua 3 lần gọi liên tiếp (không phân biệt request 422 hay 201, chưa có sample 201 để đối chứng). Giá trị rate-limit này là quan sát mới tại 2026-09-26. Đây là hành vi HIỆN TẠI trên staging, KHÔNG CONFIRMED_EXPECTED — chưa có PO/dev xác nhận ngưỡng 1000/24h là business rule mong đợi. Áp dụng chung cho MỌI loại category (clipart/vector/color/additional_option/map/font) vì cùng 1 route dùng chung — CHƯA test riêng từng loại để xác nhận limit có tách theo loại hay không (xem CHK-018).",
           "oracle": {
             "kb_ids": [
-              "KB-036"
+              "asset-category/_object-level#KB-036"
             ],
             "oracle_strength": "BASELINE"
           },
@@ -667,5 +667,9 @@
       "dimension": "PERMISSION",
       "reason": ".env chỉ còn 1 account khả dụng (Linh explorer, sub=273) - không có TIB_USER_B_*/cross-tenant account để test cross-role/cross-tenant CRUD category, kể cả cho phần rate-limit mới (KB-036 không có sample cross-role/cross-tenant)."
     }
-  ]
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
 }

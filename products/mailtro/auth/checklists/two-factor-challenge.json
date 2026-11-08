@@ -24,8 +24,8 @@
       "expected_result": "Sau khi đăng nhập, tài khoản bật 2FA phải qua bước nhập mã từ ứng dụng authenticator (TOTP); nhập mã hợp lệ thì người dùng vào cùng luồng landing như đăng nhập không có 2FA.",
       "oracle": {
         "kb_ids": [
-          "KB-028",
-          "KB-046"
+          "auth/two-factor-challenge#KB-028",
+          "auth/two-factor-challenge#KB-046"
         ],
         "oracle_strength": "STRONG"
       },
@@ -59,10 +59,10 @@
       "expected_result": "Theo hiện trạng staging 23/09/2026: response POST /login có khoá two_factor và người dùng sang /login/two-factor-challenge; màn có tiêu đề \"Two-factor authentication\", mô tả \"Enter the 6-digit code from your authenticator app.\", ô \"Authentication code\" (placeholder 123456, inputmode=numeric, autocomplete=one-time-code), link \"Back to sign in\" về /login, không có nút gửi lại mã; Verify gửi POST /login/two-factor-challenge với body {code}. Lệch = cần điều tra.",
       "oracle": {
         "kb_ids": [
-          "KB-007",
-          "KB-034",
-          "KB-040",
-          "KB-045"
+          "auth/sign-in-and-workspace-selection#KB-007",
+          "auth/two-factor-challenge#KB-034",
+          "auth/two-factor-challenge#KB-040",
+          "auth/two-factor-challenge#KB-045"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -96,9 +96,9 @@
       "expected_result": "Theo hiện trạng staging 23/09/2026: chế độ recovery hiện \"Enter one of the recovery codes you saved.\" với ô \"Recovery code\" (placeholder \"Paste a recovery code\"), có nút đổi lại \"Use a code from your app instead\"; đổi chế độ xoá nội dung đã gõ và lỗi đang hiện; Verify gửi body {recovery_code} và recovery code hợp lệ cho qua challenge. Lệch = cần điều tra.",
       "oracle": {
         "kb_ids": [
-          "KB-034",
-          "KB-035",
-          "KB-040"
+          "auth/two-factor-challenge#KB-034",
+          "auth/two-factor-challenge#KB-035",
+          "auth/two-factor-challenge#KB-040"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -132,7 +132,7 @@
       "expected_result": "Recovery code đã dùng không cho qua challenge lần thứ hai (mỗi code chỉ dùng được một lần). Check không khẳng định nội dung thông báo lỗi.",
       "oracle": {
         "kb_ids": [
-          "KB-113"
+          "auth/account-security-settings#KB-113"
         ],
         "oracle_strength": "STRONG"
       },
@@ -165,7 +165,7 @@
       "expected_result": "Theo hiện trạng staging 23/09/2026: BE trả 422, UI hiện alert \"Verification failed\" và lỗi dưới field lấy từ code[0] / recovery_code[0] (\"The provided two-factor code was invalid.\"). Lệch = cần điều tra.",
       "oracle": {
         "kb_ids": [
-          "KB-040"
+          "auth/two-factor-challenge#KB-040"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -198,8 +198,8 @@
       "expected_result": "Theo hiện trạng staging 23/09/2026: Verify disabled khi ô rỗng hoặc chưa đủ 6 ký tự; frontend lọc bỏ ký tự không phải số ở ô Authentication code và bỏ mọi khoảng trắng ở ô Recovery code trước khi gửi, nên body gửi lên là giá trị đã làm sạch (giá trị hiển thị trên ô thì chưa được làm sạch, là lỗi đã biết). Lệch = cần điều tra.",
       "oracle": {
         "kb_ids": [
-          "KB-038",
-          "KB-039"
+          "auth/two-factor-challenge#KB-038",
+          "auth/two-factor-challenge#KB-039"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -211,7 +211,7 @@
       "priority": "P3",
       "automation_suitability": "SUITABLE",
       "regression_watch_kb_ids": [
-        "KB-044"
+        "auth/two-factor-challenge#KB-044"
       ]
     },
     {
@@ -232,7 +232,7 @@
         "Ghi lại lần đầu tiên bị chặn (nếu có), thông báo hiển thị và thời gian chờ."
       ],
       "observation_point": "Số lần sai trước khi bị chặn, status 429 và thông báo hiển thị.",
-      "expected_result": "Chưa có căn cứ để viết kết quả mong đợi: Jira MTRO-88 ghi giới hạn 6 lần/phút/session và 20 lần/phút/IP, nhưng test-run staging 23/09/2026 nhập 15–20 mã sai đều chỉ nhận 422 (một khảo sát khác cùng ngày lại thấy 429); chưa có quyết định PO/Dev phân xử.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [],
         "oracle_strength": "NONE"
@@ -250,7 +250,8 @@
         "KB-042",
         "KB-043"
       ],
-      "oq_id": "OQ-auth-007"
+      "oq_id": "OQ-auth-007",
+      "observation_guidance": "Chưa có căn cứ để viết kết quả mong đợi: Jira MTRO-88 ghi giới hạn 6 lần/phút/session và 20 lần/phút/IP, nhưng test-run staging 23/09/2026 nhập 15–20 mã sai đều chỉ nhận 422 (một khảo sát khác cùng ngày lại thấy 429); chưa có quyết định PO/Dev phân xử."
     },
     {
       "check_id": "CHK-008",
@@ -273,7 +274,7 @@
       "expected_result": "Theo hiện trạng staging 23/09/2026: màn hiện \"This sign-in expires in {time}.\" đếm ngược từ 5:00; hết giờ thì hiện toast \"Your sign-in expired. Please sign in again.\" và tự quay về /login. Lệch = cần điều tra.",
       "oracle": {
         "kb_ids": [
-          "KB-036"
+          "auth/two-factor-challenge#KB-036"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -307,7 +308,7 @@
       "expected_result": "Theo hiện trạng staging 23/09/2026: reload hoặc mở tab mới làm mất lượt 2FA challenge (state chỉ lưu trong tab), người dùng phải đăng nhập lại; check không khẳng định màn đích và thông báo. Lệch = cần điều tra.",
       "oracle": {
         "kb_ids": [
-          "KB-037"
+          "auth/two-factor-challenge#KB-037"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -338,7 +339,7 @@
         "Ghi lại màn đích."
       ],
       "observation_point": "Màn đích khi mở thẳng route challenge.",
-      "expected_result": "Chưa có căn cứ để viết kết quả mong đợi: việc bị đưa về /login chỉ đọc từ router trong bundle và route-probe, chưa có rule PO/Dev.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [],
         "oracle_strength": "NONE"
@@ -354,7 +355,8 @@
       "context_kb_ids": [
         "KB-033"
       ],
-      "oq_id": "OQ-auth-025"
+      "oq_id": "OQ-auth-025",
+      "observation_guidance": "Chưa có căn cứ để viết kết quả mong đợi: việc bị đưa về /login chỉ đọc từ router trong bundle và route-probe, chưa có rule PO/Dev."
     },
     {
       "check_id": "CHK-011",
@@ -373,7 +375,7 @@
         "Nếu thiết bị cho phép, thử mã của chu kỳ kế tiếp."
       ],
       "observation_point": "Mã lệch chu kỳ có được nhận không.",
-      "expected_result": "Chưa có căn cứ để viết kết quả mong đợi: tài liệu không nêu cửa sổ thời gian chấp nhận mã TOTP.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [],
         "oracle_strength": "NONE"
@@ -389,7 +391,8 @@
       "context_kb_ids": [
         "KB-028"
       ],
-      "oq_id": "OQ-auth-009"
+      "oq_id": "OQ-auth-009",
+      "observation_guidance": "Chưa có căn cứ để viết kết quả mong đợi: tài liệu không nêu cửa sổ thời gian chấp nhận mã TOTP."
     },
     {
       "check_id": "CHK-012",
@@ -411,8 +414,8 @@
       "expected_result": "Không có cách nhận mã 2FA qua SMS, và không có cơ chế \"remember this browser\" để bỏ qua 2FA: lần đăng nhập sau trên cùng trình duyệt vẫn phải qua bước 2FA.",
       "oracle": {
         "kb_ids": [
-          "KB-029",
-          "KB-030"
+          "auth/two-factor-challenge#KB-029",
+          "auth/two-factor-challenge#KB-030"
         ],
         "oracle_strength": "STRONG"
       },
@@ -442,7 +445,7 @@
         "Ghi lại có màn \"Check your email\" / bước nhập mã email hay vào thẳng Choose a workspace; kiểm hộp thư."
       ],
       "observation_point": "Có bước OTP qua email hay không.",
-      "expected_result": "Chưa có căn cứ để viết kết quả mong đợi: Jira MTRO-92 §1 nói tài khoản chưa bật TOTP phải nhập mã OTP gửi qua email, còn Jira MTRO-88, staging 23/09/2026 và bundle 29/09/2026 nói không có bước này; chưa có xác nhận Dev.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [],
         "oracle_strength": "NONE"
@@ -459,7 +462,8 @@
         "KB-031",
         "KB-032"
       ],
-      "oq_id": "OQ-auth-026"
+      "oq_id": "OQ-auth-026",
+      "observation_guidance": "Chưa có căn cứ để viết kết quả mong đợi: Jira MTRO-92 §1 nói tài khoản chưa bật TOTP phải nhập mã OTP gửi qua email, còn Jira MTRO-88, staging 23/09/2026 và bundle 29/09/2026 nói không có bước này; chưa có xác nhận Dev."
     },
     {
       "check_id": "CHK-014",
@@ -482,7 +486,7 @@
       "expected_result": "Sau khi qua 2FA challenge thành công với URL có tham số ?invite=, lời mời được chấp nhận: tài khoản trở thành thành viên của workspace mời.",
       "oracle": {
         "kb_ids": [
-          "KB-047"
+          "auth/two-factor-challenge#KB-047"
         ],
         "oracle_strength": "STRONG"
       },
@@ -515,7 +519,7 @@
       "expected_result": "Theo hiện trạng staging 23/09/2026 (khớp cả hai bundle frontend): màn 2FA challenge không có tuỳ chọn \"remember / trust this device\". Lệch = cần điều tra.",
       "oracle": {
         "kb_ids": [
-          "KB-140"
+          "auth/two-factor-challenge#KB-140"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -645,7 +649,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-10-08",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   }
 }

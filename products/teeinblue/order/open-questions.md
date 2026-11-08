@@ -329,3 +329,59 @@ Root cause (claimed webhook configuration fix) has never been independently veri
 ```json
 {"oq_id":"OQ-order-053","type":"NEEDS_CONFIRMATION","feature_id":"order-design-vector-render","summary":"KB-768 là một lượt chạy staging (file render 2026-10-07), không ghi build: order design SVG gộp mọi layer có id duy nhất, đều mang prefix svg-…-, không tham chiếu treo, màu đúng, khi mọi layer cùng một màu. Căn cứ expected chỉ là lời tóm tắt của Dev trên TIB-5501, không trích nguyên văn. Cần Dev xác nhận, và lượt chạy khi mỗi layer giữ màu riêng. CHK-002 chờ câu trả lời này.","kb_ids":["KB-768"]}
 ```
+
+```json
+{"oq_id":"OQ-order-054","type":"NEEDS_CONFIRMATION","feature_id":"order-design-vector-render","summary":"Cần xác định KB đích cho các reference của order-design-vector-render: KB-418. Chưa có đích duy nhất; các ref được tách khỏi liên kết đang hoạt động, không dùng chúng làm căn cứ kết luận."}
+```
+
+```json
+{"oq_id":"OQ-order-055","type":"NEEDS_CONFIRMATION","feature_id":"place-personalized-order-storefront","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-006-ORDER01-SYNC “Order appears in portal Orders list within a reasonable time after storefront checkout completes (known-flaky area, OQ-order-001)” của feature place-personalized-order-storefront. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-order-056","type":"NEEDS_CONFIRMATION","feature_id":"place-personalized-order-storefront","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-011-ORDER01 “Checkout behavior with a non-approved Test Payment Gateway card (declined '2' or gateway-failure '3')” của feature place-personalized-order-storefront. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-order-057","type":"NEEDS_CONFIRMATION","feature_id":"place-personalized-order-storefront","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-012-ORDER01 “Add-to-cart / checkout attempt with one or more required personalization fields left empty” của feature place-personalized-order-storefront. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-order-058","type":"NEEDS_CONFIRMATION","feature_id":"place-personalized-order-storefront","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-013-ORDER01 “Personalization text field behavior at the stated 10-character max length boundary” của feature place-personalized-order-storefront. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-order-059","type":"NEEDS_CONFIRMATION","feature_id":"place-personalized-order-storefront","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-014-ORDER01 “Complete checkout end-to-end using the Express shipping option” của feature place-personalized-order-storefront. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-order-060","type":"NEEDS_CONFIRMATION","feature_id":"place-personalized-order-storefront","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-015-ORDER01 “Signed-in buyer can complete the same personalized checkout flow” của feature place-personalized-order-storefront. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-order-061","type":"NEEDS_CONFIRMATION","feature_id":"place-personalized-order-storefront","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-016-ORDER01 “Cart contents and mockup persist correctly after a page reload” của feature place-personalized-order-storefront. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-order-062","type":"NEEDS_CONFIRMATION","feature_id":"place-personalized-order-storefront","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-017-ORDER01 “POST /cart/add request/response contract for a personalized add-to-cart” của feature place-personalized-order-storefront. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-order-063","type":"NEEDS_CONFIRMATION","feature_id":"review-and-initiate-fulfillment-portal","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-P12-SYNC-VISIBILITY “Merchant-facing signal (or lack thereof) when an order fails to sync from storefront checkout into the portal” của feature review-and-initiate-fulfillment-portal. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-order-064","type":"NEEDS_CONFIRMATION","feature_id":"review-and-initiate-fulfillment-portal","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-P13-PERMISSION “Non-owner / restricted-permission portal role access to orders list, order-details, fulfill action, and change-status dropdown” của feature review-and-initiate-fulfillment-portal. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-order-065","type":"NEEDS_CONFIRMATION","feature_id":"review-and-initiate-fulfillment-portal","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-P14-DB-CROSSCHECK “Order/order-item database rows match what the portal UI and API display” của feature review-and-initiate-fulfillment-portal. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-order-066","type":"NEEDS_CONFIRMATION","feature_id":"review-and-initiate-fulfillment-portal","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-P15-CUSTOMIZATION-EDIT “'Edit customization' / 'View customization' effect on the design/order state” của feature review-and-initiate-fulfillment-portal. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-order-067","type":"NEEDS_CONFIRMATION","feature_id":"review-and-initiate-fulfillment-portal","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-P16-FULFILL-POD-CONNECTED “'Confirm & Send to fulfill' behavior when a POD account (e.g. Printify) IS connected” của feature review-and-initiate-fulfillment-portal. missing_or_unresolved_oracle"}
+```

@@ -1,5 +1,5 @@
 # Resell (BOX / ITEMS), số tiền hoàn, store credit Koin + ticket + cart Function, huỷ/refund đơn từ Shopify
-**Published context version:** 2
+**Published context version:** 3
 
 **Product:** mysbox · **Object:** `resell-refund-credit` · **Mode:** REFRESH (trên nền DOC_BOOTSTRAP v1) · **Environment:** documented + staging · **Published:** 2026-10-17
 

@@ -4,9 +4,9 @@
   "name": "Dùng lại customer Shopify có sẵn khi tạo company từ submission",
   "user_goal": "Khi company được tạo từ một submission, hệ thống link customer Shopify có sẵn (ưu tiên email, phone chỉ khi submission không có email) thay vì tạo customer trùng, và không tạo company khi customer đó đã là contact của company khác.",
   "user_goal_kb_refs": [
-    "KB-035",
-    "KB-037",
-    "KB-042"
+    "company-submissions/customer-matching#KB-035",
+    "company-submissions/customer-matching#KB-037",
+    "company-submissions/customer-matching#KB-042"
   ],
   "stable_since_version": "v1",
   "actors": [
@@ -14,23 +14,23 @@
       "role": "system",
       "permission_observed": "Chạy matching lúc merchant Approve (luồng cũ) hoặc trong queued job lúc buyer submit (store bật cờ).",
       "kb_refs": [
-        "KB-035",
-        "KB-036"
+        "company-submissions/customer-matching#KB-035",
+        "company-submissions/customer-matching#KB-036"
       ]
     },
     {
       "role": "merchant (Portal)",
       "permission_observed": "Gián tiếp kích hoạt matching khi Approve submission chưa có `company_id`.",
       "kb_refs": [
-        "KB-036",
-        "KB-018"
+        "company-submissions/customer-matching#KB-036",
+        "company-submissions/approve-company-creation#KB-018"
       ]
     },
     {
       "role": "người gửi form công khai",
       "permission_observed": "Trên store bật cờ, submit bằng email của customer có sẵn làm customer đó thành Main contact (Location admin) của company mới mà không qua review của merchant (chờ PO quyết).",
       "kb_refs": [
-        "KB-046"
+        "company-submissions/customer-matching#KB-046"
       ]
     }
   ],
@@ -39,16 +39,16 @@
       "path": "Approve submission chưa có `company_id` (luồng cũ)",
       "precondition": "Submission không có `company_id`.",
       "kb_refs": [
-        "KB-036",
-        "KB-018"
+        "company-submissions/customer-matching#KB-036",
+        "company-submissions/approve-company-creation#KB-018"
       ]
     },
     {
       "path": "Queued job tạo company lúc buyer submit form",
       "precondition": "Store bật cờ `enable_company_creation_on_submit`.",
       "kb_refs": [
-        "KB-036",
-        "KB-049"
+        "company-submissions/customer-matching#KB-036",
+        "company-submissions/auto-company-creation-on-submit#KB-049"
       ]
     }
   ],
@@ -57,29 +57,29 @@
       "name": "Link customer có sẵn thay vì tạo trùng",
       "description": "Tìm customer Shopify bằng email/phone đã submit và link vào company mới; thời điểm matching tuỳ nhánh (Approve luồng cũ hay job lúc submit), cùng thứ tự ưu tiên. Không khớp ai thì tạo customer mới (theo ticket).",
       "kb_refs": [
-        "KB-035",
-        "KB-036",
-        "KB-045"
+        "company-submissions/customer-matching#KB-035",
+        "company-submissions/customer-matching#KB-036",
+        "company-submissions/customer-matching#KB-045"
       ]
     },
     {
       "name": "Ưu tiên email, phone chỉ là phương án dự phòng",
       "description": "Thử email trước (email đã chuẩn hoá rồi email gốc); phone chỉ dùng khi submission không có email; email và phone khớp 2 customer khác nhau thì lấy theo email; email mới + phone trùng không match theo phone (staging thấy customer mới được tạo không có phone).",
       "kb_refs": [
-        "KB-037",
-        "KB-038",
-        "KB-039",
-        "KB-040",
-        "KB-041"
+        "company-submissions/customer-matching#KB-037",
+        "company-submissions/customer-matching#KB-038",
+        "company-submissions/customer-matching#KB-039",
+        "company-submissions/customer-matching#KB-040",
+        "company-submissions/customer-matching#KB-041"
       ]
     },
     {
       "name": "Từ chối khi customer đã thuộc company khác",
       "description": "Customer khớp đã là contact của company khác → lỗi `customer_in_other_company`, không tạo company (áp cả luồng Approve cũ). Bug mở: luồng cũ vẫn tạo company không có contact; ở nhánh job lỗi này không còn tái hiện.",
       "kb_refs": [
-        "KB-042",
-        "KB-043",
-        "KB-044"
+        "company-submissions/customer-matching#KB-042",
+        "company-submissions/customer-matching#KB-043",
+        "company-submissions/customer-matching#KB-044"
       ]
     }
   ],
@@ -90,9 +90,9 @@
       "trigger": "Approve luồng cũ / job lúc submit",
       "condition": "Có customer khớp theo email (hoặc theo phone khi submission không có email) và customer chưa thuộc company khác.",
       "kb_refs": [
-        "KB-035",
-        "KB-037",
-        "KB-039"
+        "company-submissions/customer-matching#KB-035",
+        "company-submissions/customer-matching#KB-037",
+        "company-submissions/customer-matching#KB-039"
       ]
     },
     {
@@ -101,7 +101,7 @@
       "trigger": "Approve luồng cũ / job lúc submit",
       "condition": "Không khớp customer nào (theo ticket, chưa có rule đang hiệu lực).",
       "kb_refs": [
-        "KB-045"
+        "company-submissions/customer-matching#KB-045"
       ]
     },
     {
@@ -110,8 +110,8 @@
       "trigger": "Approve luồng cũ / job lúc submit",
       "condition": "Customer khớp đã là contact của company khác; ở job lúc submit submission chuyển `failed`.",
       "kb_refs": [
-        "KB-042",
-        "KB-053"
+        "company-submissions/customer-matching#KB-042",
+        "company-submissions/auto-company-creation-on-submit#KB-053"
       ]
     }
   ],
@@ -121,7 +121,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-035"
+        "company-submissions/customer-matching#KB-035"
       ]
     },
     {
@@ -129,7 +129,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-036"
+        "company-submissions/customer-matching#KB-036"
       ]
     },
     {
@@ -137,7 +137,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-037"
+        "company-submissions/customer-matching#KB-037"
       ]
     },
     {
@@ -145,7 +145,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-038"
+        "company-submissions/customer-matching#KB-038"
       ]
     },
     {
@@ -153,7 +153,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-039"
+        "company-submissions/customer-matching#KB-039"
       ]
     },
     {
@@ -161,7 +161,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-040"
+        "company-submissions/customer-matching#KB-040"
       ]
     },
     {
@@ -169,7 +169,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-042"
+        "company-submissions/customer-matching#KB-042"
       ]
     }
   ],
@@ -179,7 +179,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-041"
+        "company-submissions/customer-matching#KB-041"
       ],
       "status": "CURRENT_STATE"
     },
@@ -188,7 +188,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-044"
+        "company-submissions/customer-matching#KB-044"
       ],
       "status": "CURRENT_STATE"
     },
@@ -197,7 +197,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-046"
+        "company-submissions/customer-matching#KB-046"
       ],
       "status": "CURRENT_STATE"
     }
@@ -207,7 +207,7 @@
     {
       "statement": "Trên store bật cờ, customer có sẵn có thể bị gán làm Main contact với role Location admin của company mới chỉ bằng việc người lạ submit form công khai bằng email của họ, không qua review của merchant (chờ PO quyết, task Testlane SEC-04).",
       "kb_refs": [
-        "KB-046"
+        "company-submissions/customer-matching#KB-046"
       ]
     }
   ],
@@ -216,7 +216,7 @@
       {
         "item": "Approve submission chưa có `company_id` kích hoạt matching",
         "kb_refs": [
-          "KB-036"
+          "company-submissions/customer-matching#KB-036"
         ]
       }
     ],
@@ -224,8 +224,8 @@
       {
         "item": "Submit registration form trên store bật cờ kích hoạt matching trong job",
         "kb_refs": [
-          "KB-036",
-          "KB-046"
+          "company-submissions/customer-matching#KB-036",
+          "company-submissions/customer-matching#KB-046"
         ]
       }
     ],
@@ -234,22 +234,22 @@
       {
         "item": "Email đã chuẩn hoá / email gốc, phone của submission dùng làm khoá matching",
         "kb_refs": [
-          "KB-037",
-          "KB-039",
-          "KB-040"
+          "company-submissions/customer-matching#KB-037",
+          "company-submissions/customer-matching#KB-039",
+          "company-submissions/customer-matching#KB-040"
         ]
       },
       {
         "item": "Lỗi `customer_in_other_company`",
         "kb_refs": [
-          "KB-042"
+          "company-submissions/customer-matching#KB-042"
         ]
       },
       {
         "item": "Shopify customer (contact) được link vào company",
         "kb_refs": [
-          "KB-035",
-          "KB-P-013"
+          "company-submissions/customer-matching#KB-035",
+          "_product-level#KB-P-013"
         ]
       }
     ],
@@ -261,8 +261,8 @@
       "relation": "used_by",
       "note": "Luồng Approve cũ gọi matching lúc Approve.",
       "kb_refs": [
-        "KB-036",
-        "KB-018"
+        "company-submissions/customer-matching#KB-036",
+        "company-submissions/approve-company-creation#KB-018"
       ]
     },
     {
@@ -270,8 +270,8 @@
       "relation": "used_by",
       "note": "Job lúc submit gọi matching; lỗi trước `companyCreate` làm submission `failed`.",
       "kb_refs": [
-        "KB-036",
-        "KB-053"
+        "company-submissions/customer-matching#KB-036",
+        "company-submissions/auto-company-creation-on-submit#KB-053"
       ]
     }
   ],
@@ -282,7 +282,7 @@
       "confidence": "LOW",
       "status": "KNOWN_DEFECT",
       "kb_refs": [
-        "KB-043"
+        "company-submissions/customer-matching#KB-043"
       ],
       "note": "Bug đang mở — regression watch, không làm oracle; check theo rule `customer_in_other_company`."
     },
@@ -291,7 +291,7 @@
       "knowledge_kind": "INFERRED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-045"
+        "company-submissions/customer-matching#KB-045"
       ],
       "note": "Chỉ ticket + test case không ghi ngày chạy."
     },
@@ -300,7 +300,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-046"
+        "company-submissions/customer-matching#KB-046"
       ]
     },
     {
@@ -308,8 +308,8 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-041",
-        "KB-040"
+        "company-submissions/customer-matching#KB-041",
+        "company-submissions/customer-matching#KB-040"
       ]
     }
   ],
@@ -318,9 +318,9 @@
       "question": "Ở luồng Approve cũ, email submission trùng customer đã thuộc company khác (kể cả khác hoa/thường, khoảng trắng) có còn tạo company không contact trên build hiện tại không (TC-DUOS-057, TC-DUOS-060 cần chạy lại)?",
       "why_it_matters": "Bug Dev FE xác nhận đang mở; rule mong đợi là báo `customer_in_other_company`.",
       "kb_refs": [
-        "KB-043",
-        "KB-042",
-        "KB-044"
+        "company-submissions/customer-matching#KB-043",
+        "company-submissions/customer-matching#KB-042",
+        "company-submissions/customer-matching#KB-044"
       ],
       "oq_id": "OQ-company-submissions-016"
     },
@@ -328,9 +328,9 @@
       "question": "PO chấp nhận việc người lạ submit form công khai bằng email customer có sẵn và được gán thẳng làm Main contact (store bật cờ), hay cần chặn / thêm bước review (task Testlane SEC-04)?",
       "why_it_matters": "Rủi ro bảo mật; không có expected cho case này.",
       "kb_refs": [
-        "KB-046",
-        "KB-035",
-        "KB-049"
+        "company-submissions/customer-matching#KB-046",
+        "company-submissions/customer-matching#KB-035",
+        "company-submissions/auto-company-creation-on-submit#KB-049"
       ],
       "oq_id": "OQ-company-submissions-017"
     },
@@ -338,8 +338,8 @@
       "question": "PO có chấp nhận kết quả customer mới không có phone khi submission dùng email mới nhưng phone trùng customer cũ không?",
       "why_it_matters": "Chỉ có hiện trạng staging; rule chỉ nói không match theo phone.",
       "kb_refs": [
-        "KB-041",
-        "KB-040"
+        "company-submissions/customer-matching#KB-041",
+        "company-submissions/customer-matching#KB-040"
       ],
       "oq_id": "OQ-company-submissions-018"
     },
@@ -347,9 +347,9 @@
       "question": "Matching xử lý thế nào khi submission không có cả email lẫn phone, khi email là alias, và phone được chuẩn hoá ra sao (ví dụ 0912 vs +84)?",
       "why_it_matters": "Tài liệu ghi quy tắc chưa chốt; thiếu oracle cho case biên.",
       "kb_refs": [
-        "KB-037",
-        "KB-039",
-        "KB-040"
+        "company-submissions/customer-matching#KB-037",
+        "company-submissions/customer-matching#KB-039",
+        "company-submissions/customer-matching#KB-040"
       ],
       "oq_id": "OQ-company-submissions-019"
     },
@@ -357,7 +357,7 @@
       "question": "Không khớp customer nào thì hệ thống có luôn tạo customer mới (Jira DUOS-411) trên build hiện tại không?",
       "why_it_matters": "Chỉ ticket + test case không ghi ngày chạy; không có rule đang hiệu lực.",
       "kb_refs": [
-        "KB-045"
+        "company-submissions/customer-matching#KB-045"
       ],
       "oq_id": "OQ-company-submissions-005"
     }
@@ -368,8 +368,8 @@
     "basis": "Ngày nguồn mới nhất / sớm nhất trong các KB item được tham chiếu (ngày quyết định PO/Dev, ngày cập nhật Jira, ngày quan sát staging); không có quan sát runtime trong lần chạy này."
   },
   "last_updated": {
-    "date": "2026-10-09",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "coverage_matrix": [
     {
@@ -488,7 +488,7 @@
       "to": "approve-company-creation",
       "relation": "USED_BY",
       "kb_refs": [
-        "KB-036"
+        "company-submissions/customer-matching#KB-036"
       ]
     },
     {
@@ -496,8 +496,8 @@
       "to": "auto-company-creation-on-submit",
       "relation": "USED_BY",
       "kb_refs": [
-        "KB-036",
-        "KB-053"
+        "company-submissions/customer-matching#KB-036",
+        "company-submissions/auto-company-creation-on-submit#KB-053"
       ]
     }
   ]

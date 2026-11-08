@@ -2081,3 +2081,415 @@
 ```json
 {"oq_id": "OQ-artwork-347", "type": "NEEDS_CONFIRMATION", "feature_id": "form-field-reorder", "summary": "Dev summary ticket fix TIB-5354 (2026-09-07) nói fix chỉ nằm trong portal (tab Re-order, chỉ luồng multi-drag), API và SDK không đổi, thư viện kéo thả gốc chưa sửa. Chưa ai xác nhận phạm vi này. Các danh sách kéo thả nhiều dòng khác dùng cùng thư viện có bị lỗi sắp index tương tự không?"}
 ```
+
+```json
+{"oq_id":"OQ-artwork-348","type":"NEEDS_CONFIRMATION","feature_id":"artwork-list-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-004 “Click 'Cancel' trên dialog xoá artwork không thực hiện xoá” của feature artwork-list-management. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-349","type":"NEEDS_CONFIRMATION","feature_id":"artwork-list-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-005 “Kết quả sau khi click 'Mark as archive'” của feature artwork-list-management. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-350","type":"NEEDS_CONFIRMATION","feature_id":"artwork-list-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-006 “Kết quả sau khi click 'Import to Translation'” của feature artwork-list-management. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-351","type":"NEEDS_CONFIRMATION","feature_id":"artwork-list-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-007 “Delete artwork — soft-delete hay hard-delete, có khôi phục được không” của feature artwork-list-management. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-352","type":"NEEDS_CONFIRMATION","feature_id":"artwork-list-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-008 “Truy cập /artworks và các action list với role/tenant khác” của feature artwork-list-management. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-353","type":"NEEDS_CONFIRMATION","feature_id":"artwork-save-persist","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-008 “GET /api/artworks/{id} trả 405 Method Not Allowed” của feature artwork-save-persist. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-354","type":"NEEDS_CONFIRMATION","feature_id":"artwork-save-persist","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-011 “validate-default-value trả lỗi 4xx/5xx thật từ server” của feature artwork-save-persist. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-355","type":"NEEDS_CONFIRMATION","feature_id":"artwork-save-persist","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-013 “2 field artwork_category_id/global_option_ids có thực sự persist ở nơi khác không” của feature artwork-save-persist. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-356","type":"NEEDS_CONFIRMATION","feature_id":"artwork-save-persist","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-015 “Đọc lại artwork sau save — GraphQL riêng hay chỉ từ response PUT (CONF-007)” của feature artwork-save-persist. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-357","type":"NEEDS_CONFIRMATION","feature_id":"artwork-save-persist","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-016 “Xác nhận OpenAPI spec cho Artwork API có tồn tại trên staging hay không (CONF-005)” của feature artwork-save-persist. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-358","type":"NEEDS_CONFIRMATION","feature_id":"artwork-save-persist","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-017 “Save/đọc artwork với role khác owner / cross-tenant (TIB_USER_B)” của feature artwork-save-persist. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-359","type":"NEEDS_CONFIRMATION","feature_id":"artwork-template-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-008 “Hành vi btn-set-invisible khi artwork có ≥2 template” của feature artwork-template-management. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-360","type":"NEEDS_CONFIRMATION","feature_id":"artwork-template-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-009 “Kết quả sau khi 'Convert to Global Template'” của feature artwork-template-management. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-361","type":"NEEDS_CONFIRMATION","feature_id":"artwork-template-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-010 “Field 'Extra charge for this template' map tới field nào trong PUT body” của feature artwork-template-management. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-362","type":"NEEDS_CONFIRMATION","feature_id":"artwork-template-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-011 “'Import from artwork' lấy nguồn từ danh sách /artworks” của feature artwork-template-management. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-363","type":"NEEDS_CONFIRMATION","feature_id":"clipart-category-storefront-behavior","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-001 “Single-type (Clipart Category›1) widget render RADIOGROUP thumbnail, item ứng layer.default_value pre-checked” của feature clipart-category-storefront-behavior. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-364","type":"NEEDS_CONFIRMATION","feature_id":"clipart-category-storefront-behavior","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-003 “[NEEDS_CONFIRMATION] Group-type <select> chỉ có placeholder disabled, 0 item selectable dù category có 2 item xác nhận server-side” của feature clipart-category-storefront-behavior. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-artwork-365","type":"NEEDS_CONFIRMATION","feature_id":"clipart-category-storefront-behavior","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-007 “[NEEDS_CONFIRMATION] Server thêm key lạ 'artwork-<id>': <numeric> vào response customization save, không có ở client localStorage lúc ghi” của feature clipart-category-storefront-behavior. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-366","type":"NEEDS_CONFIRMATION","feature_id":"clipart-category-storefront-behavior","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-013 “[NEEDS_CONFIRMATION] Preview size=500px 'không hoạt động đúng' (chỉ ra 250px) hay bị giới hạn bởi độ phân giải gốc file upload (no1.png/no2.png)?” của feature clipart-category-storefront-behavior. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-367","type":"NEEDS_CONFIRMATION","feature_id":"clipart-category-storefront-behavior","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-017 “[CRITICAL, NEEDS_CONFIRMATION] Canvas/Preview modal/cart customization image compositing gap — chosen clipart never appears in rendered output” của feature clipart-category-storefront-behavior. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-368","type":"NEEDS_CONFIRMATION","feature_id":"clipart-category-storefront-behavior","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-018 “[NEEDS_CONFIRMATION] Conflict CONF-CTX20260921-03-02 — nhánh WIDGET STOREFRONT: layer.default_value (không phải layer.url) là giá trị PRE-CHECK — đây có phải business rule dự kiến, và layer.url có nên là 1 lựa chọn hợp lệ trên storefront không?” của feature clipart-category-storefront-behavior. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-369","type":"NEEDS_CONFIRMATION","feature_id":"clipart-category-storefront-behavior","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-019 “[GAP, NEEDS_CONFIRMATION] Hành vi buyer đã login / non-US market-locale-currency / mobile-tablet viewport cho personalization form clipart-category — 0 evidence trong run này” của feature clipart-category-storefront-behavior. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-370","type":"NEEDS_CONFIRMATION","feature_id":"clipart-category-storefront-behavior","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-020 “[NEEDS_CONFIRMATION] Conflict CONF-API-CTX20260921-03-01 nhánh API ROOT EVIDENCE: GET /api/layer-image-categories trả [] vs GraphQL trả 10 rows cùng user/session (layer api, khác CHK-003 layer storefront)” của feature clipart-category-storefront-behavior. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-371","type":"NEEDS_CONFIRMATION","feature_id":"clipart-category-storefront-behavior","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-021 “[POINTER, NEEDS_CONFIRMATION] CONF-CTX20260921-03-01 (Custom class field presence, layer-level) — KHÔNG có nhánh storefront, xem layer-config-image.json cho nội dung đầy đủ” của feature clipart-category-storefront-behavior. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-372","type":"NEEDS_CONFIRMATION","feature_id":"clipart-category-storefront-behavior","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-022 “[GAP, NEEDS_CONFIRMATION] Hành vi personalization form khi 'Show option to select default value' = OFF — 0 evidence trong run này (chỉ test ON)” của feature clipart-category-storefront-behavior. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-373","type":"NEEDS_CONFIRMATION","feature_id":"condition-cycle-validation","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-008 “[CRITICAL] PUT trực tiếp với payload chứa đồ thị vòng — server có tự chặn độc lập với client?” của feature condition-cycle-validation. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-374","type":"NEEDS_CONFIRMATION","feature_id":"condition-cycle-validation","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-009 “PUT trực tiếp với self-loop (element trỏ chính layer đó)” của feature condition-cycle-validation. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-375","type":"NEEDS_CONFIRMATION","feature_id":"condition-cycle-validation","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-010 “Thuật toán chọn 'layer gốc' hiển thị đầu message lỗi với cấu trúc dependency khác” của feature condition-cycle-validation. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-376","type":"NEEDS_CONFIRMATION","feature_id":"condition-cycle-validation","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-011 “Hành vi storefront nếu 1 artwork có vòng lọt qua được validation” của feature condition-cycle-validation. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-377","type":"NEEDS_CONFIRMATION","feature_id":"conditional-setting-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-008 “Giới hạn số condition tối đa trên 1 layer” của feature conditional-setting-config. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-378","type":"NEEDS_CONFIRMATION","feature_id":"conditional-setting-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-009 “Hỗ trợ lồng nhóm AND trong OR (nested logic)” của feature conditional-setting-config. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-379","type":"NEEDS_CONFIRMATION","feature_id":"conditional-setting-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-010 “Toán tử condition ngoài 'is any of' và on/off (is-none-of, contains, so sánh số/ngày)” của feature conditional-setting-config. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-380","type":"NEEDS_CONFIRMATION","feature_id":"conditional-setting-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-011 “2 layer type không có accordion CONDITIONAL SETTING — có đường API bypass để set condition không” của feature conditional-setting-config. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-381","type":"NEEDS_CONFIRMATION","feature_id":"editor-layer-workspace","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-010 “Effect thật của Group/Ungroup sau khi bấm” của feature editor-layer-workspace. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-382","type":"NEEDS_CONFIRMATION","feature_id":"editor-layer-workspace","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-011 “35 layer type trong popup có cố định qua các plan khác nhau không” của feature editor-layer-workspace. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-383","type":"NEEDS_CONFIRMATION","feature_id":"editor-layer-workspace","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-012 “Picker khác (image library, clipart) có rơi vào trạng thái rỗng tương tự Vector không” của feature editor-layer-workspace. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-384","type":"NEEDS_CONFIRMATION","feature_id":"layer-common-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-006 “Field 'Custom class:' có ở 33/35 type theo DOM (mâu thuẫn với bundle-registry code — CONF-006)” của feature layer-common-config. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-385","type":"NEEDS_CONFIRMATION","feature_id":"layer-common-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-008 “Đối chiếu chéo trực tiếp 9 layer type nằm ngoài bundle-registry nhưng có 'Custom class' trên DOM” của feature layer-common-config. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-386","type":"NEEDS_CONFIRMATION","feature_id":"layer-condition-value-binding","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-007 “dependencies[].element luôn có dạng 'layer-<6 chữ số>'” của feature layer-condition-value-binding. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-387","type":"NEEDS_CONFIRMATION","feature_id":"layer-condition-value-binding","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-008 “toggle=false (Off) serialize thành gì — chưa từng được lưu qua Save” của feature layer-condition-value-binding. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-388","type":"NEEDS_CONFIRMATION","feature_id":"layer-condition-value-binding","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-009 “Multi-value (≥2 phần tử) cho 6/8 type nguồn dạng array còn lại (ngoài clipart-category)” của feature layer-condition-value-binding. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-389","type":"NEEDS_CONFIRMATION","feature_id":"layer-condition-value-binding","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-010 “Trạng thái data addon-charge/json-list trên artwork 4087 khác nhau giữa 2 run (CONF-002)” của feature layer-condition-value-binding. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-390","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-form-elements","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-009 “Color (color) — KHÔNG xuất hiện được làm nguồn Conditional Setting dù có đầy đủ Option Title (khác Font CÓ xuất hiện được) — nguyên nhân chưa xác nhận” của feature layer-config-form-elements. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-391","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-001 “Static Image (static-photo) — theo baseline chung NHƯNG là 1/2 type KHÔNG có field 'Custom class:'” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-392","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-002 “Clipart Category › 1 Clipart category (clipart-category) — theo baseline chung, không có deviation riêng ghi nhận” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-393","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-003 “Clipart Category › Group of clipart categories (group-clipart-categories) — theo baseline chung, không có deviation riêng ghi nhận” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-394","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-007 “Text to Image (AI) (text-to-image) — KHÔNG có DESIGN SETTINGS/POPULATE VALUES, thiếu option 'No personalization', nhãn GenAI service khác Multiple Uploads” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-395","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-008 “Text to Image (AI) vs Multiple Uploads — key JSON GenAI provider (text_to_image_provider vs multi_image_provider) chưa xác nhận qua PUT thật” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-396","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-018 “[NEW v3] Clipart Category (single) — full field inventory qua Bulk Edit (DESIGN/PERSONALIZATION/EXTRA)” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-397","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-021 “[NEW v3, NEEDS_CONFIRMATION] 'Select a group of clipart categories' có thực sự hỗ trợ multi-category hay chỉ 1 category nested children?” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-398","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-024 “[NEW v3] Portal canvas render tiếp tục dùng layer.url (KHÔNG dùng layer.default_value) sau Save & Close + mở lại” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-399","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-025 “[NEW v3, NEEDS_CONFIRMATION] Conflict CONF-CTX20260921-03-02 — nhánh PORTAL: lựa chọn tường minh 'default value' của merchant có NÊN ảnh hưởng canvas portal hay không?” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-400","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-026 “[NEW v3, NEEDS_CONFIRMATION] Group's default value combobox hiện 'List is empty.' dù category có 2 item xác nhận tồn tại cùng phiên” của feature layer-config-image. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-artwork-401","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-027 “[NEW v3, NEEDS_CONFIRMATION] Conflict CONF-API-CTX20260921-03-01 nhánh PORTAL: GET /api/layer-image-categories trả [] rỗng trong khi GraphQL clipart_categories trả 10 rows cùng user/session” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-402","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-028 “[NEW v3, NEEDS_CONFIRMATION] Conflict CONF-CTX20260921-03-01 — field 'Custom class:' (layer-level, Clipart Category›1) có tồn tại thật hay đã mất so với canonical v2?” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-403","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-030 “[NEW v3, NEEDS_CONFIRMATION] API field 'show_clipart_name' (null observed) có đúng backing field cho UI toggle 'Show option name on hover'?” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-404","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-033 “[NEW v4, NEEDS_CONFIRMATION] Thứ tự accordion 'Populate Values đầu tiên' có cố định cho MỌI layer photo, hay chỉ khi Populate Values đã được cấu hình trước?” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-405","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-036 “[NEW v4, NEEDS_CONFIRMATION] Toggle 'Use Template Default Size' (ImagenHub, Multiple Uploads) — tác dụng khi bật ON chưa được test” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-406","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-038 “[NEW v4, NEEDS_CONFIRMATION] Rule 'prompt required' (Save & Close) — chỉ xác nhận với Gemini, chưa test OpenAI/Flux/ImagenHub (cả Multiple Uploads lẫn Text to Image)” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-407","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-041 “[NEW v4, NEEDS_CONFIRMATION] Token '{{input}}' trần có xuất hiện khi Maximum photos=1 (chưa test)?” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-408","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-043 “[NEW v4, NEEDS_CONFIRMATION] Cảnh báo unsupported-provider (Flux, Text to Image) — chỉ thử ở UI cấu hình, chưa thử lúc generate thật” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-409","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-045 “[NEW v4, NEEDS_CONFIRMATION] '+ Variable' picker hiển thị option gì khi artwork CÓ ≥1 layer Text/Additional Option khác?” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-410","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-048 “[NEW v4, NEEDS_CONFIRMATION] Text to Image (AI) có bao giờ được offer làm Populate Content source hay không — chỉ 1 sample phủ định” của feature layer-config-image. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-artwork-411","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-049 “[NEW v4, NEEDS_CONFIRMATION] Beta badge KHÔNG xuất hiện cho Text to Image (AI) — chỉ xác nhận trên 2 bề mặt staff-authenticated, chưa test storefront PDP/theme thật” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-412","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-050 “[NEW v4, CONFLICTED, CONF-CBS003-01, NEEDS_CONFIRMATION] Verify hiện trạng số lượng/tên lựa chọn Personalization của Text to Image (AI) — KHÔNG chọn 1 phía làm oracle” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-413","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-051 “[NEW v4, NEEDS_CONFIRMATION, GAP] TIB-5188 — thứ tự resize/crop và minimum-resolution validation của pipeline GenAI (Multiple Uploads) HOÀN TOÀN CHƯA TEST” của feature layer-config-image. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-414","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-052 “[NEW v4, NEEDS_CONFIRMATION, GAP] TIB-5339 — so sánh sync vs async giữa route upload chính (presigned-S3) và route fallback (multipart) KHÔNG so sánh được” của feature layer-config-image. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-artwork-415","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-053 “[NEW v4, NEEDS_CONFIRMATION, GAP] 'Duplicate & Share' (TIB-5326) — control không tìm thấy ở portal editor lẫn storefront Live Preview cho Multiple Uploads/Text to Image” của feature layer-config-image. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-artwork-416","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-maps-astronomy","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-002 “Street Maps (maps) — hành vi khi thiếu Mapbox access token (3rd-party Services) chưa xác nhận” của feature layer-config-maps-astronomy. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-417","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-maps-astronomy","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-006 “Moon Phase (moon-phase) — chính tả field code 'maps_seacher_enabled' cần giữ nguyên khi viết assertion, không tự sửa thành 'searcher'” của feature layer-config-maps-astronomy. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-418","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-others","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-004 “QR Code (qr-code) — hành vi khi nhập vượt quá 4296 ký tự chưa được thử (chặn/cắt/lỗi)” của feature layer-config-others. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-419","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-puzzles","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-004 “Word Search (word-search) — chuỗi 'Custom class:' xuất hiện HAI LẦN trong panel DOM, chưa xác nhận 2 field riêng hay lỗi duplicate render” của feature layer-config-puzzles. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-420","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-text","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-001 “Single-line Text (text) — tuân theo baseline chung, không có deviation field riêng ghi nhận” của feature layer-config-text. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-421","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-text","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-002 “Curve Text (curve-text) — tuân theo baseline chung, không có deviation field riêng ghi nhận” của feature layer-config-text. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-422","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-text","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-005 “Other › Spiral Text (spiral-text) — hành vi khi nhập Inner radius < 20 chưa xác nhận” của feature layer-config-text. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-423","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-text","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-007 “Paragraph › Normal (paragraph) — key JSON thật của 'Remove line breaks' chưa xác nhận, chưa viết được assertion API” của feature layer-config-text. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-424","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-vector","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-001 “Static Vector (static-vector) — theo baseline chung NHƯNG là 1/2 type KHÔNG có field 'Custom class:'” của feature layer-config-vector. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-425","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-vector","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-002 “Static Vector (static-vector) — chưa có per-type DOM dump riêng ngoài việc thiếu Custom class” của feature layer-config-vector. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-426","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-vector","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-007 “[MỚI,, CBS-004] Rate-limit Static Vector (POST /api/layer-images/svg, resource user_rate_limiter:layer_image) — giá trị limit=1000, reset=86400s (24h)” của feature layer-config-vector. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-427","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-vector","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-008 “[MỚI,, CBS-004] Hành vi giảm của x-ratelimit-remaining trên POST /api/layer-images/svg — CONF-CBS004-001 UNRESOLVED, KHÔNG dùng làm oracle” của feature layer-config-vector. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-428","type":"NEEDS_CONFIRMATION","feature_id":"layer-duplicate-link-copy","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-001 “Nút 'Duplicate & Link options' luôn hiện diện, tên giống nhau mọi layer type” của feature layer-duplicate-link-copy. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-429","type":"NEEDS_CONFIRMATION","feature_id":"layer-duplicate-link-copy","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-002 “20 layer type nhóm LINKED — config panel rút gọn còn 2 accordion sau khi Duplicate & Link” của feature layer-duplicate-link-copy. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-430","type":"NEEDS_CONFIRMATION","feature_id":"layer-duplicate-link-copy","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-003 “15 layer type nhóm PLAIN_COPY — giữ nguyên đầy đủ accordion sau khi Duplicate & Link” của feature layer-duplicate-link-copy. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-431","type":"NEEDS_CONFIRMATION","feature_id":"layer-duplicate-link-copy","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-004 “Duplicate & Link options không sinh network request (client-side cho tới Save)” của feature layer-duplicate-link-copy. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-432","type":"NEEDS_CONFIRMATION","feature_id":"layer-duplicate-link-copy","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-005 “Layer row của bản LINKED KHÔNG có icon chain — icon set luôn cố định 5 icon (CONF-003)” của feature layer-duplicate-link-copy. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-433","type":"NEEDS_CONFIRMATION","feature_id":"layer-duplicate-link-copy","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-006 “Sau Save, sửa layer gốc có thực sự đồng bộ (sync) sang bản LINKED không” của feature layer-duplicate-link-copy. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-434","type":"NEEDS_CONFIRMATION","feature_id":"layer-duplicate-link-copy","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-007 “Layer type chưa test rơi vào nhóm LINKED hay PLAIN_COPY khi Duplicate & Link” của feature layer-duplicate-link-copy. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-435","type":"NEEDS_CONFIRMATION","feature_id":"layer-duplicate-link-copy","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-008 “Shape JSON của layer LINKED trong PUT body (field đánh dấu linked/source_layer_id)” của feature layer-duplicate-link-copy. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-436","type":"NEEDS_CONFIRMATION","feature_id":"layer-print-effects","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-001 “Nút Print Effects mở popover shape-cut với 5 preset + Customize” của feature layer-print-effects. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-437","type":"NEEDS_CONFIRMATION","feature_id":"layer-print-effects","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-002 “Nút 'Apply layout' disabled khi 0 shape-cut được chọn” của feature layer-print-effects. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-438","type":"NEEDS_CONFIRMATION","feature_id":"layer-print-effects","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-003 “Customize cho phép tuỳ chỉnh grid rows/columns” của feature layer-print-effects. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-439","type":"NEEDS_CONFIRMATION","feature_id":"layer-print-effects","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-004 “Footnote nguyên văn trong popover Print Effects” của feature layer-print-effects. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-440","type":"NEEDS_CONFIRMATION","feature_id":"layer-print-effects","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-005 “[CONF-004] Tính năng emboss có tồn tại hay không — KHÔNG được khẳng định là không tồn tại” của feature layer-print-effects. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-441","type":"NEEDS_CONFIRMATION","feature_id":"layer-print-effects","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-006 “Print Effects config lưu vào field nào trong PUT body” của feature layer-print-effects. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-442","type":"NEEDS_CONFIRMATION","feature_id":"layer-print-effects","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-007 “Trang 'Order Design' — nơi effect layer thực sự hiển thị làm production guide” của feature layer-print-effects. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-443","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-015 “13 nhóm nguồn Browse values có bao phủ đầy đủ mọi layer/output type không” của feature populate-values. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-444","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-016 “Cú pháp thật của {{value.formula(<expression>)}} và {{value.context.<from>To<to>}}” của feature populate-values. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-445","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-017 “Cơ chế khoá Google-Font-lock có áp dụng cho channel Background/Shape không (chỉ test Font/Color)” của feature populate-values. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-446","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-018 “Layer đã populate hiển thị giá trị thật (không phải placeholder) trên storefront” của feature populate-values. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-447","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-020 “[NEW v3, NEEDS_CONFIRMATION] Token '{{input}}' trần có xuất hiện khi Maximum photos=1 hay không?” của feature populate-values. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-448","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-021 “[NEW v3, NEEDS_CONFIRMATION] Text to Image (AI) có bao giờ được offer làm Populate Content source hay không — chỉ 1 sample phủ định” của feature populate-values. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-artwork-449","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-023 “[NEW v3, NEEDS_CONFIRMATION] Nửa 'layer đích tự động trigger effect chain riêng khi nhận giá trị populate' (liên quan TIB-5302) — chưa xác nhận” của feature populate-values. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-artwork-450","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-024 “[NEW v3, NEEDS_CONFIRMATION] Hành vi propagation (KB-008, CHK-022) có giữ nguyên trên guest session thật hay không — hiện chỉ có staff-authenticated proxy” của feature populate-values. missing_or_unresolved_oracle"}
+```

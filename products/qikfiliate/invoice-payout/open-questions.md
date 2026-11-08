@@ -266,3 +266,11 @@
   "summary": "payment_method_name/payment_info rỗng trên Invoice tự động fallback về thông tin HIỆN TẠI của User. Oracle dựa trên KB-005, derivation=code_artifact — theo phanh derivation không đủ làm oracle STRONG. Cần xác nhận từ nguồn mạnh hơn."
 }
 ```
+
+```json
+{"oq_id":"OQ-invoice-payout-033","type":"NEEDS_CONFIRMATION","feature_id":"admin-invoice-processing","summary":"[object Object]"}
+```
+
+```json
+{"oq_id":"OQ-invoice-payout-034","type":"NEEDS_CONFIRMATION","feature_id":"admin-invoice-processing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-012 “[KNOWN DEFECT C2 - khong phai expected result] Doi status sang completed KHONG goi API thanh toan nao va KHONG chan thao tac nham” của feature admin-invoice-processing. P1_requires_independent_authority"}
+```

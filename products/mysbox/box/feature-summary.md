@@ -1,5 +1,5 @@
 # Box (mystery box = 1 variant Shopify): loại box Single/Bundle/Group-Tier, phần thưởng + xác suất, tạo/publish/xoá, version bất biến, tồn kho/pool, picking mode, pool refill
-**Published context version:** 3
+**Published context version:** 4
 
 **Product:** mysbox · **Object:** `box` · **Mode:** REFRESH (trên nền DOC_BOOTSTRAP v1) · **Environment:** documented + staging · **Published:** 2026-10-17
 

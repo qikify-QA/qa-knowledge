@@ -143,3 +143,6 @@ Tổng: 8 mục (NEEDS_CONFIRMATION/CONFLICT/OPEN_ISSUE). Sinh từ bootstrap DO
 }
 ```
 
+```json
+{"oq_id":"OQ-analytics-009","type":"NEEDS_CONFIRMATION","feature_id":"analytics","summary":"[object Object]"}
+```

@@ -8,22 +8,22 @@
       "role": "admin",
       "permission_observed": "Xem, filter theo tên shop hoặc loại sự kiện trên màn hình Customer Event (audit trail, chỉ xem).",
       "kb_refs": [
-        "KB-008",
-        "KB-011"
+        "customer-shop/customer-lifecycle-state#KB-008",
+        "customer-shop/customer-lifecycle-state#KB-011"
       ]
     },
     {
       "role": "affiliate",
       "permission_observed": "Chỉ xem trạng thái vòng đời của shop, không tự cập nhật.",
       "kb_refs": [
-        "KB-005"
+        "customer-shop/customer-lifecycle-state#KB-005"
       ]
     },
     {
       "role": "client_app",
       "permission_observed": "Gửi CustomerEvent qua API; không phải nơi admin nhập tay.",
       "kb_refs": [
-        "KB-009"
+        "customer-shop/customer-lifecycle-state#KB-009"
       ]
     }
   ],
@@ -32,14 +32,14 @@
       "path": "Admin > Customer Event screen",
       "precondition": "role=admin",
       "kb_refs": [
-        "KB-008"
+        "customer-shop/customer-lifecycle-state#KB-008"
       ]
     },
     {
       "path": "Affiliate dashboard (trạng thái hiển thị theo shop)",
       "precondition": "role=affiliate",
       "kb_refs": [
-        "KB-005"
+        "customer-shop/customer-lifecycle-state#KB-005"
       ]
     }
   ],
@@ -48,59 +48,59 @@
       "name": "Enum 6 giá trị CustomerEvent.name",
       "description": "CustomerEvent.name (const CustomerEvent::STATUS_*) nhận đúng 6 giá trị: installed, uninstalled, reinstalled, subscribed, upgraded, canceled.",
       "kb_refs": [
-        "KB-001",
-        "KB-002"
+        "customer-shop/customer-lifecycle-state#KB-001",
+        "customer-shop/customer-lifecycle-state#KB-002"
       ]
     },
     {
       "name": "CustomerEvent vẫn xem được dù Customer đã soft-delete",
       "description": "Quan hệ belongsTo(Customer::class)->withTrashed cho phép vẫn xem được event dù Customer đã bị soft-delete.",
       "kb_refs": [
-        "KB-003"
+        "customer-shop/customer-lifecycle-state#KB-003"
       ]
     },
     {
       "name": "Customer.latestEvent quyết định trạng thái hiển thị",
       "description": "CustomerEvent mới nhất quyết định trạng thái vòng đời hiển thị cho shop, ở cả admin panel và dashboard affiliate.",
       "kb_refs": [
-        "KB-004"
+        "customer-shop/customer-lifecycle-state#KB-004"
       ]
     },
     {
       "name": "Affiliate chỉ xem, không tự cập nhật",
       "description": "Trạng thái do client app báo về qua API; affiliate chỉ xem.",
       "kb_refs": [
-        "KB-005",
-        "KB-009"
+        "customer-shop/customer-lifecycle-state#KB-005",
+        "customer-shop/customer-lifecycle-state#KB-009"
       ]
     },
     {
       "name": "deleted_at = soft-delete khi shop gỡ cài app",
       "description": "deleted_at là soft-delete, được đặt khi shop gỡ cài app.",
       "kb_refs": [
-        "KB-006"
+        "customer-shop/customer-lifecycle-state#KB-006"
       ]
     },
     {
       "name": "Uninstalled/canceled → không còn charge mới",
       "description": "Khi shop ở trạng thái uninstalled/canceled, sẽ không có charge mới nào từ Shopify nữa.",
       "kb_refs": [
-        "KB-007"
+        "customer-shop/customer-lifecycle-state#KB-007"
       ]
     },
     {
       "name": "Màn hình Customer Event chỉ xem (audit trail), lọc được",
       "description": "Hoàn toàn chỉ xem; lọc trực tiếp theo tên shop hoặc theo loại sự kiện.",
       "kb_refs": [
-        "KB-008",
-        "KB-011"
+        "customer-shop/customer-lifecycle-state#KB-008",
+        "customer-shop/customer-lifecycle-state#KB-011"
       ]
     },
     {
       "name": "Nhãn màu theo trạng thái (không đầy đủ)",
       "description": "Nhãn trạng thái tô màu theo loại sự kiện; tài liệu chỉ nêu 4/6 cặp màu (installed=xanh lá, uninstalled=đỏ, reinstalled=vàng, subscribed=xanh dương) rồi bỏ lửng — KHÔNG phải danh sách đầy đủ cho 6 trạng thái.",
       "kb_refs": [
-        "KB-010"
+        "customer-shop/customer-lifecycle-state#KB-010"
       ]
     }
   ],
@@ -111,8 +111,8 @@
       "trigger": "shop gỡ cài app, client app báo event",
       "condition": "CustomerEvent.name=uninstalled, Customer.deleted_at set",
       "kb_refs": [
-        "KB-002",
-        "KB-006"
+        "customer-shop/customer-lifecycle-state#KB-002",
+        "customer-shop/customer-lifecycle-state#KB-006"
       ]
     },
     {
@@ -121,7 +121,7 @@
       "trigger": "shop cài lại app",
       "condition": "CustomerEvent.name=reinstalled",
       "kb_refs": [
-        "KB-002"
+        "customer-shop/customer-lifecycle-state#KB-002"
       ]
     },
     {
@@ -130,7 +130,7 @@
       "trigger": "shop subscribe",
       "condition": "CustomerEvent.name=subscribed",
       "kb_refs": [
-        "KB-002"
+        "customer-shop/customer-lifecycle-state#KB-002"
       ]
     },
     {
@@ -139,7 +139,7 @@
       "trigger": "shop upgrade plan",
       "condition": "CustomerEvent.name=upgraded",
       "kb_refs": [
-        "KB-002"
+        "customer-shop/customer-lifecycle-state#KB-002"
       ]
     },
     {
@@ -148,8 +148,8 @@
       "trigger": "shop huỷ subscription",
       "condition": "CustomerEvent.name=canceled",
       "kb_refs": [
-        "KB-002",
-        "KB-007"
+        "customer-shop/customer-lifecycle-state#KB-002",
+        "customer-shop/customer-lifecycle-state#KB-007"
       ]
     },
     {
@@ -158,7 +158,7 @@
       "trigger": "invariant hệ thống",
       "condition": "deleted_at set",
       "kb_refs": [
-        "_object-level:KB-001"
+        "customer-shop/_object-level#KB-001"
       ]
     },
     {
@@ -167,7 +167,7 @@
       "trigger": "client app gửi name sai chính tả qua POST /api/customer-events",
       "condition": "name không khớp enum, không bị chặn",
       "kb_refs": [
-        "KB-012"
+        "customer-shop/customer-lifecycle-state#KB-012"
       ]
     }
   ],
@@ -175,67 +175,67 @@
     {
       "statement": "1 Customer có thể có nhiều CustomerEvent (quan hệ 1-N).",
       "kb_refs": [
-        "KB-001"
+        "customer-shop/customer-lifecycle-state#KB-001"
       ]
     },
     {
       "statement": "CustomerEvent.name nhận đúng 6 giá trị: installed, uninstalled, reinstalled, subscribed, upgraded, canceled.",
       "kb_refs": [
-        "KB-002"
+        "customer-shop/customer-lifecycle-state#KB-002"
       ]
     },
     {
       "statement": "Quan hệ belongsTo(Customer::class)->withTrashed — vẫn xem được event dù Customer đã bị soft-delete.",
       "kb_refs": [
-        "KB-003"
+        "customer-shop/customer-lifecycle-state#KB-003"
       ]
     },
     {
       "statement": "Customer.latestEvent quyết định trạng thái mới nhất hiển thị ở cả admin panel và dashboard affiliate.",
       "kb_refs": [
-        "KB-004"
+        "customer-shop/customer-lifecycle-state#KB-004"
       ]
     },
     {
       "statement": "Affiliate chỉ xem trạng thái vòng đời của shop, không tự cập nhật.",
       "kb_refs": [
-        "KB-005"
+        "customer-shop/customer-lifecycle-state#KB-005"
       ]
     },
     {
       "statement": "deleted_at là soft-delete, được đặt khi shop gỡ cài app.",
       "kb_refs": [
-        "KB-006"
+        "customer-shop/customer-lifecycle-state#KB-006"
       ]
     },
     {
       "statement": "Khi shop uninstalled/canceled, sẽ không có charge mới nào từ Shopify.",
       "kb_refs": [
-        "KB-007"
+        "customer-shop/customer-lifecycle-state#KB-007"
       ]
     },
     {
       "statement": "Màn hình Customer Event hoàn toàn chỉ xem, là một audit trail.",
       "kb_refs": [
-        "KB-008"
+        "customer-shop/customer-lifecycle-state#KB-008"
       ]
     },
     {
       "statement": "Dữ liệu Customer Event do client app gửi qua API, không phải nơi admin nhập tay.",
       "kb_refs": [
-        "KB-009"
+        "customer-shop/customer-lifecycle-state#KB-009"
       ]
     },
     {
       "statement": "Màn hình Customer Event lọc trực tiếp được theo tên shop hoặc theo loại sự kiện.",
       "kb_refs": [
-        "KB-011"
+        "customer-shop/customer-lifecycle-state#KB-011"
       ]
     },
     {
       "statement": "Nhãn trạng thái được tô màu theo loại sự kiện (chỉ biết 4/6 cặp màu).",
       "kb_refs": [
-        "KB-010"
+        "customer-shop/customer-lifecycle-state#KB-010"
       ]
     }
   ],
@@ -245,7 +245,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "status": "KNOWN_DEFECT",
       "kb_refs": [
-        "KB-012"
+        "customer-shop/customer-lifecycle-state#KB-012"
       ]
     }
   ],
@@ -256,8 +256,8 @@
       "capability": "xem/filter Customer Event",
       "allowed": true,
       "kb_refs": [
-        "KB-008",
-        "KB-011"
+        "customer-shop/customer-lifecycle-state#KB-008",
+        "customer-shop/customer-lifecycle-state#KB-011"
       ]
     },
     {
@@ -265,7 +265,7 @@
       "capability": "cập nhật tay trạng thái lifecycle",
       "allowed": false,
       "kb_refs": [
-        "KB-009"
+        "customer-shop/customer-lifecycle-state#KB-009"
       ]
     },
     {
@@ -273,7 +273,7 @@
       "capability": "xem trạng thái lifecycle",
       "allowed": true,
       "kb_refs": [
-        "KB-005"
+        "customer-shop/customer-lifecycle-state#KB-005"
       ]
     },
     {
@@ -281,7 +281,7 @@
       "capability": "cập nhật trạng thái lifecycle",
       "allowed": false,
       "kb_refs": [
-        "KB-005"
+        "customer-shop/customer-lifecycle-state#KB-005"
       ]
     },
     {
@@ -289,7 +289,7 @@
       "capability": "gửi CustomerEvent qua API",
       "allowed": true,
       "kb_refs": [
-        "KB-009"
+        "customer-shop/customer-lifecycle-state#KB-009"
       ]
     }
   ],
@@ -318,7 +318,7 @@
       "feature_key": "customer-shop-registry",
       "note": "CustomerEvent gắn với Customer; soft-delete trigger (shop gỡ app) mô tả ở đây, ảnh hưởng registry.",
       "kb_refs": [
-        "KB-006"
+        "customer-shop/customer-lifecycle-state#KB-006"
       ]
     },
     {
@@ -326,7 +326,7 @@
       "object_key": "customer-shop",
       "note": "Soft-delete vẫn tính cap lifetime usage — invariant object-level liên quan trực tiếp tới trạng thái uninstalled/soft-deleted.",
       "kb_refs": [
-        "_object-level:KB-001"
+        "customer-shop/_object-level#KB-001"
       ]
     },
     {
@@ -334,7 +334,7 @@
       "object_key": "integration-api",
       "note": "Known defect KB-012 có claim tương đương ở object integration-api (ngoài quyền ghi run này) — cần đối chiếu id khi publish để tránh 2 KB-id cho cùng 1 defect.",
       "kb_refs": [
-        "KB-012"
+        "customer-shop/customer-lifecycle-state#KB-012"
       ]
     }
   ],
@@ -344,7 +344,7 @@
       "severity": "MEDIUM",
       "status": "KNOWN_DEFECT — KHÔNG publish như hành vi đúng",
       "kb_refs": [
-        "KB-012"
+        "customer-shop/customer-lifecycle-state#KB-012"
       ]
     }
   ],
@@ -355,8 +355,8 @@
     }
   ],
   "last_updated": {
-    "date": "2026-10-05",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "profile_relationships": [
     {

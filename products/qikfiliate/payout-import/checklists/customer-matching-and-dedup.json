@@ -23,7 +23,7 @@
       "expected_result": "Conversion được tạo và liên kết đúng Customer thoả cả 2 điều kiện (name=Shop VÀ program.slug=app_slug).",
       "oracle": {
         "kb_ids": [
-          "KB-003"
+          "payout-import/customer-matching-and-dedup#KB-003"
         ],
         "oracle_strength": "STRONG"
       },
@@ -54,7 +54,7 @@
       "expected_result": "Dòng bị bỏ qua hoàn toàn — KHÔNG tạo Conversion, dù chỉ lệch 1 trong 2 điều kiện.",
       "oracle": {
         "kb_ids": [
-          "KB-004"
+          "payout-import/customer-matching-and-dedup#KB-004"
         ],
         "oracle_strength": "STRONG"
       },
@@ -81,7 +81,7 @@
         "Kiểm tra log hệ thống/application log."
       ],
       "observation_point": "Log hệ thống sau khi dòng bị bỏ qua.",
-      "expected_result": "HÀNH VI HIỆN TẠI (known defect — observability gap, cùng loại với KB-024 của feature payout-csv-upload, khác nguyên nhân skip): không có log nào được ghi khi 1 dòng bị bỏ qua vì không khớp Customer. Nếu phát hiện log xuất hiện, đó là thay đổi hành vi cần xác nhận lại.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [],
         "oracle_strength": "NONE"
@@ -92,7 +92,9 @@
         "KB-005"
       ],
       "priority": "P2",
-      "automation_suitability": "SUITABLE"
+      "automation_suitability": "SUITABLE",
+      "observation_guidance": "HÀNH VI HIỆN TẠI (known defect — observability gap, cùng loại với KB-024 của feature payout-csv-upload, khác nguyên nhân skip): không có log nào được ghi khi 1 dòng bị bỏ qua vì không khớp Customer. Nếu phát hiện log xuất hiện, đó là thay đổi hành vi cần xác nhận lại.",
+      "oq_id": "OQ-payout-import-067"
     },
     {
       "check_id": "CHK-CMD-004",
@@ -114,11 +116,11 @@
       "expected_result": "Các dòng khớp toàn bộ điều kiện dedup với 1 Conversion sẵn có (payout_date, charge_type, charge_creation_time theo ngày, partner_share trong sai số 0.005 — KHÔNG kể điều kiện charge_id, xem CHK-CMD-008/009) KHÔNG được tạo Conversion mới. Đây là hành vi ĐÚNG, không phải lỗi. KHÔNG khẳng định số liệu tuyệt đối '0 created' cho mọi file (KB-012 chỉ là 1 ví dụ minh hoạ, EXAMPLE_ONLY) — chỉ khẳng định nguyên tắc 'không trùng lặp'.",
       "oracle": {
         "kb_ids": [
-          "KB-006",
-          "KB-007",
-          "KB-008",
-          "KB-009",
-          "KB-010"
+          "payout-import/customer-matching-and-dedup#KB-006",
+          "payout-import/customer-matching-and-dedup#KB-007",
+          "payout-import/customer-matching-and-dedup#KB-008",
+          "payout-import/customer-matching-and-dedup#KB-009",
+          "payout-import/customer-matching-and-dedup#KB-010"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -126,7 +128,9 @@
       "open_question_draft": "Oracle STRONG cua check 'CHK-CMD-004' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm).",
       "risk_refs": [],
       "priority": "P1",
-      "automation_suitability": "SUITABLE"
+      "automation_suitability": "SUITABLE",
+      "expected_result_basis": "BASELINE_NOT_REQUIREMENT",
+      "oq_id": "OQ-payout-import-068"
     },
     {
       "check_id": "CHK-CMD-005",
@@ -148,7 +152,7 @@
       "expected_result": "Dòng được coi là TRÙNG (không tạo Conversion mới) vì charge_creation_time so theo NGÀY, không so theo giờ/phút/giây.",
       "oracle": {
         "kb_ids": [
-          "KB-009"
+          "payout-import/customer-matching-and-dedup#KB-009"
         ],
         "oracle_strength": "STRONG"
       },
@@ -178,7 +182,7 @@
       "expected_result": "Lệch trong sai số 0.005: coi là khớp, KHÔNG tạo Conversion mới. Lệch vượt 0.005: coi là dòng khác, TẠO Conversion mới (nếu các điều kiện khác vẫn khớp, đây là ranh giới boundary cần xác nhận không bị coi nhầm là trùng).",
       "oracle": {
         "kb_ids": [
-          "KB-010"
+          "payout-import/customer-matching-and-dedup#KB-010"
         ],
         "oracle_strength": "STRONG"
       },
@@ -208,8 +212,8 @@
       "expected_result": "Cả 2 trường hợp đều TẠO Conversion mới — lệch payout_date HOẶC lệch charge_type đều phá điều kiện AND của dedup, không bị coi là trùng.",
       "oracle": {
         "kb_ids": [
-          "KB-007",
-          "KB-008"
+          "payout-import/customer-matching-and-dedup#KB-007",
+          "payout-import/customer-matching-and-dedup#KB-008"
         ],
         "oracle_strength": "STRONG"
       },
@@ -237,11 +241,11 @@
         "Kiểm tra dòng mới có bị coi là trùng (không tạo Conversion) hay được tạo mới."
       ],
       "observation_point": "Có/không có Conversion mới được tạo; vai trò thực tế của charge_id trong quyết định đó.",
-      "expected_result": "KHÔNG khẳng định 1 phía. Side A (KB-014, nguồn `qikfiliate/payout - charge type reference`): dedup KHÔNG dùng charge_id làm khoá chính cho dòng refund/downgrade — nghĩa là 2 dòng refund khác charge_id vẫn có thể bị coi là trùng nếu mọi điều kiện khác khớp (rủi ro: bỏ sót 1 refund thật, coi nhầm là trùng lặp). Side B (KB-013, nguồn `qikfiliate/payout - dedup and reconciliation`): charge_id giống nhau LÀ 1 điều kiện AND bắt buộc — nghĩa là 2 dòng refund khác charge_id sẽ KHÔNG bị coi là trùng, mỗi dòng tạo Conversion riêng (rủi ro ngược: nếu charge_id của dòng refund không ổn định/được Shopify gán lại, có thể tạo Conversion refund trùng lặp). Cả 2 phía đều chỉ ở mức INFERRED (confidence LOW), KHÔNG dùng làm oracle cho tới khi dev/PO xác nhận.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [
-          "KB-013",
-          "KB-014"
+          "payout-import/customer-matching-and-dedup#KB-013",
+          "payout-import/customer-matching-and-dedup#KB-014"
         ],
         "oracle_strength": "NONE"
       },
@@ -251,7 +255,9 @@
         "OQ-payout-import-021"
       ],
       "priority": "P1",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "observation_guidance": "KHÔNG khẳng định 1 phía. Side A (KB-014, nguồn `qikfiliate/payout - charge type reference`): dedup KHÔNG dùng charge_id làm khoá chính cho dòng refund/downgrade — nghĩa là 2 dòng refund khác charge_id vẫn có thể bị coi là trùng nếu mọi điều kiện khác khớp (rủi ro: bỏ sót 1 refund thật, coi nhầm là trùng lặp). Side B (KB-013, nguồn `qikfiliate/payout - dedup and reconciliation`): charge_id giống nhau LÀ 1 điều kiện AND bắt buộc — nghĩa là 2 dòng refund khác charge_id sẽ KHÔNG bị coi là trùng, mỗi dòng tạo Conversion riêng (rủi ro ngược: nếu charge_id của dòng refund không ổn định/được Shopify gán lại, có thể tạo Conversion refund trùng lặp). Cả 2 phía đều chỉ ở mức INFERRED (confidence LOW), KHÔNG dùng làm oracle cho tới khi dev/PO xác nhận.",
+      "oq_id": "OQ-payout-import-069"
     },
     {
       "check_id": "CHK-CMD-009",
@@ -271,11 +277,11 @@
         "Kiểm tra dòng mới có bị coi là trùng với Conversion cũ hay không, dựa trên việc charge_id rỗng được so sánh thế nào."
       ],
       "observation_point": "Có/không có Conversion mới được tạo; cách charge_id rỗng được xử lý (loại khỏi điều kiện AND hay so sánh NULL=NULL luôn đúng).",
-      "expected_result": "KHÔNG khẳng định 1 phía. Side B (KB-013, `qikfiliate/payout - dedup and reconciliation`) nêu rõ: charge_id rỗng được coi là NULL khi so sánh, KHÔNG so '=' với chuỗi rỗng — ngụ ý 2 dòng downgrade/credit khác nhau nhưng đều charge_id rỗng SẼ KHÔNG tự động bị coi là trùng chỉ vì cùng rỗng (NULL không bằng NULL trong ngữ cảnh này), vẫn phải khớp đủ 4 điều kiện còn lại. Side A (KB-014, `qikfiliate/payout - charge type reference`) nói chung là charge_id không dùng làm khoá chính cho các dòng loại này — nhất quán theo hướng 'charge_id không có sức phân biệt' nhưng không xác nhận cơ chế NULL-handling cụ thể như Side B. Cần dev xác nhận cơ chế SQL/code thực tế (NULL-safe comparison hay bị loại hẳn khỏi WHERE) trước khi dùng làm oracle.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [
-          "KB-013",
-          "KB-014"
+          "payout-import/customer-matching-and-dedup#KB-013",
+          "payout-import/customer-matching-and-dedup#KB-014"
         ],
         "oracle_strength": "NONE"
       },
@@ -285,7 +291,9 @@
         "OQ-payout-import-021"
       ],
       "priority": "P1",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "observation_guidance": "KHÔNG khẳng định 1 phía. Side B (KB-013, `qikfiliate/payout - dedup and reconciliation`) nêu rõ: charge_id rỗng được coi là NULL khi so sánh, KHÔNG so '=' với chuỗi rỗng — ngụ ý 2 dòng downgrade/credit khác nhau nhưng đều charge_id rỗng SẼ KHÔNG tự động bị coi là trùng chỉ vì cùng rỗng (NULL không bằng NULL trong ngữ cảnh này), vẫn phải khớp đủ 4 điều kiện còn lại. Side A (KB-014, `qikfiliate/payout - charge type reference`) nói chung là charge_id không dùng làm khoá chính cho các dòng loại này — nhất quán theo hướng 'charge_id không có sức phân biệt' nhưng không xác nhận cơ chế NULL-handling cụ thể như Side B. Cần dev xác nhận cơ chế SQL/code thực tế (NULL-safe comparison hay bị loại hẳn khỏi WHERE) trước khi dùng làm oracle.",
+      "oq_id": "OQ-payout-import-070"
     },
     {
       "check_id": "CHK-CMD-010",
@@ -308,7 +316,7 @@
       "expected_result": "Dedup vẫn nhận diện đúng trùng lặp dù Conversion gốc đến từ 1 lần import KHÁC, đã lưu trong DB trước đó — không chỉ so trong phạm vi file đang xử lý.",
       "oracle": {
         "kb_ids": [
-          "KB-006"
+          "payout-import/customer-matching-and-dedup#KB-006"
         ],
         "oracle_strength": "STRONG"
       },
@@ -356,5 +364,9 @@
       "dimension": "INTEGRATION",
       "reason": "Không có cross-surface portal/storefront/API; feature này được payout-csv-upload và populate-reconcile-late-data tái sử dụng dưới dạng dependency nội bộ, không phải ranh giới tích hợp cross-surface."
     }
-  ]
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
 }

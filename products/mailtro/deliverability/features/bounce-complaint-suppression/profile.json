@@ -9,17 +9,17 @@
       "role": "system (worker xử lý sự kiện SES)",
       "permission_observed": "Không có thao tác người dùng; quyết định suppress chạy ở backend khi nhận event Bounce / Complaint / Delivery.",
       "kb_refs": [
-        "KB-029",
-        "KB-030",
-        "KB-031",
-        "KB-034"
+        "deliverability/bounce-complaint-suppression#KB-029",
+        "deliverability/bounce-complaint-suppression#KB-030",
+        "deliverability/bounce-complaint-suppression#KB-031",
+        "deliverability/bounce-complaint-suppression#KB-034"
       ]
     },
     {
       "role": "system (SES account-level suppression list)",
       "permission_observed": "Danh sách suppression của SES bật `BOUNCE + COMPLAINT` trên cả 2 AWS account, là lưới account-global tách biệt với suppression theo workspace.",
       "kb_refs": [
-        "KB-041"
+        "deliverability/bounce-complaint-suppression#KB-041"
       ]
     }
   ],
@@ -28,31 +28,31 @@
       "path": "Event SES `Bounce` (`bounceType = Permanent` hoặc `Transient`) tới worker",
       "precondition": "Event hợp lệ đã qua pipeline sự kiện SES.",
       "kb_refs": [
-        "KB-029",
-        "KB-031",
-        "KB-058"
+        "deliverability/bounce-complaint-suppression#KB-029",
+        "deliverability/bounce-complaint-suppression#KB-031",
+        "deliverability/ses-event-pipeline#KB-058"
       ]
     },
     {
       "path": "Event SES `Complaint` tới worker",
       "precondition": "Event hợp lệ đã qua pipeline sự kiện SES.",
       "kb_refs": [
-        "KB-030",
-        "KB-058"
+        "deliverability/bounce-complaint-suppression#KB-030",
+        "deliverability/ses-event-pipeline#KB-058"
       ]
     },
     {
       "path": "Event SES `Delivery` cho cặp (team_id, email) đang có counter soft bounce",
       "precondition": "Counter soft bounce > 0.",
       "kb_refs": [
-        "KB-034"
+        "deliverability/bounce-complaint-suppression#KB-034"
       ]
     },
     {
       "path": "Task import chạy một lần lúc triển khai đầu, kéo danh sách suppression của SES vào bảng `suppressions`",
       "precondition": "Lần triển khai đầu.",
       "kb_refs": [
-        "KB-043"
+        "deliverability/bounce-complaint-suppression#KB-043"
       ]
     }
   ],
@@ -61,46 +61,46 @@
       "name": "Suppress ngay khi hard bounce",
       "description": "`bounceType = Permanent` tạo ngay row `reason = hard_bounce`, vĩnh viễn, không độ trễ, không ngưỡng.",
       "kb_refs": [
-        "KB-029"
+        "deliverability/bounce-complaint-suppression#KB-029"
       ]
     },
     {
       "name": "Suppress ngay khi complaint",
       "description": "Event `Complaint` tạo ngay row `reason = complaint`, vĩnh viễn. Loại `complaintFeedbackType` nào dẫn tới suppress chưa được mô tả.",
       "kb_refs": [
-        "KB-030"
+        "deliverability/bounce-complaint-suppression#KB-030"
       ]
     },
     {
       "name": "Đếm soft bounce và suppress theo ngưỡng",
       "description": "Mỗi `Transient` tăng counter của (team_id, email); đủ 7 lần liên tiếp không xen Delivery thì tạo row `reason = soft_bounce` và xoá counter; một Delivery xoá hẳn counter. SES không tự xử lý soft bounce.",
       "kb_refs": [
-        "KB-031",
-        "KB-032",
-        "KB-033",
-        "KB-034",
-        "KB-035"
+        "deliverability/bounce-complaint-suppression#KB-031",
+        "deliverability/bounce-complaint-suppression#KB-032",
+        "deliverability/bounce-complaint-suppression#KB-033",
+        "deliverability/bounce-complaint-suppression#KB-034",
+        "deliverability/bounce-complaint-suppression#KB-035"
       ]
     },
     {
       "name": "Giữ một suppression active cho mỗi cặp (team_id, email)",
       "description": "Partial unique trên row chưa soft-delete; verdict đầu tiên quyết định `reason` và không bị ghi đè; row đã gỡ giữ làm audit và event bounce mới vẫn tạo được row active mới.",
       "kb_refs": [
-        "KB-036",
-        "KB-037",
-        "KB-038",
-        "KB-039"
+        "deliverability/bounce-complaint-suppression#KB-036",
+        "deliverability/bounce-complaint-suppression#KB-037",
+        "deliverability/bounce-complaint-suppression#KB-038",
+        "deliverability/bounce-complaint-suppression#KB-039"
       ]
     },
     {
       "name": "Phạm vi theo workspace cộng lưới SES account-global",
       "description": "Suppression trong DB khoá theo (team_id, email), không ảnh hưởng workspace khác; bảng không có cột region / account (provenance nằm ở `ses_events`); danh sách SES account-level là lớp riêng, được đồng bộ một lần vào bảng lúc triển khai đầu.",
       "kb_refs": [
-        "KB-040",
-        "KB-041",
-        "KB-042",
-        "KB-043",
-        "KB-044"
+        "deliverability/bounce-complaint-suppression#KB-040",
+        "deliverability/bounce-complaint-suppression#KB-041",
+        "deliverability/bounce-complaint-suppression#KB-042",
+        "deliverability/bounce-complaint-suppression#KB-043",
+        "deliverability/bounce-complaint-suppression#KB-044"
       ]
     }
   ],
@@ -111,7 +111,7 @@
       "trigger": "Event `bounceType = Permanent`",
       "condition": "Ngay lập tức, vĩnh viễn",
       "kb_refs": [
-        "KB-029"
+        "deliverability/bounce-complaint-suppression#KB-029"
       ]
     },
     {
@@ -120,7 +120,7 @@
       "trigger": "Event `Complaint`",
       "condition": "Ngay lập tức, vĩnh viễn",
       "kb_refs": [
-        "KB-030"
+        "deliverability/bounce-complaint-suppression#KB-030"
       ]
     },
     {
@@ -129,7 +129,7 @@
       "trigger": "Event `bounceType = Transient`",
       "condition": "Theo cặp (team_id, email)",
       "kb_refs": [
-        "KB-031"
+        "deliverability/bounce-complaint-suppression#KB-031"
       ]
     },
     {
@@ -138,7 +138,7 @@
       "trigger": "Soft bounce thứ 7 liên tiếp",
       "condition": "Không xen event Delivery",
       "kb_refs": [
-        "KB-032"
+        "deliverability/bounce-complaint-suppression#KB-032"
       ]
     },
     {
@@ -147,7 +147,7 @@
       "trigger": "Event `Delivery`",
       "condition": "Xoá hẳn, không giảm 1",
       "kb_refs": [
-        "KB-034"
+        "deliverability/bounce-complaint-suppression#KB-034"
       ]
     },
     {
@@ -156,8 +156,8 @@
       "trigger": "Event bounce / complaint khác loại cho cùng cặp",
       "condition": "Verdict đầu tiên thắng",
       "kb_refs": [
-        "KB-037",
-        "KB-036"
+        "deliverability/bounce-complaint-suppression#KB-037",
+        "deliverability/bounce-complaint-suppression#KB-036"
       ]
     },
     {
@@ -166,8 +166,8 @@
       "trigger": "Event bounce mới cho cùng cặp",
       "condition": "Row cũ vẫn giữ làm audit",
       "kb_refs": [
-        "KB-039",
-        "KB-038"
+        "deliverability/bounce-complaint-suppression#KB-039",
+        "deliverability/bounce-complaint-suppression#KB-038"
       ]
     }
   ],
@@ -177,7 +177,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-029"
+        "deliverability/bounce-complaint-suppression#KB-029"
       ]
     },
     {
@@ -185,7 +185,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-030"
+        "deliverability/bounce-complaint-suppression#KB-030"
       ]
     },
     {
@@ -193,7 +193,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-031"
+        "deliverability/bounce-complaint-suppression#KB-031"
       ]
     },
     {
@@ -201,7 +201,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-032"
+        "deliverability/bounce-complaint-suppression#KB-032"
       ]
     },
     {
@@ -209,7 +209,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-033"
+        "deliverability/bounce-complaint-suppression#KB-033"
       ]
     },
     {
@@ -217,7 +217,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-034"
+        "deliverability/bounce-complaint-suppression#KB-034"
       ]
     },
     {
@@ -225,7 +225,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-036"
+        "deliverability/bounce-complaint-suppression#KB-036"
       ]
     },
     {
@@ -233,7 +233,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-037"
+        "deliverability/bounce-complaint-suppression#KB-037"
       ]
     },
     {
@@ -241,7 +241,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-038"
+        "deliverability/bounce-complaint-suppression#KB-038"
       ]
     },
     {
@@ -249,7 +249,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-039"
+        "deliverability/bounce-complaint-suppression#KB-039"
       ]
     },
     {
@@ -257,7 +257,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-040"
+        "deliverability/bounce-complaint-suppression#KB-040"
       ]
     },
     {
@@ -265,7 +265,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-041"
+        "deliverability/bounce-complaint-suppression#KB-041"
       ]
     },
     {
@@ -273,7 +273,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-042"
+        "deliverability/bounce-complaint-suppression#KB-042"
       ]
     },
     {
@@ -281,7 +281,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-043"
+        "deliverability/bounce-complaint-suppression#KB-043"
       ]
     }
   ],
@@ -292,7 +292,7 @@
       "confidence": "LOW",
       "status": "CURRENT_STATE",
       "kb_refs": [
-        "KB-054"
+        "deliverability/send-time-suppression-check#KB-054"
       ]
     },
     {
@@ -301,7 +301,7 @@
       "confidence": "MEDIUM",
       "status": "CURRENT_STATE",
       "kb_refs": [
-        "KB-004"
+        "deliverability/suppression-list-management#KB-004"
       ]
     }
   ],
@@ -312,7 +312,7 @@
       {
         "item": "Kết quả hiển thị ở cột `Reason` của tab `Bounce & complaint` (`Bounced` / `Spam complaint`); nhãn cho soft_bounce chưa mô tả",
         "kb_refs": [
-          "KB-004"
+          "deliverability/suppression-list-management#KB-004"
         ]
       }
     ],
@@ -322,25 +322,25 @@
       {
         "item": "Bảng `suppressions`: reason hard_bounce / complaint / soft_bounce, soft-delete, partial unique (team_id, email), không có cột region / account",
         "kb_refs": [
-          "KB-029",
-          "KB-030",
-          "KB-032",
-          "KB-036",
-          "KB-042"
+          "deliverability/bounce-complaint-suppression#KB-029",
+          "deliverability/bounce-complaint-suppression#KB-030",
+          "deliverability/bounce-complaint-suppression#KB-032",
+          "deliverability/bounce-complaint-suppression#KB-036",
+          "deliverability/bounce-complaint-suppression#KB-042"
         ]
       },
       {
         "item": "Bảng `soft_bounce_counters` theo (team_id, email)",
         "kb_refs": [
-          "KB-031",
-          "KB-034"
+          "deliverability/bounce-complaint-suppression#KB-031",
+          "deliverability/bounce-complaint-suppression#KB-034"
         ]
       },
       {
         "item": "Provenance của suppression nằm ở `ses_events`",
         "kb_refs": [
-          "KB-042",
-          "KB-064"
+          "deliverability/bounce-complaint-suppression#KB-042",
+          "deliverability/ses-event-pipeline#KB-064"
         ]
       }
     ],
@@ -348,8 +348,8 @@
       {
         "item": "SES account-level suppression list bật `BOUNCE + COMPLAINT` trên 2 AWS account; task import một lần từ danh sách SES (theo tài liệu, không có mã nguồn)",
         "kb_refs": [
-          "KB-041",
-          "KB-043"
+          "deliverability/bounce-complaint-suppression#KB-041",
+          "deliverability/bounce-complaint-suppression#KB-043"
         ]
       }
     ]
@@ -360,8 +360,8 @@
       "relation": "upstream",
       "note": "Chỉ event đã qua kiểm whitelist / chữ ký / attribution mới tới bước quyết định suppress.",
       "kb_refs": [
-        "KB-058",
-        "KB-063"
+        "deliverability/ses-event-pipeline#KB-058",
+        "deliverability/ses-event-pipeline#KB-063"
       ]
     },
     {
@@ -369,8 +369,8 @@
       "relation": "consumer",
       "note": "Row suppression hiển thị ở trang Suppressions và được gỡ qua Portal API.",
       "kb_refs": [
-        "KB-004",
-        "KB-015"
+        "deliverability/suppression-list-management#KB-004",
+        "deliverability/suppression-list-management#KB-015"
       ]
     },
     {
@@ -378,8 +378,8 @@
       "relation": "consumer",
       "note": "Row suppression active chặn gửi ở lần sau.",
       "kb_refs": [
-        "KB-045",
-        "KB-046"
+        "deliverability/send-time-suppression-check#KB-045",
+        "deliverability/send-time-suppression-check#KB-046"
       ]
     },
     {
@@ -387,7 +387,7 @@
       "relation": "see_also",
       "note": "Hạ tầng gửi là fact cấp sản phẩm.",
       "kb_refs": [
-        "KB-P-073"
+        "_product-level#KB-P-073"
       ]
     }
   ],
@@ -399,9 +399,9 @@
       "status": null,
       "conflict_group": null,
       "kb_refs": [
-        "KB-035",
-        "KB-034",
-        "KB-032"
+        "deliverability/bounce-complaint-suppression#KB-035",
+        "deliverability/bounce-complaint-suppression#KB-034",
+        "deliverability/bounce-complaint-suppression#KB-032"
       ]
     },
     {
@@ -411,7 +411,7 @@
       "status": null,
       "conflict_group": null,
       "kb_refs": [
-        "KB-044"
+        "deliverability/bounce-complaint-suppression#KB-044"
       ]
     },
     {
@@ -421,8 +421,8 @@
       "status": null,
       "conflict_group": null,
       "kb_refs": [
-        "KB-031",
-        "KB-032"
+        "deliverability/bounce-complaint-suppression#KB-031",
+        "deliverability/bounce-complaint-suppression#KB-032"
       ]
     }
   ],
@@ -435,9 +435,9 @@
       "question": "Reset counter soft bounce mỗi khi có Delivery khiến ngưỡng 7 lần liên tiếp gần như không đạt — PO muốn giữ cách reset này hay đổi?",
       "why_it_matters": "Quyết định có thể kiểm suppress soft bounce trong điều kiện thực tế hay không.",
       "kb_refs": [
-        "KB-035",
-        "KB-034",
-        "KB-032"
+        "deliverability/bounce-complaint-suppression#KB-035",
+        "deliverability/bounce-complaint-suppression#KB-034",
+        "deliverability/bounce-complaint-suppression#KB-032"
       ],
       "oq_id": "OQ-deliverability-009"
     },
@@ -445,10 +445,10 @@
       "question": "Địa chỉ có sẵn trên danh sách suppression của SES có đúng là sinh row `reason = hard_bounce` ở tầng ứng dụng không; event `bounceSubType = Suppressed` tạo row với reason gì; mọi `complaintFeedbackType` đều dẫn tới suppress hay chỉ loại `abuse`?",
       "why_it_matters": "Các điểm biên của rule suppress chưa có expected.",
       "kb_refs": [
-        "KB-044",
-        "KB-030",
-        "KB-018",
-        "KB-029"
+        "deliverability/bounce-complaint-suppression#KB-044",
+        "deliverability/bounce-complaint-suppression#KB-030",
+        "deliverability/suppression-list-management#KB-018",
+        "deliverability/bounce-complaint-suppression#KB-029"
       ],
       "oq_id": "OQ-deliverability-010"
     },
@@ -456,11 +456,11 @@
       "question": "Soft bounce (Epic B2 'Later') và 6 số delivery (Epic B6 'Later') có thuộc phạm vi hiện hành không, khi task MTRO-77 và MTRO-82 đã DONE?",
       "why_it_matters": "Nếu ngoài phạm vi, các check soft bounce có thể không cần chạy regression.",
       "kb_refs": [
-        "KB-031",
-        "KB-032",
-        "KB-033",
-        "KB-034",
-        "KB-069"
+        "deliverability/bounce-complaint-suppression#KB-031",
+        "deliverability/bounce-complaint-suppression#KB-032",
+        "deliverability/bounce-complaint-suppression#KB-033",
+        "deliverability/bounce-complaint-suppression#KB-034",
+        "deliverability/ses-event-pipeline#KB-069"
       ],
       "oq_id": "OQ-deliverability-011"
     },
@@ -468,9 +468,9 @@
       "question": "Tài liệu thiết kế bounce / complaint của repo sản phẩm (26/08/2026) mô tả gì thêm ngoài rule 07/09/2026 — cách chọn region / account SES cho một lần gửi, cập nhật trạng thái contact?",
       "why_it_matters": "QA chưa truy cập được; chi tiết ngoài rule chưa được mô tả.",
       "kb_refs": [
-        "KB-029",
-        "KB-030",
-        "KB-041"
+        "deliverability/bounce-complaint-suppression#KB-029",
+        "deliverability/bounce-complaint-suppression#KB-030",
+        "deliverability/bounce-complaint-suppression#KB-041"
       ],
       "oq_id": "OQ-deliverability-012"
     },
@@ -478,8 +478,8 @@
       "question": "Địa chỉ nằm trên danh sách suppression account-global của SES (không có row trong workspace) có hiện ở trang Suppressions của workspace không?",
       "why_it_matters": "Ảnh hưởng tới kỳ vọng hiển thị và quan hệ giữa hai lớp suppression.",
       "kb_refs": [
-        "KB-041",
-        "KB-043"
+        "deliverability/bounce-complaint-suppression#KB-041",
+        "deliverability/bounce-complaint-suppression#KB-043"
       ],
       "oq_id": "OQ-deliverability-025"
     },
@@ -487,15 +487,15 @@
       "question": "Suppression do soft bounce hiển thị nhãn gì ở cột `Reason` của trang Suppressions?",
       "why_it_matters": "UI chỉ quan sát thấy `Bounced` và `Spam complaint`.",
       "kb_refs": [
-        "KB-004",
-        "KB-032"
+        "deliverability/suppression-list-management#KB-004",
+        "deliverability/bounce-complaint-suppression#KB-032"
       ],
       "oq_id": "OQ-deliverability-008"
     }
   ],
   "last_updated": {
-    "date": "2026-10-08",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "coverage_matrix": [
     {
@@ -587,8 +587,8 @@
       "to": "ses-event-pipeline",
       "relation": "CONSUMES_EVENTS_FROM",
       "kb_refs": [
-        "KB-058",
-        "KB-029"
+        "deliverability/ses-event-pipeline#KB-058",
+        "deliverability/bounce-complaint-suppression#KB-029"
       ]
     },
     {
@@ -596,8 +596,8 @@
       "to": "suppression-list-management",
       "relation": "FEEDS",
       "kb_refs": [
-        "KB-004",
-        "KB-015"
+        "deliverability/suppression-list-management#KB-004",
+        "deliverability/suppression-list-management#KB-015"
       ]
     },
     {
@@ -605,7 +605,7 @@
       "to": "send-time-suppression-check",
       "relation": "FEEDS",
       "kb_refs": [
-        "KB-045"
+        "deliverability/send-time-suppression-check#KB-045"
       ]
     }
   ]

@@ -5,3 +5,4 @@
 - 2026-11-07 — CBS-080 — `confirm-password-dialog`: thêm KB-016 đến KB-020 và 13 check từ lời dev; dialog vẫn chưa quan sát được, KB-010 đến KB-012 không đổi.
 - 2026-11-07 — CBS-080 — `staff-security-status`: thêm KB-030, KB-032 (`CONFIRMED_EXPECTED`/`MEDIUM`) và KB-031 (`PROPOSED`/`LOW`, chờ OQ-account-security-057) về quy tắc chip, và 6 check; KB-013 đến KB-015 và 3 check cũ không đổi.
 - 2026-11-07 — CBS-080 — Thêm OQ-account-security-032 đến OQ-account-security-057. OQ-account-security-001, 016, 019, 026, 027, 028 thêm phần đã có lời dev. Không có open question nào được đóng; OQ-account-security-025 về multi-store giữ nguyên.
+- 2026-11-08 (maintenance-2026-11-08) — Chuẩn hoá reference theo namespace; sửa OQ và phân loại oracle/expected theo nguồn hiện có. Không xác nhận thêm requirement hoặc thay đổi hành vi sản phẩm.

@@ -1,5 +1,5 @@
 # Models — catalog model/provider (kể cả model nội bộ Teeinblue) và Playground chạy model trực tiếp
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** ImagenHub · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-08
 

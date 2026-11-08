@@ -1,5 +1,5 @@
 # Program — app Shopify được quảng bá trong chương trình affiliate
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** qikfiliate · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-05
 

@@ -1,5 +1,5 @@
 # Object: Translation (product: teeinblue) — Feature Profile Summary
-**Published context version:** 3
+**Published context version:** 4
 
 Env: staging — role `owner` (account explore) on portal, `GUEST buyer` on storefront.
 

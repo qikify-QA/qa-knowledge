@@ -8,14 +8,14 @@
       "role": "store owner / staff (sub=273, user_id=266, plan Blue (Test))",
       "permission_observed": "Full quyền save artwork; JWT chứa cả staff id (sub) và tenant/user id (user_id) trong cùng token",
       "kb_refs": [
-        "KB-058"
+        "artwork/artwork-save-persist#KB-058"
       ]
     },
     {
       "role": "merchant-owner (store owner/staff, instance 520 nprice1)",
       "permission_observed": "Mở artwork trong Artwork Editor và bấm Save; trên bản copy Artwork 1.0 #5187 PUT trả 500 nên không Save được",
       "kb_refs": [
-        "KB-145"
+        "artwork/artwork-save-persist#KB-145"
       ]
     }
   ],
@@ -24,8 +24,8 @@
       "path": "artwork editor — nút 'Save & Close' hoặc 'Save'",
       "precondition": "artwork editor có ≥1 layer đang cấu hình",
       "kb_refs": [
-        "KB-049",
-        "KB-050"
+        "artwork/artwork-save-persist#KB-049",
+        "artwork/artwork-save-persist#KB-050"
       ]
     }
   ],
@@ -34,53 +34,53 @@
       "name": "Editor thuần client-side cho tới khi Save",
       "description": "Add/edit/delete layer, mở accordion, duplicate layer KHÔNG sinh API call nào; artwork chỉ thực sự ghi DB khi Save & Close.",
       "kb_refs": [
-        "KB-049"
+        "artwork/artwork-save-persist#KB-049"
       ]
     },
     {
       "name": "Trình tự Save cố định",
       "description": "POST /api/artworks/{id}/validate-default-value (luôn 204 trong mọi sample, 10/10) rồi PUT /api/artworks/{id} (200, ghi toàn bộ artwork). Thứ tự luôn cố định: validate-default-value -> [circular-dependency check, client-side] -> PUT (chỉ gửi nếu không bị chặn).",
       "kb_refs": [
-        "KB-050",
-        "KB-062"
+        "artwork/artwork-save-persist#KB-050",
+        "artwork/artwork-save-persist#KB-062"
       ]
     },
     {
       "name": "PUT full-replace",
       "description": "PUT /api/artworks/{id} ghi đè toàn bộ artwork trong 1 lần gọi (body chứa đủ mọi layer hiện có, không phải patch từng layer). Response ECHO chính xác từng field so với request trong sample có full-body capture.",
       "kb_refs": [
-        "KB-052"
+        "artwork/artwork-save-persist#KB-052"
       ]
     },
     {
       "name": "Client-side field validation trước Save",
       "description": "8/35 layer type ở trạng thái mặc định bị chặn Save với message cụ thể theo field/type; 2 type (Text to Image AI, Multiple Uploads) validate 2 tầng tuần tự (GenAI service trước, Prompt field xuất hiện sau).",
       "kb_refs": [
-        "KB-051"
+        "artwork/artwork-save-persist#KB-051"
       ]
     },
     {
       "name": "Đọc lại dữ liệu sau save",
       "description": "REST GET /api/artworks/{id} KHÔNG được hỗ trợ (405); toàn bộ layer/template data (bao gồm dependency, retrieval_*) chỉ đọc được qua Hasura GraphQL, cột artworks.templates kiểu jsonb.",
       "kb_refs": [
-        "KB-056"
+        "artwork/artwork-save-persist#KB-056"
       ]
     },
     {
       "name": "[MỚI, CBS-097] Hai phiên Artwork Editor cùng sửa một artwork: lần Save sau ghi đè cả layer",
       "description": "OBSERVED_CURRENT/LOW (1 lượt, một cặp field AI provider): tab B (dữ liệu cũ) Save sau tab A thì thắng cho cả layer, thay đổi của tab A mất, không cảnh báo xung đột, không 500. Hệ quả nhất quán với PUT full-replace (KB-052) nhưng chưa xác nhận là hành vi mong muốn.",
       "kb_refs": [
-        "KB-970",
-        "KB-052"
+        "artwork/artwork-save-persist#KB-970",
+        "artwork/artwork-save-persist#KB-052"
       ]
     },
     {
       "name": "[MỚI, CBS-097] Lưu thứ tự field của tab Re-order (Form panel) qua Save và đọc lại",
       "description": "OBSERVED_CURRENT/LOW (1 lượt): thứ tự field sau khi thả ở tab Re-order giữ nguyên sau Save và mở lại editor, khớp thứ tự đọc qua GraphQL (KB-973). Field JSON chứa thứ tự đang conflict: templates[].positions là thứ tự render (KB-053) hay thứ tự form (KB-974) — CONF-CBS-097-01 UNRESOLVED, không làm oracle.",
       "kb_refs": [
-        "KB-973",
-        "KB-974",
-        "KB-053"
+        "artwork/artwork-save-persist#KB-973",
+        "artwork/artwork-save-persist#KB-974",
+        "artwork/artwork-save-persist#KB-053"
       ]
     }
   ],
@@ -91,10 +91,10 @@
       "trigger": "Save & Close / Save",
       "condition": "validate-default-value trả 204 VÀ client không phát hiện field bắt buộc thiếu hoặc vòng condition",
       "kb_refs": [
-        "KB-049",
-        "KB-050",
-        "KB-062",
-        "KB-054"
+        "artwork/artwork-save-persist#KB-049",
+        "artwork/artwork-save-persist#KB-050",
+        "artwork/artwork-save-persist#KB-062",
+        "artwork/artwork-save-persist#KB-054"
       ]
     },
     {
@@ -103,7 +103,7 @@
       "trigger": "bấm Save & Close khi field bắt buộc chưa điền",
       "condition": "layer thuộc 8/35 type liệt kê ở KB-051",
       "kb_refs": [
-        "KB-051"
+        "artwork/artwork-save-persist#KB-051"
       ]
     },
     {
@@ -112,7 +112,7 @@
       "trigger": "bấm Save (kể cả khi không sửa gì)",
       "condition": "quan sát 1 lần trên 1 fixture (staging 2026-10-21→22); nguyên nhân chưa rõ, không suy rộng cho mọi artwork Artwork 1.0",
       "kb_refs": [
-        "KB-145"
+        "artwork/artwork-save-persist#KB-145"
       ]
     },
     {
@@ -121,7 +121,7 @@
       "trigger": "tab B bấm Save sau khi tab A đã Save",
       "condition": "1 lượt, một cặp field AI provider; loại layer khác chưa thử",
       "kb_refs": [
-        "KB-970"
+        "artwork/artwork-save-persist#KB-970"
       ]
     },
     {
@@ -130,7 +130,7 @@
       "trigger": "Save rồi mở lại editor",
       "condition": "1 lượt, không ghi build",
       "kb_refs": [
-        "KB-973"
+        "artwork/artwork-save-persist#KB-973"
       ]
     },
     {
@@ -139,7 +139,7 @@
       "trigger": "Save",
       "condition": "build staging 2026-10-23; known issue phía server, không phải expected",
       "kb_refs": [
-        "KB-972"
+        "artwork/artwork-save-persist#KB-972"
       ]
     }
   ],
@@ -148,49 +148,49 @@
     {
       "statement": "Request body PUT có field cấp artwork: name, width/height, design_format ('rgb'), artwork_category_id (null), template_settings (null), global_option_ids ([]), schema_version (2), templates[] (mỗi phần tử: id 'template-<6 số>', name, addons: [], charge_enabled, positions[], layers[]).",
       "kb_refs": [
-        "KB-053"
+        "artwork/artwork-save-persist#KB-053"
       ],
       "observed_count": 2
     },
     {
       "statement": "Response bổ sung so với request: id, description (null), thumbnail (null), is_locked (null), current_version_id (tăng sau mỗi save), status (0). Response KHÔNG có artwork_category_id/global_option_ids ở top-level dù request có gửi.",
       "kb_refs": [
-        "KB-054"
+        "artwork/artwork-save-persist#KB-054"
       ],
       "observed_count": 1
     },
     {
       "statement": "Layer object trong templates[].layers[] có 7 field common envelope xuất hiện ở 35/35 layer: id ('layer-<6 số>'), type, name, locked, visible, customization_type, schema_version.",
       "kb_refs": [
-        "KB-055"
+        "artwork/artwork-save-persist#KB-055"
       ],
       "observed_count": 1
     },
     {
       "statement": "JWT portal (localStorage.teeinblue_token[0].token) chứa claim sub='273' (staffs.id) và user_id=266 (users.id) trong cùng token; xác nhận chéo qua GraphQL artworks row {user_id:266, staff_id:273}.",
       "kb_refs": [
-        "KB-058"
+        "artwork/artwork-save-persist#KB-058"
       ],
       "observed_count": 2
     },
     {
       "statement": "localStorage['teeinblue_token'] là mảng JSON [{token, expiredAt}], không phải chuỗi JWT trần; gửi nhầm cả mảng làm Bearer vẫn HTTP 200 nhưng body có errors[].",
       "kb_refs": [
-        "KB-059"
+        "artwork/artwork-save-persist#KB-059"
       ],
       "observed_count": 1
     },
     {
       "statement": "POST /v1/graphql không kèm Authorization vẫn trả HTTP 200 kèm errors[] (không trả 401 như REST) — status code KHÔNG dùng được để assert authz trên GraphQL.",
       "kb_refs": [
-        "KB-060"
+        "artwork/artwork-save-persist#KB-060"
       ],
       "observed_count": 1
     },
     {
       "statement": "Response header access-control-expose-headers của PUT liệt kê tên Retry-After/X-RateLimit-Limit/X-RateLimit-Remaining/X-RateLimit-Reset, nhưng giá trị thực chưa từng xuất hiện trong bất kỳ capture nào.",
       "kb_refs": [
-        "KB-061"
+        "artwork/artwork-save-persist#KB-061"
       ],
       "observed_count": 1
     },
@@ -199,7 +199,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-145"
+        "artwork/artwork-save-persist#KB-145"
       ],
       "observed_count": 1
     },
@@ -208,7 +208,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-970"
+        "artwork/artwork-save-persist#KB-970"
       ],
       "observed_count": null
     },
@@ -218,7 +218,7 @@
       "confidence": "LOW",
       "status": "KNOWN_DEFECT",
       "kb_refs": [
-        "KB-971"
+        "artwork/artwork-save-persist#KB-971"
       ],
       "observed_count": null
     },
@@ -228,7 +228,7 @@
       "confidence": "LOW",
       "status": "KNOWN_DEFECT",
       "kb_refs": [
-        "KB-972"
+        "artwork/artwork-save-persist#KB-972"
       ],
       "observed_count": null
     },
@@ -237,7 +237,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-973"
+        "artwork/artwork-save-persist#KB-973"
       ],
       "observed_count": null
     },
@@ -248,8 +248,8 @@
       "status": "UNRESOLVED",
       "conflict_group": "CONF-CBS-097-01",
       "kb_refs": [
-        "KB-974",
-        "KB-053"
+        "artwork/artwork-save-persist#KB-974",
+        "artwork/artwork-save-persist#KB-053"
       ],
       "observed_count": null
     }
@@ -261,7 +261,7 @@
       "observed_count": 2,
       "rule_confidence": "LOW",
       "kb_refs": [
-        "KB-051"
+        "artwork/artwork-save-persist#KB-051"
       ]
     },
     {
@@ -270,7 +270,7 @@
       "observed_count": 2,
       "rule_confidence": "LOW",
       "kb_refs": [
-        "KB-051"
+        "artwork/artwork-save-persist#KB-051"
       ]
     },
     {
@@ -279,7 +279,7 @@
       "observed_count": 2,
       "rule_confidence": "LOW",
       "kb_refs": [
-        "KB-051"
+        "artwork/artwork-save-persist#KB-051"
       ]
     },
     {
@@ -288,7 +288,7 @@
       "observed_count": 2,
       "rule_confidence": "LOW",
       "kb_refs": [
-        "KB-051"
+        "artwork/artwork-save-persist#KB-051"
       ]
     },
     {
@@ -297,7 +297,7 @@
       "observed_count": 2,
       "rule_confidence": "LOW",
       "kb_refs": [
-        "KB-051"
+        "artwork/artwork-save-persist#KB-051"
       ]
     },
     {
@@ -306,7 +306,7 @@
       "observed_count": 2,
       "rule_confidence": "LOW",
       "kb_refs": [
-        "KB-051"
+        "artwork/artwork-save-persist#KB-051"
       ]
     },
     {
@@ -315,7 +315,7 @@
       "observed_count": 1,
       "rule_confidence": "LOW",
       "kb_refs": [
-        "KB-056"
+        "artwork/artwork-save-persist#KB-056"
       ]
     },
     {
@@ -324,8 +324,8 @@
       "observed_count": 1,
       "rule_confidence": "LOW",
       "kb_refs": [
-        "KB-059",
-        "KB-060"
+        "artwork/artwork-save-persist#KB-059",
+        "artwork/artwork-save-persist#KB-060"
       ]
     },
     {
@@ -334,7 +334,7 @@
       "observed_count": 1,
       "rule_confidence": "LOW",
       "kb_refs": [
-        "KB-057"
+        "artwork/artwork-save-persist#KB-057"
       ]
     }
   ],
@@ -343,7 +343,7 @@
       "role": "store owner/staff",
       "capability": "full save/read artwork của chính tenant (user_id=266) qua REST PUT + GraphQL",
       "kb_refs": [
-        "KB-058"
+        "artwork/artwork-save-persist#KB-058"
       ]
     }
   ],
@@ -353,13 +353,13 @@
       {
         "item": "[MỚI, CBS-097] Artwork Editor mở cùng một artwork ở hai tab, lần lượt Save (last-save-wins cho cả layer, không cảnh báo)",
         "kb_refs": [
-          "KB-970"
+          "artwork/artwork-save-persist#KB-970"
         ]
       },
       {
         "item": "[MỚI, CBS-097] Artwork Editor — Form panel, tab Re-order: thứ tự field sau Save và mở lại editor",
         "kb_refs": [
-          "KB-973"
+          "artwork/artwork-save-persist#KB-973"
         ]
       }
     ],
@@ -374,13 +374,13 @@
       {
         "item": "[MỚI, CBS-097, KNOWN_DEFECT] PUT /api/artworks/{id} tự dựng sửa layer locked: true — 200, giá trị được lưu",
         "kb_refs": [
-          "KB-971"
+          "artwork/artwork-save-persist#KB-971"
         ]
       },
       {
         "item": "[MỚI, CBS-097, KNOWN_DEFECT] Request lưu artwork với Option title chứa NUL — 500 {\"message\": \"Server Error\"}, dữ liệu không đổi",
         "kb_refs": [
-          "KB-972"
+          "artwork/artwork-save-persist#KB-972"
         ]
       }
     ],
@@ -389,14 +389,14 @@
       {
         "item": "[MỚI, CBS-097] Thứ tự field đọc qua GraphQL sau Save khớp thứ tự trên tab Re-order",
         "kb_refs": [
-          "KB-973"
+          "artwork/artwork-save-persist#KB-973"
         ]
       },
       {
         "item": "[MỚI, CBS-097, CONFLICT CONF-CBS-097-01] Nghĩa của templates[].positions (thứ tự render hay thứ tự form) và templates[].layers khi reorder",
         "kb_refs": [
-          "KB-053",
-          "KB-974"
+          "artwork/artwork-save-persist#KB-053",
+          "artwork/artwork-save-persist#KB-974"
         ]
       }
     ],
@@ -407,23 +407,23 @@
       "type": "feature",
       "description": "Toàn bộ nội dung layer/template dựng ở FEAT-03/04/05/08/09/10/11 chỉ thực sự persist qua feature này.",
       "kb_refs": [
-        "KB-049",
-        "KB-050"
+        "artwork/artwork-save-persist#KB-049",
+        "artwork/artwork-save-persist#KB-050"
       ]
     },
     {
       "type": "feature",
       "description": "[MỚI, CBS-097] Thứ tự field đổi ở tab Re-order (FEAT-31-form-field-reorder) chỉ persist qua Save của feature này.",
       "kb_refs": [
-        "KB-973",
-        "KB-974"
+        "artwork/artwork-save-persist#KB-973",
+        "artwork/artwork-save-persist#KB-974"
       ]
     },
     {
       "type": "feature",
       "description": "[MỚI, CBS-097] Editor chặn sửa layer locked qua Bulk edit (FEAT-28-layer-bulk-edit, KB-880/KB-881) nhưng server không chặn PUT tự dựng (KB-971, KNOWN_DEFECT).",
       "kb_refs": [
-        "KB-971"
+        "artwork/artwork-save-persist#KB-971"
       ]
     }
   ],
@@ -431,76 +431,76 @@
     {
       "risk": "CONF-005: chưa xác nhận OpenAPI spec có tồn tại thật trên staging (9 path thử đều 404) hay chỉ chưa tìm đúng path — KHÔNG coi bảng field/schema trong KB này là contract chính thức cho tới khi có xác nhận.",
       "kb_refs": [
-        "KB-057"
+        "artwork/artwork-save-persist#KB-057"
       ],
       "conflict_id": "CONF-005"
     },
     {
       "risk": "CONF-007: chưa rõ readback dùng 1 GraphQL query riêng (như evidence capture mô tả) hay chỉ đọc lại từ chính response PUT rồi gán nhãn 'GraphQL' theo thói quen mô tả field jsonb — ảnh hưởng cách viết test verify sau save.",
       "kb_refs": [
-        "KB-056",
-        "KB-054"
+        "artwork/artwork-save-persist#KB-056",
+        "artwork/artwork-save-persist#KB-054"
       ],
       "conflict_id": "CONF-007"
     },
     {
       "risk": "Rate-limit header có tên expose trên response PUT nhưng chưa từng quan sát giá trị/threshold thật — KHÔNG dùng làm oracle test rate-limit cho tới khi có giá trị thật.",
       "kb_refs": [
-        "KB-061"
+        "artwork/artwork-save-persist#KB-061"
       ]
     },
     {
       "risk": "PUT response body chỉ được capture đầy đủ ở 1-2/10 lần gọi quan sát được — phần lớn field request/response body vẫn ở mức LOW confidence, observed_count=1, không được suy required/optional.",
       "kb_refs": [
-        "KB-053",
-        "KB-054",
-        "KB-055"
+        "artwork/artwork-save-persist#KB-053",
+        "artwork/artwork-save-persist#KB-054",
+        "artwork/artwork-save-persist#KB-055"
       ]
     },
     {
       "risk": "Bản copy Artwork 1.0 #5187 không Save được (PUT 500) — fixture này không dùng được cho bất kỳ check nào cần Save; check Paragraph Artwork 1.0 của feature text-multi-stroke đang bị chặn bởi lỗi này.",
       "kb_refs": [
-        "KB-145"
+        "artwork/artwork-save-persist#KB-145"
       ]
     },
     {
       "risk": "Chỉ 1 fixture, 1 lượt chạy: không được dùng KB-145 làm oracle 'Save artwork Artwork 1.0 luôn lỗi', cũng không được bỏ qua như lỗi fixture khi chưa có nguyên nhân. TC-TIB-6332 hiện 'passed' trên Testlane trong khi actualResult ghi Blocked.",
       "kb_refs": [
-        "KB-145"
+        "artwork/artwork-save-persist#KB-145"
       ]
     },
     {
       "risk": "[MỚI, CBS-097] Hai phiên cùng sửa một artwork: thay đổi của phiên Save trước mất im lặng (mất dữ liệu, không cảnh báo). Chỉ 1 lượt trên field AI provider; chưa rõ là hành vi mong muốn — không assert last-save-wins là đúng hay sai.",
       "kb_refs": [
-        "KB-970"
+        "artwork/artwork-save-persist#KB-970"
       ]
     },
     {
       "risk": "[MỚI, CBS-097, KNOWN_DEFECT] Server không bảo vệ layer locked: client tự dựng PUT sửa được layer locked: true. Không bao giờ làm oracle; chưa có bug chính thức.",
       "kb_refs": [
-        "KB-971"
+        "artwork/artwork-save-persist#KB-971"
       ]
     },
     {
       "risk": "[MỚI, CBS-097, KNOWN_DEFECT] Option title chứa NUL làm Save trả 500; chưa chạy lại trên build mới hơn 2026-10-23, chưa rõ expected (từ chối có thông báo hay loại bỏ ký tự).",
       "kb_refs": [
-        "KB-972"
+        "artwork/artwork-save-persist#KB-972"
       ]
     },
     {
       "risk": "[MỚI, CBS-097] CONF-CBS-097-01: không dùng templates[].positions làm oracle cho thứ tự render hay thứ tự form cho tới khi conflict được giải; KB-053 giữ nguyên.",
       "kb_refs": [
-        "KB-053",
-        "KB-974"
+        "artwork/artwork-save-persist#KB-053",
+        "artwork/artwork-save-persist#KB-974"
       ],
       "conflict_id": "CONF-CBS-097-01"
     },
     {
       "risk": "[MỚI, CBS-097] Mọi quan sát mới là kết quả AI hoặc ghi chú QA, phần lớn không ghi build, 1 lượt: OBSERVED_CURRENT/LOW, không có item CONFIRMED_EXPECTED để làm oracle.",
       "kb_refs": [
-        "KB-970",
-        "KB-973",
-        "KB-974"
+        "artwork/artwork-save-persist#KB-970",
+        "artwork/artwork-save-persist#KB-973",
+        "artwork/artwork-save-persist#KB-974"
       ]
     }
   ],
@@ -537,7 +537,7 @@
       "question": "Vì sao PUT /api/artworks/5187 trả 500 'Server Error' kể cả khi Save không đổi gì trên bản copy Artwork 1.0 chưa có version đã lưu — lỗi dữ liệu của bản copy, lỗi sản phẩm với artwork Artwork 1.0 chưa có version, hay liên quan TIB-5580?",
       "why_it_matters": "Quyết định đây là bug sản phẩm cần check hồi quy hay chỉ là fixture hỏng; cần log server để phân biệt.",
       "kb_refs": [
-        "KB-145"
+        "artwork/artwork-save-persist#KB-145"
       ],
       "oq_type": "NEEDS_CONFIRMATION",
       "oq_id": "OQ-artwork-114"
@@ -546,7 +546,7 @@
       "question": "Các artwork Artwork 1.0 khác (không phải bản copy #5187, kể cả artwork gốc #2164 hoặc artwork 1.0 đã có version lưu) có Save được không?",
       "why_it_matters": "Cần một artwork Artwork 1.0 Save được làm fixture để chạy lại check Paragraph Artwork 1.0; hiện chưa biết phạm vi của lỗi 500.",
       "kb_refs": [
-        "KB-145"
+        "artwork/artwork-save-persist#KB-145"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-artwork-115"
@@ -555,7 +555,7 @@
       "question": "Khi PUT /api/artworks/{id} trả 500, Artwork Editor hiển thị gì cho người dùng (toast/thông báo lỗi, giữ thay đổi chưa lưu hay không)?",
       "why_it_matters": "KB-145 chỉ ghi artwork không Save được, không ghi phản hồi UI; check negative cho lỗi server khi Save chưa có oracle.",
       "kb_refs": [
-        "KB-145"
+        "artwork/artwork-save-persist#KB-145"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-artwork-116"
@@ -564,7 +564,7 @@
       "question": "[MỚI, CBS-097] Hai tab cùng sửa một layer thì lần Save sau ghi đè cả layer, thay đổi của tab kia mất, không cảnh báo. Last-save-wins cho cả layer có phải hành vi mong muốn, có cần cảnh báo xung đột không? Có áp cho loại layer khác ngoài field AI provider không?",
       "why_it_matters": "Mất dữ liệu im lặng khi nhiều người/nhiều tab cùng sửa; check concurrent save chưa có expected.",
       "kb_refs": [
-        "KB-970"
+        "artwork/artwork-save-persist#KB-970"
       ],
       "oq_type": "NEEDS_CONFIRMATION",
       "oq_id": "OQ-artwork-331"
@@ -573,7 +573,7 @@
       "question": "[MỚI, CBS-097, KNOWN_DEFECT] PUT /api/artworks/{id} tự dựng vẫn lưu thay đổi trên layer locked: true (200). Server có nên từ chối thay đổi trên layer locked không?",
       "why_it_matters": "Locked chỉ được chặn ở UI; check REGRESSION watch chưa có expected.",
       "kb_refs": [
-        "KB-971"
+        "artwork/artwork-save-persist#KB-971"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-artwork-332"
@@ -582,7 +582,7 @@
       "question": "[MỚI, CBS-097, KNOWN_DEFECT] Bug Option title chứa ký tự NUL làm request lưu artwork trả 500 đã sửa chưa, và hành vi mong muốn là từ chối có thông báo hay loại bỏ ký tự?",
       "why_it_matters": "Chưa chạy lại trên build mới hơn 2026-10-23; check watch chưa có expected.",
       "kb_refs": [
-        "KB-972"
+        "artwork/artwork-save-persist#KB-972"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-artwork-333"
@@ -591,7 +591,7 @@
       "question": "[MỚI, CBS-097] Thứ tự field sau khi thả ở tab Re-order giữ nguyên sau Save và mở lại editor, khớp GraphQL (1 lượt, không ghi build). Đây có phải hành vi mong muốn?",
       "why_it_matters": "Check persistence thứ tự field chưa có oracle; cần test case PASS có build hoặc xác nhận PO/Dev.",
       "kb_refs": [
-        "KB-973"
+        "artwork/artwork-save-persist#KB-973"
       ],
       "oq_type": "NEEDS_CONFIRMATION",
       "oq_id": "OQ-artwork-334"
@@ -600,8 +600,8 @@
       "question": "[MỚI, CBS-097, CONFLICT CONF-CBS-097-01] templates[].positions là thứ tự render của layer (KB-053) hay thứ tự field của tab Re-order (KB-974)? Nếu là thứ tự form thì reorder có đổi thứ tự render không, và thứ tự render nằm ở đâu (templates[].layers?)",
       "why_it_matters": "Quyết định field nào dùng để verify thứ tự sau Save và reorder có ảnh hưởng render hay không.",
       "kb_refs": [
-        "KB-053",
-        "KB-974"
+        "artwork/artwork-save-persist#KB-053",
+        "artwork/artwork-save-persist#KB-974"
       ],
       "oq_type": "CONFLICT",
       "conflict_group": "CONF-CBS-097-01",
@@ -609,8 +609,8 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-07",
-    "ccr_ref": "CBS-097"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "coverage_matrix": [
     {
@@ -677,7 +677,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-145"
+        "artwork/artwork-save-persist#KB-145"
       ],
       "basis": "1 quan sát, 1 fixture"
     },
@@ -689,7 +689,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-145"
+        "artwork/artwork-save-persist#KB-145"
       ]
     },
     {
@@ -700,7 +700,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-970"
+        "artwork/artwork-save-persist#KB-970"
       ],
       "basis": "1 lượt, OBSERVED_CURRENT LOW"
     },
@@ -712,7 +712,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-970"
+        "artwork/artwork-save-persist#KB-970"
       ],
       "basis": "chưa thử"
     },
@@ -724,7 +724,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-971"
+        "artwork/artwork-save-persist#KB-971"
       ],
       "basis": "KNOWN_DEFECT, 2 lượt (2026-10-23, 2026-10-30)"
     },
@@ -736,7 +736,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-972"
+        "artwork/artwork-save-persist#KB-972"
       ],
       "basis": "KNOWN_DEFECT, build 2026-10-23"
     },
@@ -748,7 +748,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-972"
+        "artwork/artwork-save-persist#KB-972"
       ],
       "basis": "chưa chạy lại"
     },
@@ -760,7 +760,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-973"
+        "artwork/artwork-save-persist#KB-973"
       ],
       "basis": "1 lượt, OBSERVED_CURRENT LOW"
     },
@@ -772,8 +772,8 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-053",
-        "KB-974"
+        "artwork/artwork-save-persist#KB-053",
+        "artwork/artwork-save-persist#KB-974"
       ],
       "basis": "CONF-CBS-097-01 UNRESOLVED"
     }
@@ -784,8 +784,8 @@
       "conflict_id": "CONF-CBS-097-01",
       "conflict_group": "CONF-CBS-097-01",
       "kb_ids": [
-        "KB-053",
-        "KB-974"
+        "artwork/artwork-save-persist#KB-053",
+        "artwork/artwork-save-persist#KB-974"
       ],
       "status": "UNRESOLVED",
       "side_a": "KB-053: templates[].positions là mảng layer id theo thứ tự render (một sample PUT full body, 2026-09-10).",
@@ -824,9 +824,9 @@
       "relation": "persists",
       "note": "stroke_layers / stroke_enabled / stroke_color / stroke_width của text layer chỉ persist qua PUT của feature này (KB-129); lỗi PUT 500 trên bản copy Artwork 1.0 #5187 (KB-145) chặn việc kiểm payload Paragraph Artwork 1.0 (KB-142).",
       "kb_refs": [
-        "KB-129",
-        "KB-142",
-        "KB-145"
+        "artwork/text-multi-stroke#KB-129",
+        "artwork/text-multi-stroke#KB-142",
+        "artwork/artwork-save-persist#KB-145"
       ]
     },
     {
@@ -835,8 +835,8 @@
       "relation": "persists",
       "note": "Thứ tự field đổi ở tab Re-order chỉ persist qua Save của feature này (KB-973); nghĩa của templates[].positions đang conflict (CONF-CBS-097-01).",
       "kb_refs": [
-        "KB-973",
-        "KB-974"
+        "artwork/artwork-save-persist#KB-973",
+        "artwork/artwork-save-persist#KB-974"
       ]
     },
     {
@@ -845,7 +845,7 @@
       "relation": "related",
       "note": "Bulk edit loại layer locked ở UI (KB-880, KB-881); server không chặn PUT tự dựng trên layer locked (KB-971, KNOWN_DEFECT).",
       "kb_refs": [
-        "KB-971"
+        "artwork/artwork-save-persist#KB-971"
       ],
       "cross_feature_kb_refs": [
         "KB-880",

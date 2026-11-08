@@ -1,5 +1,5 @@
 # Templates — recipe tái sử dụng (model + prompt/variables + default inputs + post-processing + fallback), quản lý trên portal và gọi qua template_id
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** ImagenHub · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-08
 

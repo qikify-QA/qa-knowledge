@@ -1,5 +1,5 @@
 # Onboarding Dashboard (Home screen: onboarding empty-state + dashboard)
-**Published context version:** 2
+**Published context version:** 3
 
 **Product:** qik-volume · **Object:** `onboarding-dashboard` · **Mode:** REFRESH (trên nền DOC_BOOTSTRAP v1) · **Environment:** documented + staging · **Published:** 2026-10-18
 
