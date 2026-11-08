@@ -1,12 +1,12 @@
 # Object: Order (product: teeinblue) — Feature Profile Summary
-**Published context version:** 6
+**Published context version:** 7
 
-- **Env:** staging. Bootstrap 2026-09-13; cập nhật CBS-006 (TIB-5584) và CBS-011 (TIB-5558, action Hide) 2026-10-30; CBS-074 (Edit Customization sau order, tracking từ provider) 2026-11-06.
+- **Env:** staging. Bootstrap 2026-09-13; cập nhật CBS-006 (TIB-5584) và CBS-011 (TIB-5558, action Hide) 2026-10-30; CBS-074 (Edit Customization sau order, tracking từ provider) 2026-11-06; CBS-096 (import đơn Shopify với customization_id sai định dạng, order design ảnh AI, order design vector) 2026-11-07.
 - **Nguồn:** phần lớn knowledge là `OBSERVED_CURRENT` từ bootstrap; item `CONFIRMED_EXPECTED` gồm KB-182, KB-238, KB-239, KB-392, từ test case Testlane PASS trên staging; KB-182 chờ PO xác nhận vì đổi đầu ra fulfillment (OQ-order-020)
 - **Actor coverage:** storefront = GUEST buyer only (no signed-in buyer tested); portal = owner (Linh explorer, sub=273) only (no non-owner/restricted role tested)
 - **Authoritative store: `linh-explorer-2.myshopify.com`** — NOT `linh-explorer.myshopify.com`. The latter has a known add-to-cart failure for this campaign that prevents completing a real order there; this KB should not be treated as verified for that store until its add-to-cart issue is investigated separately (see `OQ-order-013`).
-- **3 features** (`place-personalized-order-storefront`, `review-and-initiate-fulfillment-portal`, `edit-customization-after-order`). Hai feature đầu đã có coverage; `edit-customization-after-order` chưa có coverage xác nhận (item đều PROPOSED, check đều NEEDS_CONFIRMATION). Không feature nào bị chặn hoàn toàn.
-- **34 KB items** across the object: 0 HIGH, 7 MEDIUM, 27 LOW. 24 item bootstrap resting on exactly ONE order end-to-end (plus a second order used only to illustrate the sync conflict below).
+- **5 features** (`place-personalized-order-storefront`, `review-and-initiate-fulfillment-portal`, `edit-customization-after-order`, `shopify-order-import`, `order-design-vector-render`). Hai feature đầu đã có coverage; `edit-customization-after-order` và `shopify-order-import` chưa có coverage xác nhận (item đều PROPOSED, check đều NEEDS_CONFIRMATION); `order-design-vector-render` chỉ có quan sát một lượt (BASELINE). Không feature nào bị chặn hoàn toàn.
+- **43 KB items** across the object: 0 HIGH, 7 MEDIUM, 36 LOW. 24 item bootstrap resting on exactly ONE order end-to-end (plus a second order used only to illustrate the sync conflict below).
 - **1 unresolved conflict spanning both features:** `OQ-order-001` — an order placed successfully at storefront checkout did not appear in the portal Orders list for 90+ minutes across all statuses/stores/a 30-day range; a second order did sync after an unverified user claim that a webhook configuration issue had been fixed. That claim has never been independently verified.
 
 ---
@@ -40,6 +40,9 @@
 
 **Cập nhật CBS-013 (TIB-5203):** chuỗi Add to cart → checkout → order trên portal → file design có giá trị layer + Global Option (KB-369, OBSERVED_CURRENT/LOW, 1 lượt trên staging trước redeploy) — chưa xác nhận, ảnh hưởng order/fulfillment, chờ PO/Dev (OQ-order-027). CHK-022-ORDER01 là NEEDS_CONFIRMATION.
 
+**Cập nhật CBS-096:**
+- Order design dùng ảnh AI đã generate và fit vào box layer (T2I GPT Default phủ đúng box; MU GPT 2K phủ hết chiều rộng, contain, không crop); item Ready (KB-766, OBSERVED_CURRENT/LOW, một lượt chạy staging 2026-10-27, không ghi build). Số đo bbox/kích thước master không phải giá trị chuẩn. Cách fit đúng và model khác chưa xác nhận (OQ-order-051).
+
 ---
 
 ## review-and-initiate-fulfillment-portal — Review and initiate fulfillment for an incoming order
@@ -72,6 +75,9 @@
 
 **Gate:** publish này giữ điều kiện — KB-022 phải giữ scope POD-disconnected; `OQ-order-001` giữ UNRESOLVED
 
+**Cập nhật CBS-096:**
+- Đề xuất, chưa ship (TIB-5563): Order details / Edit order hiện nguyên giá trị customization_id trong "Options" của item khi bật "show line item properties", ẩn sau "Show more", HTML-escape (KB-764, PROPOSED/LOW). Chưa quan sát; không dùng làm expected (OQ-order-050).
+
 ---
 
 **Cập nhật CBS-015 (TIB-5633, Group nhiều layer):** Regenerate design trong order detail cho item có artwork Group ~250 layer tạo xong design mới (Item Activity log 'generated a new design'), không kẹt generating (KB-392, `CONFIRMED_EXPECTED`/MEDIUM, test case Testlane PASS staging 2026-10-29; PO chưa xác nhận ý định — OQ-order-030; chạy lại sau merge/production — OQ-order-029). Toast 'put your design in queue', việc Item Activity logs không có dòng 'is generating' riêng và việc order vẫn ở Ready sau Regenerate chỉ là quan sát (KB-393, `OBSERVED_CURRENT`/LOW, OQ-order-028). Checklist CHK-P24..CHK-P26 (CHK-P25, CHK-P26 NEEDS_CONFIRMATION). Render order design của Group nhiều layer nằm ở object `artwork` (feature `group-layer-order-design-render`).
@@ -85,6 +91,34 @@
 - **Checklist:** CHK-001..CHK-004 đều NEEDS_CONFIRMATION, oracle NONE: chỉ ghi nhận, chưa kết luận PASS/FAIL.
 - **Không dùng làm expected cho:** /cart (OQ-order-031), bước lưu (OQ-order-033), nút cùng tên ở Portal (OQ-order-011).
 - **Còn mở:** OQ-order-031..038, OQ-order-040..044.
+
+---
+
+## shopify-order-import — Import đơn Shopify vào Teeinblue khi line item có customization_id
+**Goal:** Đơn Shopify (webhook create/update, re-sync, FixMissingCustomization) được import vào Teeinblue; line item có customization_id sai định dạng không làm hỏng cả đơn.
+**Phạm vi:** backend import/đồng bộ đơn Shopify, khôi phục customization, usage. Không gồm flow đặt hàng storefront và review/fulfill ở portal.
+
+**Trạng thái:** mọi item là PROPOSED/LOW (KB-760..KB-763, KB-765), theo câu trả lời của Dev trên TIB-5563 ngày 2026-10-26 cho bản fix **chưa ship**. Không item nào là expected; mọi check (CHK-001..CHK-009) oracle NONE.
+- Đề xuất: customization_id chỉ dùng để tìm customization khi đúng UUID 8-4-4-4-12 (không trim, không trích từ chuỗi dài hơn), cả `_customization_id` và `customization_id`; nhánh id số giữ nguyên.
+- Đề xuất: đơn có line sai định dạng vẫn import, line đó không có design và không tạo usage; khôi phục qua cart token không áp cho line đó; chỉ luồng đơn Shopify dùng check này; đơn lỗi trước fix không import lại.
+
+**Risks/Unknowns:**
+- Lượt QA staging 2026-10-28 thấy đơn có line sai định dạng không vào Teeinblue (OQ-order-046, liên quan OQ-order-001).
+- Chờ test case PASS sau fix và sau release (OQ-order-045, OQ-order-047..OQ-order-049).
+
+---
+
+## order-design-vector-render — Order design PNG/SVG của vector layer đã đổi màu
+**Goal:** Order design của vector layer có màu render đúng: PNG tô kín, SVG gộp có id duy nhất và tham chiếu đúng.
+**Phạm vi:** order design PNG và SVG của vector layer có màu. Không gồm preview storefront, file SVG nguồn (artwork), luồng Regenerate và fulfillment.
+
+**Quan sát (OBSERVED_CURRENT/LOW, staging, không ghi build, chỉ khi mọi layer cùng một màu):**
+- PNG sau Re-generate tô kín mọi vector có clipPath id trùng, không vùng trong suốt, bố cục giống preview (KB-767).
+- SVG gộp mọi layer: id duy nhất toàn file, có prefix `svg-…-`, không tham chiếu treo, màu đúng (KB-768).
+
+**Risks/Unknowns:**
+- Chưa xác nhận là hành vi đúng; trạng thái deploy TIB-5350 chưa rõ (OQ-order-052, OQ-order-053).
+- Mỗi layer giữ màu riêng, PDF và production chưa kiểm. Fixture khác artwork KB-418.
 
 ---
 

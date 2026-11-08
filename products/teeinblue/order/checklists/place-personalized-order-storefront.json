@@ -2,7 +2,7 @@
   "feature_id": "FEAT-ORDER-01",
   "feature_key": "place-personalized-order-storefront",
   "object_id": "order",
-  "checklist_version": "3",
+  "checklist_version": "7",
   "checks": [
     {
       "check_id": "CHK-001-ORDER01",
@@ -709,6 +709,82 @@
       "priority": "P1",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-order-027"
+    },
+    {
+      "check_id": "CHK-023-ORDER01",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-096] Đơn có layer ảnh AI (model T2I GPT Default, MU GPT 2K): order design có dùng đúng ảnh buyer đã generate và fit vào box layer không crop không — chưa xác nhận",
+      "applicability": {
+        "role": "guest buyer (generate ảnh AI và đặt order test) + merchant owner/staff — account explore (verify GET /api/user id=266 sau mỗi lần login) xem order design",
+        "state": "campaign đã publish trên store explore có layer ảnh AI; CHỈ 2 model đã quan sát: T2I GPT Default và MU GPT 2K (mỗi model một item); buyer đã generate ảnh trên storefront; item ở trạng thái Ready",
+        "environment": "staging, ghi build khi chạy (lượt quan sát gốc 2026-10-27 không ghi build); production chưa kiểm",
+        "surface_or_device": "storefront product page (generate ảnh AI, Add to cart, checkout); portal order-details + order design tải về / API order design"
+      },
+      "precondition": "Dựng campaign có layer ảnh AI cho từng model trên store explore; store có gateway test. Lưu lại ảnh AI buyer đã generate (tải về từ preview/network) để so với order design.",
+      "steps": [
+        "Trên storefront, với từng model generate một ảnh AI cho layer; lưu ảnh đã generate; Add to cart; checkout bằng gateway test.",
+        "Trên portal mở order-details; ghi trạng thái từng item và Item Activity Logs (có lỗi không).",
+        "Tải order design của từng item; so nội dung ảnh trong layer với ảnh đã generate (cùng ảnh hay ảnh khác).",
+        "Với từng item ghi cách ảnh nằm trong box layer: phủ đúng box, phủ hết chiều rộng còn chừa khoảng trống theo chiều cao, hay bị cắt mất phần nào của ảnh. Số đo bbox / kích thước master chỉ ghi lại, không phải tiêu chí pass/fail."
+      ],
+      "observation_point": "Ảnh trong order design có phải ảnh đã generate không; ảnh có bị crop không; cách ảnh lấp box theo từng model; trạng thái item.",
+      "expected_result": "Baseline quan sát 1 lượt (staging 2026-10-27, build không ghi; chưa phải expected xác nhận): order design dùng đúng ảnh đã generate; với T2I GPT Default ảnh phủ đúng box; với MU GPT 2K ảnh phủ hết chiều rộng kiểu contain, không bị crop; cả hai item Ready, không lỗi. Chỉ áp cho 2 model này. Lệch = điều tra kèm build và model, không tự kết luận là bug.",
+      "oracle": {
+        "kb_ids": [
+          "KB-766"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "PO/Dev: order design dùng ảnh AI đã generate và fit vào box layer (T2I GPT Default phủ đúng box; MU GPT 2K contain theo chiều rộng, không crop — quan sát 1 lượt staging 2026-10-27) có phải hành vi đúng không; fit kiểu contain hay cover, áp cho mọi model hay chỉ một số?",
+      "related_kb_ids": [
+        "KB-766",
+        "KB-017"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Order design dùng sai ảnh hoặc crop mất phần ảnh buyer đã duyệt làm in sai sản phẩm (mất tiền)",
+        "Một lượt quan sát, 2 model, build không ghi, không có căn cứ expected"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-order-051"
+    },
+    {
+      "check_id": "CHK-024-ORDER01",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "[CBS-096] Gap: order design của layer ảnh AI với model khác T2I GPT Default / MU GPT 2K, hoặc box layer có tỉ lệ khác — ảnh có còn đúng và không bị crop không",
+      "applicability": {
+        "role": "guest buyer + merchant owner/staff — account explore",
+        "state": "layer ảnh AI dùng (a) model khác 2 model đã quan sát, (b) box layer tỉ lệ khác (vd box dọc cao, box ngang rộng) với 2 model đã quan sát",
+        "environment": "staging, ghi build",
+        "surface_or_device": "storefront product page + portal order-details + order design tải về"
+      },
+      "precondition": "Như CHK-023-ORDER01, đổi model / tỉ lệ box của layer ảnh AI.",
+      "steps": [
+        "Với từng cấu hình: generate ảnh, lưu ảnh, đặt order test.",
+        "Tải order design; ghi ảnh có đúng không, có bị crop không, cách ảnh lấp box; so với CHK-023-ORDER01."
+      ],
+      "observation_point": "Ảnh đúng/sai, crop hay không, cách lấp box theo model và tỉ lệ box.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Với model AI khác ngoài T2I GPT Default và MU GPT 2K, hoặc box layer có tỉ lệ khác, order design có còn dùng đúng ảnh đã generate và không crop không; và trên production thì sao?",
+      "related_kb_ids": [
+        "KB-766"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không suy 'contain, không crop' sang model hoặc tỉ lệ box khác khi chưa kiểm"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-order-051"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -775,6 +851,15 @@
         "CHK-022-ORDER01"
       ],
       "coverage_status": "GAP_FLAGGED_NEEDS_CONFIRMATION (NONE; KB-369 OBSERVED_CURRENT/LOW chỉ ở related_kb_ids)"
+    },
+    {
+      "feature_id": "FEAT-ORDER-01",
+      "risk": "[CBS-096] Order design của layer ảnh AI dùng sai ảnh hoặc bị crop (KB-766, 1 lượt quan sát với 2 model, build không ghi)",
+      "covered_by_checks": [
+        "CHK-023-ORDER01",
+        "CHK-024-ORDER01"
+      ],
+      "coverage_status": "BASELINE + NEEDS_CONFIRMATION cho 2 model đã quan sát (CHK-023-ORDER01); model / tỉ lệ box khác là gap NONE (CHK-024-ORDER01)"
     }
   ],
   "excluded_dimensions": [
@@ -789,10 +874,14 @@
     {
       "dimension": "CORE / NEGATIVE / BOUNDARY / PERMISSION / STATE_DATA / REGRESSION — phạm vi CBS-013 (KB-369)",
       "reason": "KB-369 là 1 lượt quan sát chuỗi cross-surface storefront → cart → order portal → file design với Global Option (INTEGRATION: CHK-022-ORDER01). Không có evidence input sai, giới hạn, quyền khác guest/owner hay persistence riêng. KB-369 là ADD, không đổi hành vi item base, không phải KNOWN_DEFECT nên không có REGRESSION/regression watch; việc chạy lại sau merge nằm trong câu hỏi mở của CHK-022-ORDER01."
+    },
+    {
+      "dimension": "CORE / NEGATIVE / PERMISSION / STATE_DATA / REGRESSION — phạm vi CBS-096 (KB-766)",
+      "reason": "KB-766 là 1 lượt quan sát chuỗi storefront (ảnh AI đã generate) → order design (INTEGRATION: CHK-023-ORDER01); model / tỉ lệ box khác là BOUNDARY gap (CHK-024-ORDER01). Bước generate ảnh trên storefront thuộc sdk genai-personalization-runtime, không lặp ở đây. Không có evidence input sai, quyền khác guest/owner hay persistence. KB-766 là ADD, không đổi item base, không phải KNOWN_DEFECT nên không có REGRESSION/regression watch. KB-761 (shopify-order-import) liên quan OQ-order-001 nhưng CHK-006-ORDER01-SYNC giữ nguyên, không sửa."
     }
   ],
   "last_updated": {
-    "date": "2026-10-30",
-    "ccr_ref": "CBS-013"
+    "date": "2026-11-07",
+    "ccr_ref": "CBS-096"
   }
 }

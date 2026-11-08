@@ -52,7 +52,7 @@ Chọn Source **xoá trắng ô Value** (2026-08-26, 2026-10-13). Quy trình:
 
 ### Populate photo target
 - Target Photo Upload (Single) → POPULATE VALUES → `Populate Content` → Source = layer Multiple Uploads / Photo → Value `{{input.N}}` / `{{input}}`.
-- Target `No personalization` không sinh field trên storefront; preview hiện placeholder target. Muốn target gọi `/derive` thì target phải `Create a new option` + có ít nhất 1 effect (vd `Black & White (TIB)`): SDK chỉ bắn `POST customer-uploads/{id}/derive` cho target có `retrieval_value_enabled` + `retrieval_layer` = photo source + effect.
+- Target `No personalization` không sinh field trên storefront; ảnh target hiện trên preview trước và sau khi buyer upload ở nguồn xem KB `layer-config-image` (fit của photo layer No personalization). Muốn target gọi `/derive` thì target phải `Create a new option` + có ít nhất 1 effect (vd `Black & White (TIB)`): SDK chỉ bắn `POST customer-uploads/{id}/derive` cho target có `retrieval_value_enabled` + `retrieval_layer` = photo source + effect.
 
 ## CONDITIONAL SETTING
 

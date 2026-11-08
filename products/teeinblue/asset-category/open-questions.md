@@ -239,3 +239,33 @@
 ```json
 {"oq_id":"OQ-asset-category-040","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"CHK-018, CHK-021, CHK-022, CHK-023 cần bước PUT lên upload_url của Open API, trong khi host của bước này chưa được xác nhận (OQ-open-api-001 ở object open-api). Các check này chỉ ghi nhận cho tới khi host có kết luận. Cần dev xác nhận host của bước PUT."}
 ```
+
+## OQ-asset-category-041 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-asset-category-041", "type": "NEEDS_CONFIRMATION", "feature_id": "asset-category-item-management", "summary": "Thumbnail của clipart SVG có clip-path lồng qua nhiều <clipPath> có hiện đúng hình đã mask, không hiện outer bounding shape không (KB-640, CHK-027)? Nguồn hiện chỉ là mô tả dev tự sinh từ branch diff (Jira TIB-5350, PR teeinblue-api #3836, 2026-09-23); mục test đề xuất trong nguồn chưa tick; ghi chú QA-3395 TC-01, TC-02 không có id test case hay build. Cũng cần chốt \"SVG clipart\" có phải item upload qua dropzone /vectors (POST /api/cliparts/svg) không, vì dropzone /cliparts chỉ nhận ảnh raster. Cần test case PASS có id Testlane và build/ngày chạy, hoặc PO/Dev xác nhận hành vi."}
+```
+
+## OQ-asset-category-042 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-asset-category-042", "type": "NEEDS_CONFIRMATION", "feature_id": "asset-category-item-management", "summary": "Fix thumbnail SVG clip-path (TIB-5350) đã lên production từ ngày nào? CCR ghi SHIPPED nhưng không có ngày deploy production; CHK-027 hiện chỉ áp cho staging."}
+```
+
+## OQ-asset-category-043 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-asset-category-043", "type": "NEEDS_CONFIRMATION", "feature_id": "asset-category-item-management", "summary": "Thumbnail layer image SVG có clip-path lồng (object artwork, dùng chung ThumbnailMaker::makeFromSvg() theo mô tả dev TIB-5350) hiển thị thế nào? Object artwork chưa có item cho hành vi này; cần quyết có mở CCR hoặc explore cho artwork không."}
+```
+
+## OQ-asset-category-044 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-asset-category-044", "type": "NEEDS_CONFIRMATION", "feature_id": "asset-category-item-management", "summary": "Sau khi đổi renderer thumbnail SVG sang resvg (TIB-5350), thumbnail của SVG không có clip-path có còn giống trước không, và thumbnail sinh đồng bộ trong POST /api/cliparts/svg hay bằng job nền? Chưa có quan sát; CHK-008 chỉ kiểm có field thumbnail trong response nên không bắt được ảnh thumbnail bị vỡ."}
+```
+
+## OQ-asset-category-045 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-asset-category-045", "type": "NEEDS_CONFIRMATION", "feature_id": "asset-category-item-management", "summary": "teeinblue-api có chuẩn hoá `name` của clipart khi lưu không? Theo comment dev TIB-5412 (2026-09-23), fix so khớp tên của Dynamic Clipart by Text chỉ ở teeinblue-sdk, việc chuẩn hoá name ở API để ngoài PR như follow-up tuỳ chọn; câu hỏi follow-up của QA và câu hỏi render server-side chưa có trả lời, không ai xác nhận. Claim này không được nạp vào KB (CBS-099 CLAIM-02). Cần Dev/PO xác nhận hành vi lưu name hiện tại và có follow-up hay không."}
+```

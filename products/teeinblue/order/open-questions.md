@@ -275,3 +275,57 @@ Root cause (claimed webhook configuration fix) has never been independently veri
 ```json
 {"oq_id": "OQ-order-044", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "Với campaign by product base, hành vi đúng là gì? Hai nguồn chưa được chốt bằng lời xác nhận gốc. KB-436 ghi theo phía test case. CHK-003 chờ câu trả lời này.", "side_a": "Không có link: ghi chú đề 2026-10-29 (tib-product-behaviors dòng 33) ghi 'không có cho product base'; TC-TIB-7191 skipped ghi cùng ý.", "side_b": "Link vẫn hiện, click thì báo không hỗ trợ edit: TC-TIB-982 PASS 2026-08-27 không ghi build; ghi chú đề 2026-11-05 và mục #144 của ghi chú audit ghi theo phía này.", "kb_ids": ["KB-436"]}
 ```
+
+## OQ-order-045 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-order-045","type":"OPEN_ISSUE","feature_id":"shopify-order-import","summary":"Hành vi chưa ship (TIB-5563 còn ở QA Review): KB-760 là đề xuất theo câu trả lời của Dev 2026-10-26, chưa có test case PASS sau fix. Cần chạy lại trên build có fix và sau release production: customization_id chỉ dùng để tìm customization khi đúng UUID 8-4-4-4-12 (không trim; khoảng trắng, {…}, 32 hex không gạch, UUID nằm trong chuỗi dài hơn là sai định dạng), cả _customization_id và customization_id. Nhánh id số (hasCustomizationId) chỉ được nói là giữ nguyên, chưa có mô tả hành vi. CHK-001, CHK-002 chờ câu trả lời này.","kb_ids":["KB-760"]}
+```
+
+## OQ-order-046 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-order-046","type":"OPEN_ISSUE","feature_id":"shopify-order-import","summary":"Hành vi chưa ship và có quan sát trái chiều: theo Dev (2026-10-26), đơn có line customization_id sai định dạng vẫn được import, line đó như item không có design và không tạo usage (KB-761). Lượt QA trên staging 2026-10-28 (QA-3430) thấy ngược lại: đơn có line sai định dạng không vào Teeinblue sau 33–38 phút, đơn đối chứng vào trong dưới 4 phút; bug chưa được file. Cần lượt chạy trên build có fix, và PO xác nhận ý định (mất đơn, usage/billing). Hành vi trên build hiện tại (trước fix) cũng chưa được ghi lại. Liên quan OQ-order-001, không đóng mục đó. CHK-003, CHK-004, CHK-005 chờ câu trả lời này.","kb_ids":["KB-761","KB-011","KB-017"]}
+```
+
+## OQ-order-047 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-order-047","type":"OPEN_ISSUE","feature_id":"shopify-order-import","summary":"Hành vi chưa ship (TIB-5563): khôi phục customization qua cart token chạy theo đơn, chỉ khi không line nào có id số/UUID hợp lệ, và line có property không bao giờ được khôi phục (KB-762). Chưa quan sát. CHK-006 chờ câu trả lời này.","kb_ids":["KB-762"]}
+```
+
+## OQ-order-048 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-order-048","type":"OPEN_ISSUE","feature_id":"shopify-order-import","summary":"Hành vi chưa ship (TIB-5563): re-sync (SyncShopifyOrder / admin Order Sync) và command FixMissingCustomization đi cùng lookup đơn Shopify; Etsy và nền tảng khác không bị ảnh hưởng; _tib_customization_id đọc bằng method riêng (KB-763). Chưa chạy re-sync, FixMissingCustomization; chưa có mô tả cách xử lý _tib_customization_id; \"Etsy không ảnh hưởng\" chưa kiểm. CHK-007, CHK-008 chờ câu trả lời này.","kb_ids":["KB-763"]}
+```
+
+## OQ-order-049 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-order-049","type":"OPEN_ISSUE","feature_id":"shopify-order-import","summary":"Theo Dev (2026-10-26), đơn đã lỗi SQLSTATE 22P02 trước bản fix sẽ không được import lại (KB-765). Hành vi chưa ship; PO cần xác nhận việc không khôi phục đơn lịch sử là chủ ý, và có đường nào (re-sync, FixMissingCustomization) đưa được các đơn đó vào không. CHK-009 chờ câu trả lời này.","kb_ids":["KB-765"]}
+```
+
+## OQ-order-050 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-order-050","type":"OPEN_ISSUE","feature_id":"review-and-initiate-fulfillment-portal","summary":"Hành vi chưa ship theo quyết định operator cho mọi claim TIB-5563: Order details / Edit order hiện nguyên giá trị _customization_id / customization_id trong danh sách \"Options\" của item, chỉ khi store bật \"show line item properties\", ẩn sau \"Show more\", giá trị được HTML-escape (KB-764). Chưa quan sát (lượt staging 2026-10-28 bị chặn). Chưa rõ \"Options\" hiện gì khi tắt setting hoặc trên build trước fix. PO xác nhận ý định HTML-escape. CHK-P28, CHK-P29, CHK-P30 chờ câu trả lời này.","kb_ids":["KB-764","KB-017"]}
+```
+
+## OQ-order-051 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-order-051","type":"NEEDS_CONFIRMATION","feature_id":"place-personalized-order-storefront","summary":"KB-766 là một lượt chạy staging 2026-10-27, không ghi build, không có căn cứ expected: order design dùng ảnh AI đã generate và fit vào box layer (T2I GPT Default phủ đúng box; MU GPT 2K phủ hết chiều rộng, contain, không crop). Cần PO/Dev xác nhận cách fit đúng (contain hay cover), có áp cho mọi model và tỉ lệ box khác không, và hành vi trên production. CHK-023-ORDER01, CHK-024-ORDER01 chờ câu trả lời này.","kb_ids":["KB-766"]}
+```
+
+## OQ-order-052 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-order-052","type":"NEEDS_CONFIRMATION","feature_id":"order-design-vector-render","summary":"KB-767 là một lượt chạy staging 2026-10-08, không ghi build, không có căn cứ expected: order design PNG (Re-generate) của vector layer đã đổi màu có clipPath id trùng tô kín mọi vector, bố cục giống preview, khi mọi layer cùng một màu. Cần xác nhận đây là hành vi đúng; trạng thái deploy của TIB-5350 (hỗ trợ clipPath khi chuyển SVG sang ảnh) chưa rõ, câu trả lời của Dev trên TIB-5501 chỉ trỏ sang TIB-5350. Chưa kiểm khi mỗi layer giữ màu riêng, định dạng PDF và production. Fixture khác với artwork KB-418 nên chưa coi là conflict. CHK-001, CHK-003, CHK-004 chờ câu trả lời này.","kb_ids":["KB-767"]}
+```
+
+## OQ-order-053 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-order-053","type":"NEEDS_CONFIRMATION","feature_id":"order-design-vector-render","summary":"KB-768 là một lượt chạy staging (file render 2026-10-07), không ghi build: order design SVG gộp mọi layer có id duy nhất, đều mang prefix svg-…-, không tham chiếu treo, màu đúng, khi mọi layer cùng một màu. Căn cứ expected chỉ là lời tóm tắt của Dev trên TIB-5501, không trích nguyên văn. Cần Dev xác nhận, và lượt chạy khi mỗi layer giữ màu riêng. CHK-002 chờ câu trả lời này.","kb_ids":["KB-768"]}
+```

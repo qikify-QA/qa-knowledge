@@ -1169,3 +1169,915 @@
 ```json
 {"oq_id":"OQ-artwork-195","type":"NEEDS_CONFIRMATION","feature_id":"layer-print-effects","summary":"Sau khi bỏ file pre-render của border custom_shape, order design (print file) lấy border từ đâu, và border size có đúng không? Comment #53942 chỉ nói SDK vẽ trên canvas; scope.surface của KB-425 ghi \"render\" chung, CHK-011, CHK-012 không kiểm print file. Nếu print file đổi đường xử lý thì KB-425 phải lên impact HIGH.","kb_ids":["KB-425"]}
 ```
+
+## OQ-artwork-196 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-196","type":"NEEDS_CONFIRMATION","feature_id":"svg-to-image-rendering","summary":"KB-570: design PNG của artwork có layer SVG clip-path lồng nhiều cấp vẽ đúng hình đã mask ở cả 4 format PNG_*, theo dev doc auto-generated; quan sát mới có ở PNG_RGB. Đây có phải hành vi đúng ở cả PNG_RGBA, PNG_ADOBE_RGB, PNG_SRGB không? Cần PO xác nhận (ảnh hưởng file in). Liên quan CHK-001, CHK-002.","kb_ids":["KB-570"]}
+```
+
+## OQ-artwork-197 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-197","type":"NEEDS_CONFIRMATION","feature_id":"svg-to-image-rendering","summary":"KB-571: chỉ nhánh PNG đổi sang resvg, EPS/AI/PDF vẫn qua Inkscape, theo dev doc auto-generated; EPS và AI chưa có quan sát. Có xác nhận được export EPS/AI/PDF vẫn hoạt động như trước không? Cần PO xác nhận (ảnh hưởng file in). Liên quan CHK-003.","kb_ids":["KB-571"]}
+```
+
+## OQ-artwork-198 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-198","type":"NEEDS_CONFIRMATION","feature_id":"svg-to-image-rendering","summary":"KB-572: SVG có <image href=\"data:…\"> (href trần) vẫn hiện ảnh nhúng ở thumbnail và design PNG, theo dev doc auto-generated. Đây có phải hành vi đúng không? Cần PO xác nhận (ảnh hưởng file in). Liên quan CHK-004.","kb_ids":["KB-572"]}
+```
+
+## OQ-artwork-199 — CONFLICT
+
+```json
+{"oq_id":"OQ-artwork-199","type":"CONFLICT","feature_id":"svg-to-image-rendering","summary":"Nền design file PNG_RGB, PNG_ADOBE_RGB, PNG_SRGB khi render SVG: tài liệu dev và số đo staging nói ngược nhau. Nền đúng của từng format PNG_* là gì? Chờ PO/Dev trả lời câu hỏi PENDING-09 của bộ test QA-3395; số đo phía side_b cũng cần lặp lại trên build ghi rõ. Hai item UNRESOLVED, không làm oracle; CHK-008 chỉ ghi nhận, không kết luận.","side_a":"Dev doc auto-generated của PR teeinblue-api #3836 (2026-09-23, KB-573): PNG_RGB, PNG_ADOBE_RGB, PNG_SRGB nền trắng đục, giữ như mặc định Inkscape cũ; PNG_RGBA nền trong suốt.","side_b":"Lượt đo QA trên staging 2026-10-07 (KB-574, mỗi format một order, không ghi build): PNG_RGB, PNG_ADOBE_RGB, PNG_SRGB là PNG RGBA nền trong suốt (pixel góc alpha 0), giống một order PNG_RGB trước fix.","kb_ids":["KB-573","KB-574"]}
+```
+
+## OQ-artwork-200 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-200","type":"NEEDS_CONFIRMATION","feature_id":"svg-to-image-rendering","summary":"KB-573: theo dev doc auto-generated, PNG_RGBA có nền trong suốt; PNG_RGBA chưa được thử (TC-09 tạm dừng). Đây có phải hành vi đúng không? (Phần PNG_RGB/ADOBE_RGB/SRGB xem OQ-artwork-199.) Cần PO xác nhận (ảnh hưởng file in).","kb_ids":["KB-573"]}
+```
+
+## OQ-artwork-201 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-201","type":"NEEDS_CONFIRMATION","feature_id":"svg-to-image-rendering","summary":"KB-575: design PNG_ADOBE_RGB nhúng ICC \"Adobe RGB (1998)\" và PNG_SRGB nhúng ICC \"sRGB IEC61966-2.1\", một mẫu mỗi format ngày 2026-10-07. Đây có phải hành vi đúng không? Cần PO xác nhận (ảnh hưởng file in). Liên quan CHK-007.","kb_ids":["KB-575"]}
+```
+
+## OQ-artwork-202 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-202","type":"NEEDS_CONFIRMATION","feature_id":"svg-to-image-rendering","summary":"KB-576: clip-path trỏ id không tồn tại thì shape không bị clip, clip-path khai qua CSS style vẫn clip đúng ở thumbnail, quan sát một lượt 2026-10-07. Đây có phải hành vi đúng không? Liên quan CHK-005, CHK-006.","kb_ids":["KB-576"]}
+```
+
+## OQ-artwork-203 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-203","type":"OPEN_ISSUE","feature_id":"svg-to-image-rendering","summary":"Design file và thumbnail của SVG được sinh lúc nào, do sự kiện gì (tạo order, upload, regenerate thủ công)? KB-570..576 không mô tả trigger, nên check của feature này chưa có bước dựng đầu ra rõ ràng.","kb_ids":[]}
+```
+
+## OQ-artwork-204 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-204","type":"OPEN_ISSUE","feature_id":"svg-to-image-rendering","summary":"Chạy lại trên build ghi rõ và production: mọi lượt chạy làm nguồn cho KB-570..584 (staging 2026-10-07/08, AI chạy) không ghi build, CCR ghi SHIPPED nhưng chưa có bằng chứng production; role khác merchant-owner và cross-tenant chưa quan sát. Cần lượt chạy có build (hoặc nguồn PO/Dev nguyên văn) rồi gửi CCR mới để nâng các item này.","kb_ids":["KB-570","KB-571","KB-572","KB-573","KB-574","KB-575","KB-576","KB-577","KB-578","KB-579","KB-580","KB-581","KB-582","KB-583","KB-584"]}
+```
+
+## OQ-artwork-205 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-205","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-puzzles","summary":"KB-577: Word Cloud với shape SVG clip-path lồng nhiều cấp chỉ đặt chữ trong vùng đã mask, quan sát một lượt 2026-10-07; chưa so preview storefront/editor với final render. Đây có phải hành vi đúng không? Cần PO xác nhận (ảnh hưởng file in). Liên quan CHK-006.","kb_ids":["KB-577"]}
+```
+
+## OQ-artwork-206 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-206","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-puzzles","summary":"KB-578: Word Cloud bật \"Use shape's color\" trên shape SVG clip-path chỉ lấy màu từ vùng nhìn thấy, quan sát một lượt 2026-10-07. Đây có phải hành vi đúng không? Cần PO xác nhận (ảnh hưởng file in). Liên quan CHK-007.","kb_ids":["KB-578"]}
+```
+
+## OQ-artwork-207 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-207","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-puzzles","summary":"KB-579: Word Cloud với shape SVG đơn giản, shape PNG lấp chữ trong shape, tắt custom shape thì lấp đầy ô vuông, quan sát một lượt 2026-10-07 không có baseline trước fix. Đây có phải hành vi đúng không? Liên quan CHK-008.","kb_ids":["KB-579"]}
+```
+
+## OQ-artwork-208 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-208","type":"OPEN_ISSUE","feature_id":"layer-config-puzzles","summary":"Preview Word Cloud trên storefront và artwork editor với shape SVG clip-path lồng nhiều cấp có khớp final render (design PNG) không? Lượt test tương ứng đang tạm dừng; KB-577, KB-578 chỉ nói về final render.","kb_ids":["KB-577","KB-578"]}
+```
+
+## OQ-artwork-209 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-209","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-others","summary":"KB-580: layer QR Code render nguyên vẹn và decode đúng chuỗi ở cả design PNG và PDF của cùng đơn, quan sát một lượt 2026-10-07. Đây có phải hành vi đúng không? Cần PO xác nhận (ảnh hưởng file in). Liên quan CHK-007.","kb_ids":["KB-580"]}
+```
+
+## OQ-artwork-210 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-210","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-vector","summary":"KB-581: SVG layer image upload 05/2025 re-render design PNG bình thường, mẫu 3 file ngày 2026-10-07. Đây có phải hành vi đúng không, kể cả SVG cũ có <text> sống? Cần PO xác nhận (ảnh hưởng file in). Liên quan CHK-012.","kb_ids":["KB-581"]}
+```
+
+## OQ-artwork-211 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-211","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-vector","summary":"KB-582: upload SVG làm layer image thì bản lưu bỏ DOCTYPE, ENTITY, <script> và không trả 500, quan sát một lượt 2026-10-07; SSRF, DoS, file cực lớn chưa kiểm. Đây có phải hành vi đúng không? Cần PO xác nhận (bảo mật). Liên quan CHK-013.","kb_ids":["KB-582"]}
+```
+
+## OQ-artwork-212 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-212","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-vector","summary":"KB-583: tên file SVG upload được làm sạch, key lưu ngẫu nhiên, tên > 255 ký tự bị validate chặn, quan sát một lượt 2026-10-07 qua API. Đây có phải hành vi đúng không, và UI hiển thị tên ra sao? Cần PO xác nhận (bảo mật). Liên quan CHK-014, CHK-015.","kb_ids":["KB-583"]}
+```
+
+## OQ-artwork-213 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-213","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-vector","summary":"KB-584: file SVG nguồn trên CDN giữ nguyên tập id, không prefix svg- sau recolor và đặt order, 2 file mẫu ngày 2026-10-08. Đây có phải hành vi đúng không? Liên quan CHK-016.","kb_ids":["KB-584"]}
+```
+
+## OQ-artwork-214 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-214","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-vector","summary":"KB-418 (lượt chạy 2026-10-14) ghi artwork chỉ có layer static-vector, Design format PNG_RGB thì order báo \"Line item cannot generate design\"; KB-570 và KB-581 (lượt chạy 2026-10-07) thấy design PNG của artwork có layer SVG render bình thường. Nguồn không nói artwork của hai lượt khác nhau ở điểm nào (có layer raster hay không). Đây là hai fixture khác nhau hay một hành vi chưa ổn định? Liên quan OQ-artwork-189, CHK-010.","kb_ids":["KB-418","KB-570","KB-581"]}
+```
+
+## OQ-artwork-215 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-215","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"Một lượt chạy dùng ảnh gốc full-resolution, áp effect tuần tự, progress dừng 95%, all or nothing: chỉ có dev doc tự sinh (2026-10-08). Cần: PO hoặc Dev xác nhận nguyên văn (có ngày, có link) rằng đây là hành vi đúng, không chỉ là mô tả code.","kb_ids":["KB-802"]}
+```
+
+## OQ-artwork-216 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-216","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"Chạy thành công thay ảnh layer (một bước undo), lưu ảnh mới vào image library, ảnh cũ giữ nguyên: chỉ có dev doc tự sinh (2026-10-08). Cần: PO hoặc Dev xác nhận nguyên văn (có ngày, có link) rằng đây là hành vi đúng, không chỉ là mô tả code.","kb_ids":["KB-803"]}
+```
+
+## OQ-artwork-217 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-217","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"Chạy lại lấy ảnh hiện tại; đổi cấu hình effect không tự cập nhật ảnh: mục spec không xác định được người viết/ngày. Cần: PO hoặc Dev xác nhận nguyên văn (có ngày, có link) rằng đây là hành vi đúng, không chỉ là mô tả code.","kb_ids":["KB-806"]}
+```
+
+## OQ-artwork-218 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-218","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"Toast \"Could not run effects\" 10 giây và warning layer không còn trong template: chỉ có dev doc tự sinh. Cần: PO hoặc Dev xác nhận nguyên văn (có ngày, có link) rằng đây là hành vi đúng, không chỉ là mô tả code.","kb_ids":["KB-811"]}
+```
+
+## OQ-artwork-219 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-219","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"Double-click Run effects chỉ một lượt: chỉ có quan sát TC-79, câu nguồn nằm ở Possible test cases. Cần: PO hoặc Dev xác nhận nguyên văn (có ngày, có link) rằng đây là hành vi đúng, không chỉ là mô tả code.","kb_ids":["KB-812"]}
+```
+
+## OQ-artwork-220 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-220","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"Danh sách dịch vụ được kiểm API key trước khi chạy và kiểm lại phía server: chỉ có dev doc tự sinh. Cần: PO hoặc Dev xác nhận nguyên văn (có ngày, có link) rằng đây là hành vi đúng, không chỉ là mô tả code.","kb_ids":["KB-816"]}
+```
+
+## OQ-artwork-221 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-221","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"Vế phụ CLAIM-08: đóng layer editor/chọn layer khác/mở lại artwork khi đang chạy không mất lượt chạy, progress bar hiện lại: chỉ từ dev doc tự sinh. Cần: PO hoặc Dev xác nhận nguyên văn vế này (có ngày, có link). Đây có phải hành vi đúng không?","kb_ids":["KB-808"]}
+```
+
+## OQ-artwork-222 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-222","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"Vế phụ CLAIM-09: chữ toast \"Timed out waiting for the effects to finish.\" và quy tắc hàng đợi không tính vào 6 phút: chỉ từ dev doc tự sinh. Cần: PO hoặc Dev xác nhận nguyên văn vế này (có ngày, có link). Đây có phải hành vi đúng không?","kb_ids":["KB-810"]}
+```
+
+## OQ-artwork-223 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-223","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"Vế phụ CLAIM-12: 5 lượt/phút/store dùng chung owner + staff, đổi được trong server config, tính vào giới hạn upload layer image: chỉ từ dev doc tự sinh. Cần: PO hoặc Dev xác nhận nguyên văn vế này (có ngày, có link). Đây có phải hành vi đúng không?","kb_ids":["KB-814"]}
+```
+
+## OQ-artwork-224 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-224","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"Vế hover style của nút Run effects (nền primary blue, chữ trắng) đã bỏ khỏi KB: chỉ dựa mục spec \"Run effects\" trong description TIB-5470, không xác định được người viết/ngày. Cần: PO xác nhận nguyên văn style hover của nút Run effects. Đây có phải hành vi đúng không?","kb_ids":["KB-801"]}
+```
+
+## OQ-artwork-225 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-225","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"Vế bỏ khỏi CLAIM-05: bật lại HD sau khi chạy thì HD dựng từ ảnh đã xử lý; chỉ có trong dev doc tự sinh, chưa quan sát (TC-09 tạm dừng). Cần: Dev/PO xác nhận nguyên văn và QA quan sát khi bật lại HD sau lượt chạy. Đây có phải hành vi đúng không? Quan hệ với KB-421/KB-423 (HD dựng từ ảnh trong image library) chưa rõ.","kb_ids":["KB-804"]}
+```
+
+## OQ-artwork-226 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-226","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"Vế bỏ khỏi CLAIM-08: reload trang khi đang chạy (progress bar mất, layer không bị thay, ảnh vẫn vào library); nguồn là mục Possible test cases, TC-14..16 không có kết quả có ngày. Cần: Dev/PO xác nhận nguyên văn hành vi khi reload trang lúc đang chạy. Đây có phải hành vi đúng không?","kb_ids":["KB-807"]}
+```
+
+## OQ-artwork-227 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-227","type":"OPEN_ISSUE","feature_id":"run-image-effects","summary":"Known limitation: chuỗi có cả Remove background và Face cutout vẫn đòi key Remove background dù server bỏ qua Remove background; workaround xoá effect Remove background. PO chỉ chấp nhận cho release (ok Q5, 2026-10-14); TC-31 tạm dừng. Cần: Ticket theo dõi việc sửa, hoặc PO xác nhận giữ giới hạn này lâu dài.","kb_ids":["KB-818"]}
+```
+
+## OQ-artwork-228 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-228","type":"OPEN_ISSUE","feature_id":"run-image-effects","summary":"Điều kiện hiển thị nút Run effects chưa kiểm hết: store Etsy chưa có lượt kiểm (TC-03 not-run); Linked/No customization mới kiểm 2/4 layer (TC-80 tạm dừng). Cần: QA chạy TC-03 trên store Etsy và hoàn tất TC-80.","kb_ids":["KB-800"]}
+```
+
+## OQ-artwork-229 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-229","type":"OPEN_ISSUE","feature_id":"run-image-effects","summary":"Face Cutout và Photo Enhancer có cần API key trước khi chạy hay không: chưa ai trả lời (PENDING-12). Cần: Dev trả lời nguyên văn Face Cutout / Photo Enhancer có nằm trong danh sách kiểm key không.","kb_ids":["KB-816"]}
+```
+
+## OQ-artwork-230 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-230","type":"OPEN_ISSUE","feature_id":"run-image-effects","summary":"Liên hệ object image-library (không sửa ở run này): image-library KB-012 đang ghi quota theo ngày là suy đoán (CHK-041, OQ-image-library-023), trong khi Dev Q10 nêu default 1000 ảnh/ngày/store cho giới hạn upload khi chạy effect. Khác sdk KB-051 (rate limit buyer). Cần: Đối chiếu ở run của object image-library; không đổi item image-library ở đây. Cũng chưa rõ chu kỳ theo ngày lịch hay cửa sổ trượt, và giới hạn 5 lượt/phút của portal có dùng chung limiter với sdk KB-051 (buyer, storefront) không.","kb_ids":["KB-813","KB-814"]}
+```
+
+## OQ-artwork-231 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-231","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"KB-815 (quyền, Dev Q4 2026-10-14): Manage Artwork là quyền duy nhất cần để chạy Run effects, staff không có quyền không mở được artwork editor và server từ chối lượt chạy. Item đã CONFIRMED_EXPECTED nhưng thuộc chủ đề permission (rủi ro cao): PO xác nhận lại phạm vi quyền này, và QA cần một staff không có Manage Artwork để kiểm (CHK-021, CHK-022).","kb_ids":["KB-815"]}
+```
+
+## OQ-artwork-232 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-232","type":"OPEN_ISSUE","feature_id":"run-image-effects","summary":"Run effects và popover Fill in variables trên Photo layer dùng Global Option: KB-800 cố ý không phát biểu về layer Global Option (phần \"không hiện cho Global option\" của dev doc đã bị spec 2026-10-19 đảo lại); KB-819 (spec) nói popover áp cho cả normal và global options. Hành vi phía Global Option thuộc object global-option (đã publish, còn OQ mở ở đó). Cần đối chiếu hai object khi test layer dùng Global Option.","kb_ids":["KB-800","KB-819"]}
+```
+
+## OQ-artwork-233 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-233","type":"OPEN_ISSUE","feature_id":"run-image-effects","summary":"Rule đã xác nhận nhưng chưa có lượt quan sát trên staging: tooltip \"Save the artwork first...\" cho layer PSD/Canva chưa Save (TC-05 tạm dừng), timeout thật (TC-19 chỉ mô phỏng), toast hết giới hạn 1000 ảnh/ngày, staff không có Manage Artwork. Cần setup (dev hỗ trợ ép timeout/quota, staff test) để chạy CHK-005, CHK-013, CHK-019, CHK-021/022.","kb_ids":["KB-801","KB-809","KB-813","KB-815"]}
+```
+
+## OQ-artwork-234 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-234","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"artwork KB-049 (artwork-save-persist) ghi thao tác trong editor không gọi API và phiên chưa Save không để lại dấu vết DB; Run effects gọi API, để lại ảnh mới trong image library và tính vào giới hạn upload dù artwork không Save. KB-049 chỉ liệt kê add/edit/delete/accordion/duplicate nên chưa mâu thuẫn; cần xác nhận Run effects là ngoại lệ có chủ đích của quy tắc \"không Save thì không để lại dấu vết\".","kb_ids":["KB-802","KB-803","KB-814"]}
+```
+
+## OQ-artwork-235 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-235","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"\"Photo layer\" trong KB-800 có gồm layer Multiple Uploads (mục Image effects after generating, KB-018) hay Text to Image không? Nguồn chỉ nói Photo layer customization Normal; cả candidate và base đều không nói.","kb_ids":["KB-800"]}
+```
+
+## OQ-artwork-236 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-236","type":"NEEDS_CONFIRMATION","feature_id":"run-effects-fill-in-variables","summary":"Giá trị chỉ gồm khoảng trắng bị coi là trống (PENDING-19, PO chưa xác nhận). Cần: PO xác nhận nguyên văn expected của hành vi này; khi có, CCR mới có thể nâng lên CONFIRMED_EXPECTED. Đây có phải hành vi đúng không?","kb_ids":["KB-826"]}
+```
+
+## OQ-artwork-237 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-237","type":"NEEDS_CONFIRMATION","feature_id":"run-effects-fill-in-variables","summary":"Mọi biến không khớp thì chạy thẳng, không mở popover (PENDING-16; spec có thể đọc là popover rỗng). Cần: PO xác nhận nguyên văn expected của hành vi này; khi có, CCR mới có thể nâng lên CONFIRMED_EXPECTED. Đây có phải hành vi đúng không?","kb_ids":["KB-828"]}
+```
+
+## OQ-artwork-238 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-238","type":"NEEDS_CONFIRMATION","feature_id":"run-effects-fill-in-variables","summary":"Giá trị nhập hiển thị như text thường, payload XSS/HTML không render: chỉ là quan sát TC-86/87. Cần: PO xác nhận nguyên văn expected của hành vi này; khi có, CCR mới có thể nâng lên CONFIRMED_EXPECTED. Đây có phải hành vi đúng không? Chủ đề bảo mật (rủi ro cao): PO xác nhận giá trị nhập phải hiển thị như text thường.","kb_ids":["KB-830"]}
+```
+
+## OQ-artwork-239 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-239","type":"NEEDS_CONFIRMATION","feature_id":"run-effects-fill-in-variables","summary":"Vế phụ CLAIM-17: prompt không có biến thì chạy thẳng; đóng popover thì không chạy: chỉ là kết quả test, spec không ghi nguyên chữ. Cần: PO hoặc Dev xác nhận nguyên văn vế này (có ngày, có link). Đây có phải hành vi đúng không?","kb_ids":["KB-820"]}
+```
+
+## OQ-artwork-240 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-240","type":"NEEDS_CONFIRMATION","feature_id":"run-effects-fill-in-variables","summary":"Vế phụ CLAIM-18: giá trị lưu không hợp lệ với input type mới bị bỏ, field trống + hint (PENDING-20, PO chưa xác nhận). Cần: PO hoặc Dev xác nhận nguyên văn vế này (có ngày, có link). Đây có phải hành vi đúng không?","kb_ids":["KB-822"]}
+```
+
+## OQ-artwork-241 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-241","type":"NEEDS_CONFIRMATION","feature_id":"run-effects-fill-in-variables","summary":"Vế bỏ khỏi CLAIM-22: option bị đổi tên thì token cũ không còn khớp (hệ quả suy ra từ Q1 B, PENDING-21), PO không nói riêng. Cần: PO xác nhận nguyên văn hành vi khi option bị đổi tên. Đây có phải hành vi đúng không?","kb_ids":["KB-827"]}
+```
+
+## OQ-artwork-242 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-242","type":"NEEDS_CONFIRMATION","feature_id":"run-effects-fill-in-variables","summary":"Vế bỏ khỏi CLAIM-24: giá trị nhập trong popover không ghi vào default của option trong artwork; không có trong quote xác nhận. Cần: PO/Dev xác nhận nguyên văn giá trị nhập không ghi vào default của option. Đây có phải hành vi đúng không?","kb_ids":["KB-829"]}
+```
+
+## OQ-artwork-243 — CONFLICT
+
+```json
+{"oq_id":"OQ-artwork-243","type":"CONFLICT","feature_id":"run-effects-fill-in-variables","summary":"Chữ hint field trống trong popover Fill in variables: spec (PO, 2026-10-26) ghi \"No default value. Enter one to run.\", build staging 2026-10-30 (assets/index.BMgdZMSW.js) hiện \"No valid default value. Enter one to run.\" cho mọi field trống. Cần: PO hoặc QA lead chọn chữ đúng; nếu build đúng thì cần cập nhật spec.","kb_ids":["KB-824","KB-825"],"side_a":"Spec TIB-5470 description, Update: Prompt variables › Fields (PO, 2026-10-26): hint \"No default value. Enter one to run.\"","side_b":"QA-3406 TC-61 (tạm dừng) 2026-10-30, build assets/index.BMgdZMSW.js: hint \"No valid default value. Enter one to run.\" cho mọi field trống, kể cả option không có default.","conflict_group":"fill-variables-empty-hint-copy"}
+```
+
+## OQ-artwork-244 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-244","type":"OPEN_ISSUE","feature_id":"run-effects-fill-in-variables","summary":"Vế giá trị nhập không chia sẻ sang browser, tab hoặc staff khác đã được PO chọn (Q2 A) nhưng chưa kiểm trực tiếp. Cần: QA kiểm trên browser/tab khác và với staff khác.","kb_ids":["KB-829"]}
+```
+
+## OQ-artwork-245 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-245","type":"OPEN_ISSUE","feature_id":"run-effects-fill-in-variables","summary":"Liên hệ object sdk (không sửa ở run này): sdk KB-415 nói storefront JSON List điền được prompt variable, còn câu hỏi Dev 55823 xếp biến JSON list vào nhóm biến portal không khớp. Khác surface, không chọn phía. Cần: Dev xác nhận biến JSON list trong popover portal có khớp option không, đối chiếu với storefront.","kb_ids":["KB-827"]}
+```
+
+## OQ-artwork-246 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-246","type":"OPEN_ISSUE","feature_id":"run-effects-fill-in-variables","summary":"Biến của ImagenHub template (effect imagenhub:image_filter) có mở popover Fill in variables như biến trong prompt không? Chưa thử (TC-78, PENDING-18); liên quan artwork KB-424 (warning ImagenHub variables). Liên quan CHK-021.","kb_ids":["KB-819"]}
+```
+
+## OQ-artwork-247 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-247","type":"NEEDS_CONFIRMATION","feature_id":"run-effects-fill-in-variables","summary":"Nguồn biến của prompt effect trên Photo layer: KB-113/KB-115 (layer-config-image) chỉ mô tả \"+ Variable\" trong prompt GenAI của Multiple Uploads/Text to Image (lấy Option Title từ layer Text/Additional Option khác, quan sát một lần); KB-819/KB-821 khớp biến với option gồm text, Only numbers, Date picker, option layer. Base chưa có item nào cho biến trong prompt của Image effects trên Photo layer: cần xác nhận cùng một cơ chế khớp biến.","kb_ids":["KB-819","KB-821"]}
+```
+
+## OQ-artwork-248 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-248","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Effect có bật dùng kích thước layer: hai layer khác kích thước thì gọi riêng, mỗi lần trừ một lượt. Không nạp KB (S0). Tên công tắc trên portal chưa biết, không có test case. Cần: Dev (giangnth) xác nhận nguyên văn, có ngày và link (ví dụ comment trên Jira TIB-5577), lời sửa câu Q2 ngày 2026-10-29; hiện chỉ là lời QA phuongbb chuyển lại, kênh gốc không rõ, không có trên Jira. Chưa xác nhận thì không nạp KB.","kb_ids":[]}
+```
+
+## OQ-artwork-249 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-249","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Effect Gen AI trên layer Photo Reposition không bật dùng kích thước layer: hai layer khác kích thước vẫn gọi chung một lần. Không nạp KB (S0), không có test case. Cần: Dev (giangnth) xác nhận nguyên văn, có ngày và link (ví dụ comment trên Jira TIB-5577), lời sửa câu Q2 ngày 2026-10-29; hiện chỉ là lời QA phuongbb chuyển lại, kênh gốc không rõ, không có trên Jira. Chưa xác nhận thì không nạp KB.","kb_ids":[]}
+```
+
+## OQ-artwork-250 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-250","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Contour cut: khác chiều rộng thì gọi riêng, cùng chiều rộng khác chiều cao thì gọi chung. Không nạp KB (S0), không có test case; không đụng item contour cut của layer-print-effects. Cần: Dev (giangnth) xác nhận nguyên văn, có ngày và link (ví dụ comment trên Jira TIB-5577), lời sửa câu Q2 ngày 2026-10-29; hiện chỉ là lời QA phuongbb chuyển lại, kênh gốc không rõ, không có trên Jira. Chưa xác nhận thì không nạp KB. Khi được xác nhận thì đối chiếu lại item contour cut KB-391 (layer-print-effects) và KB-044.","kb_ids":[]}
+```
+
+## OQ-artwork-251 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-251","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Các effect không phụ thuộc kích thước (gray_scale, remove background, watercolor, sketch…; danh sách chỉ là ví dụ) luôn gọi chung dù layer khác kích thước. Không nạp KB (S0); ngược với cách đọc rộng câu Q2 trên Jira (xem OQ CONFLICT populate-share-call-layer-size). Cần: Dev (giangnth) xác nhận nguyên văn, có ngày và link (ví dụ comment trên Jira TIB-5577), lời sửa câu Q2 ngày 2026-10-29; hiện chỉ là lời QA phuongbb chuyển lại, kênh gốc không rõ, không có trên Jira. Chưa xác nhận thì không nạp KB.","kb_ids":[]}
+```
+
+## OQ-artwork-252 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-252","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"gray_scale trên hai layer Direct upload khác kích thước dùng chung một lần gọi derive: chỉ có quan sát QA-3434 TC-64 (2026-10-27, build không ghi), test case không có căn cứ expected có nguồn. Cần: PO hoặc Dev xác nhận nguyên văn (có ngày, có link) đây là hành vi đúng; chạy lại trên build có ghi phiên bản (sau 2026-10-29 08:21 GMT).","kb_ids":["KB-853"]}
+```
+
+## OQ-artwork-253 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-253","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Option chained {{output}} bắt đầu từ ảnh đã xử lý của nguồn, effect nguồn chạy một lần cho mỗi ảnh: chỉ có dev doc tự sinh từ branch diff (TIB-5504 comment 56020, 2026-10-29). Comment 56446 TIB-5504 (Dev, 2026-11-04, ngoài CCR) nói đã đổi luật effect trùng giữa nguồn và option {{output}} (effect trùng chỉ chạy một lần); không phải claim, không nạp. Item này không resolve OQ-artwork-093, OQ đó giữ mở. Cần: PO hoặc Dev xác nhận nguyên văn (có ngày, có link) rằng đây là hành vi đúng, không chỉ là mô tả code; đồng thời làm rõ luật effect trùng theo comment 56446 qua một Proposal riêng.","kb_ids":["KB-854"]}
+```
+
+## OQ-artwork-254 — CONFLICT
+
+```json
+{"oq_id":"OQ-artwork-254","type":"CONFLICT","feature_id":"populate-values","summary":"Effect không phải Gen AI trên layer Direct upload / Cropper: hai layer khác kích thước có tách lần gọi (và lượt) hay không. Phần Gen AI (KB-851) không tranh chấp. Cần: Dev xác nhận nguyên văn có ngày + link phía nào đúng; lời sửa Q2 ngày 2026-10-29 (CLAIM-03/04/05/07, S0, không link) ủng hộ side_b nhưng không được dùng làm căn cứ. Liên quan: request Gen AI có mang kích thước layer không (KB-851 so với KB-853) chưa rõ. Liên quan CHK-030.","kb_ids":["KB-852","KB-853"],"conflict_group":"populate-share-call-layer-size","side_a":"Jira TIB-5577 comment 55689 (Dev, 2026-10-27, Q2): kích thước layer Direct upload / Cropper thuộc thiết lập effect, khác kích thước thì gọi riêng, tính lượt riêng; câu không giới hạn loại effect (KB-852).","side_b":"QA-3434 TC-64 PASS 2026-10-27 staging: gray_scale trên layer Direct upload 400×400 và 400×300 dùng chung một lần gọi derive, request không mang kích thước (KB-853)."}
+```
+
+## OQ-artwork-255 — CONFLICT
+
+```json
+{"oq_id":"OQ-artwork-255","type":"CONFLICT","feature_id":"populate-values","summary":"Option Photo Reposition {{output}} có effect riêng: điều kiện đi theo vị trí nguồn chỉ là tỷ lệ ảnh kết quả lệch ≤ 0.05, hay còn phụ thuộc tỷ lệ khung option so với khung nguồn. Cần: Dev trả lời về TC-28 (bug draft chưa file); chạy TC-27 và mốc 1.049/1.051. Liên quan CHK-040.","kb_ids":["KB-856","KB-857"],"conflict_group":"populate-reposition-follow-ratio","side_a":"Jira TIB-5504 comment 56059 (Dev, 2026-10-29, Q5): đi theo khi tỷ lệ kết quả lệch ≤ 0.05 so với ảnh nguồn (KB-856).","side_b":"QA-3441 TC-28 FAIL 2026-10-29 staging: khung option 400×400 khác khung nguồn 400×300 thì không đi theo dù lệch 0.04/0.05 (KB-857)."}
+```
+
+## OQ-artwork-256 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-256","type":"OPEN_ISSUE","feature_id":"populate-values","summary":"Known issue nguồn Photo Cropper: thay ảnh thì option {{output}} bắt đầu ngay từ ảnh mới, effect nguồn chạy hai lần, lỗi thì option và nguồn hiện ảnh khác nhau. Không do TIB-5504, có ticket riêng nhưng dev không nêu key; thấy một lần ở QA-3441 TC-24, chưa file bug. Cần: Key ticket riêng và trạng thái fix; không dùng làm expected. Liên quan CHK-045. Chưa rõ lần chạy effect nguồn thứ hai có tính thêm lượt không.","kb_ids":["KB-867"]}
+```
+
+## OQ-artwork-257 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-257","type":"OPEN_ISSUE","feature_id":"populate-values","summary":"Known preview vs print mismatch: preview storefront không vẽ vị trí populate từ Photo Reposition cho layer No personalization, vẫn fit ảnh vào khung, trong khi order render dùng vị trí đó. Cần: Ticket theo dõi lệch preview/bản in và kế hoạch xử lý; không dùng làm expected. PO xác nhận vị trí populate từ Photo Reposition dùng trong order render là chủ đích (rủi ro order, impact HIGH); chưa có lượt đặt đơn thật đối chiếu vị trí trên order design. Liên quan CHK-038, CHK-039.","kb_ids":["KB-859","KB-860"]}
+```
+
+## OQ-artwork-258 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-258","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Lượt bị trừ khi populated option dùng chung hoặc tách lần gọi effect: số lượt khi dùng chung một lần gọi chưa đo (QA-3434 TC-13 tạm dừng), và \"lượt\" là bộ đếm nào (Gen AI credit của store, rate-limit visitor của sdk, hay quota Run effects của portal) chưa rõ; cũng chưa rõ lần gọi lại sau reload (KB-865) có tính thêm lượt không. Cần: PO xác nhận ý định tính lượt (rủi ro tiền, impact HIGH). Liên quan CHK-031.","kb_ids":["KB-850","KB-851","KB-852","KB-853","KB-865"]}
+```
+
+## OQ-artwork-259 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-259","type":"OPEN_ISSUE","feature_id":"populate-values","summary":"Layer Cropper chưa có lượt kiểm cho Gen AI khác kích thước gọi riêng: QA-3434 TC-14 chỉ chạy Gemini trên Direct upload và chưa chạy lại trên build sau 2026-10-29 08:21 GMT. Cần: QA chạy trên layer Cropper với build có ghi phiên bản.","kb_ids":["KB-851"]}
+```
+
+## OQ-artwork-260 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-260","type":"OPEN_ISSUE","feature_id":"populate-values","summary":"Hành vi lỗi của option chained {{output}} mới kiểm với lỗi giả lập trong trang (HTTP 500 / status 3), chưa kiểm với lỗi thật từ provider. Cần: QA kiểm với lỗi thật (ví dụ prompt bị moderation chặn).","kb_ids":["KB-862","KB-863","KB-864"]}
+```
+
+## OQ-artwork-261 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-261","type":"OPEN_ISSUE","feature_id":"populate-values","summary":"Add to Cart bị chặn khi effect riêng của option chained {{output}} lỗi chưa được test riêng (rủi ro order, impact HIGH). Cần: QA kiểm vế Add to Cart; PO xác nhận nếu kết quả khác.","kb_ids":["KB-864"]}
+```
+
+## OQ-artwork-262 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-artwork-262","type":"OPEN_ISSUE","feature_id":"populate-values","summary":"Layer ảnh No personalization populate {{output}} từ nguồn Photo Cropper nhận ảnh đã crop: dev nói đúng theo code nhưng chưa kiểm trên UI (staging chưa có campaign có cấu hình này), CCR ghi QA-3441 TC-38 PASS. Cần: dựng fixture trên store explorer và kiểm trên UI.","kb_ids":["KB-858"]}
+```
+
+## OQ-artwork-263 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-263","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Chain populate {{output}} từ hai cấp trở lên: portal cho cấu hình nhưng chỉ một cấp được hỗ trợ; hành vi chain nhiều cấp không có expected. Cần: PO quyết portal có nên chặn cấu hình này hay ghi rõ không hỗ trợ. Liên quan CHK-036.","kb_ids":["KB-861"]}
+```
+
+## OQ-artwork-264 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-264","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Phạm vi token của KB-120 / CHK-022 (lan truyền ngay giá trị gốc): mới quan sát với {{input.1}} từ nguồn Multiple Uploads nhưng item không ghi rõ chỉ áp cho {{input.N}}. Với {{output}}, option bắt đầu từ ảnh đã xử lý của nguồn (KB-866, KB-854), và bắt đầu ngay từ ảnh mới với nguồn Photo Cropper là known defect (KB-867). Cần: ghi rõ phạm vi token của KB-120 ở lần cập nhật sau để không đọc rộng thành expected.","kb_ids":["KB-120","KB-866","KB-867"]}
+```
+
+## OQ-artwork-265 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-265","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Liên hệ object sdk (không sửa ở run này): sdk KB-487 nói layer populate target chạy effect lên ảnh buyer upload vào nguồn, có thể đọc là ảnh gốc; với {{output}} có effect nguồn, KB-866 nói option bắt đầu từ kết quả của nguồn. Cần: PO/Dev xác nhận KB-487 có phân biệt {{input}} và {{output}} không.","kb_ids":["KB-866","KB-854"]}
+```
+
+## OQ-artwork-266 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-266","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"KB-865 (reload thì option chained chạy lại từ đầu) ngầm cần ảnh nguồn còn sau reload, trong khi sdk KB-019 thấy full reload không khôi phục form (field text/clipart). Khác loại field, không kết luận mâu thuẫn. Cần: quan sát photo layer sau reload.","kb_ids":["KB-865"]}
+```
+
+## OQ-artwork-267 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-267","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Base chỉ có quan sát portal cho nguồn Multiple Uploads (KB-118, KB-119); delta ngầm cho phép layer Photo (Direct upload / Cropper / Reposition) làm nguồn {{output}}, chưa có quan sát portal nào cho cấu hình này. Cần: quan sát dropdown Source option với nguồn Photo.","kb_ids":["KB-118","KB-119","KB-858","KB-859"]}
+```
+
+## OQ-artwork-268 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-268","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Mọi item CBS-091 (KB-850..KB-867) có trạng thái ship UNKNOWN: TIB-5577 và TIB-5504 đang Passed, chỉ có scope staging, production chưa có quan sát. Cần: xác nhận ticket đã ship production và build tương ứng.","kb_ids":["KB-850","KB-855","KB-859","KB-866"]}
+```
+
+## OQ-artwork-269 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-269","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Nợ base có sẵn: KB-124 (layer-config-image), CHK-024 và OQ-artwork-093 tham chiếu \"KB-008 (feature populate-values)\" trong khi item tương ứng trong shard populate-values là KB-120. Cần: sửa tham chiếu ở lần cập nhật sau.","kb_ids":["KB-120"]}
+```
+
+## OQ-artwork-270 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-270","type":"NEEDS_CONFIRMATION","feature_id":"layer-bulk-edit","summary":"KB-881: chọn 1 layer mở được Bulk edit; selection chỉ locked hoặc chỉ replica thì mục \"Bulk edit\" có nhưng disabled (lượt 2026-10-22 replica-only còn ẩn); selection lẫn editable + locked + replica chỉ ghi layer editable. Đây có phải hành vi đúng, disabled hay ẩn? Cần: PO hoặc Dev xác nhận nguyên văn, có ngày (Jira TIB-5299), hoặc test case PASS có căn cứ expected trên build cuối.","kb_ids":["KB-881"]}
+```
+
+## OQ-artwork-271 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-271","type":"NEEDS_CONFIRMATION","feature_id":"layer-bulk-edit","summary":"KB-882: chữ header / mô tả / footer (không dấu chấm), nút Cancel / Save, accordion đầu mở sẵn, rộng 620 px của modal Bulk edit chỉ là quan sát TC-07/08. Đây có phải chữ và bố cục chuẩn không? Cần: PO hoặc Dev xác nhận nguyên văn, có ngày (Jira TIB-5299), hoặc test case PASS có căn cứ expected trên build cuối.","kb_ids":["KB-882"]}
+```
+
+## OQ-artwork-272 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-272","type":"NEEDS_CONFIRMATION","feature_id":"layer-bulk-edit","summary":"KB-884: ghi lại đúng giá trị cũ thì không lỗi, 1 undo step; Cancel / Esc / click ngoài modal không ghi, không thêm undo step — chỉ quan sát 2026-10-23 trên build cũ. Đây có phải hành vi đúng trên build cuối? Cần: PO hoặc Dev xác nhận nguyên văn, có ngày (Jira TIB-5299), hoặc test case PASS có căn cứ expected trên build cuối.","kb_ids":["KB-884"]}
+```
+
+## OQ-artwork-273 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-273","type":"NEEDS_CONFIRMATION","feature_id":"layer-bulk-edit","summary":"KB-886: Populate Content (và Populate Color / Background của text) trong modal là radio On / No change / Off, mặc định No change — PO A2 và Dev 55846 không nói về Populate. Đây có phải hành vi đúng? Cần: PO hoặc Dev xác nhận nguyên văn, có ngày (Jira TIB-5299), hoặc test case PASS có căn cứ expected trên build cuối.","kb_ids":["KB-886"]}
+```
+
+## OQ-artwork-274 — CONFLICT
+
+```json
+{"oq_id":"OQ-artwork-274","type":"CONFLICT","feature_id":"layer-bulk-edit","summary":"\"Personalization for this layer\" trong modal Bulk edit: PO A2 (49367, 2026-08-28) yêu cầu segmented control On / – / Off; Dev (55846, 2026-10-28) + TC-15 cho thấy vẫn là radio 3 lựa chọn, không có No change, và đã hỏi lại PO (PENDING-02). Cần: PO trả lời câu hỏi của Dev ở comment 55846: giữ radio-rỗng-là-no-change hay đổi UI sang tri-state thật.","kb_ids":["KB-887","KB-888"],"conflict_group":"CONF-CBS-092-03","side_a":"KB-887 (INFERRED, LOW): PO A2 comment 49367 (2026-08-28) — Personalization phải là segmented control On / – / Off.","side_b":"KB-888 (OBSERVED_CURRENT, LOW): Dev 55846 (2026-10-28) + TC-15 — radio 3 lựa chọn, không có No change; chỉ Cancel quay lại trạng thái không chọn."}
+```
+
+## OQ-artwork-275 — CONFLICT
+
+```json
+{"oq_id":"OQ-artwork-275","type":"CONFLICT","feature_id":"layer-bulk-edit","summary":"Layer linked khi bulk edit setting ngoài Conditional: TC-43 (2026-10-30) thấy LK1 giữ linked và form_label không đổi; Dev 49205 C3 (2026-08-27) nói các setting khác vẫn áp bình thường; Dev 55846 chỉ nói đã fix \"layer Link bị patch nhầm\". Cần: Dev hoặc PO nói rõ: sau fix 2026-10-28, setting ngoài Conditional có còn ghi lên layer linked không.","kb_ids":["KB-890","KB-891"],"conflict_group":"CONF-CBS-092-04","side_a":"KB-890 (OBSERVED_CURRENT, LOW): TC-43 — layer linked giữ customization_type linked, form_label không đổi.","side_b":"KB-891 (INFERRED, LOW): Dev 49205 C3 — layer linked, các setting khác ngoài Conditional vẫn áp bình thường."}
+```
+
+## OQ-artwork-276 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-276","type":"NEEDS_CONFIRMATION","feature_id":"layer-bulk-edit","summary":"KB-893: danh sách field theo tổ hợp layer type (Text + Paragraph, 5 text type, cùng type clipart, Text + Clipart) chỉ là quan sát TC-16..19, một phần trên build cũ. Đây có phải tập field đúng không? Cần: PO hoặc Dev xác nhận nguyên văn, có ngày (Jira TIB-5299), hoặc test case PASS có căn cứ expected trên build cuối.","kb_ids":["KB-893"]}
+```
+
+## OQ-artwork-277 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-277","type":"NEEDS_CONFIRMATION","feature_id":"layer-bulk-edit","summary":"KB-896: panel Conditional Setting hiện khi ≥1 layer hỗ trợ; rule ghi cho mọi layer hỗ trợ, bỏ qua Dynamic Clipart by Text; rule cũ bị thay (mới thấy 1 layer, TC-42 chưa xong). Đây có phải hành vi đúng? Cần: PO hoặc Dev xác nhận nguyên văn, có ngày (Jira TIB-5299), hoặc test case PASS có căn cứ expected trên build cuối. TC-42 chạy đủ bước xoá rule và undo.","kb_ids":["KB-896"]}
+```
+
+## OQ-artwork-278 — CONFLICT
+
+```json
+{"oq_id":"OQ-artwork-278","type":"CONFLICT","feature_id":"layer-bulk-edit","summary":"Vector category trong Design settings của Bulk edit: TC-26 (2026-10-22, build cũ) thấy \"Select one vector category\" + default value; Dev 49205 C5 (2026-08-27) nói Design settings chỉ gồm text, clipart, grouped_clipart, default_value. PENDING-01 chưa ai trả lời. Cần: Dev hoặc PO trả lời PENDING-01: vector category có thuộc scope Bulk edit không; chạy lại TC-26 trên build cuối kèm reset default.","kb_ids":["KB-906","KB-907"],"conflict_group":"CONF-CBS-092-05","side_a":"KB-906 (OBSERVED_CURRENT, LOW): TC-26 — V1 + V2 có field vector category.","side_b":"KB-907 (INFERRED, LOW): Dev 49205 C5 — Design settings chỉ gồm text, clipart, grouped_clipart, default_value."}
+```
+
+## OQ-artwork-279 — CONFLICT
+
+```json
+{"oq_id":"OQ-artwork-279","type":"CONFLICT","feature_id":"layer-bulk-edit","summary":"Danh sách nguồn Populate trong Bulk edit: TC-31 (2026-10-30, build index.BMgdZMSW.js) thấy loại mọi layer đang chọn (\"List is empty.\"); dev summary 49895 (2026-09-04) và QA 2026-10-29 (build index.acNZihq9.js) thấy chỉ loại layer đầu tiên. Không ai xác nhận thay đổi giữa 2 build. Cần: Dev xác nhận đã đổi logic nguồn Populate giữa 2 build (có ngày), hoặc PO nói hành vi đúng.","kb_ids":["KB-901","KB-902"],"conflict_group":"CONF-CBS-092-06","side_a":"KB-901 (OBSERVED_CURRENT, LOW): TC-31 — nguồn loại mọi layer đang chọn.","side_b":"KB-902 (OBSERVED_CURRENT, LOW): dev summary 49895 + QA 2026-10-29 — chỉ loại layer đầu tiên của selection."}
+```
+
+## OQ-artwork-280 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-280","type":"NEEDS_CONFIRMATION","feature_id":"layer-bulk-edit","summary":"KB-903: Populate values + \"Use an existing global option\" set trong cùng 1 Save đều được ghi (global_option + retrieval_value_enabled / retrieval_layer), quan sát TC-31 2026-10-30. Đây có phải hành vi đúng? Cần: PO hoặc Dev xác nhận nguyên văn, có ngày (Jira TIB-5299), hoặc test case PASS có căn cứ expected trên build cuối.","kb_ids":["KB-903"]}
+```
+
+## OQ-artwork-281 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-281","type":"NEEDS_CONFIRMATION","feature_id":"layer-bulk-edit","summary":"Khi selection không có setting chung: mục Bulk edit trên menu có vẫn bật không, và nút Save có bị disable không? Chỉ dev summary 49895 nói, chưa ai thấy (vế bị bỏ của CLAIM-20; empty state ở KB-904). Cần: PO hoặc Dev xác nhận nguyên văn, có ngày (Jira TIB-5299), hoặc test case PASS có căn cứ expected trên build cuối. Hoặc dựng được tổ hợp layer thật dẫn tới empty state (TC-22).","kb_ids":[]}
+```
+
+## OQ-artwork-282 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-282","type":"NEEDS_CONFIRMATION","feature_id":"layer-bulk-edit","summary":"Chọn group layer: layer con có được chọn theo và nhận Bulk edit, group không bị ghi, header đếm cả group không? Chỉ quan sát 1 lượt TC-04 2026-10-22 build cũ; Dev 49205 A3 nói selection loại layer group; PO chưa quyết PENDING-05. Không nạp KB. Cần: PO quyết PENDING-05; Dev xác nhận hành vi chọn group trên build cuối.","kb_ids":[]}
+```
+
+## OQ-artwork-283 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-283","type":"NEEDS_CONFIRMATION","feature_id":"layer-bulk-edit","summary":"Default text set qua Bulk edit có điền sẵn vào ô nhập storefront không; modal có cần field \"Prefill default text\" (autofill_default_value) như panel single-layer không? Chỉ quan sát TC-30 (chưa PASS, expected khác). Không nạp KB. Cần: PO hoặc Dev xác nhận nguyên văn, có ngày. TIB-5236 chỉ là ngữ cảnh regression, không phải nguồn.","kb_ids":[]}
+```
+
+## OQ-artwork-284 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-284","type":"NEEDS_CONFIRMATION","feature_id":"layer-bulk-edit","summary":"Known limitation theo dev summary 49895: field cùng tên nhưng khác kiểu giữa các layer type bị loại khỏi modal Bulk edit, không thông báo. PENDING-04 chưa trả lời, QA chưa thử. Không nạp KB. Cần: Dev hoặc PO trả lời PENDING-04; QA chạy tổ hợp layer có field cùng tên khác kiểu.","kb_ids":[]}
+```
+
+## OQ-artwork-285 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-285","type":"NEEDS_CONFIRMATION","feature_id":"layer-common-config","summary":"Option title và Add instruction được chèn như HTML trên form storefront và form preview portal (<b>, <img> hiện thật; <script>, onerror bị bỏ) — quan sát TC-35, có từ trước TIB-5299; Dev 55846 chỉ nói không liên quan ticket. Đây là defect (khả năng bảo mật) hay hành vi chấp nhận? Không nạp KB. Cần: PO hoặc Dev nói rõ đúng/sai; nếu là defect thì ticket theo dõi. Không tự tạo issue Jira, hỏi operator trước.","kb_ids":[]}
+```
+
+## OQ-artwork-286 — CONFLICT
+
+```json
+{"oq_id":"OQ-artwork-286","type":"CONFLICT","feature_id":"editor-layer-workspace","summary":"Menu overflow trên layer action bar: KB-043 (bootstrap 2026-09-10) ghi action bar không có menu '...'; KB-085 (layer-config-image, bootstrap 2026-09-21) ghi panel cấu hình chỉ tiếp cận qua '...' > 'Bulk edit', không có panel single-layer; KB-908 (TC-01 2026-10-30) ghi menu More (…) có Bulk edit đứng đầu + Replace image layer, Link with another layer, Convert to another layer, 6 mục bulk cũ không còn. Cần: Operator/owner quyết resolve (supersede tắt ở teeinblue); run explore hoặc test case có căn cứ expected đọc lại action bar và panel single-layer trên build cuối; cập nhật CHK-005, CHK-015 theo kết quả. Ghi chú thêm: KB-043 và KB-085 đã lệch nhau từ base về việc có menu '...' hay không, KB-908 cùng chiều KB-085 ở điểm đó; KB-908 không nói gì về panel single-layer. Check mất oracle: CHK-005, CHK-024 (editor-layer-workspace), CHK-015 (layer-config-image).","kb_ids":["KB-043","KB-085","KB-908"],"conflict_group":"CONF-CBS-092-01","side_a":"KB-043 (OBSERVED_CURRENT, MEDIUM, 2026-09-10): không có menu overflow (CHK-005); KB-085 (OBSERVED_CURRENT, LOW, 2026-09-21): panel cấu hình chỉ qua '...' > 'Bulk edit', không panel single-layer (CHK-015).","side_b":"KB-908 (OBSERVED_CURRENT, LOW, CBS-092 CLAIM-01, TC-01 2026-10-30): menu More (…) có Bulk edit đứng đầu + 3 mục; 6 mục bulk cũ không còn.","check_ids":["CHK-005","CHK-024","CHK-015"]}
+```
+
+## OQ-artwork-287 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-287","type":"NEEDS_CONFIRMATION","feature_id":"editor-layer-workspace","summary":"KB-908: nội dung và nhãn menu More (…) (Bulk edit, Replace image layer, Link with another layer, Convert to another layer; Artwork 1.0 vẫn ghi \"Share with another layer\") chỉ là quan sát TC-01, khác nhãn trong TC expected và ticket. Đây có phải nội dung và nhãn đúng? Cần: PO hoặc Dev xác nhận nguyên văn, có ngày (Jira TIB-5299), hoặc test case PASS có căn cứ expected trên build cuối.","kb_ids":["KB-908"]}
+```
+
+## OQ-artwork-288 — CONFLICT
+
+```json
+{"oq_id":"OQ-artwork-288","type":"CONFLICT","feature_id":"editor-layer-workspace","summary":"Bar hành động khi selection có replica Global Template: KB-042 (bootstrap 2026-09-10) ghi bar Deselect/Group/Duplicate/Delete không đổi theo loại/số lượng layer chọn; KB-909 (Dev 55846, 2026-10-28) nói cờ canMutate chặn Group / Duplicate / Delete khi selection có replica. Sample của KB-042 không có replica nên có thể chỉ khác state. Cần: Operator/owner quyết resolve (supersede tắt); đọc lại action bar với selection có replica trên build cuối; cập nhật CHK-006 theo kết quả. Ghi chú thêm: KB-909 và KB-042 có thể chỉ khác state (sample của KB-042 không có replica); nếu PO xác nhận khác state thì là item mới, không phải mâu thuẫn. Check mất oracle: CHK-002, CHK-003, CHK-004, CHK-006, CHK-025.","kb_ids":["KB-042","KB-909"],"conflict_group":"CONF-CBS-092-02","side_a":"KB-042 (OBSERVED_CURRENT, MEDIUM, 2026-09-10): bar hành động không đổi theo loại/số lượng layer chọn (CHK-006).","side_b":"KB-909 (CONFIRMED_EXPECTED, LOW, UNRESOLVED; po_dev_confirm Dev 55846 2026-10-28): replica → canMutate chặn Group / Duplicate / Delete.","check_ids":["CHK-002","CHK-003","CHK-004","CHK-006","CHK-025"]}
+```
+
+## OQ-artwork-289 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-289","type":"NEEDS_CONFIRMATION","feature_id":"conditional-setting-config","summary":"KB-225 / CHK-017 mô tả lối vào \"Bulk apply Conditional setting\" từ layer action bar; theo KB-908 (TC-01 2026-10-30) mục \"Conditional setting\" đó đã bị TIB-5299 bỏ khỏi menu More (…), Conditional giờ nằm trong modal Bulk edit. KB-225 / CHK-017 còn đúng không? OQ-artwork-154 vẫn mở. Cần: Run có lock conditional-setting-config cập nhật KB-225 / CHK-017 sau khi CONF-CBS-092-01 được resolve; PO hoặc Dev xác nhận Show/Hide khi bulk apply Conditional trong modal.","kb_ids":["KB-225"],"check_ids":["CHK-017"],"related_oq_ids":["OQ-artwork-154"]}
+```
+
+## OQ-artwork-290 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-290","type":"NEEDS_CONFIRMATION","feature_id":"editor-layer-workspace","summary":"Live Preview trong portal artwork editor dùng teeinblue-sdk qua git submodule src/sdk, chỉ có fix TIB-5412 sau khi submodule được bump riêng (note Dev TIB-5412 comment 51755, 2026-09-23). Submodule đã được bump chưa? Không nạp KB. Cần: Dev xác nhận đã bump submodule src/sdk (commit/PR, có ngày).","kb_ids":[]}
+```
+
+## OQ-artwork-291 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-291","type":"NEEDS_CONFIRMATION","feature_id":"layer-bulk-edit","kb_ids":["KB-883","KB-897"],"summary":"Hai hành vi ghi đè hàng loạt được publish với cờ rủi ro cao: chạm field rồi để rỗng thì ghi rỗng cho mọi layer đã chọn (KB-883); đổi clipart category / group mà không chạm Default value thì default_value thành null trên mọi layer đã chọn (KB-897). Cả hai có nguồn Dev và đang làm oracle cho check P1. Mức HIGH là đánh giá của bước diff. Cần: PO xác nhận đây là ý định sản phẩm (ghi đè không cảnh báo)."}
+```
+
+## OQ-artwork-292 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-292","type":"NEEDS_CONFIRMATION","feature_id":"layer-bulk-edit","kb_ids":["KB-880"],"summary":"Quyền: staff không có quyền Manage Artwork có thấy / dùng được Bulk edit không? TC-06 chưa chạy, chưa có item nào về quyền (CHK-026 là gap). Cần: account staff không có quyền do operator cấp, hoặc PO/Dev xác nhận nguyên văn có ngày."}
+```
+
+## OQ-artwork-293 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-293","type":"NEEDS_CONFIRMATION","feature_id":"layer-bulk-edit","kb_ids":["KB-898"],"summary":"Redo sau Undo của một lượt Bulk edit: TC-28 thấy Redo khôi phục toàn bộ, nhưng PO C1 (49367) chỉ nói về Undo. Cần: PO/Dev xác nhận Redo là một bước khôi phục toàn bộ lượt bulk edit."}
+```
+
+## OQ-artwork-294 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-294","type":"NEEDS_CONFIRMATION","feature_id":"editor-layer-workspace","kb_ids":["KB-042"],"summary":"KB-042 có hai vế: canvas toolbar đổi theo loại layer (không bị tranh chấp) và bar hành động không đổi theo selection (bị KB-909 tranh chấp). Vì conflict ở mức item, CHK-002, CHK-003, CHK-004 (chỉ dùng vế canvas toolbar) cũng mất oracle. Cần: khi PO quyết CONF-CBS-092-02 (OQ-artwork-288), quyết luôn có tách KB-042 thành hai item để trả oracle cho CHK-002..004 không.","check_ids":["CHK-002","CHK-003","CHK-004"]}
+```
+
+## OQ-artwork-295 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-295","type":"NEEDS_CONFIRMATION","feature_id":"layer-config-image","kb_ids":["KB-087","KB-088"],"summary":"KB-087, KB-088 (2026-09-21) mô tả field inventory của dialog Bulk Edit trước TIB-5299 (dialog mở cho 1 layer clipart-category). Modal Bulk edit mới (feature layer-bulk-edit: KB-883 field mở ra rỗng / No change, KB-885, KB-893 tập field chung) có thể làm hai item này cũ. CCR không khai quan hệ, không sửa. Cần: quan sát lại panel cấu hình 1 layer clipart-category trên build hiện tại."}
+```
+
+## OQ-artwork-296 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-296","type":"NEEDS_CONFIRMATION","feature_id":"layer-bulk-edit","kb_ids":["KB-884","KB-893","KB-906"],"summary":"Mọi test case của QA-3419 là kết quả AI do máy chạy, chỉ trên staging; một số lượt (TC-18, TC-19, TC-26, TC-12/13/40) chạy trên build cũ index.BqS1iTCG.js, không phải build cuối index.BMgdZMSW.js. TIB-5299 Done nhưng production chưa có quan sát. Cần: chạy lại các TC này trên build cuối và quan sát production."}
+```
+
+## OQ-artwork-297 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-297", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-photo-border", "kb_ids": ["KB-910"], "summary": "KB-910: Contour cut ở Border size 1 vẽ viền theo outline phần đục của clipart, không thành khung vuông theo bounding box, chỉ là quan sát test case (một layer Clipart Category, Artwork editor, zoom 50%, không ghi build). Đây có phải hành vi đúng ở mọi size không? Bản fix đã được Dev xác nhận ở KB-912. Cần: PO hoặc Dev xác nhận nguyên văn, có ngày (Jira TIB-5592), hoặc test case PASS có căn cứ expected và ghi build/bản đã test.", "check_ids": ["CHK-002"]}
+```
+
+## OQ-artwork-298 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-298", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-photo-border", "kb_ids": ["KB-911"], "summary": "KB-911: Contour cut ở Border size 1–3 chỉ vẽ màu viền thành vòng ngoài hình, không ám màu lên clipart hay vùng trong suốt, ảnh viền nằm dưới ảnh clipart — chỉ là quan sát test case. Đây có phải cách vẽ đúng (kể cả thứ tự lớp viền dưới clipart) không? Size 2 và 3 khác nhau thế nào về độ dày? Cần: PO hoặc Dev xác nhận nguyên văn, có ngày (Jira TIB-5592), hoặc test case PASS có căn cứ expected và ghi build/bản đã test.", "check_ids": ["CHK-002"]}
+```
+
+## OQ-artwork-299 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-299", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-photo-border", "kb_ids": ["KB-916"], "summary": "KB-916: thiết lập Border đọc lại đúng sau Save & Close + reload và field photo_border (size, type, color, display, line, enabled; display mockup_order = \"Mockup Preview & Order Design\") chỉ là quan sát một mẫu. Tập giá trị đầy đủ của type và display là gì, và đây có phải contract lưu chuẩn không? Cần: PO hoặc Dev xác nhận nguyên văn, có ngày (Jira TIB-5592), hoặc test case PASS có căn cứ expected và ghi build/bản đã test.", "check_ids": ["CHK-014", "CHK-015"]}
+```
+
+## OQ-artwork-300 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-300", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-photo-border", "kb_ids": ["KB-917"], "summary": "KB-917: Undo/Redo khi đổi Border size trả cả giá trị lẫn hình vẽ, Duplicate layer giữ nguyên thiết lập Border — chỉ là quan sát test case trên một layer đơn, bản copy không được lưu. Đây có phải hành vi đúng không, và Border của bản copy có giữ sau Save không? Cần: PO hoặc Dev xác nhận nguyên văn, có ngày (Jira TIB-5592), hoặc test case PASS có căn cứ expected và ghi build/bản đã test. Thêm: chưa rõ TC-27 dùng thao tác Duplicate nào — theo KB-045 layer Clipart Category có thể tạo bản LINKED, và KB-429 ẩn Photo Border khi selection có layer Linked, nên chưa rõ Border của bản copy được đọc thế nào; số phím gõ khi đổi size 3 → 1 không ghi, chưa đối chiếu được với luật mỗi phím là 1 undo step của KB-428 (nêu cho multi-select).", "check_ids": ["CHK-016", "CHK-017"]}
+```
+
+## OQ-artwork-301 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-301", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-photo-border", "kb_ids": ["KB-918", "KB-914"], "summary": "KB-918: Dev/PO cho biết Border size = 0 (min theo KB-914) phải vẽ gì — không có viền hay giá trị khác? Một lượt quan sát trong Artwork editor thấy size 0 vẽ viền dày như size 10; đây có phải lỗi không? Chưa chạy lại, chưa kiểm storefront và Order Design ở size 0; QA có bug draft chưa submit, chưa có ticket. Cần: Dev hoặc PO xác nhận nguyên văn, có ngày, expected của size 0 (Jira TIB-5592 hoặc ticket mới do operator quyết). Không tự tạo issue.", "check_ids": ["CHK-012"]}
+```
+
+## OQ-artwork-302 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-302", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-photo-border", "kb_ids": ["KB-915", "KB-429"], "summary": "KB-915: \"Linked clipart\" Dev liệt kê trong các loại layer dùng chung hàm vẽ viền có phải layer customization type Linked của KB-429 (Photo Border bị ẩn khi selection có layer Linked) không? Nếu là cùng loại thì Photo Border áp cho Linked theo đường nào (layer nguồn hay chính layer Linked)? Cần: Dev xác nhận nguyên văn, có ngày (Jira TIB-5592 hoặc TIB-5212).", "check_ids": ["CHK-008"]}
+```
+
+## OQ-artwork-303 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-303", "type": "OPEN_ISSUE", "feature_id": "layer-photo-border", "kb_ids": ["KB-912", "KB-913", "KB-915"], "summary": "Bề mặt và loại layer chưa kiểm sau fix TIB-5592: chưa chạy kết quả vẽ viền ở storefront live preview (mockup), cart Edit design, Portal View/Edit customization (KB-912), file Order Design và mockup render (KB-913); chưa kiểm các loại layer ngoài Clipart Category — Dynamic clipart (dynamic_by_text), Clipart group, Linked clipart, Static image, Photo Upload — và border kiểu Custom shape (KB-915). Cần: Chạy test case trên các bề mặt và loại layer này (store explorer), ghi build. Riêng Custom shape: KB-912 chỉ mô tả lỗi cho Contour cut, chưa rõ Custom shape ở size 1–3 phải vẽ thế nào (CHK-009 chưa có oracle). Các check READY CHK-003..CHK-007 đóng phần bề mặt khi được chạy.", "check_ids": ["CHK-009"]}
+```
+
+## OQ-artwork-304 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-304", "type": "OPEN_ISSUE", "feature_id": "layer-photo-border", "kb_ids": ["KB-914"], "summary": "KB-914: max (không có), step = 1 và cách ô Border size xử lý số thập phân chưa được kiểm runtime; kết quả vẽ ở giá trị lớn (vd size 100) chưa chạy. Cần: Chạy test case boundary cho ô Border size, ghi build.", "check_ids": ["CHK-013"]}
+```
+
+## OQ-artwork-305 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-305", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-photo-border", "kb_ids": ["KB-913"], "check_ids": ["CHK-005"], "summary": "PO xác nhận KB-913 (chạm order/fulfillment, oracle STRONG duy nhất của CHK-005 P1): server render (file Order Design, mockup render) vẽ Photo Border bằng code riêng, không bị lỗi TIB-5592, và đơn đã render không cần regenerate. Hiện chỉ có lời Dev (Jira TIB-5592 comment 55072, 2026-10-19), QA chưa kiểm Order Design file và mockup render. KB-913 không nói gì về border custom_shape trên print file: câu đó vẫn ở OQ-artwork-195 (còn mở). Cần: PO xác nhận nguyên văn, có ngày."}
+```
+
+## OQ-artwork-306 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-306", "type": "OPEN_ISSUE", "feature_id": "layer-config-image", "kb_ids": ["KB-930"], "summary": "KB-930: photo layer No personalization được coi là populated với mọi nguồn (Dev TIB-5521 55637 Q4), nhưng nguồn {{input}} trần chưa được QA kiểm (mới kiểm photo, Photo Reposition, Multiple Uploads {{input.1}}, output effect). Cần: Test case PASS có ngày/build cho nguồn {{input}} trần, hoặc run explore hẹp."}
+```
+
+## OQ-artwork-307 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-307", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": ["KB-931"], "summary": "KB-931: photo layer No personalization bỏ qua Direct upload style (ảnh mặc định fill, populated contain) ở Mockup Editor, Campaign Editor, storefront preview và order design chỉ là quan sát QA-3402 (AI chạy 2026-10-26, căn cứ expected không rõ). Đây có phải fit rule đúng? Cần: PO hoặc Dev xác nhận nguyên văn có ngày trên Jira TIB-5521, hoặc test case Testlane PASS có căn cứ expected và build. Người quyết: PO (cờ requires_human_decision của diff cho KB-931).", "check_ids": ["CHK-064"]}
+```
+
+## OQ-artwork-308 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-308", "type": "OPEN_ISSUE", "feature_id": "layer-config-image", "kb_ids": ["KB-936"], "summary": "KB-936 (known defect): API áp placement position của layer No personalization đã populated, SDK preview thì không (Dev TIB-5521 55637 Q3, chỉ đề xuất chấp nhận). PO có chấp nhận khác biệt preview/design này không? QA TC-09 chưa tái hiện được lệch vị trí. Cần: PO trả lời Q3 trên TIB-5521; ai đó tái hiện lệch vị trí trên staging hoặc tách ticket bug. Người quyết: PO (cờ requires_human_decision của diff cho KB-936).", "check_ids": ["CHK-066"]}
+```
+
+## OQ-artwork-309 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-309", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": ["KB-937"], "summary": "KB-937: layer No personalization không có ảnh mặc định và không có retrieval value thì SDK preview không vẽ gì (Dev 55639 RQ6 mô tả hiện trạng có từ trước). Đây có phải expected không? Cần: PO xác nhận nguyên văn có ngày (TIB-5521 hoặc ticket riêng).", "check_ids": ["CHK-065"]}
+```
+
+## OQ-artwork-310 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-310", "type": "OPEN_ISSUE", "feature_id": "layer-config-image", "kb_ids": ["KB-942"], "summary": "KB-942: Gen AI effect chỉ có ở Photo layer trên Artwork 2.0 (Dev TIB-5573 56104). Trạng thái ship khai UNKNOWN; Gen AI effect của layer clipart Artwork 1.0 chưa được thử. Cần: Xác nhận đã ship; test case cho clipart Artwork 1.0 nếu còn artwork 1.0 trên staging. Người quyết: PO (cờ requires_human_decision của diff cho KB-942)."}
+```
+
+## OQ-artwork-311 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-311", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": ["KB-943"], "summary": "KB-943: danh sách field output size theo model (GPT gpt-image-2, Gemini pro/31, Flux 2, không field với Flux 1/gpt-image-1.5/ImagenHub; Default chọn sẵn) chỉ là quan sát QA-3435 2026-10-27, build không ghi. Field nằm sau Prompt / Example prompts, lệch mô tả 'under the provider' của Dev summary 55645. gpt-image-2.5-flare/sunburst chưa kiểm. Đây có phải danh sách và vị trí đúng? Cần: Dev/PO xác nhận nguyên văn có ngày (TIB-5561), hoặc test case Testlane PASS có build và căn cứ expected; kiểm gpt-image-2.5-flare/sunburst.", "check_ids": ["CHK-073"]}
+```
+
+## OQ-artwork-312 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-312", "type": "OPEN_ISSUE", "feature_id": "layer-config-image", "kb_ids": ["KB-944"], "summary": "KB-944: khi 0.5K lưu dưới nano_banana_31 và account chuyển sang pro, generate 2K (Dev 55697 Q1). TC-06 (build không ghi) thấy dropdown lúc đó không chọn gì (không hiện Default, không hiện 2K) — vế này chưa có xác nhận, không nạp. Cần: Dev xác nhận dropdown hiển thị gì ở pro với 0.5K đã lưu, hoặc test case có build."}
+```
+
+## OQ-artwork-313 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-313", "type": "OPEN_ISSUE", "feature_id": "layer-config-image", "kb_ids": ["KB-945"], "summary": "KB-945: qua API/MCP chỉ điền 1 field Flux thì được nhận nhưng bị bỏ qua, size theo tỉ lệ layer (Dev 55697 Q2) — phần này chưa được QA kiểm. Cần: Test case PASS có build gửi 1 field qua REST/MCP."}
+```
+
+## OQ-artwork-314 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-314", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": ["KB-947"], "summary": "KB-947: portal không check 4 MP trước khi save, lỗi về từ server sau khi bấm Save và editor vẫn mở — chỉ từ Dev summary 55645 (Known limitation) và TC-15 (build không ghi). Đây có phải hành vi chấp nhận được? Cần: PO/Dev xác nhận nguyên văn có ngày (TIB-5561).", "check_ids": ["CHK-082"]}
+```
+
+## OQ-artwork-315 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-315", "type": "OPEN_ISSUE", "feature_id": "layer-config-image", "kb_ids": ["KB-948", "KB-946"], "summary": "KB-948 (known defect): thông báo 4 MP hiện ghi 'must be less than' trên cả 3 nơi dù biên là ≤ (KB-946). Dev đồng ý đổi sang 'must not exceed …' nhưng PO chưa trả lời (QA hỏi ở 55728, 2026-10-27). RA QA-3435 ghi Single upload là 'must not exceed' theo lịch sử QA-3181, trái quan sát TC-17 — chưa chọn bên nào. Cần: PO chốt chữ thông báo; sau khi ship, test case có build đọc lại chữ trên 3 nơi (kể cả GO Single upload).", "check_ids": ["CHK-084"]}
+```
+
+## OQ-artwork-316 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-316", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": ["KB-950"], "summary": "KB-950: Gen AI effect của Single upload có Resolution 1K/2K/4K không có Default, GPT chọn sẵn 1K, Gemini 2K (TC-11, build không ghi; Dev summary 55645 gọi là khác biệt có chủ đích). Đây có phải expected? Cần: PO/Dev xác nhận nguyên văn có ngày (TIB-5561), hoặc test case có build và căn cứ expected.", "check_ids": ["CHK-074"]}
+```
+
+## OQ-artwork-317 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-317", "type": "OPEN_ISSUE", "feature_id": "layer-config-image", "kb_ids": ["KB-951"], "summary": "KB-951 (known limitation): sau khi chọn resolution không chọn lại Default được; GPT/Gemini phải tạo lại layer, Flux xoá cả 2 field. PO chưa xác nhận chấp nhận cho release (Dev 55697 Q5 'PO to confirm release'). Cần: PO trả lời trên TIB-5561 có chấp nhận cho release không; nếu không, ticket sửa.", "check_ids": ["CHK-076"]}
+```
+
+## OQ-artwork-318 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-318", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": ["KB-952"], "summary": "KB-952: giá trị output size lưu dạng chuỗi trong layer JSON, giữ sau reload/duplicate, storefront generate dùng giá trị đó — chỉ là quan sát TC-08/09/27 (build không ghi, không có căn cứ expected cho lưu/reload/duplicate). Liên quan OQ-sdk-040 (object sdk, không gỡ). Cần: Dev/PO xác nhận nguyên văn có ngày, hoặc test case Testlane PASS có build và căn cứ expected.", "check_ids": ["CHK-075"]}
+```
+
+## OQ-artwork-319 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-319", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": ["KB-954"], "summary": "KB-954: ở đường portal/REST server không check lại allowed values của output size (Dev 55697 Q7 mô tả hiện trạng; TC-31 thấy giá trị lạ qua REST được lưu). Đây là hành vi chấp nhận hay cần thêm validate phía server? Cần: PO quyết; Dev xác nhận có ngày. Người quyết: PO (cờ requires_human_decision của diff cho KB-954).", "check_ids": ["CHK-081"]}
+```
+
+## OQ-artwork-320 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-320", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": ["KB-955"], "summary": "KB-955: ô Flux width/height chỉ giữ số, Save ô rỗng báo required, tên GO chứa payload hiện nguyên chữ — chỉ là quan sát TC-33 (build không ghi, căn cứ expected KHÔNG CÓ). Đây có phải hành vi đúng? Cần: Dev/PO xác nhận, hoặc test case Testlane PASS có build và căn cứ expected. Người quyết: PO (cờ requires_human_decision của diff cho KB-955).", "check_ids": ["CHK-083"]}
+```
+
+## OQ-artwork-321 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-321", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": ["KB-956"], "summary": "KB-956: cảnh báo thiếu API key trong danh sách effect của layer/GO editor mở rộng cho OpenAI/Flux/Gemini, Gen AI Effect khi chưa có default provider, Remove background khi chưa chọn remover — chỉ theo dev doc tự sinh từ branch diff (TIB-5470 53778), không có kết quả chạy có ngày. Đây có phải hành vi đúng? Cần: PO/Dev xác nhận nguyên văn có ngày, hoặc test case Testlane PASS có build (TC-32 hiện chỉ có status passed).", "check_ids": ["CHK-086"]}
+```
+
+## OQ-artwork-322 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-322", "type": "OPEN_ISSUE", "feature_id": "layer-config-image", "kb_ids": ["KB-957"], "summary": "KB-957: logic grouped_clipart theo chế độ manual/auto (Dev TIB-5412 52817). Manual/auto ứng với layer type nào (dynamic-by-text / clipart-frame là cách hiểu của QA) và 'option đầu tiên' theo thứ tự nào chưa rõ. TC-09 chưa viết lại, TC-10 chưa có kết quả chạy. Cần: Dev xác nhận mapping manual/auto sang layer type và thứ tự 'option đầu tiên', có ngày.", "check_ids": ["CHK-087"]}
+```
+
+## OQ-artwork-323 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-323", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": [], "summary": "CLAIM-27 (S0, không nạp KB): layer Dynamic Clipart by Text so khớp text buyer gõ với tên option clipart (origin_name/name) và group_name sau khi chuẩn hoá cả hai phía về Unicode NFC (tên lưu NFD khớp text gõ NFC và ngược lại; áp cho nguồn clipart và grouped_clipart). Chỉ có note kỹ thuật Dev TIB-5412 comment 51755 (2026-09-23), không ai xác nhận; TC QA Hub passed nhưng actualResult rỗng. Liên quan OQ-artwork-290, OQ-asset-category-045. Cần: Dev/PO xác nhận nguyên văn có ngày, PR teeinblue-sdk #2036 kèm diff (dev_doc), hoặc test case Testlane PASS có ngày, build và căn cứ expected.", "check_ids": ["CHK-088"]}
+```
+
+## OQ-artwork-324 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-324", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": [], "summary": "CLAIM-28 (S0, không nạp KB): sau chuẩn hoá NFC, tên ASCII vẫn khớp như cũ, so khớp vẫn phân biệt hoa thường, text rỗng hoặc chỉ khoảng trắng không khớp clipart nào. Chỉ có mục 'Possible test cases' trong note Dev TIB-5412 comment 51755 (2026-09-23), không ai xác nhận. Liên quan OQ-artwork-290, OQ-asset-category-045. Cần: Dev/PO xác nhận nguyên văn có ngày, hoặc test case Testlane PASS có ngày, build và căn cứ expected.", "check_ids": ["CHK-088"]}
+```
+
+## OQ-artwork-325 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-325", "type": "OPEN_ISSUE", "feature_id": "no-personalization-photo-render", "kb_ids": ["KB-932", "KB-933"], "summary": "KB-932, KB-933: mockup render ở danh sách Mockups chưa được kiểm theo fit rule của layer No personalization; chiều 'trước lần sync / Re-generate / save thì ảnh KHÔNG đổi' chưa được kiểm (không có đơn trước fix có layer ảnh mặc định trên staging). QA mới thấy chiều đổi sau sync/save (TC-21, TC-22). Cần: Test case có build cho mockup trong Mockups list và cho chiều chưa đổi trước sync/Re-generate/save (cần fixture dựng trước fix hoặc dữ liệu cũ).", "check_ids": ["CHK-003"]}
+```
+
+## OQ-artwork-326 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-326", "type": "OPEN_ISSUE", "feature_id": "no-personalization-photo-render", "kb_ids": ["KB-938"], "summary": "KB-938 (known defect): job order design fail khi layer No personalization không có ảnh mặc định và không có retrieval value (Dev 55639 RQ6, có từ trước TIB-5521). Ứng viên bug cho ticket riêng; chữ lỗi quan sát TC-30 'The url field is required.' khác tên exception dev nêu. Có cần ticket sửa và expected đúng là gì? Cần: PO quyết expected (vd chặn cấu hình hoặc render rỗng); Dev mở ticket riêng nếu sửa. Không tự tạo ticket — hỏi operator. Người quyết: PO (cờ requires_human_decision của diff cho KB-938).", "check_ids": ["CHK-004"]}
+```
+
+## OQ-artwork-327 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-327", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": ["KB-931", "KB-860"], "summary": "KB-860 (populate-values) ghi preview storefront 'vẫn fit ảnh vào khung layer' với layer No personalization populate {{output}} từ Photo Reposition; KB-931 (quan sát) ghi ảnh populated thì contain. Chưa rõ 'fit' của KB-860 là contain hay fill; nếu là fill thì hai item lệch nhau. Không tự phân xử. Cần: Dev xác nhận có ngày (TIB-5504 hoặc TIB-5521)."}
+```
+
+## OQ-artwork-328 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-328", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": ["KB-114", "KB-018", "KB-019", "KB-943"], "summary": "KB-114 (Flux Text to Image: ảnh theo tỉ lệ layer, không thấy field size) và inventory KB-018/KB-019 (quan sát 2026-09) có thể đã cũ với account dùng Flux 2 / GPT gpt-image-2 / Gemini, vì TIB-5561 thêm field output size theo model (KB-943). Base không ghi model của account lúc quan sát nên không tính là conflict. Cần: re-verify (REFRESH) field theo model của account, hoặc Dev xác nhận có ngày."}
+```
+
+## OQ-artwork-329 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-329", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": ["KB-939", "KB-940", "KB-941", "KB-943", "KB-944"], "summary": "Tên model Gemini: KB-939..KB-941 dùng 'Nano Banana 2.1' (không có 0.5K), KB-943/KB-944 dùng key nano_banana_31 = 'Nano Banana 2 (3.1)' (có 0.5K). Hiện coi là hai model khác nhau; key API của Nano Banana 2.1 chưa ghi, và KB-943 chụp 2026-10-27, trước fix TIB-5573 Q2 (2026-10-30). Cần: Dev xác nhận key model và danh sách Resolution theo từng model."}
+```
+
+## OQ-artwork-330 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-330", "type": "NEEDS_CONFIRMATION", "feature_id": "no-personalization-photo-render", "kb_ids": ["KB-933"], "summary": "KB-933 (Dev TIB-5521 55637 Q2): sau fix TIB-5521 không có gì tự render lại; order design cũ chỉ đổi khi Re-generate, ảnh trên store đổi ở lần sync tới. Việc này chạm order/fulfillment. Người quyết: PO xác nhận ý định, và đơn đã render trước fix có cần regenerate không."}
+```
+
+## OQ-artwork-331 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-331", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-save-persist", "kb_ids": ["KB-970"], "summary": "KB-970: hai tab cùng sửa một layer thì lần save sau ghi đè cả layer, thay đổi của tab kia mất, không cảnh báo (QA-3435 TC-34, một lượt, TC chỉ ghi nhận). Last-save-wins cho cả layer có phải hành vi mong muốn không, có cần cảnh báo xung đột không? Có áp cho loại layer khác ngoài field AI provider không? Thêm (diff): mất dữ liệu chỉ giới hạn ở layer hai tab cùng sửa, hay lần Save sau ghi đè cả artwork (KB-052: PUT ghi toàn bộ artwork)?"}
+```
+
+## OQ-artwork-332 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-332", "type": "OPEN_ISSUE", "feature_id": "artwork-save-persist", "kb_ids": ["KB-971"], "summary": "KB-971 (known defect): PUT /api/artworks/{id} tự dựng vẫn lưu thay đổi trên layer locked: true (200), quan sát 2026-10-23 và 2026-10-30. Server có nên từ chối thay đổi trên layer locked không? Chưa có bug chính thức (chỉ draft)."}
+```
+
+## OQ-artwork-333 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-333", "type": "OPEN_ISSUE", "feature_id": "artwork-save-persist", "kb_ids": ["KB-972"], "summary": "KB-972 (known defect): Option title chứa ký tự NUL làm request lưu artwork trả 500, dữ liệu không đổi (build 2026-10-23). Bug NUL có sẵn đã sửa chưa, và hành vi mong muốn là từ chối có thông báo hay loại bỏ ký tự?"}
+```
+
+## OQ-artwork-334 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-334", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-save-persist", "kb_ids": ["KB-973"], "summary": "KB-973: thứ tự field sau khi thả ở tab Re-order giữ nguyên sau Save và mở lại editor, khớp GraphQL (QA-3352 TC-08, AI, một lượt, không ghi build). Cần xác nhận đây là hành vi mong muốn."}
+```
+
+## OQ-artwork-335 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-335", "type": "CONFLICT", "feature_id": "artwork-save-persist", "kb_ids": ["KB-053", "KB-974"], "summary": "Nghĩa của templates[].positions: thứ tự render của layer (KB-053) hay thứ tự field của tab Re-order trong Form panel (KB-974)? Nếu là thứ tự form thì reorder ở tab Re-order có đổi thứ tự render không, và thứ tự render nằm ở đâu (templates[].layers?). Thêm (diff): reorder ở tab Re-order có đổi thứ tự render / order design không?", "side_a": "KB-053 (bootstrap 2026-09-10, một sample PUT full body): positions là mảng layer id theo thứ tự render.", "side_b": "KB-974 (ghi chú QA khi duyệt spec QA-3352 TC-03, 2026-09-28, không assert): thứ tự field của tab Re-order đọc lại ở positions, templates[].layers không đổi thứ tự khi reorder."}
+```
+
+## OQ-artwork-336 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-336", "type": "NEEDS_CONFIRMATION", "feature_id": "form-field-reorder", "kb_ids": ["KB-975"], "summary": "KB-975: kéo thả nhiều dòng liền nhau (≥10) ở tab Re-order đưa cả khối về ngay dưới dòng đích, giữ thứ tự (QA-3352 TC-03, AI, không ghi build). Cần xác nhận đây là hành vi mong muốn; căn cứ expected chỉ là dev summary ticket fix."}
+```
+
+## OQ-artwork-337 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-337", "type": "NEEDS_CONFIRMATION", "feature_id": "form-field-reorder", "kb_ids": ["KB-975", "KB-976"], "summary": "KB-975/KB-976: mỗi case multi-drag chỉ có một lượt PASS, trong khi lỗi gốc ngẫu nhiên theo index (dev gợi ý lặp 3–5 lần). Kết quả có ổn định qua nhiều lượt không?"}
+```
+
+## OQ-artwork-338 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-338", "type": "NEEDS_CONFIRMATION", "feature_id": "form-field-reorder", "kb_ids": ["KB-976"], "summary": "KB-976: các dòng không liền nhau sau khi kéo được gom theo thứ tự gốc của danh sách, không theo thứ tự click (QA-3352 TC-04, AI). Đây có phải hành vi mong muốn? Repro gốc của QA (2026-08-25) ghi kỳ vọng \"9-10-19...\" cho chuỗi click 9-10-19-11..18 — đó là thứ tự click hay tên dòng? Nếu là kỳ vọng theo thứ tự click thì trái quan sát."}
+```
+
+## OQ-artwork-339 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-339", "type": "NEEDS_CONFIRMATION", "feature_id": "form-field-reorder", "kb_ids": ["KB-977"], "summary": "KB-977: click thường (không phím bổ trợ) vào dòng chưa chọn thêm dòng đó vào selection ở tab Re-order. Cơ chế này chỉ có ghi nhận Slack không rõ người xác nhận; cần xác nhận là hành vi mong muốn."}
+```
+
+## OQ-artwork-340 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-340", "type": "NEEDS_CONFIRMATION", "feature_id": "form-field-reorder", "kb_ids": ["KB-978"], "summary": "KB-978: click lại dòng đang chọn bỏ chọn riêng dòng đó, click ra ngoài danh sách bỏ chọn tất cả (ảnh chụp máy TC-22, chưa ai tick). Cần người xác nhận; click ngoài danh sách mới thử ở tiêu đề tab, vùng khác chưa thử."}
+```
+
+## OQ-artwork-341 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-341", "type": "OPEN_ISSUE", "feature_id": "form-field-reorder", "kb_ids": ["KB-979"], "summary": "KB-979 (giới hạn đã biết): cụm nhiều dòng thả sát mép trên/dưới danh sách Re-order rơi về đầu/cuối danh sách thay vì đúng chỗ con trỏ. PO có chấp nhận giới hạn này không, có kế hoạch sửa không?"}
+```
+
+## OQ-artwork-342 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-342", "type": "NEEDS_CONFIRMATION", "feature_id": "form-field-reorder", "kb_ids": ["KB-980"], "summary": "KB-980: kéo một dòng ở tab Re-order thì dòng nằm ngay dưới dòng đích (automation, chưa kiểm tay). Cần xác nhận là hành vi mong muốn."}
+```
+
+## OQ-artwork-343 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-343", "type": "NEEDS_CONFIRMATION", "feature_id": "form-field-reorder", "kb_ids": ["KB-980"], "summary": "Tab Re-order: kéo một dòng thả xuống cuối danh sách luôn dừng ngay trước dòng cuối cùng ở lượt automation 2026-09-28 (lượt 2026-09-18 thì qua). Đây là giới hạn thật của widget (không có vùng thả sau dòng cuối) hay do cách giả lập chuột? Phần này không đưa vào KB."}
+```
+
+## OQ-artwork-344 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-344", "type": "NEEDS_CONFIRMATION", "feature_id": "form-field-reorder", "kb_ids": ["KB-981"], "summary": "KB-981: label chứa HTML/script hiển thị dạng chữ thường trong tab Re-order, không tạo node thật (QA-3352 TC-18, AI, không build). Phía storefront (form và console) chưa chạy vì thiếu campaign đã publish; artifact trích không thể hiện riêng bước reload. Cần xác nhận hành vi mong muốn và chạy phần storefront."}
+```
+
+## OQ-artwork-345 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-345", "type": "NEEDS_CONFIRMATION", "feature_id": "form-field-reorder", "kb_ids": ["KB-982"], "summary": "KB-982: label dài (5000 ký tự trong lượt test) và label có ký tự điều khiển được lưu nguyên, reorder/Save vẫn chạy (QA-3352 TC-20, AI). Giới hạn độ dài label theo field là bao nhiêu, vượt giới hạn thì cắt hay báo lỗi? Thêm (diff): ký tự điều khiển trong lượt test có gồm NUL không; NUL trong label có gây 500 như Option title (KB-972) không?"}
+```
+
+## OQ-artwork-346 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-346", "type": "NEEDS_CONFIRMATION", "feature_id": "form-field-reorder", "summary": "Shift-click trong tab Re-order làm gì? Hai quan sát ngược nhau: (a) ghi nhận Slack không rõ người xác nhận nói chọn dòng đó và mọi dòng phía trên tới đầu danh sách; (b) ảnh chụp máy TC-21 (2026-09-18, chưa tick) thấy chỉ chọn dải liền giữa hai lần click. Không nạp KB, không check nào assert shift-click."}
+```
+
+## OQ-artwork-347 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-347", "type": "NEEDS_CONFIRMATION", "feature_id": "form-field-reorder", "summary": "Dev summary ticket fix TIB-5354 (2026-09-07) nói fix chỉ nằm trong portal (tab Re-order, chỉ luồng multi-drag), API và SDK không đổi, thư viện kéo thả gốc chưa sửa. Chưa ai xác nhận phạm vi này. Các danh sách kéo thả nhiều dòng khác dùng cùng thư viện có bị lỗi sắp index tương tự không?"}
+```

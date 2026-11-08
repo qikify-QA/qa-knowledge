@@ -25,6 +25,13 @@
       "kb_refs": [
         "KB-415"
       ]
+    },
+    {
+      "role": "[MỚI, CBS-088] merchant-owner (nhận design file đơn hàng)",
+      "permission_observed": "KB-580 ghi scope role merchant-owner (design file); KB không có quan sát về quyền.",
+      "kb_refs": [
+        "KB-580"
+      ]
     }
   ],
   "entry_points": [
@@ -42,6 +49,13 @@
       "precondition": "Môi trường staging; KB-415 không nêu setup riêng",
       "kb_refs": [
         "KB-415"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-088] Design file PNG và PDF của cùng một đơn có layer QR Code",
+      "precondition": "Đơn có layer QR Code, design ra cả PNG và PDF; cần công cụ decode QR (lượt quan sát dùng OpenCV). KB không nêu config hay account riêng khác.",
+      "kb_refs": [
+        "KB-580"
       ]
     }
   ],
@@ -80,6 +94,13 @@
       "kb_refs": [
         "KB-415"
       ]
+    },
+    {
+      "name": "[MỚI, CBS-088] QR Code render trong design file PNG và PDF — chỉ quan sát",
+      "description": "OBSERVED_CURRENT/LOW, một lượt Testlane TC-TIB-4724 (staging, 2026-10-07, AI do máy chạy, không ghi build): layer QR Code render nguyên vẹn và decode (OpenCV) ra đúng chuỗi đã nhập ở cả design PNG lẫn design PDF của cùng một đơn. Một đơn. Chưa có người xác nhận, không dùng làm oracle.",
+      "kb_refs": [
+        "KB-580"
+      ]
     }
   ],
   "state_transitions": [],
@@ -94,6 +115,17 @@
       "shipped": "UNKNOWN",
       "kb_refs": [
         "KB-415"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-088] Layer QR Code render nguyên vẹn và decode ra đúng chuỗi đã nhập ở cả design PNG lẫn design PDF của cùng một đơn. Chưa có người xác nhận đây là hành vi đúng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "scope": "staging, merchant-owner, api (order design), một đơn, một lượt TC-TIB-4724, 2026-10-07, record không ghi build",
+      "shipped": "SHIPPED",
+      "kb_refs": [
+        "KB-580"
       ]
     }
   ],
@@ -116,9 +148,12 @@
     ],
     "storefront": [],
     "api": [
-      "[MỚI, CBS-079] get-layer-schema-tool của MCP, format full: default typography theo layer (KB-415, quan sát)"
+      "[MỚI, CBS-079] get-layer-schema-tool của MCP, format full: default typography theo layer (KB-415, quan sát)",
+      "[MỚI, CBS-088] Sinh design file đơn hàng PNG và PDF có layer QR Code (KB-580, quan sát)"
     ],
-    "data": [],
+    "data": [
+      "[MỚI, CBS-088] Nội dung QR decode từ design PNG/PDF khớp chuỗi đã nhập (KB-580, quan sát)"
+    ],
     "code": [
       "bundle-registry: marker_enabled/marker_layout/header_enabled/short_name_enabled/display_text/first_day (calendar, bundle-descriptor, CHƯA cross-check layer type trong registry tz/hS) — INFERRED."
     ]
@@ -135,6 +170,13 @@
         "KB-010",
         "KB-011",
         "KB-012"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "[MỚI, CBS-088] Sinh design file theo Design format thuộc FEAT-25-svg-to-image-rendering; KB-580 chỉ ghi kết quả của layer QR Code, cùng bộ QA-3395/TIB-5350.",
+      "kb_refs": [
+        "KB-580"
       ]
     }
   ],
@@ -159,6 +201,12 @@
       "kb_refs": [
         "KB-415"
       ]
+    },
+    {
+      "risk": "[MỚI, CBS-088] KB-580 một đơn, một lượt (AI chạy), không ghi build, căn cứ expected không có. Không suy sang format EPS/AI, sang chuỗi QR dài gần giới hạn 4296 ký tự, hay sang nhiều đơn.",
+      "kb_refs": [
+        "KB-580"
+      ]
     }
   ],
   "environment_differences": [],
@@ -166,8 +214,9 @@
     "observed_at": "2026-10-08"
   },
   "last_updated": {
-    "date": "2026-11-06",
-    "ccr_ref": "CBS-079"
+    "date": "2026-11-07",
+    "ccr_ref": "CBS-088",
+    "delta_note": "[CBS-088] Thêm KB-580 quan sát 2026-10-07. Các dải trước (bootstrap 2026-09-10, CBS-079 2026-10-08) không re-verify."
   },
   "unknown_areas": [
     {
@@ -194,6 +243,15 @@
         "KB-415"
       ],
       "oq_id": "OQ-artwork-186"
+    },
+    {
+      "question": "[MỚI, CBS-088] Layer QR Code render nguyên vẹn và decode đúng chuỗi ở cả design PNG và PDF của cùng đơn (một lượt 2026-10-07). Đây có phải hành vi đúng không?",
+      "why_it_matters": "KB-580 một đơn, chưa có oracle. Cần PO/Dev xác nhận nguyên văn, có ngày; hoặc build của lượt TC-TIB-4724.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-580"
+      ],
+      "oq_id": "OQ-artwork-209"
     }
   ],
   "coverage_matrix": [
@@ -252,6 +310,42 @@
         "KB-415"
       ],
       "basis": "shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-17-layer-config-others",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-088] QR Code trong design PNG và PDF của cùng đơn",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-580"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt 1 đơn 2026-10-07; chưa có oracle"
+    },
+    {
+      "feature_id": "FEAT-17-layer-config-others",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-088] QR Code trong design EPS/AI",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-580"
+      ],
+      "basis": "KB-580 chỉ PNG và PDF"
+    },
+    {
+      "feature_id": "FEAT-17-layer-config-others",
+      "layer": "api",
+      "role": "any",
+      "state": "[MỚI, CBS-088] QR Code trong design file",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "KB-580"
+      ],
+      "basis": "Chỉ quan sát ở staging"
     }
   ],
   "profile_conflicts": [
@@ -284,6 +378,15 @@
       "note": "[MỚI, CBS-079] KB-415 nằm ở feature này theo calendar, nhưng 8 layer kiểm cùng lượt gồm warp-text, spiral-text, shape-text thuộc nhóm TEXT. Quan sát không thêm item nào vào FEAT-12.",
       "kb_refs": [
         "KB-415"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-17-layer-config-others",
+      "to_feature_id": "FEAT-25-svg-to-image-rendering",
+      "relation": "related (render boundary)",
+      "note": "[MỚI, CBS-088] KB-580 (QR Code trong design PNG/PDF) cùng bộ QA-3395/TIB-5350 với FEAT-25; cơ chế sinh design theo format thuộc FEAT-25.",
+      "kb_refs": [
+        "KB-580"
       ]
     }
   ]

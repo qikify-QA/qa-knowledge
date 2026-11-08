@@ -21,6 +21,13 @@
       "kb_refs": [
         "KB-238"
       ]
+    },
+    {
+      "role": "[MỚI, CBS-096] buyer + merchant-owner",
+      "permission_observed": "Buyer đặt đơn có layer ảnh AI ở storefront; store owner xem order design qua API ở staging (một lượt 2026-10-27, build không ghi). Không thử role khác.",
+      "kb_refs": [
+        "KB-766"
+      ]
     }
   ],
   "entry_points": [
@@ -94,6 +101,13 @@
       "description": "OBSERVED_CURRENT/LOW (KB-369, S1, 1 lượt staging 2026-10-28 ~06:00 UTC, Testlane TC-TIB-7405, Jira TIB-5203, trước lần redeploy mà dev yêu cầu recheck, chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng). Trên storefront campaign #3270 (Nprice1), nhập 'ORDER5203', chọn GO-A 'Blue', Add to cart rồi checkout (Bogus gateway): POST /api/merchant/shopify/customization → 201 với layer-520311='ORDER5203', global-option-1125='blue'; localStorage teeinblue-customizations khớp; cart line có _customization_id; order Shopify #1121 về portal là order 4812 thuộc campaign #3270; 'View customization' của order hiện Name=ORDER5203, Color A1 (global-option-1125)=Blue; file design render 'ORDER5203' và clipart, không phải default 'NAME' (GO additional-option không có hình). Không dùng làm oracle.",
       "kb_refs": [
         "KB-369"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-096] Đặt order có layer ảnh AI — order design dùng ảnh đã generate, fit vào box layer (quan sát, chưa xác nhận)",
+      "description": "OBSERVED_CURRENT/LOW (KB-766, S1, 1 lượt staging 2026-10-27, build không ghi, không có căn cứ expected). Buyer đặt đơn có layer ảnh AI ở storefront; order design (xem qua API) dùng đúng ảnh đã generate và ảnh được fit vào box của layer: model T2I GPT Default — ảnh phủ đúng box; model MU GPT 2K — ảnh phủ hết chiều rộng kiểu contain, không bị crop; cả hai item Ready, không có lỗi. Chỉ 2 model nói trên; kích thước master và bbox đo được là số của lượt chạy đó, không phải giá trị chuẩn. Không dùng làm oracle.",
+      "kb_refs": [
+        "KB-766"
       ]
     }
   ],
@@ -174,6 +188,15 @@
       "kb_refs": [
         "KB-369"
       ]
+    },
+    {
+      "from": "[MỚI, CBS-096] buyer đã generate ảnh AI cho layer ảnh AI trên storefront (model T2I GPT Default hoặc MU GPT 2K)",
+      "to": "order item Ready; order design dùng đúng ảnh đã generate, fit vào box layer (T2I GPT Default phủ đúng box; MU GPT 2K contain theo chiều rộng, không crop)",
+      "trigger": "đặt đơn",
+      "condition": "OBSERVED_CURRENT/LOW, 1 lượt staging 2026-10-27, build không ghi; chỉ 2 model; không phải expected",
+      "kb_refs": [
+        "KB-766"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -246,6 +269,16 @@
       "kb_refs": [
         "KB-369"
       ]
+    },
+    {
+      "statement": "[MỚI, CBS-096] Quan sát staging 2026-10-27 (1 lượt do người gửi tự thu, build không ghi; chưa có căn cứ expected): khi buyer đặt đơn có layer ảnh AI và store owner xem order design qua API, order design dùng đúng ảnh đã generate và ảnh fit vào box layer — T2I GPT Default phủ đúng box; MU GPT 2K phủ hết chiều rộng kiểu contain, không crop; cả hai item Ready, không lỗi. Chỉ 2 model; bbox và kích thước master đo được không phải giá trị chuẩn.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging, buyer + merchant-owner, item Ready, api (order design); 1 lượt 2026-10-27",
+      "observed_count": 1,
+      "kb_refs": [
+        "KB-766"
+      ]
     }
   ],
   "observed_validations": [],
@@ -274,13 +307,15 @@
       "Order confirmation page",
       "Repeat checkout for second order",
       "[MỚI, CBS-011] Add to cart với layer action Hide đang bị ẩn (Required để trống; giá trị nhập trước khi bị Hide); localStorage teeinblue-customizations — KB-238",
-      "[MỚI, CBS-013] Product page campaign #3270 có Global Option (Nprice1) → Add to cart → checkout Bogus; cart line _customization_id; localStorage teeinblue-customizations (quan sát) — KB-369"
+      "[MỚI, CBS-013] Product page campaign #3270 có Global Option (Nprice1) → Add to cart → checkout Bogus; cart line _customization_id; localStorage teeinblue-customizations (quan sát) — KB-369",
+      "[MỚI, CBS-096] Product page có layer ảnh AI (model T2I GPT Default, MU GPT 2K) → đặt đơn (quan sát) — KB-766"
     ],
     "api": [
       "POST /cart/add (INFERRED only, KB-006)",
       "GET /api/orders?by_teeinblue=1 (used cross-layer to confirm sync, KB-011)",
       "[MỚI, CBS-011] POST /api/merchant/shopify/customization (payload không có key layer bị Hide) và GET /cart.js (line-item properties chỉ property nội bộ '_') — KB-238",
-      "[MỚI, CBS-013] POST /api/merchant/shopify/customization → 201 với key layer-<id> và global-option-<id> của campaign có GO (quan sát) — KB-369"
+      "[MỚI, CBS-013] POST /api/merchant/shopify/customization → 201 với key layer-<id> và global-option-<id> của campaign có GO (quan sát) — KB-369",
+      "[MỚI, CBS-096] Order design của item có layer ảnh AI (store owner xem qua API; quan sát) — KB-766"
     ],
     "data": [],
     "code": []
@@ -289,7 +324,8 @@
     "Depends on the Shopify-hosted 'Test Payment Gateway' being enabled in this staging store (KB-007) — not verified as always-on infrastructure, just observed present at run time.",
     "Downstream feature review-and-initiate-fulfillment-portal depends on the order-sync step of this feature completing successfully; that step is NOT reliable per OQ-order-001 (see risks[0]).",
     "[MỚI, CBS-011] Việc layer bị Hide không chặn Add to cart và không mang giá trị vào cart/order phụ thuộc kết quả đánh giá điều kiện Hide của SDK storefront (sdk, feature storefront-buyer-facing) và cấu hình action/điều kiện ở artwork (feature conditional-setting-config) (KB-238).",
-    "[MỚI, CBS-013] Giá trị Global Option trong order phụ thuộc bước nhập/Add to cart của SDK storefront (sdk, feature storefront-buyer-facing) và liên kết layer ↔ Global Option ở global-option (feature artwork-personalization-global-option-link) (KB-369, quan sát)."
+    "[MỚI, CBS-013] Giá trị Global Option trong order phụ thuộc bước nhập/Add to cart của SDK storefront (sdk, feature storefront-buyer-facing) và liên kết layer ↔ Global Option ở global-option (feature artwork-personalization-global-option-link) (KB-369, quan sát).",
+    "[MỚI, CBS-096] Order design của layer ảnh AI phụ thuộc ảnh buyer đã generate trên storefront và model AI được dùng (T2I GPT Default, MU GPT 2K là hai model duy nhất đã quan sát) (KB-766, quan sát)."
   ],
   "risks": [
     {
@@ -333,6 +369,13 @@
       "detail": "Không dùng làm expected; check order với Global Option trên build sau khi 2 PR TIB-5203 merge cần chạy lại trước khi đặt oracle. Một order Bogus, một GO additional-option (không có hình trên file design).",
       "kb_refs": [
         "KB-369"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-096] Cách fit ảnh AI vào box layer trong order design (KB-766) chỉ là 1 lượt quan sát với 2 model, build không ghi, không có căn cứ expected.",
+      "detail": "Không dùng làm expected; không assert bbox hay kích thước master đo được; không suy 'contain, không crop' sang model khác hoặc layer có tỉ lệ box khác khi chưa được PO/Dev xác nhận.",
+      "kb_refs": [
+        "KB-766"
       ]
     }
   ],
@@ -387,11 +430,28 @@
       ],
       "type": "NEEDS_CONFIRMATION",
       "oq_id": "OQ-order-027"
+    },
+    {
+      "question": "[MỚI, CBS-096] Order design dùng ảnh AI đã generate và fit vào box layer — kiểu contain hay cover, áp cho mọi model hay chỉ một số — có phải hành vi đúng không (PO/Dev xác nhận)?",
+      "why_it_matters": "KB-766 chỉ là 1 lượt quan sát staging 2026-10-27 với 2 model, build không ghi, không có căn cứ expected; check order design của layer ảnh AI không có oracle.",
+      "kb_refs": [
+        "KB-766"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-order-051"
+    },
+    {
+      "question": "[MỚI, CBS-096] Với model AI khác ngoài T2I GPT Default và MU GPT 2K, hoặc box layer có tỉ lệ khác, order design có còn dùng đúng ảnh đã generate và không crop không; và trên production thì sao?",
+      "why_it_matters": "KB-766 chỉ quan sát 2 model, 1 lượt, staging; không có tri thức cho model / tỉ lệ box / môi trường khác.",
+      "kb_refs": [
+        "KB-766"
+      ],
+      "oq_id": "OQ-order-051"
     }
   ],
   "last_updated": {
-    "date": "2026-10-30",
-    "ccr_ref": "CBS-013"
+    "date": "2026-11-07",
+    "ccr_ref": "CBS-096"
   },
   "coverage_matrix": [
     {
@@ -541,6 +601,40 @@
         "KB-369"
       ],
       "basis": "shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-ORDER-01",
+      "layer": "storefront+api",
+      "role": "buyer + merchant-owner",
+      "state": "[MỚI, CBS-096] order design của layer ảnh AI, model T2I GPT Default và MU GPT 2K, item Ready",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-766"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt 2026-10-27, build không ghi; chưa có oracle"
+    },
+    {
+      "feature_id": "FEAT-ORDER-01",
+      "layer": "api",
+      "role": "buyer + merchant-owner",
+      "state": "[MỚI, CBS-096] order design của layer ảnh AI với model khác / tỉ lệ box khác",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-766"
+      ]
+    },
+    {
+      "feature_id": "FEAT-ORDER-01",
+      "layer": "api",
+      "role": "any",
+      "state": "[MỚI, CBS-096] order design của layer ảnh AI",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "KB-766"
+      ]
     }
   ],
   "profile_conflicts": [],
@@ -591,6 +685,28 @@
       "description": "[MỚI, CBS-013] Giá trị Global Option buyer chọn (global-option-1125) xuất hiện trong payload customization và View customization của order (KB-369, quan sát).",
       "kb_refs": [
         "KB-369"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-ORDER-01",
+      "to_feature_id": "FEAT-09-genai-personalization-runtime",
+      "to_feature_key": "genai-personalization-runtime",
+      "relationship": "continues_flow_of (cross-object: sdk)",
+      "description": "[MỚI, CBS-096] Ảnh AI buyer generate trên storefront là đầu vào của order design của layer ảnh AI (KB-766, quan sát, 2 model).",
+      "kb_refs": [
+        "KB-766"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-ORDER-01",
+      "to_feature_id": "FEAT-04-shopify-order-import",
+      "to_feature_key": "shopify-order-import",
+      "relationship": "upstream_dependency",
+      "description": "[MỚI, CBS-096] Đơn đặt ở storefront mang line item property _customization_id (KB-238, KB-369) là đầu vào của import đơn Shopify; hành vi import khi customization_id sai định dạng chỉ là đề xuất chưa ship (KB-761). OQ-order-001 giữ nguyên.",
+      "kb_refs": [
+        "KB-238",
+        "KB-369",
+        "KB-761"
       ]
     }
   ]

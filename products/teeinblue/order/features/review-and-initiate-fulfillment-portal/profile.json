@@ -281,6 +281,18 @@
       ]
     }
   ],
+  "proposed_behavior": [
+    {
+      "statement": "[MỚI, CBS-096] Theo Dev (Jira TIB-5563, 2026-10-26), sau bản fix chưa ship: Portal Order details và Edit order hiển thị nguyên giá trị _customization_id / customization_id của line item trong danh sách 'Options' của item; chỉ hiện khi store bật 'show line item properties', bị thu gọn sau 'Show more', giá trị được HTML-escape.",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "shipped": "NOT_SHIPPED",
+      "note": "Không phải oracle; chưa quan sát (lượt staging 2026-10-28 bị chặn). Gần KB-017, CHK-P05, không thay thế.",
+      "kb_refs": [
+        "KB-764"
+      ]
+    }
+  ],
   "observed_validations": [],
   "permissions": [
     {
@@ -302,7 +314,8 @@
       "Change status dropdown",
       "[MỚI, CBS-006] Order-details → tải order design (print file) PNG / PDF của order item (KB-182, KB-183)",
       "[MỚI, CBS-011] Order-details → View customization, preview customization, mockup và print file PNG của từng item theo điều kiện Hide (KB-239)",
-      "[MỚI, CBS-015] Order-details → Regenerate (icon sync) design của order item; Item Activity logs ghi 'generated a new design' (KB-392); toast 'put your design in queue' (quan sát, KB-393)"
+      "[MỚI, CBS-015] Order-details → Regenerate (icon sync) design của order item; Item Activity logs ghi 'generated a new design' (KB-392); toast 'put your design in queue' (quan sát, KB-393)",
+      "[MỚI, CBS-096, PROPOSED chưa ship] Order details và Edit order → danh sách 'Options' của item hiện customization_id thô khi bật 'show line item properties', sau 'Show more' (KB-764)"
     ],
     "storefront": [],
     "api": [
@@ -323,7 +336,8 @@
     "The true behavior of 'Confirm & Send to fulfill' depends on POD (Printify) connection state. Only the POD-disconnected branch is known (KB-022); the POD-connected branch is an unresolved dependency for any test or automation that assumes 'no mutation is fired' generally.",
     "[MỚI, CBS-006] Nội dung print file (order design) phụ thuộc quy tắc effective visibility của Group do object artwork sở hữu (feature group-layer-effective-visibility: layer chỉ render khi cờ của nó và mọi Group tổ tiên đều ON) và Design format của artwork (PNG/PDF) (KB-182, KB-183).",
     "[MỚI, CBS-011] Nội dung print file, preview và mockup của order phụ thuộc cấu hình action Show/Hide và điều kiện của layer do object artwork sở hữu (feature conditional-setting-config) và kết quả ẩn/hiện mà buyer thấy trên storefront (sdk, feature storefront-buyer-facing) (KB-239).",
-    "[MỚI, CBS-015] Kết quả Regenerate phụ thuộc việc render order design của artwork có group nhiều layer do object artwork sở hữu (feature group-layer-order-design-render, artwork KB-380) (KB-392)."
+    "[MỚI, CBS-015] Kết quả Regenerate phụ thuộc việc render order design của artwork có group nhiều layer do object artwork sở hữu (feature group-layer-order-design-render, artwork KB-380) (KB-392).",
+    "[MỚI, CBS-096] Việc hiện customization_id thô trong 'Options' (PROPOSED) phụ thuộc bản fix TIB-5563 được ship và setting 'show line item properties' của store; giá trị đến từ line item property của đơn Shopify do shopify-order-import xử lý (KB-764)."
   ],
   "risks": [
     {
@@ -392,6 +406,14 @@
       "kb_refs": [
         "KB-393",
         "KB-019"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-096] Hiển thị customization_id thô trong 'Options' của item (KB-764) là đề xuất chưa ship, chưa quan sát (lượt staging 2026-10-28 bị chặn).",
+      "detail": "Không viết check assert giá trị thô, điều kiện 'show line item properties', vị trí sau 'Show more' hay HTML-escape cho tới khi có TC PASS trên build có fix TIB-5563. Không thay thế mô tả card order-item của KB-017.",
+      "kb_refs": [
+        "KB-764",
+        "KB-017"
       ]
     }
   ],
@@ -505,11 +527,28 @@
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-order-029"
+    },
+    {
+      "question": "[MỚI, CBS-096] Trên build có fix TIB-5563, Order details và Edit order có hiện nguyên giá trị _customization_id / customization_id trong 'Options' của item — chỉ khi bật 'show line item properties', thu gọn sau 'Show more', HTML-escape — như Dev mô tả không?",
+      "why_it_matters": "KB-764 là đề xuất chưa ship, chưa quan sát (lượt staging 2026-10-28 bị chặn); check hiển thị customization_id thô không có oracle.",
+      "kb_refs": [
+        "KB-764"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-order-050"
+    },
+    {
+      "question": "[MỚI, CBS-096] Khi store tắt 'show line item properties', hoặc trên build hiện tại (trước fix), danh sách 'Options' của item hiện gì cho line item có customization_id?",
+      "why_it_matters": "KB-764 chỉ mô tả trường hợp bật setting sau fix; không có tri thức cho trường hợp tắt hoặc build hiện tại, nên không so được trước/sau fix.",
+      "kb_refs": [
+        "KB-764"
+      ],
+      "oq_id": "OQ-order-050"
     }
   ],
   "last_updated": {
-    "date": "2026-11-06",
-    "ccr_ref": "CBS-074"
+    "date": "2026-11-07",
+    "ccr_ref": "CBS-096"
   },
   "coverage_matrix": [
     {
@@ -725,6 +764,42 @@
         "KB-392"
       ],
       "basis": "shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-096] Order details / Edit order → 'Options' hiện customization_id thô (bật 'show line item properties', sau 'Show more', HTML-escape)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-764"
+      ],
+      "basis": "PROPOSED, TIB-5563 chưa ship; lượt staging 2026-10-28 bị chặn"
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-096] 'Options' của item khi tắt 'show line item properties'",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-764"
+      ],
+      "basis": "không có tri thức"
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "layer": "portal",
+      "role": "any",
+      "state": "[MỚI, CBS-096] hiển thị customization_id thô sau khi TIB-5563 release",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "KB-764"
+      ],
+      "basis": "NOT_SHIPPED"
     }
   ],
   "profile_conflicts": [],
@@ -795,6 +870,27 @@
       "to_feature_key": "group-layer-order-design-render",
       "relationship": "applies_render_owned_by (cross-object: artwork)",
       "description": "[MỚI, CBS-015] Regenerate design của item có artwork group ~250 layer (KB-392); render order design của artwork có Group layer thuộc artwork (artwork KB-380).",
+      "kb_refs": [
+        "KB-392"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-04-shopify-order-import",
+      "from_feature_key": "shopify-order-import",
+      "to_feature_id": "FEAT-ORDER-PORTAL-01",
+      "relationship": "feeds (PROPOSED)",
+      "description": "[MỚI, CBS-096] Giá trị customization_id thô hiện trong 'Options' của item (KB-764) và line sai định dạng hiện như item không có design (KB-761) đều là kết quả import đơn Shopify theo đề xuất TIB-5563 chưa ship.",
+      "kb_refs": [
+        "KB-764",
+        "KB-761"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-ORDER-PORTAL-01",
+      "to_feature_id": "FEAT-05-order-design-vector-render",
+      "to_feature_key": "order-design-vector-render",
+      "relationship": "triggers_render",
+      "description": "[MỚI, CBS-096] Re-generate design ở order detail (KB-392) là thao tác sinh order design PNG của vector layer recolor quan sát ở order-design-vector-render (KB-767, OBSERVED_CURRENT/LOW).",
       "kb_refs": [
         "KB-392"
       ]

@@ -2,7 +2,7 @@
   "feature_id": "FEAT-01-global-option-instance-management",
   "feature_key": "global-option-instance-management",
   "object_id": "global-option",
-  "checklist_version": "4",
+  "checklist_version": "5",
   "checks": [
     {
       "check_id": "CHK-01-001",
@@ -854,6 +854,246 @@
       "priority": "P2",
       "automation_suitability": "UNKNOWN",
       "oq_id": "OQ-global-option-043"
+    },
+    {
+      "check_id": "CHK-01-026",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-100] Save GO Text to Image với kích thước Flux vượt 4 MP (2000×2001) bị server từ chối; đúng 4.000.000 px (2000×2000) được lưu",
+      "applicability": {
+        "role": "merchant-owner — account của TIB_STAGING_EMAIL, store explorer",
+        "state": "GO Text to Image đã tồn tại, GenAI service Flux, kích thước Flux đang lưu ≤ 4.000.000 px và đã ghi lại",
+        "environment": "staging (staging-portal.teeinblue.com); ghi build portal lúc chạy",
+        "surface_or_device": "portal trang Edit GO + DevTools Network, desktop browser"
+      },
+      "precondition": "Trên store explorer, tạo (hoặc Duplicate) một GO Text to Image throwaway với GenAI service Flux; ghi lại width/height Flux đang lưu (vd 1024×1024). Mở DevTools > Network, bật Preserve log.",
+      "steps": [
+        "Mở /global-options/<id>/edit, đặt kích thước Flux thành width 2000, height 2001 (4.002.000 px), bấm Save; ghi lại HTTP status của request save và toast hiển thị.",
+        "Mở lại /global-options/<id>/edit bằng một lần điều hướng mới (tab mới), đọc width/height Flux.",
+        "Đặt kích thước Flux thành width 2000, height 2000 (đúng 4.000.000 px), bấm Save; ghi lại HTTP status và toast.",
+        "Mở lại /global-options/<id>/edit bằng một lần điều hướng mới, đọc width/height Flux."
+      ],
+      "observation_point": "Width/height Flux đọc lại sau mỗi lần điều hướng mới (giá trị server đã lưu). HTTP status và toast chỉ ghi lại, không dùng để kết luận.",
+      "expected_result": "Bước 2: width/height Flux vẫn là giá trị đã ghi ở precondition, không phải 2000×2001 (server từ chối lưu khi width × height > 4.000.000 px). Bước 4: width/height Flux là 2000×2000 (biên ≤ 4.000.000 px được lưu). Lệch = bug. Không assert text message lỗi, HTTP status, key lỗi hay số toast: text chưa được PO chốt, 422/key chỉ là quan sát LOW (KB-721, xem CHK-01-028), hai toast là known defect (KB-722, xem CHK-01-029).",
+      "oracle": {
+        "kb_ids": [
+          "KB-720"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-721",
+        "KB-722",
+        "KB-015",
+        "KB-004"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "[CBS-100] Text message lỗi 4 MP chưa chốt (TIB-5561 Q4): assert text sẽ sai khi PO chốt bản khác"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-01-027",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-100] Save GO Single upload có Gen AI effect Flux với kích thước Flux vượt 4 MP (3000×2000) bị server từ chối; 2000×2000 được lưu (loại GO này trước TIB-5561 không bị kiểm)",
+      "applicability": {
+        "role": "merchant-owner — account của TIB_STAGING_EMAIL, store explorer",
+        "state": "GO Single upload (Image > Photo Upload > Single Upload) đã tồn tại, có Gen AI effect Flux, kích thước output Flux đang lưu ≤ 4.000.000 px và đã ghi lại",
+        "environment": "staging (staging-portal.teeinblue.com); ghi build portal lúc chạy",
+        "surface_or_device": "portal trang Edit GO + DevTools Network, desktop browser"
+      },
+      "precondition": "Trên store explorer, tạo (hoặc Duplicate) một GO Single upload throwaway có Gen AI effect Flux; ghi lại kích thước output Flux đang lưu (vd 1200×800). Mở DevTools > Network, bật Preserve log.",
+      "steps": [
+        "Mở /global-options/<id>/edit, trong effect Flux đặt kích thước output thành width 3000, height 2000 (6.000.000 px), bấm Save; ghi lại HTTP status, body lỗi của request save và toast hiển thị.",
+        "Mở lại /global-options/<id>/edit bằng một lần điều hướng mới (tab mới), đọc kích thước output Flux.",
+        "Đặt kích thước output Flux thành width 2000, height 2000 (đúng 4.000.000 px), bấm Save; ghi lại HTTP status và toast.",
+        "Mở lại /global-options/<id>/edit bằng một lần điều hướng mới, đọc kích thước output Flux."
+      ],
+      "observation_point": "Kích thước output Flux đọc lại sau mỗi lần điều hướng mới (giá trị server đã lưu). HTTP status, body lỗi và toast chỉ ghi lại, không dùng để kết luận.",
+      "expected_result": "Bước 2: kích thước output Flux vẫn là giá trị đã ghi ở precondition, không phải 3000×2000 (server từ chối lưu khi width × height > 4.000.000 px; lưu được 3000×2000 là quay lại hành vi trước TIB-5561). Bước 4: kích thước output Flux là 2000×2000 (biên ≤ 4.000.000 px được lưu). Lệch = bug. Không assert text message, HTTP status, key lỗi `data.effects.0.flux_output_width` hay số toast (xem CHK-01-028, CHK-01-029).",
+      "oracle": {
+        "kb_ids": [
+          "KB-720"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-721",
+        "KB-722"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "[CBS-100] GO Single upload có Flux trước TIB-5561 không bị kiểm: GO cũ đã lưu > 4 MP có thể bị chặn ở lần save sau (CLAIM-04 S0, chưa kiểm, OQ-global-option-048) — không dùng GO có sẵn làm fixture",
+        "[CBS-100] Text message lỗi 4 MP chưa chốt (TIB-5561 Q4)"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-01-028",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-100] Ghi lại HTTP status, key lỗi và text message khi save GO bị từ chối vì vượt 4 MP — chưa có expected",
+      "applicability": {
+        "role": "merchant-owner — account của TIB_STAGING_EMAIL, store explorer",
+        "state": "GO Text to Image (Flux) và GO Single upload có Gen AI effect Flux đã tồn tại, như precondition của CHK-01-026, CHK-01-027",
+        "environment": "staging (staging-portal.teeinblue.com); bắt buộc ghi build portal lúc chạy",
+        "surface_or_device": "portal + DevTools Network, desktop browser"
+      },
+      "precondition": "Dùng fixture throwaway của CHK-01-026 và CHK-01-027. Mở DevTools > Network, bật Preserve log.",
+      "steps": [
+        "GO Text to Image: đặt Flux 2000×2001, bấm Save; ghi lại HTTP status và response body của request save.",
+        "Ghi lại nguyên văn đầy đủ (không cắt) text của từng toast/thông báo lỗi hiển thị.",
+        "GO Single upload có effect Flux: đặt kích thước output 3000×2000, bấm Save; ghi lại HTTP status, key lỗi trong response body và text thông báo.",
+        "Ghi build portal (tên bundle JS) và thời điểm chạy."
+      ],
+      "observation_point": "HTTP status và response body của request save, key lỗi, text thông báo nguyên văn. Quan sát hiện có để đối chiếu, không phải expected (KB-721, OBSERVED_CURRENT/LOW, 1 lượt mỗi case, không ghi build): save trả 422 với 2000×2001, 200 với 2000×2000; GO Single upload lỗi validate trên key `data.effects.0.flux_output_width`; text ghi lại bị cắt \"Something went wrong! Flux dimension … 4 Megapixel)\".",
+      "expected_result": "Không khẳng định (oracle NONE): ghi lại status, key lỗi và text nguyên văn cho từng loại GO. Text message, HTTP 422 và key lỗi chưa phải oracle cho tới khi PO chốt text và QA chạy lại TC-16/TC-17 có ghi build.",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Text message cuối của lỗi 4 MP khi save Global Option là gì? Dev đồng ý đổi 'must be less than 4.000.000 px (4 Megapixel)' sang 'must not exceed 4.000.000 px (4 Megapixel)' (TIB-5561 #55697 Q4), chờ PO chốt. HTTP 422 và key lỗi `data.effects.0.flux_output_width` (KB-721, chỉ từ TC-16/TC-17 không ghi build) có phải hành vi mong đợi không? (cùng câu với OQ-global-option-045)",
+      "related_kb_ids": [
+        "KB-721",
+        "KB-720"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "[CBS-100] Assert text message (kể cả bản 'must be less than' hay 'must not exceed') sẽ sai khi PO chốt text khác"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-global-option-045"
+    },
+    {
+      "check_id": "CHK-01-029",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "[CBS-100, KNOWN_DEFECT watch] Save GO bị từ chối hiện đồng thời 2 toast (lỗi cụ thể + 'Failed to save global option.')",
+      "applicability": {
+        "role": "merchant-owner — account của TIB_STAGING_EMAIL, store explorer",
+        "state": "GO Text to Image (Flux) throwaway đã tồn tại, như precondition của CHK-01-026",
+        "environment": "staging (staging-portal.teeinblue.com); ghi build portal lúc chạy",
+        "surface_or_device": "portal trang Edit GO, desktop browser"
+      },
+      "precondition": "Dùng GO Text to Image throwaway của CHK-01-026.",
+      "steps": [
+        "Mở /global-options/<id>/edit, đặt Flux 2000×2001, bấm Save.",
+        "Đếm số toast hiển thị và ghi lại nguyên văn từng toast.",
+        "Tuỳ chọn, để kiểm vế 'mọi lỗi save' theo lời dev: trên một GO throwaway khác, gây một lỗi save khác trên trang Edit (vd xoá trống 'Global Option Name (internal)'), bấm Save, đếm và ghi lại toast. Không dùng kết quả nhánh này để kết luận CHK-01-022.",
+        "Ghi build portal và thời điểm chạy."
+      ],
+      "observation_point": "Số toast và text từng toast khi save bị từ chối. Hành vi lỗi hiện tại (KB-722, known defect, OBSERVED_CURRENT/LOW, 1 lượt TC-16 không ghi build): portal hiện đồng thời 2 toast, \"Failed to save global option.\" và lỗi cụ thể \"Something went wrong! Flux dimension … 4 Megapixel)\" (text bị cắt trong ghi chép). Gặp lại 2 toast = defect đã biết, không mở bug mới; chỉ còn 1 toast = có thể đã được sửa, ghi lại build và báo để cập nhật KB-722.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Hai toast khi save Global Option lỗi (lỗi cụ thể + 'Failed to save global option.') là known limitation theo dev summary TIB-5561 #55645. Có áp cho mọi lỗi save trên trang Global Option không (mới quan sát ở lỗi 4 MP), có ticket sửa không, và sau khi sửa thì hiển thị mong đợi là gì? (cùng câu với OQ-global-option-046)",
+      "related_kb_ids": [
+        "KB-721",
+        "KB-720"
+      ],
+      "regression_watch_kb_ids": [
+        "KB-722"
+      ],
+      "risk_refs": [
+        "[CBS-100] KNOWN_DEFECT KB-722: không assert 2 toast là expected, không coi là lỗi mới khi gặp lại"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-global-option-046"
+    },
+    {
+      "check_id": "CHK-01-030",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[CBS-100] GO loại Multiple Uploads tạo qua MCP: ghi lại cách portal mở GO đó (quan sát: như form GO text, không sửa được)",
+      "applicability": {
+        "role": "merchant-owner + client MCP — account của TIB_STAGING_EMAIL, store explorer",
+        "state": "GO Multiple Uploads mới tạo qua MCP cho check này, chưa dùng ở artwork/campaign nào",
+        "environment": "staging (staging-portal.teeinblue.com); ghi build portal và phiên bản client MCP",
+        "surface_or_device": "client MCP + portal (list /global-options, trang Edit GO), desktop browser"
+      },
+      "precondition": "Client MCP đã kết nối store explorer (account TIB_STAGING_EMAIL); không kết nối store khác. Không sửa GO có sẵn.",
+      "steps": [
+        "Qua client MCP, tạo một Global Option loại Multiple Uploads với tên throwaway duy nhất; ghi lại id và phản hồi của MCP.",
+        "Portal: mở /global-options, tìm GO vừa tạo, ghi lại giá trị cột Type.",
+        "Mở /global-options/<id>/edit, ghi lại form hiển thị (tiêu đề, các field, có field nào của Multiple Uploads không).",
+        "Không bấm Save trên portal (tránh ghi dữ liệu GO qua form text).",
+        "Dọn dẹp: xoá GO vừa tạo (Delete trên portal hoặc qua MCP), ghi lại kết quả."
+      ],
+      "observation_point": "Phản hồi MCP khi tạo; cột Type trên list; form hiển thị ở trang Edit.",
+      "expected_result": "Baseline hiện tại (KB-723, OBSERVED_CURRENT/LOW, 1 lượt, 1 GO): MCP tạo GO Multiple Uploads thành công; portal mở GO đó như form của GO text, tức portal không sửa được GO này. Không khẳng định đây là đúng thiết kế hay lỗi, không suy ra MCP có nên chặn tạo loại này; lệch = cần điều tra, không tự kết luận bug.",
+      "oracle": {
+        "kb_ids": [
+          "KB-723"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "MCP cho tạo Global Option loại Multiple Uploads mà portal không có ở màn tạo (KB-001) và mở GO đó như form text (KB-723). Đây là hành vi mong đợi hay lỗi? Nếu là lỗi, sửa ở phía MCP (chặn tạo) hay portal (hỗ trợ form)? (cùng câu với OQ-global-option-047)",
+      "related_kb_ids": [
+        "KB-001",
+        "KB-720"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "[CBS-100] Save GO Multiple Uploads từ form text có thể ghi sai dữ liệu GO — check không Save",
+        "[CBS-100] Cách cấu hình client MCP nguồn không nêu"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-global-option-047"
+    },
+    {
+      "check_id": "CHK-01-031",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-100] Save GO qua MCP với kích thước Flux vượt 4 MP bị server từ chối; đúng 4.000.000 px (2000×2000) được lưu",
+      "applicability": {
+        "role": "merchant-owner + client MCP — account của TIB_STAGING_EMAIL, store explorer",
+        "state": "GO Text to Image throwaway với GenAI service Flux đã tồn tại, kích thước Flux đang lưu ≤ 4.000.000 px và đã ghi lại",
+        "environment": "staging; ghi build và phiên bản client MCP",
+        "surface_or_device": "client MCP (save) + portal trang Edit GO (đọc lại), desktop browser"
+      },
+      "precondition": "Client MCP đã kết nối store explorer (account TIB_STAGING_EMAIL). Dùng GO Text to Image throwaway (có thể là fixture của CHK-01-026, sau khi đã ghi lại kích thước Flux đang lưu).",
+      "steps": [
+        "Qua client MCP, cập nhật GO đó với kích thước Flux width 2000, height 2001; ghi lại phản hồi của MCP.",
+        "Portal: mở /global-options/<id>/edit bằng một lần điều hướng mới, đọc width/height Flux.",
+        "Qua client MCP, cập nhật GO đó với kích thước Flux width 2000, height 2000; ghi lại phản hồi.",
+        "Portal: mở lại trang Edit bằng một lần điều hướng mới, đọc width/height Flux."
+      ],
+      "observation_point": "Width/height Flux đọc lại trên portal sau mỗi lần cập nhật qua MCP (giá trị server đã lưu). Phản hồi MCP chỉ ghi lại.",
+      "expected_result": "Bước 2: width/height Flux vẫn là giá trị đã ghi ở precondition, không phải 2000×2001 (server từ chối lưu qua MCP khi width × height > 4.000.000 px). Bước 4: width/height Flux là 2000×2000. Lệch = bug. Không assert nội dung thông báo lỗi trả về MCP.",
+      "oracle": {
+        "kb_ids": [
+          "KB-720"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-723",
+        "KB-721"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "[CBS-100] Đường save MCP chưa có quan sát nào (chỉ có lời dev #55697 Q7); cách cấu hình client MCP nguồn không nêu"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -981,20 +1221,75 @@
         "CHK-01-025"
       ],
       "coverage_status": "GAP_NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-01-global-option-instance-management",
+      "capability": "[CBS-100] Quy tắc Flux 4 MP khi save Global Option trên portal: GO Text to Image và GO Single upload có Gen AI effect Flux, biên ≤ 4.000.000 px (KB-720)",
+      "check_ids": [
+        "CHK-01-026",
+        "CHK-01-027"
+      ],
+      "coverage_status": "COVERED_STRONG"
+    },
+    {
+      "feature_id": "FEAT-01-global-option-instance-management",
+      "capability": "[CBS-100] Quy tắc Flux 4 MP khi save Global Option qua MCP (KB-720, chưa có quan sát)",
+      "check_ids": [
+        "CHK-01-031"
+      ],
+      "coverage_status": "COVERED_STRONG"
+    },
+    {
+      "feature_id": "FEAT-01-global-option-instance-management",
+      "risk": "[CBS-100] Text message, HTTP 422 và key lỗi của lỗi 4 MP chưa phải expected (KB-721 OBSERVED_CURRENT/LOW, text chờ PO)",
+      "check_ids": [
+        "CHK-01-028"
+      ],
+      "coverage_status": "GAP_NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-01-global-option-instance-management",
+      "risk": "[CBS-100] KNOWN_DEFECT KB-722: save lỗi hiện đồng thời 2 toast",
+      "check_ids": [
+        "CHK-01-029"
+      ],
+      "coverage_status": "REGRESSION_WATCH_NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-01-global-option-instance-management",
+      "risk": "[CBS-100] MCP tạo được GO Multiple Uploads mà portal mở như form text (KB-723, 1 lượt)",
+      "check_ids": [
+        "CHK-01-030"
+      ],
+      "coverage_status": "PARTIAL_NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-01-global-option-instance-management",
+      "coverage_gap": "[CBS-100] Quy tắc 4 MP ở màn tạo mới GO (chưa có quan sát, profile coverage_matrix[17], covered: false)",
+      "check_ids": [],
+      "coverage_status": "GAP",
+      "note": "KB-720 nói 'save một Global Option' nhưng không tách tạo mới với sửa; chưa viết check tạo mới để không suy rộng. Khi có quan sát hoặc xác nhận, thêm nhánh tạo mới vào CHK-01-026/027."
+    },
+    {
+      "feature_id": "FEAT-01-global-option-instance-management",
+      "coverage_gap": "[CBS-100] GO đã lưu trước TIB-5561 với Flux > 4 MP ở lần save tiếp theo (CLAIM-04 S0, không có KB item, profile unknown_areas[21])",
+      "check_ids": [],
+      "coverage_status": "GAP",
+      "note": "Không có KB item và không dựng được fixture mới (server đã chặn > 4 MP); chờ OQ-global-option-048."
     }
   ],
   "excluded_dimensions": [
     {
-      "dimension": "BOUNDARY",
-      "reason": "0 evidence về giới hạn kích thước/số lượng/độ dài/định dạng cho bất kỳ field nào của Global Option; 23/30 leaf type hoàn toàn chưa tạo/test (chỉ 7/30 đã test), nên không có cơ sở viết boundary check có oracle. CBS-004 không thêm evidence boundary nào cho feature này."
+      "dimension": "BOUNDARY (ngoài giới hạn Flux 4 MP)",
+      "reason": "[CBS-100] Giới hạn Flux 4 MP đã có check BOUNDARY (CHK-01-026, CHK-01-027) theo KB-720. Ngoài giới hạn này vẫn 0 evidence về giới hạn kích thước/số lượng/độ dài/định dạng cho field nào khác của Global Option; 23/30 leaf type hoàn toàn chưa tạo/test (chỉ 7/30 đã test), nên không có cơ sở viết boundary check có oracle. CBS-004 không thêm evidence boundary nào cho feature này."
     },
     {
       "dimension": "PERMISSION",
-      "reason": "Chỉ test role owner (account của TIB_STAGING_EMAIL), 1 tenant — permission matrix đầy đủ (staff hạn chế quyền, cross-tenant CRUD trực tiếp qua UI) hoàn toàn chưa rõ. 2 khía cạnh security-observational (header trust, client-controlled where) giữ ở CHK-01-018, CHK-01-019 (NEEDS_CONFIRMATION); phần role-matrix rộng hơn vẫn excluded do 0 evidence. CBS-004 không thêm evidence permission."
+      "reason": "Chỉ test role owner (account của TIB_STAGING_EMAIL), 1 tenant — permission matrix đầy đủ (staff hạn chế quyền, cross-tenant CRUD trực tiếp qua UI) hoàn toàn chưa rõ. 2 khía cạnh security-observational (header trust, client-controlled where) giữ ở CHK-01-018, CHK-01-019 (NEEDS_CONFIRMATION); phần role-matrix rộng hơn vẫn excluded do 0 evidence. CBS-004 không thêm evidence permission. CBS-100 thêm actor client MCP nhưng không có evidence về quyền (role khác, cross-tenant) qua MCP."
     }
   ],
   "last_updated": {
-    "date": "2026-11-05",
-    "ccr_ref": "CBS-073"
+    "date": "2026-11-07",
+    "ccr_ref": "CBS-100"
   }
 }

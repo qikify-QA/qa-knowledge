@@ -2,7 +2,7 @@
   "feature_id": "FEAT-ORDER-PORTAL-01",
   "feature_key": "review-and-initiate-fulfillment-portal",
   "object_id": "order",
-  "checklist_version": "6",
+  "checklist_version": "7",
   "checks": [
     {
       "check_id": "CHK-P01",
@@ -903,6 +903,120 @@
       "priority": "P2",
       "automation_suitability": "NOT_SUITABLE",
       "oq_id": "OQ-order-039"
+    },
+    {
+      "check_id": "CHK-P28",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-096] Order details và Edit order: danh sách 'Options' của line item có hiện giá trị _customization_id / customization_id thô khi store bật 'show line item properties' không, và có thu gọn sau 'Show more' không",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (verify GET /api/user id=266 sau mỗi lần login)",
+        "state": "store explore bật 'show line item properties'; đơn Shopify có line item mang _customization_id (đơn A) và đơn có line mang customization_id (đơn B), giá trị đã biết",
+        "environment": "staging, build có fix TIB-5563 (chưa ship lúc lập checklist; ghi build khi chạy); production chưa áp dụng",
+        "surface_or_device": "portal order-details (card order-item, danh sách 'Options') và màn Edit order"
+      },
+      "precondition": "Ghi build và xác nhận có fix TIB-5563. Bật 'show line item properties' cho store explore (ghi giá trị ban đầu để trả lại). Tạo đơn A và B như shopify-order-import CHK-001 (ghi giá trị property đã dùng).",
+      "steps": [
+        "Mở order-details của đơn A; tìm danh sách 'Options' của line item; ghi Options hiện sẵn và có nút 'Show more' không.",
+        "Bấm 'Show more'; ghi dòng nào chứa giá trị _customization_id và giá trị hiển thị (so ký tự với giá trị property đã dùng).",
+        "Mở màn Edit order của đơn A; lặp lại hai bước trên.",
+        "Lặp lại cho đơn B (tên property customization_id).",
+        "Trả setting 'show line item properties' về giá trị ban đầu."
+      ],
+      "observation_point": "Có/không dòng customization_id trong 'Options' ở Order details và Edit order; dòng đó nằm trước hay sau 'Show more'; giá trị hiển thị có giống hệt giá trị property không. Đề xuất chưa ship (KB-764, PROPOSED — không phải expected): giá trị thô hiện trong 'Options', chỉ khi bật 'show line item properties', thu gọn sau 'Show more'. Không thay mô tả card order-item của CHK-P05 (KB-017).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Trên build có fix TIB-5563, Order details và Edit order có hiện nguyên giá trị _customization_id / customization_id trong 'Options' của item — chỉ khi bật 'show line item properties', thu gọn sau 'Show more' — như Dev mô tả không? Lượt staging 2026-10-28 bị chặn, chưa có quan sát.",
+      "related_kb_ids": [
+        "KB-764",
+        "KB-017"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Merchant không thấy customization_id thô để đối chiếu line không có design (KB-761 phía shopify-order-import)",
+        "Đề xuất chưa ship, chưa quan sát"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-order-050"
+    },
+    {
+      "check_id": "CHK-P29",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-096] Giá trị customization_id chứa ký tự HTML hiển thị trong 'Options' ở Order details / Edit order: hiện như văn bản hay bị trình duyệt diễn giải thành markup",
+      "applicability": {
+        "role": "merchant owner/staff — account explore",
+        "state": "store explore bật 'show line item properties'; đơn Shopify có line item mang _customization_id chứa ký tự HTML (chuỗi đánh dấu vô hại, vd '<i>tib-esc-1</i>&amp;\"x\"')",
+        "environment": "staging, build có fix TIB-5563 (chưa ship lúc lập checklist; ghi build khi chạy)",
+        "surface_or_device": "portal order-details (danh sách 'Options') và màn Edit order; DevTools Elements"
+      },
+      "precondition": "Như CHK-P28. Chỉ dùng chuỗi đánh dấu vô hại (thẻ định dạng, ký tự &, \"), không dùng payload chạy script hay tải tài nguyên ngoài.",
+      "steps": [
+        "Tạo đơn có line item với _customization_id = chuỗi đánh dấu (ghi nguyên văn chuỗi đã gửi).",
+        "Mở order-details; bấm 'Show more' ở 'Options'; ghi văn bản hiển thị (có thấy nguyên ký tự '<i>' hay chữ bị in nghiêng).",
+        "Trong DevTools Elements, ghi node của giá trị: là text node chứa ký tự đã escape hay phần tử <i> thật.",
+        "Lặp lại trên màn Edit order."
+      ],
+      "observation_point": "Văn bản hiển thị và cấu trúc DOM của giá trị ở hai màn. Đề xuất chưa ship (KB-764, PROPOSED — không phải expected): giá trị được HTML-escape.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Trên build có fix TIB-5563, giá trị _customization_id / customization_id hiện trong 'Options' có được HTML-escape ở cả Order details và Edit order như Dev mô tả không?",
+      "related_kb_ids": [
+        "KB-764"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Giá trị property do buyer kiểm soát được render thành markup trong phiên merchant (lỗ hổng chèn mã, permission)"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-order-050"
+    },
+    {
+      "check_id": "CHK-P30",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-096] Gap: 'Options' của line item có customization_id khi store TẮT 'show line item properties', và trên build trước fix TIB-5563",
+      "applicability": {
+        "role": "merchant owner/staff — account explore",
+        "state": "(a) store explore tắt 'show line item properties', build có fix; (b) build trước fix, setting bật; đơn có line mang _customization_id đã biết",
+        "environment": "staging, ghi build khi chạy",
+        "surface_or_device": "portal order-details (danh sách 'Options') và màn Edit order"
+      },
+      "precondition": "Như CHK-P28, ghi giá trị setting ban đầu và trả lại sau khi chạy.",
+      "steps": [
+        "Trường hợp (a): tắt setting; mở order-details và Edit order của đơn; ghi 'Options' hiện gì (có 'Show more' không, có dòng customization_id không).",
+        "Trường hợp (b): trên build trước fix, bật setting; lặp lại bước ghi.",
+        "So với kết quả CHK-P28."
+      ],
+      "observation_point": "Nội dung 'Options' ở (a) và (b). KB-764 chỉ mô tả trường hợp bật setting sau fix; không có tri thức cho (a), (b).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Khi store tắt 'show line item properties', hoặc trên build trước fix TIB-5563, danh sách 'Options' của item hiện gì cho line item có customization_id?",
+      "related_kb_ids": [
+        "KB-764",
+        "KB-017"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không so được trước/sau fix nếu không có trạng thái build hiện tại"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-order-050"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -978,6 +1092,16 @@
         "CHK-P27"
       ],
       "coverage_status": "NOT_APPLICABLE trên staging; production là gap NONE (CHK-P27)"
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "risk": "[CBS-096] Hiển thị customization_id thô trong 'Options' của item ở Order details / Edit order (KB-764, PROPOSED, TIB-5563 chưa ship): điều kiện setting, 'Show more', HTML-escape; trạng thái khi tắt setting / build trước fix chưa có tri thức",
+      "covered_by_checks": [
+        "CHK-P28",
+        "CHK-P29",
+        "CHK-P30"
+      ],
+      "coverage_status": "GAP_FLAGGED_NEEDS_CONFIRMATION (NONE; chờ TC PASS trên build có fix TIB-5563)"
     }
   ],
   "excluded_dimensions": [
@@ -1004,10 +1128,14 @@
     {
       "dimension": "CORE / NEGATIVE / BOUNDARY / PERMISSION / STATE_DATA / REGRESSION — phạm vi CBS-074 (KB-437)",
       "reason": "KB-437 chỉ phát biểu tracking từ provider không test được trên môi trường test (NOT_TESTABLE mức Case); không có item về hành vi tracking. CHK-P27 ghi cách biểu đạt env-blocked, không tạo check chạy được trên staging. Không có item KNOWN_DEFECT nên không có regression watch."
+    },
+    {
+      "dimension": "BOUNDARY / PERMISSION / STATE_DATA / INTEGRATION / REGRESSION — phạm vi CBS-096 (KB-764)",
+      "reason": "KB-764 chỉ là hiển thị customization_id thô trong 'Options' (CORE: CHK-P28; HTML-escape ở NEGATIVE: CHK-P29; trường hợp tắt setting / build trước fix ở NEGATIVE: CHK-P30). Không có evidence về độ dài/giới hạn giá trị, quyền khác owner, persistence hay contract API. Kết quả import của line sai định dạng (KB-761) thuộc checklist shopify-order-import, không lặp ở đây. KB-764 là ADD, không đổi hành vi item base (CHK-P05 giữ nguyên), không phải KNOWN_DEFECT nên không có REGRESSION/regression watch. Regenerate design sinh order design vector (KB-392 → KB-767) thuộc checklist order-design-vector-render."
     }
   ],
   "last_updated": {
-    "date": "2026-11-06",
-    "ccr_ref": "CBS-074"
+    "date": "2026-11-07",
+    "ccr_ref": "CBS-096"
   }
 }

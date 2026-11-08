@@ -2,6 +2,7 @@
   "feature_id": "FEAT-07-artwork-save-persist",
   "feature_key": "artwork-save-persist",
   "object_id": "artwork",
+  "checklist_version": "20",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -635,6 +636,210 @@
       "priority": "P2",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-artwork-116"
+    },
+    {
+      "check_id": "CHK-021",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-097, NEEDS_CONFIRMATION] Hai tab Artwork Editor cùng sửa một layer rồi lần lượt Save: thay đổi của tab Save trước còn không, có cảnh báo xung đột không",
+      "applicability": {
+        "role": "merchant-owner (store owner/staff)",
+        "state": "artwork đã lưu, mở ở hai tab trước khi tab nào Save; layer có field AI provider (lặp lại với loại layer khác)",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork Editor, desktop browser, hai tab cùng session"
+      },
+      "precondition": "Artwork throwaway trên store explorer, có ít nhất một layer có field AI provider.",
+      "steps": [
+        "Mở cùng artwork ở tab A và tab B.",
+        "Tab A: sửa một field AI provider của layer X, bấm Save.",
+        "Tab B (không reload): sửa field AI provider khác của cùng layer X, bấm Save.",
+        "Ghi thông báo/cảnh báo hiển thị ở tab B (nguyên văn) và status của request Save.",
+        "Mở lại editor ở tab mới; ghi giá trị cả hai field của layer X (đọc thêm qua GraphQL nếu được).",
+        "Lặp lại với một loại layer khác; ghi kết quả kèm build, không phán pass hay fail."
+      ],
+      "observation_point": "Giá trị của field tab A sửa sau cả hai lần Save; có cảnh báo xung đột không; có lỗi 500 không. Hiện trạng đã quan sát (không phải expected): lần save sau thắng cho cả layer, thay đổi của tab A mất, không cảnh báo, không 500 (KB-970).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Hai tab cùng sửa một layer thì lần Save sau ghi đè cả layer, thay đổi của tab kia mất, không cảnh báo (1 lượt QA-3435 TC-34). Last-save-wins cho cả layer có phải hành vi mong muốn, có cần cảnh báo xung đột không, có áp cho loại layer khác không? Cần PO/Dev xác nhận nguyên văn có ngày + ticket, hoặc test case PASS có căn cứ expected và build.",
+      "related_kb_ids": [
+        "KB-970",
+        "KB-052"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mất dữ liệu im lặng khi hai phiên cùng sửa một artwork."
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-331"
+    },
+    {
+      "check_id": "CHK-022",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "[CBS-097, KNOWN_DEFECT watch] PUT /api/artworks/{id} tự dựng sửa layer locked: true vẫn được lưu (200)",
+      "applicability": {
+        "role": "merchant-owner (store owner/staff)",
+        "state": "artwork có layer locked: true",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "REST PUT /api/artworks/{id} + GraphQL readback"
+      },
+      "precondition": "Artwork throwaway trên store explorer có một layer locked: true; chép request Save & Close từ editor (devtools).",
+      "steps": [
+        "Chép body của request PUT Save & Close.",
+        "Chỉ sửa form_label của layer locked: true, gửi PUT với token của merchant-owner.",
+        "Ghi status và body response.",
+        "Đọc lại layer qua GraphQL; ghi form_label và locked.",
+        "Ghi kết quả kèm build; không phán pass hay fail."
+      ],
+      "observation_point": "Status PUT; form_label và locked của layer sau khi đọc lại.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Server có nên từ chối thay đổi trên layer locked: true khi client tự dựng PUT không (hiện trả 200 và lưu, QA-3419 TC-37)? Cần Dev/PO xác nhận hành vi mong muốn; file bug riêng trên Testlane nếu là lỗi.",
+      "related_kb_ids": [
+        "KB-052",
+        "KB-055",
+        "KB-880",
+        "KB-881"
+      ],
+      "regression_watch_kb_ids": [
+        "KB-971"
+      ],
+      "risk_refs": [
+        "Layer locked chỉ được bảo vệ ở UI; client tự dựng request sửa được nội dung bị khoá."
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "known_defect_behavior": "Server trả 200 và lưu giá trị mới; đọc lại qua GraphQL thấy giá trị mới, layer vẫn locked: true (QA-3419 TC-37, 2026-10-23 và 2026-10-30). Known issue, không phải expected.",
+      "oq_id": "OQ-artwork-332"
+    },
+    {
+      "check_id": "CHK-023",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "[CBS-097, KNOWN_DEFECT watch] Lưu artwork có Option title chứa ký tự NUL trả 500, dữ liệu không đổi",
+      "applicability": {
+        "role": "merchant-owner (store owner/staff)",
+        "state": "artwork có Option title chứa ký tự NUL (U+0000) trên hai template",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork Editor Save hoặc REST PUT /api/artworks/{id}"
+      },
+      "precondition": "Artwork throwaway trên store explorer có hai template; cách đưa ký tự NUL vào Option title ghi lại cùng kết quả.",
+      "steps": [
+        "Đặt Option title chứa ký tự NUL trên hai template.",
+        "Save; ghi status và body response của request lưu.",
+        "Mở lại editor; ghi dữ liệu có đổi không.",
+        "Ghi kết quả kèm build (so với build 2026-10-23); không phán pass hay fail."
+      ],
+      "observation_point": "Status request lưu; dữ liệu sau khi mở lại; có thông báo cho người dùng không.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Bug Option title chứa NUL làm request lưu artwork trả 500 đã sửa chưa, và hành vi mong muốn là từ chối có thông báo hay loại bỏ ký tự? Cần Dev xác nhận trạng thái bug và chạy lại trên build mới hơn.",
+      "related_kb_ids": [
+        "KB-145",
+        "KB-052"
+      ],
+      "regression_watch_kb_ids": [
+        "KB-972"
+      ],
+      "risk_refs": [
+        "Save lỗi 500 với input có ký tự điều khiển; chưa có expected."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "known_defect_behavior": "HTTP 500 {\"message\": \"Server Error\"}, dữ liệu không đổi (QA-3419 TC-39, build 2026-10-23). Known issue, không phải expected.",
+      "oq_id": "OQ-artwork-333"
+    },
+    {
+      "check_id": "CHK-024",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-097, NEEDS_CONFIRMATION] Thứ tự field đổi ở tab Re-order còn giữ sau Save và mở lại editor, khớp thứ tự đọc qua GraphQL",
+      "applicability": {
+        "role": "merchant-owner (store owner/staff)",
+        "state": "artwork có nhiều field trong Form panel",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork Editor — Form panel, tab Re-order; GraphQL readback"
+      },
+      "precondition": "Artwork throwaway trên store explorer có ≥3 field; ghi thứ tự ban đầu.",
+      "steps": [
+        "Ở tab Re-order, kéo một field thả xuống dưới một dòng khác giữa danh sách (không thả sau dòng cuối).",
+        "Ghi thứ tự ngay sau khi thả.",
+        "Save, đóng và mở lại editor; ghi thứ tự ở tab Re-order.",
+        "Đọc artwork qua GraphQL; ghi thứ tự field đọc được và field JSON chứa nó.",
+        "Lặp 3 lượt; ghi kết quả kèm build."
+      ],
+      "observation_point": "Thứ tự sau mở lại so với ngay sau khi thả; thứ tự qua GraphQL. Hiện trạng đã quan sát (không phải expected): giữ nguyên và khớp GraphQL, 1 lượt (KB-973).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Thứ tự field sau khi thả ở tab Re-order giữ nguyên sau Save và mở lại editor, khớp GraphQL (QA-3352 TC-08, 1 lượt, không ghi build). Đây có phải hành vi mong muốn? Cần test case PASS có build + căn cứ expected, hoặc PO/Dev xác nhận nguyên văn có ngày.",
+      "related_kb_ids": [
+        "KB-973",
+        "KB-050",
+        "KB-053"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mất thứ tự field đã sắp sau khi lưu."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-334"
+    },
+    {
+      "check_id": "CHK-025",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-097, CONFLICT] Sau reorder ở tab Re-order và Save: templates[].positions và templates[].layers đổi thế nào, thứ tự render trên canvas có đổi không",
+      "applicability": {
+        "role": "merchant-owner (store owner/staff)",
+        "state": "artwork có nhiều layer/field, thứ tự form khác thứ tự render nếu dựng được",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork Editor (canvas + tab Re-order); PUT body; GraphQL readback"
+      },
+      "precondition": "Artwork throwaway trên store explorer; capture được body PUT Save & Close.",
+      "steps": [
+        "Capture body PUT và đọc GraphQL trước reorder; ghi templates[].positions, thứ tự templates[].layers và thứ tự render trên canvas.",
+        "Đổi thứ tự field ở tab Re-order, Save.",
+        "Capture lại body PUT và GraphQL; ghi cùng ba thứ tự.",
+        "So sánh trước/sau; ghi kết quả kèm build, không phán pass hay fail."
+      ],
+      "observation_point": "Field nào đổi khi reorder (positions, layers); thứ tự render trên canvas có đổi không.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "templates[].positions là thứ tự render của layer hay thứ tự field của tab Re-order? Nếu là thứ tự form thì reorder có đổi thứ tự render không, và thứ tự render nằm ở đâu (templates[].layers?). Cần Dev xác nhận nguyên văn có ngày + link, hoặc explore hẹp so PUT body/GraphQL trước và sau reorder.",
+      "related_kb_ids": [
+        "KB-053",
+        "KB-974",
+        "KB-973"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "CONF-CBS-097-01: verify thứ tự sau Save bằng sai field JSON; reorder form có thể đổi thứ tự render ngoài ý muốn."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-335"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -678,11 +883,46 @@
         "CHK-017"
       ],
       "oracle": "không đổi so với base"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "capability": "[CBS-097] Concurrent save hai tab: last-save-wins cho cả layer (KB-970)",
+      "checks": [
+        "CHK-021"
+      ],
+      "covered": "NONE, NEEDS_CONFIRMATION; observe-only."
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "capability": "[CBS-097] Persist thứ tự field tab Re-order và nghĩa templates[].positions (KB-973, KB-974, CONF-CBS-097-01)",
+      "checks": [
+        "CHK-024",
+        "CHK-025"
+      ],
+      "covered": "NONE, NEEDS_CONFIRMATION; conflict không làm expected."
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "risk": "[CBS-097] KNOWN_DEFECT: server không chặn PUT trên layer locked (KB-971), Option title chứa NUL trả 500 (KB-972)",
+      "checks": [
+        "CHK-022",
+        "CHK-023"
+      ],
+      "covered": "REGRESSION watch, expected_result rỗng."
     }
   ],
-  "excluded_dimensions": [],
+  "excluded_dimensions": [
+    {
+      "dimension": "BOUNDARY — phạm vi CBS-097",
+      "reason": "KB-970..KB-974 không có phát biểu về giới hạn kích thước/số lượng/độ dài; boundary của label thuộc FEAT-31-form-field-reorder (KB-982)."
+    },
+    {
+      "dimension": "PERMISSION — phạm vi CBS-097",
+      "reason": "KB mới chỉ quan sát role merchant-owner; role khác/cross-tenant đã có CHK-017 của base. Việc sửa layer locked qua PUT tự dựng (KB-971) là KNOWN_DEFECT nên theo dõi ở CHK-022 (REGRESSION), không làm check PERMISSION có expected."
+    }
+  ],
   "last_updated": {
-    "date": "2026-10-26",
-    "ccr_ref": "CBS-007"
+    "date": "2026-11-07",
+    "ccr_ref": "CBS-097"
   }
 }

@@ -239,6 +239,10 @@
       "surface": "portal (Artwork Editor → Save) · api (PUT /api/artworks/{id})",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-10-26",
+      "ccr_ref": "CBS-007"
+    },
     "tags": [
       "artwork-1.0",
       "save",
@@ -250,10 +254,149 @@
     "related_kb_ids": [
       "KB-050",
       "KB-052"
+    ]
+  },
+  {
+    "kb_id": "KB-970",
+    "topic": "Hai tab cùng sửa một layer rồi lần lượt Save: lần save sau ghi đè cả layer, không cảnh báo (1 quan sát)",
+    "statement": "Khi hai tab Artwork Editor ở portal (staging, role merchant-owner) cùng mở một artwork, tab A sửa một field AI provider của layer và Save, rồi tab B (dữ liệu cũ) sửa field AI provider khác của cùng layer và Save, quan sát thấy trong QA-3435 TC-34 (kết quả AI, 2026-10-27, không ghi build): lần save sau thắng cho cả layer, thay đổi của tab A bị mất, không có cảnh báo xung đột và không lỗi 500. Một lượt quan sát trên một cặp field AI provider, không khái quát cho mọi loại layer; TC chỉ ghi nhận hành vi, không assert hành vi đúng. Liên quan KB-052 (PUT ghi đè toàn bộ artwork), không thay.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner/staff)",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "QA-3435",
+      "concurrent-edit",
+      "last-save-wins",
+      "save"
+    ],
+    "related_kb_ids": [
+      "KB-052"
     ],
     "last_updated": {
-      "date": "2026-10-26",
-      "ccr_ref": "CBS-007"
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-097"
+    }
+  },
+  {
+    "kb_id": "KB-971",
+    "topic": "Known defect: PUT /api/artworks/{id} tự dựng vẫn lưu thay đổi trên layer locked (200)",
+    "statement": "Khi gửi PUT /api/artworks/{id} tự dựng (chép request Save & Close của editor, chỉ sửa form_label của một layer có locked: true) với role merchant-owner trên staging, quan sát thấy trong QA-3419 TC-37 (kết quả AI, 2026-10-30, build staging index.BMgdZMSW.js; cùng kết quả lượt 2026-10-23): server trả 200 và giá trị mới được lưu (đọc lại qua GraphQL thấy giá trị mới, layer vẫn locked: true). Đây là known issue phía server, chưa có bug chính thức, không phải expected và không làm oracle. Editor không cho sửa layer locked qua Bulk edit (KB-880, KB-881); liên quan KB-052, KB-055, không thay.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner/staff)",
+      "surface": "api",
+      "brand": null
+    },
+    "tags": [
+      "QA-3419",
+      "known-defect",
+      "locked-layer",
+      "put-artwork",
+      "server-side"
+    ],
+    "related_kb_ids": [
+      "KB-052",
+      "KB-055",
+      "KB-880",
+      "KB-881"
+    ],
+    "status": "KNOWN_DEFECT",
+    "last_updated": {
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-097"
+    }
+  },
+  {
+    "kb_id": "KB-972",
+    "topic": "Known defect: Option title chứa ký tự NUL làm request lưu artwork trả 500, dữ liệu không đổi",
+    "statement": "Khi lưu artwork có Option title chứa ký tự NUL (U+0000) trên hai template trong cùng một request (role merchant-owner, staging), quan sát thấy trong QA-3419 TC-39 (2026-10-23, build staging index.BqS1iTCG.js): request lưu artwork trả HTTP 500 với body {\"message\": \"Server Error\"} và dữ liệu không đổi. TC được bỏ qua và quy về một bug có sẵn về ký tự NUL; đây là known issue phía server, không phải expected và không làm oracle. Chưa chạy lại trên build mới hơn. Khác KB-145 (500 khi Save bản copy Artwork 1.0, nguyên nhân khác).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner/staff)",
+      "surface": "api",
+      "brand": null
+    },
+    "tags": [
+      "QA-3419",
+      "known-defect",
+      "nul-character",
+      "http-500",
+      "save"
+    ],
+    "related_kb_ids": [
+      "KB-145",
+      "KB-052"
+    ],
+    "status": "KNOWN_DEFECT",
+    "last_updated": {
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-097"
+    }
+  },
+  {
+    "kb_id": "KB-973",
+    "topic": "Thứ tự field sau khi thả ở tab Re-order giữ nguyên sau Save và mở lại editor, khớp GraphQL (1 lượt)",
+    "statement": "Khi đổi thứ tự field bằng kéo thả trong tab Re-order của Form panel ở Artwork Editor (portal, staging, role merchant-owner), Save rồi mở lại editor, quan sát thấy trong QA-3352 TC-08 (kết quả AI, 2026-09-28, không ghi build): thứ tự trên màn hình sau khi tải lại trùng với thứ tự ngay sau khi thả, và thứ tự field đọc qua GraphQL khớp. Một lượt chạy. Liên quan KB-050, KB-053, không thay.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner/staff)",
+      "surface": "portal · api",
+      "brand": null
+    },
+    "tags": [
+      "QA-3352",
+      "re-order",
+      "persist",
+      "graphql"
+    ],
+    "related_kb_ids": [
+      "KB-050",
+      "KB-053"
+    ],
+    "last_updated": {
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-097"
+    }
+  },
+  {
+    "kb_id": "KB-974",
+    "topic": "Thứ tự field của tab Re-order đọc lại từ templates[].positions; templates[].layers không đổi thứ tự (ghi chú QA, đang conflict với KB-053)",
+    "statement": "Khi đổi thứ tự field trong tab Re-order của Form panel (staging, role merchant-owner), ghi chú quan sát của QA lúc duyệt spec QA-3352 TC-03 (2026-09-28, không có assert riêng) ghi rằng thứ tự thật đọc lại qua GraphQL nằm ở templates[].positions, còn thứ tự của templates[].layers không đổi khi reorder. Chưa xác định positions có đồng thời là thứ tự render hay không. Mô tả này căng với KB-053 (positions là mảng layer id theo thứ tự render); hai phía được giữ, chưa phía nào được xác nhận, không làm oracle.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner/staff)",
+      "surface": "api · db",
+      "brand": null
+    },
+    "tags": [
+      "QA-3352",
+      "positions",
+      "templates",
+      "re-order",
+      "conflict"
+    ],
+    "related_kb_ids": [
+      "KB-053",
+      "KB-973"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-CBS-097-01",
+    "last_updated": {
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-097"
     }
   }
 ]

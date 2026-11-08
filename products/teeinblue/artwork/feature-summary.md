@@ -1,10 +1,17 @@
 # Object: Artwork (product: teeinblue) — Feature Profile Summary
-**Published context version:** 13
+**Published context version:** 20
 
 
-- **24 features.** Đa số item là `OBSERVED_CURRENT`. Item `CONFIRMED_EXPECTED` của object đến từ CBS-006 (TIB-5584, effective visibility của layer Group): nguồn là test case Testlane PASS hoặc QA plan của dev, chỉ trên staging 2026-10-16 — TIB-5584 chưa xác nhận đã ship production, chưa chạy lại sau khi đủ PR merge (OQ-artwork-144). CBS-011 (TIB-5558, action Hide trong Conditional Setting) thêm KB-221, KB-222, KB-224, KB-227 (đang conflict), KB-228, KB-229 là `CONFIRMED_EXPECTED`/MEDIUM theo test case Testlane PASS trên staging 2026-10-28, chạy trước khi 6 PR của TIB-5558 merge; TIB-5558 chưa xác nhận đã ship production.
+- **31 features.** Đa số item là `OBSERVED_CURRENT`. Item `CONFIRMED_EXPECTED` của object đến từ CBS-006 (TIB-5584, effective visibility của layer Group): nguồn là test case Testlane PASS hoặc QA plan của dev, chỉ trên staging 2026-10-16 — TIB-5584 chưa xác nhận đã ship production, chưa chạy lại sau khi đủ PR merge (OQ-artwork-144). CBS-011 (TIB-5558, action Hide trong Conditional Setting) thêm KB-221, KB-222, KB-224, KB-227 (đang conflict), KB-228, KB-229 là `CONFIRMED_EXPECTED`/MEDIUM theo test case Testlane PASS trên staging 2026-10-28, chạy trước khi 6 PR của TIB-5558 merge; TIB-5558 chưa xác nhận đã ship production.
 - **CBS-079 (backfill các ticket layer và render):** thêm KB-415..KB-429 và 20 check trên bảy feature, không có supersede, không đổi item base. Chín item là `CONFIRMED_EXPECTED`/MEDIUM theo comment dev (KB-420, KB-421, KB-423..KB-429), năm item là `OBSERVED_CURRENT`/LOW, KB-419 là `INFERRED`/LOW. Build và ngày deploy production chưa biết, các item chỉ dùng cho staging (OQ-artwork-185); role chưa rõ ở KB-420..KB-429 (OQ-artwork-184).
-- **13 conflicts, all UNRESOLVED** (mới nhất: `CONF-artwork-dependency-action-01`, shape `dependency` có key `action`, CBS-011) — see `open-questions.md` (type `CONFLICT`) for both sides of each; `kb.json`/feature `kb.json` items carry a matching `conflict_group` + `status: UNRESOLVED`.
+- **CBS-088 (render SVG và upload SVG, TIB-5350/TIB-5501):** thêm feature `svg-to-image-rendering` và KB-570..KB-584, 17 check trên bốn feature, không có supersede, không đổi item base. Mọi item mới là `OBSERVED_CURRENT`/LOW: nguồn là dev doc tự sinh từ branch diff hoặc lượt chạy QA không ghi build; chưa có nguồn xác nhận hành vi đúng, build và production chưa biết (OQ-artwork-204).
+- **CBS-090 (Run effects của Photo layer, TIB-5470):** thêm feature `run-image-effects` (KB-800..KB-818, 30 check) và `run-effects-fill-in-variables` (KB-819..KB-830, 21 check), không có supersede, không đổi item base. 14 item là `CONFIRMED_EXPECTED`/MEDIUM theo PO/Dev trả lời hoặc spec của PO trên TIB-5470, KB-824 là `CONFIRMED_EXPECTED`/LOW đang conflict; còn lại `OBSERVED_CURRENT`/LOW, KB-818 là known limitation. Hành vi của layer dùng Global Option nằm ở object `global-option` (OQ-artwork-232).
+- **CBS-091 (populate-values, TIB-5577/TIB-5504):** thêm KB-850..KB-867 và CHK-026..CHK-045 vào feature `populate-values`, không có supersede, không đổi item base. 11 item là `CONFIRMED_EXPECTED`/MEDIUM theo Dev trả lời trên Jira; KB-853, KB-854 là `OBSERVED_CURRENT`/LOW; KB-860, KB-867 là known defect; KB-852/853 và KB-856/857 là hai conflict mới. Ticket chưa xác nhận đã ship production, item chỉ dùng cho staging (OQ-artwork-268).
+- **CBS-092 (Bulk edit nhiều layer, TIB-5299):** thêm feature `layer-bulk-edit` (KB-880..KB-907, 27 check) và KB-908, KB-909 vào `editor-layer-workspace`, không có supersede. 13 item là `CONFIRMED_EXPECTED`/MEDIUM theo PO/Dev trả lời trên Jira. KB-908 (menu More (…)) và KB-909 (replica chặn Group / Duplicate / Delete) mâu thuẫn với base KB-043, KB-085, KB-042: cả hai phía UNRESOLVED, chờ PO (OQ-artwork-286, OQ-artwork-288); CHK-002..CHK-006 của `editor-layer-workspace` và CHK-015 của `layer-config-image` tạm không có oracle. Test case do AI chạy, chỉ staging (OQ-artwork-296).
+- **CBS-093 (Photo Border, TIB-5592):** thêm feature `layer-photo-border` (KB-910..KB-918, 17 check), không có supersede, không đổi item base. 4 item là `CONFIRMED_EXPECTED`/MEDIUM theo Dev trả lời trên Jira; 5 item là `OBSERVED_CURRENT`/LOW. QA mới kiểm Artwork editor với layer Clipart Category; các bề mặt và loại layer khác chưa chạy (OQ-artwork-303).
+- **CBS-095 (photo layer No personalization, Gen AI Resolution, output size; TIB-5521/5573/5561/5470/5412):** thêm KB-930, KB-931, KB-934, KB-936, KB-937, KB-939..KB-957 và CHK-061..CHK-088 vào `layer-config-image`, KB-935 và CHK-013, CHK-014 vào `layer-duplicate-link-copy`, feature mới `no-personalization-photo-render` (KB-932, KB-933, KB-938, 4 check). Không có supersede, không conflict mới, không đổi item base. 15 item là `CONFIRMED_EXPECTED`/MEDIUM theo Dev trả lời trên Jira hoặc test case có build; 9 item `OBSERVED_CURRENT`/LOW; 4 known defect/limitation. So khớp NFC của Dynamic Clipart by Text không nạp (OQ-artwork-323, OQ-artwork-324).
+- **CBS-097 (tab Re-order của Form panel và lưu artwork; TIB-5354, TIB-5561, TIB-5299, QA-3435):** thêm feature `form-field-reorder` (KB-975..KB-982, 9 check) và KB-970..KB-974, CHK-021..CHK-025 vào `artwork-save-persist`, không có supersede, không đổi item base. Không item nào `CONFIRMED_EXPECTED`: mọi check mới là NEEDS_CONFIRMATION (oracle NONE). KB-971, KB-972, KB-979 là known defect/limitation; KB-974 conflict với KB-053 (CONF-CBS-097-01).
+- **24 conflicts, all UNRESOLVED** (mới nhất: CONF-CBS-097-01, CBS-097) — see `open-questions.md` (type `CONFLICT`) for both sides of each; `kb.json`/feature `kb.json` items carry a matching `conflict_group` + `status: UNRESOLVED`. Riêng CONF-CBS-097-01: chỉ KB-974 mang `conflict_group`; KB-053 (base) giữ nguyên, phía kia của conflict ghi ở OQ-artwork-335 — không dùng KB-053 hay KB-974 làm oracle cho nghĩa của `positions`.
 - **1 CRITICAL finding** — canvas/Preview modal/cart customization image never composites a selected Clipart Category item (KB-112, feature `clipart-category-storefront-behavior`); not concluded as a confirmed product defect vs. a test-fixture artifact — see that feature's Risks section.
 - **1 cross-object dispute** — Text to Image (AI) personalization option count (2 vs 3 choices, `CONF-CBS003-01`, feature `layer-config-image`) is cross-referenced with object `global-option`; a checklist item for this area (`layer-config-image` checklist) is currently `automation_suitability: SUITABLE` while the underlying fact is disputed — worth auditing before trusting that check's PASS/FAIL signal.
 - **Actors observed across this object's history:** store owner/staff (account "Linh explorer", plan "Blue (Test)"), buyer (guest, storefront), and a staff-authenticated Live Preview proxy used to approximate buyer-facing runtime for GenAI layer types (not a true guest session).
@@ -65,6 +72,7 @@
 ---
 
 ## FEAT-03 — Editor Layer Workspace
+**CBS-092:** KB-043 (không có menu overflow) và KB-085 (FEAT-13) ↔ KB-908 (menu More (…) có Bulk edit) là CONF-CBS-092-01; KB-042 (bar hành động không đổi theo selection) ↔ KB-909 (replica chặn Group / Duplicate / Delete) là CONF-CBS-092-02. Cả hai phía UNRESOLVED; CHK-002..CHK-006 không có oracle tới khi PO quyết (OQ-artwork-286..OQ-artwork-288, OQ-artwork-294). Live Preview và submodule sdk: OQ-artwork-290.
 **Goal:** Thêm layer mới vào artwork và thao tác chọn/toolbar dùng chung trong canvas, độc lập với cấu hình chi tiết từng layer type.
 **Entry points:** nút "+ Layer" · canvas — click chọn layer
 **Cập nhật CBS-006 (TIB-5584, staging 2026-10-16):** chọn Group đang ẩn không có box drag/resize/rotate, không có thao tác transform, Align không đổi vị trí (KB-169); chọn layer con của Group ẩn không mở quick editor (KB-171, theo dev); kéo Group hiện có con tự ẩn thì mọi con di chuyển cùng (KB-172, theo dev); artwork không có Group render như trước (KB-173). **Quan sát chưa chốt (KB-170):** quick toolbar của Group ẩn chỉ còn mục Align (6 nút không disable, bấm không tác dụng), không có Transform, Print Effects, Mask — expected cho Align chưa chốt (OQ-artwork-145), Mask ẩn hay disable chưa chốt (KB-167, OQ-artwork-138). Checklist CHK-013..CHK-018; OQ-artwork-145..146.
@@ -187,6 +195,13 @@
 
 - **KB-145 (CBS-007, 1 lần quan sát, staging):** trên một bản copy Artwork 1.0, `PUT /api/artworks/{id}` trả 500 kể cả khi không sửa gì nên không Save được; chưa rõ nguyên nhân và chưa rõ artwork 1.0 khác có Save được không (OQ-artwork-114..116, CHK-018..CHK-020).
 
+**Cập nhật CBS-097 (OBSERVED_CURRENT/LOW, staging, không làm oracle):**
+- Hai tab cùng sửa một layer: lần Save sau thắng cho cả layer, không cảnh báo, không 500 (KB-970, OQ-artwork-331)
+- Known defect: PUT tự dựng vẫn lưu thay đổi trên layer `locked: true` (KB-971, OQ-artwork-332); Option title chứa NUL làm save trả 500, dữ liệu không đổi (KB-972, OQ-artwork-333)
+- Thứ tự đổi ở tab Re-order giữ sau Save và mở lại editor, khớp GraphQL (KB-973, OQ-artwork-334)
+- ⚠️ **CONF-CBS-097-01:** `templates[].positions` là thứ tự render (KB-053) hay thứ tự field của tab Re-order (KB-974)? OQ-artwork-335
+- Checklist: CHK-021..CHK-025, đều NEEDS_CONFIRMATION.
+
 **Gate:** CONDITIONAL_PASS (core sequence validate→PUT confidence HIGH đủ làm baseline regression oracle; phần lớn field-level detail vẫn LOW; CONF-005/CONF-007 phải giữ nguyên cả 2 phía; không suy diễn hành vi server khi validate-default-value lỗi)
 
 ---
@@ -290,6 +305,10 @@
 7. **[v4, CBS-003, MỚI] Token enumeration khi Source = Multiple Uploads:** picker 'Available Value' offer đúng `{{input.1}}/{{input.2}}/{{input.3}}` (khớp Maximum photos=3 nguồn) + `{{output}}` — KHÔNG có `{{input}}` trần trong session này (KB-118); chỉ test max_photos=3, CHƯA test max_photos=1 (coverage gap)
 8. **[v4, CBS-003, MỚI] Source option dropdown** chỉ offer layer Multiple Uploads, KHÔNG offer Text to Image (AI) làm source trong session này (KB-119) — 1 sample, chưa generalize
 9. **🏁 [v4, CBS-003, FLAGSHIP, confidence HIGH]** Giá trị gốc (pre-effect) của Multiple Uploads lan truyền tới layer đích NGAY LẬP TỨC khi buyer upload, KHÔNG chờ Generate — xác nhận hội tụ qua 3 evidence độc lập (portal config + API request body `retrieval_value_enabled/retrieval_layer/retrieval_value` + storefront runtime Live Preview) (KB-120). Nửa còn lại — layer đích tự trigger effect chain riêng của nó — KHÔNG xác nhận được (fixture test không có effect nào cấu hình trên layer đích), xem companion `sdk` FEAT-09
+10. **[v16, CBS-091] Dùng chung lần gọi effect:** hai populated option dùng chung một lần gọi khi cùng ảnh và cùng toàn bộ thiết lập effect (effect type, prompt đã điền biến, template, remove background) (KB-850); Gen AI trên layer Direct upload / Cropper khác kích thước thì gọi riêng, tính lượt riêng (KB-851); hai option chained `{{output}}` cùng nguồn chỉ dùng chung khi setup y hệt (KB-855). Với effect không phải Gen AI trên Direct upload / Cropper khác kích thước: conflict `populate-share-call-layer-size` (KB-852 vs KB-853), không làm oracle
+11. **[v16, CBS-091] Option chained `{{output}}` có effect riêng:** bắt đầu từ ảnh đã xử lý của nguồn, effect nguồn chạy một lần cho mỗi ảnh (KB-854, OBSERVED_CURRENT/LOW); effect nguồn gửi trong field riêng, server chỉ dùng khi nguồn chưa có kết quả full-size (KB-866); chỉ hỗ trợ chain 1 cấp (KB-861)
+12. **[v16, CBS-091] Lỗi và reload của option chained `{{output}}`:** effect nguồn lỗi thì option để trống, không lỗi riêng (KB-862); nguồn thay ảnh mà lỗi thì option giữ kết quả ảnh cũ (KB-863); effect riêng của option lỗi thì lỗi + Try again hiện trên nguồn, Add to Cart bị chặn (KB-864); reload khi đang processing thì chạy lại từ đầu bằng call mới (KB-865)
+13. **[v16, CBS-091] Layer No personalization populate `{{output}}`:** nguồn Photo Cropper → nhận ảnh đã crop (KB-858); nguồn Photo Reposition → dữ liệu vị trí đi theo nguồn và order render dùng vị trí này (KB-859), preview storefront không vẽ vị trí (known defect KB-860). Option Photo Reposition `{{output}}` đi theo vị trí nguồn: conflict `populate-reposition-follow-ratio` (KB-856 vs KB-857)
 
 **Coverage:** portal ✅ · api ✅ (PUT `layer.retrieval_*`; **v4: POST /api/artworks cho Multiple Uploads source**) · data ✅ (`font_categories` query) · storefront ⚠️ (**v4, MỚI: raw-value propagation qua Live Preview widget — staff-authenticated proxy, KHÔNG phải guest thật, xem KB-120**)
 **Confidence:** LOW-MEDIUM (**coverage mỏng nhất trong toàn object** trước v4 — observed_count=1-2 cho 6/9 KB item; KB-120 flagship = HIGH nhờ 3 evidence hội tụ)
@@ -302,7 +321,9 @@
 - Storefront hiển thị giá trị đã populate thật (không phải placeholder), role khác owner/cross-tenant — chưa test (ngoại trừ raw-value propagation ở KB-120, qua proxy staff)
 - **Token `{{input}}` trần khi Maximum photos=1** — CHƯA TEST (chỉ test max_photos=3)
 - **Text to Image có bao giờ được offer làm Populate source không** — 1 sample phủ định, CHƯA generalize
-- **Effect-auto-trigger half của KB-120** (layer đích tự chạy effect chain riêng khi nhận giá trị populate) — CHƯA xác nhận, cần fixture có effect cấu hình sẵn trên layer đích
+- **Effect-auto-trigger half của KB-120** (layer đích tự chạy effect chain riêng khi nhận giá trị populate) — phần `{{output}}` có KB-866 (CONFIRMED) và KB-854 (LOW); phần `{{input.N}}` CHƯA xác nhận (OQ-artwork-093)
+- **[v16, CBS-091]** Lượt bị trừ khi dùng chung hoặc tách lần gọi chưa đo, bộ đếm chưa rõ (OQ-artwork-258); Cropper chưa có lượt kiểm cho Gen AI khác kích thước (OQ-artwork-259); lỗi mới kiểm bằng giả lập (OQ-artwork-260); Add to Cart khi lỗi chưa test riêng (OQ-artwork-261); known defect nguồn Photo Cropper thay ảnh (KB-867, OQ-artwork-256)
+- **[v16, CBS-091]** Bốn claim về kích thước layer (effect bật dùng kích thước layer, Gen AI trên Photo Reposition, contour cut, effect không phụ thuộc kích thước) không có nguồn, chưa nạp KB (OQ-artwork-248..OQ-artwork-251)
 
 **Gate:** CONDITIONAL_PASS (đủ phát hiện regression trên luồng đã thử Font/Color/Word Cloud/dynamic-by-text/Multiple Uploads source; KHÔNG đủ để coi là bao phủ toàn bộ 22/35 layer type có accordion này; KHÔNG suy diễn cú pháp formula/context template thành spec chính thức; KB-120 giữ oracle BASELINE dù confidence HIGH — vẫn OBSERVED_CURRENT, không CONFIRMED_EXPECTED)
 
@@ -335,6 +356,7 @@
 - **KB-157 (CBS-008, 1 lần quan sát, staging):** layer Curve Text không có tuỳ chọn căn lề text; layer lưu `align: center`. Chưa rõ là thiết kế hay thiếu, và nút 'Align' trên toolbar (KB-042) căn layer hay căn text (OQ-artwork-136, OQ-artwork-137; CHK-009).
 
 ## FEAT-13 — Layer Config: nhóm IMAGE (8 layer type)
+**CBS-092:** KB-085 (panel chỉ qua '...' > 'Bulk edit') nằm trong CONF-CBS-092-01, UNRESOLVED; CHK-015 không có oracle (OQ-artwork-286). KB-087, KB-088 có thể đã cũ so với modal Bulk edit mới (OQ-artwork-295).
 **Goal:** Cấu hình field/behavior riêng nhóm IMAGE: Static Image, Clipart Category, Clipart Category Group, Photo Upload Single/Multiple, Text to Image (AI), Dynamic Clipart by Text Manual/Auto Placement.
 **Entry points:** config panel layer type nhóm IMAGE (Clipart Category single/group CHỈ vào được qua menu layer "..." > "Bulk edit" — không có panel single-layer riêng, xác nhận v3)
 
@@ -363,6 +385,8 @@
 - Storefront/role khác owner-cross-tenant cho 6 type còn lại ngoài Clipart Category — chưa test
 
 - **KB-420..KB-424 (CBS-079):** batch HD thay tooltip "Selected layers use different images…", tối đa 10 ảnh khác nhau mỗi lần bấm; HD phụ thuộc nơi ảnh nằm, không phụ thuộc layer type; warning ImagenHub match title của Global Option (CHK-054..CHK-060). KB-422 (route, env, 422 của batch HD) là `OBSERVED_CURRENT`/LOW, chưa kiểm trên hệ thống (OQ-artwork-192). Per-field warning và nút "+ variable" chưa chốt (OQ-artwork-191).
+
+- **CBS-095 (KB-930..KB-957 trừ KB-932, KB-933, KB-935, KB-938):** photo layer No personalization populated với mọi nguồn (KB-930), thumbnail fill (KB-934); Gen AI Resolution theo model Gemini của account, Nano Banana 2.1 chỉ 1K/2K/4K (KB-939..KB-941); Gen AI effect chỉ ở Photo layer trên Artwork 2.0 (KB-942); field output size theo model và giá trị đã lưu (KB-944, KB-949); Flux width/height và giới hạn 4 MP trên mọi đường save (KB-945, KB-946), allowed values chỉ check qua MCP (KB-953); grouped_clipart theo manual/auto (KB-957). Quan sát chưa chốt: KB-931, KB-937, KB-943, KB-947, KB-950, KB-952, KB-954..KB-956. Known defect: KB-936, KB-948, KB-951. Open questions OQ-artwork-306..OQ-artwork-324, OQ-artwork-327..OQ-artwork-329.
 
 **Gate:** CONDITIONAL_PASS (per-type observed_count=1-2 → LOW; field JSON qua bundle-registry INFERRED trừ phần Clipart Category + Photo Upload/Multiple Uploads/Text to Image đã cross-check API trực tiếp; 3 conflict PHẢI giữ UNRESOLVED — 2 cũ + CONF-CBS003-01 mới)
 
@@ -416,6 +440,8 @@
 
 - **KB-417, KB-418 (CBS-079, 1 lượt chạy, staging 2026-10-14):** upload Static Vector tạo layer static-vector; artwork chỉ có static-vector với Design format SVG ra file .svg, PNG_RGB báo "Line item cannot generate design", lưu SVG khi còn raster layer trả HTTP 400. Chưa xác nhận là hành vi đúng (OQ-artwork-188, OQ-artwork-189; CHK-009..CHK-011).
 
+- **KB-581..KB-584 (CBS-088, lượt chạy QA staging 2026-10-07/08, không ghi build):** SVG layer image cũ (05/2025) re-render design PNG bình thường; upload SVG bỏ DOCTYPE, ENTITY, `<script>` và không trả 500; tên file được làm sạch, key lưu ngẫu nhiên, tên > 255 ký tự bị validate chặn; file SVG nguồn trên CDN giữ nguyên id sau recolor và đặt order. Chưa xác nhận là hành vi đúng (OQ-artwork-210..OQ-artwork-213; CHK-012..CHK-016). SSRF, DoS, file cực lớn chưa kiểm. KB-418 và KB-570/KB-581 cho kết quả design PNG khác nhau trên hai fixture (OQ-artwork-214). Render SVG sang ảnh nằm ở FEAT-25.
+
 **Gate:** CONDITIONAL_PASS (per-type observed_count=1 → LOW; field JSON qua bundle-registry INFERRED; rate-limit CONDITIONAL_PASS, CONF-CBS004-001 UNRESOLVED)
 
 ---
@@ -462,6 +488,8 @@
 - Word Search "Custom class:" xuất hiện 2 lần trong DOM — chưa xác nhận là bug hay 2 field thật, cần verify trước khi viết test case cho field này
 - Storefront/role khác owner-cross-tenant — chưa test
 
+- **KB-577..KB-579 (CBS-088, lượt chạy Testlane staging 2026-10-07, không ghi build):** Word Cloud với shape SVG clip-path lồng nhiều cấp chỉ đặt chữ trong vùng đã mask; "Use shape's color" chỉ lấy màu từ vùng nhìn thấy; shape SVG đơn giản, shape PNG lấp chữ trong shape, tắt custom shape thì lấp đầy ô vuông. Chưa xác nhận là hành vi đúng (OQ-artwork-205..OQ-artwork-207; CHK-006..CHK-008); preview storefront/editor chưa so với final render (OQ-artwork-208).
+
 **Gate:** CONDITIONAL_PASS (per-type observed_count=1 → LOW; field JSON qua bundle-registry INFERRED)
 
 ---
@@ -484,6 +512,8 @@
 - Storefront/role khác owner-cross-tenant — chưa test
 
 - **KB-415 (CBS-079, 1 lượt chạy, staging 2026-10-08):** default typography của calendar là Heebo/regular, 8 layer text-like là Roboto/regular. Chưa xác nhận giá trị đúng (OQ-artwork-186, CHK-006).
+
+- **KB-580 (CBS-088, lượt chạy Testlane staging 2026-10-07, không ghi build):** layer QR Code render nguyên vẹn và decode đúng chuỗi ở cả design PNG và PDF của cùng đơn. Chưa xác nhận là hành vi đúng (OQ-artwork-209; CHK-007).
 
 **Gate:** CONDITIONAL_PASS (per-type observed_count=1 → LOW; field JSON qua bundle-registry INFERRED)
 
@@ -603,6 +633,124 @@
 
 **Checklist:** CHK-001..CHK-016; CHK-001..CHK-006 có oracle từ test case; 10 NEEDS_CONFIRMATION (CHK-007..CHK-016).
 **Open questions:** OQ-artwork-165..OQ-artwork-173. Liên quan FEAT-22 (effective visibility, KB-158), FEAT-06 (print effects), object `order` (Regenerate design, Item Activity logs), object `sdk` (storefront preview).
+
+---
+
+## FEAT-25 — SVG to Image Rendering (TIB-5350)
+**Goal:** SVG trong artwork (layer vector, ảnh SVG) được rasterize đúng ở thumbnail và ở design file theo Design format (PNG_RGB, PNG_RGBA, PNG_ADOBE_RGB, PNG_SRGB, EPS, AI, PDF): áp clip-path, ảnh nhúng, nền theo format.
+**Không thuộc:** field cấu hình layer vector và upload SVG (FEAT-14), render Word Cloud (FEAT-16), render group (FEAT-24).
+**Entry points:** thumbnail SVG trên portal; design file của order (object `order`).
+
+**Trạng thái nguồn:** mọi item là `OBSERVED_CURRENT`/LOW. KB-570..KB-573 lấy từ dev doc tự sinh từ branch diff của PR teeinblue-api #3836 (2026-09-23), chưa kiểm trên build ghi rõ; KB-574..KB-576 là lượt chạy QA trên staging 2026-10-07 không ghi build. Chưa có nguồn xác nhận hành vi đúng; production chưa xác nhận (OQ-artwork-204).
+
+**Quan sát chưa chốt expected:**
+- Design PNG của artwork có layer SVG clip-path lồng nhiều cấp vẽ đúng hình đã mask; nhánh PNG dùng resvg thay Inkscape. Mới quan sát ở PNG_RGB (KB-570, OQ-artwork-196)
+- Chỉ nhánh PNG đổi renderer; EPS, AI, PDF vẫn qua Inkscape. Mới thấy PDF, EPS và AI chưa kiểm (KB-571, OQ-artwork-197)
+- SVG có `<image href="data:…">` (href trần, không `xlink:`) vẫn hiện ảnh nhúng ở thumbnail và design PNG (KB-572, OQ-artwork-198)
+- Design PNG_ADOBE_RGB nhúng ICC "Adobe RGB (1998)", PNG_SRGB nhúng ICC "sRGB IEC61966-2.1", một mẫu mỗi format (KB-575, OQ-artwork-201)
+- Ở thumbnail: clip-path trỏ id không tồn tại thì shape không bị clip; clip-path khai qua CSS `style` vẫn clip đúng (KB-576, OQ-artwork-202)
+
+**Conflict:** `svg-png-design-background` UNRESOLVED. Dev doc nói nền PNG_RGB, PNG_ADOBE_RGB, PNG_SRGB là trắng đục (KB-573); lượt đo staging thấy RGBA nền trong suốt, giống trước fix (KB-574). Không dùng làm oracle (OQ-artwork-199). PNG_RGBA chưa được thử (OQ-artwork-200).
+
+**Chưa kiểm:** design file và thumbnail sinh do sự kiện gì (OQ-artwork-203); role khác merchant-owner, cross-tenant, production (OQ-artwork-204).
+
+**Checklist:** CHK-001..CHK-008, tất cả NEEDS_CONFIRMATION; CHK-008 (nền design PNG_*) không có oracle, chỉ ghi nhận.
+**Open questions:** OQ-artwork-196..OQ-artwork-204. Liên quan FEAT-14 (upload SVG, KB-418), FEAT-16 (Word Cloud), FEAT-17 (QR Code), object `order` (design file), object `asset-category` (thumbnail clipart SVG).
+
+**Gate:** CONDITIONAL_PASS (mọi item LOW, chưa có oracle xác nhận; nền design PNG_* đang conflict)
+
+---
+
+## FEAT-28 — Layer Bulk Edit (TIB-5299)
+**Goal:** Merchant chọn nhiều layer trong artwork editor và sửa một lượt các setting chung qua modal Bulk edit.
+**Không thuộc:** action bar và menu More (FEAT-03), panel single-layer của từng type (layer-config-*), lưu artwork phía server (artwork-save-persist).
+**Entry points:** menu More (…) trên layer action bar → Bulk edit. Nội dung menu đang conflict (CONF-CBS-092-01, OQ-artwork-286).
+
+**Hành vi đã xác nhận (PO/Dev trên TIB-5299, staging):**
+- Layer hidden được bulk edit; replica Global Template bị loại như layer locked; selection lẫn layer thường + replica vẫn mở được, chỉ layer thường bị sửa (KB-880)
+- Field mở ra rỗng / No change; Save chỉ ghi field đã chạm; chạm rồi để rỗng thì ghi rỗng cho mọi layer (KB-883, OQ-artwork-291)
+- Mark required và Show on cart là On / No change / Off, mặc định No change (KB-885)
+- Chỉ hiện setting chung; panel Populate values chỉ hiện khi mọi layer cùng type (KB-892); Artwork 1.0 không có Personalization và Use an existing global option (KB-894)
+- Conditional: nguồn loại mọi layer đang chọn và replica (KB-895); layer linked không nhận rule (KB-889)
+- Đổi clipart category / group mà không chạm default thì default_value thành null (KB-897, OQ-artwork-291)
+- Một lần Save là đúng 1 undo step (KB-898); chỉ ghi vào editor, lên server khi Save artwork (KB-899)
+- Option title trùng được giữ, storefront hiện N field cùng tiêu đề (KB-900); empty state khi không có setting chung (KB-904); không có font / color / size (KB-905)
+
+**Quan sát chưa chốt expected:** điều kiện selection 1 layer / chỉ locked / chỉ replica (KB-881); chữ và bố cục modal (KB-882); Cancel / Esc / ghi lại giá trị cũ (KB-884); Populate tri-state (KB-886); field theo tổ hợp type (KB-893); Conditional ghi cho layer hỗ trợ, rule cũ bị thay (KB-896); Populate + global option cùng một Save (KB-903). OQ-artwork-270..OQ-artwork-280.
+
+**Conflict:** CONF-CBS-092-03 Personalization tri-state (PO) vs radio không có No change (Dev) — KB-887/KB-888, OQ-artwork-274; CONF-CBS-092-04 setting của layer linked — KB-890/KB-891, OQ-artwork-275; CONF-CBS-092-05 vector category trong Design settings — KB-906/KB-907, OQ-artwork-278; CONF-CBS-092-06 nguồn Populate — KB-901/KB-902, OQ-artwork-279. Không phía nào làm oracle.
+
+**Chưa kiểm:** quyền staff không có Manage Artwork (OQ-artwork-292); Redo (OQ-artwork-293); chọn group layer, prefill default text trên storefront, field cùng tên khác kiểu (OQ-artwork-282..OQ-artwork-284); build cuối và production (OQ-artwork-296).
+
+**Checklist:** CHK-001..CHK-027; 14 READY (oracle STRONG), 13 NEEDS_CONFIRMATION.
+**Open questions:** OQ-artwork-270..OQ-artwork-285, OQ-artwork-291..OQ-artwork-293, OQ-artwork-296. Liên quan FEAT-03 (menu More, KB-908), FEAT-08 (KB-225 / CHK-017, OQ-artwork-289), FEAT-11 (populate-values), FEAT-13 (KB-085, KB-087, OQ-artwork-295), object `sdk` (form storefront).
+
+**Gate:** CONDITIONAL_PASS (4 conflict trong nguồn, test case do AI chạy, chỉ staging)
+
+---
+
+## FEAT-29 — Layer Photo Border (TIB-5592)
+**Goal:** Merchant bật Border (Photo Border) cho một layer và chỉnh Type (Contour cut / Custom shape), color, size, thin line, Display border on; viền vẽ đúng ở editor, storefront và file đơn.
+**Không thuộc:** preset shape-cut của Print Effects (FEAT-06, KB-044, KB-391, KB-425), multi-select và rule ẩn Photo Border (FEAT-03, KB-427..KB-429).
+**Entry points:** toolbar layer trong Artwork editor → popup Border; storefront live preview, cart Edit design, Portal View/Edit customization; server render (Order Design, mockup render).
+
+**Hành vi đã xác nhận (Dev trên TIB-5592, staging):**
+- Storefront live preview (mockup), cart Edit design, Portal View/Edit customization và Artwork editor dùng chung code vẽ viền phía client; lỗi khung vuông ở size 1 và ám màu ở size 1–3 đã được fix ở cả bốn chỗ (KB-912)
+- Server render (file Order Design, mockup render) là code riêng, không bị lỗi này; đơn đã render không sai (KB-913, chờ PO: OQ-artwork-305)
+- Border size: min 0, step 1, không có max (KB-914)
+- Clipart Category, Dynamic clipart (dynamic_by_text), Clipart group, Linked clipart, Static image, Photo Upload và border Custom shape dùng chung hàm vẽ viền (KB-915)
+
+**Quan sát chưa chốt expected:** Contour cut size 1 đi theo outline (KB-910); size 1–3 chỉ vẽ vòng ngoài, viền nằm dưới clipart (KB-911); Border đọc lại sau Save & Close + reload, field `photo_border` (KB-916); Undo/Redo size và Duplicate giữ Border (KB-917); size 0 vẽ viền dày như size 10 trong một lượt, expected chưa có (KB-918). OQ-artwork-297..OQ-artwork-301.
+
+**Chưa kiểm:** "Linked clipart" có phải layer Linked của KB-429 (OQ-artwork-302); bề mặt ngoài Artwork editor, loại layer ngoài Clipart Category, Custom shape (OQ-artwork-303); max, decimal, size lớn (OQ-artwork-304); production.
+
+**Checklist:** CHK-001..CHK-017; 8 READY (oracle STRONG), 9 NEEDS_CONFIRMATION.
+**Open questions:** OQ-artwork-297..OQ-artwork-305. Liên quan FEAT-03 (KB-427..KB-429), FEAT-05 (KB-045), FEAT-06 (KB-391, KB-425, OQ-artwork-174, OQ-artwork-195), FEAT-13 (KB-017).
+
+**Gate:** CONDITIONAL_PASS (oracle STRONG dựa trên một comment Dev, test case do AI chạy, chỉ staging)
+
+---
+
+## FEAT-30 — No Personalization Photo Render (TIB-5521)
+**Goal:** Photo layer "No personalization" render đúng fit ở phía server (mockup, ảnh product đẩy lên store, file order design) và người test biết khi nào ảnh cũ được render lại.
+**Không thuộc:** cấu hình layer và fit rule (FEAT-13 `layer-config-image`, KB-930, KB-931), linked copy (FEAT-05, KB-935), runtime SDK trên storefront (object `sdk`).
+**Entry points:** sync campaign lên store; Re-generate design của order; save artwork (thumbnail).
+
+**Hành vi đã xác nhận (Dev trên TIB-5521, 2026-10-26, staging):**
+- Mockup và ảnh product đẩy lên store đi qua cùng transformer với layer No personalization nên theo cùng fit rule (KB-932)
+- Sau fix TIB-5521 không có gì tự render lại: ảnh trên store đổi ở lần sync tới, order design đổi khi Re-generate, thumbnail đổi khi save artwork; SDK preview đổi ngay khi SDK deploy (KB-933, chờ PO: OQ-artwork-330)
+
+**Known defect:** layer không có ảnh mặc định và không có retrieval value thì job order design fail (KB-938, có từ trước TIB-5521, OQ-artwork-326).
+
+**Chưa kiểm:** mockup ở danh sách Mockups; chiều "trước sync / Re-generate / save thì không đổi" (OQ-artwork-325); production.
+
+**Checklist:** CHK-001..CHK-004; 2 READY, 2 NEEDS_CONFIRMATION.
+**Open questions:** OQ-artwork-325, OQ-artwork-326, OQ-artwork-330. Liên quan FEAT-13 (KB-930, KB-931, KB-934), FEAT-11 (KB-858..KB-860).
+
+**Gate:** CONDITIONAL_PASS (oracle dựa trên một comment Dev, chỉ staging)
+
+---
+
+## FEAT-31 — Form Field Reorder (TIB-5354)
+**Goal:** Store owner/staff sắp lại thứ tự field của form personalization trong tab Re-order của Form panel (Artwork Editor), kéo một hoặc nhiều dòng một lần.
+**Không thuộc:** chọn layer trên canvas (FEAT `editor-layer-workspace`, KB-043); kéo thả ở màn hình product-base; thứ tự field trên storefront; lưu bền thứ tự (FEAT-07 `artwork-save-persist`, KB-973, KB-974).
+**Entry points:** Artwork Editor → panel Form → tab Re-order.
+
+**Hành vi quan sát (OBSERVED_CURRENT/LOW, automation staging 2026-09, không ghi build):**
+- Click thường vào dòng chưa chọn thêm dòng đó vào selection; click lại bỏ chọn dòng đó; click ra ngoài danh sách bỏ chọn tất cả (KB-977, KB-978)
+- Kéo nhiều dòng liền nhau (kể cả ≥10 dòng) đưa cả khối về ngay dưới dòng đích, giữ thứ tự tương đối, không rớt dòng (KB-975)
+- Dòng không liền nhau gom thành một khối theo thứ tự gốc của danh sách, không theo thứ tự click (KB-976)
+- Kéo một dòng: dòng nằm ngay dưới dòng đích (KB-980); thả sau dòng cuối cùng chưa rõ (OQ-artwork-343)
+- Label chứa HTML/script hiển thị dạng chữ, không tạo node thật ở portal (KB-981); label rất dài và có ký tự điều khiển vẫn lưu, reorder, Save được (KB-982)
+
+**Known limitation:** cụm nhiều dòng thả sát mép trên/dưới có thể rơi về đầu/cuối danh sách, cụm vẫn nguyên và đúng thứ tự (KB-979, OQ-artwork-341).
+
+**Chưa kiểm / chưa nạp:** hành vi shift-click (hai quan sát ngược nhau, OQ-artwork-346); phạm vi fix và các danh sách kéo thả nhiều dòng khác (OQ-artwork-347); storefront với label HTML (OQ-artwork-344); độ ổn định qua nhiều lượt (OQ-artwork-337).
+
+**Checklist:** CHK-001..CHK-009; tất cả NEEDS_CONFIRMATION (oracle NONE).
+**Open questions:** OQ-artwork-336..OQ-artwork-347.
+
+**Gate:** CONDITIONAL_PASS (không có nguồn xác nhận expected; chỉ quan sát automation trên staging)
 
 ---
 

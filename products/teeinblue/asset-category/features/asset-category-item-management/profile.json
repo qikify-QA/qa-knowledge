@@ -203,6 +203,13 @@
       "kb_refs": [
         "KB-037"
       ]
+    },
+    {
+      "name": "Thumbnail cho item SVG có clip-path lồng nhiều <clipPath> (theo mô tả dev, chưa quan sát)",
+      "description": "KB-640 (OBSERVED_CURRENT, confidence LOW, S1): theo mô tả dev tự sinh từ branch diff (Jira TIB-5350, PR teeinblue-api #3836, 2026-09-23), ThumbnailMaker::makeFromSvg(), hàm tạo thumbnail cho clipart và layer image, trước đây dùng coder MSVG của ImageMagick, không đúng spec với SVG có clip-path; bản sửa rasterize SVG qua resvg trước rồi mới đưa PNG vào pipeline Imagick resize/trim/extent. Test đề xuất trong mô tả (chưa tick): upload SVG clipart có clip-path lồng qua nhiều <clipPath> thì thumbnail hiện đúng hình đã mask, không hiện outer bounding shape. Chưa có quan sát trên hệ thống, chưa có người xác nhận là hành vi mong đợi; không làm oracle STRONG. Phạm vi chính là thumbnail clipart (thư viện, listing clipart); phía layer image thuộc artwork, chỉ liên quan. Không thay capability 'Upload vector item thật (SVG)' (KB-015).",
+      "kb_refs": [
+        "KB-640"
+      ]
     }
   ],
   "state_transitions": [
@@ -385,6 +392,12 @@
       "kb_refs": [
         "KB-560"
       ]
+    },
+    {
+      "statement": "KB-640 (OBSERVED_CURRENT, confidence LOW, S1, merchant-owner/staging, object_state: SVG có clip-path lồng qua nhiều <clipPath>): nguồn là mô tả dev tự sinh từ branch diff (TIB-5350, PR teeinblue-api #3836, 2026-09-23), không phải quan sát trên hệ thống. Theo mô tả, thumbnail của clipart SVG có clip-path lồng được tạo bằng cách rasterize qua resvg rồi mới qua pipeline Imagick, và test đề xuất (chưa tick) kỳ vọng thumbnail hiện đúng hình đã mask, không hiện outer bounding shape. Ghi chú QA-3395 TC-01, TC-02 không có id test case Testlane hay build nên không tính là quan sát. Không phải rule, không làm oracle STRONG.",
+      "kb_refs": [
+        "KB-640"
+      ]
     }
   ],
   "observed_validations": [
@@ -441,7 +454,8 @@
       "form Add new tại chỗ trên /color-categories, /additional-options, /map-styles (KB-011, KB-023)",
       "nút Add new + modal 'Select a font' trên /font-categories (KB-012, KB-031)",
       "dropzone upload trên /cliparts (KB-014, KB-033, KB-034), /vectors (KB-015, KB-032)",
-      "uploader layer image và mockup library, chỉ có ghi nhận phía lỗi (KB-560)"
+      "uploader layer image và mockup library, chỉ có ghi nhận phía lỗi (KB-560)",
+      "thumbnail clipart SVG ở thư viện và listing clipart, theo mô tả dev, chưa quan sát (KB-640)"
     ],
     "storefront": [],
     "api": [
@@ -453,7 +467,9 @@
       "POST /cliparts của Open API, kiểm tra cap khi thêm clipart (KB-561, KB-562)"
     ],
     "data": [],
-    "code": []
+    "code": [
+      "ThumbnailMaker::makeFromSvg() (teeinblue-api, PR #3836), tạo thumbnail cho clipart và layer image; rasterize SVG qua resvg trước pipeline Imagick, theo mô tả dev tự sinh từ diff (KB-640)"
+    ]
   },
   "dependencies": [
     {
@@ -477,6 +493,13 @@
       "kb_refs": [
         "KB-035",
         "KB-037"
+      ]
+    },
+    {
+      "depends_on": "artwork (object; feature của layer image chưa xác định, chưa có item ở object đó)",
+      "relationship": "related_feature: thumbnail layer image dùng cùng ThumbnailMaker::makeFromSvg() với thumbnail clipart theo mô tả dev; thuộc artwork, chỉ liên quan, không gộp vào profile này.",
+      "kb_refs": [
+        "KB-640"
       ]
     }
   ],
@@ -531,6 +554,13 @@
       "kb_refs": [
         "KB-037"
       ]
+    },
+    {
+      "risk": "KB-640: hành vi thumbnail SVG clip-path lồng chỉ có mô tả dev tự sinh từ diff, chưa quan sát, chưa có người xác nhận, chưa rõ ngày deploy production của fix TIB-5350. Không dùng 'thumbnail hiện đúng hình đã mask' làm expected cứng; thay đổi coder (MSVG sang resvg) chạm mọi thumbnail SVG của clipart, nên regression trên SVG không có clip-path cũng chưa có quan sát.",
+      "severity": "LOW",
+      "kb_refs": [
+        "KB-640"
+      ]
     }
   ],
   "environment_differences": [
@@ -549,11 +579,11 @@
   ],
   "freshness": {
     "observed_at": "2026-11-07",
-    "note": "Run này không tự quan sát. Ngày là ngày nạp CCR; KB-560, KB-569 có nguồn ngày 2026-10-14, KB-568 ngày 2026-10-29, lời dev ngày 2026-10-28 và 2026-10-29. Item base giữ freshness của các đợt quan sát 2026-09."
+    "note": "Run này không tự quan sát. Ngày là ngày nạp CCR CBS-099; KB-640 có nguồn ngày 2026-09-23. Item của base v2 (CBS-078) giữ freshness của nguồn tương ứng: KB-560, KB-569 ngày 2026-10-14, KB-568 ngày 2026-10-29, lời dev ngày 2026-10-28 và 2026-10-29; item bootstrap giữ freshness của các đợt quan sát 2026-09."
   },
   "last_updated": {
     "date": "2026-11-07",
-    "ccr_ref": "CBS-078"
+    "ccr_ref": "CBS-099"
   },
   "unknown_areas": [
     {
@@ -612,6 +642,22 @@
         "KB-560"
       ],
       "oq_id": "OQ-asset-category-030"
+    },
+    {
+      "question": "Thumbnail của clipart SVG có clip-path lồng qua nhiều <clipPath> có hiện đúng hình đã mask, không hiện outer bounding shape không?",
+      "why_it_matters": "KB-640 (OBSERVED_CURRENT, confidence LOW, S1) chỉ dựa trên mô tả dev tự sinh từ branch diff (TIB-5350, PR teeinblue-api #3836, 2026-09-23); mục test đề xuất chưa tick, ghi chú QA-3395 TC-01, TC-02 không có id test case Testlane hay build nên không tính là quan sát. Chưa rõ ngày deploy production của fix. Chưa có test_case PASS có id và build/ngày chạy, hoặc lời PO/Dev xác nhận, thì không viết được expected cho thumbnail SVG clip-path.",
+      "kb_refs": [
+        "KB-640"
+      ],
+      "oq_id": "OQ-asset-category-041"
+    },
+    {
+      "question": "Thumbnail layer image SVG có clip-path lồng (object artwork, cùng ThumbnailMaker::makeFromSvg()) hiển thị thế nào?",
+      "why_it_matters": "KB-640 chỉ nêu layer image như phạm vi liên quan; object artwork chưa có item nào cho thumbnail layer image, nên profile này không phủ phía đó và không suy từ thumbnail clipart sang được. Cần nạp item ở artwork (quan sát hoặc xác nhận) trước khi viết check cho layer image.",
+      "kb_refs": [
+        "KB-640"
+      ],
+      "oq_id": "OQ-asset-category-043"
     }
   ],
   "coverage_matrix": [
@@ -831,6 +877,18 @@
         "KB-569"
       ],
       "note": "NOT_TESTABLE, xem environment_differences"
+    },
+    {
+      "feature_id": "FEAT-03-asset-item-management",
+      "layer": "api+portal",
+      "role": "merchant-owner",
+      "state": "Thumbnail clipart SVG có clip-path lồng qua nhiều <clipPath>",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-640"
+      ],
+      "note": "Chỉ có mô tả dev tự sinh từ diff (S1), chưa quan sát, không làm oracle; phía layer image thuộc artwork, chưa có item"
     }
   ],
   "profile_conflicts": [
