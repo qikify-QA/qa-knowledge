@@ -2,7 +2,7 @@
   "feature_id": "FEAT-04-printarea-definition",
   "feature_key": "printarea-definition",
   "object_id": "product-base",
-  "checklist_version": "7",
+  "checklist_version": "8",
   "checks": [
     {
       "check_id": "CHK-04-001",
@@ -990,6 +990,158 @@
       "priority": "P3",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-product-base-041"
+    },
+    {
+      "check_id": "CHK-04-029",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-034] Print area có DPI trống: ô DPI hiển thị \"300\" màu xám, giá trị lưu vẫn null",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "print area có dpi trống (null)",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Role merchant-owner, có một print area có dpi trống (vd print area có từ trước khi có tính năng DPI), ở /products/{id}/edit, section Printareas. Check không sửa dữ liệu.",
+      "steps": [
+        "Mở /products/{id}/edit, xem ô DPI của print area có dpi trống",
+        "Ghi lại giá trị và màu chữ của ô DPI",
+        "Đọc field dpi của print area qua GraphQL"
+      ],
+      "observation_point": "Ô DPI trên bảng Printareas và field dpi của print area",
+      "expected_result": "Ô DPI hiển thị \"300\" màu xám. Field dpi của print area vẫn là null.",
+      "oracle": {
+        "kb_ids": [
+          "KB-515"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-515",
+        "KB-512"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nguồn test case, cùng chiều với KB-512 (nguồn dev); CHK-04-022 phủ thêm phần export của print area cũ."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-04-030",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-034] Sửa DPI inline rồi lưu: DPI lưu giá trị mới, ô DPI hiển thị giá trị mới, hết màu xám",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "sửa DPI inline với giá trị trong khoảng hợp lệ",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Role merchant-owner, ở /products/{id}/edit của product base dùng để test, có ít nhất 1 print area có dpi trống. Dùng giá trị trong khoảng 72–300, vd 150.",
+      "steps": [
+        "Bấm vào ô DPI của print area; dialog Warning hiện thì bấm Got it",
+        "Nhập 150, xác nhận lưu",
+        "Quan sát ô DPI trên bảng"
+      ],
+      "observation_point": "Ô DPI trên bảng Printareas sau khi lưu",
+      "expected_result": "DPI của print area lưu bằng 150. Ô DPI hiển thị \"150\" và không còn màu xám.",
+      "oracle": {
+        "kb_ids": [
+          "KB-516"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-516",
+        "KB-032",
+        "KB-513"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Validation khoảng 72–300 nằm ở CHK-04-017; check này chỉ phủ lưu thành công với giá trị hợp lệ."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-04-031",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-034] Form New printarea: ô DPI có giá trị mặc định 300",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "mở form New printarea",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Role merchant-owner, ở /products/{id}/edit của product base dùng để test, section Printareas. Check không tạo print area.",
+      "steps": [
+        "Mở form New printarea",
+        "Đọc giá trị mặc định của ô DPI"
+      ],
+      "observation_point": "Ô DPI trong form New printarea",
+      "expected_result": "Ô DPI trong form New printarea có giá trị mặc định 300.",
+      "oracle": {
+        "kb_ids": [
+          "KB-517"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-517",
+        "KB-029"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-029 (trước khi có tính năng) không liệt kê DPI trong giá trị mặc định của form; CHK-04-001 giữ nguyên."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-04-032",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-034] Print area có DPI đã đặt: ô DPI hiển thị đúng giá trị đó, không màu xám",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "print area có dpi đã đặt (khác null)",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Role merchant-owner, có một print area có dpi đã đặt khác 300 (vd đặt qua form New printarea hoặc sửa inline), ở /products/{id}/edit, section Printareas.",
+      "steps": [
+        "Mở /products/{id}/edit, xem ô DPI của print area có dpi đã đặt",
+        "Ghi lại giá trị và màu chữ của ô DPI",
+        "So với ô DPI của print area có dpi trống (nếu có)"
+      ],
+      "observation_point": "Ô DPI trên bảng Printareas",
+      "expected_result": "Ô DPI hiển thị đúng giá trị DPI đã đặt, không màu xám. DPI trống mới hiển thị \"300\" màu xám.",
+      "oracle": {
+        "kb_ids": [
+          "KB-518"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-518",
+        "KB-515"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Phân biệt DPI đã đặt với DPI trống ở màn hình, người dùng dễ nhầm 300 mặc định với 300 đã đặt."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1020,6 +1172,11 @@
     {
       "feature_id": "FEAT-04-printarea-definition",
       "permission_coverage": "Không có check PERMISSION: phạm vi cột/hàng và cross-tenant vẫn ở CHK-04-013, chờ account thứ hai."
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "risk": "Hiển thị và sửa DPI trên bảng Printareas, mặc định form New printarea (CBS-034)",
+      "covered": "CHK-04-029 (DPI trống hiển thị 300 xám), CHK-04-030 (sửa inline lưu), CHK-04-031 (mặc định form 300), CHK-04-032 (DPI đã đặt hiển thị đúng). Oracle test case PASS staging và production, không phải lời dev."
     }
   ],
   "excluded_dimensions": [
@@ -1029,7 +1186,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-06",
-    "ccr_ref": "CBS-077"
+    "date": "2026-11-08",
+    "ccr_ref": "CBS-034"
   }
 }

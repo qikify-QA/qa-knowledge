@@ -1,5 +1,5 @@
 # Object: Product Base (product: teeinblue) — Feature Profile Summary
-**Published context version:** 7
+**Published context version:** 8
 
 - **Phạm vi đã kiểm thử:** role `owner` (Linh explorer, sub=273), 1 organization, store `linh-explorer.myshopify.com`, environment staging. Chưa có evidence cho role khác (không có tài khoản thứ 2 để test permission/cross-tenant).
 - **9/9 feature có profile:** product-base-browse, product-base-create, product-base-identity, printarea-definition, variant-catalog, variant-add-to-campaigns, mockup-attachment, product-base-lifecycle, product-base-campaign-link. Confidence tổng thể object: MEDIUM. `product-base-campaign-link` là feature yếu nhất (confidence LOW, gần như không có bằng chứng cho đường ghi dữ liệu).
@@ -90,6 +90,7 @@
 6. Dialog cảnh báo mỗi lần bấm sửa — nội dung là i18n key chưa dịch
 7. Đường ghi dữ liệu bất đối xứng: tạo/sửa qua Hasura GraphQL client-side `_set`; xoá qua REST DELETE — khác hoàn toàn với product base (REST cho tất cả)
 8. Modal "Logs" của product base ghi các sự kiện Printarea (added/removed/name changed/size changed) — đây là 1 trong 2 hệ thống Activity Log của portal, tách biệt với staff activity log toàn cục ở `/activity-logs` (xem thêm ở `product-base-campaign-link`); độ tin cậy của việc ghi log này không ổn định giữa các lần thử, xem OQ-002/OQ-008
+9. DPI của printarea (CBS-034, bổ sung KB-505..KB-513): ô DPI hiển thị "300" màu xám khi DPI trống (giá trị lưu vẫn null); sửa inline rồi lưu thì hiển thị giá trị mới không xám; form New printarea mặc định 300; DPI đã đặt hiển thị đúng giá trị (KB-515..KB-518, test case PASS staging và production). Phần file order design xem object `order`, feature `order-design-print-resolution`.
 
 **Coverage:** portal (create-default/duplicate-key/invalid-width-text/delete/width-height-edit) ✅ · api (insert/update-invalid-type/delete-204/orphan-row-location) ✅ · width/height boundary (0/âm/lớn/thập phân) — không cần validate theo quyết định sản phẩm ✅ · Hasura `_set` scope negative/cross-tenant test ❌ (OQ-005) · non-owner ❌
 **Confidence:** MEDIUM

@@ -1,4 +1,5 @@
 # Object: Font (product: teeinblue) — Feature Profile Summary
+**Published context version:** 2
 
 - **Object:** Font (entity `custom_fonts`, trang `/fonts`, menu Assets > Upload Fonts) — riêng biệt với `font_category` (`/font-categories`, object khác, ngoài phạm vi tài liệu này). Xem KB-019.
 - **Environment quan sát:** staging, store `linh-explorer.myshopify.com`.
@@ -89,6 +90,8 @@
 **Capabilities:**
 1. Font picker "Your Custom Fonts" dùng chung GraphQL query `getData` với `/fonts` — hiển thị đủ font hiện có kể cả font vừa upload trong cùng phiên quan sát
 2. Áp dụng font đã chọn trực tiếp cho text layer — không cần qua bước Font Category riêng
+3. [PROPOSED, chưa xác nhận] Ký tự CJK/RTL không render (trắng hoặc tofu) khi layer dùng font chỉ hỗ trợ Latin; muốn render phải upload custom font hỗ trợ bộ chữ đó (KB-020)
+4. [PROPOSED, chưa xác nhận] Font type = Custom Fonts mà chưa chọn font cụ thể thì artwork không save được; toolbar hiện "Empty fonts!!!" và banner đỏ hiện lỗi JS thô (KB-021)
 
 **Coverage:** portal (text layer Paragraph, chọn font vừa upload) covered · api (query getData tái sử dụng) covered · code not observed · portal (layer type khác ngoài Paragraph) not observed · storefront (sản phẩm áp dụng font hiển thị phía khách hàng) not observed · non-owner not observed
 **Confidence:** LOW — coverage mỏng nhất object (chỉ 1 ACT, 1 sample)
@@ -97,6 +100,7 @@
 - Chỉ test trên layer type "Paragraph" — layer/element type khác chưa test (OQ-font-014)
 - Font picker trong editor có search/phân trang riêng khi danh sách dài không — chỉ quan sát với 4 font (OQ-font-013)
 - Ảnh hưởng lên storefront khách hàng khi xem sản phẩm áp dụng font — hoàn toàn ngoài phạm vi quan sát tới nay (OQ-font-015)
+- Hai hành vi PROPOSED (KB-020, KB-021) mới là rule QA có từ trước, chưa có xác nhận Dev/PO: CJK/RTL với font Latin-only có cần cảnh báo hoặc fallback không (OQ-font-022); chặn save khi chưa chọn font và thông báo lỗi JS thô có phải thiết kế không (OQ-font-023)
 
 **Gate:** CONDITIONAL_PASS (chỉ 1 KB item riêng + 1 KB dùng chung làm nguồn — cần mở rộng sample trước khi dùng cho automation diện rộng)
 

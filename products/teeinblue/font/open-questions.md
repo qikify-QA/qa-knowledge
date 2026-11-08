@@ -136,3 +136,15 @@ _Regenerated từ nguồn thật (kb.json conflicts, checklist items NEEDS_CONFI
 ```json
 {"oq_id": "OQ-font-021", "type": "OPEN_ISSUE", "feature_id": null, "summary": "0/5 write operation của object Font (create, rename, download, delete, Font Settings Save) có sample lỗi 4xx/5xx nào được quan sát — không thể kết luận hệ thống 'không có validation lỗi', chỉ là CHƯA CÓ sample lỗi ở bất kỳ thao tác ghi nào. Đây là gap mang tính hệ thống, không riêng 1 checklist item."}
 ```
+
+## OQ-font-022 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-font-022", "type": "NEEDS_CONFIRMATION", "feature_id": "use-custom-font-in-artwork-editor", "summary": "Dev/PO xác nhận: ký tự CJK/RTL không render (trắng hoặc tofu) khi layer dùng font chỉ hỗ trợ Latin (KB-020, rule QA, PROPOSED) có phải hành vi mong muốn không, có cần cảnh báo hoặc fallback cho merchant không, và Font Settings (Block rendering / Replace with space / Fallback to a custom font) cùng banner ký tự không hỗ trợ (KB-002, KB-006) tác động thế nào ở artwork editor và storefront. Liên quan OQ-font-011, OQ-font-015."}
+```
+
+## OQ-font-023 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-font-023", "type": "NEEDS_CONFIRMATION", "feature_id": "use-custom-font-in-artwork-editor", "summary": "Dev/PO xác nhận: chặn save artwork khi Font type = Custom Fonts mà chưa chọn font (KB-021, rule QA, PROPOSED) có phải thiết kế không, và banner đỏ hiện lỗi JS thô \"Cannot read properties of undefined (reading 'family')\" có phải thông báo mong muốn hay nên là validation thân thiện (so với artwork KB-051). Mới quan sát khi thao tác bằng JS, chưa thử bằng chuột."}
+```

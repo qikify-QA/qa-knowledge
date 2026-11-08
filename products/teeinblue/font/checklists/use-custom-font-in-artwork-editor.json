@@ -1,7 +1,8 @@
 {
   "feature_id": "FEAT-04-use-custom-font-in-artwork-editor",
   "feature_key": "use-custom-font-in-artwork-editor",
-  "checklist_version": "1",
+  "object_id": "font",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -25,7 +26,10 @@
       "observation_point": "request operation name + danh sách hiển thị trong picker so với /fonts",
       "expected_result": "Picker dùng cùng GraphQL operation getData (custom_fonts_connection) như /fonts; font vừa upload ở /fonts xuất hiện trong danh sách picker, không cần qua bước Font Category riêng (KB-008, KB-009). CHỈ 1 sample (1 artwork, 1 layer type 'Paragraph') — chưa tổng quát hoá cho mọi layer type hay mọi kích thước danh sách.",
       "oracle": {
-        "kb_ids": ["KB-008", "KB-009"],
+        "kb_ids": [
+          "KB-008",
+          "KB-009"
+        ],
         "oracle_strength": "BASELINE"
       },
       "status": "READY",
@@ -59,7 +63,9 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "oq_ref": "OQ-font-011",
-      "risk_refs": ["coverage_gap:FEAT-04:select-and-save-never-executed"],
+      "risk_refs": [
+        "coverage_gap:FEAT-04:select-and-save-never-executed"
+      ],
       "priority": "P1",
       "automation_suitability": "UNKNOWN"
     },
@@ -88,7 +94,9 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "oq_ref": "OQ-font-012",
-      "risk_refs": ["coverage_gap:FEAT-04:empty-picker-state"],
+      "risk_refs": [
+        "coverage_gap:FEAT-04:empty-picker-state"
+      ],
       "priority": "P3",
       "automation_suitability": "UNKNOWN"
     },
@@ -117,7 +125,9 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "oq_ref": "OQ-font-013",
-      "risk_refs": ["coverage_gap:FEAT-04:picker-long-list"],
+      "risk_refs": [
+        "coverage_gap:FEAT-04:picker-long-list"
+      ],
       "priority": "P3",
       "automation_suitability": "UNKNOWN"
     },
@@ -146,7 +156,9 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "oq_ref": "OQ-font-014",
-      "risk_refs": ["coverage_gap:FEAT-04:other-layer-types"],
+      "risk_refs": [
+        "coverage_gap:FEAT-04:other-layer-types"
+      ],
       "priority": "P3",
       "automation_suitability": "UNKNOWN"
     },
@@ -175,47 +187,153 @@
       },
       "status": "NEEDS_CONFIRMATION",
       "oq_ref": "OQ-font-015",
-      "risk_refs": ["coverage_gap:FEAT-04:storefront-rendering"],
+      "risk_refs": [
+        "coverage_gap:FEAT-04:storefront-rendering"
+      ],
       "priority": "P2",
       "automation_suitability": "UNKNOWN"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Ký tự CJK/RTL khi text layer dùng font chỉ hỗ trợ Latin: ghi nhận kết quả render và cảnh báo (nguồn PROPOSED, chưa xác nhận)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "text layer dùng font chỉ hỗ trợ Latin, nội dung nhập là ký tự CJK hoặc RTL",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Role merchant-owner, có artwork với một text layer. Có một font chỉ hỗ trợ Latin (vd font Google Fonts như Roboto) để áp cho layer. Không dùng store/campaign của dữ liệu thật.",
+      "steps": [
+        "Mở artwork editor, chọn text layer.",
+        "Chọn font chỉ hỗ trợ Latin cho layer.",
+        "Nhập một chuỗi ký tự CJK, rồi một chuỗi ký tự RTL.",
+        "Ghi lại ký tự hiển thị trắng, tofu hay đúng, và có banner/cảnh báo nào hiện không.",
+        "Lặp lại với một custom font đã upload có hỗ trợ đúng bộ chữ để đối chiếu."
+      ],
+      "observation_point": "Canvas của artwork editor và mọi banner/cảnh báo ký tự không hỗ trợ",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-020",
+        "KB-008"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-020 PROPOSED/LOW (rule QA chưa Dev/PO xác nhận); chưa có expected_result, tác động của Font Settings và storefront chưa kiểm."
+      ],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-font-022"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Font type = Custom Fonts chưa chọn font cụ thể: ghi nhận kết quả khi Save artwork (nguồn PROPOSED, chưa xác nhận)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "text layer Font type = Custom Fonts, chưa chọn font cụ thể",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Role merchant-owner, có artwork với một text layer. Thao tác bằng chuột (bản ghi nhận gốc chỉ thao tác bằng JS). Dùng artwork thử, không dùng dữ liệu thật.",
+      "steps": [
+        "Mở artwork editor, chọn text layer.",
+        "Đổi Font type sang 'Custom Fonts' nhưng không bấm 'Select a font'.",
+        "Quan sát toolbar và banner.",
+        "Bấm Save artwork.",
+        "Ghi lại artwork có được lưu không và nguyên văn thông báo hiện ra."
+      ],
+      "observation_point": "Toolbar, banner đỏ và trạng thái lưu của artwork sau khi bấm Save",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-021",
+        "KB-008"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-021 PROPOSED/LOW (rule QA chưa Dev/PO xác nhận); mới ghi nhận bằng thao tác JS, chưa kiểm bằng chuột."
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-font-023"
     }
   ],
   "coverage_by_feature_and_risk": [
     {
       "feature_id": "FEAT-04-use-custom-font-in-artwork-editor",
       "risk_or_gap_ref": "Select + Save chưa từng thực hiện thật (core action của toàn object Font)",
-      "covered_by_check_ids": ["CHK-002"],
+      "covered_by_check_ids": [
+        "CHK-002"
+      ],
       "coverage_status": "OPEN_NEEDS_CONFIRMATION"
     },
     {
       "feature_id": "FEAT-04-use-custom-font-in-artwork-editor",
       "risk_or_gap_ref": "empty picker state chưa test",
-      "covered_by_check_ids": ["CHK-003"],
+      "covered_by_check_ids": [
+        "CHK-003"
+      ],
       "coverage_status": "OPEN_NEEDS_CONFIRMATION"
     },
     {
       "feature_id": "FEAT-04-use-custom-font-in-artwork-editor",
       "risk_or_gap_ref": "picker search/phân trang khi danh sách dài chưa test",
-      "covered_by_check_ids": ["CHK-004"],
+      "covered_by_check_ids": [
+        "CHK-004"
+      ],
       "coverage_status": "OPEN_NEEDS_CONFIRMATION"
     },
     {
       "feature_id": "FEAT-04-use-custom-font-in-artwork-editor",
       "risk_or_gap_ref": "layer type khác Paragraph chưa test",
-      "covered_by_check_ids": ["CHK-005"],
+      "covered_by_check_ids": [
+        "CHK-005"
+      ],
       "coverage_status": "OPEN_NEEDS_CONFIRMATION"
     },
     {
       "feature_id": "FEAT-04-use-custom-font-in-artwork-editor",
       "risk_or_gap_ref": "storefront rendering hoàn toàn ngoài phạm vi quan sát tới nay",
-      "covered_by_check_ids": ["CHK-006"],
+      "covered_by_check_ids": [
+        "CHK-006"
+      ],
       "coverage_status": "OPEN_NEEDS_CONFIRMATION"
     },
     {
       "feature_id": "FEAT-04-use-custom-font-in-artwork-editor",
       "risk_or_gap_ref": "picker dùng chung data source với /fonts (KB-008, KB-009)",
-      "covered_by_check_ids": ["CHK-001"],
+      "covered_by_check_ids": [
+        "CHK-001"
+      ],
       "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-04-use-custom-font-in-artwork-editor",
+      "risk_or_gap_ref": "ký tự CJK/RTL với font chỉ hỗ trợ Latin (PROPOSED, chưa xác nhận)",
+      "covered_by_check_ids": [
+        "CHK-007"
+      ],
+      "coverage_status": "OPEN_NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-04-use-custom-font-in-artwork-editor",
+      "risk_or_gap_ref": "chặn save khi Custom Fonts chưa chọn font (PROPOSED, chưa xác nhận)",
+      "covered_by_check_ids": [
+        "CHK-008"
+      ],
+      "coverage_status": "OPEN_NEEDS_CONFIRMATION"
     }
   ],
   "excluded_dimensions": [
@@ -227,5 +345,9 @@
       "dimension": "REGRESSION",
       "reason": "Không có conflict hay stale-content nào liên quan tới feature này, và đây là lần đầu xây dựng checklist cho feature này — không có phiên bản trước để so sánh."
     }
-  ]
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "CBS-035"
+  }
 }

@@ -1,11 +1,11 @@
 # Object: Order (product: teeinblue) — Feature Profile Summary
-**Published context version:** 7
+**Published context version:** 8
 
 - **Env:** staging. Bootstrap 2026-09-13; cập nhật CBS-006 (TIB-5584) và CBS-011 (TIB-5558, action Hide) 2026-10-30; CBS-074 (Edit Customization sau order, tracking từ provider) 2026-11-06; CBS-096 (import đơn Shopify với customization_id sai định dạng, order design ảnh AI, order design vector) 2026-11-07.
 - **Nguồn:** phần lớn knowledge là `OBSERVED_CURRENT` từ bootstrap; item `CONFIRMED_EXPECTED` gồm KB-182, KB-238, KB-239, KB-392, từ test case Testlane PASS trên staging; KB-182 chờ PO xác nhận vì đổi đầu ra fulfillment (OQ-order-020)
 - **Actor coverage:** storefront = GUEST buyer only (no signed-in buyer tested); portal = owner (Linh explorer, sub=273) only (no non-owner/restricted role tested)
 - **Authoritative store: `linh-explorer-2.myshopify.com`** — NOT `linh-explorer.myshopify.com`. The latter has a known add-to-cart failure for this campaign that prevents completing a real order there; this KB should not be treated as verified for that store until its add-to-cart issue is investigated separately (see `OQ-order-013`).
-- **5 features** (`place-personalized-order-storefront`, `review-and-initiate-fulfillment-portal`, `edit-customization-after-order`, `shopify-order-import`, `order-design-vector-render`). Hai feature đầu đã có coverage; `edit-customization-after-order` và `shopify-order-import` chưa có coverage xác nhận (item đều PROPOSED, check đều NEEDS_CONFIRMATION); `order-design-vector-render` chỉ có quan sát một lượt (BASELINE). Không feature nào bị chặn hoàn toàn.
+- **6 features** (`place-personalized-order-storefront`, `review-and-initiate-fulfillment-portal`, `edit-customization-after-order`, `shopify-order-import`, `order-design-vector-render`, `order-design-print-resolution`). Hai feature đầu đã có coverage; `edit-customization-after-order` và `shopify-order-import` chưa có coverage xác nhận (item đều PROPOSED, check đều NEEDS_CONFIRMATION); `order-design-vector-render` chỉ có quan sát một lượt (BASELINE). Không feature nào bị chặn hoàn toàn.
 - **43 KB items** across the object: 0 HIGH, 7 MEDIUM, 36 LOW. 24 item bootstrap resting on exactly ONE order end-to-end (plus a second order used only to illustrate the sync conflict below).
 - **1 unresolved conflict spanning both features:** `OQ-order-001` — an order placed successfully at storefront checkout did not appear in the portal Orders list for 90+ minutes across all statuses/stores/a 30-day range; a second order did sync after an unverified user claim that a webhook configuration issue had been fixed. That claim has never been independently verified.
 
@@ -119,6 +119,19 @@
 **Risks/Unknowns:**
 - Chưa xác nhận là hành vi đúng; trạng thái deploy TIB-5350 chưa rõ (OQ-order-052, OQ-order-053).
 - Mỗi layer giữ màu riêng, PDF và production chưa kiểm. Fixture khác artwork KB-418.
+
+---
+
+## order-design-print-resolution — Độ phân giải (DPI) của file order design theo print area
+**Goal:** File order design (PNG) ghi resolution bằng DPI của print area, kích thước pixel giữ nguyên.
+**Phạm vi:** file order design PNG khi tạo order và khi regenerate design. Không gồm cấu hình DPI trên Product Base (object `product-base`, feature `printarea-definition`, nơi cũng có các quy tắc về JPG/PDF, pixel, validation và import print area: KB-505..KB-513), nội dung render layer, chọn design format.
+
+**Đã xác nhận (CONFIRMED_EXPECTED/MEDIUM, test case PASS staging 2026-10-29 và production 2026-11-02):**
+- Print area có DPI trống: file design ghi 300 DPI, pixel không đổi (KB-769).
+- Đổi DPI của print area (vd 150) rồi regenerate design: file ghi DPI mới, pixel không đổi (KB-770).
+- Tạo order với print area có DPI đã đặt (vd 200): file design ghi đúng DPI đó (KB-771).
+
+**Risks/Unknowns:** chưa có điều chưa biết nào mà canon không phủ.
 
 ---
 

@@ -40,7 +40,11 @@
       "precondition": "Đang ở trang edit của product base. Print area có từ trước giữ DPI trống và hiển thị \"300\" màu mờ.",
       "kb_refs": [
         "KB-512",
-        "KB-513"
+        "KB-513",
+        "KB-515",
+        "KB-516",
+        "KB-517",
+        "KB-518"
       ]
     },
     {
@@ -122,11 +126,15 @@
     },
     {
       "name": "Khai báo DPI của print area",
-      "description": "Seller đặt DPI ở sửa inline hoặc form New printarea, khoảng hợp lệ 72–300. DPI trống dùng 300 khi export; print area có từ trước giữ trống và hiển thị \"300\" màu mờ.",
+      "description": "Seller đặt DPI ở sửa inline hoặc form New printarea, khoảng hợp lệ 72–300. DPI trống dùng 300 khi export. Print area có DPI trống (null, gồm print area có từ trước) hiển thị \"300\" màu xám ở ô DPI, giá trị lưu vẫn null. Sửa DPI inline rồi xác nhận thì lưu giá trị mới, ô DPI hiển thị giá trị đó và hết màu xám. Print area có DPI đã đặt hiển thị đúng giá trị đó, không xám. Form New printarea có ô DPI mặc định 300.",
       "kb_refs": [
         "KB-505",
         "KB-512",
-        "KB-513"
+        "KB-513",
+        "KB-515",
+        "KB-516",
+        "KB-517",
+        "KB-518"
       ]
     },
     {
@@ -238,6 +246,37 @@
       "condition": "",
       "kb_refs": [
         "KB-510"
+      ]
+    },
+    {
+      "from": "print area có DPI trống (null)",
+      "to": "ô DPI hiển thị \"300\" màu xám, giá trị lưu vẫn null",
+      "trigger": "mở Product Base > Edit, xem bảng Printareas",
+      "condition": "Gồm print area có từ trước khi có tính năng DPI. Nguồn test case, cùng chiều với KB-512 (nguồn dev).",
+      "kb_refs": [
+        "KB-515",
+        "KB-512"
+      ]
+    },
+    {
+      "from": "print area có DPI trống hoặc đã đặt",
+      "to": "DPI lưu bằng giá trị mới, ô DPI hiển thị giá trị mới, không còn màu xám",
+      "trigger": "sửa inline ô DPI bằng giá trị trong khoảng hợp lệ rồi xác nhận lưu",
+      "condition": "Giá trị trong khoảng 72–300 (KB-513). Kích thước pixel của print area không đổi.",
+      "kb_refs": [
+        "KB-516",
+        "KB-513",
+        "KB-505"
+      ]
+    },
+    {
+      "from": "mở form New printarea",
+      "to": "ô DPI có giá trị mặc định 300",
+      "trigger": "mở form New printarea trong Product Base > Edit",
+      "condition": "KB-029 (trước khi có tính năng) không liệt kê DPI trong giá trị mặc định của form, thiếu chứ không mâu thuẫn.",
+      "kb_refs": [
+        "KB-517",
+        "KB-029"
       ]
     }
   ],
@@ -364,6 +403,50 @@
       "kb_refs": [
         "KB-513"
       ]
+    },
+    {
+      "statement": "Print area có DPI trống (null) hiển thị \"300\" màu xám ở ô DPI của bảng Printareas trong Product Base > Edit; giá trị DPI lưu vẫn là null. Trùng ý hiển thị với rule từ KB-512 (nguồn dev), nguồn này là test case.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, bảng Printareas, print area có DPI trống",
+      "caveats": "Một test case (staging và production) là một citation.",
+      "confirmation_ref": "Test case TC-TIB-7786, PASS staging 2026-10-29 và production 2026-11-02",
+      "kb_refs": [
+        "KB-515"
+      ]
+    },
+    {
+      "statement": "Ô DPI của print area trong bảng Printareas sửa inline được: nhập giá trị mới rồi xác nhận lưu thì DPI lưu bằng giá trị đó, ô DPI hiển thị giá trị mới và không còn màu xám.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, sửa inline ô DPI",
+      "caveats": "Validation khoảng 72–300 và xoá trống DPI không thuộc rule này (xem KB-513, KB-510).",
+      "confirmation_ref": "Test case TC-TIB-7785, PASS staging 2026-10-29 và production 2026-11-02",
+      "kb_refs": [
+        "KB-516"
+      ]
+    },
+    {
+      "statement": "Form New printarea trong Product Base > Edit có ô DPI với giá trị mặc định 300.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, form New printarea",
+      "caveats": "Một test case (staging và production) là một citation.",
+      "confirmation_ref": "Test case TC-TIB-7787, PASS staging 2026-10-29 và production 2026-11-02",
+      "kb_refs": [
+        "KB-517"
+      ]
+    },
+    {
+      "statement": "Print area có DPI đã đặt (khác null) hiển thị đúng giá trị đó ở ô DPI của bảng Printareas, không màu xám (khác DPI trống hiển thị \"300\" màu xám).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, bảng Printareas, print area có DPI đã đặt",
+      "caveats": "Một test case (staging và production) là một citation.",
+      "confirmation_ref": "Test case TC-TIB-7787, PASS staging 2026-10-29 và production 2026-11-02",
+      "kb_refs": [
+        "KB-518"
+      ]
     }
   ],
   "observed_behavior": [
@@ -437,7 +520,11 @@
         "item": "DPI ở section Printareas: sửa inline, form New printarea, hiển thị \"300\" màu mờ khi trống",
         "kb_refs": [
           "KB-512",
-          "KB-513"
+          "KB-513",
+          "KB-515",
+          "KB-516",
+          "KB-517",
+          "KB-518"
         ]
       },
       {
@@ -514,7 +601,9 @@
         "item": "printareas.dpi (cho phép trống; constraint printareas_dpi_check khoảng 72–300, tên do QA ghi)",
         "kb_refs": [
           "KB-512",
-          "KB-513"
+          "KB-513",
+          "KB-515",
+          "KB-516"
         ]
       }
     ],
@@ -653,8 +742,8 @@
     "note": "Run này không tự quan sát. Ngày là ngày nạp CCR; KB-505..KB-513 là lời dev ngày 2026-10-23 và 2026-10-30. Item base giữ freshness của lần khảo sát 2026-09."
   },
   "last_updated": {
-    "date": "2026-11-06",
-    "ccr_ref": "CBS-077"
+    "date": "2026-11-08",
+    "ccr_ref": "CBS-034"
   },
   "unknown_areas": [
     {
@@ -852,6 +941,34 @@
         "KB-512",
         "KB-513"
       ]
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "hiển thị DPI trống (\"300\" xám) và DPI đã đặt, sửa DPI inline, mặc định 300 ở form New printarea (có test case)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-515",
+        "KB-516",
+        "KB-517",
+        "KB-518"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-printarea-definition",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "hiển thị DPI trống và DPI đã đặt, sửa DPI inline, mặc định 300 ở form New printarea (có test case)",
+      "environment": "production",
+      "covered": true,
+      "kb_refs": [
+        "KB-515",
+        "KB-516",
+        "KB-517",
+        "KB-518"
+      ]
     }
   ],
   "profile_conflicts": [
@@ -866,10 +983,11 @@
     },
     {
       "type": "STALE_CANDIDATE_NOT_APPLIED",
-      "detail": "KB-029 (form New printarea không có DPI) và capabilities[0] của base có thể chỉ là quan sát trước TIB-5500; dev nói form này có chặn DPI (KB-513). Giữ nguyên văn.",
+      "detail": "KB-029 (form New printarea không có DPI) và capabilities[0] của base có thể chỉ là quan sát trước TIB-5500; dev nói form này có chặn DPI (KB-513). Giữ nguyên văn. Cập nhật CBS-034: KB-517 (test case) xác nhận form có ô DPI mặc định 300; phần này đã vào capability \"Khai báo DPI của print area\", capabilities[0] giữ nguyên văn.",
       "kb_refs": [
         "KB-029",
-        "KB-513"
+        "KB-513",
+        "KB-517"
       ]
     },
     {

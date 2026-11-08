@@ -2,6 +2,7 @@
 
 1 dòng / thay đổi đáng chú ý, mới nhất lên trên. Chi tiết đầy đủ nằm trong `kb.json` / `features/*/kb.json` (`last_updated.ccr_ref`) và `features/*/profile.json`.
 
+- 2026-11-08 — CBS-034 — TIB-5500: feature `printarea-definition` thêm KB-515..KB-518 (CONFIRMED_EXPECTED/MEDIUM, nguồn test case TC-TIB-7785/7786/7787 PASS staging và production: ô DPI hiển thị 300 xám khi DPI trống, sửa DPI inline, form New printarea mặc định 300, DPI đã đặt hiển thị đúng) và CHK-04-029..CHK-04-032. Bổ sung cho KB-505..KB-513 đã có (nguồn dev). Phần file order design nằm ở object `order`.
 - 2026-10-30 — CBS-010 — TIB-5496: feature mới `variant-add-to-campaigns` (thêm nhiều variant vào campaign từ bảng Variants): KB-187..KB-202, KB-204 — 8 quy tắc CONFIRMED_EXPECTED/MEDIUM từ test case PASS trên staging 2026-10-09, 9 quan sát OBSERVED_CURRENT/LOW trong đó 5 known defect BUG-261..BUG-265; checklist CHK-09-001..CHK-09-023. Mở OQ-product-base-017..028.
 - 2026-10-30 — CBS-010 — TIB-5496: `variant-catalog` thêm KB-186 (chọn nhiều dòng bằng Ctrl/Shift-click, Delete selected enabled khi có vùng chọn) và CHK-05-015..CHK-05-017. Mở OQ-product-base-029, OQ-product-base-030.
 - 2026-10-30 — CBS-010 — TIB-5496: `product-base-campaign-link` thêm KB-203 (sau bulk Add, campaign published hiện "Update required"; variant mới chỉ vào instance_variants sau khi Update thủ công) và CHK-08-014, CHK-08-015. Mở OQ-product-base-031.
