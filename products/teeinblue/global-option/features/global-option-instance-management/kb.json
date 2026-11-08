@@ -450,6 +450,10 @@
       "surface": "portal+storefront",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-05",
+      "ccr_ref": "CBS-073"
+    },
     "tags": [
       "TIB-5591",
       "global-option",
@@ -463,10 +467,125 @@
         "relation": "related_feature",
         "note": "Cùng chủ đề storefront cập nhật sau sync campaign, nhưng về assignment mockup/video với variant; thuộc sdk, feature storefront-buyer-facing (KB-321, OBSERVED_CURRENT)."
       }
+    ]
+  },
+  {
+    "kb_id": "KB-720",
+    "topic": "Save Global Option: giới hạn Flux 4 MP (width × height ≤ 4.000.000 px) kiểm ở server, mọi loại GO, mọi đường save",
+    "statement": "Theo `Jira TIB-5561 comment #55697 (dev) Q4, Q7, 2026-10-27` (2026-10-27), cùng dev summary TIB-5561 #55645 (2026-10-26): khi save một Global Option (role merchant-owner, staging, qua portal/REST và MCP), server từ chối lưu nếu kích thước Flux có width × height > 4.000.000 px; đúng 4.000.000 px (ví dụ 2000×2000) vẫn được lưu (biên là ≤). Giới hạn áp cho mọi Global Option, gồm GO Text to Image và GO Single upload có Gen AI effect Flux (loại GO Single upload này trước TIB-5561 không bị kiểm). Phát biểu chỉ nói về save Global Option, không phủ layer artwork; không phủ GO Multiple Uploads (portal không có loại GO này). Text của message lỗi chưa được PO chốt nên không thuộc phát biểu này.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal+api",
+      "brand": null
+    },
+    "tags": [
+      "flux",
+      "4mp-limit",
+      "save",
+      "validation",
+      "text-to-image",
+      "single-upload",
+      "mcp",
+      "ccr:CBS-100"
+    ],
+    "related_kb_ids": [
+      "KB-004",
+      "KB-015"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5561 comment #55697 (dev) Q4, Q7, 2026-10-27",
+      "authored_on": "2026-10-27",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-100"
+    }
+  },
+  {
+    "kb_id": "KB-721",
+    "topic": "Quan sát save Global Option vượt 4 MP: HTTP 422, key lỗi data.effects.0.flux_output_width, 2000×2000 lưu được",
+    "statement": "Quan sát của QA trên staging ngày 2026-10-27 (test case TC-16, TC-17 trong đợt regression QA-3435, kết quả do AI chạy, không ghi build; mỗi case 1 lượt), role merchant-owner, portal: save GO Text to Image với Flux 2000×2001 bị từ chối với 422, với 2000×2000 → 200; save GO Single upload có Gen AI effect Flux, đổi size từ 1200×800 sang 3000×2000 → 422 với lỗi validate trên key `data.effects.0.flux_output_width`, sang 2000×2000 → 200. Text lỗi ghi lại bị cắt: \"Something went wrong! Flux dimension … 4 Megapixel)\". Đây là quan sát hiện tại, không phải expected: text message lỗi cuối chưa chốt (chờ PO), HTTP status và key lỗi chưa được nguồn có thẩm quyền xác nhận.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal+api",
+      "brand": null
+    },
+    "tags": [
+      "flux",
+      "4mp-limit",
+      "save",
+      "http-422",
+      "error-message",
+      "ccr:CBS-100"
+    ],
+    "related_kb_ids": [
+      "KB-720",
+      "KB-722"
     ],
     "last_updated": {
-      "date": "2026-11-05",
-      "ccr_ref": "CBS-073"
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-100"
+    }
+  },
+  {
+    "kb_id": "KB-722",
+    "topic": "Known limitation: save Global Option lỗi 4 MP hiện 2 toast (lỗi cụ thể + 'Failed to save global option.')",
+    "statement": "Quan sát của QA trên staging ngày 2026-10-27 (test case TC-16 trong đợt regression QA-3435, không ghi build; 1 lượt), role merchant-owner, portal: khi save GO Text to Image bị từ chối vì vượt 4 MP, portal hiện đồng thời 2 toast: \"Failed to save global option.\" và lỗi cụ thể \"Something went wrong! Flux dimension … 4 Megapixel)\" (text bị cắt trong ghi chép). Dev ghi đây là known limitation trong dev summary TIB-5561 (2026-10-26) và nói nó xảy ra với mọi lỗi save trên trang Global Option; vế \"mọi lỗi save\" là lời dev, chưa được quan sát ngoài lỗi 4 MP. Known defect, không phải expected, không dùng làm oracle.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "toast",
+      "save-error",
+      "known-limitation",
+      "ccr:CBS-100"
+    ],
+    "related_kb_ids": [
+      "KB-721"
+    ],
+    "status": "KNOWN_DEFECT",
+    "last_updated": {
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-100"
+    }
+  },
+  {
+    "kb_id": "KB-723",
+    "topic": "MCP tạo được Global Option loại Multiple Uploads; portal mở GO đó như form text",
+    "statement": "Quan sát của QA trên staging ngày 2026-10-27 (ghi chú ở bước Multiple Uploads của TC-08 trong đợt regression QA-3435, bước đánh dấu N/A; 1 lượt, 1 GO, GO đã xoá sau đó), role merchant-owner + client MCP: tạo Global Option loại Multiple Uploads qua MCP thành công, nhưng khi mở GO đó trên portal thì portal hiển thị nó như form của GO text, tức portal không sửa được GO này. Việc portal không có loại GO Multiple Uploads ở màn tạo đã có ở KB-001 và không lặp lại ở đây. Chưa có Dev/PO xác nhận đây là hành vi mong đợi hay lỗi; không suy ra MCP có nên chặn tạo MU GO hay không.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner + client MCP",
+      "surface": "portal+api",
+      "brand": null
+    },
+    "tags": [
+      "mcp",
+      "multiple-uploads",
+      "global-option-type",
+      "ccr:CBS-100"
+    ],
+    "related_kb_ids": [
+      "KB-001"
+    ],
+    "last_updated": {
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-100"
     }
   }
 ]

@@ -2,7 +2,7 @@
   "feature_id": "FEAT-17-layer-config-others",
   "feature_key": "layer-config-others",
   "object_id": "artwork",
-  "checklist_version": "13",
+  "checklist_version": "14",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -200,12 +200,54 @@
       "priority": "P3",
       "automation_suitability": "SUITABLE",
       "oq_id": "OQ-artwork-186"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-088] Layer QR Code render nguyên vẹn và decode ra đúng chuỗi đã nhập ở cả design PNG và design PDF của cùng một đơn — baseline một lượt, chưa xác nhận",
+      "applicability": {
+        "role": "merchant-owner (design file); order test thay buyer",
+        "state": "một đơn có layer QR Code với chuỗi đã biết; design ra cả PNG và PDF",
+        "environment": "staging; ghi build và ngày chạy (production chưa quan sát)",
+        "surface_or_device": "design file đơn hàng do API render"
+      },
+      "precondition": "Store explorer; artwork throwaway có layer QR Code, gắn campaign đã publish; store cho phép order test. Cách để cùng một đơn ra design cả PNG và PDF KB không mô tả: nếu không làm được trên một đơn thì ghi rõ cách đã dùng (vd hai đơn cùng chuỗi, đổi Design format giữa hai lần) và không coi là cùng điều kiện với baseline.",
+      "steps": [
+        "Nhập một chuỗi đã biết (ghi lại nguyên văn) vào QR Code khi đặt order test",
+        "Chờ design generate xong; tải design PNG và design PDF của line item",
+        "Xem QR trong từng file có nguyên vẹn không (không bị cắt, không thiếu module)",
+        "Decode QR trong từng file (vd OpenCV); so chuỗi decode với chuỗi đã nhập",
+        "Ghi kết quả theo từng file kèm build và ngày chạy"
+      ],
+      "observation_point": "QR Code trong design PNG và PDF: hình nguyên vẹn, chuỗi decode",
+      "expected_result": "Baseline một lượt (Testlane TC-TIB-4724, staging 2026-10-07, AI chạy, không ghi build; một đơn), không phải expected đã xác nhận: QR render nguyên vẹn và decode ra đúng chuỗi đã nhập ở cả design PNG lẫn design PDF. Lệch là tín hiệu cần điều tra, không tự kết luận là bug.",
+      "oracle": {
+        "kb_ids": [
+          "KB-580"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "KB-580: layer QR Code render nguyên vẹn và decode đúng chuỗi ở cả design PNG và PDF của cùng đơn, quan sát một lượt 2026-10-07. Đây có phải hành vi đúng không? Cần PO hoặc Dev xác nhận nguyên văn, có ngày; hoặc build của lượt chạy TC-TIB-4724.",
+      "related_kb_ids": [
+        "KB-580",
+        "KB-034"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Một đơn, một lượt AI chạy, không ghi build.",
+        "Rasterize/export chung thuộc FEAT-25-svg-to-image-rendering."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-209"
     }
   ],
   "coverage_by_feature_and_risk": [
     {
       "feature_id": "FEAT-17-layer-config-others",
-      "core_capability_coverage": "5/5 capability của profile có check: Song Search (CHK-001), Calendar (CHK-002), QR Code (CHK-003, CHK-004), Clock (CHK-005), default typography trong schema MCP (CHK-006)."
+      "core_capability_coverage": "Song Search (CHK-001), Calendar (CHK-002), QR Code field (CHK-003, CHK-004), Clock (CHK-005), default typography trong schema MCP (CHK-006); [CBS-088] QR Code trong design PNG/PDF (CHK-007)."
     },
     {
       "feature_id": "FEAT-17-layer-config-others",
@@ -214,6 +256,14 @@
         "CHK-006"
       ],
       "covered": "BASELINE + NEEDS_CONFIRMATION, chưa có oracle pass/fail"
+    },
+    {
+      "feature_id": "FEAT-17-layer-config-others",
+      "capability": "[CBS-088] QR Code render và decode trong design PNG/PDF (KB-580)",
+      "checks": [
+        "CHK-007"
+      ],
+      "covered": "BASELINE + NEEDS_CONFIRMATION, một đơn"
     }
   ],
   "excluded_dimensions": [
@@ -224,10 +274,18 @@
     {
       "dimension": "REGRESSION — phạm vi CBS-079",
       "reason": "KB-415 có relation ADD, không đổi hành vi item base. Shard không có item status KNOWN_DEFECT nên không có regression watch."
+    },
+    {
+      "dimension": "NEGATIVE / BOUNDARY / PERMISSION / STATE_DATA — phạm vi CBS-088",
+      "reason": "KB-580 chỉ quan sát một đơn với chuỗi hợp lệ; không có quan sát chuỗi dài/sai, quyền hay persistence. Hành vi vượt 4296 ký tự vẫn là CHK-004 base."
+    },
+    {
+      "dimension": "REGRESSION — phạm vi CBS-088",
+      "reason": "KB-580 relation ADD, không đổi item base; không có item KNOWN_DEFECT."
     }
   ],
   "last_updated": {
-    "date": "2026-11-06",
-    "ccr_ref": "CBS-079"
+    "date": "2026-11-07",
+    "ccr_ref": "CBS-088"
   }
 }

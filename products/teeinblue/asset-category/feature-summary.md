@@ -1,14 +1,14 @@
 # Object: Asset Category (product: teeinblue) — Feature Summary
-**Published context version:** 2
+**Published context version:** 3
 
 Trạng thái hiện tại của object `asset-category`: 6 loại category asset (Clipart, Vector, Color, Additional Option, Map Style, Font Category) + luồng thêm item vào category + luồng bulk-upload zip.
 
 - **Environment:** staging. **Role đã test:** duy nhất `owner` ("Linh explorer" — định danh `sub=273` trong nội dung cũ; hạ tầng hiện dùng Sanctum cookie+XSRF, verify bằng `GET /api/user` → id=266). 1 organization/store duy nhất.
 - **4 feature có profile + checklist:** `asset-category-route-entity-clarification`, `asset-category-crud`, `asset-category-item-management`, `asset-category-bulk-upload`. Feature đầu tiên KHÔNG phải tính năng user-facing (xem ghi chú riêng).
-- **KB:** 51 item. 5 item dùng chung toàn object nằm ở `kb.json`; phần còn lại nằm trong `features/<feature-key>/kb.json`.
+- **KB:** 52 item. 5 item dùng chung toàn object nằm ở `kb.json`; phần còn lại nằm trong `features/<feature-key>/kb.json`.
 - **Knowledge kind:** phần lớn `OBSERVED_CURRENT`; 13 item `CONFIRMED_EXPECTED` (KB-020, KB-022, KB-023, KB-026, KB-027, KB-033 — đều có PO xác nhận trực tiếp nội dung, ghi rõ trong statement; KB-561..KB-567 theo lời dev, riêng KB-567 đang conflict); 2 item `INFERRED` (KB-019, KB-569); 2 item `PROPOSED` là phía kỳ vọng của 2 conflict chưa ngã ngũ (KB-038, KB-040).
 - **Conflict chưa ngã ngũ:** 3 nhóm — `CFL-001` (khung diễn giải naming convention field `type`) `CFL-002` (kỳ vọng `vector_category` vs giá trị thật `vector`) và `CFL-003` (cách tính cửa sổ daily limit). Xem `open-questions.md` (OQ-asset-category-006/007/031).
-- **Open question:** 40 mục trong `open-questions.md` (24 NEEDS_CONFIRMATION, 3 CONFLICT, 13 OPEN_ISSUE).
+- **Open question:** 45 mục trong `open-questions.md` (29 NEEDS_CONFIRMATION, 3 CONFLICT, 13 OPEN_ISSUE).
 
 ---
 
@@ -94,18 +94,20 @@ Portal layer: form field mapping ✅ chỉ Clipart, ❌ 5 loại còn lại · s
 7. Cap clipart: theo dev, cap 300 có từ 2025, admin nâng được theo merchant, Open API áp cùng kiểm tra khi thêm clipart (KB-561); chạm cap ở `POST /cliparts` trả 422 (KB-562); zip bulk tạo category mới, file thừa bị skip kèm log, kết thúc done (KB-563). Số 300 là số tại thời điểm nguồn. Setup: key `clipart_max_per_category` (KB-564).
 8. Daily limit upload asset: theo dev, 1,000 layer image, 4,000 clipart, 1,000 clipart category mỗi 24h, dùng chung portal và Open API (KB-565). Setup để test 429: "… max attempts" ở admin panel, xong trả lại giá trị cũ (KB-566). Cách tính cửa sổ đang conflict, không làm oracle: KB-567 (lời dev), KB-568 (QA ghi nhận), OQ-asset-category-031.
 9. Kết quả dropzone: QA ghi nhận trong test case kết quả hiện bằng text, không thấy icon; chưa có người xác nhận (KB-560, OBSERVED_CURRENT/LOW, OQ-asset-category-030).
+10. Thumbnail SVG có clip-path lồng qua nhiều `<clipPath>`: theo mô tả dev tự sinh từ branch diff (TIB-5350, 2026-09-23), thumbnail rasterize qua resvg trước pipeline Imagick nên hiện đúng hình đã mask, không hiện outer bounding shape. Chưa quan sát, chưa có người xác nhận, không làm oracle STRONG (KB-640, OBSERVED_CURRENT/LOW, CHK-027, OQ-asset-category-041).
 
 **Khác biệt môi trường:** Horizon `NOT_TESTABLE` mức vế (KB-569, INFERRED/LOW, không làm oracle, OQ-asset-category-032).
 
-**Coverage:** quick-add Color/Additional Option/Map Style ✅ (9/9 sample) · Font full flow ✅ (1 sample) · Clipart upload PNG ✅ · Vector upload SVG ✅ (chỉ 1 sample cũ, chưa có sample thành công gần đây) · negative sai định dạng ✅ (2 sample, 1 là defect) · rate-limit ⚠️ PARTIAL (chỉ giá trị limit) · cross-tenant insert ❌ · insert thất bại (staff log) ❌
+**Coverage:** quick-add Color/Additional Option/Map Style ✅ (9/9 sample) · Font full flow ✅ (1 sample) · Clipart upload PNG ✅ · Vector upload SVG ✅ (chỉ 1 sample cũ, chưa có sample thành công gần đây) · negative sai định dạng ✅ (2 sample, 1 là defect) · rate-limit ⚠️ PARTIAL (chỉ giá trị limit) · thumbnail SVG clip-path lồng ❌ (chưa quan sát) · cross-tenant insert ❌ · insert thất bại (staff log) ❌
 **Confidence:** MEDIUM
-**Last updated:** 2026-11-07 (nội dung Add-new/Font/upload/negative: 2026-09-15; rate-limit 2 route upload: 2026-09-26; cap, daily limit, dropzone, Horizon: 2026-11-07)
+**Last updated:** 2026-11-07 (nội dung Add-new/Font/upload/negative: 2026-09-15; rate-limit 2 route upload: 2026-09-26; cap, daily limit, dropzone, Horizon: 2026-11-07; thumbnail SVG clip-path: 2026-11-07)
 **Risks / Unknowns:**
 - Security: `insert_cliparts` là Hasura GraphQL table-level mutation gọi thẳng từ client bằng session portal thường, tự build `variables.objects` — chưa có sample cross-tenant (OQ-asset-category-017, severity MEDIUM)
 - Security: presigned storage URL tách rời JWT app, scope ký chỉ ràng buộc Host, chưa có negative test TTL (OQ-asset-category-018, severity MEDIUM)
 - Defect chờ triage: 500 lộ stack trace + UI `[object Object]` khi sai định dạng Vector (OQ-asset-category-020)
 - OQ-asset-category-014 (cơ chế Add new của Font chưa re-verify độc lập) · OQ-asset-category-015 (staff log khi insert lỗi) · OQ-asset-category-016 (Clipart `.txt` bước sau) · OQ-asset-category-019 (Map Style cần field cấu hình nào) · OQ-asset-category-021 (chưa có sample `.svg` thành công) · OQ-asset-category-022 (staff log thiếu ở 2/3 category mới) · OQ-asset-category-023 (chưa re-test 3 category gốc 6008/6009/6010)
 - OQ-asset-category-033..040: uploader layer image và mockup library phía thành công, zip vượt cap, nghĩa của "không có reset", ngày lên production, cap áp ở đâu, route ăn bộ đếm clipart, field "… max attempts" và account admin, phụ thuộc bước PUT của CHK-018, CHK-021..CHK-023.
+- OQ-asset-category-041..045: thumbnail SVG clip-path lồng (và "SVG clipart" có phải item của `/vectors`), ngày lên production của fix thumbnail SVG, thumbnail layer image SVG ở artwork, thumbnail SVG không clip-path sau khi đổi renderer và thời điểm sinh thumbnail, API có chuẩn hoá `name` clipart lúc lưu không.
 
 ---
 

@@ -93,6 +93,10 @@
       "surface": "portal",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-079"
+    },
     "tags": [
       "static-vector",
       "svg-upload",
@@ -103,11 +107,7 @@
     "related_kb_ids": [
       "KB-128",
       "KB-048"
-    ],
-    "last_updated": {
-      "date": "2026-11-07",
-      "ccr_ref": "CBS-079"
-    }
+    ]
   },
   {
     "kb_id": "KB-418",
@@ -121,6 +121,10 @@
       "surface": "portal+render",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-079"
+    },
     "tags": [
       "static-vector",
       "design-format",
@@ -131,10 +135,116 @@
     "related_kb_ids": [
       "KB-417",
       "KB-053"
+    ]
+  },
+  {
+    "kb_id": "KB-581",
+    "topic": "SVG layer image upload 05/2025 (trước resvg) re-render design PNG bình thường (quan sát 2026-10-07)",
+    "statement": "Trong lượt chạy Testlane TC-TIB-4734 (staging, 2026-10-07, record Testlane passed có ngày chạy nhưng không ghi build, kết quả AI do máy chạy; TC dạng quan sát), với 3 file SVG layer image upload từ 05/2025 (trước khi có resvg), quan sát thấy render lại design PNG bình thường, không lỗi và không trống. Mẫu 3 file; file thứ 3 không có <text> sống nên không chạm known issue mất chữ. Chưa có người xác nhận đây là hành vi đúng.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "api",
+      "brand": null
+    },
+    "tags": [
+      "TIB-5350",
+      "QA-3395",
+      "static-vector",
+      "svg-render",
+      "legacy-svg"
+    ],
+    "related_kb_ids": [
+      "KB-128"
     ],
     "last_updated": {
       "date": "2026-11-07",
-      "ccr_ref": "CBS-079"
+      "ccr_ref": "CBS-088"
+    }
+  },
+  {
+    "kb_id": "KB-582",
+    "topic": "Upload SVG làm layer image: bản lưu bỏ DOCTYPE, ENTITY, <script>; upload không trả 500 (quan sát 2026-10-07)",
+    "statement": "Trong lượt chạy Testlane TC-TIB-4735 và TC-TIB-4739 (staging, 2026-10-07, record Testlane passed có ngày chạy nhưng không ghi build, kết quả AI do máy chạy), khi upload SVG làm layer image (và cùng lượt ở clipart), quan sát thấy bản SVG được lưu đã bị bỏ DOCTYPE, ENTITY (entity XXE không resolve, thumbnail không chứa nội dung file hệ thống) và thẻ <script>; upload không trả 500. SSRF, DoS, file cực lớn chưa kiểm. Phía clipart thuộc object asset-category, chỉ ghi như liên quan. Hành vi upload có sẵn, không do thay đổi resvg. Chưa có người xác nhận đây là hành vi đúng.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (upload SVG)",
+      "surface": "api",
+      "brand": null
+    },
+    "tags": [
+      "TIB-5350",
+      "QA-3395",
+      "static-vector",
+      "svg-upload",
+      "sanitize",
+      "security"
+    ],
+    "related_kb_ids": [
+      "KB-128"
+    ],
+    "last_updated": {
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-088"
+    }
+  },
+  {
+    "kb_id": "KB-583",
+    "topic": "Tên file SVG upload được làm sạch, key lưu ngẫu nhiên, tên > 255 ký tự bị validate chặn (quan sát 2026-10-07)",
+    "statement": "Trong lượt chạy Testlane TC-TIB-4740 (staging, 2026-10-07, record Testlane passed có ngày chạy nhưng không ghi build, kết quả AI do máy chạy), khi upload SVG làm layer image với tên file giả mạo, quan sát thấy tên được làm sạch (test.png.svg thành test.png, ../../evil.svg thành evil), file lưu với key ngẫu nhiên nên không path traversal, còn tên dài 300 ký tự bị chặn bằng validate \"The filenames.2 field must not be greater than 255 characters.\". Phần hiển thị trên UI chưa xem. Hành vi upload có sẵn, không do thay đổi resvg. Chưa có người xác nhận đây là hành vi đúng.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (upload SVG)",
+      "surface": "api",
+      "brand": null
+    },
+    "tags": [
+      "TIB-5350",
+      "QA-3395",
+      "static-vector",
+      "svg-upload",
+      "filename-sanitize",
+      "security"
+    ],
+    "related_kb_ids": [
+      "KB-128"
+    ],
+    "last_updated": {
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-088"
+    }
+  },
+  {
+    "kb_id": "KB-584",
+    "topic": "File SVG nguồn trên CDN không bị sửa sau recolor và đặt order: tập id giữ nguyên, không prefix svg- (quan sát 2026-10-08)",
+    "statement": "Trong lượt chạy QA TC-19 của bộ QA-3394 (staging, 2026-10-08, AI chạy, không có id Testlane, không ghi build portal/SDK), với 2 file SVG đã recolor và đã có order, quan sát thấy file SVG nguồn lưu trên CDN có tập id giống hệt file gốc và không có id mang prefix svg-. Hai file mẫu. Chưa có người xác nhận đây là hành vi đúng.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (asset đã upload)",
+      "surface": "api (asset CDN)",
+      "brand": null
+    },
+    "tags": [
+      "TIB-5501",
+      "QA-3394",
+      "static-vector",
+      "svg-id-dedupe",
+      "asset-cdn"
+    ],
+    "related_kb_ids": [
+      "KB-128"
+    ],
+    "last_updated": {
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-088"
     }
   }
 ]

@@ -56,6 +56,13 @@
         "KB-224",
         "KB-230"
       ]
+    },
+    {
+      "name": "[MỚI, CBS-095] Linked copy của photo layer 'No personalization' — phần lấy từ layer gốc và phần riêng",
+      "description": "CONFIRMED_EXPECTED (Dev TIB-5521 55637 Q6): bản linked ('Duplicate & Link') của photo layer No personalization dùng box, flip, rotate của chính nó; ảnh, retrieval value, photo border và shadow lấy từ layer gốc; mask, color và cropper không áp dụng (API luôn để mask_enable = false; SDK xoá photo_editor, enable_cropper, masked_*, effects). Chỉ áp cho photo layer No personalization; trả lời một phần câu hỏi 'field nào sync' ở unknown_areas[0] cho riêng layer này.",
+      "kb_refs": [
+        "KB-935"
+      ]
     }
   ],
   "state_transitions": [
@@ -76,9 +83,32 @@
       "kb_refs": [
         "KB-224"
       ]
+    },
+    {
+      "from": "[MỚI, CBS-095] photo layer 'No personalization' (có ảnh, retrieval value, photo border, shadow)",
+      "to": "bản linked có box/flip/rotate riêng; ảnh, retrieval value, photo border, shadow theo layer gốc; không có mask/color/cropper",
+      "trigger": "Duplicate & Link options",
+      "condition": "CONFIRMED_EXPECTED, staging",
+      "kb_refs": [
+        "KB-935"
+      ]
     }
   ],
-  "confirmed_rules": [],
+  "confirmed_rules": [
+    {
+      "rule": "Linked copy của photo layer 'No personalization' dùng box, flip, rotate của chính nó; ảnh, retrieval value, photo border và shadow lấy từ layer gốc; mask, color và cropper không áp dụng (API luôn để mask_enable = false).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner + buyer, api · storefront · portal",
+      "shipped": "SHIPPED",
+      "caveats": "Một citation; QA-3402 TC-12..15 bổ trợ. Chỉ áp cho photo layer No personalization; không đổi kết luận LINKED/PLAIN_COPY theo type ở KB-045.",
+      "confirmation_ref": "Jira TIB-5521 comment 55637 (Dev), 2026-10-26",
+      "kb_refs": [
+        "KB-935"
+      ]
+    }
+  ],
   "observed_behavior": [
     {
       "statement": "Thao tác Duplicate & Link options không sinh network entry nào (0 request) — thuần client-side cho tới khi Save.",
@@ -133,8 +163,22 @@
         ]
       }
     ],
-    "storefront": [],
-    "api": [],
+    "storefront": [
+      {
+        "item": "[MỚI, CBS-095] SDK preview của bản linked photo layer No personalization (SDK xoá photo_editor, enable_cropper, masked_*, effects)",
+        "kb_refs": [
+          "KB-935"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "item": "[MỚI, CBS-095] Render phía API bản linked photo layer No personalization: mask_enable luôn false, không dùng color/cropper",
+        "kb_refs": [
+          "KB-935"
+        ]
+      }
+    ],
     "data": [],
     "code": []
   },
@@ -159,6 +203,13 @@
       "description": "Linked layer đi theo hiển thị cuối của layer gốc trên storefront chỉ có nguồn dev doc (object sdk, FEAT-07-storefront-buyer-facing).",
       "kb_refs": [
         "KB-235"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "[MỚI, CBS-095] Photo border của bản linked lấy từ layer gốc (FEAT-29-layer-photo-border); photo layer No personalization mô tả ở FEAT-13-layer-config-image và FEAT-30-no-personalization-photo-render.",
+      "kb_refs": [
+        "KB-935"
       ]
     }
   ],
@@ -226,8 +277,9 @@
     }
   ],
   "last_updated": {
-    "date": "2026-10-30",
-    "ccr_ref": "CBS-011"
+    "date": "2026-11-07",
+    "ccr_ref": "CBS-095",
+    "delta_note_cbs095": "[CBS-095] Thêm KB-935 (xác nhận dev 2026-10-26): linked copy của photo layer No personalization. Phần base không re-verify."
   },
   "coverage_matrix": [
     {
@@ -300,6 +352,30 @@
         "KB-045",
         "KB-230"
       ]
+    },
+    {
+      "feature_id": "FEAT-05-layer-duplicate-link-copy",
+      "layer": "api+storefront",
+      "role": "merchant-owner + buyer",
+      "state": "[MỚI, CBS-095] linked copy của photo layer No personalization (box/flip/rotate riêng; ảnh/retrieval/border/shadow từ gốc; không mask/color/cropper)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-935"
+      ],
+      "basis": "CONFIRMED_EXPECTED; QA-3402 TC-12..15 bổ trợ"
+    },
+    {
+      "feature_id": "FEAT-05-layer-duplicate-link-copy",
+      "layer": "api+storefront",
+      "role": "merchant-owner + buyer",
+      "state": "[MỚI, CBS-095] linked copy của photo layer có personalization khác No personalization",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-935"
+      ],
+      "basis": "KB-935 chỉ phủ photo layer No personalization"
     }
   ],
   "profile_conflicts": [],
@@ -344,6 +420,24 @@
       "note": "Linked layer đi theo hiển thị cuối của layer gốc (dev doc, chưa kiểm).",
       "kb_refs": [
         "KB-235"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-05-layer-duplicate-link-copy",
+      "to_feature_id": "FEAT-13-layer-config-image",
+      "relation": "related",
+      "note": "[MỚI, CBS-095] Linked copy của photo layer No personalization (KB-935) dùng layer cấu hình ở FEAT-13 (KB-930).",
+      "kb_refs": [
+        "KB-935"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-05-layer-duplicate-link-copy",
+      "to_feature_id": "FEAT-29-layer-photo-border",
+      "relation": "related",
+      "note": "[MỚI, CBS-095] Photo border và shadow của bản linked lấy từ layer gốc (KB-935).",
+      "kb_refs": [
+        "KB-935"
       ]
     }
   ]

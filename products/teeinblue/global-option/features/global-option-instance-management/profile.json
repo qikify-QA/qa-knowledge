@@ -22,6 +22,14 @@
         "KB-008",
         "KB-025"
       ]
+    },
+    {
+      "role": "merchant-owner + client MCP",
+      "permission_observed": "[CBS-100] Tạo được Global Option loại Multiple Uploads qua MCP (1 lượt, KB-723, OBSERVED_CURRENT/LOW). Quy tắc 4 MP áp cho cả đường save MCP theo KB-720; save qua MCP chưa có quan sát.",
+      "kb_refs": [
+        "KB-720",
+        "KB-723"
+      ]
     }
   ],
   "entry_points": [
@@ -64,12 +72,20 @@
         "KB-033",
         "KB-034"
       ]
+    },
+    {
+      "path": "[CBS-100] client MCP (tạo/save Global Option ngoài portal)",
+      "precondition": "client MCP kết nối với store của merchant-owner; cách cấu hình MCP nguồn không nêu",
+      "kb_refs": [
+        "KB-720",
+        "KB-723"
+      ]
     }
   ],
   "capabilities": [
     {
       "name": "Tạo Global Option instance mới (1 trong 30 leaf type / 7 nhóm)",
-      "description": "Chọn layer type ở modal 2 cấp (7 nhóm, 29 nút cấp 1, 30 leaf thực tạo được), điền form type-specific, Save gọi 1 endpoint chung cho mọi type. [CBS-004] Riêng type Additional Option (nguồn 'Create new'), Save chuyển thẳng tới trang Edit của GO vừa tạo thay vì quay về danh sách (KB-033, CONFIRMED_EXPECTED); hành vi sau Save của type khác chưa được verify.",
+      "description": "Chọn layer type ở modal 2 cấp (7 nhóm, 29 nút cấp 1, 30 leaf thực tạo được), điền form type-specific, Save gọi 1 endpoint chung cho mọi type. [CBS-004] Riêng type Additional Option (nguồn 'Create new'), Save chuyển thẳng tới trang Edit của GO vừa tạo thay vì quay về danh sách (KB-033, CONFIRMED_EXPECTED); hành vi sau Save của type khác chưa được verify. [CBS-100] KB-720 (CONFIRMED_EXPECTED) đặt giới hạn Flux 4 MP khi save Global Option, trên mọi đường save. Qua MCP tạo được GO loại Multiple Uploads mà màn tạo portal không có, và portal mở GO đó như form text (KB-723, OBSERVED_CURRENT/LOW, 1 lượt; chưa rõ là mong đợi hay lỗi, không dùng làm oracle).",
       "kb_refs": [
         "KB-001",
         "KB-002",
@@ -80,16 +96,21 @@
         "KB-014",
         "KB-015",
         "KB-019",
-        "KB-033"
+        "KB-033",
+        "KB-720",
+        "KB-723"
       ]
     },
     {
       "name": "Sửa (edit) Global Option instance đã tồn tại",
-      "description": "Sửa field (vd Option Title, Global Option Name) trên instance có sẵn và Save. [CBS-004] Đường save đang tranh chấp — CONF-CBS-004-01 UNRESOLVED: KB-006 (quan sát 2026-09-15, GO 860) ghi nhận Save gọi Hasura GraphQL mutation client-dựng 'updateGlobalOption', không phải REST PUT; KB-034 (TC-TIB-4513/4514/4515, 2026-10-08, chỉ Single-line Text) ghi nhận save nay qua API validation (lưu dữ liệu hợp lệ, chặn Name rỗng). Không dùng bên nào làm oracle cho tới khi conflict được quyết. [CBS-073] Đề xuất chưa xác nhận (KB-372, PROPOSED/LOW, Testlane TC-TIB-6199): sau khi sửa trên Portal, storefront cần sync campaign mới nhận thay đổi. Hai lượt khác nhau: campaign 3069 giữ dữ liệu cũ tới khi sync, campaign 3072 hiện giá trị mới ngay không cần sync. Không dùng làm oracle; KB-372 không nói về đường save nên không giải conflict trên.",
+      "description": "Sửa field (vd Option Title, Global Option Name) trên instance có sẵn và Save. [CBS-004] Đường save đang tranh chấp — CONF-CBS-004-01 UNRESOLVED: KB-006 (quan sát 2026-09-15, GO 860) ghi nhận Save gọi Hasura GraphQL mutation client-dựng 'updateGlobalOption', không phải REST PUT; KB-034 (TC-TIB-4513/4514/4515, 2026-10-08, chỉ Single-line Text) ghi nhận save nay qua API validation (lưu dữ liệu hợp lệ, chặn Name rỗng). Không dùng bên nào làm oracle cho tới khi conflict được quyết. [CBS-073] Đề xuất chưa xác nhận (KB-372, PROPOSED/LOW, Testlane TC-TIB-6199): sau khi sửa trên Portal, storefront cần sync campaign mới nhận thay đổi. Hai lượt khác nhau: campaign 3069 giữ dữ liệu cũ tới khi sync, campaign 3072 hiện giá trị mới ngay không cần sync. Không dùng làm oracle; KB-372 không nói về đường save nên không giải conflict trên. [CBS-100] Quy tắc (KB-720, CONFIRMED_EXPECTED/MEDIUM): server từ chối save Global Option khi kích thước Flux width × height > 4.000.000 px; đúng 4.000.000 px (vd 2000×2000) vẫn lưu. Áp cho mọi Global Option, gồm GO Text to Image và GO Single upload có Gen AI effect Flux, trên mọi đường save portal/REST và MCP. Text message lỗi không thuộc quy tắc (chờ PO). KB-720 không giải CONF-CBS-004-01. Quan sát, không phải expected (KB-721, OBSERVED_CURRENT/LOW, 1 lượt mỗi case, không ghi build): vượt 4 MP bị từ chối với 422, 2000×2000 trả 200, GO Single upload báo lỗi trên key `data.effects.0.flux_output_width`. Known defect, không phải expected (KB-722): lỗi 4 MP hiện đồng thời 2 toast.",
       "kb_refs": [
         "KB-006",
         "KB-034",
-        "KB-372"
+        "KB-372",
+        "KB-720",
+        "KB-721",
+        "KB-722"
       ]
     },
     {
@@ -196,6 +217,27 @@
       "kb_refs": [
         "KB-372"
       ]
+    },
+    {
+      "from": "GO đang sửa có kích thước Flux width × height > 4.000.000 px (GO Text to Image, hoặc GO Single upload có Gen AI effect Flux)",
+      "to": "không lưu: server từ chối save; GO giữ dữ liệu đã lưu trước đó",
+      "trigger": "Save (portal/REST hoặc MCP)",
+      "condition": "[CBS-100, CONFIRMED_EXPECTED KB-720] biên là ≤: đúng 4.000.000 px (vd 2000×2000) vẫn lưu. HTTP status, key lỗi và text message không thuộc phần expected (KB-721 OBSERVED_CURRENT/LOW; text chờ PO). Toast hiển thị khi bị từ chối là known defect (KB-722), không dùng làm oracle. GO lưu trước TIB-5561 với Flux > 4 MP: chưa kiểm (unknown_areas[21])",
+      "kb_refs": [
+        "KB-720",
+        "KB-721",
+        "KB-722"
+      ]
+    },
+    {
+      "from": "không tồn tại",
+      "to": "GO loại Multiple Uploads tồn tại (tạo qua MCP); portal mở GO đó như form của GO text",
+      "trigger": "tạo GO loại Multiple Uploads qua client MCP",
+      "condition": "[CBS-100, OBSERVED_CURRENT/LOW KB-723] 1 lượt, 1 GO (đã xoá sau đó); màn tạo portal không có loại này (KB-001). Chưa có Dev/PO xác nhận là mong đợi hay lỗi; không dùng làm oracle",
+      "kb_refs": [
+        "KB-723",
+        "KB-001"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -207,6 +249,16 @@
       "limitation": "Chỉ phủ loại Additional Option, staging, role owner; hành vi sau Save của các loại GO khác không nằm trong test case.",
       "kb_refs": [
         "KB-033"
+      ]
+    },
+    {
+      "statement": "Khi save một Global Option (qua portal/REST hoặc MCP), server từ chối lưu nếu kích thước Flux có width × height > 4.000.000 px; đúng 4.000.000 px (ví dụ 2000×2000) vẫn được lưu (biên là ≤). Giới hạn áp cho mọi Global Option, gồm GO Text to Image và GO Single upload có Gen AI effect Flux (loại GO Single upload này trước TIB-5561 không bị kiểm).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source": "po_dev_confirm — Jira TIB-5561 comment #55697 (dev chinhdt) Q4, Q7, authored_on 2026-10-27; supporting: dev summary TIB-5561 #55645 (2026-10-26, cùng người viết, không phải nguồn độc lập)",
+      "limitation": "Chỉ nói save Global Option, không phủ layer artwork; không phủ GO Multiple Uploads (portal không có loại này). Text message lỗi, HTTP status và key lỗi KHÔNG thuộc rule: text cuối chờ PO chốt (TIB-5561 Q4), 422 và `data.effects.0.flux_output_width` chỉ là quan sát LOW (KB-721). Toast khi bị từ chối là known defect (KB-722). Chưa có quan sát cho đường MCP; GO lưu trước TIB-5561 với Flux > 4 MP chưa kiểm. Scope staging, role merchant-owner.",
+      "kb_refs": [
+        "KB-720"
       ]
     }
   ],
@@ -297,6 +349,34 @@
         "KB-024",
         "KB-025"
       ]
+    },
+    {
+      "statement": "[CBS-100, quan sát, không phải expected] Staging 2026-10-27 (TC-16, TC-17 trong đợt regression QA-3435, kết quả do AI chạy, không ghi build, mỗi case 1 lượt), role merchant-owner, portal: save GO Text to Image với Flux 2000×2001 bị từ chối với 422, với 2000×2000 → 200; save GO Single upload có Gen AI effect Flux, đổi size từ 1200×800 sang 3000×2000 → 422 với lỗi validate trên key `data.effects.0.flux_output_width`, sang 2000×2000 → 200. Text lỗi ghi lại bị cắt. HTTP status, key lỗi và text chưa được nguồn có thẩm quyền xác nhận; text cuối chờ PO.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "kb_refs": [
+        "KB-721"
+      ]
+    },
+    {
+      "statement": "[CBS-100, KNOWN DEFECT, không phải expected, không dùng làm oracle] Staging 2026-10-27 (TC-16, 1 lượt, không ghi build), role merchant-owner, portal: khi save GO Text to Image bị từ chối vì vượt 4 MP, portal hiện đồng thời 2 toast: lỗi cụ thể (text bị cắt trong ghi chép) và \"Failed to save global option.\". Dev ghi đây là known limitation (dev summary TIB-5561, 2026-10-26) và nói nó xảy ra với mọi lỗi save trên trang Global Option; vế 'mọi lỗi save' là lời dev, mới quan sát ở lỗi 4 MP.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "status": "KNOWN_DEFECT",
+      "observed_count": 1,
+      "kb_refs": [
+        "KB-722"
+      ]
+    },
+    {
+      "statement": "[CBS-100, quan sát] Staging 2026-10-27 (ghi chú ở bước Multiple Uploads của TC-08 trong đợt regression QA-3435, bước đánh dấu N/A; 1 lượt, 1 GO, GO đã xoá sau đó), role merchant-owner + client MCP: tạo Global Option loại Multiple Uploads qua MCP thành công, nhưng portal mở GO đó như form của GO text, tức portal không sửa được GO này. Chưa có Dev/PO xác nhận là mong đợi hay lỗi; không suy ra MCP có nên chặn tạo MU GO hay không.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "kb_refs": [
+        "KB-723"
+      ]
     }
   ],
   "observed_validations": [
@@ -308,9 +388,29 @@
       "kb_refs": [
         "KB-015"
       ]
+    },
+    {
+      "input": "[CBS-100] Save GO Text to Image với Flux 2000×2001 (vượt 4 MP), portal, staging 2026-10-27 (TC-16, không ghi build)",
+      "message_verbatim": "Something went wrong! Flux dimension … 4 Megapixel) (text bị cắt trong ghi chép; bị từ chối với 422)",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "not_expected_note": "Quan sát hiện tại, không phải expected. Text cuối chờ PO chốt (TIB-5561 Q4, unknown_areas[18]); không dùng text, HTTP status hay toast làm oracle. Expected chỉ là 'save bị từ chối' theo KB-720.",
+      "kb_refs": [
+        "KB-721"
+      ]
+    },
+    {
+      "input": "[CBS-100] Save GO Single upload có Gen AI effect Flux, đổi size 1200×800 → 3000×2000 (vượt 4 MP), portal, staging 2026-10-27 (TC-17, không ghi build)",
+      "message_verbatim": "(text không được ghi riêng cho case này; trả 422 với lỗi validate trên key `data.effects.0.flux_output_width`)",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "not_expected_note": "Quan sát hiện tại, không phải expected; HTTP status và key lỗi chưa được nguồn có thẩm quyền xác nhận (unknown_areas[18]).",
+      "kb_refs": [
+        "KB-721"
+      ]
     }
   ],
-  "observed_validations_note": "Carry-forward base (KB-015, OBSERVED_CURRENT). Message 'Error — Global Option Name is required' của KB-034 không đưa vào đây: KB-034 là CONFIRMED_EXPECTED (không phải OBSERVED_CURRENT) và đang conflict UNRESOLVED (CONF-CBS-004-01); nguyên văn nằm ở profile_conflicts.",
+  "observed_validations_note": "Carry-forward base (KB-015, OBSERVED_CURRENT). Message 'Error — Global Option Name is required' của KB-034 không đưa vào đây: KB-034 là CONFIRMED_EXPECTED (không phải OBSERVED_CURRENT) và đang conflict UNRESOLVED (CONF-CBS-004-01); nguyên văn nằm ở profile_conflicts. [CBS-100] Hai dòng KB-721 là quan sát LOW, observed_count 1, không tổng quát hoá thành rule; toast 'Failed to save global option.' của KB-722 (KNOWN_DEFECT) cố ý không đưa vào đây.",
   "permissions": [
     {
       "role": "owner",
@@ -322,6 +422,14 @@
         "KB-007",
         "KB-008"
       ]
+    },
+    {
+      "role": "merchant-owner + client MCP",
+      "capability": "[CBS-100] tạo Global Option loại Multiple Uploads qua MCP (portal không tạo được loại này)",
+      "observed": true,
+      "kb_refs": [
+        "KB-723"
+      ]
     }
   ],
   "surface_mapping": {
@@ -329,7 +437,8 @@
       "/global-options",
       "/global-options/create",
       "/global-options/create/<type-slug>",
-      "/global-options/{id}/edit (General/Settings/Preview; đích redirect sau Save khi tạo Additional Option — KB-033)"
+      "/global-options/{id}/edit (General/Settings/Preview; đích redirect sau Save khi tạo Additional Option — KB-033)",
+      "[CBS-100] /global-options/{id}/edit: Save GO có Flux > 4 MP bị server từ chối (rule KB-720); toast khi bị từ chối là known defect (KB-722); portal mở GO Multiple Uploads tạo qua MCP như form text (KB-723, quan sát)"
     ],
     "storefront": [
       "Đề xuất chưa xác nhận (KB-372, PROPOSED/LOW): storefront hiển thị global option đã sửa trên Portal. Campaign 3069 giữ dữ liệu cũ tới khi sync, campaign 3072 hiện giá trị mới ngay không cần sync; trang/field cụ thể nguồn chưa nêu"
@@ -340,7 +449,8 @@
       "POST /api/graphql mutation updateGlobalOption (edit, Hasura mutation) — [UNRESOLVED CONF-CBS-004-01, KB-006]",
       "POST /api/graphql khi Save trang Edit (Single-line Text) qua API validation, lỗi trả trong body GraphQL (200); tên operation chưa quan sát — [UNRESOLVED CONF-CBS-004-01, KB-034]",
       "POST /api/global-options/{id}/clone (clone)",
-      "DELETE /api/global-options/{id} (delete)"
+      "DELETE /api/global-options/{id} (delete)",
+      "[CBS-100] MCP: đường save Global Option chịu quy tắc 4 MP (KB-720, chưa quan sát); tạo được GO loại Multiple Uploads (KB-723, quan sát)"
     ],
     "data": [
       "name",
@@ -348,7 +458,8 @@
       "data (polymorphic theo type; keys quan sát: required, additional_option, clipart, ...)",
       "global_option_category_id",
       "id",
-      "updated_at"
+      "updated_at",
+      "[CBS-100] kích thước Flux output (width × height ≤ 4.000.000 px, KB-720); key lỗi quan sát `data.effects.0.flux_output_width` cho GO Single upload (KB-721, LOW)"
     ],
     "code": []
   },
@@ -388,6 +499,15 @@
       "description": "[CBS-073] Đề xuất chưa xác nhận (KB-372, PROPOSED/LOW): storefront cần thao tác này mới nhận thay đổi của Global Option sửa trên Portal. Hai lượt trong Testlane TC-TIB-6199 khác nhau: campaign 3069 giữ dữ liệu cũ tới khi sync, campaign 3072 hiện giá trị mới ngay không cần sync. Thao tác cụ thể và nơi thực hiện nguồn chưa nêu, nên chưa gán về capability hay feature nào.",
       "kb_refs": [
         "KB-372"
+      ]
+    },
+    {
+      "target": "kênh MCP (client MCP tạo/save Global Option)",
+      "direction": "alternate_surface",
+      "description": "[CBS-100] MCP là đường save thứ hai ngoài portal/REST: quy tắc 4 MP áp cho cả MCP (KB-720, chưa quan sát qua MCP); MCP tạo được GO loại Multiple Uploads mà portal không tạo và không sửa được (KB-723, OBSERVED_CURRENT/LOW, chưa rõ mong đợi hay lỗi).",
+      "kb_refs": [
+        "KB-720",
+        "KB-723"
       ]
     }
   ],
@@ -456,13 +576,33 @@
       "kb_refs": [
         "KB-372"
       ]
+    },
+    {
+      "risk": "[CBS-100] Check lỗi 4 MP chỉ có oracle cho vế 'save bị từ chối / đúng 4.000.000 px vẫn lưu' (KB-720). Text message, HTTP 422 và key `data.effects.0.flux_output_width` là quan sát LOW không ghi build (KB-721); assert text message (kể cả bản 'must be less than' hay 'must not exceed') sẽ sai khi PO chốt text khác.",
+      "kb_refs": [
+        "KB-720",
+        "KB-721"
+      ]
+    },
+    {
+      "risk": "[CBS-100] KNOWN DEFECT: save lỗi trên trang Global Option hiện đồng thời 2 toast (lỗi cụ thể + 'Failed to save global option.'). Check không được assert 2 toast là expected, cũng không được coi là lỗi mới khi gặp lại; theo dev có thể áp cho mọi lỗi save, mới quan sát ở lỗi 4 MP.",
+      "status": "KNOWN_DEFECT",
+      "kb_refs": [
+        "KB-722"
+      ]
+    },
+    {
+      "risk": "[CBS-100] GO loại Multiple Uploads tạo qua MCP bị portal mở như form text, tức merchant không sửa được trên portal (KB-723, 1 lượt). Nếu đây là lỗi, dữ liệu GO có thể bị ghi sai khi Save từ form text; chưa có Dev/PO xác nhận, không dùng làm oracle.",
+      "kb_refs": [
+        "KB-723"
+      ]
     }
   ],
   "environment_differences": [],
   "freshness": {
-    "observed_at": "2026-10-21",
+    "observed_at": "2026-10-27",
     "base_observed_at": "2026-09-16",
-    "note": "Item base giữ freshness 2026-09-15/16; KB-033/KB-034 nguồn authored 2026-10-08; KB-372 (PROPOSED/LOW, đề xuất chưa xác nhận) nguồn Testlane TC-TIB-6199 authored 2026-10-21, gồm hai lượt campaign 3069 và 3072; run này không tự quan sát."
+    "note": "Item base giữ freshness 2026-09-15/16; KB-033/KB-034 nguồn authored 2026-10-08; KB-372 (PROPOSED/LOW, đề xuất chưa xác nhận) nguồn Testlane TC-TIB-6199 authored 2026-10-21, gồm hai lượt campaign 3069 và 3072. [CBS-100] KB-720 nguồn authored 2026-10-27 (#55697; #55645 2026-10-26); KB-721/KB-722/KB-723 quan sát QA 2026-10-27; ingest 2026-11-07. Run này không tự quan sát."
   },
   "unknown_areas": [
     {
@@ -591,11 +731,53 @@
       ],
       "oq_type": "NEEDS_CONFIRMATION",
       "oq_id": "OQ-global-option-043"
+    },
+    {
+      "question": "[CBS-100] Text message cuối của lỗi 4 MP khi save Global Option là gì? Dev đồng ý đổi 'must be less than 4.000.000 px (4 Megapixel)' sang 'must not exceed 4.000.000 px (4 Megapixel)' (TIB-5561 #55697 Q4), chờ PO chốt (#55728 chưa có trả lời). HTTP 422 và key lỗi `data.effects.0.flux_output_width` có phải hành vi mong đợi không?",
+      "why_it_matters": "Hiện chỉ có text bị cắt và 422/key từ test case không ghi build (KB-721, OBSERVED_CURRENT/LOW). Check lỗi 4 MP không có oracle cho text, status, key cho tới khi PO chốt text và QA chạy lại TC-16/TC-17 có ghi build.",
+      "kb_refs": [
+        "KB-721",
+        "KB-720"
+      ],
+      "draft_id": "OQ-global-option-045",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-global-option-045"
+    },
+    {
+      "question": "[CBS-100] Hai toast khi save Global Option lỗi (lỗi cụ thể + 'Failed to save global option.') có áp cho mọi lỗi save trên trang Global Option không (mới quan sát ở lỗi 4 MP), và có ticket sửa không?",
+      "why_it_matters": "KB-722 là known defect theo dev summary TIB-5561 #55645, 1 lượt quan sát. Không biết phạm vi thì check toast cho lỗi save khác (vd Name rỗng của KB-034) không biết nên chờ 1 hay 2 toast; không biết ticket sửa thì không biết khi nào defect hết.",
+      "kb_refs": [
+        "KB-722"
+      ],
+      "draft_id": "OQ-global-option-046",
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-global-option-046"
+    },
+    {
+      "question": "[CBS-100] MCP cho tạo Global Option loại Multiple Uploads mà portal không sửa được (mở như form text). Đây là hành vi mong đợi hay lỗi?",
+      "why_it_matters": "KB-723 chỉ là 1 lượt quan sát, không có nguồn xác nhận. Check tạo GO qua MCP và check mở GO MU trên portal không có oracle; nếu là lỗi thì Save từ form text có thể ghi sai dữ liệu GO.",
+      "kb_refs": [
+        "KB-723",
+        "KB-001"
+      ],
+      "draft_id": "OQ-global-option-047",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-global-option-047"
+    },
+    {
+      "question": "[CBS-100] Global Option đã lưu trước TIB-5561 với Flux width × height > 4 MP có bị chặn ở lần save tiếp theo cho tới khi giảm size không?",
+      "why_it_matters": "Claim CBS-100__CLAIM-04 là S0 (câu dev tự viết ở mục Known limitation của #55645, chưa ai kiểm) nên không có KB item; KB-720 chỉ nói quy tắc khi save. Check sửa field khác trên GO cũ có Flux > 4 MP không có oracle cho tới khi QA kiểm hoặc Dev/PO trả lời trực tiếp.",
+      "kb_refs": [
+        "KB-720"
+      ],
+      "draft_id": "OQ-global-option-048",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-global-option-048"
     }
   ],
   "last_updated": {
-    "date": "2026-11-05",
-    "ccr_ref": "CBS-073"
+    "date": "2026-11-07",
+    "ccr_ref": "CBS-100"
   },
   "coverage_matrix": [
     {
@@ -742,6 +924,79 @@
       "kb_refs": [
         "KB-372"
       ]
+    },
+    {
+      "feature_id": "FEAT-01-global-option-instance-management",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "[CBS-100] save GO Text to Image / GO Single upload có effect Flux: > 4.000.000 px bị từ chối, đúng 2000×2000 lưu được",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-720",
+        "KB-721"
+      ],
+      "basis": "rule KB-720 (po_dev_confirm, CONFIRMED_EXPECTED/MEDIUM); quan sát KB-721 1 lượt mỗi case, không ghi build"
+    },
+    {
+      "feature_id": "FEAT-01-global-option-instance-management",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "[CBS-100] text message, HTTP status, key lỗi khi vượt 4 MP",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-721"
+      ],
+      "basis": "chỉ quan sát LOW, text bị cắt và chờ PO; không phải oracle"
+    },
+    {
+      "feature_id": "FEAT-01-global-option-instance-management",
+      "layer": "api",
+      "role": "merchant-owner + client MCP",
+      "state": "[CBS-100] save GO qua MCP với Flux > 4 MP; tạo GO mới với Flux > 4 MP",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-720"
+      ],
+      "basis": "rule nói áp mọi đường save, chưa có quan sát"
+    },
+    {
+      "feature_id": "FEAT-01-global-option-instance-management",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-100] GO lưu trước TIB-5561 với Flux > 4 MP, save lần tiếp theo",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-720"
+      ],
+      "basis": "claim S0 không nạp (OQ-global-option-048)"
+    },
+    {
+      "feature_id": "FEAT-01-global-option-instance-management",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-100] toast khi save lỗi: 2 toast ở lỗi 4 MP (KNOWN_DEFECT); lỗi save khác chưa quan sát",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-722"
+      ],
+      "basis": "KNOWN_DEFECT, 1 lượt; không phải oracle"
+    },
+    {
+      "feature_id": "FEAT-01-global-option-instance-management",
+      "layer": "portal+api",
+      "role": "merchant-owner + client MCP",
+      "state": "[CBS-100] MCP tạo GO Multiple Uploads; portal mở GO đó như form text",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-723"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt 1 GO; chưa rõ mong đợi hay lỗi, không phải oracle"
     }
   ],
   "profile_conflicts": [

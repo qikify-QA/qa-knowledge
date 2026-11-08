@@ -5,9 +5,9 @@ _Tổng hợp từ `kb.json` (conflicts, tagged qua `conflict_group`), `features
 | Loại | Số lượng |
 |---|---|
 | CONFLICT | 5 |
-| NEEDS_CONFIRMATION | 23 |
-| OPEN_ISSUE | 9 |
-| **Tổng** | **37** |
+| NEEDS_CONFIRMATION | 32 |
+| OPEN_ISSUE | 16 |
+| **Tổng** | **53** |
 
 ## OQ-global-option-001 — CONFLICT
 
@@ -271,4 +271,58 @@ _Tổng hợp từ `kb.json` (conflicts, tagged qua `conflict_group`), `features
 
 ```json
 {"oq_id":"OQ-global-option-044","type":"OPEN_ISSUE","feature_id":"global-option-instance-management","summary":"Buyer có đặt hàng được trên dữ liệu Global Option cũ trong khoảng trước sync không, và order nhận giá trị nào? Chưa có quan sát; rủi ro này là một lý do KB-372 cần PO xác nhận.","kb_ids":["KB-372"]}
+```
+
+## OQ-global-option-045 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-global-option-045", "type": "NEEDS_CONFIRMATION", "feature_id": "global-option-instance-management", "summary": "Text message cuối của lỗi Flux 4 MP khi save Global Option là gì? Dev đồng ý đổi 'must be less than 4.000.000 px (4 Megapixel)' sang 'must not exceed 4.000.000 px (4 Megapixel)', chờ PO chốt (TIB-5561 Q4). HTTP 422 và key lỗi `data.effects.0.flux_output_width` (KB-721) có phải hành vi mong đợi không? Cần chạy lại test case có ghi build. CHK-01-028 chưa có oracle.", "kb_ids": ["KB-721"]}
+```
+
+## OQ-global-option-046 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-global-option-046", "type": "OPEN_ISSUE", "feature_id": "global-option-instance-management", "summary": "Known limitation: save Global Option lỗi hiện hai toast (lỗi cụ thể + 'Failed to save global option.'), KB-722. Dev nói áp cho mọi lỗi save trên trang Global Option, mới quan sát ở lỗi 4 MP. Có ticket sửa không, và sau khi sửa thì hiển thị gì? CHK-01-029 chỉ là regression watch.", "kb_ids": ["KB-722"]}
+```
+
+## OQ-global-option-047 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-global-option-047", "type": "NEEDS_CONFIRMATION", "feature_id": "global-option-instance-management", "summary": "MCP cho tạo Global Option loại Multiple Uploads mà portal không có loại này và mở GO đó như form text (KB-723). Đây là hành vi mong đợi hay lỗi? Save từ form text đó có ghi sai dữ liệu GO không? PO/Dev quyết; CHK-01-030 chưa có oracle.", "kb_ids": ["KB-723"]}
+```
+
+## OQ-global-option-048 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-global-option-048", "type": "NEEDS_CONFIRMATION", "feature_id": "global-option-instance-management", "summary": "Global Option đã lưu trước TIB-5561 với Flux width × height > 4 MP có bị chặn ở lần save tiếp theo cho tới khi giảm size không? Chỉ có câu trong dev summary TIB-5561 (Known limitation), chưa ai kiểm, nên chưa có item KB.", "kb_ids": ["KB-720"]}
+```
+
+## OQ-global-option-049 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-global-option-049", "type": "OPEN_ISSUE", "feature_id": "artwork-personalization-global-option-link", "summary": "Known defect trên staging (KB-724): khi TIB-5416 đang tạm revert, photo layer dùng Global Option dùng chung một position cho mọi template, layer khác tỉ lệ có thể trông bị giãn. TIB-5416 đã lên lại staging chưa, và sau TIB-5416 hành vi mong đợi khi buyer đổi template là gì? CHK-02-033 chỉ là regression watch.", "kb_ids": ["KB-724"]}
+```
+
+## OQ-global-option-050 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-global-option-050", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-personalization-global-option-link", "summary": "PO xác nhận Run effects trên layer dùng Global Option chỉ thay ảnh của layer đó và không đổi Global Option (KB-726, spec TIB-5470 không ghi nguyên chữ cho GO). [Effect settings] của effect Gemini hiển thị thế nào còn chờ so mockup. CHK-02-031 chưa có oracle.", "kb_ids": ["KB-726", "KB-725"]}
+```
+
+## OQ-global-option-051 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-global-option-051", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-personalization-global-option-link", "summary": "PO có chấp nhận copy tooltip 'Select a global option with image effects to run them.' cho nút Run effects disabled khi Global Option có 0 effect (KB-728, khác tooltip layer Normal) không? CHK-02-032 chưa có oracle.", "kb_ids": ["KB-728"]}
+```
+
+## OQ-global-option-052 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-global-option-052", "type": "NEEDS_CONFIRMATION", "feature_id": "global-option-instance-management", "summary": "Giới hạn Flux 4 MP (KB-720) mới có nguồn dev, chưa quan sát ở đường save qua MCP, khi tạo Global Option mới, và chưa quan sát việc portal không kiểm trước khi Save (dev summary). Cần một lượt chạy có ghi build cho các đường này; CHK-01-031 đang dựa duy nhất vào KB-720.", "kb_ids": ["KB-720"]}
+```
+
+## OQ-global-option-053 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-global-option-053", "type": "NEEDS_CONFIRMATION", "feature_id": "global-option-instance-management", "summary": "KB-723, KB-724, KB-728 có shipped UNKNOWN; mọi item CBS-100 chỉ có nguồn staging. TIB-5561 và TIB-5470 đã lên production chưa?", "kb_ids": ["KB-723", "KB-724", "KB-728"]}
 ```

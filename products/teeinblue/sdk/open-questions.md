@@ -1035,3 +1035,369 @@
 ```json
 {"oq_id":"OQ-sdk-125","type":"NEEDS_CONFIRMATION","feature_id":"required-addon-validation","summary":"\"Áp dụng cho tất cả merchant\" của KB-455 (TIB-5510 #55732, 2026-10-27) còn đúng cho cả chặn ATC ở SDK và rule Checkout không, hay chỉ còn đúng cho rule Checkout, sau khi #56209 (2026-11-02, KB-443) đổi chặn ATC ở SDK thành mặc định tắt cho toàn bộ store?","kb_ids":["KB-455","KB-443"]}
 ```
+
+## OQ-sdk-126 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-126","type":"NEEDS_CONFIRMATION","feature_id":"genai-model-settings","summary":"Hành vi migration (successor, giữ cài đặt khác, picker disable model cũ) mới chỉ quan sát một lượt chạy QA-3408 TC-07/TC-14 không ghi build; chưa có nguồn xác nhận expected. Nếu PO coi việc migration tự đổi model đã lưu của merchant là thay đổi dữ liệu nhạy cảm thì cần nâng impact lên HIGH và hỏi owner.","kb_ids":["KB-458"],"needs":"Dev hoặc PO xác nhận nguyên văn hành vi migration, hoặc test case chạy lại có build ghi rõ."}
+```
+
+## OQ-sdk-127 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-127","type":"NEEDS_CONFIRMATION","feature_id":"genai-model-settings","summary":"Model mặc định khi lưu không chọn model chỉ quan sát phía sau ngày migrate (QA-3408 TC-05), build không ghi; phía trước ngày migrate chưa test.","kb_ids":["KB-462"],"needs":"Dev hoặc PO xác nhận quy tắc model mặc định trước và sau ngày migrate; chạy lại phía trước ngày migrate."}
+```
+
+## OQ-sdk-128 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-128","type":"NEEDS_CONFIRMATION","feature_id":"genai-model-settings","summary":"Validate key với model retired trả code model_retired và không chọn model thì validate theo model mặc định: chỉ có quan sát QA-3408 TC-06/TC-22, không có căn cứ expected, build không ghi.","kb_ids":["KB-463"],"needs":"Dev hoặc PO xác nhận response mong muốn của Validate key với model retired và khi không gửi model."}
+```
+
+## OQ-sdk-129 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-129","type":"NEEDS_CONFIRMATION","feature_id":"genai-model-settings","summary":"Request lưu từ tab cũ còn gửi model retired: quan sát 200, lưu cài đặt khác, giữ model (QA-3408 TC-20), không có căn cứ expected.","kb_ids":["KB-465"],"needs":"Dev hoặc PO xác nhận đây là hành vi mong muốn của save rule sau ngày migrate."}
+```
+
+## OQ-sdk-130 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-130","type":"NEEDS_CONFIRMATION","feature_id":"genai-model-settings","summary":"API lưu Gen AI Effects đang nhận mọi giá trị model (id lạ, script, SQL/NoSQL) với 200 và lưu nguyên văn. Dev xác nhận ticket không đổi hành vi này, nhưng đó không phải mong muốn. Có nên chặn giá trị model không hợp lệ bằng 4xx không?","kb_ids":["KB-467"],"needs":"PO quyết có chặn 4xx cho giá trị model không hợp lệ (và theo ticket nào); đến lúc đó item không dùng làm expected."}
+```
+
+## OQ-sdk-131 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-131","type":"NEEDS_CONFIRMATION","feature_id":"genai-model-settings","summary":"Toggle auto-switch (nhãn, mô tả, mặc định OFF, lưu/giữ sau reload) khớp spec PO trong description TIB-5554 theo đối chiếu, nhưng CCR không trích spec và build không ghi; mới là quan sát QA-3408 TC-01/TC-02.","kb_ids":["KB-469"],"needs":"Trích nguyên văn spec PO (label, Default state OFF, description) kèm ngày, hoặc test case chạy lại có build."}
+```
+
+## OQ-sdk-132 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-132","type":"NEEDS_CONFIRMATION","feature_id":"genai-model-settings","summary":"Phạm vi toggle auto-switch: hiện tại 1 toggle cho mọi provider GenAI (1 field genai_auto_fallback), trong khi spec PO ghi \"applies to the account's active AI service and model\". Ý định là toggle theo service/model đang active hay 1 toggle cho mọi provider?","kb_ids":["KB-470"],"needs":"PO chốt phạm vi toggle."}
+```
+
+## OQ-sdk-133 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-133","type":"NEEDS_CONFIRMATION","feature_id":"genai-model-settings","summary":"Id lưu nano_banana_21 của Nano Banana 2.1 chỉ là quan sát (QA-3442 TC-01), không có căn cứ expected.","kb_ids":["KB-471"],"needs":"Dev xác nhận id lưu của Nano Banana 2.1."}
+```
+
+## OQ-sdk-134 — CONFLICT
+
+```json
+{"oq_id":"OQ-sdk-134","type":"CONFLICT","feature_id":"genai-model-settings","summary":"Model Gemini sau migration: global-option/KB-031 (quan sát 2026-09-16, trước khi TIB-5554 ship) ghi job generate trả model='nano_banana' và global-option CHK-02-011 expect model='nano_banana'; sdk KB-459 (dev, Jira TIB-5554 comment #54687 Q9, 2026-10-15) nói account ở nano_banana được chuyển sang nano_banana_31. Lưu ý: \"KB-031\" ở đây là của object global-option, không phải sdk KB-031. Có thể chỉ là hai mốc thời gian khác nhau (giá trị cũ nano_banana khớp vế đầu của KB-459); điểm lệch thực là CHK-02-011 có còn đúng sau migrate_at không, chưa ai chạy lại sau 2026-10-16. Phía global-option chưa được đánh dấu vì object đó ngoài lock của run này.","kb_ids":["KB-459"],"needs":"PO quyết; hoặc một run có lock object global-option cập nhật KB-031 / CHK-02-011 theo model sau migration.","conflict_group":"CONF-CBS089-01","side_a":"global-option/KB-031 (feature artwork-personalization-global-option-link): job generate GO#862 trả model='nano_banana' (OBSERVED_CURRENT, LOW, 1 mẫu, 2026-09-16); global-option CHK-02-011 expect model='nano_banana'.","side_b":"sdk KB-459: giá trị lưu Gemini cũ là nano_banana, account ở nano_banana được chuyển sang nano_banana_31 (CONFIRMED_EXPECTED, po_dev_confirm 2026-10-15)."}
+```
+
+## OQ-sdk-135 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-135","type":"OPEN_ISSUE","feature_id":"genai-model-settings","summary":"migrated_at sau lượt chạy sạch và known limitation (account bị ép về model retired, email lần hai) chưa có người xác nhận, test case chưa chạy. Claim trong CCR thiếu người xác nhận nên chưa có KB item.","kb_ids":[],"needs":"Dev hoặc PO xác nhận nguyên văn, hoặc chạy TC-09/12/13/17 của QA-3408."}
+```
+
+## OQ-sdk-136 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-136","type":"OPEN_ISSUE","feature_id":"genai-model-settings","summary":"Từ ngày migrate chọn model retired bị 422 + toast retired: dev nói 422 nhưng QA-3408 TC-18, TC-21 (2026-10-16) ra 200. Claim trong CCR thiếu người xác nhận nên chưa có KB item.","kb_ids":[],"needs":"Dev nêu trạng thái tái hiện được 422 trên staging."}
+```
+
+## OQ-sdk-137 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-137","type":"OPEN_ISSUE","feature_id":"genai-model-settings","summary":"Email sau khi đổi model (1 email, nêu model cũ/mới, chỉ account có API key provider đó) chưa có người xác nhận, test case chưa chạy. Claim trong CCR thiếu người xác nhận nên chưa có KB item.","kb_ids":[],"needs":"Dev trả lời Q3 hoặc chạy TC-08/10/11/40 của QA-3408."}
+```
+
+## OQ-sdk-138 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-138","type":"OPEN_ISSUE","feature_id":"genai-model-settings","summary":"Admin > Settings từ chối giá trị sai của genai_model_retirements và genai_model_fallbacks chưa có người xác nhận; QA không có quyền Admin. Claim trong CCR thiếu người xác nhận nên chưa có KB item.","kb_ids":[],"needs":"Người có quyền Admin chạy TC-23/24/39/42, hoặc dev xác nhận nguyên văn."}
+```
+
+## OQ-sdk-139 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-139","type":"NEEDS_CONFIRMATION","feature_id":"genai-model-settings","summary":"Key Gemini hợp lệ nhưng không có quyền với Nano Banana 2.1: Validate key có báo not valid với câu chung \"Key is not working. Please check & try again.\" như dev nói (KB-457) không? TC-26 của QA-3442 chưa chạy, cần fixture key không có quyền với 2.1. Testlane TC-TIB-7927 ghi quyết định QA 2026-11-01: không tạo được key Gemini không có quyền 2.1 trên staging.","kb_ids":["KB-457"]}
+```
+
+## OQ-sdk-140 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-140","type":"OPEN_ISSUE","feature_id":"genai-model-settings","summary":"Feature genai-model-settings chưa có KB cho role khác merchant-owner, cross-tenant và production; mọi item scope staging. Không viết check cho các vùng này từ evidence hiện tại.","kb_ids":[]}
+```
+
+## OQ-sdk-141 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-141","type":"NEEDS_CONFIRMATION","feature_id":"genai-model-settings","summary":"Đặt migrate_at về ngày hiện tại trên staging làm quy tắc lưu và model mặc định áp cho MỌI account staging (KB-461). Các check cần chạy job migration hoặc cần phía trước ngày migrate (CHK-010..CHK-015) ai được chạy, trên account nào, và cần dev/admin phối hợp thế nào?","kb_ids":["KB-461","KB-466"]}
+```
+
+## OQ-sdk-142 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-142","type":"OPEN_ISSUE","feature_id":"genai-personalization-runtime","summary":"Endpoint effect storefront customer-uploads/{id}/image-filter-effects/async dùng resolution do browser gửi thay vì giá trị đã lưu trên layer (QA-3442 TC-33, 2 repro, 2026-10-30). Ý dev chấp nhận để đó chỉ có trong tin Slack QA lưu, không có link; đã ship hay chưa không rõ; chưa thử derive hay field khác.","kb_ids":["KB-475"],"needs":"Dev xác nhận nguyên văn có link (Jira/PR) rằng đây là giới hạn chấp nhận hay bug cần sửa; nếu sửa, ticket theo dõi."}
+```
+
+## OQ-sdk-143 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-143","type":"NEEDS_CONFIRMATION","feature_id":"genai-personalization-runtime","summary":"Server bỏ qua model/gemini_model giả mạo trong request effect storefront và dùng model của account: chỉ là quan sát QA (TC-TIB-7934, skip, 2 lần), chưa ai xác nhận. Chưa ai quan sát generate khi model đã lưu là giá trị lạ (API lưu không kiểm, KB-467 của genai-model-settings).","kb_ids":["KB-476"],"needs":"Dev xác nhận nguyên văn server luôn lấy model từ private_config của store owner cho request effect storefront."}
+```
+
+## OQ-sdk-144 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-144","type":"NEEDS_CONFIRMATION","feature_id":"genai-personalization-runtime","summary":"Hành vi Resolution \"Default\" theo provider có nguồn dev_doc (Jira TIB-5561 #55645) nhưng product tắt allow_dev_doc_supersede nên item ở OBSERVED_CURRENT/LOW; GPT Default mới chạy layer 3:2 (1:1, 2:3 chưa chạy). Trả lời một phần OQ-sdk-040.","kb_ids":["KB-477"],"needs":"PO/dev xác nhận nguyên văn (po_dev_confirm) hoặc test case PASS có build ghi rõ; chạy GPT Default trên layer 1:1 và 2:3."}
+```
+
+## OQ-sdk-145 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-145","type":"NEEDS_CONFIRMATION","feature_id":"genai-personalization-runtime","summary":"Dung sai test cho ảnh GPT khi chọn resolution: dev \"ok\" mức ±16 px / tỉ lệ ±1%, nhưng quy tắc làm tròn xuống bội 16 ở 1K tỉ lệ 3:2 cho lệch tỉ lệ khoảng 1.6% (QA-3435 TC-21, 2026-10-27), vượt ±1%. Quy tắc làm tròn và dung sai không cùng đúng được.","kb_ids":["KB-478"],"needs":"Dev/PO chốt dung sai test (hoặc công thức kích thước kỳ vọng theo từng tỉ lệ) cho GPT."}
+```
+
+## OQ-sdk-146 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-146","type":"NEEDS_CONFIRMATION","feature_id":"genai-personalization-runtime","summary":"Flux ra đúng width × height có nguồn dev_doc (Jira TIB-5561 #55645) nhưng product tắt allow_dev_doc_supersede nên item ở OBSERVED_CURRENT/LOW; quan sát duy nhất QA-3435 TC-25 bước 2 không ghi build.","kb_ids":["KB-480"],"needs":"PO/dev xác nhận nguyên văn hoặc test case PASS có build ghi rõ."}
+```
+
+## OQ-sdk-147 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-147","type":"NEEDS_CONFIRMATION","feature_id":"genai-personalization-runtime","summary":"Layer Text to Image có sẵn giữ Gemini resolution chọn lúc ở nano_banana_pro, nay dùng khi account ở nano_banana_31 (trước bị bỏ qua). Dev ghi \"PO to confirm\" việc chấp nhận cho merchant đang live và việc Text to Image chỉ dành cho beta (TIB-5561 #55697 Q6); QA đã hỏi PO (#55728), chưa có trả lời (Q4/Q5/Q6). Ranh giới với KB-489 (layer có sẵn mở ở Default) chưa rõ.","kb_ids":["KB-481"],"needs":"PO trả lời Q4/Q5/Q6 của TIB-5561."}
+```
+
+## OQ-sdk-148 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-148","type":"NEEDS_CONFIRMATION","feature_id":"genai-personalization-runtime","summary":"Account còn ở model retired sau ngày shutdown: dev chọn \"plain failure\" (buyer thấy lỗi, không cảnh báo/CTA cho seller, không tự fallback) như giới hạn dev chấp nhận (TIB-5554 #54687 Q8); QA từng muốn cảnh báo seller; chưa có PO chốt và TC-36/TC-47 chưa chạy. Vế portal từ chối lưu model retired bằng 422 còn nghi vấn (OQ-sdk-136).","kb_ids":["KB-483"],"needs":"PO chốt hành vi mong muốn (A cảnh báo + CTA / B plain failure / C auto-fallback); chạy TC-36, TC-47."}
+```
+
+## OQ-sdk-149 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-149","type":"NEEDS_CONFIRMATION","feature_id":"genai-personalization-runtime","summary":"Quality low/medium/high và generate nền trong suốt bằng gpt-image-1.5 không fallback_model sau migration chỉ là quan sát QA-3408 TC-16 (2026-10-16), không có căn cứ expected, build không ghi.","kb_ids":["KB-484"],"needs":"Dev/PO xác nhận nguyên văn, hoặc test case chạy lại có build ghi rõ."}
+```
+
+## OQ-sdk-150 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-150","type":"NEEDS_CONFIRMATION","feature_id":"genai-personalization-runtime","summary":"Generate chạy bằng backup cùng provider và ghi fallback_model khi model down (GPT, Gemini, Flux) chỉ là quan sát QA tick tay QA-3408 TC-25 với lỗi do dev stub; vế model đã lưu không đổi chưa có trong kết quả ghi lại.","kb_ids":["KB-485"],"needs":"Dev xác nhận nguyên văn hành vi failover; chạy lại TC-25 ghi cả model đã lưu và build."}
+```
+
+## OQ-sdk-151 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-151","type":"NEEDS_CONFIRMATION","feature_id":"genai-personalization-runtime","summary":"Layer có sẵn mở ở Resolution \"Default\" và Save & Close không đổi thì không thêm key *_resolution / flux_output_* chỉ là quan sát QA-3435 TC-02 (build không ghi); dev notes chỉ nói layer có sẵn không bị ảnh hưởng.","kb_ids":["KB-489"],"needs":"Dev xác nhận nguyên văn hành vi lưu key size của layer có sẵn."}
+```
+
+## OQ-sdk-152 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-152","type":"OPEN_ISSUE","feature_id":"genai-personalization-runtime","summary":"Ngưỡng coi model là down (cửa sổ 5 phút, ≥ 50 lỗi và ≥ 50%; chỉ timeout/408/5xx được đếm; ngưỡng là biến env GENAI_FALLBACK_*) chưa có người xác nhận, test case liên quan (TC-27, 28, 46) chưa chạy. Claim trong CCR thiếu người xác nhận nên chưa có KB item.","kb_ids":[],"needs":"Dev hoặc PO xác nhận nguyên văn, hoặc chạy TC-27/28/46 của QA-3408."}
+```
+
+## OQ-sdk-153 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-153","type":"OPEN_ISSUE","feature_id":"genai-personalization-runtime","summary":"Retry 1 lần trên backup trong 60 s, thử lại model gốc sau 30 phút, không có backup thứ hai, toggle tắt hoặc không có backup thì lỗi provider như cũ: chưa có người xác nhận, TC-26/29/30/31/45 chưa chạy. Claim trong CCR thiếu người xác nhận nên chưa có KB item.","kb_ids":[],"needs":"Dev hoặc PO xác nhận nguyên văn, hoặc chạy TC-26/29/30/31/45 của QA-3408."}
+```
+
+## OQ-sdk-154 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-154","type":"OPEN_ISSUE","feature_id":"genai-personalization-runtime","summary":"Cấu hình backup genai_model_fallbacks (default theo model, override theo user, danh sách cặp mặc định, backup retired theo successor; áp cho image filter, text-to-image, multi-image) chưa có người xác nhận; QA không có quyền Admin, TC-32/33/35 chưa chạy. Claim trong CCR thiếu người xác nhận nên chưa có KB item.","kb_ids":[],"needs":"Người có quyền Admin đọc genai_model_fallbacks, hoặc dev xác nhận nguyên văn."}
+```
+
+## OQ-sdk-155 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-155","type":"OPEN_ISSUE","feature_id":"genai-personalization-runtime","summary":"Known limitation của fallback (quay về model gốc trễ tới 30 phút; bộ đếm chung nên một account có thể đẩy mọi account opt-in sang backup; call treo chỉ được đếm sau TIB-5389; deadline polling Flux không tính là outage) chưa có người xác nhận. Claim trong CCR thiếu người xác nhận nên chưa có KB item.","kb_ids":[],"needs":"Dev hoặc PO xác nhận nguyên văn."}
+```
+
+## OQ-sdk-156 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-156","type":"OPEN_ISSUE","feature_id":"genai-personalization-runtime","summary":"Storefront không đổi sau TIB-5470 (effect vẫn chạy trên ảnh buyer upload, thiếu key vẫn lặng lẽ bỏ qua effect; mua với layer có ảnh đã xử lý thì order design dùng ảnh đã xử lý): nguồn chỉ là mục regression/possible test cases của dev doc TIB-5470, không phải phát biểu hành vi; TC-43/44 không có kết quả chạy có ngày. Vế order design thuộc object order (ngoài lock). Chưa có KB item.","kb_ids":[],"needs":"Dev/PO xác nhận nguyên văn hành vi storefront, hoặc test case PASS có ngày và build; vế order cần run có lock object order."}
+```
+
+## OQ-sdk-157 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-157","type":"NEEDS_CONFIRMATION","feature_id":"genai-personalization-runtime","summary":"KB-482 (generate chỉ đọc model trong private_config của store owner; migration và email chỉ cho store owner, staff không nhận) chạm phân quyền owner/staff: item ADDED được diff đánh dấu cần owner xác nhận ý định. Scope item là buyer/api trong khi vế migration và email là hành vi phía account merchant.","kb_ids":["KB-482"],"needs":"PO xác nhận ý định cho staff account; reviewer/owner xem có cần tách scope vế migration và email."}
+```
+
+## OQ-sdk-158 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-158","type":"OPEN_ISSUE","feature_id":"genai-personalization-runtime","summary":"Outage/fallback của Nano Banana 2.1 chưa QA nào chạy (TC-27/28/39 skip, TC-29 pause); dev sau đó nói không cần test lại fallback cho 2.1; bảng genai_model_fallbacks chưa đọc được vì QA không có quyền Admin.","kb_ids":["KB-474","KB-488"],"needs":"Nếu cần test: nhờ Dev chuyển 2.1 sang down trên staging (KB-488) và người có quyền Admin đọc genai_model_fallbacks."}
+```
+
+## OQ-sdk-159 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-159","type":"OPEN_ISSUE","feature_id":"genai-personalization-runtime","summary":"Layer Text to Image có Resolution 512 đã lưu dưới Nano Banana 2 khi account ở Nano Banana 2.1 chưa test (QA chỉ test Multiple Uploads).","kb_ids":["KB-472"],"needs":"Chạy trên layer Text to Image."}
+```
+
+## OQ-sdk-160 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-160","type":"OPEN_ISSUE","feature_id":"genai-personalization-runtime","summary":"Gemini trên layer không vuông mới kiểm tỉ lệ 3:2 ở 1K/2K trên nano_banana_pro; 0.5K, 4K và các tỉ lệ khác chưa kiểm.","kb_ids":["KB-479"],"needs":"Chạy thêm 0.5K/4K trên layer không vuông."}
+```
+
+## OQ-sdk-161 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-161","type":"OPEN_ISSUE","feature_id":"genai-personalization-runtime","summary":"Production của khác biệt môi trường KB-488 (cách đưa Nano Banana 2.1 vào trạng thái down) không rõ; mọi item mới của CBS-094 chỉ có scope staging.","kb_ids":["KB-488"],"needs":"Dev mô tả phía production."}
+```
+
+## OQ-sdk-162 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-162","type":"OPEN_ISSUE","feature_id":"genai-personalization-runtime","summary":"Kết quả QA-3435 (2026-10-27) và QA-3408 (2026-10-16) không ghi build, nên baseline của KB-477, KB-480, KB-481, KB-484, KB-485, KB-489 chưa gắn được với bản đã test.","kb_ids":["KB-477","KB-480","KB-481","KB-484","KB-485","KB-489"],"needs":"Chạy lại có ghi build, hoặc QA bổ sung build vào kết quả."}
+```
+
+## OQ-sdk-163 — CONFLICT
+
+```json
+{"oq_id":"OQ-sdk-163","type":"CONFLICT","feature_id":"template-switch-photo-sync","conflict_group":"CONF-CBS098-01","summary":"Hành vi tại độ lệch tỉ lệ đúng 5% (tính theo layer đích, ví dụ 1000×1000 → 1000×1050) khi đổi template: giữ position không warning hay reset kèm warning. Hai nguồn nói ngược nhau, chưa phân xử; không phía nào là oracle.","side_a":"KB-494 (OBSERVED_CURRENT/LOW): Testlane TC-06 của QA-3415, chạy 2026-10-21 trên staging SDK app-v1.js 2026-10-21 05:56 GMT, 2/2 lượt: cặp lệch đúng 5% bị reset về placement mặc định và hiện warning; phép tính trên trang cho 0.05000000000000006 > 0.05. Bug draft chưa file, dev chưa trả lời.","side_b":"KB-515 (CONFIRMED_EXPECTED/LOW, đang UNRESOLVED): dev trả lời Q1 ở Jira TIB-5566 comment 55235 (2026-10-21): độ lệch đúng 5% được tính là cùng tỉ lệ — giữ position, không warning.","kb_ids":["KB-494","KB-515"],"needs":"PO/Dev phân xử: đúng 5% là giữ hay reset; nếu giữ là đúng thì đây là bug làm tròn số thực (cần ticket theo dõi)."}
+```
+
+## OQ-sdk-164 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-164","type":"NEEDS_CONFIRMATION","feature_id":"template-switch-photo-sync","summary":"Xoá ảnh ở template A rồi đổi sang B thì B rỗng, không warning, ảnh mới ở B bắt đầu ở placement mặc định (KB-499): chỉ là quan sát TC-36 (2026-10-21), không có căn cứ expected; localStorage vẫn giữ key position cũ sau khi xoá ảnh.","kb_ids":["KB-499"],"needs":"Dev/PO xác nhận nguyên văn đây là hành vi đúng, và việc giữ key position cũ là chủ đích."}
+```
+
+## OQ-sdk-165 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-165","type":"NEEDS_CONFIRMATION","feature_id":"template-switch-photo-sync","summary":"Template đích có 2 photo layer cùng option title nhưng khác tỉ lệ thì mỗi layer được xét riêng, warning chỉ ở field của layer reset (KB-500): chỉ là quan sát TC-37, không có căn cứ expected.","kb_ids":["KB-500"],"needs":"Dev/PO xác nhận nguyên văn việc xét giữ/reset và warning theo từng layer."}
+```
+
+## OQ-sdk-166 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-166","type":"NEEDS_CONFIRMATION","feature_id":"template-switch-photo-sync","summary":"Layer populate target (TIB-5302) bị sync bỏ qua và theo luật populate (KB-504, lời dev): TC-18 chưa chạy trên build thật; hành vi chạm object artwork (populate-values) mà run này không ghi vào. artwork có conflict riêng về ngưỡng 0.05 của populate (khác đại lượng, không gộp).","kb_ids":["KB-504"],"needs":"Chạy TC-18; operator quyết có cần CCR riêng ghi tham chiếu chéo ở artwork/populate-values."}
+```
+
+## OQ-sdk-167 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-167","type":"NEEDS_CONFIRMATION","feature_id":"template-switch-photo-sync","summary":"Đổi template nhanh liên tục và popup desktop / mobile 390×844 vẫn giữ position (KB-513): chỉ là quan sát (TC-26; TC-28 trên Testlane chỉ ghi tạm dừng), không có căn cứ expected; nhánh \"Enable Reposition on main gallery\" = ON chưa kiểm.","kb_ids":["KB-513"],"needs":"Dev/PO xác nhận expected cho đổi nhanh và popup/mobile; chạy nhánh toggle ON."}
+```
+
+## OQ-sdk-168 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-168","type":"NEEDS_CONFIRMATION","feature_id":"template-switch-photo-sync","summary":"Chữ đầy đủ của warning tỉ lệ (KB-514) chỉ có ở lượt chạy SDK cache cũ, không hợp lệ; lượt chạy sạch chỉ ghi phần đầu \"Your photo doesn't match this design's aspect ratio\".","kb_ids":["KB-514"],"needs":"Chữ đầy đủ từ nguồn (dictionary/dev) hoặc lượt chạy sạch ghi nguyên chữ."}
+```
+
+## OQ-sdk-169 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-169","type":"NEEDS_CONFIRMATION","feature_id":"template-switch-photo-sync","summary":"Đổi Size hoặc option map sang template/artwork khác chạy cùng logic giữ/reset (KB-503) chỉ có lời dev đọc code; TC-14, TC-15 chưa chạy.","kb_ids":["KB-503"],"needs":"Chạy TC-14, TC-15 trên build có TIB-5566."}
+```
+
+## OQ-sdk-170 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-170","type":"NEEDS_CONFIRMATION","feature_id":"template-switch-photo-sync","summary":"Layer Multiple Uploads có reposition giữ một position cho ảnh ghép khi đổi template (KB-501) chưa có lượt chạy (TC-19, TC-20).","kb_ids":["KB-501"],"needs":"Chạy TC-19, TC-20."}
+```
+
+## OQ-sdk-171 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-171","type":"NEEDS_CONFIRMATION","feature_id":"template-switch-photo-sync","summary":"Ảnh không sync giữa field type khác nhau (KB-502) chưa có lượt chạy (TC-21..TC-23, TC-34).","kb_ids":["KB-502"],"needs":"Chạy TC-21..TC-23, TC-34."}
+```
+
+## OQ-sdk-172 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-172","type":"NEEDS_CONFIRMATION","feature_id":"template-switch-photo-sync","summary":"Edit design từ cart và order design / file in dùng position đã giữ (KB-505) chỉ dựa trên dev đồng ý đề xuất QA; TC-16 phần Edit và TC-17 chưa chạy; order KB-369 không nói về position.","kb_ids":["KB-505"],"needs":"Chạy TC-16 (Edit design) và TC-17 (order design)."}
+```
+
+## OQ-sdk-173 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-173","type":"OPEN_ISSUE","feature_id":"template-switch-photo-sync","summary":"Photo layer dùng Global Option không thuộc feature này (TIB-5416). Trên staging khi TIB-5416 bị revert, layer Global Option dùng chung một position cho mọi template (global-option có known defect riêng); khi TIB-5416 lên lại cần xem lại hai phía.","kb_ids":[],"needs":"Theo dõi TIB-5416; không viết check sync cho photo layer Global Option dựa trên feature này."}
+```
+
+## OQ-sdk-174 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-174","type":"NEEDS_CONFIRMATION","feature_id":"template-switch-photo-sync","summary":"Field status Testlane của task TIB-223 (QA-3415) không phản ánh kết quả: mọi test case đều \"passed\", kể cả TC-06 ❌, TC-30 ❌ và các TC chưa chạy. Kết quả của KB-490, KB-492, KB-498 chỉ đọc được ở actualResult.","kb_ids":["KB-490","KB-492","KB-498"],"needs":"QA sửa status trên Testlane cho khớp actualResult."}
+```
+
+## OQ-sdk-175 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-175","type":"NEEDS_CONFIRMATION","feature_id":"template-switch-photo-sync","summary":"Scale position theo layer đích (KB-491) và mức giãn trong ngưỡng 5% (KB-495) mới có số đo một lượt (TC-02, TC-09); chưa kiểm nhiều cặp kích thước.","kb_ids":["KB-491","KB-495"],"needs":"Chạy thêm vài cặp kích thước nếu cần check định lượng."}
+```
+
+## OQ-sdk-176 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-176","type":"NEEDS_CONFIRMATION","feature_id":"template-switch-photo-sync","summary":"Tên setting: KB-490 nói \"khi bật sync giữa template\", KB-513 nói nhánh \"Enable Reposition on main gallery\"; product-page-settings hiện chỉ ghi \"Sync customer's selection between same title options\", \"Enable Text Reposition on main gallery\" và \"Photo Reposition on Mockup\". Chưa rõ control nào ứng với hai tên này.","kb_ids":["KB-490","KB-513"],"needs":"Dev/QA chỉ đúng control trong Product page settings."}
+```
+
+## OQ-sdk-177 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-177","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Sau reload, template picker không khôi phục nhưng chọn lại template thì ảnh và position đã giữ hiện lại đúng (KB-506): chỉ là quan sát TC-35 (2026-10-22), không có căn cứ expected. Vế picker không khôi phục trùng nghĩa KB-019 (không thay KB-019).","kb_ids":["KB-506"],"needs":"Dev/PO xác nhận expected sau reload."}
+```
+
+## OQ-sdk-178 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-178","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Position buyer sửa tay trong localStorage không bị clamp hay bỏ qua: customization POST trả 201 lưu nguyên giá trị, \"abc\" gây lỗi console, thumbnail cart mất ảnh hoặc lệch (KB-507, quan sát TC-30 ❌ 2/2). Bug draft chưa file, dev chưa trả lời; order design với các giá trị này chưa kiểm. Cùng dạng với known issue ở artwork (server 201 với payload buyer chèn).","kb_ids":["KB-507"],"needs":"PO/Dev quyết đây là giới hạn chấp nhận hay bug; ý định validate phía server."}
+```
+
+## OQ-sdk-179 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-179","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Tên file payload không render, SVG có script / HTML đổi đuôi .jpg bị từ chối với thông báo \"Cannot upload because the image is too small. Please upload a bigger image\", payload text hiển thị literal (KB-508): chỉ là quan sát TC-31..TC-33, không có căn cứ expected; thông báo cho file sai định dạng có thể không đúng; order design của TC-33 dùng đơn tạo trên SDK cũ.","kb_ids":["KB-508"],"needs":"PO xác nhận thông báo đúng cho file sai định dạng; chạy lại order design trên SDK mới."}
+```
+
+## OQ-sdk-180 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-180","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Namespace id SVG khi vector layer áp màu (KB-509) có nguồn dev summary TIB-5501 nhưng product tắt allow_dev_doc_supersede nên ở OBSERVED_CURRENT/LOW; quan sát chỉ khi mọi layer cùng một Color option — \"mỗi layer giữ màu riêng\" khi nhiều Color option chưa kiểm (TC-01, TC-03 tạm dừng).","kb_ids":["KB-509"],"needs":"Chạy với nhiều Color option; xác nhận có cần nguồn spec/PO để lên expected."}
+```
+
+## OQ-sdk-181 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-181","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Vector layer chưa áp màu không bị namespace id (KB-510) có nguồn dev summary TIB-5501, bị hạ OBSERVED_CURRENT/LOW; vế render qua <image href> chỉ là quan sát TC-18.","kb_ids":["KB-510"],"needs":"Xác nhận nếu cần dùng làm expected."}
+```
+
+## OQ-sdk-182 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-182","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Prefix id được sinh lại mỗi lần đổi màu hay cố định theo layer (KB-512 chỉ là quan sát phụ TC-26): dev chưa trả lời vế này của Q3 (TIB-5501).","kb_ids":["KB-512"],"needs":"Dev trả lời vế prefix của Q3."}
+```
+
+## OQ-sdk-183 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-183","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Field status Testlane của task TIB-223 không phản ánh kết quả (mọi TC \"passed\", kể cả TC-30 ❌ và TC chưa chạy); KB-506..KB-508 đọc kết quả ở actualResult.","kb_ids":["KB-506","KB-507","KB-508"],"needs":"QA sửa status trên Testlane cho khớp actualResult."}
+```
+
+## OQ-sdk-184 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-184","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Kết quả QA-3394 (TC-18, TC-26, 2026-10-08) không ghi build portal/SDK nên KB-509, KB-510, KB-512 chưa gắn được với bản đã test.","kb_ids":["KB-509","KB-510","KB-512"],"needs":"Chạy lại có ghi build, hoặc QA bổ sung build vào kết quả."}
+```
+
+## OQ-sdk-185 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-sdk-185","type":"OPEN_ISSUE","feature_id":"storefront-buyer-facing","summary":"Known issue chưa rõ nội dung: vector layer có Drop shadow, đổi màu khi SVG trùng id với layer khác — Testlane TC-05 của task TIB-166 failed, gắn BUG-255; không ngày chạy, không người xác nhận, actualResult rỗng. Không nạp KB.","kb_ids":[],"needs":"QA/Dev cho biết nội dung BUG-255, ngày, build, đã ship chưa."}
+```
+
+## OQ-sdk-186 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-sdk-186","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"KB-015 (shape của teeinblue-customizations, quan sát 2026-09) không liệt kê key position; sau TIB-5566 localStorage có key position dạng 0–1 (KB-491, KB-499). KB-015 và check BASELINE dựa trên nó có thể đã lỗi thời.","kb_ids":["KB-015"],"needs":"Quan sát lại shape localStorage trên SDK hiện tại."}
+```

@@ -45,6 +45,16 @@
         "KB-032",
         "KB-038"
       ]
+    },
+    {
+      "role": "merchant-owner",
+      "permission_observed": "[CBS-100] Trong portal, bấm 'Run effects' trên layer dùng Global Option: effect của GO chạy lên ảnh của chính layer (KB-726, quan sát LOW); với GO 0 effect thì nút bị disabled (KB-728, quan sát LOW). Hiển thị summary và lưu giá trị biến prompt theo layer là expected theo spec (KB-725, KB-727).",
+      "kb_refs": [
+        "KB-725",
+        "KB-726",
+        "KB-727",
+        "KB-728"
+      ]
     }
   ],
   "entry_points": [
@@ -92,6 +102,23 @@
       "kb_refs": [
         "KB-035",
         "KB-036"
+      ]
+    },
+    {
+      "path": "[CBS-100] portal artwork editor > layer dùng Global Option > Global Option summary > nút 'Run effects' (popover 'Fill in variables' khi prompt của effect có biến)",
+      "precondition": "layer dùng 'Use an existing global option' trỏ tới GO có image effects; GO 0 effect thì nút bị disabled (KB-728, quan sát)",
+      "kb_refs": [
+        "KB-725",
+        "KB-726",
+        "KB-727",
+        "KB-728"
+      ]
+    },
+    {
+      "path": "[CBS-100] storefront: buyer đổi template trên sản phẩm có photo layer dùng Global Option",
+      "precondition": "staging khi TIB-5416 đang tạm revert (SDK build-staging); ở trạng thái này hành vi là known defect (KB-724), chưa có expected",
+      "kb_refs": [
+        "KB-724"
       ]
     }
   ],
@@ -163,6 +190,16 @@
       "kb_refs": [
         "KB-371"
       ]
+    },
+    {
+      "name": "[CBS-100] Chạy image effects của Global Option lên layer dùng GO đó ('Run effects' trong portal)",
+      "description": "Expected (KB-725, CONFIRMED_EXPECTED/MEDIUM, spec TIB-5470 bản 2026-10-19): khi layer dùng Global Option có sẵn, Global Option summary của layer hiện nút `Run effects` cạnh `Image effects (N)` (N = số effect của GO), bên dưới liệt kê effect theo đúng thứ tự trong GO, mỗi dòng `[Effect name] · [Effect settings]`; cách hiển thị [Effect settings] theo từng loại effect không được spec nêu. Expected (KB-727, CONFIRMED_EXPECTED/MEDIUM, spec TIB-5470 bản 2026-10-26): khi prompt của effect có biến, `Run effects` mở popover `Fill in variables`; giá trị nhập lần cuối lưu riêng cho từng layer, còn giữ sau mỗi lần chạy, không lưu trên GO — 2 layer dùng cùng GO giữ giá trị biến riêng, dữ liệu GO không đổi. 'Giá trị biến' là giá trị nhập cho biến prompt phía merchant, không phải giá trị personalization buyer nhập (KB-029). Quan sát, không phải expected (KB-726, OBSERVED_CURRENT/LOW, TC-82..84 không ghi build): effect chạy lên ảnh hiện tại của chính layer và thay ảnh đó, dữ liệu GO không đổi; vế 'GO không đổi' chưa được PO xác nhận cho trường hợp chung. Quan sát, không phải expected (KB-728, OBSERVED_CURRENT/LOW, TC-85 tạm dừng, 1 lượt): GO 0 effect thì summary hiện `Image effects (0)`, `Run effects` disabled kèm tooltip riêng; copy tooltip chưa được PO chấp nhận.",
+      "kb_refs": [
+        "KB-725",
+        "KB-726",
+        "KB-727",
+        "KB-728"
+      ]
     }
   ],
   "state_transitions": [
@@ -222,6 +259,26 @@
         "KB-035",
         "KB-036"
       ]
+    },
+    {
+      "from": "[CBS-100] layer dùng Global Option (GO có ≥ 1 image effect) với ảnh hiện tại",
+      "to": "ảnh của layer được thay bằng kết quả chạy effect; dữ liệu Global Option không đổi",
+      "trigger": "bấm 'Run effects' trên Global Option summary của layer (nếu prompt có biến: điền ở popover 'Fill in variables')",
+      "condition": "[OBSERVED_CURRENT/LOW KB-726] quan sát TC-82..84 không ghi build, vế 'GO không đổi' chưa được PO xác nhận cho trường hợp chung — không phải oracle. Riêng giá trị biến prompt lưu theo layer, không trên GO, là expected (KB-727). GO 0 effect thì nút disabled (KB-728, quan sát)",
+      "kb_refs": [
+        "KB-726",
+        "KB-727",
+        "KB-728"
+      ]
+    },
+    {
+      "from": "[CBS-100] storefront: photo layer dùng Global Option đang hiện ở template A",
+      "to": "buyer đổi sang template B; photo giữ nguyên position dùng chung, có thể trông bị giãn trên layer khác tỉ lệ",
+      "trigger": "buyer đổi template trên storefront",
+      "condition": "[KNOWN_DEFECT KB-724] chỉ trên staging khi TIB-5416 đang tạm revert; dev mô tả là bug cũ mà TIB-5416 sửa (position theo từng layer); QA chưa quan sát (TC-24 chưa chạy). Không phải expected, không dùng làm oracle; expected sau TIB-5416 chưa có",
+      "kb_refs": [
+        "KB-724"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -271,6 +328,26 @@
       "limitation": "Verify với GO 986 (inline) và GO 987 (category), role owner, staging. Ý định 'cố ý không chép item inline' chỉ có từ dev, không thuộc rule; việc loại trừ GO category-sourced có phải cố ý không chưa rõ.",
       "kb_refs": [
         "KB-039"
+      ]
+    },
+    {
+      "statement": "Trong portal, khi một layer dùng Global Option có sẵn, Global Option summary của layer đó hiện nút `Run effects` cạnh `Image effects (N)`, với N là số effect của Global Option; bên dưới liệt kê các effect theo đúng thứ tự định nghĩa trong Global Option, mỗi dòng dạng `[Effect name] · [Effect settings]`.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source": "spec_doc — Jira TIB-5470 description (PO huyen.chu), bản sửa 2026-10-19, mục Portal › Run effects, bullet Global Option (authored_on 2026-10-19)",
+      "limitation": "Không nói cách hiển thị cụ thể của [Effect settings] cho từng loại effect (effect Gemini còn chờ so mockup, TC-81 tạm dừng). Trường hợp N = 0 (tooltip, trạng thái disabled) chỉ có quan sát LOW (KB-728), không thuộc rule. Scope staging, role merchant-owner, portal.",
+      "kb_refs": [
+        "KB-725"
+      ]
+    },
+    {
+      "statement": "Trong portal, khi prompt của effect có biến thì `Run effects` mở popover `Fill in variables`; giá trị nhập lần cuối được lưu riêng cho từng layer và còn giữ sau mỗi lần chạy. Với layer dùng Global Option, các giá trị này lưu theo layer, không lưu trên Global Option: hai layer dùng cùng một Global Option giữ giá trị biến riêng của mình, và dữ liệu Global Option không đổi.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source": "spec_doc — Jira TIB-5470 description (PO huyen.chu), bản sửa 2026-10-26, mục Update: Prompt variables › Saved values (authored_on 2026-10-26); TC-73 PASS 2026-10-28 chỉ là đối chứng cùng chiều",
+      "limitation": "'Giá trị biến' là giá trị nhập cho biến prompt ở popover Fill in variables của Run effects phía merchant, KHÔNG phải giá trị personalization buyer nhập trên storefront (KB-029, chia sẻ theo GO) — hai rule không mâu thuẫn và không được gộp. Rule chỉ nói về giá trị biến; việc ảnh kết quả có đổi GO hay không thuộc KB-726 (quan sát LOW). Scope staging, role merchant-owner, portal.",
+      "kb_refs": [
+        "KB-727"
       ]
     }
   ],
@@ -367,6 +444,35 @@
       "kb_refs": [
         "KB-371"
       ]
+    },
+    {
+      "statement": "[CBS-100, KNOWN DEFECT, không phải expected, không dùng làm oracle] Theo dev chinhdt trả lời Q9 ở Jira TIB-5566 #55235 (2026-10-21): trên staging khi TIB-5416 đang tạm revert (SDK build-staging), photo layer dùng Global Option dùng chung một position cho mọi template và giữ nguyên position đó khi buyer đổi template trên storefront; trên layer khác tỉ lệ, ảnh có thể trông bị giãn. Dev gọi đây là bug có từ trước mà TIB-5416 sửa (position theo từng layer). QA chưa quan sát (TC-24 chưa chạy); không suy gì cho production hay cho lúc TIB-5416 đã lên lại. Không liên quan tới việc chia sẻ giá trị buyer nhập giữa các layer (KB-029).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "status": "KNOWN_DEFECT",
+      "scope": "staging khi TIB-5416 đang tạm revert (SDK build-staging), buyer, storefront",
+      "observed_count": null,
+      "kb_refs": [
+        "KB-724"
+      ]
+    },
+    {
+      "statement": "[CBS-100, quan sát, không phải expected] Staging 2026-10-28 (TC-82, TC-83, TC-84 trong đợt regression QA-3406, PASS, không ghi build), role merchant-owner, portal: bấm `Run effects` trên một layer dùng Global Option thì các effect của Global Option chạy lên ảnh hiện tại của chính layer đó và thay ảnh đó bằng kết quả, còn dữ liệu của Global Option không đổi. Spec TIB-5470 nói Run effects dùng ảnh hiện tại của layer làm input và thay ảnh bằng kết quả, nhưng không phát biểu riêng cho Global Option; vế 'GO không đổi' chưa được PO xác nhận.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "KB-726"
+      ]
+    },
+    {
+      "statement": "[CBS-100, quan sát, không phải expected] Staging 2026-10-28 (TC-85 trong đợt regression QA-3406, tạm dừng, không PASS, không ghi tên bundle; 1 lượt, 1 GO có effects rỗng, đã khôi phục), role merchant-owner, portal: với layer dùng Global Option không có effect nào, summary hiện `Image effects (0)`, nút `Run effects` bị disabled, tooltip là \"Select a global option with image effects to run them.\", khác tooltip của layer Normal (\"Applies all effects to the current image and replaces it.\"). Spec TIB-5470 chỉ nói Run effects disabled khi chưa cấu hình effect, không nói tooltip cho Global Option; copy tooltip chưa được PO chấp nhận.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "kb_refs": [
+        "KB-728"
+      ]
     }
   ],
   "observed_validations": [
@@ -380,6 +486,7 @@
       ]
     }
   ],
+  "observed_validations_note": "[CBS-100] Không thêm dòng mới: tooltip nút Run effects disabled (KB-728) là trạng thái disabled chứ không phải thông báo validate, và copy chưa được PO chấp nhận; nguyên văn nằm ở observed_behavior[16].",
   "permissions": [
     {
       "role": "owner",
@@ -425,6 +532,15 @@
       "kb_refs": [
         "KB-038"
       ]
+    },
+    {
+      "role": "merchant-owner",
+      "capability": "[CBS-100] bấm Run effects trên layer dùng Global Option (GO có effect); thấy nút disabled khi GO 0 effect",
+      "observed": true,
+      "kb_refs": [
+        "KB-726",
+        "KB-728"
+      ]
     }
   ],
   "surface_mapping": {
@@ -435,12 +551,15 @@
       "[CBS-004] /artworks editor > Conditional Setting ('is any of' = item inline của GO Additional Option — KB-037)",
       "[CBS-004] /artworks editor > Quick-fill 'Populate Content from another option' > 'Source option' (loại trừ layer GO Additional Option — KB-039)",
       "[CBS-004] customization data của order (dòng '<Option Title>: <item>'; surface portal vs API public chưa tách — KB-035, KB-036)",
-      "[MỚI, CBS-013] campaign editor campaign #3270 (Nprice1) > mục 'Personalization form' hiện layer gắn Global Option (Color A1 dropdown) + preview mockup (quan sát — KB-371)"
+      "[MỚI, CBS-013] campaign editor campaign #3270 (Nprice1) > mục 'Personalization form' hiện layer gắn Global Option (Color A1 dropdown) + preview mockup (quan sát — KB-371)",
+      "[CBS-100] artwork editor > Global Option summary của layer: `Image effects (N)` + nút `Run effects` + danh sách `[Effect name] · [Effect settings]` theo thứ tự trong GO (KB-725); N = 0 thì nút disabled (KB-728, quan sát)",
+      "[CBS-100] popover `Fill in variables` của Run effects khi prompt có biến; giá trị lưu theo layer (KB-727)"
     ],
     "storefront": [
       "storefront product page campaign 2605 — panel PERSONALIZE / #tee-artwork-form (2 field: GO#860 type=text, GO#862 type=text-to-image)",
       "cart page (line item properties sau add-to-cart)",
-      "[CBS-004] storefront field GO Additional Option inline (GO 986) điều khiển hiện/ẩn layer điều kiện (layer-513136 — KB-038)"
+      "[CBS-004] storefront field GO Additional Option inline (GO 986) điều khiển hiện/ẩn layer điều kiện (layer-513136 — KB-038)",
+      "[CBS-100] đổi template trên sản phẩm có photo layer dùng Global Option — KNOWN_DEFECT trên staging khi TIB-5416 tạm revert (KB-724), chưa quan sát"
     ],
     "api": [
       "POST /api/artworks (create artwork, trả layer.customization_type/global_option/required)",
@@ -459,7 +578,9 @@
       "localStorage 'teeinblue-customizations' = mảng per-product, key literal 'global-option-<id>' (type=text — KB-030)",
       "localStorage 'teeinblue-text-to-image-gen-state' khoá theo layer_id (type=text-to-image, round 1 — xem conflict CONFLICT-SF-01, KHÔNG cùng cơ chế với 2 key trên)",
       "cart line item properties: _customization_id, _customization_image, _tib_fulfilled_sku, _tib_design_link_1, _tib_design_link_2 (KB-032)",
-      "[CBS-004] GO 'Option Title' (input form_label) → tiền tố dòng nhãn trong customization data của order (KB-035)"
+      "[CBS-004] GO 'Option Title' (input form_label) → tiền tố dòng nhãn trong customization data của order (KB-035)",
+      "[CBS-100] giá trị biến prompt của Run effects: lưu theo layer, không lưu trên Global Option (KB-727); tên field lưu trữ chưa quan sát",
+      "[CBS-100] danh sách image effects của Global Option (số lượng N và thứ tự hiển thị theo GO — KB-725)"
     ],
     "code": []
   },
@@ -520,6 +641,25 @@
       "description": "[MỚI, CBS-013] Màn campaign editor thuộc object campaign; profile này chỉ ghi việc mục Personalization form render layer gắn Global Option (KB-371, quan sát).",
       "kb_refs": [
         "KB-371"
+      ]
+    },
+    {
+      "target": "object: artwork (Run effects / image effects của layer, TIB-5470)",
+      "direction": "cross-object",
+      "description": "[CBS-100] Run effects và popover Fill in variables là chức năng layer của artwork editor (spec TIB-5470); profile này chỉ ghi phần áp cho layer dùng Global Option (KB-725..KB-728).",
+      "kb_refs": [
+        "KB-725",
+        "KB-726",
+        "KB-727",
+        "KB-728"
+      ]
+    },
+    {
+      "target": "fix TIB-5416 (position theo từng layer cho Global Option photo layer, SDK build-staging)",
+      "direction": "blocked/unclear",
+      "description": "[CBS-100] Trên staging TIB-5416 đang tạm revert nên photo layer dùng GO dùng chung một position cho mọi template (KNOWN_DEFECT KB-724). Trạng thái TIB-5416 và expected sau khi lên lại chưa biết; check đổi template với photo layer GO phụ thuộc vào đó.",
+      "kb_refs": [
+        "KB-724"
       ]
     }
   ],
@@ -609,12 +749,46 @@
       "kb_refs": [
         "KB-371"
       ]
+    },
+    {
+      "risk": "[CBS-100] KNOWN DEFECT trên staging (TIB-5416 tạm revert): photo layer dùng Global Option dùng chung position cho mọi template, ảnh có thể trông bị giãn trên layer khác tỉ lệ. Check đổi template không được lấy position dùng chung làm expected, cũng không có expected thay thế cho tới khi TIB-5416 lên lại và PO/Dev nêu hành vi mong đợi. Không suy cho production.",
+      "status": "KNOWN_DEFECT",
+      "kb_refs": [
+        "KB-724"
+      ]
+    },
+    {
+      "risk": "[CBS-100] Vế 'Run effects trên layer dùng GO không đổi dữ liệu Global Option' (KB-726) chỉ là quan sát LOW không ghi build và diễn giải của người gửi; check 'GO không đổi sau Run effects' chưa có oracle, trừ phần giá trị biến prompt (KB-727, expected).",
+      "kb_refs": [
+        "KB-726",
+        "KB-727"
+      ]
+    },
+    {
+      "risk": "[CBS-100] Hiển thị `[Effect settings]` theo từng loại effect không có trong spec (KB-725); effect Gemini còn chờ so mockup (TC-81 tạm dừng). Check chỉ có oracle cho sự có mặt của Run effects, Image effects (N) và thứ tự effect.",
+      "kb_refs": [
+        "KB-725"
+      ]
+    },
+    {
+      "risk": "[CBS-100] Tooltip Run effects disabled khi GO 0 effect (KB-728) là quan sát 1 lượt trên test case tạm dừng, copy chưa được PO chấp nhận; không assert nguyên văn tooltip.",
+      "kb_refs": [
+        "KB-728"
+      ]
+    },
+    {
+      "risk": "[CBS-100] Dễ nhầm hai loại 'giá trị' của GO dùng chung: giá trị biến prompt của Run effects (merchant, portal) lưu theo layer (KB-727), còn giá trị personalization buyer nhập (storefront) chia sẻ theo GO (KB-029). Check không được suy rule này từ rule kia.",
+      "kb_refs": [
+        "KB-727",
+        "KB-029"
+      ]
     }
   ],
+  "environment_differences": [],
   "freshness": {
     "observed_at": "2026-10-30",
     "base_observed_at": "2026-09-16",
-    "note": "Item base giữ freshness 2026-09-15/16; KB-036 quan sát 2026-10-08; KB-037/038/039 authored 2026-10-08, KB-035 authored 2026-10-11; KB-371 quan sát 2026-10-28."
+    "note": "Item base giữ freshness 2026-09-15/16; KB-036 quan sát 2026-10-08; KB-037/038/039 authored 2026-10-08, KB-035 authored 2026-10-11; KB-371 quan sát 2026-10-28. [CBS-100] KB-724 nguồn dev authored 2026-10-21; KB-725 spec authored 2026-10-19; KB-727 spec authored 2026-10-26; KB-726/KB-728 quan sát QA 2026-10-28; ingest 2026-11-07. observed_at giữ 2026-10-30 của base (không lùi). Run này không tự quan sát."
   },
   "unknown_areas": [
     {
@@ -718,11 +892,42 @@
       ],
       "oq_type": "NEEDS_CONFIRMATION",
       "oq_id": "OQ-global-option-038"
+    },
+    {
+      "question": "[CBS-100] TIB-5416 (position theo từng layer cho Global Option photo layer) đã lên lại staging chưa? Sau TIB-5416, hành vi mong đợi cụ thể khi buyer đổi template là gì?",
+      "why_it_matters": "Tới lúc TIB-5416 lên lại, position dùng chung trên staging là bug cũ (KB-724, KNOWN_DEFECT), không phải expected; check đổi template với photo layer dùng GO không có oracle cho tới khi Dev cho biết trạng thái TIB-5416, PO/Dev nêu expected và QA chạy TC-24. Nguồn không nói gì về production.",
+      "kb_refs": [
+        "KB-724"
+      ],
+      "draft_id": "OQ-global-option-049",
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-global-option-049"
+    },
+    {
+      "question": "[CBS-100] PO có xác nhận Run effects trên layer dùng Global Option chỉ thay ảnh của layer đó và không đổi Global Option không (spec TIB-5470 không ghi nguyên chữ cho GO)? Cách hiển thị [Effect settings] của effect Gemini trong Global Option summary là gì?",
+      "why_it_matters": "KB-726 chỉ là quan sát LOW không ghi build; KB-725 không nói [Effect settings] theo loại effect và TC-81 (Gemini) tạm dừng chờ so mockup. Check 'GO không đổi sau Run effects' và check hiển thị effect Gemini không có oracle.",
+      "kb_refs": [
+        "KB-726",
+        "KB-725"
+      ],
+      "draft_id": "OQ-global-option-050",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-global-option-050"
+    },
+    {
+      "question": "[CBS-100] PO có chấp nhận copy tooltip 'Select a global option with image effects to run them.' cho nút Run effects disabled khi Global Option có 0 effect (khác tooltip layer Normal) không?",
+      "why_it_matters": "KB-728 là 1 lượt quan sát trên TC-85 tạm dừng; spec chỉ nói nút disabled khi chưa cấu hình effect. Check tooltip không có oracle tới khi PO chấp nhận hoặc đưa copy khác.",
+      "kb_refs": [
+        "KB-728"
+      ],
+      "draft_id": "OQ-global-option-051",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-global-option-051"
     }
   ],
   "last_updated": {
-    "date": "2026-10-30",
-    "ccr_ref": "CBS-013"
+    "date": "2026-11-07",
+    "ccr_ref": "CBS-100"
   },
   "coverage_matrix": [
     {
@@ -926,6 +1131,88 @@
         "KB-371"
       ],
       "basis": "OBSERVED_CURRENT/LOW, 1 lượt 2026-10-28 trước redeploy; chưa có oracle"
+    },
+    {
+      "feature_id": "FEAT-02-artwork-personalization-global-option-link",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-100] Global Option summary của layer: Run effects cạnh Image effects (N), effect liệt kê theo thứ tự GO dạng `[Effect name] · [Effect settings]`",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-725"
+      ],
+      "basis": "spec_doc TIB-5470 bản 2026-10-19 (CONFIRMED_EXPECTED/MEDIUM)"
+    },
+    {
+      "feature_id": "FEAT-02-artwork-personalization-global-option-link",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-100] Fill in variables: giá trị biến prompt lưu theo layer, không trên GO; 2 layer cùng GO giữ giá trị riêng",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-727"
+      ],
+      "basis": "spec_doc TIB-5470 bản 2026-10-26 (CONFIRMED_EXPECTED/MEDIUM)"
+    },
+    {
+      "feature_id": "FEAT-02-artwork-personalization-global-option-link",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-100] Run effects chạy lên ảnh của chính layer, dữ liệu GO không đổi",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-726"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, TC-82..84 không ghi build; vế 'GO không đổi' chưa PO xác nhận, không phải oracle"
+    },
+    {
+      "feature_id": "FEAT-02-artwork-personalization-global-option-link",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-100] GO 0 effect: Image effects (0), Run effects disabled, tooltip riêng",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-728"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt TC-85 tạm dừng; copy tooltip chưa PO chấp nhận, không phải oracle"
+    },
+    {
+      "feature_id": "FEAT-02-artwork-personalization-global-option-link",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-100] hiển thị [Effect settings] cho effect Gemini (và các loại effect khác)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-725"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-artwork-personalization-global-option-link",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[CBS-100] đổi template với photo layer dùng GO trên staging khi TIB-5416 tạm revert: KNOWN_DEFECT position dùng chung, QA chưa quan sát (TC-24 chưa chạy)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-724"
+      ],
+      "basis": "dev mô tả bug cũ (KNOWN_DEFECT), không phải oracle"
+    },
+    {
+      "feature_id": "FEAT-02-artwork-personalization-global-option-link",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[CBS-100] đổi template với photo layer dùng GO sau khi TIB-5416 lên lại; production",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-724"
+      ]
     }
   ],
   "profile_conflicts": [

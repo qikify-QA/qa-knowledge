@@ -80,14 +80,23 @@
       "description": "Toolbar phía trên canvas đổi theo nhóm layer đang chọn: text hiện Transform/Align/Print Effects + font/size; image/vector hiện Transform/Align/Print Effects (không font); form-elements (color/toggle) chỉ hiện Align.",
       "kb_refs": [
         "KB-042"
-      ]
+      ],
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-CBS-092-02",
+      "conflict_note": "[MỚI, CBS-092] KB-042 là phía base của CONF-CBS-092-02 (supersede.md STEP 7). Vế đang tranh chấp là câu 'bar hành động KHÔNG đổi theo loại/số lượng layer chọn' của KB-042, đối với KB-909 (canMutate chặn Group / Duplicate / Delete khi selection có replica Global Template). Không dùng KB-042 làm oracle tới khi resolve; xem risks và unknown_areas[10]."
     },
     {
       "name": "Layer action bar cố định",
       "description": "Khi chọn ≥1 layer: Deselect / N selected / Group (Ctrl/Cmd+G) / Ungroup (Ctrl/Cmd+Shift+G) / Copy to clipboard / Duplicate / Duplicate & Link options / Delete — không có menu overflow '...' trong build này.",
       "kb_refs": [
         "KB-043"
-      ]
+      ],
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-CBS-092-01",
+      "related_conflict_groups": [
+        "CONF-CBS-092-02"
+      ],
+      "conflict_note": "[MỚI, CBS-092] KB-043 là phía base của CONF-CBS-092-01 (supersede.md STEP 7): KB-908 (TC-01 2026-10-30) quan sát menu More (…) có Bulk edit, Replace image layer, Link with another layer, Convert to another layer. Việc action bar 'cố định' cũng chạm CONF-CBS-092-02 (KB-909, selection có replica). Không dùng mô tả này làm oracle tới khi resolve; xem risks và unknown_areas[8], [10]."
     },
     {
       "name": "Vector library rỗng chặn thêm layer nhóm VECTOR",
@@ -155,7 +164,13 @@
       "kb_refs": [
         "KB-042",
         "KB-043"
-      ]
+      ],
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-CBS-092-01",
+      "related_conflict_groups": [
+        "CONF-CBS-092-02"
+      ],
+      "conflict_note": "[MỚI, CBS-092] Việc action bar hiện ra khi chọn layer không bị tranh chấp; thành phần của action bar (menu overflow, KB-043 vs KB-908) và việc nó đổi theo selection có replica (KB-042 vs KB-909) đang UNRESOLVED."
     },
     {
       "from": "chưa chọn",
@@ -421,6 +436,27 @@
         "kb_refs": [
           "KB-429"
         ]
+      },
+      {
+        "item": "[MỚI, CBS-092, UNRESOLVED] layer action bar → menu More (…): Bulk edit, Replace image layer, Link with another layer, Convert to another layer (chỉ quan sát TC-01, mâu thuẫn KB-043 / KB-085)",
+        "kb_refs": [
+          "KB-908",
+          "KB-043"
+        ],
+        "cross_feature_kb_refs": [
+          "KB-085"
+        ],
+        "status": "UNRESOLVED",
+        "conflict_group": "CONF-CBS-092-01"
+      },
+      {
+        "item": "[MỚI, CBS-092, UNRESOLVED] layer action bar → Group / Duplicate / Delete khi selection có replica Global Template (KB-909 vs KB-042)",
+        "kb_refs": [
+          "KB-909",
+          "KB-042"
+        ],
+        "status": "UNRESOLVED",
+        "conflict_group": "CONF-CBS-092-02"
       }
     ],
     "storefront": [
@@ -441,7 +477,16 @@
       }
     ],
     "data": [],
-    "code": []
+    "code": [
+      {
+        "item": "[MỚI, CBS-092, UNRESOLVED] cờ canMutate (có từ trước TIB-5299) chặn Group / Duplicate / Delete khi selection có replica; TIB-5299 bỏ cờ khỏi riêng mục Bulk edit (theo quote Dev 55846 C3)",
+        "kb_refs": [
+          "KB-909"
+        ],
+        "status": "UNRESOLVED",
+        "conflict_group": "CONF-CBS-092-02"
+      }
+    ]
   },
   "dependencies": [
     {
@@ -473,6 +518,18 @@
       "kb_refs": [
         "KB-429"
       ]
+    },
+    {
+      "type": "feature",
+      "description": "[MỚI, CBS-092, UNRESOLVED] Theo KB-908 (quan sát TC-01), menu More (…) trên layer action bar là đường vào modal Bulk edit của FEAT-28-layer-bulk-edit; đang UNRESOLVED ở CONF-CBS-092-01 với KB-043 và KB-085 (FEAT-13-layer-config-image).",
+      "kb_refs": [
+        "KB-908",
+        "KB-043"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-085"
+      ],
+      "conflict_group": "CONF-CBS-092-01"
     }
   ],
   "risks": [
@@ -512,16 +569,49 @@
       "kb_refs": [
         "KB-427"
       ]
+    },
+    {
+      "risk": "[MỚI, CBS-092] CONF-CBS-092-01 UNRESOLVED — menu overflow trên layer action bar: KB-043 (base, OBSERVED_CURRENT/MEDIUM, 2026-09-10) không có menu '...'; KB-085 (base FEAT-13, OBSERVED_CURRENT/LOW, 2026-09-21) panel cấu hình chỉ qua '...' > 'Bulk edit'; KB-908 (CCR CLAIM-01, OBSERVED_CURRENT/LOW, TC-01 2026-10-30, AI do máy chạy) menu More (…) có Bulk edit đứng đầu + Replace image layer, Link with another layer, Convert to another layer, 6 mục bulk cũ không còn. Theo supersede.md STEP 7 cả hai phía UNRESOLVED, không phía nào làm oracle; CHK-005 (KB-043) và CHK-015 (KB-085) cần xét lại sau khi resolve.",
+      "kb_refs": [
+        "KB-043",
+        "KB-908"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-085"
+      ],
+      "conflict_group": "CONF-CBS-092-01",
+      "status": "UNRESOLVED"
+    },
+    {
+      "risk": "[MỚI, CBS-092] CONF-CBS-092-02 UNRESOLVED — action bar khi selection có replica Global Template: KB-042 (base, OBSERVED_CURRENT/MEDIUM, 2026-09-10) bar Deselect/Group/Duplicate/Delete không đổi theo loại/số lượng layer chọn (sample không có replica); KB-909 (CCR CLAIM-03, CONFIRMED_EXPECTED/LOW, Dev 55846 2026-10-28) cờ canMutate chặn Group / Duplicate / Delete khi selection có replica. Có thể chỉ khác state; không chọn bên, không làm oracle; CHK-006 (KB-042) cần xét lại sau khi resolve.",
+      "kb_refs": [
+        "KB-042",
+        "KB-909"
+      ],
+      "conflict_group": "CONF-CBS-092-02",
+      "status": "UNRESOLVED"
+    },
+    {
+      "risk": "[MỚI, CBS-092] Theo KB-908, mục \"Conditional setting\" đã bị bỏ khỏi menu More (…), chạm KB-225 / CHK-017 (Bulk apply Conditional setting từ action bar) của conditional-setting-config và OQ-artwork-154; KB-908 đang UNRESOLVED nên không sửa check đó ở run này.",
+      "kb_refs": [
+        "KB-908"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-225"
+      ],
+      "conflict_group": "CONF-CBS-092-01",
+      "status": "UNRESOLVED"
     }
   ],
   "environment_differences": [],
   "freshness": {
     "observed_at": "2026-11-06",
-    "source_observed_on": "2026-10-16"
+    "source_observed_on": "2026-10-16",
+    "delta_observed_at": "2026-10-30"
   },
   "last_updated": {
-    "date": "2026-11-06",
-    "ccr_ref": "CBS-079"
+    "date": "2026-11-07",
+    "ccr_ref": "CBS-092"
   },
   "unknown_areas": [
     {
@@ -574,6 +664,68 @@
         "KB-429"
       ],
       "oq_id": "OQ-artwork-184"
+    },
+    {
+      "question": "[MỚI, CBS-092] Trên build cuối, layer action bar có menu overflow More (…) không, gồm những mục gì (KB-908: Bulk edit, Replace image layer, Link with another layer, Convert to another layer; 6 mục bulk cũ không còn), và panel cấu hình single-layer có tồn tại không (KB-085)?",
+      "why_it_matters": "CONF-CBS-092-01 UNRESOLVED: KB-043 (không có menu overflow, CHK-005) và KB-085 (panel chỉ qua '...' > 'Bulk edit', CHK-015) trái KB-908; supersede tắt ở teeinblue nên cần operator/owner quyết, kèm lượt explore hoặc test case có căn cứ expected trên build cuối.",
+      "type": "CONFLICT",
+      "kb_refs": [
+        "KB-043",
+        "KB-908"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-085"
+      ],
+      "conflict_group": "CONF-CBS-092-01",
+      "draft_id": "OQ-artwork-286",
+      "oq_id": "OQ-artwork-286"
+    },
+    {
+      "question": "[MỚI, CBS-092] Nội dung và nhãn menu More (…) (Bulk edit, Replace image layer, Link with another layer, Convert to another layer; Artwork 1.0 vẫn ghi \"Share with another layer\") có phải nội dung và nhãn đúng?",
+      "why_it_matters": "KB-908 chỉ là quan sát TC-01, khác nhãn trong TC expected và ticket; check nhãn menu chưa có oracle.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-908"
+      ],
+      "conflict_group": "CONF-CBS-092-01",
+      "draft_id": "OQ-artwork-287",
+      "oq_id": "OQ-artwork-287"
+    },
+    {
+      "question": "[MỚI, CBS-092] Khi selection có layer replica Global Template, Group / Duplicate / Delete trên action bar bị chặn (ẩn hay disable) như KB-909 nói, hay bar không đổi như KB-042?",
+      "why_it_matters": "CONF-CBS-092-02 UNRESOLVED; sample của KB-042 không có replica nên có thể chỉ khác state. CHK-006 cần cập nhật theo kết quả đọc lại action bar với selection có replica trên build cuối.",
+      "type": "CONFLICT",
+      "kb_refs": [
+        "KB-042",
+        "KB-909"
+      ],
+      "conflict_group": "CONF-CBS-092-02",
+      "draft_id": "OQ-artwork-288",
+      "oq_id": "OQ-artwork-288"
+    },
+    {
+      "question": "[MỚI, CBS-092] KB-225 / CHK-017 (lối vào \"Bulk apply Conditional setting\" từ layer action bar) còn đúng không, khi theo KB-908 mục \"Conditional setting\" đã bị bỏ khỏi menu More (…) và Conditional nằm trong modal Bulk edit?",
+      "why_it_matters": "Chạm check đang publish của conditional-setting-config và OQ-artwork-154; cần run có lock conditional-setting-config sau khi CONF-CBS-092-01 được resolve.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-908"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-225"
+      ],
+      "conflict_group": "CONF-CBS-092-01",
+      "owner_feature_key": "conditional-setting-config",
+      "draft_id": "OQ-artwork-289",
+      "oq_id": "OQ-artwork-289"
+    },
+    {
+      "question": "[MỚI, CBS-092] Live Preview trong portal artwork editor dùng teeinblue-sdk qua git submodule src/sdk; submodule đã được bump để có fix TIB-5412 chưa?",
+      "why_it_matters": "Claim S0 CLAIM-24 (note Dev TIB-5412 comment 51755, 2026-09-23) không thành KB; Live Preview trong editor có thể chưa có fix. Cần Dev xác nhận commit/PR có ngày.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [],
+      "source": "S0 CBS-092__CLAIM-24 (discarded_by_normalizer)",
+      "draft_id": "OQ-artwork-290",
+      "oq_id": "OQ-artwork-290"
     }
   ],
   "coverage_matrix": [
@@ -700,6 +852,44 @@
         "KB-429"
       ],
       "basis": "shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-092] menu overflow More (…) trên layer action bar và nội dung của nó",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-043",
+        "KB-908"
+      ],
+      "basis": "UNRESOLVED CONF-CBS-092-01 (KB-043 vs KB-908, cùng KB-085 ở FEAT-13), không có oracle"
+    },
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-092] action bar khi selection có replica Global Template",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-042",
+        "KB-909"
+      ],
+      "basis": "UNRESOLVED CONF-CBS-092-02, KB-909 chỉ có câu Dev; chưa đọc lại trên build cuối"
+    },
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-092] menu More (…) ở Artwork 1.0",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-908"
+      ],
+      "basis": "statement_limits của KB-908: Artwork 1.0 ghi \"Share with another layer\" chỉ được ghi nhận"
     }
   ],
   "profile_conflicts": [
@@ -709,6 +899,29 @@
       "detail": "Nội dung có sẵn (dependencies[0]) tham chiếu KB-049 — item thuộc FEAT-07-artwork-save-persist, không nằm trong kb.json của feature này. Giữ nguyên văn; không thêm tham chiếu mới tới item đó.",
       "kb_refs": [
         "KB-049"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "type": "CCR_CONTRADICTS_BASE_UNRESOLVED",
+      "conflict_group": "CONF-CBS-092-01",
+      "detail": "[MỚI, CBS-092] side_a: KB-043 (base, OBSERVED_CURRENT/MEDIUM, không có menu overflow, CHK-005) + KB-085 (base FEAT-13, OBSERVED_CURRENT/LOW, panel chỉ qua '...' > 'Bulk edit', CHK-015); side_b: KB-908 (CCR CLAIM-01, OBSERVED_CURRENT/LOW, menu More (…) có Bulk edit + 3 mục). supersede.md STEP 7: giữ cả hai, cả hai UNRESOLVED, không phía nào làm oracle. Base KB-043 trong profile được gắn status/conflict_group, chữ giữ nguyên.",
+      "kb_refs": [
+        "KB-043",
+        "KB-908"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-085"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "type": "CCR_CONTRADICTS_BASE_UNRESOLVED",
+      "conflict_group": "CONF-CBS-092-02",
+      "detail": "[MỚI, CBS-092] side_a: KB-042 (base, OBSERVED_CURRENT/MEDIUM, bar hành động không đổi theo loại/số lượng layer chọn, CHK-006); side_b: KB-909 (CCR CLAIM-03, CONFIRMED_EXPECTED/LOW, canMutate chặn Group / Duplicate / Delete khi selection có replica). Sample KB-042 không có replica — có thể chỉ khác state; profile không phán xử. supersede.md STEP 7: cả hai UNRESOLVED.",
+      "kb_refs": [
+        "KB-042",
+        "KB-909"
       ]
     }
   ],
@@ -761,6 +974,37 @@
       "kb_refs": [
         "KB-429"
       ]
+    },
+    {
+      "from_feature_id": "FEAT-03-editor-layer-workspace",
+      "to_feature_id": "FEAT-28-layer-bulk-edit",
+      "relation": "contains",
+      "note": "[MỚI, CBS-092, UNRESOLVED] Theo KB-908, menu More (…) trên layer action bar chứa mục Bulk edit mở modal của FEAT-28; đang UNRESOLVED ở CONF-CBS-092-01 với KB-043 và KB-085 (FEAT-13).",
+      "kb_refs": [
+        "KB-908"
+      ],
+      "conflict_group": "CONF-CBS-092-01"
+    },
+    {
+      "from_feature_id": "FEAT-03-editor-layer-workspace",
+      "to_feature_id": "FEAT-13-layer-config-image",
+      "relation": "shares_conflict",
+      "note": "[MỚI, CBS-092] KB-085 (FEAT-13) là phía base cùng KB-043 của CONF-CBS-092-01 đối với KB-908.",
+      "kb_refs": [
+        "KB-043",
+        "KB-908"
+      ],
+      "conflict_group": "CONF-CBS-092-01"
+    },
+    {
+      "from_feature_id": "FEAT-03-editor-layer-workspace",
+      "to_feature_key": "conditional-setting-config",
+      "relation": "related",
+      "note": "[MỚI, CBS-092, UNRESOLVED] Theo KB-908, mục \"Conditional setting\" bị bỏ khỏi menu More (…); chạm KB-225 / CHK-017 và OQ-artwork-154.",
+      "kb_refs": [
+        "KB-908"
+      ],
+      "conflict_group": "CONF-CBS-092-01"
     }
   ]
 }

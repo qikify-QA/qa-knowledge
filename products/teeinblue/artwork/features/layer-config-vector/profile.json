@@ -33,6 +33,16 @@
         "KB-417",
         "KB-418"
       ]
+    },
+    {
+      "role": "[MỚI, CBS-088] merchant-owner (upload SVG làm layer image; asset SVG đã recolor và có order)",
+      "permission_observed": "KB-581..KB-584 ghi scope role merchant-owner; KB không có quan sát về quyền hay role khác.",
+      "kb_refs": [
+        "KB-581",
+        "KB-582",
+        "KB-583",
+        "KB-584"
+      ]
     }
   ],
   "entry_points": [
@@ -72,6 +82,28 @@
       "precondition": "Artwork chỉ có layer static-vector; lưu Design format SVG khi artwork còn raster layer trả HTTP 400 (quan sát một lượt)",
       "kb_refs": [
         "KB-418"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-088] Upload SVG làm layer image (Static Vector), gồm cả gọi trực tiếp qua API",
+      "precondition": "Có file SVG mẫu cho từng trường hợp: chứa DOCTYPE/ENTITY trỏ file hệ thống, chứa <script> (KB-582); tên file test.png.svg, ../../evil.svg, tên 300 ký tự (KB-583). KB không nêu config hay account riêng khác.",
+      "kb_refs": [
+        "KB-582",
+        "KB-583"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-088] Re-render design PNG của artwork dùng SVG layer image upload từ 05/2025 (trước resvg)",
+      "precondition": "Có SVG layer image upload từ 05/2025 (mẫu quan sát 3 file). Dựng được fixture này hay không phụ thuộc data cũ có sẵn; KB không nêu cách dựng.",
+      "kb_refs": [
+        "KB-581"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-088] File SVG nguồn trên CDN của asset đã recolor và đã có order",
+      "precondition": "Asset SVG đã upload, đã recolor và có order (mẫu quan sát 2 file).",
+      "kb_refs": [
+        "KB-584"
       ]
     }
   ],
@@ -113,6 +145,28 @@
       "kb_refs": [
         "KB-418"
       ]
+    },
+    {
+      "name": "[MỚI, CBS-088] Làm sạch nội dung và tên file khi upload SVG làm layer image — chỉ quan sát",
+      "description": "OBSERVED_CURRENT/LOW, một lượt Testlane (staging, 2026-10-07, AI do máy chạy, không ghi build). TC-TIB-4735/4739: bản SVG được lưu đã bỏ DOCTYPE, ENTITY (entity XXE không resolve, thumbnail không chứa nội dung file hệ thống) và thẻ <script>; upload không trả 500; SSRF, DoS, file cực lớn chưa kiểm (KB-582). TC-TIB-4740: tên file được làm sạch (test.png.svg thành test.png, ../../evil.svg thành evil), file lưu với key ngẫu nhiên nên không path traversal, tên 300 ký tự bị validate chặn; phần hiển thị UI chưa xem (KB-583). Hành vi upload có sẵn, không do thay đổi resvg. Chưa có người xác nhận, không dùng làm oracle.",
+      "kb_refs": [
+        "KB-582",
+        "KB-583"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-088] SVG layer image upload trước resvg vẫn re-render design PNG — chỉ quan sát",
+      "description": "OBSERVED_CURRENT/LOW, một lượt Testlane TC-TIB-4734 (staging, 2026-10-07, AI do máy chạy, không ghi build; TC dạng quan sát): 3 file SVG layer image upload từ 05/2025 render lại design PNG bình thường, không lỗi, không trống. Mẫu 3 file; file thứ 3 không có <text> sống nên không chạm known issue mất chữ. Cơ chế render chung thuộc FEAT-25-svg-to-image-rendering. Chưa có người xác nhận, không dùng làm oracle.",
+      "kb_refs": [
+        "KB-581"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-088] File SVG nguồn trên CDN không bị sửa sau recolor và đặt order — chỉ quan sát",
+      "description": "OBSERVED_CURRENT/LOW, một lượt QA TC-19 của bộ QA-3394 (staging, 2026-10-08, AI chạy, không id Testlane, không ghi build portal/SDK): 2 file SVG đã recolor và đã có order có file nguồn trên CDN mang tập id giống hệt file gốc, không có id prefix svg-. Căn cứ expected chỉ là mô tả ticket TIB-5501. Chưa có người xác nhận, không dùng làm oracle.",
+      "kb_refs": [
+        "KB-584"
+      ]
     }
   ],
   "state_transitions": [
@@ -151,6 +205,16 @@
       "kb_refs": [
         "KB-417"
       ]
+    },
+    {
+      "from": "[MỚI, CBS-088] file SVG gửi lên chứa DOCTYPE/ENTITY hoặc <script>, hoặc tên file giả mạo",
+      "to": "bản SVG lưu đã bỏ DOCTYPE, ENTITY, <script>; tên file đã làm sạch; key lưu ngẫu nhiên",
+      "trigger": "upload SVG làm layer image",
+      "condition": "OBSERVED_CURRENT/LOW, một lượt TC-TIB-4735/4739/4740, staging; tên > 255 ký tự bị validate chặn; không làm oracle",
+      "kb_refs": [
+        "KB-582",
+        "KB-583"
+      ]
     }
   ],
   "confirmed_rules": [],
@@ -183,6 +247,50 @@
       "shipped": "UNKNOWN",
       "kb_refs": [
         "KB-418"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-088] 3 file SVG layer image upload từ 05/2025 (trước resvg) render lại design PNG bình thường, không lỗi và không trống. Mẫu 3 file; file thứ 3 không có <text> sống nên không chạm known issue mất chữ. Chưa có người xác nhận đây là hành vi đúng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "scope": "staging, merchant-owner, api, một lượt TC-TIB-4734, 2026-10-07, record không ghi build",
+      "shipped": "SHIPPED",
+      "kb_refs": [
+        "KB-581"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-088] Upload SVG làm layer image: bản SVG lưu đã bỏ DOCTYPE, ENTITY (entity XXE không resolve, thumbnail không chứa nội dung file hệ thống) và thẻ <script>; upload không trả 500. SSRF, DoS, file cực lớn chưa kiểm. Chưa có người xác nhận đây là hành vi đúng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "scope": "staging, merchant-owner, api, một lượt TC-TIB-4735/TC-TIB-4739, 2026-10-07, record không ghi build",
+      "shipped": "SHIPPED",
+      "kb_refs": [
+        "KB-582"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-088] Upload SVG làm layer image với tên file giả mạo: tên được làm sạch (test.png.svg thành test.png, ../../evil.svg thành evil), file lưu với key ngẫu nhiên nên không path traversal; tên 300 ký tự bị validate chặn. Phần hiển thị UI chưa xem. Chưa có người xác nhận đây là hành vi đúng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "scope": "staging, merchant-owner, api, một lượt TC-TIB-4740, 2026-10-07, record không ghi build",
+      "shipped": "SHIPPED",
+      "kb_refs": [
+        "KB-583"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-088] 2 file SVG đã recolor và đã có order: file SVG nguồn trên CDN có tập id giống hệt file gốc, không có id prefix svg-. Hai file mẫu. Chưa có người xác nhận đây là hành vi đúng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "scope": "staging, merchant-owner, api (asset CDN), một lượt QA-3394 TC-19, 2026-10-08, không ghi build",
+      "shipped": "SHIPPED",
+      "kb_refs": [
+        "KB-584"
       ]
     }
   ],
@@ -224,6 +332,16 @@
       "kb_refs": [
         "KB-418"
       ]
+    },
+    {
+      "input": "[MỚI, CBS-088] Upload SVG làm layer image với tên file dài 300 ký tự (qua API)",
+      "message_verbatim": "The filenames.2 field must not be greater than 255 characters.",
+      "condition": "Tên file > 255 ký tự; chỉ số '2' trong 'filenames.2' là vị trí file trong request của lượt chạy, không tổng quát hoá.",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "KB-583"
+      ]
     }
   ],
   "permissions": [
@@ -258,10 +376,14 @@
     "api": [
       "[MỚI] POST /api/merchant/{platform}/vector-upload (KB-126, rate-limit 4/phút)",
       "[MỚI] POST /api/merchant/{platform}/upload-error-logs (KB-127, rate-limit 6/phút, client tự gọi khi vector-upload lỗi 500)",
-      "[MỚI] POST /api/layer-images/svg (KB-128, rate-limit 1000/24h, resource layer_image — KHÁC /api/cliparts/svg)"
+      "[MỚI] POST /api/layer-images/svg (KB-128, rate-limit 1000/24h, resource layer_image — KHÁC /api/cliparts/svg)",
+      "[MỚI, CBS-088] Upload SVG làm layer image: làm sạch nội dung (KB-582) và tên file, validate tên ≤ 255 ký tự (KB-583) — KB không ghi route cụ thể",
+      "[MỚI, CBS-088] Re-render design PNG từ SVG layer image cũ (KB-581, quan sát)"
     ],
     "data": [
-      "[MỚI, CBS-079] File design .svg của order từ artwork chỉ có layer static-vector (KB-418, quan sát)"
+      "[MỚI, CBS-079] File design .svg của order từ artwork chỉ có layer static-vector (KB-418, quan sát)",
+      "[MỚI, CBS-088] Bản SVG lưu sau upload: không còn DOCTYPE/ENTITY/<script> (KB-582); key lưu ngẫu nhiên, tên đã làm sạch (KB-583)",
+      "[MỚI, CBS-088] File SVG nguồn trên CDN của asset đã recolor: tập id giữ nguyên, không prefix svg- (KB-584)"
     ],
     "code": [
       "bundle-registry: key `clipart` dùng chung cho vector-category/clipart-category/font/color; tz['vector-upload'] không liệt kê enum image_cropper/image_placement — INFERRED."
@@ -295,6 +417,20 @@
         "KB-126",
         "KB-127",
         "KB-128"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "[MỚI, CBS-088] Rasterize SVG sang design PNG/thumbnail thuộc FEAT-25-svg-to-image-rendering; KB-581 chỉ ghi kết quả re-render của SVG layer image cũ.",
+      "kb_refs": [
+        "KB-581"
+      ]
+    },
+    {
+      "type": "cross_object",
+      "description": "[MỚI, CBS-088] Lượt chạy KB-582 có cả upload clipart (POST /api/cliparts/svg, object asset-category KB-015); chỉ ghi như liên quan, không tạo item ở asset-category.",
+      "kb_refs": [
+        "KB-582"
       ]
     }
   ],
@@ -346,6 +482,27 @@
         "KB-417",
         "KB-418"
       ]
+    },
+    {
+      "risk": "[MỚI, CBS-088] Kiểm bảo mật upload SVG mới một phần: SSRF, DoS, file cực lớn (TC-18/19/20) chưa kiểm. Không coi việc bỏ DOCTYPE/ENTITY/<script> là bằng chứng upload SVG an toàn toàn diện.",
+      "kb_refs": [
+        "KB-582"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-088] KB-581 mẫu 3 file; KB chỉ ghi file thứ 3 không có <text> sống nên không chạm known issue mất chữ, và không cho thấy mẫu nào phủ SVG cũ có <text> sống. Không suy kết quả này sang SVG cũ có <text>.",
+      "kb_refs": [
+        "KB-581"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-088] KB-581..KB-584 mỗi item một lượt (AI chạy), không ghi build; KB-584 có căn cứ expected chỉ là mô tả ticket, 2 file mẫu. Không viết check coi các kết quả này là expected tới khi có xác nhận.",
+      "kb_refs": [
+        "KB-581",
+        "KB-582",
+        "KB-583",
+        "KB-584"
+      ]
     }
   ],
   "environment_differences": [],
@@ -353,10 +510,10 @@
     "observed_at": "2026-10-14"
   },
   "last_updated": {
-    "date": "2026-11-06",
-    "ccr_ref": "CBS-079",
+    "date": "2026-11-07",
+    "ccr_ref": "CBS-088",
     "note": "2 dải freshness trong feature này: (1) Static Vector (ngoại lệ Custom class)/Vector Category/baseline field 'Upload editor' của Vector Upload — last observed 2026-09-10, KHÔNG re-verify trong run này. (2) Rate-limit middleware của Static Vector (POST /api/layer-images/svg) và Vector Upload (POST vector-upload + upload-error-logs) — MỚI tại 2026-09-26 (CCR CBS-004), evidence 2 nguồn độc lập (API trực tiếp + UI/network capture qua portal-explorer dispatch #2).",
-    "delta_note": "[CBS-079] Thêm dải thứ 3: KB-417, KB-418 quan sát 2026-10-14 (TC-TIB-5705, TC-TIB-5710). Hai dải trên không re-verify ở CBS-079."
+    "delta_note": "[CBS-079] Thêm dải thứ 3: KB-417, KB-418 quan sát 2026-10-14 (TC-TIB-5705, TC-TIB-5710). Hai dải trên không re-verify ở CBS-079. [CBS-088] Thêm dải thứ 4: KB-581..KB-583 quan sát 2026-10-07, KB-584 quan sát 2026-10-08. Ba dải trước không re-verify ở CBS-088."
   },
   "unknown_areas": [
     {
@@ -400,6 +557,42 @@
         "KB-418"
       ],
       "oq_id": "OQ-artwork-189"
+    },
+    {
+      "question": "[MỚI, CBS-088] SVG layer image upload từ 05/2025 re-render design PNG bình thường (mẫu 3 file, 2026-10-07). Đây có phải hành vi đúng không, kể cả SVG cũ có <text> sống?",
+      "why_it_matters": "KB-581 một lượt, không build, không cho thấy phủ SVG cũ có <text> sống; checklist chưa có oracle regression cho SVG cũ. Cần PO/Dev xác nhận nguyên văn, có ngày; hoặc build của lượt TC-TIB-4734.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-581"
+      ],
+      "oq_id": "OQ-artwork-210"
+    },
+    {
+      "question": "[MỚI, CBS-088] Upload SVG làm layer image bỏ DOCTYPE, ENTITY, <script> và không trả 500 (một lượt 2026-10-07). Đây có phải hành vi đúng không, và SSRF, DoS, file cực lớn được xử lý ra sao?",
+      "why_it_matters": "KB-582 chưa có oracle; phần SSRF/DoS/file lớn chưa có evidence nên không viết được check bảo mật đầy đủ. Cần PO/Dev xác nhận nguyên văn, có ngày; hoặc build của lượt TC-TIB-4735, TC-TIB-4739.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-582"
+      ],
+      "oq_id": "OQ-artwork-211"
+    },
+    {
+      "question": "[MỚI, CBS-088] Tên file SVG upload được làm sạch, key lưu ngẫu nhiên, tên > 255 ký tự bị validate chặn (một lượt qua API 2026-10-07). Đây có phải hành vi đúng không, và UI hiển thị tên ra sao?",
+      "why_it_matters": "KB-583 chưa có oracle và chưa xem UI. Cần PO/Dev xác nhận nguyên văn, có ngày; hoặc build của lượt TC-TIB-4740.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-583"
+      ],
+      "oq_id": "OQ-artwork-212"
+    },
+    {
+      "question": "[MỚI, CBS-088] File SVG nguồn trên CDN giữ nguyên tập id, không prefix svg- sau recolor và đặt order (2 file mẫu, 2026-10-08). Đây có phải hành vi đúng không?",
+      "why_it_matters": "KB-584 chỉ có mô tả §Expected của ticket làm căn cứ, không phải xác nhận. Cần PO/Dev xác nhận nguyên văn, có ngày; hoặc lượt chạy trên build ghi rõ.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-584"
+      ],
+      "oq_id": "OQ-artwork-213"
     }
   ],
   "coverage_matrix": [
@@ -496,6 +689,82 @@
         "KB-418"
       ],
       "basis": "shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-14-layer-config-vector",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-088] re-render design PNG của SVG layer image upload 05/2025",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-581"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt 2026-10-07, mẫu 3 file; SVG cũ có <text> sống chưa được cho thấy là phủ; chưa có oracle"
+    },
+    {
+      "feature_id": "FEAT-14-layer-config-vector",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-088] làm sạch nội dung SVG (DOCTYPE/ENTITY/<script>) và tên file khi upload",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-582",
+        "KB-583"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt 2026-10-07; chưa có oracle"
+    },
+    {
+      "feature_id": "FEAT-14-layer-config-vector",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-088] upload SVG: SSRF, DoS, file cực lớn",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-582"
+      ],
+      "basis": "TC-18/19/20 chưa kiểm"
+    },
+    {
+      "feature_id": "FEAT-14-layer-config-vector",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-088] hiển thị tên file SVG đã làm sạch trên UI",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-583"
+      ],
+      "basis": "Chưa xem UI"
+    },
+    {
+      "feature_id": "FEAT-14-layer-config-vector",
+      "layer": "data",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-088] file SVG nguồn trên CDN sau recolor và order",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-584"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt 2026-10-08, 2 file mẫu; chưa có oracle"
+    },
+    {
+      "feature_id": "FEAT-14-layer-config-vector",
+      "layer": "api",
+      "role": "any",
+      "state": "[MỚI, CBS-088] KB-581..KB-584",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "KB-581",
+        "KB-582",
+        "KB-583",
+        "KB-584"
+      ],
+      "basis": "Mọi quan sát chỉ ở staging"
     }
   ],
   "profile_conflicts": [
@@ -543,6 +812,24 @@
       "note": "[MỚI, CBS-079] KB-418 (lưu Design format) liên quan KB-053 của FEAT-07 (field cấp artwork trong PUT body).",
       "kb_refs": [
         "KB-418"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-14-layer-config-vector",
+      "to_feature_id": "FEAT-25-svg-to-image-rendering",
+      "relation": "related (render boundary)",
+      "note": "[MỚI, CBS-088] Feature này cung cấp SVG đầu vào (upload, layer vector); rasterize sang thumbnail/design file thuộc FEAT-25. KB-581 (re-render SVG cũ) ghi ở đây theo feature_id của shard. KB-570 của FEAT-25 đối chiếu KB-418: fixture khác, không trùng.",
+      "kb_refs": [
+        "KB-581"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-14-layer-config-vector",
+      "to_feature_id": "asset-category-item-management (object asset-category)",
+      "relation": "related (cross-object)",
+      "note": "[MỚI, CBS-088] KB-582 cùng lượt có upload clipart SVG (POST /api/cliparts/svg, asset-category KB-015); không tạo item ở asset-category.",
+      "kb_refs": [
+        "KB-582"
       ]
     }
   ]

@@ -2,7 +2,7 @@
   "feature_id": "FEAT-03-asset-item-management",
   "feature_key": "asset-category-item-management",
   "object_id": "asset-category",
-  "checklist_version": "2",
+  "checklist_version": "3",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -101,7 +101,8 @@
         "KB-012"
       ],
       "priority": "P3",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-asset-category-014"
     },
     {
       "check_id": "CHK-004",
@@ -191,7 +192,8 @@
       "oq_ref": "OQ-asset-category-015",
       "risk_refs": [],
       "priority": "P3",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-asset-category-015"
     },
     {
       "check_id": "CHK-007",
@@ -286,7 +288,8 @@
         "KB-034"
       ],
       "priority": "P2",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-asset-category-016"
     },
     {
       "check_id": "CHK-010",
@@ -316,7 +319,8 @@
         "KB-017"
       ],
       "priority": "P1",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-asset-category-017"
     },
     {
       "check_id": "CHK-011",
@@ -351,7 +355,8 @@
         "KB-028"
       ],
       "priority": "P2",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-asset-category-018"
     },
     {
       "check_id": "CHK-012",
@@ -379,7 +384,8 @@
       "oq_ref": "OQ-asset-category-019",
       "risk_refs": [],
       "priority": "P3",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-asset-category-019"
     },
     {
       "check_id": "CHK-013",
@@ -442,7 +448,8 @@
         "KB-032"
       ],
       "priority": "P2",
-      "automation_suitability": "NOT_SUITABLE"
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-asset-category-020"
     },
     {
       "check_id": "CHK-015",
@@ -537,7 +544,8 @@
         "CBS-004-window-24h-not-verified"
       ],
       "priority": "P3",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-asset-category-021"
     },
     {
       "check_id": "CHK-018",
@@ -915,6 +923,47 @@
       "priority": "P3",
       "automation_suitability": "NOT_SUITABLE",
       "oq_id": "OQ-asset-category-032"
+    },
+    {
+      "check_id": "CHK-027",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Thumbnail của item SVG có clip-path lồng qua nhiều <clipPath> upload qua dropzone /vectors",
+      "applicability": {
+        "role": "merchant-owner (account explorer theo account_guard của product)",
+        "state": "category Vector đã tồn tại trên store explorer; file SVG có clip-path lồng qua nhiều <clipPath>",
+        "environment": "staging; production chưa rõ ngày deploy fix TIB-5350 nên chưa áp",
+        "surface_or_device": "portal dropzone /vectors + listing item của category Vector"
+      },
+      "precondition": "Đăng nhập account explorer, xác minh account theo account_guard. Có 1 category Vector trên store explorer. Check hiểu \"SVG clipart\" trong nguồn là item upload qua dropzone /vectors (POST /api/cliparts/svg), vì dropzone /cliparts chỉ nhận ảnh raster; cách hiểu chưa được xác nhận. Chuẩn bị file fixture clip-nested.svg (cách dựng của check, nguồn không kèm file mẫu): <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"200\"><defs><clipPath id=\"outer\"><circle cx=\"100\" cy=\"100\" r=\"80\"/></clipPath><clipPath id=\"inner\" clip-path=\"url(#outer)\"><rect x=\"100\" y=\"0\" width=\"100\" height=\"200\"/></clipPath></defs><rect width=\"200\" height=\"200\" fill=\"#d00\" clip-path=\"url(#inner)\"/></svg>. Mở file này trực tiếp trong Chrome và chụp lại làm hình đối chiếu: nửa phải của hình tròn màu đỏ.",
+      "steps": [
+        "Mở category Vector, kéo thả clip-nested.svg vào dropzone /vectors.",
+        "Ghi lại status và field thumbnail trong response của POST /api/cliparts/svg.",
+        "Mở URL thumbnail trong response, so với hình đối chiếu.",
+        "Reload category (chờ thêm vài phút nếu thumbnail chưa có), so thumbnail hiển thị ở listing item với hình đối chiếu.",
+        "Ghi lại thumbnail hiện nửa hình tròn đã mask, hay hiện cả hình vuông đỏ 200x200 (outer bounding shape), hay hình khác."
+      ],
+      "observation_point": "Ảnh thumbnail từ field thumbnail của response và thumbnail ở listing item của category Vector, so với hình đối chiếu render trong Chrome",
+      "expected_result": "Baseline theo mô tả dev tự sinh từ branch diff (TIB-5350, PR teeinblue-api #3836), chưa quan sát trên hệ thống và chưa có người xác nhận: thumbnail hiện đúng hình đã mask (nửa phải hình tròn đỏ), không hiện outer bounding shape (hình vuông đỏ). Lệch thì cần điều tra, chưa kết luận là bug.",
+      "oracle": {
+        "kb_ids": [
+          "KB-640"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Thumbnail của clipart SVG có clip-path lồng qua nhiều <clipPath> có hiện đúng hình đã mask, không hiện outer bounding shape không? Nguồn hiện chỉ là mô tả dev tự sinh từ branch diff (TIB-5350, PR teeinblue-api #3836, 2026-09-23); mục test đề xuất chưa tick, ghi chú QA-3395 TC-01, TC-02 không có id test case hay build. \"SVG clipart\" có phải item upload qua dropzone /vectors không? Cần một test_case PASS có id test case Testlane và build/ngày chạy, hoặc PO/Dev xác nhận.",
+      "related_kb_ids": [
+        "KB-640",
+        "KB-015"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "svg-thumbnail-clip-path"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-asset-category-041"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1049,6 +1098,17 @@
         "CHK-026"
       ],
       "note": "NOT_TESTABLE mức vế trên môi trường test."
+    },
+    {
+      "feature_id": "FEAT-03-asset-item-management",
+      "risk_ref": "svg-thumbnail-clip-path",
+      "kb_refs": [
+        "KB-640"
+      ],
+      "check_ids": [
+        "CHK-027"
+      ],
+      "note": "Profile risks[7]. BASELINE, NEEDS_CONFIRMATION: nguồn chỉ là mô tả dev tự sinh từ diff. Phía layer image (artwork) và regression hình thumbnail của SVG không có clip-path chưa có check (không có oracle)."
     }
   ],
   "excluded_dimensions": [
@@ -1063,10 +1123,34 @@
     {
       "dimension": "REGRESSION",
       "reason": "Phần cap, daily limit, dropzone: shard không có item KNOWN_DEFECT và không có hành vi khác base đã publish."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Phần thumbnail SVG (KB-640): item ADD, base đã publish chưa có hành vi thumbnail SVG để so; regression hình thumbnail của SVG không có clip-path sau khi đổi coder MSVG sang resvg chưa có oracle, phần API (field thumbnail trong 201) đã ở CHK-008."
+    },
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Phần thumbnail SVG (KB-640): nguồn không nêu SVG lỗi hay clip-path hỏng xử lý thế nào; sai định dạng ở /vectors đã có CHK-014."
+    },
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Phần thumbnail SVG (KB-640): nguồn không nêu giới hạn độ sâu lồng <clipPath> hay kích thước SVG."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "Phần thumbnail SVG (KB-640): nguồn không nói gì về role."
+    },
+    {
+      "dimension": "STATE_DATA",
+      "reason": "Phần thumbnail SVG (KB-640): nguồn không nói thumbnail của item đã upload trước fix có được tạo lại hay không."
+    },
+    {
+      "dimension": "INTEGRATION",
+      "reason": "Phần thumbnail SVG (KB-640): thumbnail layer image dùng cùng ThumbnailMaker::makeFromSvg() thuộc object artwork, chưa có item ở đó; không viết check cross-object khi chưa có KB."
     }
   ],
   "last_updated": {
     "date": "2026-11-07",
-    "ccr_ref": "CBS-078"
+    "ccr_ref": "CBS-099"
   }
 }

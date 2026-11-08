@@ -2,7 +2,7 @@
   "feature_id": "FEAT-05-layer-duplicate-link-copy",
   "feature_key": "layer-duplicate-link-copy",
   "object_id": "artwork",
-  "checklist_version": "9",
+  "checklist_version": "10",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -401,6 +401,84 @@
       "automation_suitability": "SUITABLE",
       "conflict_refs": [],
       "oq_id": "OQ-artwork-157"
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-095] Linked copy của photo layer No personalization: box/flip/rotate của chính nó; ảnh, retrieval value, photo border, shadow lấy từ layer gốc",
+      "applicability": {
+        "role": "merchant-owner cấu hình; buyer trên storefront preview và order design",
+        "state": "photo layer Personalization = 'No personalization' có ảnh mặc định, retrieval value bật, photo border và shadow; đã 'Duplicate & Link options'",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork Editor 2.0; storefront SDK preview; order design phía API"
+      },
+      "precondition": "Fixture throwaway trên store explorer như applicability.",
+      "steps": [
+        "Trên bản linked, đổi vị trí/kích thước box, flip và rotate khác layer gốc; Save",
+        "Trên layer gốc, đổi ảnh mặc định, màu/độ dày photo border và shadow; Save",
+        "Mở storefront preview; populate layer gốc qua nguồn retrieval; ghi ảnh, border, shadow, box, flip, rotate của cả hai layer",
+        "Đặt đơn test; ghi lại như bước 3 trên order design"
+      ],
+      "observation_point": "Box/flip/rotate và ảnh/retrieval/border/shadow của bản linked so với layer gốc",
+      "expected_result": "Bản linked giữ box, flip, rotate của chính nó. Ảnh, retrieval value, photo border và shadow của bản linked theo layer gốc (đổi ở gốc thì bản linked đổi theo).",
+      "oracle": {
+        "kb_ids": [
+          "KB-935"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-935",
+        "KB-045",
+        "KB-429"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chỉ áp cho photo layer No personalization; không đổi kết luận LINKED/PLAIN_COPY theo type ở KB-045 (đang UNRESOLVED CONF-003).",
+        "Câu hỏi sync tổng quát ở CHK-006 giữ nguyên."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-095] Linked copy của photo layer No personalization không áp mask, color, cropper: API mask_enable = false; SDK bỏ photo_editor, enable_cropper, masked_*, effects",
+      "applicability": {
+        "role": "merchant-owner cấu hình; buyer trên storefront preview và order design",
+        "state": "photo layer No personalization ở layer gốc có mask, cropper và image effect đã bật; đã 'Duplicate & Link options'",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "dữ liệu render phía API (order design); storefront SDK preview, network capture bật"
+      },
+      "precondition": "Fixture throwaway như applicability.",
+      "steps": [
+        "Save artwork; mở storefront preview; ghi bản linked có mask/color/cropper/effect hiển thị không",
+        "Ghi dữ liệu layer bản linked mà SDK dùng (photo_editor, enable_cropper, masked_*, effects)",
+        "Đặt đơn test; ghi mask_enable của bản linked trong dữ liệu render order design và hình trên order design"
+      ],
+      "observation_point": "mask_enable phía API; các field SDK của bản linked; hình hiển thị",
+      "expected_result": "Mask, color và cropper không áp cho bản linked. Phía API mask_enable của bản linked là false. Dữ liệu SDK dùng cho bản linked không còn photo_editor, enable_cropper, masked_*, effects.",
+      "oracle": {
+        "kb_ids": [
+          "KB-935"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-935"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nơi đọc mask_enable phía API không có route trong KB; ghi lại nơi đã đọc."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -436,6 +514,15 @@
         "CHK-012"
       ],
       "oracle": "NONE"
+    },
+    {
+      "feature_id": "FEAT-05-layer-duplicate-link-copy",
+      "item": "[CBS-095] Capability: linked copy của photo layer No personalization (KB-935)",
+      "check_ids": [
+        "CHK-013",
+        "CHK-014"
+      ],
+      "oracle": "STRONG trên staging (Dev TIB-5521 55637 Q6). Photo layer có personalization khác No personalization chưa có check (profile coverage_matrix covered false)."
     }
   ],
   "excluded_dimensions": [
@@ -446,10 +533,14 @@
     {
       "dimension": "PERMISSION",
       "reason": "Không có KB item về role khác owner/staff hay copy/paste sang artwork của tenant khác."
+    },
+    {
+      "dimension": "NEGATIVE, STATE_DATA riêng, REGRESSION — phạm vi CBS-095",
+      "reason": "KB-935 không có phát biểu về input sai hay persistence riêng (Save/reload đã nằm trong bước của CHK-013); relation ADD, không KNOWN_DEFECT nên không có regression watch."
     }
   ],
   "last_updated": {
-    "date": "2026-10-30",
-    "ccr_ref": "CBS-011"
+    "date": "2026-11-07",
+    "ccr_ref": "CBS-095"
   }
 }
