@@ -1,6 +1,7 @@
 {
   "feature_id": "FEAT-02-upload-custom-font",
   "feature_key": "upload-custom-font",
+  "object_id": "font",
   "checklist_version": "1",
   "checks": [
     {
@@ -151,7 +152,7 @@
         "Quan sát response code + UI (có warning/error nào không)."
       ],
       "observation_point": "response code + UI feedback",
-      "expected_result": "Theo quan sát duy nhất hiện có (KB-012, CHỈ 1 SAMPLE THÀNH CÔNG THỰC SỰ), server chấp nhận (201), tạo font độc lập cùng tên, không có lỗi/cảnh báo uniqueness — nhưng đây chỉ là 1 sample, KHÔNG được khái quát hoá thành 'hệ thống không có unique constraint'.",
+      "expected_result": "Theo quan sát duy nhất hiện có (KB-012, CHỈ 1 SAMPLE THÀNH CÔNG THỰC SỰ), server chấp nhận (201), tạo font độc lập cùng tên, không có lỗi/cảnh báo uniqueness — nhưng đây chỉ là 1 sample, KHÔNG được khái quát hoá thành 'hệ thống không có unique constraint'. [CBS-136] spec-hub rule fonts-name (KB-022, PROPOSED, chưa Dev xác nhận) cho biết font đặt tên theo tên file đã strip ký tự đặc biệt và giữ original_name 'so duplicates can be spotted' (merchant tự nhận ra), hàm ý không tự chặn trùng tên; việc có chặn ở client/server hay không là NEEDS_CONFIRMATION (OQ-font-047).",
       "oracle": {
         "kb_ids": [
           "font/upload-custom-font#KB-012"
@@ -163,7 +164,10 @@
       "risk_refs": [],
       "priority": "P2",
       "automation_suitability": "HYBRID",
-      "oq_id": "OQ-font-034"
+      "oq_id": "OQ-font-034",
+      "related_kb_ids": [
+        "font/upload-custom-font#KB-022"
+      ]
     },
     {
       "check_id": "CHK-006",
@@ -208,7 +212,8 @@
       "precondition": "Cần cách bypass client-side blocking (vd gọi thẳng REST POST /api/custom-fonts bằng API client với file .png, không qua UI).",
       "steps": [
         "Gọi trực tiếp POST /api/custom-fonts với file .png (qua API client, không qua UI).",
-        "Quan sát response."
+        "Quan sát response.",
+        "Đối chiếu message server trả về với message spec-hub đề xuất (KB-023, PROPOSED, CHƯA xác nhận): file không đọc được như font -> 'Invalid font file'; file đọc được nhưng không convert được -> 'Failed to process font'. Khớp thì xác nhận KB-013 chỉ thiếu quan sát nhánh server (không phải conflict); khác thì ghi message thật."
       ],
       "observation_point": "response code + body",
       "expected_result": null,
@@ -223,7 +228,10 @@
       ],
       "priority": "P2",
       "automation_suitability": "SUITABLE",
-      "oq_id": "OQ-font-035"
+      "oq_id": "OQ-font-035",
+      "related_kb_ids": [
+        "font/upload-custom-font#KB-023"
+      ]
     },
     {
       "check_id": "CHK-008",
@@ -388,7 +396,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-136"
   }
 }

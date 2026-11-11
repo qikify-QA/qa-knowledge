@@ -1525,3 +1525,205 @@
 ```json
 {"oq_id":"OQ-sdk-217","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-038 “CFL-004 UNRESOLVED: SDK version thuc su dang serve cho tung store (campaign 2595) mau thuan giua 3 nguon evidence portal+storefront -- KHONG tu chon 1 phia lam oracle mac dinh” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
 ```
+
+## OQ-sdk-218 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-sdk-218",
+  "type": "OPEN_ISSUE",
+  "feature_id": "buyer-reposition",
+  "summary": "Curve Text (GraphQL type: \"curve-text\") không có affordance Reposition nào ở cả hai cơ chế (KB-516). Chưa xác nhận đây là ý định thiết kế hay giới hạn hiện tại — QA chỉ xác nhận hành vi quan sát được (2026-10-02, QA-3374 TC-61), TC-61 chỉ phủ Single-line Text. Người trả lời: PO."
+}
+```
+
+## OQ-sdk-219 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-219",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "buyer-reposition",
+  "summary": "Ranh giới \"Portal chỉ có công tắc BẬT/TẮT Reposition, cơ chế thật chỉ test được trên storefront\" (KB-517) có đúng không, khi nút seller 'Re-position' trong Artwork Editor (KB-521) cũng nằm trong Portal? Chưa PO/Dev nào xác nhận. Người trả lời: Dev."
+}
+```
+
+## OQ-sdk-220 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-220",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "buyer-reposition",
+  "summary": "Popup Reposition đứng riêng chỉ liệt kê target đã customize (KB-518) có đúng cả ở staging không? Staging hiện 6 target trong popup còn production chỉ 2 trên fixture tương tự, chưa giải thích được (do customize hay do build). Người trả lời: Dev."
+}
+```
+
+## OQ-sdk-221 — CONFLICT
+
+```json
+{
+  "oq_id": "OQ-sdk-221",
+  "type": "CONFLICT",
+  "feature_id": "product-page-settings-config",
+  "summary": "Nhãn đúng của toggle 'Enable Reposition on main gallery' ở build hiện tại là gì, và toggle này có thật sự đổi hẳn cơ chế UI Reposition (inline main gallery khi BẬT, popup riêng khi TẮT) không (CBS-128 CLAIM-04)? Candidate KB-529 CONFLICTED với KB-026, requires_human_decision=true, chưa có input/approvals.json nên KB-529 không publish — chỉ giữ OQ này. Người trả lời: Dev.",
+  "side_a": "FACT-120 (QA, xác nhận 2026-09-25, lại 2026-10-16, QA-3374/QA-3410): nhãn \"Enable Reposition on main gallery\"; toggle BẬT thì không có nút Reposition riêng, nút+khung kéo thả hiện trực tiếp trên main gallery; TẮT thì có nút riêng mở popup.",
+  "side_b": "KB-026 (bootstrap, 2026-09-21): nhãn \"Enable Text Reposition on main gallery\" = unchecked, quan sát trực tiếp trên portal cả hai store explorer; cùng nhãn trong checklist product-page-settings-config.json (~dòng 119)."
+}
+```
+
+## OQ-sdk-222 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-222",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "buyer-reposition",
+  "summary": "Với Clipart/Group of Clipart/Vector Category, việc tự select artwork trên main gallery khi chọn giá trị radio (KB-519) có phải là control Reposition chính thức không? Chỉ dựa trên screenshot QA, không có TC, TC-08 cần retest theo cơ chế này. Người trả lời: Dev."
+}
+```
+
+## OQ-sdk-223 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-223",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "buyer-reposition",
+  "summary": "Static Image/Static Vector bật Reposition có thật sự render component .tee-static-reposition trong panel form không (KB-520), khi BUG-12 (không render field nào trên storefront) bị QA skip 2026-10-29 vì issue đã Done, chưa kết luận? Người trả lời: Dev."
+}
+```
+
+## OQ-sdk-224 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-224",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "buyer-reposition",
+  "summary": "Nút 'Re-position' của seller trong Artwork Editor (KB-521) có hoạt động như mô tả không? TC-19 (QA-3410) ⏸️ chưa kết luận: Form Mode:Preview không persist, cần xác nhận cách vào đúng Live preview. Ranh giới với KB-517 (\"Portal chỉ có công tắc\") chưa được PO/Dev xác nhận. Người trả lời: Dev."
+}
+```
+
+## OQ-sdk-225 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-225",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "buyer-reposition",
+  "summary": "Cơ chế kích hoạt Reposition của Clipart Category (chọn radio khác, ~400ms hiện control, mất sau Add to cart — KB-522) có đúng ở mọi campaign và là hành vi thiết kế không? Mới verify tay một campaign (2026-09-27), không có TC riêng; tick TC-08 trên Jira từng ❌ do script cold-start flaky. Người trả lời: Dev."
+}
+```
+
+## OQ-sdk-226 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-226",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "buyer-reposition",
+  "summary": "Công thức lưu vị trí tỉ lệ cho Category/Image layer (delta / kích thước ô kéo .tee-drr của layer — KB-524) có đúng cho ô không vuông và theo build production hiện hành không? Chỉ khớp 4 số lẻ trong một phép đo trên production không ghi lại build; verdict release-verification tổng thể là INCONCLUSIVE (3/8 TC PASS). Người trả lời: Dev."
+}
+```
+
+## OQ-sdk-227 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-227",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "buyer-reposition",
+  "summary": "Text layer lưu vị trí px tuyệt đối (khác Category/Image layer lưu tỉ lệ 0-1 — KB-525/KB-524) có phải là hành vi chủ ý và còn đúng ở build hiện tại không? Chỉ đo tay trên staging (TC-37, 2026-09-27), không có TC riêng cho đơn vị lưu của Text. Người trả lời: Dev."
+}
+```
+
+## OQ-sdk-228 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-228",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "buyer-reposition",
+  "summary": "Linked copy có base size khác origin sync position/scale theo tỉ lệ tương ứng (không \"y hệt origin\" như TIB-5265 — KB-526) có được Dev xác nhận là hành vi đúng không? Mới đo một fixture (ratio ~0.67, 2026-10-05); TC-38 chỉ test copy cùng kích thước nên chưa phủ ca base size khác nhau. Người trả lời: Dev."
+}
+```
+
+## OQ-sdk-229 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-229",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "buyer-reposition",
+  "summary": "Sync scale của linked copy trên storefront thật (cả POSITION và SCALE) có đúng như trong admin Live preview không (KB-527)? Mới verify SCALE trong Live preview (2026-10-05, không save); POSITION trên storefront thật cần đo lại. Người trả lời: Dev."
+}
+```
+
+## OQ-sdk-230 — CONFLICT
+
+```json
+{
+  "oq_id": "OQ-sdk-230",
+  "type": "CONFLICT",
+  "feature_id": "buyer-reposition",
+  "summary": "Server-side design-file render có áp đúng transform của nguồn cho linked copy không (KB-528)? FACT-143 cũ (bên ngoài canon, trong qa-rules local product_facts.md) nói KHÔNG; TC-38 PASS 2026-10-06 (BUG-215 Passed) đo pixel cho thấy CÓ. Build không ghi lại ở cả hai lần đo, chưa kiểm lại trên production sau fix. Người trả lời: Dev.",
+  "side_a": "FACT-143 cũ (2026-10-05, trước khi đảo ngược cùng ngày): server-side design-file render KHÔNG áp transform đã sync đúng ở client — copy rơi về default (không scale), dù order data chỉ có override cho origin.",
+  "side_b": "TC-38 PASS 2026-10-06 (QA-3374, BUG-215 Passed, staging): đo lại bbox, nguồn+copy cùng 167×173px, cùng rotate ~44°, chỉ lệch vị trí in khác trên áo — linked copy nhận đúng transform nguồn trong render file."
+}
+```
+
+## OQ-sdk-231 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-231",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "sync-selection-between-templates",
+  "summary": "Cơ chế sync_between_templates chỉ đồng bộ selection của buyer, còn default value do seller đặt là độc lập theo từng layer/template (trừ Global Template/Global Option) — có đúng là hành vi PO/Dev chốt không (KB-530)? Expected do QA chốt 2026-09-11 (QA-3350 TC-42, QA-3286 TC-01), BR-12 từng viết sai và đã rút lại; không có nguồn PO/Dev. Người trả lời: Dev."
+}
+```
+
+## OQ-sdk-232 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-232",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "sync-selection-between-templates",
+  "summary": "Ngoại lệ Global Template: local template kế thừa default của GT layer (replica không ghi default riêng), seller không override được ở local — có đúng là hành vi PO/Dev chốt không (KB-531)? Expected do QA viết (QA-3350 TC-41), không có nguồn PO/Dev. Người trả lời: Dev."
+}
+```
+
+## OQ-sdk-233 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-233",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "sync-selection-between-templates",
+  "summary": "Ngoại lệ Global Option: layer liên kết cùng một GO dùng chung default của GO và đổi default GO propagate tới mọi layer liên kết — có đúng là hành vi PO/Dev chốt không (KB-532)? Expected do QA viết (QA-3350 TC-24/TC-26); chưa có TC kiểm riêng giữa hai template khác nhau. Người trả lời: Dev."
+}
+```
+
+## OQ-sdk-234 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-234",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "sync-selection-between-templates",
+  "summary": "Cross-type mismatch: khi hai template non-GT có Color option cùng Option title nhưng khác Color type (Solid vs Color Sequence) thì template đích không đổi (phương án a) — có phải hành vi PO/Dev chọn không (KB-533)? QA chọn phương án (a) 2026-09-11 (QA-3350 TC-56) trong 3 phương án (a không đổi / b blank / c báo lỗi), chưa ai xác nhận. Người trả lời: PO."
+}
+```
+
+## OQ-sdk-235 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-235",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "sync-selection-between-templates",
+  "summary": "Tiêu chí match khi sync selection giữa template có đúng là Option title cộng personalization type/settings (Layer name KHÔNG phải tiêu chí, Layer name khác nhau vẫn sync) không (CBS-130 CLAIM-01)? Không có test case kiểm riêng ca 'Layer name khác nhau vẫn sync' (ca âm Layer-name đã bị bỏ khỏi bộ TC); phát biểu trước đó (Layer name + Option title + type) đã bị QA đính chính 2026-08-25. Claim ở mức S0 (không nạp KB), chỉ ghi nhận làm unknown area. Người trả lời: Dev."
+}
+```

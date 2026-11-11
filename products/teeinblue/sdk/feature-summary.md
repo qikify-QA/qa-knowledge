@@ -1,8 +1,8 @@
 # Object: SDK (product: teeinblue) — Feature Profile Summary
-**Published context version:** 18
+**Published context version:** 20
 
 - **Environment:** staging. Kiến thức trong object này phần lớn là `OBSERVED_CURRENT` baseline; **`CONFIRMED_EXPECTED` chỉ có KB-053, KB-058 (CBS-001, chỉ staging build TIB-5352) và KB-061 (CBS-003, open-platform callback, chỉ trường hợp 1 artwork), KB-181 (CBS-006, buyer preview theo effective visibility của Group, chỉ staging 2026-10-16), KB-320, KB-322..KB-326 (CBS-009, gallery lọc media theo variant, staging 2026-10-22 trước khi code merge), KB-350, KB-352 (CBS-013, shape response campaigns/{id}.json khi gọi với tham số v mới, staging 2026-10-28 trước khi code merge), KB-408, KB-413..KB-455 (CBS-081, nguồn comment dev, shipped chưa rõ, production chưa xác nhận), KB-456, KB-457, KB-460, KB-461, KB-464, KB-466, KB-468 (CBS-089, cài đặt model GenAI; KB-459 cũng CONFIRMED_EXPECTED nhưng UNRESOLVED), KB-490..KB-493, KB-495..KB-498, KB-501..KB-505, KB-511 (CBS-098, sync ảnh khi đổi template và namespace id SVG; KB-515 cũng CONFIRMED_EXPECTED nhưng UNRESOLVED)**; KB-318 (CBS-009) cũng là CONFIRMED_EXPECTED nhưng đang UNRESOLVED vì conflict với KB-025, KB-056/KB-060 là `INFERRED`, chưa có nguồn thẩm quyền nào xác nhận business rule.
-- **Feature hiện có (8):** `storefront-buyer-facing`, `template-switch-photo-sync`, `product-page-settings-config`, `genai-personalization-runtime`, `genai-model-settings`, `open-platform-customization-callback`, `form-artwork-navigation`, `required-addon-validation` — mỗi feature có `features/<key>/{kb.json,profile.json}` và `checklists/<key>.json`. 8 feature KHÔNG phải tín hiệu coverage đủ ở cấp object (xem `open-questions.md` OQ-sdk-002).
+- **Feature hiện có (10):** `storefront-buyer-facing`, `template-switch-photo-sync`, `product-page-settings-config`, `genai-personalization-runtime`, `genai-model-settings`, `open-platform-customization-callback`, `form-artwork-navigation`, `required-addon-validation`, `buyer-reposition`, `sync-selection-between-templates` — mỗi feature có `features/<key>/{kb.json,profile.json}` và `checklists/<key>.json`. 10 feature KHÔNG phải tín hiệu coverage đủ ở cấp object (xem `open-questions.md` OQ-sdk-002).
 - **Actor đã test:** `guest` (storefront, không login) trên 2 store — store1 (instance 609, `linh-explorer.myshopify.com`) và store2 (instance 613, `linh-explorer-2.myshopify.com`); `owner` (portal: multi-store launch + inventory config `/product-page-settings`); và staff-authenticated Live Preview widget dùng làm proxy cho buyer ở `genai-personalization-runtime`. **Chưa test buyer đã login, chưa test role portal khác owner, chưa test guest session thật cho luồng GenAI.**
 - **⚠ Conflict P1 ảnh hưởng 2 feature (UNRESOLVED):** SDK version thực sự đang serve cho từng store mâu thuẫn giữa 3 nguồn evidence (baseline 2026-09-12 "store1 = SDK v1" vs portal API `sdk_version=2` cho cả 2 instance + storefront runtime re-check 2026-09-21 cho thấy cả 2 store serve `app-v2.js`). Đọc đầy đủ 3 phía ở `open-questions.md` OQ-sdk-001 (conflict_group `CFL-004`) **trước khi** dùng bất kỳ capability/check phân biệt v1/v2 theo store làm oracle.
 
@@ -132,6 +132,8 @@ portal owner, 2 store (609/613) ✅ · UI inventory 67/67 control ✅ (giá tr�
 
 **Cập nhật CBS-013 (TIB-5203):** sau đổi setting store (PUT config 200), config trong URL SDK `?v=1` và link preload vẫn trả giá trị cũ (KB-368, OBSERVED_CURRENT/LOW, BUG-440, 1 lượt trên staging trước khi code merge) — chưa rõ thiết kế hay lỗi, chờ PO (OQ-sdk-100); KB-319 có thể đã cũ trên build có cache. CHK-025 là NEEDS_CONFIRMATION.
 
+**⚠ Deferred CBS-128 (CLAIM-04, chưa publish — OQ-sdk-221):** candidate KB-529 cho rằng toggle 'Enable Reposition on main gallery' đổi hẳn cơ chế UI Reposition (BẬT: nút+khung kéo thả inline trên main gallery; TẮT: nút 'Reposition' riêng mở popup) và gọi nhãn control là "Enable Reposition on main gallery" — CONFLICTED với KB-026 (bootstrap) ghi "Enable Text Reposition on main gallery". `requires_human_decision: true`, chưa có quyết định owner nên KB-529 KHÔNG publish; KB-026 và checklist giữ nguyên. Chỉ ghi OQ-sdk-221 (CONFLICT, chờ Dev). Không chọn phía.
+
 ---
 
 ## genai-personalization-runtime
@@ -220,6 +222,42 @@ portal owner, 2 store (609/613) ✅ · UI inventory 67/67 control ✅ (giá tr�
 - **Chỉ baseline (OBSERVED_CURRENT/LOW):** xoá ảnh rồi đổi template (KB-499), hai layer khác tỉ lệ trong một template (KB-500), đổi nhanh liên tục và popup desktop/mobile (KB-513), chữ đầy đủ của warning (KB-514).
 - **Chưa kiểm:** nhánh "Enable Reposition on main gallery" = ON, Size/option map, Multiple Uploads, mixed field type, populate target, Edit design và order design (OQ-sdk-167..OQ-sdk-172). Field status Testlane của task QA-3415 không phản ánh kết quả, đọc actualResult (OQ-sdk-174).
 - Checklist CHK-001..CHK-023; OQ-sdk-163..OQ-sdk-176.
+
+## sync-selection-between-templates
+
+**Goal:** Buyer trên storefront chuyển giữa các template của một campaign và giá trị đã chọn/nhập cho một option được mang sang option cùng Option title + personalization type ở template khác; default value do seller đặt vẫn độc lập theo từng layer/template, trừ khi layer dùng chung Global Template hoặc Global Option. Feature mới từ CBS-130 (gộp CCR cũ CBS-048; QA-3286/TIB-5284, QA-3350, TIB-5241). Toggle điều khiển `sync_between_templates` thuộc `product-page-settings-config`; sync ảnh/position của photo layer thuộc `template-switch-photo-sync`.
+
+**Nguồn & trạng thái:** 4 claim test_case (QA-3350 TC-42/41/24/26/56, QA-3286 TC-01, PASS staging 2026-09-04/11) nhưng **căn cứ expected KHÔNG CÓ** (expected do QA chốt, không PO/Dev) nên tất cả hạ **S1 → OBSERVED_CURRENT/LOW**; không item nào là oracle STRONG, mọi check là BASELINE kèm OQ `NEEDS_CONFIRMATION`. Không supersede (supersede_policy tắt cho teeinblue).
+
+**Điểm chính (OBSERVED_CURRENT/LOW — không làm oracle):** sync chỉ đồng bộ selection của buyer, default của seller độc lập theo layer/template (KB-530, OQ-sdk-231); Global Template: local kế thừa default của GT layer, seller không override ở local (KB-531, OQ-sdk-232); Global Option: layer liên kết dùng chung default GO, đổi default GO propagate tới mọi layer liên kết (KB-532, OQ-sdk-233); cross-type mismatch (cùng Option title khác Color type): template đích giữ nguyên, không blank/lỗi/cross-apply (KB-533, OQ-sdk-234).
+
+**Chưa rõ:** tiêu chí match sync (Option title + type, Layer name không phải tiêu chí) chưa có TC riêng và phát biểu cũ đã bị đính chính (CLAIM-01, S0 không nạp — OQ-sdk-235); mọi expected chưa có nguồn PO/Dev; chưa test ở api/db, GO giữa hai template khác nhau. Toggle `sync_between_templates` default_value và cấp store chưa xác nhận (xem `product-page-settings-config`, mâu thuẫn KB-026/KB-038 — báo ở results.open_questions của CBS-130, OQ CONFLICT chờ Dev).
+
+**Checklist:** CHK-001..CHK-005, mọi check status READY với oracle BASELINE (không dùng kết luận bug). OQ-sdk-231..OQ-sdk-235.
+
+## buyer-reposition
+
+**Goal:** Buyer tự điều chỉnh (kéo, resize, xoay) vị trí một layer đã customize (Text, Clipart/Vector Category, Static Image/Vector) trên main gallery/mockup hoặc qua popup riêng của storefront, trước Add to cart; seller đặt baseline vị trí cho layer nguồn trong Artwork Editor. Feature mới từ CBS-128 (gộp CCR cũ CBS-047; TIB-4355, TIB-5309, TIB-5541, TIB-5265, QA-3374/QA-3356/QA-3410).
+
+**Nguồn & trạng thái:** mọi claim ở mức S2 (rule QA có chủ, `PROPOSED` kèm `qa_rule_ref`) hoặc S1 (capture/đo tay của QA/AI, `OBSERVED_CURRENT`/LOW); KHÔNG có claim nào đạt S3, nên **không item nào là oracle STRONG** — mọi check là `NEEDS_CONFIRMATION` chờ Dev/PO. Không supersede (supersede_policy tắt cho teeinblue).
+
+**Entry points:**
+- Storefront product customization — main gallery inline khi toggle 'Enable Reposition on main gallery' = ON (xem feature `product-page-settings-config`); popup Reposition riêng khi toggle = OFF (chỉ liệt kê target đã customize).
+- Portal Artwork Editor → Personalization Settings, nút 'Re-position' (layer Clipart Category / Group of Clipart Categories) — seller đặt baseline; Live preview để verify sync scale linked copy.
+
+**Điểm chính (PROPOSED, S2):** Curve Text (type 'curve-text') không có affordance reposition ở cả hai cơ chế, hành vi có từ trước (KB-516, OQ-sdk-218 hỏi PO); cơ chế Reposition thật chỉ test được trên storefront, Portal chỉ có công tắc BẬT/TẮT (KB-517, OQ-sdk-219); popup đứng riêng chỉ liệt kê target đã customize (KB-518, OQ-sdk-220); kích hoạt control Category = đổi radio, ~400ms hiện, mất sau Add to cart (KB-522, OQ-sdk-225); linked copy base size khác origin sync position/scale theo tỉ lệ tương ứng, không 'y hệt origin' (KB-526, OQ-sdk-228).
+
+**Chỉ baseline (OBSERVED_CURRENT/LOW, S1 — không làm oracle):** Category layer auto-select artwork trên main gallery khi chọn radio (KB-519); Static Image/Vector có component .tee-static-reposition trong panel form (KB-520, lưu ý BUG-12 chưa kết luận); seller baseline qua nút Re-position (KB-521, TC-19 chưa kết luận); lưu vị trí Category/Image theo tỉ lệ box layer (KB-524) vs Text layer px tuyệt đối (KB-525) — đừng generalize giữa hai nhóm; sync scale linked copy real-time trong Live preview (KB-527); server-side design-file render áp đúng transform cho linked copy (KB-528).
+
+**Conflict (UNRESOLVED):** KB-528 (server render áp đúng transform cho linked copy, TC-38 PASS 2026-10-06/BUG-215) đối lập bản ghi FACT-143 cũ (ngoài canon, qa-rules local) nói server KHÔNG áp transform — conflict_group `CBS-128__CLAIM-13__FACT-143`, chưa kiểm lại production sau fix, chờ Dev (OQ-sdk-230). Vì đây là feature mới (ADD), không contradict KB canon nào nên KB-528 vẫn publish kèm OQ theo luật "ADD có requires_human_decision vẫn publish".
+
+**Coverage:** storefront buyer (staging) ✅ (từ ghi nhận QA, chưa có explore độc lập trong run này) · portal store owner baseline ✅ (TC-19 chưa kết luận) · api POST customization / design-file render ✅ (một phép đo, build không ghi lại) · production ❌ · ô kéo không vuông (công thức lưu vị trí) ❌ · linked copy base size khác nhau > 1 fixture ❌.
+
+**Checklist:** CHK-001..CHK-011, mọi check `NEEDS_CONFIRMATION`. OQ-sdk-218..OQ-sdk-220, OQ-sdk-222..OQ-sdk-230.
+
+**Ràng buộc khi dùng làm oracle:** không nâng item nào lên expected khẳng định tới khi Dev/PO xác nhận; công thức lưu vị trí tỉ lệ (KB-524) chỉ khớp 4 số lẻ một phép đo, KHÔNG coi là công thức chính thức; KB-528 giữ UNRESOLVED, không chọn phía với FACT-143; CLAIM-04 (nhãn toggle) nằm ở feature `product-page-settings-config`, deferred, chưa publish.
+
+---
 
 ## Gaps ở cấp Object (áp dụng cho toàn bộ object `sdk`)
 

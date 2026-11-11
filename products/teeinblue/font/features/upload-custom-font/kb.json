@@ -8,7 +8,6 @@
     "scope": {
       "environment": "staging",
       "role": "owner (sub=273)",
-      "object_state": "trước khi upload",
       "surface": "portal"
     },
     "last_updated": {
@@ -16,8 +15,8 @@
       "ccr_ref": "bootstrap"
     },
     "related_kb_ids": [],
-    "conflict_group": "CONFLICT-002",
-    "status": "UNRESOLVED"
+    "status": "UNRESOLVED",
+    "conflict_group": "CONFLICT-002"
   },
   {
     "kb_id": "KB-011",
@@ -28,7 +27,6 @@
     "scope": {
       "environment": "staging",
       "role": "owner (sub=273)",
-      "object_state": "upload file .ttf hợp lệ, tên chưa tồn tại hoặc đã tồn tại",
       "surface": "api"
     },
     "last_updated": {
@@ -36,8 +34,8 @@
       "ccr_ref": "bootstrap"
     },
     "related_kb_ids": [],
-    "conflict_group": "CONFLICT-001",
-    "status": "UNRESOLVED"
+    "status": "UNRESOLVED",
+    "conflict_group": "CONFLICT-001"
   },
   {
     "kb_id": "KB-012",
@@ -48,7 +46,6 @@
     "scope": {
       "environment": "staging",
       "role": "owner (sub=273)",
-      "object_state": "đã tồn tại 1 font cùng tên (id 919)",
       "surface": "api"
     },
     "last_updated": {
@@ -66,7 +63,6 @@
     "scope": {
       "environment": "staging",
       "role": "owner (sub=273)",
-      "object_state": "chọn file .png thay vì .ttf/.otf",
       "surface": "portal"
     },
     "last_updated": {
@@ -84,7 +80,6 @@
     "scope": {
       "environment": "staging",
       "role": "owner (sub=273)",
-      "object_state": "font mới upload thành công",
       "surface": "api"
     },
     "last_updated": {
@@ -92,5 +87,71 @@
       "ccr_ref": "bootstrap"
     },
     "related_kb_ids": []
+  },
+  {
+    "kb_id": "KB-022",
+    "topic": "Đặt tên font mới theo tên file (strip ký tự đặc biệt); giữ original_name để merchant tự nhận diện trùng",
+    "statement": "Theo spec-hub rule fonts-name (2026-11-11, đọc source teeinblue-api, log_id=156), font mới được đặt tên theo tên file với ký tự đặc biệt bị loại bỏ (chỉ giữ chữ, số, khoảng trắng, dấu gạch ngang và gạch dưới); tên gốc bên trong file font được giữ riêng làm original_name để có thể phát hiện trùng. Đổi tên (rename) áp cùng quy tắc ký tự. Rule diễn đạt 'so duplicates can be spotted' hàm ý merchant TỰ nhận ra trùng bằng mắt qua original_name hiển thị, không phải hệ thống tự chặn upload trùng tên — suy luận này củng cố quan sát KB-012 (upload trùng tên được server chấp nhận, tạo row độc lập, không cảnh báo uniqueness). Phần 'không chặn' là suy luận gián tiếp, chưa được Dev xác nhận trực tiếp.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "spec-hub:fonts-name",
+      "naming",
+      "original_name",
+      "duplicate-name",
+      "rename"
+    ],
+    "related_kb_ids": [
+      "KB-012"
+    ],
+    "qa_rule_ref": {
+      "code": "spec-hub:fonts-name",
+      "owner_role": "code (spec-hub reads teeinblue-api source)",
+      "recorded_on": "2026-11-11",
+      "locator": "spec-hub mcp__spec-hub__ask log_id=156, rule id fonts-name (feature fonts)"
+    },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-136"
+    }
+  },
+  {
+    "kb_id": "KB-023",
+    "topic": "Upload font sai định dạng ở tầng server: 'Invalid font file' (không đọc được) / 'Failed to process font' (không convert được)",
+    "statement": "Theo spec-hub rule fonts-file-types (2026-11-11, đọc source teeinblue-api, log_id=156), custom font được upload dạng .ttf hoặc .otf; file không đọc được như một font bị server từ chối với message 'Invalid font file'; file đọc được nhưng không convert được thì 'Failed to process font'. Đây là hành vi ở tầng SERVER. KB-013 chỉ quan sát nhánh CLIENT (chọn file .png bị client chặn hoàn toàn trước khi gửi, 0 network request, chỉ icon cảnh báo không message) — tức một nhánh khác mà request chưa từng tới server. Do đó rule này BỔ SUNG nhánh server chưa được quan sát, không trực tiếp mâu thuẫn với KB-013; message server thật chưa được QA quan sát trực tiếp.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "api",
+      "brand": null
+    },
+    "tags": [
+      "spec-hub:fonts-file-types",
+      "validation",
+      "server-error",
+      "invalid-font-file",
+      "failed-to-process-font"
+    ],
+    "related_kb_ids": [
+      "KB-013"
+    ],
+    "qa_rule_ref": {
+      "code": "spec-hub:fonts-file-types",
+      "owner_role": "code (spec-hub reads teeinblue-api source)",
+      "recorded_on": "2026-11-11",
+      "locator": "spec-hub mcp__spec-hub__ask log_id=156, rule id fonts-file-types (feature fonts)"
+    },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-136"
+    }
   }
 ]

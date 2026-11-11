@@ -1,0 +1,100 @@
+[
+  {
+    "kb_id": "KB-530",
+    "topic": "sync_between_templates đồng bộ selection của buyer giữa template cùng Option title; default value của seller độc lập theo từng layer/template",
+    "statement": "Theo test case QA-3350 TC-42 (PASS 2026-09-11, staging, spec CLI) và QA-3286 TC-01 (PASS 2026-09-04, staging, Chromium), khi buyer trên storefront chọn/nhập giá trị cho một option rồi chuyển sang template khác có option cùng Option title và cùng personalization type/settings, giá trị buyer đã chọn được mang sang (B hiện đúng giá trị buyer nhập, không có default/stale value nhấp nháy sau khi render xong). Trong cùng quan sát, default value do seller đặt sẵn là độc lập theo từng layer và từng template: đổi default ở một template KHÔNG làm đổi default ở template kia (trừ ngoại lệ Global Template/Global Option). Expected của hai test case do QA chốt 2026-09-11, không có nguồn PO/Dev xác nhận.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer; store owner",
+      "surface": "storefront; portal (Live Preview trong artwork editor)",
+      "brand": null
+    },
+    "tags": [
+      "sync-between-templates",
+      "default-value",
+      "buyer-selection"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-130"
+    }
+  },
+  {
+    "kb_id": "KB-531",
+    "topic": "Ngoại lệ Global Template: local template kế thừa default của GT layer; seller không override được ở local",
+    "statement": "Theo test case QA-3350 TC-41 (PASS 2026-09-11, staging, REPL tay và spec CLI), khi default value được set trên Color layer của một Global Template, local template dùng GT đó kế thừa default: option Color của local template hiện swatch (quan sát `#D0021B`) ở trạng thái active+checked, tham chiếu qua global layer id mà layer replica KHÔNG ghi field default_value riêng. Seller không override được default ở local (row replica không có nút edit). Đây là cơ chế duy nhất khiến default 'đồng bộ' giữa template, không qua sync-by-option-title. Expected do QA viết, không có nguồn PO/Dev. (Fixture được restore về null sau khi đo.)",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "store owner",
+      "surface": "portal (artwork editor, Live Preview)",
+      "brand": null
+    },
+    "tags": [
+      "global-template",
+      "default-value",
+      "inheritance"
+    ],
+    "related_kb_ids": [
+      "KB-530"
+    ],
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-130"
+    }
+  },
+  {
+    "kb_id": "KB-532",
+    "topic": "Ngoại lệ Global Option: layer liên kết cùng một GO dùng chung default của GO; đổi default GO propagate tới mọi layer liên kết",
+    "statement": "Theo test case QA-3350 TC-24 và TC-26 (PASS 2026-09-11, staging, full-suite regression 48 pass/3 flaky-then-pass/0 fail), khi nhiều layer cùng liên kết một Global Option, chúng dùng chung default value của GO: layer liên kết render đúng màu default của GO (quan sát Green, không phải giá trị local cũ Blue, không phải black); đổi default của GO thì mọi layer liên kết đều nhận default mới (quan sát mọi layer liên kết render Orange làm pre-selection default). Quan sát là propagate GO → layer; chưa có test case kiểm riêng giữa hai template khác nhau. Expected do QA viết, không có nguồn PO/Dev.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "store owner",
+      "surface": "portal (artwork editor, Global Options)",
+      "brand": null
+    },
+    "tags": [
+      "global-option",
+      "default-value",
+      "propagation"
+    ],
+    "related_kb_ids": [
+      "KB-530"
+    ],
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-130"
+    }
+  },
+  {
+    "kb_id": "KB-533",
+    "topic": "Cross-type mismatch khi sync selection: hai template non-GT cùng Option title khác Color type thì template đích không đổi",
+    "statement": "Theo test case QA-3350 TC-56 (PASS 2026-09-11, staging, spec CLI), khi hai template không dùng Global Template có Color option cùng Option title nhưng khác Color type (A = Solid, B = Color Sequence), buyer chọn màu ở A rồi chuyển sang B thì B KHÔNG đổi: B giữ nguyên state/default riêng (quan sát checkedValue='5838' là sequence default của B), err=null, fieldPresent=true, 3 options — không blank, không báo lỗi, không cross-apply. Expected là phương án (a) 'không đổi gì' do QA chọn 2026-09-11 trong 3 phương án (a không đổi / b blank / c báo lỗi); không có nguồn PO/Dev, KHÔNG coi là hành vi PO đã duyệt.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront; portal (Live Preview trong artwork editor)",
+      "brand": null
+    },
+    "tags": [
+      "cross-type-mismatch",
+      "color-type",
+      "sync-between-templates"
+    ],
+    "related_kb_ids": [
+      "KB-530"
+    ],
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-130"
+    }
+  }
+]
