@@ -318,7 +318,7 @@
   "oq_id": "OQ-sdk-027",
   "type": "NEEDS_CONFIRMATION",
   "feature_id": "product-page-settings-config",
-  "summary": "Tuong quan (INFERRED, KHONG PHAI contract da xac nhan) giua ~27 key trong .config va cac control UI da quan sat -- khong duoc dung nhu data contract field-by-field — Binding giua .config (~27 key, APIOP-001) va 67 control UI CHI la tuong quan theo ten/gia tri (INFERRED), KHONG PHAI 1 data contract da xac nhan field-by-field qua code reference hay qua response cua Save (write-path chua tung duoc test, xem CHK-022). KHONG duoc viet oracle 'thay doi checkbox X se ghi dung key Y trong .config' cho toi khi co code reference tu code-config-explorer hoac quan sat truc tiep response cua Save. Ngoai ra, .config THUC TE (~27 key) khong khop config_registry SCHEMA (~38 key, APIOP-002) -- xem CHK-020 (CFL-005) -- can resolve truoc khi coi bat ky key nao trong so ~11 key con lai cua schema la 'se xuat hien khi merchant thay doi tu UI'.",
+  "summary": "Tuong quan (INFERRED, KHONG PHAI contract da xac nhan) giua ~27 key trong .config va cac control UI da quan sat -- khong duoc dung nhu data contract field-by-field — Binding giua .config (~27 key, API-OP-001) va 67 control UI CHI la tuong quan theo ten/gia tri (INFERRED), KHONG PHAI 1 data contract da xac nhan field-by-field qua code reference hay qua response cua Save (write-path chua tung duoc test, xem CHK-022). KHONG duoc viet oracle 'thay doi checkbox X se ghi dung key Y trong .config' cho toi khi co code reference tu code-config-explorer hoac quan sat truc tiep response cua Save. Ngoai ra, .config THUC TE (~27 key) khong khop config_registry SCHEMA (~38 key, API-OP-002) -- xem CHK-020 (CFL-005) -- can resolve truoc khi coi bat ky key nao trong so ~11 key con lai cua schema la 'se xuat hien khi merchant thay doi tu UI'.",
   "related": "CHK-018 (product-page-settings-config)"
 }
 ```
@@ -330,7 +330,7 @@
   "oq_id": "OQ-sdk-028",
   "type": "NEEDS_CONFIRMATION",
   "feature_id": "product-page-settings-config",
-  "summary": "Gap: write-path (Save/Reset) hoan toan chua co evidence -- nut hien dien/enabled nhung chua tung duoc click — Save/Reset hoan toan chua co evidence trong bat ky run nao tinh toi nay (forbidden_actions cua exploration_policy). Moi gia dinh ve hanh vi luu/validate-khi-luu (bao gom co goi APIOP-001 dang PUT/POST khong, co field nao trong .config duoc ghi, co validation loi nao khong) deu la suy dien, KHONG co evidence. Can explicit policy tu orchestrator/PO cho phep 1 lan mutation co kiem soat (vd tren test-instance rieng) truoc khi co the viet duoc test case that cho write-path nay.",
+  "summary": "Gap: write-path (Save/Reset) hoan toan chua co evidence -- nut hien dien/enabled nhung chua tung duoc click — Save/Reset hoan toan chua co evidence trong bat ky run nao tinh toi nay (forbidden_actions cua exploration_policy). Moi gia dinh ve hanh vi luu/validate-khi-luu (bao gom co goi API-OP-001 dang PUT/POST khong, co field nao trong .config duoc ghi, co validation loi nao khong) deu la suy dien, KHONG co evidence. Can explicit policy tu orchestrator/PO cho phep 1 lan mutation co kiem soat (vd tren test-instance rieng) truoc khi co the viet duoc test case that cho write-path nay.",
   "related": "CHK-022 (product-page-settings-config)"
 }
 ```
@@ -1423,7 +1423,7 @@
 ```
 
 ```json
-{"oq_id":"OQ-sdk-192","type":"NEEDS_CONFIRMATION","feature_id":"product-page-settings-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-020 “CFL-005 UNRESOLVED: config_registry.instance.config (~38 key schema, APIOP-002) khong khop .config thuc te (~27 key, APIOP-001) -- chi 1 ten key trung, KHONG tu resolve” của feature product-page-settings-config. missing_or_unresolved_oracle"}
+{"oq_id":"OQ-sdk-192","type":"NEEDS_CONFIRMATION","feature_id":"product-page-settings-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-020 “CFL-005 UNRESOLVED: config_registry.instance.config (~38 key schema, API-OP-002) khong khop .config thuc te (~27 key, API-OP-001) -- chi 1 ten key trung, KHONG tu resolve” của feature product-page-settings-config. missing_or_unresolved_oracle"}
 ```
 
 ```json

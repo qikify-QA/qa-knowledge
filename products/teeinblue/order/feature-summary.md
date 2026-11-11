@@ -1,11 +1,11 @@
 # Object: Order (product: teeinblue) — Feature Profile Summary
-**Published context version:** 9
+**Published context version:** 11
 
-- **Env:** staging. Bootstrap 2026-09-13; cập nhật CBS-006 (TIB-5584) và CBS-011 (TIB-5558, action Hide) 2026-10-30; CBS-074 (Edit Customization sau order, tracking từ provider) 2026-11-06; CBS-096 (import đơn Shopify với customization_id sai định dạng, order design ảnh AI, order design vector) 2026-11-07.
-- **Nguồn:** phần lớn knowledge là `OBSERVED_CURRENT` từ bootstrap; item `CONFIRMED_EXPECTED` gồm KB-182, KB-238, KB-239, KB-392, từ test case Testlane PASS trên staging; KB-182 chờ PO xác nhận vì đổi đầu ra fulfillment (OQ-order-020)
+- **Env:** staging. Bootstrap 2026-09-13; cập nhật CBS-006 (TIB-5584) và CBS-011 (TIB-5558, action Hide) 2026-10-30; CBS-074 (Edit Customization sau order, tracking từ provider) 2026-11-06; CBS-096 (import đơn Shopify với customization_id sai định dạng, order design ảnh AI, order design vector) 2026-11-07; CBS-112 (feature mới `fulfillment-provider-request`: request gửi nhà in qua API Myze/PosterFlow) 2026-11-10; CBS-114 (Re-generate design và Edit customization ở portal trên order đã đặt, vào `edit-customization-after-order`) 2026-11-10.
+- **Nguồn:** phần lớn knowledge là `OBSERVED_CURRENT` từ bootstrap; item `CONFIRMED_EXPECTED` gồm KB-182, KB-238, KB-239, KB-392 từ test case Testlane PASS; KB-772, KB-774 từ test case ghi trên Jira QA-3348/QA-3365 PASS (kết quả AI); đều trên staging; KB-182 chờ PO xác nhận vì đổi đầu ra fulfillment (OQ-order-020)
 - **Actor coverage:** storefront = GUEST buyer only (no signed-in buyer tested); portal = owner (Linh explorer, sub=273) only (no non-owner/restricted role tested)
 - **Authoritative store: `linh-explorer-2.myshopify.com`** — NOT `linh-explorer.myshopify.com`. The latter has a known add-to-cart failure for this campaign that prevents completing a real order there; this KB should not be treated as verified for that store until its add-to-cart issue is investigated separately (see `OQ-order-013`).
-- **6 features** (`place-personalized-order-storefront`, `review-and-initiate-fulfillment-portal`, `edit-customization-after-order`, `shopify-order-import`, `order-design-vector-render`, `order-design-print-resolution`). Hai feature đầu đã có coverage; `edit-customization-after-order` và `shopify-order-import` chưa có coverage xác nhận (item đều PROPOSED, check đều NEEDS_CONFIRMATION); `order-design-vector-render` chỉ có quan sát một lượt (BASELINE). Không feature nào bị chặn hoàn toàn.
+- **7 features** (`place-personalized-order-storefront`, `review-and-initiate-fulfillment-portal`, `edit-customization-after-order`, `shopify-order-import`, `order-design-vector-render`, `order-design-print-resolution`, `fulfillment-provider-request`). Hai feature đầu đã có coverage; `edit-customization-after-order` và `shopify-order-import` chưa có coverage xác nhận (item đều PROPOSED, check đều NEEDS_CONFIRMATION); `order-design-vector-render` chỉ có quan sát một lượt (BASELINE). Không feature nào bị chặn hoàn toàn.
 - **43 KB items** across the object: 0 HIGH, 7 MEDIUM, 36 LOW. 24 item bootstrap resting on exactly ONE order end-to-end (plus a second order used only to illustrate the sync conflict below).
 - **1 unresolved conflict spanning both features:** `OQ-order-001` — an order placed successfully at storefront checkout did not appear in the portal Orders list for 90+ minutes across all statuses/stores/a 30-day range; a second order did sync after an unverified user claim that a webhook configuration issue had been fixed. That claim has never been independently verified.
 
@@ -84,13 +84,14 @@
 
 ## edit-customization-after-order — Buyer mở Edit Customization sau khi đặt order
 
-**Surface:** storefront, Thank You page và Order status page; role buyer. Cần block Edit Customization đã có trên trang.
+**Surface:** storefront (Thank You page và Order status page; role buyer; cần block Edit Customization đã có trên trang) và portal (Order details, role staff/owner: Re-generate design, Edit customization).
 
 - **Campaign Shopify product (KB-435, PROPOSED/LOW, đề xuất chưa xác minh):** theo test case, customizer mở với design editable ở cả hai trang. Bước lưu thay đổi và ghi đè artwork chưa có lượt chạy.
 - **Campaign by product base (KB-436, PROPOSED/LOW, đề xuất chưa xác minh):** theo test case, link vẫn hiện; click thì sang trang customize và báo "Your design does not support edit for now, contact shop owner". Lượt chạy chỉ ở Thank You page; hai nguồn chưa chốt (OQ-order-044).
 - **Checklist:** CHK-001..CHK-004 đều NEEDS_CONFIRMATION, oracle NONE: chỉ ghi nhận, chưa kết luận PASS/FAIL.
 - **Không dùng làm expected cho:** /cart (OQ-order-031), bước lưu (OQ-order-033), nút cùng tên ở Portal (OQ-order-011).
-- **Còn mở:** OQ-order-031..038, OQ-order-040..044.
+- **Portal, staff/owner (CBS-114, OBSERVED_CURRENT/LOW, nguồn QA, không có xác nhận PO/Dev, không phải oracle):** KB-779: sau khi đổi populate config của artwork, Re-generate design mặc định "No, keep current artwork version" dựng lại bản render byte-identical (QA-3353 TC-76); KB-780: mở Edit customization, không sửa field nào rồi Save thì design không đổi (QA-3386 TC-41). Nhánh Re-generate "Yes. Upgrade latest artwork version." và trường hợp sửa field thật rồi Save chưa có lượt chạy. CHK-005, CHK-006 (BASELINE). Các item này là quan sát về nút ở Portal nhưng chưa đóng OQ-order-011.
+- **Còn mở:** OQ-order-031..038, OQ-order-040..044, OQ-order-082..084.
 
 ---
 
@@ -132,6 +133,21 @@
 - Tạo order với print area có DPI đã đặt (vd 200): file design ghi đúng DPI đó (KB-771).
 
 **Risks/Unknowns:** chưa có điều chưa biết nào mà canon không phủ.
+
+---
+
+## fulfillment-provider-request — Request TIB gửi nhà in qua API (Myze, PosterFlow)
+**Goal:** Khi đơn được gửi fulfill tới nhà in kết nối qua API, TIB dựng payload Create Order, tách hoặc gộp request theo provider và lưu response của provider.
+**Phạm vi:** payload và request gửi nhà in, lưu response, tách/gộp theo provider, URL webhook tracking. Không gồm kết nối/cấu hình provider ở trang Fulfillments (object `product-base`, chưa có feature này trong canon) và review/gửi fulfill ở portal (`review-and-initiate-fulfillment-portal`). Setup: store explorer đã kết nối Myze/PosterFlow trên staging.
+
+**Đã xác nhận (CONFIRMED_EXPECTED/MEDIUM, test case PASS staging, chỉ phạm vi đã chạy):**
+- Payload gửi Myze mang `pickUp` có mặt, giá trị true (quan sát là boolean); đơn pickup (shippingAddress null) được Myze nhận (KB-772).
+- Payload Create Order gửi PosterFlow không có field giá (KB-774); không suy rộng cho provider khác.
+
+**Quan sát hiện tại (OBSERVED_CURRENT/LOW, chờ Dev xác nhận):** vị trí lưu response PosterFlow (KB-773), shape payload PosterFlow thật lệch ví dụ dev (không `id`, `shipping_address.state` null ở phần lớn đơn, KB-775, UNRESOLVED), gộp cùng provider khi `order_combine_by` = 1 và đơn nhiều provider tách theo provider ở lượt đã chạy (KB-776, KB-777; chưa rõ mọi giá trị `order_combine_by`), URL webhook `shipment_notification_url` (KB-778).
+
+**Risks/Unknowns:** 14 OQ mở (OQ-order-068..081), gồm 2 CONFLICT (OQ-order-077, OQ-order-078) về shape payload PosterFlow; payload Myze (country/state, phone/supplement), retry, header outbound, địa chỉ Shopify, text buyer attach, stub lỗi provider chưa có xác nhận nên chưa vào KB.
+**Coverage:** 7 KB item, 7 check (2 READY, 5 chờ xác nhận); chưa có RBAC, production, provider khác Myze/PosterFlow.
 
 ---
 

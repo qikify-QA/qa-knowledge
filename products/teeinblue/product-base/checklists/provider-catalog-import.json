@@ -1,0 +1,151 @@
+{
+  "feature_id": "FEAT-11-provider-catalog-import",
+  "feature_key": "provider-catalog-import",
+  "object_id": "product-base",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-11-001",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "Import catalog item tạo Product Base mang đúng data của catalog",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "has_connected_provider",
+        "environment": "staging",
+        "surface_or_device": "portal, api"
+      },
+      "precondition": "Đã kết nối fulfillment provider (vd PosterFlow) với API key hợp lệ; có catalog_id hợp lệ chưa import.",
+      "steps": [
+        "Mở modal Import product từ catalog nhà in trên /products",
+        "Chọn một catalog item",
+        "Save/Import"
+      ],
+      "observation_point": "Request POST /api/products/import; Product Base mới tạo ra",
+      "expected_result": "Request gửi tới /api/products/import (REST proxy backend TIB) với body chứa fulfillment_id, catalog_id; Product Base mới mang title, description, mockups, printareas, variants của catalog đó.",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-catalog-import#KB-519"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "product-base/provider-catalog-import#KB-519"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-11-002",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Danh sách catalog phân trang đầy đủ, đúng tổng số",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "has_connected_provider",
+        "environment": "staging",
+        "surface_or_device": "portal, api"
+      },
+      "precondition": "Đã kết nối fulfillment provider với catalog có nhiều trang (vd total > per_page mặc định).",
+      "steps": [
+        "Mở modal Import product từ catalog nhà in",
+        "Lướt qua các trang danh sách catalog",
+        "So khớp số lượng hiển thị với meta.total của API"
+      ],
+      "observation_point": "GET /api/fulfillments/{id}/catalogs?page=&per_page= response meta; text 'Showing X to Y of total entries' trên portal",
+      "expected_result": "meta.{page, per_page, total} khớp với số item portal cho phép truy cập qua các trang; không thiếu/trùng item nào (ví dụ total=241 → đủ 241 item duy nhất qua các trang).",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-catalog-import#KB-520"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "product-base/provider-catalog-import#KB-520"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-11-003",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "List catalog (trước import) chỉ trả 4 field, không lộ variants/availability",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "has_connected_provider",
+        "environment": "staging",
+        "surface_or_device": "portal proxy, api, db"
+      },
+      "precondition": "Đã kết nối fulfillment provider; có catalog chưa import.",
+      "steps": [
+        "Gọi GET /api/fulfillments/{id}/catalogs?page=&per_page= (mọi per_page)",
+        "Kiểm field trả về cho từng item",
+        "Import một item rồi tra GraphQL products_by_pk cho item đó"
+      ],
+      "observation_point": "Response body của endpoint list catalog; response GraphQL products_by_pk sau import",
+      "expected_result": "Response list catalog chỉ có 4 field (fulfillment_catalog_id, title, images, base_cost), không có variants/availability ở bất kỳ per_page; sau import, GraphQL products_by_pk trả variants.available cho item đó.",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-catalog-import#KB-521"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "product-base/provider-catalog-import#KB-521"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-product-base-106"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "dimension": "CORE",
+      "count": 2
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "dimension": "INTEGRATION",
+      "count": 1
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Không có KB nào về input sai/catalog_id không hợp lệ trong modal Import — CCR CBS-119 không có claim tương ứng."
+    },
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Không có KB nào đo giới hạn kích thước/số lượng/độ dài của catalog item hay content."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "Không có KB xác nhận permission/role gate riêng cho modal Import; gate của trang Fulfillments (CLAIM-03) thuộc feature fulfillment-provider-connection và là S0, không nạp KB."
+    },
+    {
+      "dimension": "STATE_DATA",
+      "reason": "CLAIM-06 (import lại catalog đã import tạo Product Base thứ 2) chỉ S0, không có nguồn xác đáng (chỉ 1 dòng precondition không quote) — không nạp KB, không đủ oracle để tạo check; xem open question riêng (không gắn kb_id)."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Feature mới (FEAT-11), lần đầu publish — không có base trước để so sánh regression."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-119"
+  }
+}

@@ -16,6 +16,14 @@
         "order/edit-customization-after-order#KB-435",
         "order/edit-customization-after-order#KB-436"
       ]
+    },
+    {
+      "role": "merchant-owner (staff/owner, portal)",
+      "permission_observed": "OBSERVED_CURRENT/LOW (KB-779, KB-780), staging, theo test case QA-3353 TC-76 và QA-3386 TC-41, build không rõ: staff/owner dùng Re-generate design và Edit customization ở Order details trên portal. Không có item nào về ranh giới quyền của role này.",
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-779",
+        "order/edit-customization-after-order#KB-780"
+      ]
     }
   ],
   "entry_points": [
@@ -34,6 +42,20 @@
         "order/edit-customization-after-order#KB-435",
         "order/edit-customization-after-order#KB-436"
       ]
+    },
+    {
+      "path": "Portal Order details -> Re-generate design",
+      "precondition": "Staff/owner mở order đã đặt trên portal (staging). Re-generate có hai lựa chọn: mặc định \"No, keep current artwork version\" (KB-779) và \"Yes. Upgrade latest artwork version.\" (chưa có lượt chạy). Quan sát QA, một lượt, build không rõ; không phải oracle.",
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-779"
+      ]
+    },
+    {
+      "path": "Portal Order details -> Edit customization",
+      "precondition": "Staff/owner mở order đã đặt trên portal (staging); mở Edit customization rồi Save (KB-780). Quan sát QA, một lượt, build không rõ; không phải oracle.",
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-780"
+      ]
     }
   ],
   "capabilities": [
@@ -49,6 +71,20 @@
       "description": "PROPOSED/LOW (KB-436, shipped UNKNOWN), không làm oracle: theo Testlane TC-TIB-982 (Thank You page, PASS 2026-08-27, không ghi build), với campaign by product base, link Edit Customization vẫn hiện; click thì sang trang customize và báo không hỗ trợ edit: \"Your design does not support edit for now, contact shop owner\". Ghi chú đề 2026-10-29 nói khác (\"không có cho product base\"); hai nguồn chưa được chốt (unknown_areas[8]). Order status page chưa có lượt chạy.",
       "kb_refs": [
         "order/edit-customization-after-order#KB-436"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-114] Quan sát QA: Re-generate design mặc định \"No\" dựng lại bản render không đổi sau khi đổi populate config của artwork (portal)",
+      "description": "OBSERVED_CURRENT/LOW (KB-779), không làm oracle: theo QA-3353 TC-76 (PASS 2026-09-09, staging, build không rõ), staff/owner đổi populate config của artwork (Value, formula, GO, màu) sau khi order đặt rồi bấm Re-generate design ở Order details với lựa chọn mặc định \"No, keep current artwork version\" thì bản render dựng lại byte-identical với bản cũ, vẫn theo giá trị buyer đã nhập; populate config mới không được áp. Phần diễn giải 'customization đóng băng, chỉ re-apply format/layout' là nhận định của QA, chưa có xác nhận PO/Dev. Không nói gì về nhánh \"Yes. Upgrade latest artwork version.\".",
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-779"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-114] Quan sát QA: mở Edit customization ở portal rồi Save không sửa field thì design của order không đổi",
+      "description": "OBSERVED_CURRENT/LOW (KB-780), không làm oracle: theo QA-3386 TC-41 (PASS 2026-10-14 khi recheck, staging, build không rõ), với order đặt khi artwork chưa bật override, sau khi seller bật override và upload mask mới, staff/owner mở Edit customization ở Order details, không sửa field nào rồi Save thì design output của order không đổi (hash giữ nguyên); mask override mới không vào design qua thao tác này. Không nói gì về trường hợp sửa field thật rồi Save.",
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-780"
       ]
     }
   ],
@@ -70,10 +106,47 @@
       "kb_refs": [
         "order/edit-customization-after-order#KB-436"
       ]
+    },
+    {
+      "from": "Portal Order details, order đã đặt, populate config của artwork đã đổi sau khi đặt",
+      "to": "Quan sát: bản render dựng lại không đổi (byte-identical), populate config mới không được áp",
+      "trigger": "staff/owner bấm Re-generate design, giữ mặc định \"No, keep current artwork version\"",
+      "condition": "OBSERVED_CURRENT/LOW (KB-779), staging, QA-3353 TC-76, build không rõ; không làm oracle. Nhánh \"Yes. Upgrade latest artwork version.\" chưa có lượt chạy.",
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-779"
+      ]
+    },
+    {
+      "from": "Portal Order details, order đặt khi artwork chưa bật override; sau đó artwork bật override và có mask mới",
+      "to": "Quan sát: design output của order không đổi (hash giữ nguyên)",
+      "trigger": "staff/owner mở Edit customization, không sửa field nào, bấm Save",
+      "condition": "OBSERVED_CURRENT/LOW (KB-780), staging, QA-3386 TC-41, build không rõ; không làm oracle. Trường hợp sửa field thật rồi Save chưa có lượt chạy.",
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-780"
+      ]
     }
   ],
   "confirmed_rules": [],
-  "observed_behavior": [],
+  "observed_behavior": [
+    {
+      "statement": "[MỚI, CBS-114] Order đã đặt, populate config của artwork bị đổi sau khi đặt, staff/owner bấm Re-generate design ở Order details với mặc định \"No, keep current artwork version\": bản render dựng lại byte-identical với bản cũ, theo giá trị buyer đã nhập; populate config mới không được áp (QA-3353 TC-76, PASS 2026-09-09, staging, build không rõ, 1 lượt; QA xác nhận, không có xác nhận PO/Dev). Nhánh \"Yes. Upgrade latest artwork version.\" không được chạy.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-779"
+      ],
+      "observed_count": 1
+    },
+    {
+      "statement": "[MỚI, CBS-114] Order đặt khi artwork chưa bật override; sau đó artwork bật override và upload mask mới; staff/owner mở Edit customization ở Order details, không sửa field nào, Save: design output của order không đổi (hash giữ nguyên), mask override mới không vào design (QA-3386 TC-41, PASS 2026-10-14 khi recheck, staging, build không rõ, 1 lượt; QA xác nhận, không có xác nhận PO/Dev). Trường hợp sửa field thật rồi Save chưa chạy.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-780"
+      ],
+      "observed_count": 1
+    }
+  ],
   "observed_validations": [],
   "permissions": [
     {
@@ -86,7 +159,22 @@
     }
   ],
   "surface_mapping": {
-    "portal": [],
+    "portal": [
+      {
+        "item": "[MỚI, CBS-114] Order details -> Re-generate design (mặc định \"No, keep current artwork version\"): bản render dựng lại không đổi sau khi đổi populate config (OBSERVED_CURRENT/LOW)",
+        "kb_refs": [
+          "order/edit-customization-after-order#KB-779",
+          "order/review-and-initiate-fulfillment-portal#KB-017"
+        ]
+      },
+      {
+        "item": "[MỚI, CBS-114] Order details -> Edit customization: mở rồi Save không sửa field, design không đổi (OBSERVED_CURRENT/LOW)",
+        "kb_refs": [
+          "order/edit-customization-after-order#KB-780",
+          "order/review-and-initiate-fulfillment-portal#KB-017"
+        ]
+      }
+    ],
     "storefront": [
       "Đề xuất chưa xác minh (KB-435, KB-436, PROPOSED/LOW): Thank You page, link Edit Customization, campaign Shopify product (KB-435) và campaign by product base (KB-436)",
       "Đề xuất chưa xác minh (KB-435, PROPOSED/LOW): Order status page, link Edit Customization, campaign Shopify product",
@@ -99,7 +187,8 @@
   },
   "dependencies": [
     "Cần order đã đặt có item thuộc campaign Shopify product hoặc campaign by product base; đặt order thuộc place-personalized-order-storefront (KB-435, KB-436, KB-010).",
-    "Theo scope của KB-435, KB-436 (PROPOSED/LOW), link phụ thuộc block Edit Customization đã có trên trang; điều kiện để block render chưa rõ, xem unknown_areas[7] (KB-435, KB-436)."
+    "Theo scope của KB-435, KB-436 (PROPOSED/LOW), link phụ thuộc block Edit Customization đã có trên trang; điều kiện để block render chưa rõ, xem unknown_areas[7] (KB-435, KB-436).",
+    "[MỚI, CBS-114] Hai quan sát portal (KB-779, KB-780) cần order đã đặt và artwork của order bị đổi sau khi đặt (đổi populate config ở KB-779; bật override và upload mask mới ở KB-780). Cùng khối Customization/Re-generate ở order-details của review-and-initiate-fulfillment-portal (KB-017)."
   ],
   "risks": [
     {
@@ -133,11 +222,13 @@
       ]
     },
     {
-      "risk": "Không áp hai đề xuất này cho nút Edit customization cùng tên ở Portal.",
-      "detail": "KB-435 và KB-436 chỉ nói về storefront; hành vi nút ở Portal vẫn thuộc OQ-order-011.",
+      "risk": "Không áp hai đề xuất storefront này cho nút Edit customization cùng tên ở Portal; KB-779 và KB-780 chỉ là quan sát QA về Portal, chưa đóng OQ-order-011.",
+      "detail": "KB-435 và KB-436 chỉ nói về storefront. KB-779 và KB-780 quan sát hành vi nút Re-generate design và Edit customization ở Portal (một lượt, OBSERVED_CURRENT/LOW, không phải oracle) nhưng không trả lời toàn bộ OQ-order-011; OQ-order-011 vẫn mở.",
       "kb_refs": [
         "order/edit-customization-after-order#KB-435",
-        "order/edit-customization-after-order#KB-436"
+        "order/edit-customization-after-order#KB-436",
+        "order/edit-customization-after-order#KB-779",
+        "order/edit-customization-after-order#KB-780"
       ],
       "oq_ref": "OQ-order-011"
     },
@@ -146,6 +237,14 @@
       "detail": "Ghi chú đề 2026-10-29 ghi \"không có cho product base\", còn TC-TIB-982 ghi link vẫn hiện và click thì báo không hỗ trợ edit. Link hiện hay không hiện đều chưa kết luận được là đúng hay lỗi (unknown_areas[8]).",
       "kb_refs": [
         "order/edit-customization-after-order#KB-436"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-114] KB-779 và KB-780 là quan sát QA một lượt mỗi item (OBSERVED_CURRENT/LOW, build không rõ, chưa có xác nhận PO/Dev), không làm oracle; chưa kiểm production.",
+      "detail": "QA diễn giải 'customization đóng băng lúc đặt hàng' và coi hành vi đúng trong lúc chạy TC, nhưng không có căn cứ expected. Không dùng làm expected để kết luận bug; lệch chỉ cần điều tra.",
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-779",
+        "order/edit-customization-after-order#KB-780"
       ]
     }
   ],
@@ -222,7 +321,7 @@
     },
     {
       "question": "Phạm vi surface của Edit Customization là những đâu?",
-      "why_it_matters": "KB-435 và KB-436 chỉ nói về Thank You page và Order status page, không khẳng định không có ở nơi khác. Nút cùng tên ở Portal vẫn thuộc OQ-order-011, feature này không trả lời OQ đó.",
+      "why_it_matters": "KB-435 và KB-436 chỉ nói về Thank You page và Order status page, không khẳng định không có ở nơi khác. Nút cùng tên ở Portal có hai quan sát QA mới (KB-779 Re-generate design, KB-780 Edit customization, OBSERVED_CURRENT/LOW) nhưng chưa đóng OQ-order-011; OQ-order-011 vẫn mở.",
       "level": "feature",
       "oq_type": "OPEN_ISSUE",
       "kb_refs": [
@@ -263,11 +362,29 @@
         "order/edit-customization-after-order#KB-435"
       ],
       "oq_id": "OQ-order-040"
+    },
+    {
+      "question": "[MỚI, CBS-114] Nhánh Re-generate design \"Yes. Upgrade latest artwork version.\" ở Order details trên portal có áp populate config/artwork mới vào bản render không, và khác gì nhánh mặc định \"No\"?",
+      "why_it_matters": "KB-779 chỉ chạy nhánh mặc định \"No\"; nhánh \"Yes\" chưa có TC chạy nên không có hành vi hay oracle nào cho nhánh này.",
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-779"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-order-084"
+    },
+    {
+      "question": "[MỚI, CBS-114] Sửa một field thật trong Edit customization ở Order details trên portal rồi Save thì design của order đổi thế nào (field sửa có vào design không, mask override mới có vào không)?",
+      "why_it_matters": "KB-780 chỉ quan sát trường hợp mở rồi Save không sửa field; trường hợp sửa field thật chưa có lượt chạy riêng nên chưa có hành vi hay oracle.",
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-780"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-order-083"
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-10",
+    "ccr_ref": "CBS-114"
   },
   "coverage_matrix": [
     {
@@ -387,6 +504,54 @@
         "order/edit-customization-after-order#KB-436"
       ],
       "basis": "shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-03-edit-customization-after-order",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-114] Re-generate design mặc định \"No\" sau khi đổi populate config: bản render không đổi",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-779"
+      ],
+      "basis": "QA-3353 TC-76 PASS 2026-09-09, 1 lượt, OBSERVED_CURRENT/LOW; chưa có check chạy lại"
+    },
+    {
+      "feature_id": "FEAT-03-edit-customization-after-order",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-114] Re-generate design nhánh \"Yes. Upgrade latest artwork version.\"",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-779"
+      ],
+      "basis": "chưa có TC chạy"
+    },
+    {
+      "feature_id": "FEAT-03-edit-customization-after-order",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-114] Edit customization mở rồi Save không sửa field: design không đổi",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-780"
+      ],
+      "basis": "QA-3386 TC-41 PASS 2026-10-14, 1 lượt, OBSERVED_CURRENT/LOW; chưa có check chạy lại"
+    },
+    {
+      "feature_id": "FEAT-03-edit-customization-after-order",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-114] Edit customization sửa field thật rồi Save",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "order/edit-customization-after-order#KB-780"
+      ],
+      "basis": "chưa có TC chạy"
     }
   ],
   "profile_conflicts": [],
@@ -408,7 +573,7 @@
       "to_feature_id": "FEAT-ORDER-PORTAL-01",
       "to_feature_key": "review-and-initiate-fulfillment-portal",
       "relationship": "same_name_different_surface",
-      "description": "Khối Customization (View/Edit) ở order-details trên Portal (KB-017) có nút cùng tên nhưng khác surface. KB-435 và KB-436 không trả lời hành vi nút đó (OQ-order-011).",
+      "description": "Khối Customization (View/Edit) ở order-details trên Portal (KB-017) có nút cùng tên nhưng khác surface. KB-435 và KB-436 không trả lời hành vi nút đó. KB-779 và KB-780 là quan sát QA về Re-generate design và Edit customization ở Portal (OBSERVED_CURRENT/LOW, một lượt mỗi item) nhưng chưa đóng OQ-order-011; OQ-order-011 vẫn mở.",
       "kb_refs": [
         "order/edit-customization-after-order#KB-435",
         "order/edit-customization-after-order#KB-436",

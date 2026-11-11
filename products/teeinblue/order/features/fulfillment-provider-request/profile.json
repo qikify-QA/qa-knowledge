@@ -1,0 +1,397 @@
+{
+  "feature_id": "FEAT-07-fulfillment-provider-request",
+  "feature_key": "fulfillment-provider-request",
+  "name": "Request TIB gửi nhà in qua API (Myze, PosterFlow)",
+  "user_goal": "Khi đơn của merchant được gửi fulfill tới nhà in kết nối qua API (Myze, PosterFlow), TIB dựng payload Create Order mà provider nhận, tách hoặc gộp request theo provider, và lưu response của provider vào bản ghi của đơn.",
+  "user_goal_kb_refs": [
+    "KB-772",
+    "KB-774",
+    "KB-776",
+    "KB-777",
+    "KB-773"
+  ],
+  "stable_since_version": null,
+  "last_updated": {
+    "date": "2026-11-10",
+    "ccr_ref": "CBS-112"
+  },
+  "scope_in": "Payload và request TIB gửi nhà in qua API (Myze, PosterFlow), lưu response, tách/gộp theo provider, URL webhook tracking.",
+  "scope_out": [
+    "Kết nối và cấu hình provider ở trang Fulfillments: product-base/fulfillment-provider-connection (feature chưa tồn tại trong canon, thuộc CCR riêng).",
+    "Review đơn và gửi fulfill ở portal: order/review-and-initiate-fulfillment-portal."
+  ],
+  "actors": [
+    {
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "permission_observed": "Payload do TIB dựng và gửi tới provider; shard không có quan sát nào về quyền hay role khởi tạo việc gửi.",
+      "kb_refs": [
+        "KB-772",
+        "KB-774",
+        "KB-775",
+        "KB-778"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Đơn được gửi fulfill tới Myze (line item map vào Myze)",
+      "precondition": "Store explorer đã kết nối Myze trên staging (thiết lập kết nối nằm ngoài feature này). Với KB-772: đơn pickup (shippingAddress null). Đọc payload ở request_data đã lưu của lượt gửi.",
+      "kb_refs": [
+        "KB-772"
+      ]
+    },
+    {
+      "path": "Đơn được gửi fulfill tới PosterFlow (line item map vào PosterFlow)",
+      "precondition": "Store explorer đã kết nối PosterFlow trên staging (thiết lập kết nối nằm ngoài feature này). Đọc payload ở request_data đã lưu và response ở bản ghi fulfillers của đơn. Không ghi giá trị tham số token của shipment_notification_url.",
+      "kb_refs": [
+        "KB-774",
+        "KB-775",
+        "KB-773",
+        "KB-778"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Dựng payload gửi Myze",
+      "description": "Đơn pickup (shippingAddress null) được gửi sang Myze; payload mang pickUp true (quan sát là boolean), Myze nhận (KB-772, CONFIRMED_EXPECTED/MEDIUM). Các field khác của payload Myze chưa có KB — xem unknown_areas.",
+      "kb_refs": [
+        "KB-772"
+      ]
+    },
+    {
+      "name": "Dựng payload Create Order gửi PosterFlow",
+      "description": "Payload không chứa field giá/pricing/cost (KB-774, CONFIRMED_EXPECTED/MEDIUM, chỉ PosterFlow trên staging). Payload mang shipment_notification_url tới endpoint /api/webhook/general với tham số user_id, token, order_token (KB-778, OBSERVED_CURRENT/LOW). Shape đầy đủ (có id hay không, shipping_address.state) đang UNRESOLVED ở CONF-CBS-112-01 (KB-775) — không dùng làm oracle.",
+      "kb_refs": [
+        "KB-774",
+        "KB-778",
+        "KB-775"
+      ]
+    },
+    {
+      "name": "Tách và gộp request theo provider",
+      "description": "Quan sát (LOW): order_combine_by = 1, đơn 2 line item cùng PosterFlow → một request row chứa mọi line item (KB-776); đơn có line item của PosterFlow và provider khác → một request row mỗi provider (KB-777).",
+      "kb_refs": [
+        "KB-776",
+        "KB-777"
+      ]
+    },
+    {
+      "name": "Lưu response của provider",
+      "description": "Quan sát (LOW): sau Create Order tới PosterFlow, fulfillers.metadata chứa id, status, reference_order_id của response và fulfillers.fulfillment_linked_id được set (KB-773).",
+      "kb_refs": [
+        "KB-773"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "đơn chưa gửi PosterFlow",
+      "to": "fulfillers của đơn có metadata (response PosterFlow) và fulfillment_linked_id",
+      "trigger": "TIB gửi Create Order tới PosterFlow",
+      "condition": "response status \"success\" ở lượt quan sát; hành vi khi lỗi chưa có KB",
+      "kb_refs": [
+        "KB-773"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "rule": "Payload gửi Myze mang pickUp true; đơn pickup (shippingAddress null) được gửi và Myze nhận.",
+      "kb_refs": [
+        "KB-772"
+      ],
+      "confirmation_type": "test_case"
+    },
+    {
+      "rule": "Payload Create Order gửi PosterFlow (staging) không chứa field giá/pricing/cost.",
+      "kb_refs": [
+        "KB-774"
+      ],
+      "confirmation_type": "test_case"
+    }
+  ],
+  "observed_behavior": [
+    {
+      "behavior": "fulfillers.metadata lưu id, status, reference_order_id của response PosterFlow; fulfillment_linked_id được set.",
+      "kb_refs": [
+        "KB-773"
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "behavior": "order_combine_by = 1: đơn nhiều line item cùng PosterFlow → một request row.",
+      "kb_refs": [
+        "KB-776"
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "behavior": "Đơn nhiều provider → một request row mỗi provider.",
+      "kb_refs": [
+        "KB-777"
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "behavior": "shipment_notification_url trỏ /api/webhook/general với tham số user_id, token, order_token; trang settings PosterFlow không có ô nhập.",
+      "kb_refs": [
+        "KB-778"
+      ],
+      "confidence": "LOW"
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      {
+        "item": "Trang settings PosterFlow (/fulfillments/posterflow) không có ô input/textarea",
+        "kb_refs": [
+          "KB-778"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "item": "Payload gửi Myze (pickUp)",
+        "kb_refs": [
+          "KB-772"
+        ]
+      },
+      {
+        "item": "Payload Create Order gửi PosterFlow (không có field giá; shipment_notification_url; shape đang conflict)",
+        "kb_refs": [
+          "KB-774",
+          "KB-778",
+          "KB-775"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "request_data đã lưu của request gửi provider; request row theo provider / order_combine_by",
+        "kb_refs": [
+          "KB-774",
+          "KB-775",
+          "KB-776",
+          "KB-777"
+        ]
+      },
+      {
+        "item": "fulfillers.metadata, fulfillers.fulfillment_linked_id",
+        "kb_refs": [
+          "KB-773"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    "Đơn đến từ order/review-and-initiate-fulfillment-portal (review và gửi fulfill ở portal) — ngoài scope feature này.",
+    "Kết nối provider (product-base/fulfillment-provider-connection) chưa có trong canon; fixture cần store explorer đã kết nối Myze/PosterFlow trên staging."
+  ],
+  "risks": [
+    {
+      "risk": "Shape payload PosterFlow chưa chốt (id, shipping_address.state) — assert theo ví dụ dev hoặc theo quan sát đều có thể sai.",
+      "kb_refs": [
+        "KB-775"
+      ],
+      "conflict_group": "CONF-CBS-112-01"
+    },
+    {
+      "risk": "Tách/gộp request chỉ quan sát ở order_combine_by = 1 và một lượt cross-provider; gộp sai có thể gửi trùng hoặc thiếu item cho nhà in.",
+      "kb_refs": [
+        "KB-776",
+        "KB-777"
+      ]
+    },
+    {
+      "risk": "shipment_notification_url chứa tham số token: không ghi giá trị vào evidence hay checklist.",
+      "kb_refs": [
+        "KB-778"
+      ]
+    },
+    {
+      "risk": "Không có KB về xử lý lỗi từ provider; check NEGATIVE chưa dựng được.",
+      "kb_refs": []
+    }
+  ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-10-08"
+  },
+  "unknown_areas": [
+    {
+      "question": "Portal hiển thị gì cho đơn đã gửi provider API (có phải chỉ fulfillment_linked_id và tracking)?",
+      "why_it_matters": "KB-773 chỉ quan sát dữ liệu; không có oracle cho UI.",
+      "oq_id": "OQ-order-076"
+    },
+    {
+      "question": "Shape chuẩn của payload Create Order gửi PosterFlow: có key id không, shipping_address có state không?",
+      "why_it_matters": "KB-775 đang UNRESOLVED (CONF-CBS-112-01); assert payload có thể sai.",
+      "oq_id": "OQ-order-077"
+    },
+    {
+      "question": "Với order_combine_by khác 1 thì line item cùng provider được gửi thế nào, và tách theo provider có luôn xảy ra không?",
+      "why_it_matters": "KB-776/KB-777 chỉ quan sát một nhánh.",
+      "oq_id": "OQ-order-080"
+    },
+    {
+      "question": "shipment_notification_url có luôn do TIB sinh cho từng request, và webhook có cập nhật tracking không?",
+      "why_it_matters": "KB-778 chỉ quan sát URL và trang settings PosterFlow.",
+      "oq_id": "OQ-order-081"
+    },
+    {
+      "question": "Payload gửi Myze xử lý country, state, phone, supplement thế nào?",
+      "why_it_matters": "Chưa có KB ngoài pickUp (KB-772).",
+      "oq_id": "OQ-order-068"
+    },
+    {
+      "question": "Khi provider trả lỗi hoặc Create Order thất bại, TIB xử lý thế nào (retry, status, message)?",
+      "why_it_matters": "Không có KB; dimension NEGATIVE chưa có check.",
+      "oq_id": "OQ-order-074"
+    },
+    {
+      "question": "Text buyer nhập được gửi cho provider trong điều kiện nào?",
+      "why_it_matters": "Chưa có KB; ảnh hưởng nội dung payload gửi provider.",
+      "oq_id": "OQ-order-073"
+    },
+    {
+      "question": "TIB lưu những phần nào của request gửi provider (body, header)?",
+      "why_it_matters": "Chưa có KB; ảnh hưởng cách kiểm auth và rò rỉ secret.",
+      "oq_id": "OQ-order-075"
+    }
+  ],
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "layer": "api",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "state": "Myze, đơn pickup",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-772"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "layer": "api",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "state": "PosterFlow, Create Order",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-774",
+        "KB-775",
+        "KB-778"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "layer": "db",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "state": "PosterFlow, sau Create Order thành công",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-773"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "layer": "db",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "state": "order_combine_by = 1, cùng provider",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-776"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "layer": "db",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "state": "order_combine_by khác 1",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "layer": "db",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "state": "đơn nhiều provider",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-777"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "layer": "portal",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "state": "trang settings PosterFlow",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-778"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "layer": "portal",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "state": "hiển thị đơn đã gửi provider",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "layer": "api",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "state": "provider trả lỗi 4xx/5xx",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "layer": "api",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "state": "mọi state",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": []
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "conflict_group": "CONF-CBS-112-01",
+      "kb_refs": [
+        "KB-775"
+      ],
+      "side_a": "Ví dụ request của dev trong Jira TIB-4778 comment 51328 (2026-09-18, ví dụ, không phải sign-off): payload có key id và shipping_address không có state.",
+      "side_b": "Quan sát payload thật gửi PosterFlow từ 2026-10-05 (QA-3365 BUG-05, re-check 2026-10-06): 4/4 order không có id trong request_data, 3/4 có shipping_address.state: null (KB-775).",
+      "note": "Không chọn bên; KB-775 không làm oracle."
+    }
+  ],
+  "profile_relationships": [
+    {
+      "feature_key": "review-and-initiate-fulfillment-portal",
+      "object": "order",
+      "relation": "upstream: gửi fulfill ở portal tạo ra request của feature này"
+    },
+    {
+      "feature_key": "fulfillment-provider-connection",
+      "object": "product-base",
+      "relation": "upstream: kết nối provider (chưa tồn tại trong canon)"
+    }
+  ]
+}

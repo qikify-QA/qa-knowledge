@@ -385,3 +385,71 @@ Root cause (claimed webhook configuration fix) has never been independently veri
 ```json
 {"oq_id":"OQ-order-067","type":"NEEDS_CONFIRMATION","feature_id":"review-and-initiate-fulfillment-portal","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-P16-FULFILL-POD-CONNECTED “'Confirm & Send to fulfill' behavior when a POD account (e.g. Printify) IS connected” của feature review-and-initiate-fulfillment-portal. missing_or_unresolved_oracle"}
 ```
+
+```json
+{"oq_id": "OQ-order-068", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "PO/dev Myze có chấp nhận payload gửi recipient.country dạng full name và không gửi recipient.state không? Hiện chỉ QA chấp nhận lệch so với expected gốc (ISO + state), không có xác nhận PO/Dev. Người trả lời: PO."}
+```
+
+```json
+{"oq_id": "OQ-order-069", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "Payload gửi Myze có thật sự gửi phone/supplement là null khi vắng, và Myze có bỏ qua không validate không? Không có nguồn, và QA-3348 TC-12 không ghi giá trị null cụ thể. Người trả lời: Dev."}
+```
+
+```json
+{"oq_id": "OQ-order-070", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "shippingAddress của Shopify order có phải chỉ null khi là đơn pickup (null cả object, không có trạng thái rỗng từng phần) không? Chưa có test case hay tài liệu Shopify chứng minh. Người trả lời: Dev."}
+```
+
+```json
+{"oq_id": "OQ-order-071", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "billingAddress của Shopify order có bao giờ null hoặc rỗng không, tức ca \"cả shipping lẫn billing đều rỗng\" có tồn tại không? Không có test case kiểm điều này. Người trả lời: Dev."}
+```
+
+```json
+{"oq_id": "OQ-order-072", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "Việc combine đơn pickup với đơn ship cùng địa chỉ hiệu dụng được xử lý thế nào: quyết định won't-fix có được PO/Dev duyệt không, và trạng thái ship ra sao? Hiện chỉ là quyết định của QA, TIB-5400 không tra được trên Jira. Người trả lời: PO."}
+```
+
+```json
+{"oq_id": "OQ-order-073", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "Text buyer nhập có phải chỉ được gửi nguyên văn cho provider khi layer text bật \"Attach customer input for fulfillment\", và quy tắc đó có áp dụng cho mọi provider dùng flow này không? Nguồn là ghi chú QA về thread Slack của Dev, không có quote, QA-3365 TC-39 bị skip. Người trả lời: Dev."}
+```
+
+```json
+{"oq_id": "OQ-order-074", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "Khi Create Order gửi provider thất bại, TIB có tự động retry không, hay chỉ staff resend thủ công, và điều này có giống nhau cho mọi provider không? Nguồn là ghi chú QA về thread Slack, không có quote, QA-3365 TC-19 bị skip. Người trả lời: Dev."}
+```
+
+```json
+{"oq_id": "OQ-order-075", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "TIB có lưu header outbound (Authorization) của request gửi provider không, hay chỉ lưu body request? Bảng lưu phần request chưa được xác nhận lại, và QA-3365 TC-27 chỉ kiểm việc không lộ raw API key. Người trả lời: Dev."}
+```
+
+```json
+{"oq_id": "OQ-order-076", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "KB-773: response PosterFlow được lưu ở fulfillers.metadata (id, status, reference_order_id) và fulfillers.fulfillment_linked_id được set — đây có phải vị trí lưu đúng theo thiết kế không? Portal hiển thị gì cho đơn gửi provider API: có phải chỉ fulfillment_linked_id và thông tin tracking không? Expected của QA-3365 TC-15 ghi \"dev confirmed\" nhưng không có tên hay quote, và TC không mở màn Portal. Người trả lời: Dev.", "kb_ids": ["KB-773"]}
+```
+
+```json
+{"oq_id": "OQ-order-077", "type": "CONFLICT", "feature_id": "fulfillment-provider-request", "summary": "KB-775: payload Create Order gửi PosterFlow có chủ ý bỏ key id và thêm shipping_address.state: null không, và shape nào là chuẩn? Người trả lời: Dev.", "side_a": "Ví dụ request của dev trong Jira TIB-4778 comment 51328 (2026-09-18, ví dụ, không phải sign-off): payload có key id và shipping_address không có state.", "side_b": "Quan sát payload thật gửi PosterFlow từ 2026-10-05 (QA-3365 BUG-05, re-check 2026-10-06): 4/4 order không có id trong request_data, 3/4 có shipping_address.state: null (KB-775).", "kb_ids": ["KB-775"]}
+```
+
+```json
+{"oq_id": "OQ-order-078", "type": "CONFLICT", "feature_id": "fulfillment-provider-request", "summary": "shipping_address trong payload gửi PosterFlow có field state hay không (và có dùng province/province_code thay cho state không)? Người trả lời: Dev.", "side_a": "Ghi chú QA FACT-084 về thread Slack của Dev (2026-09-16, không có quote): shipping_address gửi PosterFlow không có field state, dùng province/province_code.", "side_b": "Payload thật gửi PosterFlow từ 2026-10-05 có shipping_address.state: null (QA-3365 BUG-05, QA đóng 2026-10-07; QA-3365 TC-12 fail rồi chuyển skip)."}
+```
+
+```json
+{"oq_id": "OQ-order-079", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "TIB có stub hay sandbox nào để ép PosterFlow trả 4xx/5xx không, và khi PosterFlow trả lỗi thì TIB xử lý status/message thế nào? Nguồn là ghi chú QA về thread Slack, không có quote, QA-3365 TC-17 không kiểm điều này. Người trả lời: Dev."}
+```
+
+```json
+{"oq_id": "OQ-order-080", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "KB-776, KB-777: với order_combine_by khác 1, các line item cùng provider được gửi thế nào (một request cho mỗi line item?), và việc tách theo provider có luôn xảy ra ở mọi giá trị order_combine_by không? QA-3365 TC-33 chỉ chạy với giá trị 1; expected của TC-34 ghi \"Dev-confirmed 2026-09-22 (RQ6)\" không có tên hay quote. Người trả lời: Dev.", "kb_ids": ["KB-776", "KB-777"]}
+```
+
+```json
+{"oq_id": "OQ-order-081", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "KB-778: shipment_notification_url có luôn do TIB tự sinh cho từng request (không phải input staff/merchant cấu hình) không, áp dụng cho provider nào ngoài PosterFlow, và webhook này có tự cập nhật tracking cho đơn không? QA-3365 TC-31 kết luận \"N/A theo điều kiện\" nhưng tick PASS, TC-21 (webhook cập nhật tracking) bị skip. Người trả lời: Dev.", "kb_ids": ["KB-778"]}
+```
+
+```json
+{"oq_id": "OQ-order-082", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "KB-779: QA (không phải PO/Dev) xác nhận khi chạy QA-3353 TC-76 rằng Re-generate design với mặc định \"No, keep current artwork version\" trên order đã đặt dựng lại bản render byte-identical, không áp populate config (Value/formula/GO/màu) đổi sau khi đặt. Dev/PO xác nhận: đây có phải hành vi mong muốn không (customization đóng băng lúc đặt hàng, Re-generate chỉ re-apply format/layout), và có áp cho mọi populate format không? Liên quan OQ-order-011 (không đóng OQ đó). Người trả lời: Dev/PO.", "kb_ids": ["KB-779"]}
+```
+
+```json
+{"oq_id": "OQ-order-083", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "KB-780: QA (không phải PO/Dev) xác nhận khi chạy QA-3386 TC-41 rằng mở Edit customization ở portal, không sửa field nào rồi Save thì design của order đã đặt không đổi (hash giữ nguyên) dù artwork vừa bật override và upload mask mới. Dev/PO xác nhận: đây có phải hành vi mong muốn không, và sửa field thật trong Edit customization rồi Save có đưa cấu hình artwork mới (vd mask override) vào design không? Liên quan OQ-order-011 (không đóng OQ đó). Người trả lời: Dev/PO.", "kb_ids": ["KB-780"]}
+```
+
+```json
+{"oq_id": "OQ-order-084", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "Re-generate với radio \"Yes. Upgrade latest artwork version.\" có thật sự đưa thay đổi artwork (vd mask override mới) vào order đã đặt không? Chưa có TC nào chạy nhánh này và PASS (liên quan OQ-order-011). Người trả lời: Dev."}
+```

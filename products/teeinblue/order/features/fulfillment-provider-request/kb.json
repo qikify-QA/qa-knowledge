@@ -1,0 +1,186 @@
+[
+  {
+    "kb_id": "KB-772",
+    "topic": "Myze: pickUp boolean và đơn pickup trong payload gửi Myze",
+    "statement": "Theo QA-3348 TC-3 và TC-1 (test case PASS 2026-09-03, staging, chạy sau lần TIB-5228 giao QA cuối 2026-08-20; căn cứ expected: OpenAPI Myze khai pickUp là boolean), payload TIB gửi Myze mang field pickUp có mặt với giá trị true (lượt quan sát ghi kiểu boolean, khớp OpenAPI Myze; expected của test case chỉ đòi Myze nhận kiểu mà nó chấp nhận), và đơn pickup (shippingAddress null) được TIB gửi sang Myze, Myze nhận request.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "surface": "api",
+      "brand": null
+    },
+    "tags": [
+      "Myze",
+      "TIB-5228",
+      "QA-3348",
+      "pickup"
+    ],
+    "related_kb_ids": [],
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "QA-3348 TC-3 và TC-1, PASS 2026-09-03, staging, chạy sau lần TIB-5228 giao QA cuối 2026-08-20; căn cứ expected: OpenAPI Myze (D1) khai pickUp là boolean",
+      "authored_on": "2026-09-03",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-10",
+      "ccr_ref": "CBS-112"
+    }
+  },
+  {
+    "kb_id": "KB-773",
+    "topic": "Lưu response của PosterFlow vào bản ghi fulfillers",
+    "statement": "Khi TIB gửi Create Order tới PosterFlow trên staging (QA-3365 TC-15, các lượt 2026-10-06, 2026-10-07 và 2026-10-08, kết quả AI), quan sát thấy bản ghi fulfillers của đơn có metadata chứa response của PosterFlow gồm id, status (\"success\" ở lượt quan sát) và reference_order_id, và fulfillers.fulfillment_linked_id được set. Lượt quan sát chỉ đọc dữ liệu, không mở màn Portal.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "surface": "db",
+      "brand": null
+    },
+    "tags": [
+      "PosterFlow",
+      "TIB-4778",
+      "QA-3365",
+      "fulfillers"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-11-10",
+      "ccr_ref": "CBS-112"
+    }
+  },
+  {
+    "kb_id": "KB-774",
+    "topic": "PosterFlow: payload Create Order không có field giá",
+    "statement": "Theo QA-3365 TC-14 (test case PASS 2026-10-08, staging, chạy sau lần TIB-4778 giao QA cuối 2026-09-14; căn cứ expected: Jira TIB-4778 comment 51328 của dev, 2026-09-18, ví dụ Create order không có field giá), payload Create Order TIB gửi PosterFlow (request_data đã lưu) không chứa field giá, pricing hay cost nào. Chỉ áp dụng cho PosterFlow trên staging; provider khác (Myze, Marketprint, Printbelle) chưa được kiểm.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "surface": "api",
+      "brand": null
+    },
+    "tags": [
+      "PosterFlow",
+      "TIB-4778",
+      "QA-3365",
+      "pricing"
+    ],
+    "related_kb_ids": [],
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "QA-3365 TC-14, PASS 2026-10-08, staging, chạy sau lần TIB-4778 giao QA cuối 2026-09-14; căn cứ expected: Jira TIB-4778 comment 51328 (dev, 2026-09-18), ví dụ Create order không có field giá",
+      "authored_on": "2026-10-08",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-10",
+      "ccr_ref": "CBS-112"
+    }
+  },
+  {
+    "kb_id": "KB-775",
+    "topic": "PosterFlow: shape payload Create Order quan sát trên order thật từ 2026-10-05",
+    "statement": "Khi kiểm lại các order thật gửi PosterFlow trên staging từ 2026-10-05 (QA-3365 BUG-05, re-check 2026-10-06), quan sát thấy 4/4 order không có key id trong request_data, và 3/4 order có thêm shipping_address.state với giá trị null dù shipping_address lưu trên order (orders.shipping_address) không có key này; QA đóng BUG-05 ngày 2026-10-07. Shape quan sát này khác ví dụ request trong Jira TIB-4778 comment 51328 (dev, 2026-09-18); chưa rõ shape nào là chuẩn.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "surface": "api",
+      "brand": null
+    },
+    "tags": [
+      "PosterFlow",
+      "TIB-4778",
+      "QA-3365",
+      "payload-shape"
+    ],
+    "related_kb_ids": [],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-CBS-112-01",
+    "last_updated": {
+      "date": "2026-11-10",
+      "ccr_ref": "CBS-112"
+    }
+  },
+  {
+    "kb_id": "KB-776",
+    "topic": "Gộp line item cùng provider thành một request khi order_combine_by = 1",
+    "statement": "Trên staging với order_combine_by = 1 (QA-3365 TC-33, PASS 2026-10-08, kết quả AI), một đơn 2 line item cùng provider PosterFlow sinh đúng một request row chứa mọi line item PosterFlow trong payload. Nhánh order_combine_by khác 1 chưa có lượt chạy.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "surface": "db, api",
+      "brand": null
+    },
+    "tags": [
+      "PosterFlow",
+      "QA-3365",
+      "order_combine_by"
+    ],
+    "related_kb_ids": [
+      "KB-777"
+    ],
+    "last_updated": {
+      "date": "2026-11-10",
+      "ccr_ref": "CBS-112"
+    }
+  },
+  {
+    "kb_id": "KB-777",
+    "topic": "Đơn nhiều provider tách một request cho mỗi provider",
+    "statement": "Trên staging (QA-3365 TC-34, PASS 2026-10-08, kết quả AI), một đơn có line item thuộc PosterFlow và line item thuộc provider khác sinh một request row cho mỗi provider: item PosterFlow ở một row, item của provider kia ở row khác. Lượt quan sát không ghi nhận việc tách này ở từng giá trị order_combine_by.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "surface": "db, api",
+      "brand": null
+    },
+    "tags": [
+      "PosterFlow",
+      "QA-3365",
+      "order_combine_by",
+      "split-by-provider"
+    ],
+    "related_kb_ids": [
+      "KB-776"
+    ],
+    "last_updated": {
+      "date": "2026-11-10",
+      "ccr_ref": "CBS-112"
+    }
+  },
+  {
+    "kb_id": "KB-778",
+    "topic": "PosterFlow: shipment_notification_url trong payload và trang settings không có ô nhập",
+    "statement": "Trên staging (QA-3365 TC-31, các lượt 2026-10-07 và 2026-10-08, kết quả AI), payload Create Order gửi PosterFlow có shipment_notification_url trỏ tới endpoint /api/webhook/general của TIB với ba tham số query user_id, token và order_token; trang settings PosterFlow trong portal (/fulfillments/posterflow) không có ô input hay textarea nào. Chỉ quan sát PosterFlow; chưa có bằng chứng webhook này cập nhật tracking.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (system/api payload; không phụ thuộc role)",
+      "surface": "api, portal",
+      "brand": null
+    },
+    "tags": [
+      "PosterFlow",
+      "QA-3365",
+      "webhook"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-11-10",
+      "ccr_ref": "CBS-112"
+    }
+  }
+]

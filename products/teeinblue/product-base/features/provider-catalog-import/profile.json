@@ -1,0 +1,194 @@
+{
+  "feature_id": "FEAT-11-provider-catalog-import",
+  "feature_key": "provider-catalog-import",
+  "name": "Import product từ catalog nhà in (fulfillment provider)",
+  "user_goal": "Merchant/owner tạo nhanh một Product Base bằng cách import một item từ catalog có sẵn của nhà in đã kết nối (fulfillment provider), kế thừa title/description/mockups/printareas/variants của catalog đó.",
+  "user_goal_kb_refs": [
+    "product-base/provider-catalog-import#KB-519"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner",
+      "permission_observed": "chưa quan sát permission gate riêng cho modal Import; dùng chung quyền staff/owner của object product-base",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-519"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "modal Import product từ catalog nhà in (trang /products)",
+      "precondition": "đã kết nối fulfillment provider với API key hợp lệ (xem feature fulfillment-provider-connection)",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-519",
+        "product-base/provider-catalog-import#KB-520"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Import một item catalog thành Product Base",
+      "description": "Chọn item trong danh sách catalog của provider đã kết nối, hệ thống gọi POST /api/products/import (REST proxy backend TIB, body {fulfillment_id, catalog_id}) và tạo Product Base mới mang title, description, mockups, printareas, variants của catalog.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-519"
+      ]
+    },
+    {
+      "name": "Duyệt danh sách catalog có phân trang thật",
+      "description": "Modal Import hiển thị danh sách catalog qua GET /api/fulfillments/{id}/catalogs?page=&per_page= (proxy) và upstream GET /v1/catalogs; portal hiện 'Showing X to Y of total entries' và truy cập được toàn bộ catalog qua các trang (ví dụ total=241).",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-520"
+      ]
+    },
+    {
+      "name": "Xem thông tin catalog trước khi import (giới hạn field)",
+      "description": "Danh sách catalog (portal proxy) chỉ trả 4 field: fulfillment_catalog_id, title, images, base_cost — không có variants/availability ở bất kỳ per_page nào; muốn biết availability/variants phải import xong rồi tra GraphQL products_by_pk (variants.available).",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-521"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "chưa có Product Base cho catalog_id này",
+      "to": "có Product Base mới mang data của catalog",
+      "trigger": "Import catalog item (Save trong modal)",
+      "condition": "fulfillment provider đã kết nối, catalog_id hợp lệ",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-519"
+      ]
+    }
+  ],
+  "confirmed_rules": [],
+  "observed_behavior": [
+    {
+      "topic": "Import gọi REST proxy, không gọi trực tiếp PosterFlow từ browser",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-519"
+      ]
+    },
+    {
+      "topic": "Phân trang catalog là thật (meta.page/per_page/total), không phải client-side giả",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-520"
+      ]
+    },
+    {
+      "topic": "List catalog response hẹp field, không lộ stock/availability trước khi import",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-521"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      {
+        "item": "Modal Import product từ catalog nhà in (danh sách catalog, phân trang)",
+        "kb_refs": [
+          "product-base/provider-catalog-import#KB-520",
+          "product-base/provider-catalog-import#KB-521"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "item": "POST /api/products/import (REST proxy backend TIB, tạo Product Base từ catalog)",
+        "kb_refs": [
+          "product-base/provider-catalog-import#KB-519"
+        ]
+      },
+      {
+        "item": "GET /api/fulfillments/{id}/catalogs?page=&per_page= (proxy) + upstream GET /v1/catalogs",
+        "kb_refs": [
+          "product-base/provider-catalog-import#KB-520",
+          "product-base/provider-catalog-import#KB-521"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "GraphQL products_by_pk (variants.available, tra sau khi import)",
+        "kb_refs": [
+          "product-base/provider-catalog-import#KB-521"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    "fulfillment-provider-connection (feature cùng object, cần kết nối provider trước khi import được)"
+  ],
+  "risks": [
+    "Import lại một catalog đã import (CLAIM-06, S0, không nạp KB) có thể tạo duplicate câm — chưa xác nhận PO, xem unknown_areas",
+    "Không nạp quyền/role gate riêng cho modal Import (chưa có KB xác nhận)"
+  ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-10-08"
+  },
+  "unknown_areas": [
+    {
+      "question": "Endpoint POST /api/products/import và body {fulfillment_id, catalog_id} có phải hợp đồng API chính thức không, hay chỉ quan sát qua test (QA-3365 TC-7)?",
+      "why_it_matters": "Nếu coi là hợp đồng mà thực ra không được dev xác nhận, checklist sẽ báo false positive khi dev đổi response shape.",
+      "oq_id": "OQ-product-base-104"
+    },
+    {
+      "question": "Có endpoint nào lộ stock/availability của catalog trước khi import không? Mới đo ở provider PosterFlow (QA-3365 TC-46), chưa đo provider khác.",
+      "why_it_matters": "Ảnh hưởng tới UX merchant (không thấy hết hàng trước khi import) và tới rủi ro bảo mật nếu endpoint khác có lộ.",
+      "oq_id": "OQ-product-base-106"
+    },
+    {
+      "question": "PO có thật sự chấp nhận import lại catalog đã import tạo Product Base thứ 2 (duplicate câm) không? Chỉ có dòng 'PO confirmed 2026-09-16 (RQ14)' không quote.",
+      "why_it_matters": "Nếu PO không xác nhận, đây có thể là bug cần fix, không phải behavior chấp nhận.",
+      "oq_id": "OQ-product-base-107"
+    },
+    {
+      "question": "Hành vi phân trang catalog (meta.page/per_page/total, ví dụ total=241) có phải contract ổn định không, hay chỉ quan sát qua test trên staging (QA-3365 TC-6)?",
+      "why_it_matters": "Nếu dev đổi shape phân trang, checklist CHK-11-002 cần biết đây chỉ là quan sát để không coi lệch là bug chắc chắn.",
+      "oq_id": "OQ-product-base-105"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-119"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "has_connected_provider",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "has_connected_provider",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "layer": "db",
+      "role": "merchant-owner",
+      "state": "post_import",
+      "environment": "staging",
+      "covered": true
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "feature_key": "provider-catalog-import",
+      "related_feature_key": "fulfillment-provider-connection",
+      "relationship": "depends_on",
+      "note": "Import chỉ khả dụng sau khi provider đã kết nối với API key hợp lệ."
+    }
+  ]
+}

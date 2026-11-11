@@ -2,7 +2,7 @@
   "feature_id": "FEAT-03-edit-customization-after-order",
   "feature_key": "edit-customization-after-order",
   "object_id": "order",
-  "checklist_version": "6",
+  "checklist_version": "7",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -167,6 +167,82 @@
       "priority": "P3",
       "automation_suitability": "UNKNOWN",
       "oq_id": "OQ-order-032"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-114] Order details, Re-generate design mặc định \"No\" sau khi đổi populate config của artwork: ghi nhận bản render có đổi không (quan sát KB-779)",
+      "applicability": {
+        "role": "merchant-owner (staff/owner)",
+        "state": "order đã đặt; populate config của artwork (Value/formula/GO/màu) bị đổi sau khi đặt; Re-generate giữ mặc định \"No, keep current artwork version\"",
+        "environment": "staging; ghi build và ngày chạy (lượt gốc không ghi build, chưa kiểm production)",
+        "surface_or_device": "portal: Order details -> Re-generate design"
+      },
+      "precondition": "Dựng fixture trên store explorer: một order đã đặt từ artwork throwaway có populate config (Value, formula, GO hoặc màu) với giá trị buyer nhập lúc đặt. Lưu bản render hiện tại của order để so (hash hoặc file tải về). Sau đó đổi populate config của artwork sang giá trị khác.",
+      "steps": [
+        "Mở Order details của order trên portal.",
+        "Bấm Re-generate design; giữ nguyên lựa chọn mặc định \"No, keep current artwork version\" và xác nhận.",
+        "Chờ dựng xong, lấy bản render mới của order.",
+        "So bản render mới với bản đã lưu ở precondition (hash hoặc so file) và ghi giá trị trong bản render là giá trị buyer nhập hay giá trị populate config mới."
+      ],
+      "observation_point": "Bản render sau Re-generate có giống bản trước (byte-identical/hash) không; giá trị trong bản render theo buyer đã nhập hay theo populate config mới. Chỉ test nhánh mặc định \"No\"; không chọn \"Yes. Upgrade latest artwork version.\".",
+      "expected_result": "Theo quan sát KB-779 (BASELINE, một lượt QA PASS, build không rõ): bản render dựng lại byte-identical với bản trước, vẫn theo giá trị buyer đã nhập; populate config mới không được áp. Lệch = cần điều tra, chưa kết luận là bug vì không có xác nhận PO/Dev.",
+      "oracle": {
+        "kb_ids": [
+          "order/edit-customization-after-order#KB-779"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "order/review-and-initiate-fulfillment-portal#KB-017"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-779, KB-780 là quan sát QA một lượt, OBSERVED_CURRENT/LOW, không phải oracle; chưa kiểm production"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-114] Order details, mở Edit customization rồi Save không sửa field: ghi nhận design của order có đổi không (quan sát KB-780)",
+      "applicability": {
+        "role": "merchant-owner (staff/owner)",
+        "state": "order đặt khi artwork chưa bật override; sau đó artwork bật override và upload mask mới",
+        "environment": "staging; ghi build và ngày chạy (lượt gốc không ghi build, chưa kiểm production)",
+        "surface_or_device": "portal: Order details -> Edit customization"
+      },
+      "precondition": "Dựng fixture trên store explorer: đặt order từ artwork throwaway chưa bật override. Lưu design output hiện tại của order để so (hash hoặc file tải về). Sau đó bật override trên artwork và upload mask mới.",
+      "steps": [
+        "Mở Order details của order trên portal.",
+        "Mở Edit customization; không sửa field nào.",
+        "Bấm Save.",
+        "Lấy design output của order và so với bản đã lưu ở precondition (hash hoặc so file); ghi mask override mới có xuất hiện trong design không."
+      ],
+      "observation_point": "Design output của order sau Save có giống bản trước (hash giữ nguyên) không; mask override mới có vào design không. Check không sửa field thật nào trước khi Save.",
+      "expected_result": "Theo quan sát KB-780 (BASELINE, một lượt QA PASS, build không rõ): design output của order không đổi (hash giữ nguyên); mask override mới không vào design qua thao tác này. Lệch = cần điều tra, chưa kết luận là bug vì không có xác nhận PO/Dev.",
+      "oracle": {
+        "kb_ids": [
+          "order/edit-customization-after-order#KB-780"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "order/review-and-initiate-fulfillment-portal#KB-017"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-779, KB-780 là quan sát QA một lượt, OBSERVED_CURRENT/LOW, không phải oracle; chưa kiểm production"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -217,6 +293,22 @@
       "risk": "[CBS-074] Production: shipped UNKNOWN, hai đề xuất có scope staging",
       "covered_by_checks": [],
       "coverage_status": "NOT_COVERED ở production; các check chỉ áp cho staging"
+    },
+    {
+      "feature_id": "FEAT-03-edit-customization-after-order",
+      "risk": "[CBS-114] Portal Re-generate design mặc định \"No\" không áp populate config đã đổi (KB-779, OBSERVED_CURRENT/LOW)",
+      "covered_by_checks": [
+        "CHK-005"
+      ],
+      "coverage_status": "BASELINE: check ghi nhận hành vi quan sát một lượt, lệch = cần điều tra; chưa có xác nhận PO/Dev. Nhánh \"Yes\" NOT_COVERED."
+    },
+    {
+      "feature_id": "FEAT-03-edit-customization-after-order",
+      "risk": "[CBS-114] Portal Edit customization mở rồi Save không sửa field giữ nguyên design (KB-780, OBSERVED_CURRENT/LOW)",
+      "covered_by_checks": [
+        "CHK-006"
+      ],
+      "coverage_status": "BASELINE: check ghi nhận hành vi quan sát một lượt, lệch = cần điều tra; chưa có xác nhận PO/Dev. Sửa field thật rồi Save NOT_COVERED."
     }
   ],
   "excluded_dimensions": [
@@ -230,7 +322,7 @@
     },
     {
       "dimension": "STATE_DATA",
-      "reason": "Lưu thay đổi và ghi đè artwork chưa có lượt chạy (TC-TIB-980 skipped), KB-435 không phát biểu về hai bước đó. Chặn theo fulfillment status và order đặt trước khi deploy cũng chưa có item. Không viết check vượt phạm vi item; các vùng này nằm ở unknown_areas của profile."
+      "reason": "Phần storefront: lưu thay đổi và ghi đè artwork chưa có lượt chạy (TC-TIB-980 skipped), KB-435 không phát biểu về hai bước đó; chặn theo fulfillment status và order đặt trước khi deploy cũng chưa có item. Không viết check vượt phạm vi item; các vùng này nằm ở unknown_areas của profile. Phần portal đã có CHK-005, CHK-006 (KB-779, KB-780)."
     },
     {
       "dimension": "INTEGRATION",
@@ -243,10 +335,18 @@
     {
       "dimension": "OUT_OF_SCOPE: /cart",
       "reason": "KB-435, KB-436 không phát biểu về /cart vì các nguồn không thống nhất. Không viết check; vùng này nằm ở unknown_areas của profile."
+    },
+    {
+      "dimension": "OUT_OF_SCOPE: Re-generate nhánh \"Yes. Upgrade latest artwork version.\"",
+      "reason": "KB-779 không chạy nhánh này; viết check sẽ phải tự đặt expected. Nằm ở unknown_areas[10] của profile (NEEDS_CONFIRMATION)."
+    },
+    {
+      "dimension": "OUT_OF_SCOPE: Edit customization sửa field thật rồi Save",
+      "reason": "KB-780 chỉ quan sát trường hợp Save không sửa field; viết check sẽ phải tự đặt expected. Nằm ở unknown_areas[11] của profile (NEEDS_CONFIRMATION)."
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-10",
+    "ccr_ref": "CBS-114"
   }
 }

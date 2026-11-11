@@ -1,0 +1,157 @@
+{
+  "feature_id": "FEAT-10-fulfillment-provider-connection",
+  "feature_key": "fulfillment-provider-connection",
+  "object_id": "product-base",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-10-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Rotate API key: key mới có hiệu lực ngay cho request sau",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "has_connected_provider",
+        "environment": "staging",
+        "surface_or_device": "portal, api"
+      },
+      "precondition": "Đã kết nối provider với API key A hợp lệ đang hoạt động.",
+      "steps": [
+        "Vào trang Fulfillments",
+        "Save API key B hợp lệ (khác A)",
+        "Gọi một request dùng tới key (vd list catalog)"
+      ],
+      "observation_point": "Request sau Save dùng key nào (B hay vẫn A đã cache)",
+      "expected_result": "Request sau khi Save key B dùng key B, không còn dùng key A (không cache).",
+      "oracle": {
+        "kb_ids": [
+          "product-base/fulfillment-provider-connection#KB-522"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "product-base/fulfillment-provider-connection#KB-522"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-10-002",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Save API key sai: toast lỗi rõ ràng, không echo giá trị, key cũ được giữ",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "has_connected_provider",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã kết nối provider với API key A hợp lệ đang hoạt động.",
+      "steps": [
+        "Vào trang Fulfillments",
+        "Nhập một API key sai/không hợp lệ",
+        "Save",
+        "Reload trang"
+      ],
+      "observation_point": "Toast hiển thị sau Save; giá trị field sau reload",
+      "expected_result": "Toast lỗi chung xuất hiện (quan sát thực tế: 'Something went wrong! Invalid API key'), không echo lại giá trị key sai đã nhập; sau reload field vẫn hiển thị key A gốc (key cũ được giữ).",
+      "oracle": {
+        "kb_ids": [
+          "product-base/fulfillment-provider-connection#KB-522",
+          "product-base/fulfillment-provider-connection#KB-524"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "product-base/fulfillment-provider-connection#KB-522",
+        "product-base/fulfillment-provider-connection#KB-524"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-product-base-110"
+    },
+    {
+      "check_id": "CHK-10-003",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "API key hiển thị raw (không mask) sau Save, qua GraphQL, cho mọi provider",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "has_connected_provider",
+        "environment": "staging",
+        "surface_or_device": "portal, api (GraphQL)"
+      },
+      "precondition": "Đã kết nối ít nhất một provider với API key hợp lệ.",
+      "steps": [
+        "Save API key cho một provider",
+        "Gọi GraphQL { user_fulfillments { id api_key } } qua portal proxy",
+        "Lặp lại cho các provider khác (customcat, printify, picanova, dreamship, printway, shirtee, posterflow)"
+      ],
+      "observation_point": "Giá trị api_key trả về trong response GraphQL",
+      "expected_result": "GraphQL trả api_key dạng raw (không mask) cho mọi provider đã kết nối — hành vi hiện tại quan sát được, CHƯA được PO xác nhận là chủ ý thiết kế (xem open question).",
+      "oracle": {
+        "kb_ids": [
+          "product-base/fulfillment-provider-connection#KB-523"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "product-base/fulfillment-provider-connection#KB-523"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "rủi ro bảo mật: raw API key lộ qua GraphQL"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-product-base-109"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-10-fulfillment-provider-connection",
+      "dimension": "CORE",
+      "count": 1
+    },
+    {
+      "feature_id": "FEAT-10-fulfillment-provider-connection",
+      "dimension": "NEGATIVE",
+      "count": 1
+    },
+    {
+      "feature_id": "FEAT-10-fulfillment-provider-connection",
+      "dimension": "INTEGRATION",
+      "count": 1
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Không có KB nào đo giới hạn độ dài/format của API key."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "CLAIM-03 (trang Fulfillments không có Disconnect, không có role/permission gate riêng) chỉ S0 — nguồn là Dev nói qua Slack không quote, TC-29 bị skip — không nạp KB, không đủ oracle để tạo check PERMISSION; xem open question riêng (không gắn kb_id)."
+    },
+    {
+      "dimension": "STATE_DATA",
+      "reason": "Không có KB nào về persistence/reload ngoài phần đã gộp vào CHK-10-002 (key cũ giữ sau reload khi Save key sai)."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Feature mới (FEAT-10), lần đầu publish — không có base trước để so sánh regression."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-119"
+  }
+}
