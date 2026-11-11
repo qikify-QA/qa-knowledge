@@ -8,35 +8,35 @@
       "role": "owner (Linh explorer, sub=273)",
       "permission_observed": "Full observed access to orders list, order-details, item activity logs, fulfill dialog, and the change-status dropdown (view only, no transition executed). No other role/permission level (e.g. staff, limited/non-owner) was tested in this run, so no permission BOUNDARY has been observed — only what this one role can do.",
       "kb_refs": [
-        "KB-014",
-        "KB-016",
-        "KB-017",
-        "KB-019",
-        "KB-022",
-        "KB-023"
+        "order/review-and-initiate-fulfillment-portal#KB-014",
+        "order/review-and-initiate-fulfillment-portal#KB-016",
+        "order/review-and-initiate-fulfillment-portal#KB-017",
+        "order/review-and-initiate-fulfillment-portal#KB-019",
+        "order/review-and-initiate-fulfillment-portal#KB-022",
+        "order/review-and-initiate-fulfillment-portal#KB-023"
       ]
     },
     {
       "role": "owner (store owner/staff, instance 520 nprice1)",
       "permission_observed": "[MỚI, CBS-006] Đặt order Bogus từ campaign dùng artwork có Group ẩn, mở order detail và tải order design (PNG, PDF); đổi Design format của artwork sang PDF rồi trả lại PNG_RGB và sync campaign trong lượt chạy test.",
       "kb_refs": [
-        "KB-182",
-        "KB-183"
+        "order/review-and-initiate-fulfillment-portal#KB-182",
+        "order/review-and-initiate-fulfillment-portal#KB-183"
       ]
     },
     {
       "role": "[MỚI, CBS-011] merchant-owner (store owner/staff, instance 520 nprice1)",
       "permission_observed": "Mở order detail của order Bogus từ campaign có layer action Hide, xem View customization, preview customization, mockup và print file (order design PNG) của từng item trong lượt chạy test 2026-10-28. Không thử role khác.",
       "kb_refs": [
-        "KB-239"
+        "order/review-and-initiate-fulfillment-portal#KB-239"
       ]
     },
     {
       "role": "[MỚI, CBS-015] merchant-owner (store owner/staff, instance 520 nprice1)",
       "permission_observed": "Bấm Regenerate (icon sync) design của order item trong order detail và xem Item Activity logs trong lượt chạy test 2026-10-29. Không thử role khác.",
       "kb_refs": [
-        "KB-392",
-        "KB-393"
+        "order/review-and-initiate-fulfillment-portal#KB-392",
+        "order/review-and-initiate-fulfillment-portal#KB-393"
       ]
     }
   ],
@@ -45,8 +45,8 @@
       "path": "portal Orders list (portal/orders) -> order-details (order #1002 / id 4322) -> 'Confirm & Send to fulfill' button",
       "precondition": "Order must already be visible in the portal Orders list (GET /api/orders?by_teeinblue=1) — this precondition is NOT always guaranteed to hold; see risks[0] / OQ-order-001. There is no separate 'portal/fulfills' route: fulfillment review is only reachable via a specific order's detail page.",
       "kb_refs": [
-        "KB-014",
-        "KB-024"
+        "order/review-and-initiate-fulfillment-portal#KB-014",
+        "order/review-and-initiate-fulfillment-portal#KB-024"
       ]
     }
   ],
@@ -55,70 +55,70 @@
       "name": "Browse and locate orders in the portal orders list",
       "description": "Orders list defaults to date range 'Aug 14 - Sep 13', Store 'Any', TIB Status 'Any', backed by GET /api/orders?by_teeinblue=1&cursor=&per_page=25&sort=created_at&sort_type=desc. Search matches the internal order 'name' (e.g. '#1002') but does NOT match the Shopify checkout confirmation code (e.g. 'JTEL87JY0') even for a synced order — these are separate identifier namespaces in this system.",
       "kb_refs": [
-        "KB-014",
-        "KB-015"
+        "order/review-and-initiate-fulfillment-portal#KB-014",
+        "order/review-and-initiate-fulfillment-portal#KB-015"
       ]
     },
     {
       "name": "Review order and order-item structure and details",
       "description": "An Order contains one or more Order Items, each with its OWN status badge (independent from the order-level tib_status badge), its own campaign/variant/customization/design, and an attached POD service (e.g. Printify). For the single order observed: header shows '#1002 (#-4322)', tib_status badge 'ready', creation timestamp rendered in America/New_York; the order item ('#-6957') shows item-level status 'Ready', Shopify SKU distinct from Fulfilled SKU, Shopify fulfillment status empty, fulfillment service 'manual', a Customization block (View/Edit, never exercised), and Designs data (mockup, artwork name, printarea 'front' 12x18 at 3600x5400px — notably higher resolution than the on-screen preview). A separate 'Fulfillment Shipping method' panel (order/instance-level, distinct from the Shopify checkout shipping choice) showed 'No shipping method' configured. Notes/Customer/Shipping/Billing panels mirror the data entered at Shopify checkout.",
       "kb_refs": [
-        "KB-001",
-        "KB-016",
-        "KB-017",
-        "KB-020",
-        "KB-021"
+        "order/_object-level#KB-001",
+        "order/review-and-initiate-fulfillment-portal#KB-016",
+        "order/review-and-initiate-fulfillment-portal#KB-017",
+        "order/review-and-initiate-fulfillment-portal#KB-020",
+        "order/review-and-initiate-fulfillment-portal#KB-021"
       ]
     },
     {
       "name": "Cross-check order status between UI and API",
       "description": "For the same order at the same point in time, the portal UI badge 'ready' corresponds to API field tib_status = integer 6 (REST GET /api/orders) and the same-named field exists on the GraphQL orders_by_pk query (field name only, no raw payload captured). This is the ONLY UI-label/integer pairing observed in this run; no other tib_status value has been seen.",
       "kb_refs": [
-        "KB-018"
+        "order/review-and-initiate-fulfillment-portal#KB-018"
       ]
     },
     {
       "name": "Review automatic item activity log",
       "description": "The 'Item Activity Logs' dialog for an order-item shows a fully automatic event sequence with no manual merchant action: line item created -> generating a design -> design generated (with printarea/artwork/artwork-version identifiers) -> marked 'Ready to fulfill', all within ~22 seconds of order creation.",
       "kb_refs": [
-        "KB-019"
+        "order/review-and-initiate-fulfillment-portal#KB-019"
       ]
     },
     {
       "name": "Initiate fulfillment review via 'Confirm & Send to fulfill' — POD-disconnected instance only",
       "description": "On an instance where the POD provider (Printify) is NOT connected, clicking 'Confirm & Send to fulfill' opens a REVIEW dialog (not an immediate submission) showing the line item/printareas/status/shipping address with a 'Close' action and a 'Connect' prompt for Printify — no submit/pay action is available. Only 2 read-only GraphQL re-fetches (orders_by_pk, order_item_activities) were observed around the click; no mutation and no network call to a POD provider occurred. THIS FINDING IS SCOPED STRICTLY TO THE POD-DISCONNECTED STATE and describes what happens BEFORE any real send-to-fulfill submission could occur — it says nothing about what happens once a POD account is connected (see dependencies/risks).",
       "kb_refs": [
-        "KB-022"
+        "order/review-and-initiate-fulfillment-portal#KB-022"
       ]
     },
     {
       "name": "View (not execute) order-item status change options",
       "description": "The order-item-level 'Change status' dropdown lists 5 options (Ready, Sent, Fulfilled, Paused, Canceled). No option was selected in this run — this capability is limited to what the dropdown DISPLAYS; no transition, endpoint, or side effect has been observed.",
       "kb_refs": [
-        "KB-023"
+        "order/review-and-initiate-fulfillment-portal#KB-023"
       ]
     },
     {
       "name": "[MỚI, CBS-006] Nhận print file (order design) PNG/PDF đúng theo effective visibility của Group trong artwork",
       "description": "CONFIRMED_EXPECTED/MEDIUM (KB-182, Testlane TC-TIB-6068, TC-TIB-6069 PASS, staging 2026-10-16, shipped UNKNOWN): order tạo từ artwork có Group ẩn cho print file (order design) — cả PNG và PDF — không có nội dung của Group, chỉ có layer ngoài Group, khớp canvas Artwork Editor và buyer preview. OBSERVED_CURRENT/LOW (KB-183): với Group 'Emb' ẩn trên Product Base không có cell layout emboss, print file PNG cũng chỉ có layer ngoài Group; layout emboss và shape-cut chưa kiểm được (TC-TIB-6071 Blocked, TC-TIB-6070 actualResult rỗng) — không suy hành vi emboss/shape-cut từ quan sát này.",
       "kb_refs": [
-        "KB-182",
-        "KB-183"
+        "order/review-and-initiate-fulfillment-portal#KB-182",
+        "order/review-and-initiate-fulfillment-portal#KB-183"
       ]
     },
     {
       "name": "[MỚI, CBS-011] Print file, mockup và preview customization của order theo điều kiện Hide của layer",
       "description": "CONFIRMED_EXPECTED/MEDIUM (KB-239, Testlane TC-TIB-7340 PASS, staging lượt retest 2026-10-28 với SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT, trước khi 6 PR của TIB-5558 merge 2026-10-29, build hash không rõ, shipped UNKNOWN). Với order có item mà giá trị nguồn khớp điều kiện Hide, print file (order design PNG), preview customization và mockup của item đó không có layer bị Hide (print file 0 pixel đục của layer); item không khớp có layer với đúng chữ buyer đã nhập trên cả ba. Kết quả khớp cái buyer thấy trên storefront. Chỉ kiểm print file PNG, layout thường; PDF / emboss / shape-cut với điều kiện Hide chưa kiểm.",
       "kb_refs": [
-        "KB-239"
+        "order/review-and-initiate-fulfillment-portal#KB-239"
       ]
     },
     {
       "name": "[MỚI, CBS-015] Regenerate order design của order item từ order detail",
       "description": "CONFIRMED_EXPECTED/MEDIUM (KB-392, Testlane TC-TIB-7630 PASS, staging instance 520 / nprice1, chạy 2026-10-29, build hash không rõ, shipped UNKNOWN): bấm Regenerate (icon sync) trong order detail cho item có artwork group phẳng ~250 layer ảnh (đã generate design lần đầu) thì design mới được tạo xong (Item Activity log ghi 'generated a new design'), không kẹt 'generating'. Rule không phát biểu thời gian regenerate, cũng không phát biểu trạng thái order sau Regenerate. Chỉ quan sát, chưa xác nhận (OBSERVED_CURRENT/LOW, KB-393): portal hiện toast 'put your design in queue'; Item Activity log của lần regenerate chỉ ghi 'generated a new design', không có dòng 'is generating' riêng; trạng thái order sau Regenerate — xem observed_behavior. Render order design của artwork có group thuộc artwork, feature group-layer-order-design-render.",
       "kb_refs": [
-        "KB-392",
-        "KB-393"
+        "order/review-and-initiate-fulfillment-portal#KB-392",
+        "order/review-and-initiate-fulfillment-portal#KB-393"
       ]
     }
   ],
@@ -129,8 +129,8 @@
       "trigger": "open/click order #1002 (id 4322)",
       "condition": "order must already be present in the list result set",
       "kb_refs": [
-        "KB-014",
-        "KB-016"
+        "order/review-and-initiate-fulfillment-portal#KB-014",
+        "order/review-and-initiate-fulfillment-portal#KB-016"
       ]
     },
     {
@@ -139,7 +139,7 @@
       "trigger": "open 'Item Activity Logs' for order-item #6957",
       "condition": "log entries are pre-existing/automatic, generated at order-creation time, not generated by opening the dialog",
       "kb_refs": [
-        "KB-019"
+        "order/review-and-initiate-fulfillment-portal#KB-019"
       ]
     },
     {
@@ -148,7 +148,7 @@
       "trigger": "click 'Confirm & Send to fulfill'",
       "condition": "OBSERVED ONLY for POD-disconnected state; no submit action available; no mutation fired. The transition to an actual 'sent to fulfillment' state was NEVER reached or observed in this run, in either POD-connected or POD-disconnected branches.",
       "kb_refs": [
-        "KB-022"
+        "order/review-and-initiate-fulfillment-portal#KB-022"
       ]
     },
     {
@@ -157,8 +157,8 @@
       "trigger": "order được tạo và design được sinh",
       "condition": "Đã kiểm PNG và PDF (layout thường, KB-182) và PNG khi Product Base không có layout emboss (KB-183); layout emboss / shape-cut chưa kiểm",
       "kb_refs": [
-        "KB-182",
-        "KB-183"
+        "order/review-and-initiate-fulfillment-portal#KB-182",
+        "order/review-and-initiate-fulfillment-portal#KB-183"
       ]
     },
     {
@@ -167,7 +167,7 @@
       "trigger": "order được tạo và design được sinh",
       "condition": "CONFIRMED_EXPECTED/MEDIUM, staging, 1 lượt retest 2026-10-28 trước khi 6 PR merge; chỉ PNG, layout thường",
       "kb_refs": [
-        "KB-239"
+        "order/review-and-initiate-fulfillment-portal#KB-239"
       ]
     },
     {
@@ -176,7 +176,7 @@
       "trigger": "order được tạo và design được sinh",
       "condition": "CONFIRMED_EXPECTED/MEDIUM, staging, 1 lượt retest 2026-10-28 trước khi 6 PR merge; chỉ PNG, layout thường",
       "kb_refs": [
-        "KB-239"
+        "order/review-and-initiate-fulfillment-portal#KB-239"
       ]
     },
     {
@@ -185,7 +185,7 @@
       "trigger": "bấm Regenerate (icon sync) trong order detail",
       "condition": "CONFIRMED_EXPECTED/MEDIUM (KB-392), staging, 1 lượt 2026-10-29; thời gian regenerate và trạng thái order sau Regenerate không thuộc rule (trạng thái order chỉ là quan sát, KB-393)",
       "kb_refs": [
-        "KB-392"
+        "order/review-and-initiate-fulfillment-portal#KB-392"
       ]
     }
   ],
@@ -198,7 +198,7 @@
       "caveats": "Một artwork fixture (#5046, Group 'Name' ẩn, con giữ cờ ON) dựng qua MCP/API, chưa được PO/dev xác nhận là dữ liệu hợp lệ. PDF có được bằng cách đổi Design format của artwork sang PDF rồi sync campaign. Không áp cho layout emboss / shape-cut (KB-183). Lượt PASS chạy trước khi 3 PR còn OPEN merge; chưa chạy lại.",
       "confirmation_ref": "Testlane TC-TIB-6068, TC-TIB-6069 PASS (task TIB-211, Jira TIB-5584), chạy 2026-10-16",
       "kb_refs": [
-        "KB-182"
+        "order/review-and-initiate-fulfillment-portal#KB-182"
       ]
     },
     {
@@ -209,7 +209,7 @@
       "caveats": "Một lượt chạy, một order Bogus (2 item, 1 khớp / 1 không khớp), một layer text với 1 điều kiện. Chỉ print file PNG layout thường; PDF / emboss / shape-cut chưa kiểm. BUG-430 (print file order rỗng ở lượt đầu) chỉ được ghi là không tái hiện ở lượt này.",
       "confirmation_ref": "Testlane TC-TIB-7340 PASS (task TIB-231, Jira TIB-5558), chạy 2026-10-28",
       "kb_refs": [
-        "KB-239"
+        "order/review-and-initiate-fulfillment-portal#KB-239"
       ]
     },
     {
@@ -220,7 +220,7 @@
       "caveats": "Một lượt chạy, một order, chỉ item có artwork group phẳng ~250 layer. Rule không phát biểu thời gian regenerate và không phát biểu trạng thái order sau Regenerate. Toast 'put your design in queue', việc log không có dòng 'is generating' cho lần regenerate và trạng thái order sau Regenerate chỉ là quan sát (KB-393), không thuộc rule.",
       "confirmation_ref": "Testlane TC-TIB-7630 PASS (task TIB-268, Jira TIB-5633), chạy 2026-10-29",
       "kb_refs": [
-        "KB-392"
+        "order/review-and-initiate-fulfillment-portal#KB-392"
       ]
     }
   ],
@@ -228,38 +228,38 @@
     {
       "statement": "Order-level status badge and order-item-level status badge are independently tracked and can display different labels ('ready' vs 'Ready').",
       "kb_refs": [
-        "KB-001",
-        "KB-017"
+        "order/_object-level#KB-001",
+        "order/review-and-initiate-fulfillment-portal#KB-017"
       ]
     },
     {
       "statement": "Order timestamps render in America/New_York regardless of the buyer's checkout timezone (UTC).",
       "kb_refs": [
-        "KB-016"
+        "order/review-and-initiate-fulfillment-portal#KB-016"
       ]
     },
     {
       "statement": "Design print resolution (3600x5400px) is substantially higher than the on-screen mockup preview.",
       "kb_refs": [
-        "KB-017"
+        "order/review-and-initiate-fulfillment-portal#KB-017"
       ]
     },
     {
       "statement": "Item activity log events fire automatically post-order-creation with no merchant action required.",
       "kb_refs": [
-        "KB-019"
+        "order/review-and-initiate-fulfillment-portal#KB-019"
       ]
     },
     {
       "statement": "'Confirm & Send to fulfill' does not immediately submit; it opens a review dialog first, at least in the POD-disconnected state observed.",
       "kb_refs": [
-        "KB-022"
+        "order/review-and-initiate-fulfillment-portal#KB-022"
       ]
     },
     {
       "statement": "There is no dedicated 'portal/fulfills' route; fulfillment review is reached only through a specific order's detail page.",
       "kb_refs": [
-        "KB-024"
+        "order/review-and-initiate-fulfillment-portal#KB-024"
       ]
     },
     {
@@ -268,7 +268,7 @@
       "confidence": "LOW",
       "observed_count": null,
       "kb_refs": [
-        "KB-183"
+        "order/review-and-initiate-fulfillment-portal#KB-183"
       ]
     },
     {
@@ -277,7 +277,7 @@
       "confidence": "LOW",
       "observed_count": null,
       "kb_refs": [
-        "KB-393"
+        "order/review-and-initiate-fulfillment-portal#KB-393"
       ]
     }
   ],
@@ -289,7 +289,7 @@
       "shipped": "NOT_SHIPPED",
       "note": "Không phải oracle; chưa quan sát (lượt staging 2026-10-28 bị chặn). Gần KB-017, CHK-P05, không thay thế.",
       "kb_refs": [
-        "KB-764"
+        "order/review-and-initiate-fulfillment-portal#KB-764"
       ]
     }
   ],
@@ -299,9 +299,9 @@
       "role": "owner (sub=273)",
       "note": "Only this single role was exercised against every capability in this feature. No non-owner or restricted-permission role was tested, so no access boundary is known.",
       "kb_refs": [
-        "KB-014",
-        "KB-016",
-        "KB-022"
+        "order/review-and-initiate-fulfillment-portal#KB-014",
+        "order/review-and-initiate-fulfillment-portal#KB-016",
+        "order/review-and-initiate-fulfillment-portal#KB-022"
       ]
     }
   ],
@@ -344,7 +344,7 @@
       "risk": "An order placed via storefront checkout may silently fail to appear in the portal Orders list, blocking this feature's entry point entirely.",
       "detail": "Order JTEL87JY0 never appeared in GET /api/orders?by_teeinblue=1 across 90+ minutes, all TIB statuses, both stores, and a 30-day range. A later order (portal id 4322, used throughout this profile) DID appear, after the user claimed a webhook-config fix. That claim was NOT independently verified by this exploration (no dev/infra log access in this run) — it must be treated as an unverified user statement, not a confirmed fix. Resolution: UNRESOLVED, decidable only by orchestrator + context-quality-reviewer. Impact for this feature: a merchant may believe no order exists / lose track of a real order with no visible portal signal.",
       "kb_refs": [
-        "KB-014"
+        "order/review-and-initiate-fulfillment-portal#KB-014"
       ],
       "oq_ref": "OQ-order-001"
     },
@@ -352,68 +352,68 @@
       "risk": "'Confirm & Send to fulfill' behavior with a CONNECTED POD account (e.g. Printify) is completely unobserved.",
       "detail": "KB-022's 'review dialog only, no mutation, no POD network call' finding is scoped strictly to the POD-DISCONNECTED state observed in this run. It must NOT be treated as a general safety property of this action. Once a POD account is connected, this click may trigger a real mutation and/or an outbound call to the POD provider (potentially a real production side effect) — this is unknown and unverified, not confirmed-safe.",
       "kb_refs": [
-        "KB-022"
+        "order/review-and-initiate-fulfillment-portal#KB-022"
       ]
     },
     {
       "risk": "'Change status' dropdown transitions and 'Bulk Fulfill' are entirely unexercised and may have unknown side effects (notifications, POD calls, irreversible state changes).",
       "kb_refs": [
-        "KB-023",
-        "KB-024"
+        "order/review-and-initiate-fulfillment-portal#KB-023",
+        "order/review-and-initiate-fulfillment-portal#KB-024"
       ]
     },
     {
       "risk": "[MỚI, CBS-006] Print file của layout emboss / shape-cut khi artwork có Group ẩn hoàn toàn chưa kiểm (TC-TIB-6071 Blocked, TC-TIB-6070 rỗng).",
       "detail": "Không được suy rule 'print file không có nội dung Group ẩn' (KB-182) sang layout emboss / shape-cut; nếu các layout này render khác, nhà in có thể nhận file sai mà không có check nào bắt được.",
       "kb_refs": [
-        "KB-183",
-        "KB-182"
+        "order/review-and-initiate-fulfillment-portal#KB-183",
+        "order/review-and-initiate-fulfillment-portal#KB-182"
       ]
     },
     {
       "risk": "[MỚI, CBS-006] Rule print file theo Group ẩn (KB-182) chỉ được xác nhận bởi 1 lượt chạy test của agent trên staging 2026-10-16, trước khi 3 PR của TIB-5584 còn OPEN lúc đó merge; build hash không rõ, production chưa xác nhận; fixture 'Group ẩn + con visible ON' dựng qua MCP/API chưa được PO/dev xác nhận hợp lệ.",
       "detail": "Không dùng làm expected cho production khi chưa re-verify; repair command đã chạy trên dữ liệu thật nên trạng thái fixture có thể không tái hiện được bằng thao tác UI.",
       "kb_refs": [
-        "KB-182",
-        "KB-183"
+        "order/review-and-initiate-fulfillment-portal#KB-182",
+        "order/review-and-initiate-fulfillment-portal#KB-183"
       ]
     },
     {
       "risk": "[MỚI, CBS-011] Rule print file / preview / mockup theo điều kiện Hide (KB-239) chỉ có 1 lượt chạy test của agent trên staging 2026-10-28, trước khi 6 PR của TIB-5558 merge 2026-10-29; build hash không rõ, production chưa xác nhận.",
       "detail": "BUG-430 (print file order rỗng ở lượt đầu) chỉ được ghi là không tái hiện ở lượt retest, không có xác nhận đã fix trên build nào. Không dùng làm expected cho production hoặc build sau merge khi chưa chạy lại TC-TIB-7340 có ngày + build.",
       "kb_refs": [
-        "KB-239"
+        "order/review-and-initiate-fulfillment-portal#KB-239"
       ]
     },
     {
       "risk": "[MỚI, CBS-011] Print file PDF và layout emboss / shape-cut với layer action Hide chưa kiểm.",
       "detail": "KB-239 chỉ kiểm print file PNG layout thường; không suy rule sang PDF / emboss / shape-cut (tương tự giới hạn của KB-182/KB-183 với Group ẩn).",
       "kb_refs": [
-        "KB-239",
-        "KB-183"
+        "order/review-and-initiate-fulfillment-portal#KB-239",
+        "order/review-and-initiate-fulfillment-portal#KB-183"
       ]
     },
     {
       "risk": "[MỚI, CBS-015] Rule Regenerate (KB-392) chỉ có 1 lượt chạy test của agent trên staging 2026-10-29, 1 order, item có artwork group ~250 layer; build hash không rõ, shipped UNKNOWN, production chưa xác nhận.",
       "detail": "Không dùng làm expected cho production / build sau merge khi chưa chạy lại; không suy sang item có artwork khác. Không có ngưỡng thời gian regenerate được xác nhận.",
       "kb_refs": [
-        "KB-392"
+        "order/review-and-initiate-fulfillment-portal#KB-392"
       ]
     },
     {
       "risk": "[MỚI, CBS-015] Toast 'put your design in queue', việc Item Activity log không có dòng 'is generating' cho lần regenerate và trạng thái order sau Regenerate (KB-393) chỉ là quan sát.",
       "detail": "Check assert toast, check assert trạng thái order sau Regenerate, hoặc check tính thời gian regenerate từ dòng 'is generating' (như chuỗi log tự động sau khi tạo order ở KB-019), có thể cho kết quả sai khi chưa có xác nhận.",
       "kb_refs": [
-        "KB-393",
-        "KB-019"
+        "order/review-and-initiate-fulfillment-portal#KB-393",
+        "order/review-and-initiate-fulfillment-portal#KB-019"
       ]
     },
     {
       "risk": "[MỚI, CBS-096] Hiển thị customization_id thô trong 'Options' của item (KB-764) là đề xuất chưa ship, chưa quan sát (lượt staging 2026-10-28 bị chặn).",
       "detail": "Không viết check assert giá trị thô, điều kiện 'show line item properties', vị trí sau 'Show more' hay HTML-escape cho tới khi có TC PASS trên build có fix TIB-5563. Không thay thế mô tả card order-item của KB-017.",
       "kb_refs": [
-        "KB-764",
-        "KB-017"
+        "order/review-and-initiate-fulfillment-portal#KB-764",
+        "order/review-and-initiate-fulfillment-portal#KB-017"
       ]
     }
   ],
@@ -425,7 +425,7 @@
       "production": "không rõ",
       "how_to_test": "không chạy",
       "kb_refs": [
-        "KB-437"
+        "order/review-and-initiate-fulfillment-portal#KB-437"
       ]
     }
   ],
@@ -478,7 +478,7 @@
       "question": "[MỚI, CBS-006] Print file của layout emboss và shape-cut cho order từ artwork có Group ẩn có loại bỏ nội dung của Group như layout thường không?",
       "why_it_matters": "TC-TIB-6071 Blocked (Product Base dùng trong lượt chạy không có cell layout emboss), TC-TIB-6070 (shape cut) actualResult rỗng; cần chạy lại với Product Base có layout emboss/shape-cut trước khi viết check cho các layout này.",
       "kb_refs": [
-        "KB-183"
+        "order/review-and-initiate-fulfillment-portal#KB-183"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-order-018"
@@ -487,7 +487,7 @@
       "question": "[MỚI, CBS-006] Rule print file PNG/PDF theo Group ẩn (TC-TIB-6068/6069) có giữ nguyên trên build staging sau khi toàn bộ 6 PR của TIB-5584 merge, và trên production khi TIB-5584 release không?",
       "why_it_matters": "Lượt PASS duy nhất chạy trước khi 3 PR còn OPEN merge, build hash không rõ, shipped UNKNOWN; check print file theo Group ẩn chưa có nền xác nhận cho build hiện tại/production.",
       "kb_refs": [
-        "KB-182"
+        "order/review-and-initiate-fulfillment-portal#KB-182"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-order-019"
@@ -496,7 +496,7 @@
       "question": "[MỚI, CBS-011] Print file / preview / mockup của order theo điều kiện Hide (TC-TIB-7340) có giữ nguyên trên build staging sau khi 6 PR của TIB-5558 merge (2026-10-29) và trên production khi TIB-5558 release không; BUG-430 (print file order rỗng ở lượt đầu) đã được fix trên build nào?",
       "why_it_matters": "Lượt PASS duy nhất chạy trước khi 6 PR merge, build hash không rõ, shipped UNKNOWN; BUG-430 chỉ 'không tái hiện' ở lượt retest — check print file theo Hide chưa có nền xác nhận cho build hiện tại/production.",
       "kb_refs": [
-        "KB-239"
+        "order/review-and-initiate-fulfillment-portal#KB-239"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-order-023"
@@ -505,7 +505,7 @@
       "question": "[MỚI, CBS-011] Print file PDF và layout emboss / shape-cut có loại bỏ layer bị Hide như print file PNG layout thường không?",
       "why_it_matters": "KB-239 chỉ kiểm PNG layout thường; check cho PDF / emboss / shape-cut với điều kiện Hide không có oracle cho tới khi chạy.",
       "kb_refs": [
-        "KB-239"
+        "order/review-and-initiate-fulfillment-portal#KB-239"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-order-024"
@@ -514,7 +514,7 @@
       "question": "[MỚI, CBS-015] Toast 'put your design in queue' khi bấm Regenerate, việc Item Activity log không ghi dòng 'is generating' cho lần regenerate, và trạng thái order sau Regenerate (quan sát: vẫn giữ trạng thái trước đó) có phải hành vi mong đợi không (dev/PO xác nhận)?",
       "why_it_matters": "Ba điểm này chỉ có ở kết quả chạy TC-TIB-7630, expected result không khẳng định; check toast, check trạng thái order sau Regenerate và check thời gian regenerate theo log không có oracle.",
       "kb_refs": [
-        "KB-393"
+        "order/review-and-initiate-fulfillment-portal#KB-393"
       ],
       "oq_type": "NEEDS_CONFIRMATION",
       "oq_id": "OQ-order-028"
@@ -523,7 +523,7 @@
       "question": "[MỚI, CBS-015] Regenerate design (TC-TIB-7630) có giữ nguyên trên build sau khi toàn bộ PR của TIB-5633 merge và trên production không?",
       "why_it_matters": "Lượt PASS duy nhất trên staging 2026-10-29, build hash không rõ, shipped UNKNOWN; confirmed_rules[2] chỉ áp cho staging tới khi chạy lại có ngày + build.",
       "kb_refs": [
-        "KB-392"
+        "order/review-and-initiate-fulfillment-portal#KB-392"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-order-029"
@@ -532,7 +532,7 @@
       "question": "[MỚI, CBS-096] Trên build có fix TIB-5563, Order details và Edit order có hiện nguyên giá trị _customization_id / customization_id trong 'Options' của item — chỉ khi bật 'show line item properties', thu gọn sau 'Show more', HTML-escape — như Dev mô tả không?",
       "why_it_matters": "KB-764 là đề xuất chưa ship, chưa quan sát (lượt staging 2026-10-28 bị chặn); check hiển thị customization_id thô không có oracle.",
       "kb_refs": [
-        "KB-764"
+        "order/review-and-initiate-fulfillment-portal#KB-764"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-order-050"
@@ -541,14 +541,14 @@
       "question": "[MỚI, CBS-096] Khi store tắt 'show line item properties', hoặc trên build hiện tại (trước fix), danh sách 'Options' của item hiện gì cho line item có customization_id?",
       "why_it_matters": "KB-764 chỉ mô tả trường hợp bật setting sau fix; không có tri thức cho trường hợp tắt hoặc build hiện tại, nên không so được trước/sau fix.",
       "kb_refs": [
-        "KB-764"
+        "order/review-and-initiate-fulfillment-portal#KB-764"
       ],
       "oq_id": "OQ-order-050"
     }
   ],
   "last_updated": {
-    "date": "2026-11-07",
-    "ccr_ref": "CBS-096"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "coverage_matrix": [
     {
@@ -655,8 +655,8 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-182",
-        "KB-183"
+        "order/review-and-initiate-fulfillment-portal#KB-182",
+        "order/review-and-initiate-fulfillment-portal#KB-183"
       ],
       "basis": "KB-182 CONFIRMED_EXPECTED/MEDIUM; KB-183 OBSERVED_CURRENT/LOW; 1 lượt chạy 2026-10-16"
     },
@@ -668,7 +668,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-183"
+        "order/review-and-initiate-fulfillment-portal#KB-183"
       ]
     },
     {
@@ -679,7 +679,7 @@
       "environment": "production",
       "covered": false,
       "kb_refs": [
-        "KB-182"
+        "order/review-and-initiate-fulfillment-portal#KB-182"
       ],
       "basis": "shipped UNKNOWN"
     },
@@ -691,7 +691,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-239"
+        "order/review-and-initiate-fulfillment-portal#KB-239"
       ],
       "basis": "CONFIRMED_EXPECTED/MEDIUM; 1 lượt retest 2026-10-28, trước khi 6 PR merge"
     },
@@ -703,7 +703,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-239"
+        "order/review-and-initiate-fulfillment-portal#KB-239"
       ]
     },
     {
@@ -714,7 +714,7 @@
       "environment": "production",
       "covered": false,
       "kb_refs": [
-        "KB-239"
+        "order/review-and-initiate-fulfillment-portal#KB-239"
       ],
       "basis": "shipped UNKNOWN"
     },
@@ -726,7 +726,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-392"
+        "order/review-and-initiate-fulfillment-portal#KB-392"
       ],
       "basis": "CONFIRMED_EXPECTED/MEDIUM; 1 lượt 2026-10-29"
     },
@@ -738,7 +738,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-393"
+        "order/review-and-initiate-fulfillment-portal#KB-393"
       ],
       "basis": "OBSERVED_CURRENT/LOW; chưa có oracle"
     },
@@ -750,7 +750,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-392"
+        "order/review-and-initiate-fulfillment-portal#KB-392"
       ]
     },
     {
@@ -761,7 +761,7 @@
       "environment": "production",
       "covered": false,
       "kb_refs": [
-        "KB-392"
+        "order/review-and-initiate-fulfillment-portal#KB-392"
       ],
       "basis": "shipped UNKNOWN"
     },
@@ -773,7 +773,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-764"
+        "order/review-and-initiate-fulfillment-portal#KB-764"
       ],
       "basis": "PROPOSED, TIB-5563 chưa ship; lượt staging 2026-10-28 bị chặn"
     },
@@ -785,7 +785,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-764"
+        "order/review-and-initiate-fulfillment-portal#KB-764"
       ],
       "basis": "không có tri thức"
     },
@@ -797,7 +797,7 @@
       "environment": "production",
       "covered": false,
       "kb_refs": [
-        "KB-764"
+        "order/review-and-initiate-fulfillment-portal#KB-764"
       ],
       "basis": "NOT_SHIPPED"
     }
@@ -810,8 +810,8 @@
       "relationship": "upstream_dependency",
       "description": "This feature's entry point (an order visible in the portal Orders list) depends on place-personalized-order-storefront's checkout-to-sync handoff, which is not guaranteed reliable — see OQ-order-001.",
       "kb_refs": [
-        "KB-011",
-        "KB-014"
+        "order/place-personalized-order-storefront#KB-011",
+        "order/review-and-initiate-fulfillment-portal#KB-014"
       ]
     },
     {
@@ -821,8 +821,8 @@
       "relationship": "applies_rule_owned_by (cross-object: artwork)",
       "description": "[MỚI, CBS-006] Print file (order design) PNG/PDF theo effective visibility của Group; quy tắc thuộc artwork (artwork KB-158). Layout emboss / shape-cut chưa kiểm.",
       "kb_refs": [
-        "KB-182",
-        "KB-183"
+        "order/review-and-initiate-fulfillment-portal#KB-182",
+        "order/review-and-initiate-fulfillment-portal#KB-183"
       ]
     },
     {
@@ -832,7 +832,7 @@
       "relationship": "corroborates (cross-object: sdk)",
       "description": "[MỚI, CBS-006] Cùng test case TC-TIB-6068: print file PNG khớp buyer preview storefront (sdk KB-181) — ba bề mặt (editor canvas, buyer preview, print file) khớp nhau trên cùng fixture.",
       "kb_refs": [
-        "KB-182"
+        "order/review-and-initiate-fulfillment-portal#KB-182"
       ]
     },
     {
@@ -842,7 +842,7 @@
       "relationship": "applies_rule_owned_by (cross-object: artwork)",
       "description": "[MỚI, CBS-011] Print file / preview / mockup của order theo action Hide và điều kiện cấu hình ở artwork. FEAT-08 ở đây là feature của object artwork (khác sdk FEAT-08-product-page-settings-config).",
       "kb_refs": [
-        "KB-239"
+        "order/review-and-initiate-fulfillment-portal#KB-239"
       ]
     },
     {
@@ -852,7 +852,7 @@
       "relationship": "corroborates (cross-object: sdk)",
       "description": "[MỚI, CBS-011] TC-TIB-7340: kết quả ẩn/hiện layer Hide trên print file / preview / mockup của order khớp cái buyer thấy trên storefront (sdk KB-231).",
       "kb_refs": [
-        "KB-239"
+        "order/review-and-initiate-fulfillment-portal#KB-239"
       ]
     },
     {
@@ -861,7 +861,7 @@
       "relationship": "corroborates (same order)",
       "description": "[MỚI, CBS-011] Cùng order Bogus (portal orders/4811): item có layer bị Hide không có giá trị trong View customization và print file (order KB-238), item không khớp in đủ (KB-239).",
       "kb_refs": [
-        "KB-239"
+        "order/review-and-initiate-fulfillment-portal#KB-239"
       ]
     },
     {
@@ -871,7 +871,7 @@
       "relationship": "applies_render_owned_by (cross-object: artwork)",
       "description": "[MỚI, CBS-015] Regenerate design của item có artwork group ~250 layer (KB-392); render order design của artwork có Group layer thuộc artwork (artwork KB-380).",
       "kb_refs": [
-        "KB-392"
+        "order/review-and-initiate-fulfillment-portal#KB-392"
       ]
     },
     {
@@ -881,8 +881,8 @@
       "relationship": "feeds (PROPOSED)",
       "description": "[MỚI, CBS-096] Giá trị customization_id thô hiện trong 'Options' của item (KB-764) và line sai định dạng hiện như item không có design (KB-761) đều là kết quả import đơn Shopify theo đề xuất TIB-5563 chưa ship.",
       "kb_refs": [
-        "KB-764",
-        "KB-761"
+        "order/review-and-initiate-fulfillment-portal#KB-764",
+        "order/shopify-order-import#KB-761"
       ]
     },
     {
@@ -892,7 +892,7 @@
       "relationship": "triggers_render",
       "description": "[MỚI, CBS-096] Re-generate design ở order detail (KB-392) là thao tác sinh order design PNG của vector layer recolor quan sát ở order-design-vector-render (KB-767, OBSERVED_CURRENT/LOW).",
       "kb_refs": [
-        "KB-392"
+        "order/review-and-initiate-fulfillment-portal#KB-392"
       ]
     }
   ]

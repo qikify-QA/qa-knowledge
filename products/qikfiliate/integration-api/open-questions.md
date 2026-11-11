@@ -230,3 +230,123 @@
   "summary": "[RỦI RO ĐÃ BIẾT, chưa xác minh] Các endpoint khác dùng program_slug có thể gặp lỗi tương tự. KB item KB-011 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-008' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."
 }
 ```
+
+```json
+{"oq_id":"OQ-integration-api-036","type":"NEEDS_CONFIRMATION","feature_id":"api-key-authentication","summary":"Oracle STRONG cua check 'CHK-001' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-037","type":"NEEDS_CONFIRMATION","feature_id":"api-key-authentication","summary":"Oracle STRONG cua check 'CHK-002' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-038","type":"NEEDS_CONFIRMATION","feature_id":"api-key-authentication","summary":"HTTP status/response body cụ thể khi request thiếu header X-API-Key là gì? Đây là test case âm cơ bản nhất của cả nhóm 5 endpoint tích hợp nên cần một contract rõ ràng trước khi checklist có thể khẳng định expected result."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-039","type":"NEEDS_CONFIRMATION","feature_id":"api-key-authentication","summary":"Oracle STRONG cua check 'CHK-004' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-040","type":"NEEDS_CONFIRMATION","feature_id":"api-key-authentication","summary":"HTTP status/response body cụ thể khi header X-API-Key sai giá trị là gì? Cùng gap với CHK-003 (not_documented #1, `qikfiliate/integration api - overview and auth`) nhưng precondition khác (có header, giá trị sai vs hoàn toàn thiếu header)."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-041","type":"NEEDS_CONFIRMATION","feature_id":"api-key-authentication","summary":"Oracle STRONG cua check 'CHK-007' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-042","type":"NEEDS_CONFIRMATION","feature_id":"api-key-authentication","summary":"KB item KB-007 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-008' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-043","type":"NEEDS_CONFIRMATION","feature_id":"api-key-authentication","summary":"KB item KB-008 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-009' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-044","type":"NEEDS_CONFIRMATION","feature_id":"api-key-authentication","summary":"KB item KB-009 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-010' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-045","type":"NEEDS_CONFIRMATION","feature_id":"api-key-authentication","summary":"KB item KB-010 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-011' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-046","type":"NEEDS_CONFIRMATION","feature_id":"api-key-authentication","summary":"Ai cấp và quy trình rotate APP_API_KEY ra sao (ai giữ, đổi thế nào, báo client app thế nào, key cũ bị vô hiệu ngay hay có grace period)? Không có quy trình này thì không dựng được test case cho ca rotate."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-047","type":"NEEDS_CONFIRMATION","feature_id":"api-key-authentication","summary":"Nhóm 5 endpoint tích hợp có log/audit request không, và nếu có thì lưu ở đâu? Không có câu trả lời này thì không thể dựng bước verify-qua-log cho các check liên quan (ví dụ CHK-009)."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-048","type":"NEEDS_CONFIRMATION","feature_id":"api-key-authentication","summary":"Thiết kế '1 secret dùng chung cho mọi client app' (KB-006) có phải ràng buộc business chủ đích ở quy mô hiện tại (1 client app), hay là rủi ro cần redesign trước khi có client app thứ 2? Ảnh hưởng tới việc CHK-008/CHK-009 (không revoke/không phân biệt app) được coi là rủi ro chấp nhận được hay defect cần fix."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-049","type":"NEEDS_CONFIRMATION","feature_id":"customer-event-reporting-api","summary":"POST /api/customer-events trả về gì khi (program_slug, related_id) không khớp Customer nào tồn tại?"}
+```
+
+```json
+{"oq_id":"OQ-integration-api-050","type":"NEEDS_CONFIRMATION","feature_id":"customer-event-reporting-api","summary":"POST /api/customer-events có cho phép name là chuỗi rỗng không (khác với thiếu field name hoàn toàn)? Tài liệu đặt câu hỏi này cho QA nhưng không trả lời."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-051","type":"NEEDS_CONFIRMATION","feature_id":"customer-event-reporting-api","summary":"POST /api/customer-events có chặn gửi trùng lặp cùng 1 sự kiện (cùng name, cùng Customer) 2 lần không, hay tạo 2 bản ghi CustomerEvent riêng biệt?"}
+```
+
+```json
+{"oq_id":"OQ-integration-api-052","type":"NEEDS_CONFIRMATION","feature_id":"customer-event-reporting-api","summary":"KB item KB-007 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-006' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-053","type":"NEEDS_CONFIRMATION","feature_id":"customer-event-reporting-api","summary":"Xác nhận chính thức: 6 giá trị liệt kê ở bảng endpoint `qikfiliate/integration api - overview and auth` (KB-003) có đúng là KHÔNG được validate ở tầng request của POST /api/customer-events (như KB-007 mô tả), chỉ là tập giá trị model mong đợi? Tránh checklist/test case sau này dựng sai expected result theo `qikfiliate/integration api - overview and auth` một cách độc lập."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-054","type":"NEEDS_CONFIRMATION","feature_id":"customer-event-reporting-api","summary":"Client app có BẮT BUỘC gọi POST /api/customer-events(reinstalled) sau khi restore qua PUT /api/trashed-customers, hay đây chỉ là bước tuỳ chọn? Quyết định liệu trạng thái hiển thị 'reinstalled' có dùng được làm oracle test hay không."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-055","type":"NEEDS_CONFIRMATION","feature_id":"customer-event-reporting-api","summary":"Oracle STRONG cua check 'CHK-010' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-056","type":"NEEDS_CONFIRMATION","feature_id":"customer-provisioning-api","summary":"HTTP status/response body cụ thể khi POST /api/customers với tracking_id không hợp lệ/đã dùng là gì?"}
+```
+
+```json
+{"oq_id":"OQ-integration-api-057","type":"NEEDS_CONFIRMATION","feature_id":"customer-provisioning-api","summary":"Gọi POST /api/customers với related_id đã tồn tại (cùng Program) thì xảy ra gì — lỗi trùng, ghi đè, hay tạo bản ghi thứ 2? Tình huống thực tế dễ xảy ra khi client app gọi sai endpoint lúc shop cài lại."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-058","type":"NEEDS_CONFIRMATION","feature_id":"customer-provisioning-api","summary":"KB item KB-009 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-006' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-059","type":"NEEDS_CONFIRMATION","feature_id":"customer-provisioning-api","summary":"KB item KB-010 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-007' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-060","type":"NEEDS_CONFIRMATION","feature_id":"customer-provisioning-api","summary":"KB item KB-011 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-008' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-061","type":"NEEDS_CONFIRMATION","feature_id":"customer-provisioning-api","summary":"Gọi DELETE /api/customers lần 2 trên 1 Customer đã soft-delete trả về gì — vẫn 204 (idempotent), hay lỗi not-found?"}
+```
+
+```json
+{"oq_id":"OQ-integration-api-062","type":"NEEDS_CONFIRMATION","feature_id":"customer-provisioning-api","summary":"PUT /api/trashed-customers trả về status/body gì khi không tìm thấy bản ghi đã soft-delete khớp related_id+program_slug?"}
+```
+
+```json
+{"oq_id":"OQ-integration-api-063","type":"NEEDS_CONFIRMATION","feature_id":"customer-provisioning-api","summary":"PUT /api/trashed-customers trả về status/body gì khi restore thành công? Là endpoint duy nhất khôi phục dữ liệu nên cần contract response rõ ràng để verify."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-064","type":"NEEDS_CONFIRMATION","feature_id":"customer-provisioning-api","summary":"Client app có BẮT BUỘC gọi cả DELETE /api/customers và POST /api/customer-events(uninstalled) khi uninstall, hay 1 trong 2 đã đủ để hệ thống nhận biết đúng shop đã gỡ cài? Ảnh hưởng thiết kế test case cho luồng uninstall."}
+```
+
+```json
+{"oq_id":"OQ-integration-api-065","type":"NEEDS_CONFIRMATION","feature_id":"customer-provisioning-api","summary":"related_id + program_slug có phải composite key duy nhất xác định Customer cho DELETE /api/customers và PUT /api/trashed-customers không? Hiện chỉ có payload mẫu (EXAMPLE_ONLY), không có đặc tả chính thức — cần xác nhận trước khi dùng làm oracle cho test cách ly dữ liệu giữa các Program."}
+```

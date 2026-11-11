@@ -1,5 +1,5 @@
 # Object: Open API (product: teeinblue) — Feature Profile Summary
-**Published context version:** 2
+**Published context version:** 3
 
 - **Object:** API cho merchant dưới `/openapi/v1`, gọi bằng token. Phạm vi hiện có: xác thực token, tra cứu layer image và clipart, upload asset. Các nhóm route khác chưa có danh sách route đầy đủ và chưa có quan sát (đã biết `GET /openapi/v1/customizations/{uuid}` từ `_flows/storefront-sdk.md`, chưa gọi), xem OQ-open-api-013.
 - **Quan sát:** staging, role `merchant-owner`, một account, một token, chỉ tầng API. Chưa có quan sát trên production hay tầng UI.

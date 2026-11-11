@@ -594,3 +594,235 @@
   "summary": "[REGRESSION WATCH — KNOWN_DEFECT] Mẫu dữ liệu thật usage-charge có chênh $0.06 chưa giải thích được so với công thức Partner Share. KB item KB-010 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-UCC-011' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."
 }
 ```
+
+```json
+{"oq_id":"OQ-commission-calculation-058","type":"NEEDS_CONFIRMATION","feature_id":"commission-decision-flow","summary":"Oracle STRONG cua check 'CHK-CDF-001' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-059","type":"NEEDS_CONFIRMATION","feature_id":"commission-decision-flow","summary":"Oracle STRONG cua check 'CHK-CDF-002' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-060","type":"NEEDS_CONFIRMATION","feature_id":"commission-decision-flow","summary":"PO/dev xác nhận: dòng charge_type chứa \"one-time\" có bị bỏ qua hoàn toàn (không tạo Conversion, theo `qikfiliate/commission - overview`) hay vẫn đi vào nhánh recurring/first-month như mọi dòng không chứa \"usage\" khác (theo nghĩa đen của `qikfiliate/commision - recurring & first month`)? Đây là OQ-commission-calculation-005... (OQ-commission-calculation-006), ảnh hưởng trực tiếp số affiliate được trả cho loại charge này."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-061","type":"NEEDS_CONFIRMATION","feature_id":"commission-decision-flow","summary":"Oracle STRONG cua check 'CHK-CDF-004' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-062","type":"NEEDS_CONFIRMATION","feature_id":"commission-decision-flow","summary":"Oracle STRONG cua check 'CHK-CDF-005' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-063","type":"NEEDS_CONFIRMATION","feature_id":"commission-decision-flow","summary":"Oracle STRONG cua check 'CHK-CDF-006' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-064","type":"NEEDS_CONFIRMATION","feature_id":"commission-decision-flow","summary":"Khi 1 dòng trong file payout thiếu cấu hình ProgramCommission, hệ thống dừng toàn bộ import file đó, chỉ bỏ qua riêng dòng lỗi, hay có cơ chế khác? Thông báo lỗi (nếu có) hiển thị ở đâu trên admin portal? Cần PO/dev xác nhận để viết expected result cho test case import."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-065","type":"NEEDS_CONFIRMATION","feature_id":"commission-decision-flow","summary":"KB item KB-012 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-CDF-008' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-066","type":"NEEDS_CONFIRMATION","feature_id":"commission-decision-flow","summary":"Oracle STRONG cua check 'CHK-CDF-009' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-067","type":"NEEDS_CONFIRMATION","feature_id":"commission-decision-flow","summary":"PO/dev xác nhận: maximum_amount có áp dụng cho nhánh first-month bình thường (không yearly) hay không? Sai hướng nào cũng là trả sai tiền cho affiliate — cần chốt trước khi viết expected result cho mọi test case first-month vượt ngưỡng maximum_amount."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-068","type":"NEEDS_CONFIRMATION","feature_id":"commission-decision-flow","summary":"Khi 1 charge_type chứa đồng thời nhiều từ khoá phân loại (vd cả \"one-time\" và \"usage\"), nhánh nào được ưu tiên? Sơ đồ quyết định trong tài liệu trình bày tuần tự nhưng không xác nhận đó là thứ tự ưu tiên loại trừ bắt buộc. Cũng cần danh sách giá trị charge_type thật từ Shopify để biết tình huống này có xảy ra trong thực tế hay không."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-069","type":"NEEDS_CONFIRMATION","feature_id":"commission-decision-flow","summary":"Oracle STRONG cua check 'CHK-CDF-013' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-070","type":"NEEDS_CONFIRMATION","feature_id":"first-month-commission","summary":"Oracle STRONG cua check 'CHK-FMC-001' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-071","type":"NEEDS_CONFIRMATION","feature_id":"first-month-commission","summary":"Oracle STRONG cua check 'CHK-FMC-002' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-072","type":"NEEDS_CONFIRMATION","feature_id":"first-month-commission","summary":"PO/dev xác nhận: maximum_amount có áp dụng cho nhánh first-month bình thường (không yearly) hay không? Sai hướng nào cũng là trả sai tiền cho affiliate — xem đầy đủ ở checklist commission-decision-flow (CHK-CDF-011), đây là OQ-commission-calculation-005."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-073","type":"NEEDS_CONFIRMATION","feature_id":"first-month-commission","summary":"Oracle STRONG cua check 'CHK-FMC-004' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-074","type":"NEEDS_CONFIRMATION","feature_id":"first-month-commission","summary":"Oracle STRONG cua check 'CHK-FMC-006' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-075","type":"NEEDS_CONFIRMATION","feature_id":"first-month-commission","summary":"Oracle STRONG cua check 'CHK-FMC-008' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-076","type":"NEEDS_CONFIRMATION","feature_id":"first-month-commission","summary":"Moc 30 ngay cho isFirstMonth duoc tinh theo ngay lich (date-cast, cat gio) hay theo chinh xac timestamp (gio:phut:giay)? confirmation_source cua oracle (KB-010) la derivation=code_artifact (doc tu code), chua co xac nhan PO/Dev hay test_case PASS ve cach tinh moc 30 ngay nay."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-077","type":"NEEDS_CONFIRMATION","feature_id":"first-month-commission","summary":"Mốc 30 ngày của isFirstMonth được so sánh theo timezone nào (app timezone, UTC, hay timezone dữ liệu gốc từ Shopify)? Ảnh hưởng trực tiếp kết quả ở đúng biên 30 ngày."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-078","type":"NEEDS_CONFIRMATION","feature_id":"first-month-commission","summary":"KB item KB-012 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-FMC-011' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-079","type":"NEEDS_CONFIRMATION","feature_id":"first-month-commission","summary":"Công thức cho tổ hợp first-month + yearly + refund/downgrade (âm) là gì? Có áp maximum_amount × 11 cho số âm theo kiểu cap 2 chiều (xem feature refund-and-downgrade-adjustment) hay không? Đây là tổ hợp tiền lớn nhất hiện chưa có công thức."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-080","type":"NEEDS_CONFIRMATION","feature_id":"first-month-commission","summary":"Giá trị mặc định của Customer.skip_first_month khi tạo mới là gì (true/false)? Bật/tắt skip_first_month có tác dụng hồi tố với Conversion đã tạo trước đó hay chỉ áp cho conversion phát sinh sau thời điểm toggle?"}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-081","type":"NEEDS_CONFIRMATION","feature_id":"first-month-commission","summary":"Oracle STRONG cua check 'CHK-FMC-014' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-082","type":"NEEDS_CONFIRMATION","feature_id":"first-month-commission","summary":"Oracle STRONG cua check 'CHK-FMC-016' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-083","type":"NEEDS_CONFIRMATION","feature_id":"recurring-commission","summary":"Oracle STRONG cua check 'CHK-RC-001' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-084","type":"NEEDS_CONFIRMATION","feature_id":"recurring-commission","summary":"Oracle STRONG cua check 'CHK-RC-002' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-085","type":"NEEDS_CONFIRMATION","feature_id":"recurring-commission","summary":"Oracle STRONG cua check 'CHK-RC-003' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-086","type":"NEEDS_CONFIRMATION","feature_id":"recurring-commission","summary":"Oracle STRONG cua check 'CHK-RC-004' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-087","type":"NEEDS_CONFIRMATION","feature_id":"recurring-commission","summary":"Oracle STRONG cua check 'CHK-RC-005' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-088","type":"NEEDS_CONFIRMATION","feature_id":"recurring-commission","summary":"PO/dev xác nhận: công thức recurring có áp dụng cho dòng charge_type chứa \"one-time\" hay dòng đó bị bỏ qua hoàn toàn trước khi tới bước tính recurring? Đây là OQ-commission-calculation-006 — xem đầy đủ ở checklist commission-decision-flow (CHK-CDF-003)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-089","type":"NEEDS_CONFIRMATION","feature_id":"recurring-commission","summary":"Công thức tính ngược percentage lưu trên Conversion cho charge yearly bị cap là gì? `qikfiliate/commision - recurring & first month` có nhắc tới mục \"percentage lưu trên Conversion\" nhưng nội dung mục đó không có trong bộ tài liệu được giao — cần dev cung cấp lại hoặc trích đúng section."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-090","type":"NEEDS_CONFIRMATION","feature_id":"recurring-commission","summary":"Giá trị mặc định của ProgramCommission.percentage và .maximum_amount khi bản ghi mới tạo chưa cấu hình là gì (null, 0, hay bắt buộc nhập)? Ảnh hưởng trực tiếp expected result khi test ProgramCommission mới tạo."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-091","type":"NEEDS_CONFIRMATION","feature_id":"recurring-commission","summary":"Oracle STRONG cua check 'CHK-RC-012' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-092","type":"NEEDS_CONFIRMATION","feature_id":"refund-and-downgrade-adjustment","summary":"Oracle STRONG cua check 'CHK-RDA-001' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-093","type":"NEEDS_CONFIRMATION","feature_id":"refund-and-downgrade-adjustment","summary":"Oracle STRONG cua check 'CHK-RDA-003' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-094","type":"NEEDS_CONFIRMATION","feature_id":"refund-and-downgrade-adjustment","summary":"Oracle STRONG cua check 'CHK-RDA-005' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-095","type":"NEEDS_CONFIRMATION","feature_id":"refund-and-downgrade-adjustment","summary":"Oracle STRONG cua check 'CHK-RDA-006' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-096","type":"NEEDS_CONFIRMATION","feature_id":"refund-and-downgrade-adjustment","summary":"Oracle STRONG cua check 'CHK-RDA-007' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-097","type":"NEEDS_CONFIRMATION","feature_id":"refund-and-downgrade-adjustment","summary":"Oracle STRONG cua check 'CHK-RDA-008' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-098","type":"NEEDS_CONFIRMATION","feature_id":"refund-and-downgrade-adjustment","summary":"Literal charge_type thật mà Shopify dùng cho refund của 1 usage charge là gì — có chứa \"usage\" hay không? Nếu KHÔNG, refund đó rơi vào nhánh recurring/first-month (feature này) với rate/cap khác hẳn rate/cap usage gốc — sai hướng nào cũng là trả sai tiền."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-099","type":"NEEDS_CONFIRMATION","feature_id":"refund-and-downgrade-adjustment","summary":"Cơ chế dedup/đối chiếu charge_id cho dòng refund/downgrade (object payout-import, OQ-payout-import-021) hoạt động thế nào — charge_id có được dùng làm điều kiện khớp bắt buộc hay không? Nếu dedup sai, dòng refund/downgrade có thể bị bỏ sót hoặc trùng lặp trước khi vào pipeline tính hoa hồng của feature này, gây sai số tiền trừ."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-100","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"Oracle STRONG cua check 'CHK-UCC-001' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-101","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"Oracle STRONG cua check 'CHK-UCC-002' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-102","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"Oracle STRONG cua check 'CHK-UCC-003' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-103","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"Oracle STRONG cua check 'CHK-UCC-004' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-104","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"Oracle STRONG cua check 'CHK-UCC-005' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-105","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"Oracle STRONG cua check 'CHK-UCC-006' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-106","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"Oracle STRONG cua check 'CHK-UCC-007' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-107","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"Oracle STRONG cua check 'CHK-UCC-008' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-108","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"Dong usage-charge bi cap ve $0 co thuc su bi an khoi dashboard nhung van ton tai trong DB dung theo chu y thiet ke cua withoutCappedToZero, hay day la mot phat hien tu doc code chua duoc xac nhan? confirmation_source cua oracle (KB-005 + KB-006) la derivation=code_artifact (doc tu code), chua co xac nhan PO/Dev hay test_case PASS."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-109","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"KB item KB-012 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-UCC-010' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-110","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"KB item KB-010 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-UCC-011' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-111","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"Khi handle_usage_charge=true nhưng usage_percentage/usage_maximum_amount null/rỗng ở mức dữ liệu (bỏ qua validate form), hệ thống xử lý dòng usage-charge thế nào?"}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-112","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"usage_maximum_amount có cho phép giá trị null hoặc âm không? Nếu có, cap xử lý các giá trị đó thế nào, và null khác gì so với 0 (\"không giới hạn\")?"}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-113","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"already_earned (tổng amount mọi Conversion usage trước đó) có tính cả Conversion được tạo bằng thao tác tay/ngoài luồng import CSV hay không? Ảnh hưởng trực tiếp tới việc dựng test data cho cap."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-114","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"Hệ thống có đảm bảo xử lý các dòng usage-charge theo đúng thứ tự thời gian charge thật (không phải thứ tự xuất hiện trong file) trước khi áp cap hay không? Nếu không, kết quả cap có thể khác kỳ vọng khi file bị sắp xếp sai thứ tự."}
+```
+
+```json
+{"oq_id":"OQ-commission-calculation-115","type":"NEEDS_CONFIRMATION","feature_id":"usage-charge-commission","summary":"Literal charge_type thật mà Shopify dùng cho refund của 1 usage charge là gì — có chứa \"usage\" hay không? Quyết định dòng đó tính vào cap lifetime của usage-charge-commission hay vào cơ chế cap 2 chiều của refund-and-downgrade-adjustment — sai hướng nào cũng là tính sai hoa hồng."}
+```

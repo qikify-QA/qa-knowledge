@@ -284,3 +284,67 @@ Mỗi mục dưới đây là 1 entry độc lập với `oq_id` ổn định (k
 ```json
 {"oq_id": "OQ-translation-046", "type": "OPEN_ISSUE", "feature_id": "dynamic-translations", "summary": "Flow _flows/dynamic-translations.md dòng 28 (mục Hành vi đã xác nhận) ghi value bị trim 2 đầu khi save, trái KB-032. CBS-076 không có khối C nên flow chưa được sửa; người đọc flow đang thấy hai điều ngược nhau. Cần một CCR có khối C cập nhật dòng này.", "kb_ids": ["KB-032"]}
 ```
+
+```json
+{"oq_id":"OQ-translation-047","type":"NEEDS_CONFIRMATION","feature_id":"dynamic-translations","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-002 “Info banner scope KHÔNG đề cập layer placeholder / artwork custom name / campaign custom name-label — absence quan sát, không phải xác nhận unsupported” của feature dynamic-translations. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-translation-048","type":"NEEDS_CONFIRMATION","feature_id":"dynamic-translations","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-005 “Bảng manual entry với nhiều dòng (>1 entry cùng locale) hoạt động đúng — chưa kiểm chứng” của feature dynamic-translations. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-translation-049","type":"NEEDS_CONFIRMATION","feature_id":"dynamic-translations","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-006 “Entry đã lưu load lại đúng khi mở lại trang (GET /api/translations) — chỉ có 1 lần quan sát, chưa re-verify độc lập” của feature dynamic-translations. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-translation-050","type":"NEEDS_CONFIRMATION","feature_id":"dynamic-translations","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-007b “Import: hành vi submit file thực tế (format, entity matching, overwrite behavior) — chưa từng thực thi, hoàn toàn chưa kiểm chứng” của feature dynamic-translations. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-translation-051","type":"NEEDS_CONFIRMATION","feature_id":"dynamic-translations","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-008 “Dynamic Translation entry (sub-scope: Product base name) hiển thị trên storefront sau khi lưu — OPEN QUESTION, CONFLICT-001 UNRESOLVED, KHÔNG có expected_result cố định (cập nhật CBS-001: thêm điểm quan sát dictionary trên build TIB-5352)” của feature dynamic-translations. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-translation-052","type":"NEEDS_CONFIRMATION","feature_id":"dynamic-translations","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-009 “Dynamic Translation entry (sub-scope: Option Title in personalization form) hiển thị trên storefront ngoài phạm vi đã verify (production, build không có TIB-5352, campaign khác) — OQ-translation-010 vẫn mở; data point staging TIB-5352 ở CHK-018/CHK-019, không suy diễn từ CHK-008” của feature dynamic-translations. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-translation-053","type":"NEEDS_CONFIRMATION","feature_id":"dynamic-translations","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-010 “Dynamic Translation entry (sub-scope: Variants name) hiển thị trên storefront — CHƯA test, sub-scope riêng biệt với CHK-008, không suy diễn từ đó (cập nhật CBS-001: thêm điểm quan sát dictionary trên build TIB-5352)” của feature dynamic-translations. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-translation-054","type":"NEEDS_CONFIRMATION","feature_id":"dynamic-translations","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-011 “Permission boundary của POST /api/translations/bulk và GET /api/translations đối với cross-tenant/forbidden-token — chưa kiểm chứng” của feature dynamic-translations. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-translation-055","type":"NEEDS_CONFIRMATION","feature_id":"language-locale-switcher","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-006 “Hành vi combobox/switcher khi store có >2 published locale — chưa kiểm chứng” của feature language-locale-switcher. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-translation-056","type":"NEEDS_CONFIRMATION","feature_id":"language-locale-switcher","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-007 “Tương tác thực tế (click/tap) với storefront switcher ở mobile viewport — chỉ mới inventory DOM, chưa từng click” của feature language-locale-switcher. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-translation-057","type":"NEEDS_CONFIRMATION","feature_id":"language-locale-switcher","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-008 “GET /api/instances/{instanceId}/shop-locales là live pass-through hay cache của teeinblue — chưa xác định, ảnh hưởng tới stale-locale-list regression” của feature language-locale-switcher. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-translation-058","type":"NEEDS_CONFIRMATION","feature_id":"language-locale-switcher","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-009 “Permission boundary của GET /api/instances/{instanceId}/shop-locales đối với cross-tenant/forbidden-token — chưa kiểm chứng” của feature language-locale-switcher. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-translation-059","type":"NEEDS_CONFIRMATION","feature_id":"product-page-content-translation","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-006 “Override đã lưu hiển thị đúng khi reload lại trang (persistence qua page load)” của feature product-page-content-translation. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-translation-060","type":"NEEDS_CONFIRMATION","feature_id":"product-page-content-translation","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-009 “Cơ chế server-side injection nào đưa override vào HTML ban đầu — chưa xác định, không thể dùng làm oracle root-cause” của feature product-page-content-translation. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-translation-061","type":"NEEDS_CONFIRMATION","feature_id":"product-page-content-translation","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-011 “Permission boundary của PUT config-translations đối với cross-tenant/forbidden-token — chưa kiểm chứng” của feature product-page-content-translation. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-translation-062","type":"NEEDS_CONFIRMATION","feature_id":"product-page-content-translation","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-013 “Mobile viewport hiển thị override translation đúng như desktop — chưa kiểm chứng” của feature product-page-content-translation. missing_or_unresolved_oracle"}
+```

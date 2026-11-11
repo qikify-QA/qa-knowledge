@@ -7,17 +7,17 @@
       "role": "merchant",
       "permission_observed": "Tài liệu mô tả: merchant xem dashboard + áp dụng time-range filter trên trang Analytics (KB-005, KB-006, KB-007..KB-011). Không có phân tầng permission/role nào khác được tài liệu đề cập cho trang này (xem unknown_areas).",
       "kb_refs": [
-        "KB-005",
-        "KB-006",
-        "KB-007"
+        "analytics/analytics#KB-005",
+        "analytics/analytics#KB-006",
+        "analytics/analytics#KB-007"
       ]
     },
     {
       "role": "buyer",
       "permission_observed": "Tài liệu mô tả: buyer (khách truy cập storefront) kích hoạt event view/add_to_cart qua SDK khi tương tác với offer widget, độc lập với bất kỳ auth Portal nào (KB-017, KB-032).",
       "kb_refs": [
-        "KB-017",
-        "KB-032"
+        "analytics/analytics#KB-017",
+        "analytics/analytics#KB-032"
       ]
     }
   ],
@@ -26,15 +26,15 @@
       "path": "Portal left nav > Analytics",
       "precondition": "Merchant đã đăng nhập Portal; Analytics là trang độc lập, cùng cấp Manage offers/Translations/Variant swatches trong left nav (không có precondition khác được tài liệu nêu).",
       "kb_refs": [
-        "KB-005"
+        "analytics/analytics#KB-005"
       ]
     },
     {
       "path": "Storefront: offer widget render/interaction trên product page (kích hoạt SDK, không phải UI Portal)",
       "precondition": "Có ≥1 offer widget active trên trang (discount đang chạy, ví dụ Quantity Break hoặc Multibuy)",
       "kb_refs": [
-        "KB-017",
-        "KB-032"
+        "analytics/analytics#KB-017",
+        "analytics/analytics#KB-032"
       ]
     }
   ],
@@ -43,56 +43,56 @@
       "name": "Xem trang Analytics tổng quan",
       "description": "Trang Portal độc lập, toàn cục hiển thị date-range selector cộng bộ metric (views, add-to-cart, conversion, orders, revenue, top performers) để merchant theo dõi hiệu suất chiến dịch discount.",
       "kb_refs": [
-        "KB-005",
-        "KB-006"
+        "analytics/analytics#KB-005",
+        "analytics/analytics#KB-006"
       ]
     },
     {
       "name": "Lọc dữ liệu theo khoảng thời gian (Time range selector)",
       "description": "Dropdown với 5 preset (Today/Yesterday/Last 7 days [default]/Last 30 days/Last 90 days) cộng 1 option 'Custom' hiển thị nhưng disabled trong list; tuy nhiên chính dropdown đó đồng thời là 1 custom date-range picker đầy đủ (Starting/Ending text field yyyy-mm-dd + inline calendar month-grid, prefill theo preset đang chọn, ngày sau today bị disable); text 'Maximum range is 90 days' hiển thị dưới calendar (cap 90 ngày ở backend được surface lên UI); Cancel/Apply xác nhận hoặc hủy lựa chọn.",
       "kb_refs": [
-        "KB-007",
-        "KB-008",
-        "KB-009",
-        "KB-010",
-        "KB-011"
+        "analytics/analytics#KB-007",
+        "analytics/analytics#KB-008",
+        "analytics/analytics#KB-009",
+        "analytics/analytics#KB-010",
+        "analytics/analytics#KB-011"
       ]
     },
     {
       "name": "Xem các chỉ số hiệu suất (Metrics panel)",
       "description": "4 metric hàng đầu (View/Add to cart click/Conversion rate/Order with offers — số ít, khác cách viết số nhiều của ticket QVD-81) cộng Additional revenue, Best-selling discounted items, Most popular discount tiers. Conversion rate = ATC/Views×100 (KHÔNG dùng completed order — thực chất là add-to-cart rate, không phải checkout conversion). 2 metric danh sách (Best-selling discounted items, Most popular discount tiers) hiển thị text 'No data available' khi không có dữ liệu.",
       "kb_refs": [
-        "KB-006",
-        "KB-012",
-        "KB-015",
-        "KB-016",
-        "KB-034"
+        "analytics/analytics#KB-006",
+        "analytics/analytics#KB-012",
+        "analytics/analytics#KB-015",
+        "analytics/analytics#KB-016",
+        "analytics/analytics#KB-034"
       ]
     },
     {
       "name": "Backend API cung cấp dữ liệu cho dashboard (order-analytics)",
       "description": "GET /api/order-analytics/summary (revenue store-currency + USD-converted, quantity); GET /api/order-analytics/graph (time-series cho line chart, param 'summary'=quantity|revenue|revenue_usd, param 'type' chọn bucket granularity hourly/daily/weekly/monthly/yearly mặc định daily, backfill 0 cho ngày trống); GET /api/top-discount-tiers (sort theo quantity/total_items, default limit 10, nhưng Portal UI chỉ hiển thị top 3); GET /api/top-selling-variants (key theo shopify_product_id/shopify_variant_id). Mọi request phải gửi start/end dạng ISO 8601 kèm offset timezone riêng của merchant; response trả về cùng timezone đó. Tất cả endpoint nhận thêm param 'filter' (ví dụ test, currency — tài liệu tự nói underspecified trong ticket).",
       "kb_refs": [
-        "KB-019",
-        "KB-020",
-        "KB-021",
-        "KB-022",
-        "KB-023",
-        "KB-024",
-        "KB-025",
-        "KB-026",
-        "KB-033"
+        "analytics/analytics#KB-019",
+        "analytics/analytics#KB-020",
+        "analytics/analytics#KB-021",
+        "analytics/analytics#KB-022",
+        "analytics/analytics#KB-023",
+        "analytics/analytics#KB-024",
+        "analytics/analytics#KB-025",
+        "analytics/analytics#KB-026",
+        "analytics/analytics#KB-033"
       ]
     },
     {
       "name": "Ghi nhận event view/add_to_cart từ storefront SDK",
       "description": "GET /api/events trả aggregate count theo field 'type' (view | add_to_cart). POST /api/events là API call tự ghi log event của SDK (theo tài liệu mô tả 1 phiên capture cụ thể qua Playwright MCP trên store test-vl-1 — đây là api_contract claim lấy từ doc_refs, KHÔNG phải quan sát runtime của run này). Views/ATC được ghi như discrete event, không suy ra sau từ dữ liệu order. Khi có ≥2 offer widget active trên 1 page load, mỗi widget bắn 1 event 'view' riêng (không gộp thành 1 event cho cả page).",
       "kb_refs": [
-        "KB-017",
-        "KB-027",
-        "KB-028",
-        "KB-031",
-        "KB-032"
+        "analytics/analytics#KB-017",
+        "analytics/analytics#KB-027",
+        "analytics/analytics#KB-028",
+        "analytics/analytics#KB-031",
+        "analytics/analytics#KB-032"
       ]
     }
   ],
@@ -103,7 +103,7 @@
       "trigger": "Merchant chọn 1 preset khác trong dropdown",
       "condition": "Option 'Custom' trong list preset bị disable, không chọn được qua đường này",
       "kb_refs": [
-        "KB-007"
+        "analytics/analytics#KB-007"
       ]
     },
     {
@@ -112,10 +112,10 @@
       "trigger": "Merchant mở dropdown, nhập Starting/Ending (yyyy-mm-dd) hoặc chọn trên inline calendar, bấm Apply",
       "condition": "Range phải <=90 ngày (giới hạn backend QVD-69, hiển thị rõ 'Maximum range is 90 days' trên UI); ngày sau today bị disable trên calendar",
       "kb_refs": [
-        "KB-008",
-        "KB-009",
-        "KB-010",
-        "KB-011"
+        "analytics/analytics#KB-008",
+        "analytics/analytics#KB-009",
+        "analytics/analytics#KB-010",
+        "analytics/analytics#KB-011"
       ]
     },
     {
@@ -124,7 +124,7 @@
       "trigger": "Merchant bấm Cancel",
       "condition": null,
       "kb_refs": [
-        "KB-011"
+        "analytics/analytics#KB-011"
       ]
     },
     {
@@ -133,7 +133,7 @@
       "trigger": "Widget hiển thị trên page load (per-widget, không phải per-page)",
       "condition": "Nếu có N offer widget active cùng lúc trên 1 page load → N event 'view' riêng biệt, mỗi event 1 offer_id",
       "kb_refs": [
-        "KB-032"
+        "analytics/analytics#KB-032"
       ]
     }
   ],
@@ -143,7 +143,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-007"
+        "analytics/analytics#KB-007"
       ]
     },
     {
@@ -151,7 +151,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-008"
+        "analytics/analytics#KB-008"
       ]
     },
     {
@@ -159,7 +159,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-009"
+        "analytics/analytics#KB-009"
       ]
     },
     {
@@ -167,7 +167,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-010"
+        "analytics/analytics#KB-010"
       ]
     },
     {
@@ -175,7 +175,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-011"
+        "analytics/analytics#KB-011"
       ]
     },
     {
@@ -183,7 +183,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-012"
+        "analytics/analytics#KB-012"
       ]
     },
     {
@@ -191,7 +191,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-015"
+        "analytics/analytics#KB-015"
       ]
     },
     {
@@ -199,7 +199,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-016"
+        "analytics/analytics#KB-016"
       ]
     },
     {
@@ -207,7 +207,7 @@
       "knowledge_kind": "INFERRED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-017"
+        "analytics/analytics#KB-017"
       ]
     },
     {
@@ -215,7 +215,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-019"
+        "analytics/analytics#KB-019"
       ]
     },
     {
@@ -223,7 +223,7 @@
       "knowledge_kind": "INFERRED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-020"
+        "analytics/analytics#KB-020"
       ]
     },
     {
@@ -231,7 +231,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-021"
+        "analytics/analytics#KB-021"
       ]
     },
     {
@@ -239,7 +239,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-022"
+        "analytics/analytics#KB-022"
       ]
     },
     {
@@ -247,7 +247,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-023"
+        "analytics/analytics#KB-023"
       ]
     },
     {
@@ -255,7 +255,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-024"
+        "analytics/analytics#KB-024"
       ]
     },
     {
@@ -263,7 +263,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-025"
+        "analytics/analytics#KB-025"
       ]
     },
     {
@@ -271,7 +271,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-026"
+        "analytics/analytics#KB-026"
       ]
     },
     {
@@ -279,7 +279,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-027"
+        "analytics/analytics#KB-027"
       ]
     },
     {
@@ -287,7 +287,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-028"
+        "analytics/analytics#KB-028"
       ]
     },
     {
@@ -295,7 +295,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-031"
+        "analytics/analytics#KB-031"
       ]
     },
     {
@@ -303,7 +303,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-032"
+        "analytics/analytics#KB-032"
       ]
     },
     {
@@ -311,7 +311,7 @@
       "knowledge_kind": "INFERRED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-033"
+        "analytics/analytics#KB-033"
       ]
     },
     {
@@ -319,7 +319,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-034"
+        "analytics/analytics#KB-034"
       ]
     }
   ],
@@ -328,35 +328,35 @@
       "statement": "Trong 1 phiên kiểm tra (doc-reported), Conversion rate hiển thị giá trị live 25.00%, khớp công thức ticket cho mẫu cụ thể này (2/8×100=25%). Đây là 1 sample của 1 phiên, không phải enum/boundary.",
       "session_context": "doc-reported single verification session, test-vl-1, ~2026-09-14",
       "kb_refs": [
-        "KB-013"
+        "analytics/analytics#KB-013"
       ]
     },
     {
       "statement": "Trong phiên kiểm tra đó, 'Additional revenue' hiển thị một số thực (0.00 USD) — giá trị minh hoạ của phiên này (nhất quán với việc chưa có order hoàn tất trong range), không phải default/boundary.",
       "session_context": "doc-reported single verification session, test-vl-1, ~2026-09-14",
       "kb_refs": [
-        "KB-014"
+        "analytics/analytics#KB-014"
       ]
     },
     {
       "statement": "Pattern '8 views 2 ATC 0 orders' của phiên kiểm tra này nhất quán với việc views/ATC đến từ hoạt động testing của chính phiên đó, chưa có checkout hoàn tất.",
       "session_context": "doc-reported single verification session, test-vl-1, ~2026-09-14",
       "kb_refs": [
-        "KB-018"
+        "analytics/analytics#KB-018"
       ]
     },
     {
       "statement": "1 request body mẫu thực tế (form-encoded) gửi tới POST /api/events trên store 'Copper Light' (test-vl-1): offer_id=815, type=view. Ví dụ cụ thể của 1 phiên, không phải enum/required đầy đủ của contract.",
       "session_context": "doc-reported single capture, test-vl-1, ~2026-09-14",
       "kb_refs": [
-        "KB-029"
+        "analytics/analytics#KB-029"
       ]
     },
     {
       "statement": "1 request body mẫu khác (offer 816, Multibuy) có thêm field variants[0][shopify_product_id]/variants[0][shopify_variant_id]/variants[0][quantity] so với request offer 815 — vẫn là ví dụ của 1 phiên, không phải required đầy đủ.",
       "session_context": "doc-reported single capture, test-vl-1, ~2026-09-14",
       "kb_refs": [
-        "KB-030"
+        "analytics/analytics#KB-030"
       ]
     }
   ],
@@ -407,28 +407,28 @@
       "related_system": "Onboarding Dashboard (QVD-115)",
       "relationship": "UNCLEAR — ATC count hiển thị trên Onboarding Dashboard có thể, hoặc không, cùng nguồn dữ liệu với 'Add to cart clicks' trên Analytics page này; chưa được so sánh side-by-side.",
       "kb_refs": [
-        "KB-001"
+        "analytics/analytics#KB-001"
       ]
     },
     {
       "related_system": "Ask-for-Review funnel analytics (QVD-173)",
       "relationship": "CONFIRMED TÁCH BIỆT — xác nhận là 2 nguồn dữ liệu thật sự tách biệt, không dùng chung hạ tầng với Analytics feature này.",
       "kb_refs": [
-        "KB-002"
+        "analytics/analytics#KB-002"
       ]
     },
     {
       "related_system": "Shopify Sidekick app extension (QVD-179, qua QVD-176/QVD-177, đang In Progress)",
       "relationship": "UNCLEAR — tài liệu suy luận (chưa xác nhận) rằng Sidekick đọc dữ liệu hiệu suất offer (views/ATC/conversion/revenue); tự đánh dấu 'Need confirm once QVD-176/177 ship'.",
       "kb_refs": [
-        "KB-003"
+        "analytics/analytics#KB-003"
       ]
     },
     {
       "related_system": "Internal trigger-analytics (QVD-164 '[BE] Trigger analytics API' QVD-160 chat-trigger scenarios), xem qua Filament admin nội bộ (Ownego)",
       "relationship": "CONFIRMED TÁCH BIỆT — hệ thống phân tích nội bộ hoàn toàn khác, KHÔNG thuộc Analytics page merchant-facing này; nêu ra chỉ để tránh nhầm lẫn.",
       "kb_refs": [
-        "KB-004"
+        "analytics/analytics#KB-004"
       ]
     }
   ],
@@ -437,9 +437,9 @@
       "statement": "Các event view/add_to_cart gửi qua POST /api/events trả 200 OK (theo capture tài liệu hoá — KB-027/KB-028/KB-031), nhưng Portal dashboard KHÔNG cập nhật count sau khi thực hiện thêm 1 view + 1 add-to-cart thật trong phiên kiểm tra, kể cả sau Refresh/reload. Tài liệu nguồn tự đánh giá đây là 'open, unresolved finding, not a confirmed bug' — CHƯA XÁC ĐỊNH nguyên nhân là lag xử lý/aggregation, loại trừ chủ đích traffic từ route 'Preview on Online Store', hay bug dashboard thật.",
       "severity": "HIGH — ảnh hưởng trực tiếp tới độ tin cậy số liệu merchant nhìn thấy trên dashboard",
       "kb_refs": [
-        "KB-027",
-        "KB-028",
-        "KB-031"
+        "analytics/analytics#KB-027",
+        "analytics/analytics#KB-028",
+        "analytics/analytics#KB-031"
       ],
       "note": "Phần 'dashboard không cập nhật' KHÔNG có kb_id riêng (nguồn: unmapped_evidence trong the analytics feature KB, claim chưa được quá trình chuẩn hoá mint do tài liệu tự nói chưa đủ bằng chứng kết luận). Ghi nhận nguyên trạng, KHÔNG resolve ở đây — xem unknown_areas[4]."
     }
@@ -571,15 +571,19 @@
       "related_feature_key": "onboarding-dashboard",
       "relationship": "UNCLEAR — có thể chia sẻ nguồn dữ liệu ATC count (QVD-115) với Analytics; chưa xác nhận.",
       "kb_refs": [
-        "KB-001"
+        "analytics/analytics#KB-001"
       ]
     },
     {
       "related_feature_key": "ask-for-review",
       "relationship": "CONFIRMED TÁCH BIỆT — 2 nguồn dữ liệu thật sự khác nhau, không dùng chung hạ tầng (QVD-173).",
       "kb_refs": [
-        "KB-002"
+        "analytics/analytics#KB-002"
       ]
     }
-  ]
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
 }

@@ -4,11 +4,11 @@
   "name": "Image Layer Library — thư viện ảnh của Image layer trong artwork editor",
   "user_goal": "Là merchant-owner đang dựng artwork, tôi upload và tổ chức ảnh riêng của mình (category, tên, vị trí) trong thư viện ảnh ngay bên trong artwork editor, rồi chọn ảnh từ thư viện để thêm layer Static Image hoặc thay ảnh cho layer ảnh có sẵn; dọn ảnh không dùng mà không làm hỏng artwork đang dùng ảnh đó.",
   "user_goal_kb_refs": [
-    "KB-003",
-    "KB-014",
-    "KB-036",
-    "KB-037",
-    "KB-039"
+    "image-library/_object-level#KB-003",
+    "image-library/image-layer-library#KB-014",
+    "image-library/image-layer-library#KB-036",
+    "image-library/image-layer-library#KB-037",
+    "image-library/image-layer-library#KB-039"
   ],
   "stable_since_version": null,
   "stable_since_version_note": "Feature mới, không có base; version ổn định do publish đầu tiên quyết định.",
@@ -17,12 +17,12 @@
       "role": "merchant-owner",
       "permission_observed": "Trên staging, account explorer thực hiện được toàn bộ thao tác thư viện (upload, CRUD category, đổi tên, move, xoá đơn/hàng loạt, chọn ảnh vào layer) mà không gặp access-denied. Request mang x-acting-user-id = id account đang đăng nhập; {user_id} trong path upload-url = id account. Chỉ một role/account được quan sát.",
       "kb_refs": [
-        "KB-006",
-        "KB-013",
-        "KB-019",
-        "KB-030",
-        "KB-032",
-        "KB-038"
+        "image-library/_object-level#KB-006",
+        "image-library/_object-level#KB-013",
+        "image-library/image-layer-library#KB-019",
+        "image-library/image-layer-library#KB-030",
+        "image-library/image-layer-library#KB-032",
+        "image-library/image-layer-library#KB-038"
       ]
     }
   ],
@@ -31,9 +31,9 @@
       "path": "Artwork editor (/artworks?id=<artwork>) > '+ Layer' > nhóm IMAGE > 'Static Image' → modal image picker, tab 'Upload an image' mặc định",
       "precondition": "Đã login portal; artwork editor đã load (artwork chưa lưu vẫn mở được picker).",
       "kb_refs": [
-        "KB-003",
-        "KB-004",
-        "KB-014"
+        "image-library/_object-level#KB-003",
+        "image-library/_object-level#KB-004",
+        "image-library/image-layer-library#KB-014"
       ],
       "markers": [
         "KB-004 UNRESOLVED (CONF-image-library-R1026-05): cấu trúc nhóm của popup '+ Layer' lệch với knowledge artwork đã publish — không dùng danh sách nhóm làm oracle."
@@ -43,16 +43,16 @@
       "path": "Artwork editor > dòng layer ảnh > icon 'Replace image layer' → cùng image picker ở chế độ thay ảnh ('Choose new image for these layers:')",
       "precondition": "Artwork đang mở có ít nhất một layer ảnh.",
       "kb_refs": [
-        "KB-003",
-        "KB-037"
+        "image-library/_object-level#KB-003",
+        "image-library/image-layer-library#KB-037"
       ]
     },
     {
       "path": "Không có điểm vào độc lập: sidebar và router SPA không có trang Image Library/Media; nút 'TIB Library' trên /artworks là thư viện artwork template, không phải điểm vào của feature này.",
       "precondition": "Kết luận từ một account/plan merchant-owner trên staging.",
       "kb_refs": [
-        "KB-001",
-        "KB-002"
+        "image-library/_object-level#KB-001",
+        "image-library/_object-level#KB-002"
       ],
       "is_negative_finding": true
     }
@@ -63,13 +63,13 @@
       "name": "Upload ảnh vào thư viện (một hoặc nhiều file)",
       "description": "Click-to-upload qua file chooser (accept image/*, cho chọn nhiều file). Chuỗi dùng chung: upload-url (201, presigned) → PUT lên object storage → POST /api/layer-images/by-temporary-file (201, bản ghi chưa có url) → polling. Ảnh vào category đang chọn (ở 'All' thì không có category), xuất hiện đầu lưới ở trạng thái đã tick. 5 file (4 raster + 1 svg) → 4/4 raster xử lý; 6 raster → 6/6. Tên trùng được tạo bản ghi mới, không cảnh báo. Bước PUT đi tới host ngoài expected_api_base (not-oracle).",
       "kb_refs": [
-        "KB-006",
-        "KB-007",
-        "KB-009",
-        "KB-023",
-        "KB-024",
-        "KB-025",
-        "KB-026"
+        "image-library/_object-level#KB-006",
+        "image-library/_object-level#KB-007",
+        "image-library/_object-level#KB-009",
+        "image-library/image-layer-library#KB-023",
+        "image-library/image-layer-library#KB-024",
+        "image-library/image-layer-library#KB-025",
+        "image-library/image-layer-library#KB-026"
       ]
     },
     {
@@ -77,10 +77,10 @@
       "name": "Theo dõi trạng thái xử lý ảnh sau upload (processing → sẵn sàng)",
       "description": "Sau 201 của by-temporary-file, client tự gọi lặp GraphQL get layer_images(id _in ids) (~2 giây sau mỗi response; explorer ước ~2,4 giây) tới khi url/thumbnail có giá trị rồi tải lại danh sách relay. Trong lúc xử lý trạng thái chỉ hiện ở dòng upload; card chỉ xuất hiện khi xong. Sau xử lý: master giữ đuôi gốc, url '_large.webp', thumbnail '_thumbnail.webp', width/height giữ kích thước gốc (10x10 tới 3000x3000).",
       "kb_refs": [
-        "KB-029",
-        "KB-023",
-        "KB-016",
-        "KB-009"
+        "image-library/image-layer-library#KB-029",
+        "image-library/image-layer-library#KB-023",
+        "image-library/image-layer-library#KB-016",
+        "image-library/_object-level#KB-009"
       ]
     },
     {
@@ -88,11 +88,11 @@
       "name": "Kiểm tra file khi upload (loại file, nội dung, kích thước)",
       "description": "Client chặn svg/txt ngay khi chọn ('You can't upload files of this type.', không gửi request). File text đổi đuôi .png qua được client, upload-url 201 + PUT 200, rồi server trả 422 ở by-temporary-file. PNG 27 MB được chấp nhận (không thấy giới hạn). Temporary file đã nằm trên storage trước khi server kiểm nội dung (not-oracle).",
       "kb_refs": [
-        "KB-008",
-        "KB-027",
-        "KB-028",
-        "KB-010",
-        "KB-011"
+        "image-library/_object-level#KB-008",
+        "image-library/image-layer-library#KB-027",
+        "image-library/image-layer-library#KB-028",
+        "image-library/_object-level#KB-010",
+        "image-library/_object-level#KB-011"
       ]
     },
     {
@@ -100,11 +100,11 @@
       "name": "Quản lý category của thư viện ảnh (tạo, đổi tên, xoá)",
       "description": "'+ New category' → dialog 'Name:' + Create (disable khi rỗng) → POST /api/layer-image-categories {name, type:'clipart'} 201, không toast. Bút chì → dialog điền sẵn → PUT 200, không toast. Thùng rác → 'Are you sure to delete <tên category>' → DELETE 204; ảnh bên trong được giữ, thành không có category. Danh sách category REST khác tập GraphQL clipart_categories (UNRESOLVED).",
       "kb_refs": [
-        "KB-019",
-        "KB-020",
-        "KB-021",
-        "KB-022",
-        "KB-042"
+        "image-library/image-layer-library#KB-019",
+        "image-library/image-layer-library#KB-020",
+        "image-library/image-layer-library#KB-021",
+        "image-library/image-layer-library#KB-022",
+        "image-library/image-layer-library#KB-042"
       ]
     },
     {
@@ -112,12 +112,12 @@
       "name": "Duyệt, tìm kiếm, lọc theo category và phân trang ảnh",
       "description": "Lưới card (checkbox, tên-link, WxH, ngày tạo, thùng rác), dữ liệu từ GraphQL relay layer_images_connection(first: 20) cursor, loại svg/gpx và bản ghi đã soft-delete (điều kiện do client ghép). Search (Enter) → name _ilike phía server; chọn category → layer_image_category_id _eq. Rỗng: 'No data matched' (search) / 'Empty data' (category rỗng), dropzone vẫn dùng được. Page size 20/50/100/250/500, nút trước/sau, trang sau dùng after: <endCursor>. Lựa chọn được giữ khi chuyển trang.",
       "kb_refs": [
-        "KB-014",
-        "KB-015",
-        "KB-017",
-        "KB-018",
-        "KB-034",
-        "KB-035"
+        "image-library/image-layer-library#KB-014",
+        "image-library/image-layer-library#KB-015",
+        "image-library/image-layer-library#KB-017",
+        "image-library/image-layer-library#KB-018",
+        "image-library/image-layer-library#KB-034",
+        "image-library/image-layer-library#KB-035"
       ]
     },
     {
@@ -125,8 +125,8 @@
       "name": "Đổi tên ảnh trong thư viện",
       "description": "Bấm tên ảnh (link) → popover 'Name' + Save/Cancel → GraphQL mutation update_layer_images(_set {name, updated_at}) 200; nhãn card đổi tại chỗ, không toast. Tên rỗng được chấp nhận (card hiện '...').",
       "kb_refs": [
-        "KB-030",
-        "KB-031"
+        "image-library/image-layer-library#KB-030",
+        "image-library/image-layer-library#KB-031"
       ]
     },
     {
@@ -134,9 +134,9 @@
       "name": "Chuyển ảnh sang category khác (hàng loạt)",
       "description": "Tick ≥1 ảnh → 'Move to category' → dialog 'Category: [Select option]' (combobox có search) → Move → PUT /api/layer-images/move {category_id, ids} 200; danh sách tải lại, lựa chọn bị xoá, không toast. Move không chọn category vẫn 200 (category_id null).",
       "kb_refs": [
-        "KB-032",
-        "KB-033",
-        "KB-034"
+        "image-library/image-layer-library#KB-032",
+        "image-library/image-layer-library#KB-033",
+        "image-library/image-layer-library#KB-034"
       ]
     },
     {
@@ -144,9 +144,9 @@
       "name": "Chọn ảnh từ thư viện vào layer của artwork (thêm Static Image hoặc thay ảnh)",
       "description": "Tick 1 ảnh → 'Select 1 image' → picker đóng, layer 'static-photo' mới (tên = tên ảnh, url = file _large.webp) được thêm lên đầu danh sách layer và được chọn; không có request API lúc chọn — layer chỉ ở trạng thái chưa lưu của editor. Chế độ 'Replace image layer' mở cùng picker với nút 'Select' disable tới khi chọn ảnh. Thao tác thư viện ghi server ngay, không phụ thuộc Save artwork; layer thêm từ picker mất khi rời editor không lưu.",
       "kb_refs": [
-        "KB-036",
-        "KB-037",
-        "KB-041"
+        "image-library/image-layer-library#KB-036",
+        "image-library/image-layer-library#KB-037",
+        "image-library/image-layer-library#KB-041"
       ]
     },
     {
@@ -154,10 +154,10 @@
       "name": "Xoá ảnh khỏi thư viện (đơn và hàng loạt) kèm kiểm tra ảnh đang được dùng",
       "description": "Xoá đơn: thùng rác → 'Are you sure to remove <tên ảnh>' → DELETE /api/layer-images/{id} mang JSON artwork hiện tại trong body → 200 'Successfully deleted the layer image.'. Ảnh đang được layer của artwork đang mở dùng → 400 'This image has already been added to the current artwork.' + toast 'Something went wrong!', ảnh và layer giữ nguyên. Xoá hàng loạt: nút đỏ 'Delete' → 'Are you sure you want to remove N selected images?' → POST /api/layer-images/in-use {ids, templates} → {in_use_ids: []} → DELETE tuần tự từng ảnh → toast 'N images removed'. Ảnh dùng bởi artwork khác đã lưu chưa được kiểm.",
       "kb_refs": [
-        "KB-038",
-        "KB-039",
-        "KB-040",
-        "KB-035"
+        "image-library/image-layer-library#KB-038",
+        "image-library/image-layer-library#KB-039",
+        "image-library/image-layer-library#KB-040",
+        "image-library/image-layer-library#KB-035"
       ]
     }
   ],
@@ -168,9 +168,9 @@
       "trigger": "POST /api/layer-images/by-temporary-file → 201",
       "condition": "upload-url 201 và PUT lên object storage 200 trước đó",
       "kb_refs": [
-        "KB-006",
-        "KB-023",
-        "KB-029"
+        "image-library/_object-level#KB-006",
+        "image-library/image-layer-library#KB-023",
+        "image-library/image-layer-library#KB-029"
       ]
     },
     {
@@ -179,9 +179,9 @@
       "trigger": "polling GraphQL get trả url có giá trị → client tải lại danh sách relay",
       "condition": "file nhỏ có url ngay lần gọi đầu; file 27 MB cần vài lần (~7–8 giây)",
       "kb_refs": [
-        "KB-029",
-        "KB-016",
-        "KB-024"
+        "image-library/image-layer-library#KB-029",
+        "image-library/image-layer-library#KB-016",
+        "image-library/image-layer-library#KB-024"
       ]
     },
     {
@@ -190,7 +190,7 @@
       "trigger": "chọn file qua file chooser",
       "condition": "client-side",
       "kb_refs": [
-        "KB-008"
+        "image-library/_object-level#KB-008"
       ]
     },
     {
@@ -199,8 +199,8 @@
       "trigger": "POST /api/layer-images/by-temporary-file → 422",
       "condition": "client không chặn vì đuôi/mime hợp lệ; phần temporary file là not-oracle (host chưa xác nhận)",
       "kb_refs": [
-        "KB-027",
-        "KB-010"
+        "image-library/image-layer-library#KB-027",
+        "image-library/_object-level#KB-010"
       ]
     },
     {
@@ -209,7 +209,7 @@
       "trigger": "Remove trong confirm → DELETE /api/layer-image-categories/{id} → 204",
       "condition": "1 mẫu (3 ảnh)",
       "kb_refs": [
-        "KB-022"
+        "image-library/image-layer-library#KB-022"
       ]
     },
     {
@@ -218,7 +218,7 @@
       "trigger": "Move → PUT /api/layer-images/move {category_id, ids} → 200",
       "condition": "",
       "kb_refs": [
-        "KB-032"
+        "image-library/image-layer-library#KB-032"
       ]
     },
     {
@@ -227,7 +227,7 @@
       "trigger": "Save trong popover đổi tên với ô trống → update_layer_images 200",
       "condition": "suspected-defect (đổi tên rỗng được chấp nhận); không phải expected",
       "kb_refs": [
-        "KB-031"
+        "image-library/image-layer-library#KB-031"
       ]
     },
     {
@@ -236,8 +236,8 @@
       "trigger": "Remove → DELETE /api/layer-images/{id} → 200",
       "condition": "",
       "kb_refs": [
-        "KB-038",
-        "KB-040"
+        "image-library/image-layer-library#KB-038",
+        "image-library/image-layer-library#KB-040"
       ]
     },
     {
@@ -246,7 +246,7 @@
       "trigger": "Remove → DELETE /api/layer-images/{id} → 400",
       "condition": "server dựa vào JSON artwork client gửi trong body; artwork đã lưu khác chưa kiểm",
       "kb_refs": [
-        "KB-039"
+        "image-library/image-layer-library#KB-039"
       ]
     },
     {
@@ -255,8 +255,8 @@
       "trigger": "'Select 1 image'",
       "condition": "không có request API; rời editor không lưu thì layer mất, còn thay đổi thư viện vẫn giữ",
       "kb_refs": [
-        "KB-036",
-        "KB-041"
+        "image-library/image-layer-library#KB-036",
+        "image-library/image-layer-library#KB-041"
       ]
     }
   ],
@@ -268,8 +268,8 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-001",
-        "KB-003"
+        "image-library/_object-level#KB-001",
+        "image-library/_object-level#KB-003"
       ]
     },
     {
@@ -277,7 +277,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-002"
+        "image-library/_object-level#KB-002"
       ]
     },
     {
@@ -285,7 +285,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-004"
+        "image-library/_object-level#KB-004"
       ],
       "markers": [
         "UNRESOLVED",
@@ -298,7 +298,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-005"
+        "image-library/_object-level#KB-005"
       ]
     },
     {
@@ -306,7 +306,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "HIGH",
       "kb_refs": [
-        "KB-006"
+        "image-library/_object-level#KB-006"
       ]
     },
     {
@@ -314,7 +314,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-007"
+        "image-library/_object-level#KB-007"
       ],
       "markers": [
         "host_not_in_expected_api_base",
@@ -327,7 +327,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-009"
+        "image-library/_object-level#KB-009"
       ]
     },
     {
@@ -335,7 +335,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-010"
+        "image-library/_object-level#KB-010"
       ],
       "markers": [
         "suspected-defect",
@@ -349,7 +349,7 @@
       "knowledge_kind": "INFERRED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-011"
+        "image-library/_object-level#KB-011"
       ],
       "markers": [
         "suspected-defect",
@@ -364,7 +364,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-012"
+        "image-library/_object-level#KB-012"
       ]
     },
     {
@@ -372,7 +372,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-014"
+        "image-library/image-layer-library#KB-014"
       ]
     },
     {
@@ -380,7 +380,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "HIGH",
       "kb_refs": [
-        "KB-015"
+        "image-library/image-layer-library#KB-015"
       ]
     },
     {
@@ -388,7 +388,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "HIGH",
       "kb_refs": [
-        "KB-016"
+        "image-library/image-layer-library#KB-016"
       ]
     },
     {
@@ -396,7 +396,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-017"
+        "image-library/image-layer-library#KB-017"
       ]
     },
     {
@@ -404,7 +404,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-018"
+        "image-library/image-layer-library#KB-018"
       ]
     },
     {
@@ -412,7 +412,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-019"
+        "image-library/image-layer-library#KB-019"
       ]
     },
     {
@@ -420,7 +420,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-020"
+        "image-library/image-layer-library#KB-020"
       ],
       "markers": [
         "suspected-defect"
@@ -432,7 +432,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-021"
+        "image-library/image-layer-library#KB-021"
       ]
     },
     {
@@ -440,7 +440,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-022"
+        "image-library/image-layer-library#KB-022"
       ]
     },
     {
@@ -448,7 +448,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "HIGH",
       "kb_refs": [
-        "KB-023"
+        "image-library/image-layer-library#KB-023"
       ]
     },
     {
@@ -456,7 +456,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-024"
+        "image-library/image-layer-library#KB-024"
       ]
     },
     {
@@ -464,7 +464,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-025"
+        "image-library/image-layer-library#KB-025"
       ]
     },
     {
@@ -472,7 +472,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-026"
+        "image-library/image-layer-library#KB-026"
       ]
     },
     {
@@ -480,7 +480,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-027"
+        "image-library/image-layer-library#KB-027"
       ]
     },
     {
@@ -488,7 +488,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-028"
+        "image-library/image-layer-library#KB-028"
       ],
       "markers": [
         "suspected-defect"
@@ -500,7 +500,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-029"
+        "image-library/image-layer-library#KB-029"
       ]
     },
     {
@@ -508,7 +508,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-030"
+        "image-library/image-layer-library#KB-030"
       ]
     },
     {
@@ -516,7 +516,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-031"
+        "image-library/image-layer-library#KB-031"
       ],
       "markers": [
         "suspected-defect"
@@ -528,7 +528,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-032"
+        "image-library/image-layer-library#KB-032"
       ]
     },
     {
@@ -536,7 +536,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-033"
+        "image-library/image-layer-library#KB-033"
       ],
       "markers": [
         "suspected-defect"
@@ -548,7 +548,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-034"
+        "image-library/image-layer-library#KB-034"
       ]
     },
     {
@@ -556,7 +556,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-035"
+        "image-library/image-layer-library#KB-035"
       ],
       "markers": [
         "suspected-defect"
@@ -568,7 +568,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-036"
+        "image-library/image-layer-library#KB-036"
       ]
     },
     {
@@ -576,7 +576,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-037"
+        "image-library/image-layer-library#KB-037"
       ]
     },
     {
@@ -584,7 +584,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-038"
+        "image-library/image-layer-library#KB-038"
       ]
     },
     {
@@ -592,7 +592,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-039"
+        "image-library/image-layer-library#KB-039"
       ],
       "markers": [
         "suspected-defect",
@@ -605,7 +605,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-040"
+        "image-library/image-layer-library#KB-040"
       ]
     },
     {
@@ -613,7 +613,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-041"
+        "image-library/image-layer-library#KB-041"
       ]
     },
     {
@@ -621,7 +621,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-042"
+        "image-library/image-layer-library#KB-042"
       ],
       "markers": [
         "UNRESOLVED",
@@ -643,7 +643,7 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-020"
+        "image-library/image-layer-library#KB-020"
       ]
     },
     {
@@ -654,7 +654,7 @@
       "observed_count": 1,
       "rule_confidence": "LOW",
       "kb_refs": [
-        "KB-019"
+        "image-library/image-layer-library#KB-019"
       ]
     },
     {
@@ -666,7 +666,7 @@
       "rule_confidence": "LOW",
       "note": "KB-008 gộp 4 mẫu trên cả hai thư viện; 2 mẫu thuộc feature này. Không suy danh sách loại file được phép.",
       "kb_refs": [
-        "KB-008"
+        "image-library/_object-level#KB-008"
       ]
     },
     {
@@ -677,7 +677,7 @@
       "rule_confidence": "LOW",
       "note": "Câu lỗi liệt kê PNG/JPEG/GIF/WebP nhưng GIF/WebP chưa được thử — không tổng quát hoá thành rule.",
       "kb_refs": [
-        "KB-027"
+        "image-library/image-layer-library#KB-027"
       ]
     },
     {
@@ -691,7 +691,7 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-039"
+        "image-library/image-layer-library#KB-039"
       ]
     },
     {
@@ -705,7 +705,7 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-031"
+        "image-library/image-layer-library#KB-031"
       ]
     },
     {
@@ -719,7 +719,7 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-033"
+        "image-library/image-layer-library#KB-033"
       ]
     },
     {
@@ -733,7 +733,7 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-028"
+        "image-library/image-layer-library#KB-028"
       ]
     },
     {
@@ -744,7 +744,7 @@
       "observed_count": 1,
       "rule_confidence": "LOW",
       "kb_refs": [
-        "KB-026"
+        "image-library/image-layer-library#KB-026"
       ]
     }
   ],
@@ -752,22 +752,22 @@
     {
       "statement": "Chỉ quan sát một role (merchant-owner, một account/plan); chưa biết role/plan khác có thấy điểm vào hay bị giới hạn thao tác thư viện không.",
       "kb_refs": [
-        "KB-001",
-        "KB-013"
+        "image-library/_object-level#KB-001",
+        "image-library/_object-level#KB-013"
       ]
     },
     {
       "statement": "Request portal mang x-acting-user-id = id account đang đăng nhập và x-xsrf-token; server có ràng buộc header với phiên hay không chưa được kiểm.",
       "kb_refs": [
-        "KB-013"
+        "image-library/_object-level#KB-013"
       ]
     },
     {
       "statement": "Category tạo ra thuộc account đang đăng nhập; {user_id} trong path upload-url = id account. Tenant isolation cho id ảnh/category (account khác) chưa thử.",
       "kb_refs": [
-        "KB-006",
-        "KB-019",
-        "KB-013"
+        "image-library/_object-level#KB-006",
+        "image-library/image-layer-library#KB-019",
+        "image-library/_object-level#KB-013"
       ]
     }
   ],
@@ -776,41 +776,41 @@
       {
         "item": "Artwork editor > '+ Layer' > Static Image → image picker modal (tab 'Upload an image')",
         "kb_refs": [
-          "KB-003",
-          "KB-004",
-          "KB-014"
+          "image-library/_object-level#KB-003",
+          "image-library/_object-level#KB-004",
+          "image-library/image-layer-library#KB-014"
         ]
       },
       {
         "item": "Artwork editor > 'Replace image layer' → picker chế độ thay ảnh",
         "kb_refs": [
-          "KB-037"
+          "image-library/image-layer-library#KB-037"
         ]
       },
       {
         "item": "Dropzone + danh sách trạng thái upload",
         "kb_refs": [
-          "KB-009",
-          "KB-024"
+          "image-library/_object-level#KB-009",
+          "image-library/image-layer-library#KB-024"
         ]
       },
       {
         "item": "Dialog category (Name/Create/Update), dialog Confirm (Remove/Cancel), dialog 'Move to category', popover đổi tên",
         "kb_refs": [
-          "KB-019",
-          "KB-021",
-          "KB-022",
-          "KB-030",
-          "KB-032",
-          "KB-038",
-          "KB-040"
+          "image-library/image-layer-library#KB-019",
+          "image-library/image-layer-library#KB-021",
+          "image-library/image-layer-library#KB-022",
+          "image-library/image-layer-library#KB-030",
+          "image-library/image-layer-library#KB-032",
+          "image-library/image-layer-library#KB-038",
+          "image-library/image-layer-library#KB-040"
         ]
       },
       {
         "item": "Chân modal: 'Move to category', 'Deselect all', 'Select N images'; nút đỏ 'Delete'; phân trang 'Show [20] entries'",
         "kb_refs": [
-          "KB-034",
-          "KB-035"
+          "image-library/image-layer-library#KB-034",
+          "image-library/image-layer-library#KB-035"
         ]
       }
     ],
@@ -819,14 +819,14 @@
       {
         "item": "POST /api/users/{user_id}/temporary-files/upload-url",
         "kb_refs": [
-          "KB-006",
-          "KB-010"
+          "image-library/_object-level#KB-006",
+          "image-library/_object-level#KB-010"
         ]
       },
       {
         "item": "PUT presigned URL lên oe-cdn.sgp1.digitaloceanspaces.com (host ngoài expected_api_base, not-oracle)",
         "kb_refs": [
-          "KB-007"
+          "image-library/_object-level#KB-007"
         ],
         "markers": [
           "host_not_in_expected_api_base",
@@ -836,30 +836,30 @@
       {
         "item": "POST /api/layer-images/by-temporary-file (201 / 422)",
         "kb_refs": [
-          "KB-023",
-          "KB-027",
-          "KB-028"
+          "image-library/image-layer-library#KB-023",
+          "image-library/image-layer-library#KB-027",
+          "image-library/image-layer-library#KB-028"
         ]
       },
       {
         "item": "POST /api/graphql operation get — layer_images(where id _in ids) (polling)",
         "kb_refs": [
-          "KB-029"
+          "image-library/image-layer-library#KB-029"
         ]
       },
       {
         "item": "POST /api/graphql/relay operation getData — layer_images_connection (cursor, search, filter)",
         "kb_refs": [
-          "KB-015",
-          "KB-018",
-          "KB-034"
+          "image-library/image-layer-library#KB-015",
+          "image-library/image-layer-library#KB-018",
+          "image-library/image-layer-library#KB-034"
         ]
       },
       {
         "item": "GraphQL clipart_categories (tab 'Choose from clipart category')",
         "kb_refs": [
-          "KB-015",
-          "KB-042"
+          "image-library/image-layer-library#KB-015",
+          "image-library/image-layer-library#KB-042"
         ],
         "markers": [
           "UNRESOLVED",
@@ -869,45 +869,45 @@
       {
         "item": "GET /api/layer-image-categories?type=clipart; POST /api/layer-image-categories; GET/PUT/DELETE /api/layer-image-categories/{id}",
         "kb_refs": [
-          "KB-015",
-          "KB-019",
-          "KB-020",
-          "KB-021",
-          "KB-022",
-          "KB-042"
+          "image-library/image-layer-library#KB-015",
+          "image-library/image-layer-library#KB-019",
+          "image-library/image-layer-library#KB-020",
+          "image-library/image-layer-library#KB-021",
+          "image-library/image-layer-library#KB-022",
+          "image-library/image-layer-library#KB-042"
         ]
       },
       {
         "item": "POST /api/graphql mutation update_layer_images (đổi tên)",
         "kb_refs": [
-          "KB-030",
-          "KB-031"
+          "image-library/image-layer-library#KB-030",
+          "image-library/image-layer-library#KB-031"
         ]
       },
       {
         "item": "PUT /api/layer-images/move",
         "kb_refs": [
-          "KB-032",
-          "KB-033"
+          "image-library/image-layer-library#KB-032",
+          "image-library/image-layer-library#KB-033"
         ]
       },
       {
         "item": "DELETE /api/layer-images/{id} (body = JSON artwork hiện tại)",
         "kb_refs": [
-          "KB-038",
-          "KB-039"
+          "image-library/image-layer-library#KB-038",
+          "image-library/image-layer-library#KB-039"
         ]
       },
       {
         "item": "POST /api/layer-images/in-use {ids, templates}",
         "kb_refs": [
-          "KB-040"
+          "image-library/image-layer-library#KB-040"
         ]
       },
       {
         "item": "Header x-ratelimit-limit trên graphql / by-temporary-file / in-use",
         "kb_refs": [
-          "KB-012"
+          "image-library/_object-level#KB-012"
         ]
       }
     ],
@@ -915,25 +915,25 @@
       {
         "item": "Bản ghi layer image: name, master (đuôi gốc), url (_large.webp), thumbnail (_thumbnail.webp), width/height (gốc), layer_image_category_id, deleted_at (soft delete, lọc phía client)",
         "kb_refs": [
-          "KB-015",
-          "KB-016",
-          "KB-023"
+          "image-library/image-layer-library#KB-015",
+          "image-library/image-layer-library#KB-016",
+          "image-library/image-layer-library#KB-023"
         ]
       },
       {
         "item": "Layer image category: name, type 'clipart', thuộc account; xoá category không xoá ảnh",
         "kb_refs": [
-          "KB-019",
-          "KB-022",
-          "KB-042"
+          "image-library/image-layer-library#KB-019",
+          "image-library/image-layer-library#KB-022",
+          "image-library/image-layer-library#KB-042"
         ]
       },
       {
         "item": "Temporary file trên object storage (prefix temporary-files theo ngày), không có UI quản lý",
         "kb_refs": [
-          "KB-007",
-          "KB-010",
-          "KB-011"
+          "image-library/_object-level#KB-007",
+          "image-library/_object-level#KB-010",
+          "image-library/_object-level#KB-011"
         ],
         "markers": [
           "not-oracle"
@@ -942,8 +942,8 @@
       {
         "item": "Layer static-photo trong artwork JSON tham chiếu ảnh bằng url, không bằng id",
         "kb_refs": [
-          "KB-036",
-          "KB-039"
+          "image-library/image-layer-library#KB-036",
+          "image-library/image-layer-library#KB-039"
         ]
       }
     ],
@@ -954,18 +954,18 @@
       "target": "Luồng upload dùng chung của object image-library (upload-url → PUT object storage → by-temporary-file → polling)",
       "relation": "CAP-IMG-01/02/03 dùng chung với FEAT-02-mockup-layer-library",
       "kb_refs": [
-        "KB-006",
-        "KB-007",
-        "KB-008",
-        "KB-009",
-        "KB-010"
+        "image-library/_object-level#KB-006",
+        "image-library/_object-level#KB-007",
+        "image-library/_object-level#KB-008",
+        "image-library/_object-level#KB-009",
+        "image-library/_object-level#KB-010"
       ]
     },
     {
       "target": "Object storage oe-cdn.sgp1.digitaloceanspaces.com",
       "relation": "Bước PUT file; host chưa được operator xác nhận → item phụ thuộc không làm oracle",
       "kb_refs": [
-        "KB-007"
+        "image-library/_object-level#KB-007"
       ],
       "markers": [
         "host_not_in_expected_api_base",
@@ -976,9 +976,9 @@
       "target": "artwork / editor-layer-workspace (object khác)",
       "relation": "Host của điểm vào '+ Layer' và danh sách layer nhận layer static-photo",
       "kb_refs": [
-        "KB-003",
-        "KB-004",
-        "KB-036"
+        "image-library/_object-level#KB-003",
+        "image-library/_object-level#KB-004",
+        "image-library/image-layer-library#KB-036"
       ],
       "cross_object_refs": [
         "artwork/editor-layer-workspace#KB-001"
@@ -992,7 +992,7 @@
       "target": "artwork / layer-config-image và clipart-category-storefront-behavior (object khác)",
       "relation": "Tab 'Choose from clipart category' dùng GraphQL clipart_categories; bằng chứng mới cho OQ-artwork-010",
       "kb_refs": [
-        "KB-042"
+        "image-library/image-layer-library#KB-042"
       ],
       "cross_object_refs": [
         "OQ-artwork-010"
@@ -1006,9 +1006,9 @@
       "target": "artwork save (object khác)",
       "relation": "Thay đổi thư viện không phụ thuộc Save artwork; layer thêm từ picker phụ thuộc Save. Kiểm tra in-use dựa trên JSON artwork client gửi",
       "kb_refs": [
-        "KB-039",
-        "KB-040",
-        "KB-041"
+        "image-library/image-layer-library#KB-039",
+        "image-library/image-layer-library#KB-040",
+        "image-library/image-layer-library#KB-041"
       ]
     }
   ],
@@ -1021,8 +1021,8 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-035",
-        "KB-040"
+        "image-library/image-layer-library#KB-035",
+        "image-library/image-layer-library#KB-040"
       ]
     },
     {
@@ -1033,9 +1033,9 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-038",
-        "KB-039",
-        "KB-040"
+        "image-library/image-layer-library#KB-038",
+        "image-library/image-layer-library#KB-039",
+        "image-library/image-layer-library#KB-040"
       ]
     },
     {
@@ -1043,9 +1043,9 @@
       "severity": "MEDIUM",
       "category": "security-surface-unverified",
       "kb_refs": [
-        "KB-015",
-        "KB-030",
-        "KB-013"
+        "image-library/image-layer-library#KB-015",
+        "image-library/image-layer-library#KB-030",
+        "image-library/_object-level#KB-013"
       ]
     },
     {
@@ -1056,7 +1056,7 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-028"
+        "image-library/image-layer-library#KB-028"
       ]
     },
     {
@@ -1067,8 +1067,8 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-031",
-        "KB-033"
+        "image-library/image-layer-library#KB-031",
+        "image-library/image-layer-library#KB-033"
       ]
     },
     {
@@ -1079,7 +1079,7 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-020"
+        "image-library/image-layer-library#KB-020"
       ]
     },
     {
@@ -1091,8 +1091,8 @@
         "not-oracle"
       ],
       "kb_refs": [
-        "KB-010",
-        "KB-011"
+        "image-library/_object-level#KB-010",
+        "image-library/_object-level#KB-011"
       ]
     },
     {
@@ -1103,8 +1103,8 @@
         "UNRESOLVED"
       ],
       "kb_refs": [
-        "KB-004",
-        "KB-042"
+        "image-library/_object-level#KB-004",
+        "image-library/image-layer-library#KB-042"
       ]
     }
   ],
@@ -1120,7 +1120,7 @@
       "question": "GET /api/layer-image-categories?type=clipart và GraphQL clipart_categories có đang đọc hai tập dữ liệu khác nhau (category của image library vs Clipart Categories) không? Nếu đúng, OQ-artwork-010 có phải lỗi dữ liệu không?",
       "why_it_matters": "Chưa biết danh sách category nào là nguồn đúng cho picker; conflict cross-object với artwork (owner artwork) đang mở.",
       "kb_refs": [
-        "KB-042"
+        "image-library/image-layer-library#KB-042"
       ],
       "cross_object_refs": [
         "OQ-artwork-010",
@@ -1137,7 +1137,7 @@
       "question": "Popup '+ Layer' nay có nhóm DESIGN ELEMENTS (Rectangle) trong khi knowledge artwork ghi 7 nhóm/29 item — layer type mới hay khác plan/store?",
       "why_it_matters": "Điểm vào của feature nằm trong popup này; check điều hướng không có oracle ổn định cho tới khi artwork được refresh.",
       "kb_refs": [
-        "KB-004"
+        "image-library/_object-level#KB-004"
       ],
       "cross_object_refs": [
         "artwork/editor-layer-workspace#KB-001"
@@ -1151,7 +1151,7 @@
       "question": "Tên ảnh có bắt buộc không? Đổi tên thành chuỗi rỗng (200, card '...') là defect hay chấp nhận được?",
       "why_it_matters": "Quyết định expected result cho validation đổi tên.",
       "kb_refs": [
-        "KB-031"
+        "image-library/image-layer-library#KB-031"
       ],
       "oq_id": "OQ-image-library-008"
     },
@@ -1162,7 +1162,7 @@
       "question": "Việc giữ lựa chọn qua chuyển trang và cho Delete/Move/Select tác động lên ảnh không hiển thị có phải hành vi mong muốn?",
       "why_it_matters": "Rủi ro xoá ảnh không nhìn thấy; quyết định oracle cho bulk action đa trang.",
       "kb_refs": [
-        "KB-035"
+        "image-library/image-layer-library#KB-035"
       ],
       "oq_id": "OQ-image-library-010"
     },
@@ -1173,7 +1173,7 @@
       "question": "Move không chọn category (category_id null → 200) là thiếu validation hay là cách 'gỡ khỏi category'? Ảnh đang thuộc category có bị gỡ im lặng không (chưa quan sát)?",
       "why_it_matters": "Mẫu chỉ có ảnh vốn chưa có category; hệ quả với ảnh đã phân loại chưa biết.",
       "kb_refs": [
-        "KB-033"
+        "image-library/image-layer-library#KB-033"
       ],
       "oq_id": "OQ-image-library-011"
     },
@@ -1184,9 +1184,9 @@
       "question": "Server có kiểm các artwork đã lưu khác dùng ảnh khi DELETE /api/layer-images/{id} và POST /api/layer-images/in-use không, hay chỉ dựa vào JSON artwork client gửi? in_use_ids khác rỗng thì bulk delete bị chặn và báo gì?",
       "why_it_matters": "Xoá ảnh có thể làm hỏng artwork đã lưu; không explore được vì không được Save artwork test.",
       "kb_refs": [
-        "KB-038",
-        "KB-039",
-        "KB-040"
+        "image-library/image-layer-library#KB-038",
+        "image-library/image-layer-library#KB-039",
+        "image-library/image-layer-library#KB-040"
       ],
       "oq_id": "OQ-image-library-015"
     },
@@ -1197,7 +1197,7 @@
       "question": "Khi image library có 0 ảnh, picker hiển thị gì và nút Select/thêm layer có bị chặn không?",
       "why_it_matters": "Account có 9 ảnh có sẵn không được xoá nên trạng thái này chưa quan sát; OQ-artwork-047 mới được trả lời một phần.",
       "kb_refs": [
-        "KB-017"
+        "image-library/image-layer-library#KB-017"
       ],
       "cross_object_refs": [
         "OQ-artwork-047",
@@ -1212,8 +1212,8 @@
       "question": "'Select N images' với N>1 thêm N layer, một layer, hay bị chặn? Kích thước hiển thị 400x400 cho ảnh 10x10 có phải quy tắc chung không?",
       "why_it_matters": "Chỉ thử N=1 và 1 kích thước nguồn; không có oracle cho chọn nhiều ảnh.",
       "kb_refs": [
-        "KB-036",
-        "KB-034"
+        "image-library/image-layer-library#KB-036",
+        "image-library/image-layer-library#KB-034"
       ],
       "oq_id": "OQ-image-library-026"
     },
@@ -1224,8 +1224,8 @@
       "question": "Đổi page size 50/100/250/500, lùi trang nhiều lần và search kết hợp filter category hoạt động ra sao?",
       "why_it_matters": "Phân trang cursor chỉ thử 2 trang với page size 20; search và filter chỉ thử riêng lẻ.",
       "kb_refs": [
-        "KB-018",
-        "KB-034"
+        "image-library/image-layer-library#KB-018",
+        "image-library/image-layer-library#KB-034"
       ],
       "oq_id": "OQ-image-library-027"
     },
@@ -1236,8 +1236,8 @@
       "question": "Giới hạn độ dài/ký tự đặc biệt của tên ảnh và tên category là gì? Trùng tên category có bị chặn không?",
       "why_it_matters": "Chưa có boundary nào cho các field tên.",
       "kb_refs": [
-        "KB-019",
-        "KB-030"
+        "image-library/image-layer-library#KB-019",
+        "image-library/image-layer-library#KB-030"
       ],
       "oq_id": "OQ-image-library-028"
     },
@@ -1248,8 +1248,8 @@
       "question": "PUT /api/layer-image-categories/{id} với tên rỗng/khoảng trắng có bị từ chối như khi tạo (422) không?",
       "why_it_matters": "Validation đổi tên category chưa thử; chỉ biết hành vi lúc tạo.",
       "kb_refs": [
-        "KB-021",
-        "KB-020"
+        "image-library/image-layer-library#KB-021",
+        "image-library/image-layer-library#KB-020"
       ],
       "oq_id": "OQ-image-library-029"
     },
@@ -1260,8 +1260,8 @@
       "question": "Tab 'Choose from clipart category' trong image picker hoạt động thế nào và có thuộc phạm vi image library không?",
       "why_it_matters": "Tab không được mở; liên quan trực tiếp conflict CONF-image-library-R1026-04.",
       "kb_refs": [
-        "KB-014",
-        "KB-042"
+        "image-library/image-layer-library#KB-014",
+        "image-library/image-layer-library#KB-042"
       ],
       "oq_id": "OQ-image-library-030"
     },
@@ -1277,9 +1277,9 @@
       "question": "Host object storage oe-cdn.sgp1.digitaloceanspaces.com (PUT presigned của luồng upload cả hai thư viện) có phải host hợp lệ của staging để thêm vào environments.staging.additional_api_hosts không?",
       "why_it_matters": "Cho tới khi xác nhận, KB-007/KB-010/KB-011 không làm oracle; mọi check chạm bước PUT phải giữ BASELINE/NONE.",
       "kb_refs": [
-        "KB-007",
-        "KB-010",
-        "KB-011"
+        "image-library/_object-level#KB-007",
+        "image-library/_object-level#KB-010",
+        "image-library/_object-level#KB-011"
       ],
       "oq_id": "OQ-image-library-007"
     },
@@ -1294,8 +1294,8 @@
       "question": "Tên category toàn khoảng trắng làm Create bật và nhận lỗi 422 dưới toast chung 'Something went wrong!' — client có nên chặn trước/hiển thị lỗi tại field?",
       "why_it_matters": "Quyết định expected result validation tên category ở cả hai thư viện.",
       "kb_refs": [
-        "KB-020",
-        "KB-049"
+        "image-library/image-layer-library#KB-020",
+        "image-library/mockup-layer-library#KB-049"
       ],
       "oq_id": "OQ-image-library-012"
     },
@@ -1310,8 +1310,8 @@
       "question": "Có giới hạn kích thước file mong đợi cho upload ảnh/mockup không? Nếu có thì bao nhiêu? (PNG 27 MB được nhận; file lớn hơn chưa thử.)",
       "why_it_matters": "Không có boundary kích thước để làm oracle.",
       "kb_refs": [
-        "KB-028",
-        "KB-057"
+        "image-library/image-layer-library#KB-028",
+        "image-library/mockup-layer-library#KB-057"
       ],
       "oq_id": "OQ-image-library-013"
     },
@@ -1326,8 +1326,8 @@
       "question": "Có cơ chế dọn temporary file phía server (TTL/cron) cho upload bị từ chối 422 không?",
       "why_it_matters": "Không có UI/endpoint để kiểm; KB-011 chỉ là suy luận.",
       "kb_refs": [
-        "KB-010",
-        "KB-011"
+        "image-library/_object-level#KB-010",
+        "image-library/_object-level#KB-011"
       ],
       "oq_id": "OQ-image-library-016"
     },
@@ -1342,7 +1342,7 @@
       "question": "Upload bằng kéo-thả vào dropzone có cùng hành vi với click-to-upload không?",
       "why_it_matters": "Dropzone ghi 'Drag and drop, or click to upload!' nhưng chỉ click-to-upload được thử.",
       "kb_refs": [
-        "KB-009"
+        "image-library/_object-level#KB-009"
       ],
       "oq_id": "OQ-image-library-018"
     },
@@ -1356,8 +1356,8 @@
       "question": "Picker của Photo Upload, Clipart Category (tab 'Upload an image') và Dynamic Clipart có dùng chung image layer library/component không?",
       "why_it_matters": "Có thể có thêm điểm vào của thư viện ảnh; hiện chỉ là giả định chưa kiểm.",
       "kb_refs": [
-        "KB-003",
-        "KB-004"
+        "image-library/_object-level#KB-003",
+        "image-library/_object-level#KB-004"
       ],
       "oq_id": "OQ-image-library-019"
     },
@@ -1371,8 +1371,8 @@
       "question": "SVG bị loại khỏi image picker (master NOT ILIKE '%.svg'); luồng /api/layer-images/svg của Vector layer có cùng bảng dữ liệu với image library không?",
       "why_it_matters": "Ranh giới dữ liệu giữa image library và Vector chưa rõ.",
       "kb_refs": [
-        "KB-015",
-        "KB-008"
+        "image-library/image-layer-library#KB-015",
+        "image-library/_object-level#KB-008"
       ],
       "oq_id": "OQ-image-library-020"
     },
@@ -1387,9 +1387,9 @@
       "question": "GIF và WebP (được nêu trong câu lỗi 422) có thực sự upload được vào hai thư viện không?",
       "why_it_matters": "Không suy danh sách loại file được phép từ câu lỗi; test file không có GIF/WebP.",
       "kb_refs": [
-        "KB-008",
-        "KB-027",
-        "KB-055"
+        "image-library/_object-level#KB-008",
+        "image-library/image-layer-library#KB-027",
+        "image-library/mockup-layer-library#KB-055"
       ],
       "oq_id": "OQ-image-library-021"
     },
@@ -1404,8 +1404,8 @@
       "question": "Account khác (hoặc token forbidden/invalid) có đọc/sửa/xoá được ảnh, mockup, category theo id của account này không? Server có ràng buộc x-acting-user-id với phiên không?",
       "why_it_matters": "Tenant isolation và quyền chưa được kiểm; chỉ một account quan sát.",
       "kb_refs": [
-        "KB-013",
-        "KB-006"
+        "image-library/_object-level#KB-013",
+        "image-library/_object-level#KB-006"
       ],
       "oq_id": "OQ-image-library-022"
     },
@@ -1420,7 +1420,7 @@
       "question": "Khi vượt x-ratelimit-limit (vd 60 cho in-use, 1000 cho by-temporary-file) thì client/server phản ứng thế nào? Chu kỳ quota có đúng theo ngày không?",
       "why_it_matters": "Bulk delete/upload lớn có thể chạm limit; hành vi vượt limit chưa thử.",
       "kb_refs": [
-        "KB-012"
+        "image-library/_object-level#KB-012"
       ],
       "oq_id": "OQ-image-library-023"
     },
@@ -1435,7 +1435,7 @@
       "question": "Plan/role khác có trang thư viện độc lập hoặc điểm vào khác không? Spec OpenAPI có liệt kê thêm operation nào của layer-images/mockup-layers ngoài các operation đã trace không?",
       "why_it_matters": "Kết luận 'không có trang độc lập' dựa trên một account/plan; API inventory chỉ từ runtime trace.",
       "kb_refs": [
-        "KB-001"
+        "image-library/_object-level#KB-001"
       ],
       "oq_id": "OQ-image-library-024"
     },
@@ -1448,15 +1448,15 @@
       "question": "Import artwork từ 'TIB Library' và trang Customer Uploads (beta) có thuộc object nào khác cần bootstrap riêng không?",
       "why_it_matters": "Hai khu vực bị loại khỏi object image-library; cần owner quyết có mở scope ở object khác hay không. Có thể chỉ ghi nhận, không cần OQ.",
       "kb_refs": [
-        "KB-001",
-        "KB-002"
+        "image-library/_object-level#KB-001",
+        "image-library/_object-level#KB-002"
       ],
       "oq_id": "OQ-image-library-025"
     }
   ],
   "last_updated": {
-    "date": "2026-10-26",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "coverage_matrix": [
     {
@@ -1467,7 +1467,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-014"
+        "image-library/image-layer-library#KB-014"
       ]
     },
     {
@@ -1478,7 +1478,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-037"
+        "image-library/image-layer-library#KB-037"
       ]
     },
     {
@@ -1489,9 +1489,9 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-023",
-        "KB-024",
-        "KB-025"
+        "image-library/image-layer-library#KB-023",
+        "image-library/image-layer-library#KB-024",
+        "image-library/image-layer-library#KB-025"
       ]
     },
     {
@@ -1502,8 +1502,8 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-029",
-        "KB-016"
+        "image-library/image-layer-library#KB-029",
+        "image-library/image-layer-library#KB-016"
       ]
     },
     {
@@ -1515,7 +1515,7 @@
       "covered": true,
       "note": "host_not_in_expected_api_base, not-oracle",
       "kb_refs": [
-        "KB-007"
+        "image-library/_object-level#KB-007"
       ]
     },
     {
@@ -1526,7 +1526,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-008"
+        "image-library/_object-level#KB-008"
       ]
     },
     {
@@ -1537,7 +1537,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-027"
+        "image-library/image-layer-library#KB-027"
       ]
     },
     {
@@ -1548,7 +1548,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-028"
+        "image-library/image-layer-library#KB-028"
       ]
     },
     {
@@ -1559,7 +1559,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-009"
+        "image-library/_object-level#KB-009"
       ]
     },
     {
@@ -1570,8 +1570,8 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-008",
-        "KB-028"
+        "image-library/_object-level#KB-008",
+        "image-library/image-layer-library#KB-028"
       ]
     },
     {
@@ -1582,10 +1582,10 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-019",
-        "KB-020",
-        "KB-021",
-        "KB-022"
+        "image-library/image-layer-library#KB-019",
+        "image-library/image-layer-library#KB-020",
+        "image-library/image-layer-library#KB-021",
+        "image-library/image-layer-library#KB-022"
       ]
     },
     {
@@ -1596,8 +1596,8 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-019",
-        "KB-021"
+        "image-library/image-layer-library#KB-019",
+        "image-library/image-layer-library#KB-021"
       ]
     },
     {
@@ -1608,8 +1608,8 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-017",
-        "KB-018"
+        "image-library/image-layer-library#KB-017",
+        "image-library/image-layer-library#KB-018"
       ]
     },
     {
@@ -1620,7 +1620,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-017"
+        "image-library/image-layer-library#KB-017"
       ]
     },
     {
@@ -1631,8 +1631,8 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-034",
-        "KB-035"
+        "image-library/image-layer-library#KB-034",
+        "image-library/image-layer-library#KB-035"
       ]
     },
     {
@@ -1643,8 +1643,8 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-018",
-        "KB-034"
+        "image-library/image-layer-library#KB-018",
+        "image-library/image-layer-library#KB-034"
       ]
     },
     {
@@ -1655,8 +1655,8 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-030",
-        "KB-031"
+        "image-library/image-layer-library#KB-030",
+        "image-library/image-layer-library#KB-031"
       ]
     },
     {
@@ -1667,8 +1667,8 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-032",
-        "KB-033"
+        "image-library/image-layer-library#KB-032",
+        "image-library/image-layer-library#KB-033"
       ]
     },
     {
@@ -1679,7 +1679,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-036"
+        "image-library/image-layer-library#KB-036"
       ]
     },
     {
@@ -1690,7 +1690,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-036"
+        "image-library/image-layer-library#KB-036"
       ]
     },
     {
@@ -1701,8 +1701,8 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-038",
-        "KB-040"
+        "image-library/image-layer-library#KB-038",
+        "image-library/image-layer-library#KB-040"
       ]
     },
     {
@@ -1713,7 +1713,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-039"
+        "image-library/image-layer-library#KB-039"
       ]
     },
     {
@@ -1724,8 +1724,8 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-039",
-        "KB-040"
+        "image-library/image-layer-library#KB-039",
+        "image-library/image-layer-library#KB-040"
       ]
     },
     {
@@ -1736,7 +1736,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-041"
+        "image-library/image-layer-library#KB-041"
       ]
     },
     {
@@ -1747,7 +1747,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-013"
+        "image-library/_object-level#KB-013"
       ]
     },
     {
@@ -1758,7 +1758,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-001"
+        "image-library/_object-level#KB-001"
       ]
     },
     {
@@ -1794,7 +1794,7 @@
       "conflict_group": "CONF-image-library-R1026-04",
       "topic": "GET /api/layer-image-categories?type=clipart vs GraphQL clipart_categories",
       "kb_refs": [
-        "KB-042"
+        "image-library/image-layer-library#KB-042"
       ],
       "cross_object_refs": [
         "OQ-artwork-010"
@@ -1806,7 +1806,7 @@
       "conflict_group": "CONF-image-library-R1026-05",
       "topic": "Cấu trúc nhóm popup '+ Layer' của artwork editor",
       "kb_refs": [
-        "KB-004"
+        "image-library/_object-level#KB-004"
       ],
       "cross_object_refs": [
         "artwork/editor-layer-workspace#KB-001"
@@ -1821,10 +1821,10 @@
       "to": "FEAT-02-mockup-layer-library",
       "relation": "Cùng object, dùng chung luồng upload/validation client/thông báo 422/component dialog, nhưng dữ liệu (ảnh, category, endpoint) tách biệt",
       "kb_refs": [
-        "KB-005",
-        "KB-006",
-        "KB-008",
-        "KB-009"
+        "image-library/_object-level#KB-005",
+        "image-library/_object-level#KB-006",
+        "image-library/_object-level#KB-008",
+        "image-library/_object-level#KB-009"
       ]
     }
   ]

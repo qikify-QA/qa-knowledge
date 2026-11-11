@@ -1,0 +1,252 @@
+{
+  "feature_id": "FEAT-06-order-design-print-resolution",
+  "feature_key": "order-design-print-resolution",
+  "name": "Độ phân giải (DPI) trong file order design PNG theo print area",
+  "user_goal": "Store owner nhận file order design (PNG) ghi đúng độ phân giải theo DPI của print area (DPI trống = 300) mà kích thước pixel không đổi, để in đúng kích thước vật lý, cả khi order được tạo và khi regenerate design.",
+  "user_goal_kb_refs": [
+    "order/order-design-print-resolution#KB-769",
+    "order/order-design-print-resolution#KB-770",
+    "order/order-design-print-resolution#KB-771"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner (store owner/staff có quyền manage-products)",
+      "permission_observed": "Đổi DPI của print area, regenerate design của order và đọc resolution file design PNG ở staging (test case PASS staging và production). Không thử role khác.",
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-769",
+        "order/order-design-print-resolution#KB-770",
+        "order/order-design-print-resolution#KB-771"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Regenerate design của order → file order design PNG (CDN) của print area",
+      "precondition": "Order có print area với DPI trống (null) hoặc DPI đã đổi sang giá trị mới; design format PNG.",
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-769",
+        "order/order-design-print-resolution#KB-770"
+      ]
+    },
+    {
+      "path": "Tạo order mới cho print area có DPI đã đặt → file order design PNG (CDN)",
+      "precondition": "Print area đã đặt DPI (vd 200) trước khi tạo order; design format PNG.",
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-771"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "File order design PNG ghi resolution theo DPI của print area khi regenerate (DPI trống = 300)",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-769, KB-770): sau regenerate design, print area có DPI trống thì file ghi 300 DPI, có DPI đã đổi (vd 150) thì ghi đúng DPI mới; kích thước pixel không đổi so với trước khi có/đổi DPI. Công cụ đọc PNG có thể hiện resolution dạng pixels per centimeter.",
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-769",
+        "order/order-design-print-resolution#KB-770"
+      ]
+    },
+    {
+      "name": "File order design PNG của order mới ghi đúng DPI đã đặt trên print area",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-771): khi tạo order với print area có DPI đã đặt (vd 200), file order design PNG ghi resolution bằng DPI đó.",
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-771"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "print area DPI trống (null), order design PNG đã/ sẽ regenerate",
+      "to": "file order design PNG ghi 300 DPI, pixel giữ nguyên",
+      "trigger": "regenerate design của order",
+      "condition": "print area DPI null",
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-769"
+      ]
+    },
+    {
+      "from": "print area DPI đổi sang giá trị mới (vd 150)",
+      "to": "file order design PNG ghi DPI mới, pixel không đổi",
+      "trigger": "regenerate design của order sau khi đổi DPI",
+      "condition": "DPI đã đổi trước khi regenerate",
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-770"
+      ]
+    },
+    {
+      "from": "print area có DPI đã đặt (vd 200)",
+      "to": "order mới có file order design PNG ghi đúng DPI đó",
+      "trigger": "tạo order",
+      "condition": "DPI đã đặt trước khi tạo order",
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-771"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Print area DPI trống (null): file order design (PNG) sau regenerate ghi resolution 300 DPI; kích thước pixel giữ nguyên như trước khi có tính năng DPI.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner (store owner/staff có quyền manage-products); test case PASS staging 2026-10-29 và production 2026-11-02",
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-769"
+      ]
+    },
+    {
+      "statement": "Đổi DPI của print area (vd 150) rồi regenerate design: file order design (PNG) ghi resolution bằng DPI mới; kích thước pixel không đổi so với trước khi đổi DPI.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner (store owner/staff có quyền manage-products); test case PASS staging 2026-10-29 và production 2026-11-02",
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-770"
+      ]
+    },
+    {
+      "statement": "Tạo order với print area có DPI đã đặt (vd 200): file order design (PNG) ghi resolution bằng DPI đó. Claim không nói về kích thước pixel ở case này.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner (store owner/staff có quyền manage-products); test case PASS staging 2026-10-29 và production 2026-11-02",
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-771"
+      ]
+    }
+  ],
+  "observed_behavior": [],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "role": "merchant-owner",
+      "note": "Chỉ role này được dùng; không có ranh giới quyền nào được quan sát.",
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-769",
+        "order/order-design-print-resolution#KB-770",
+        "order/order-design-print-resolution#KB-771"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      "Regenerate design của order (KB-769, KB-770)",
+      "Cấu hình DPI của print area (thuộc product-base, chỉ là tiền điều kiện) (KB-770, KB-771)"
+    ],
+    "storefront": [],
+    "api": [],
+    "data": [
+      "DPI của print area (null = 300) (KB-769, KB-770)"
+    ],
+    "code": []
+  },
+  "dependencies": [
+    "DPI của print area do product-base/printarea-definition quản lý; liên kết KB-769↔KB-515, KB-770↔KB-516, KB-771↔KB-518 (object product-base).",
+    "Thao tác Regenerate design thuộc review-and-initiate-fulfillment-portal.",
+    "Canon đã phủ ở product-base/printarea-definition (không copy vào đây): KB-505 (file export PNG/JPG/PDF và thumbnail ghi resolution theo DPI print area, trống = 300, DPI không đổi pixel), KB-506..508 (import print area từ provider, DPI 150/300), KB-510 (xoá trống DPI ghi log 300), KB-513 (validation 72–300). Order này chỉ bổ sung nguồn test_case cho PNG qua regenerate/tạo order."
+  ],
+  "risks": [
+    {
+      "risk": "File order design ghi sai resolution làm in sai kích thước vật lý.",
+      "detail": "Pixel giữ nguyên nên chỉ metadata resolution quyết định kích thước in; lệch DPI không lộ qua kích thước ảnh.",
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-769",
+        "order/order-design-print-resolution#KB-770",
+        "order/order-design-print-resolution#KB-771"
+      ]
+    },
+    {
+      "risk": "Mỗi item chỉ có một test case; chỉ kiểm PNG.",
+      "detail": "Test case của order chỉ kiểm PNG; JPG/PDF/thumbnail và pixel đã có dev confirm ở KB-505 (product-base), không suy rộng từ KB-769..771 sang kết quả test_case. KB-771 không nói về pixel; KB-505 nói DPI không đổi pixel.",
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-769",
+        "order/order-design-print-resolution#KB-770",
+        "order/order-design-print-resolution#KB-771"
+      ]
+    }
+  ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-11-02"
+  },
+  "unknown_areas": [],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-06-order-design-print-resolution",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "regenerate design, print area DPI null",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-769"
+      ]
+    },
+    {
+      "feature_id": "FEAT-06-order-design-print-resolution",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "regenerate design sau khi đổi DPI",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-770"
+      ]
+    },
+    {
+      "feature_id": "FEAT-06-order-design-print-resolution",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "tạo order mới, print area DPI đã đặt",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-771"
+      ]
+    },
+    {
+      "feature_id": "FEAT-06-order-design-print-resolution",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "order design JPG/PDF",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-769",
+        "order/order-design-print-resolution#KB-770",
+        "order/order-design-print-resolution#KB-771"
+      ],
+      "note": "Chưa có test_case cho order; hành vi đã có dev confirm KB-505 ở product-base/printarea-definition (không phải unknown)."
+    },
+    {
+      "feature_id": "FEAT-06-order-design-print-resolution",
+      "layer": "portal",
+      "role": "non-owner / restricted permission",
+      "state": "any",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-769",
+        "order/order-design-print-resolution#KB-770",
+        "order/order-design-print-resolution#KB-771"
+      ]
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from_feature_id": "FEAT-06-order-design-print-resolution",
+      "from_feature_key": "order-design-print-resolution",
+      "to_feature_id": "product-base/printarea-definition",
+      "to_feature_key": "printarea-definition",
+      "relationship": "reads_config_owned_by (cross-object: product-base)",
+      "description": "DPI của print area (null = 300) do product-base cấu hình; file order design lấy resolution từ đó (KB-769↔KB-515, KB-770↔KB-516, KB-771↔KB-518). Canon phủ thêm ở object product-base: KB-505, KB-506..508, KB-510, KB-513.",
+      "kb_refs": [
+        "order/order-design-print-resolution#KB-769",
+        "order/order-design-print-resolution#KB-770",
+        "order/order-design-print-resolution#KB-771"
+      ]
+    }
+  ]
+}

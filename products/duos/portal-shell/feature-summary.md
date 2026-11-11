@@ -1,5 +1,5 @@
 # Portal chung — Home / onboarding, điều hướng Portal & B2B extensions hub, Content & Translation, banner DTC ở Customer Account, admin panel nội bộ (Filament)
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** Duos B2B · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-09
 

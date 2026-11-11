@@ -4,11 +4,11 @@
   "name": "Mockup Layer Library — media library modal của section Mockup trên product base",
   "user_goal": "Là merchant-owner đang cấu hình product base, tôi upload và tổ chức ảnh mockup của mình (category, vị trí) trong media library, xem bộ mockup dựng sẵn của TIB, và dọn mockup không dùng, để có sẵn mockup chọn gán cho product base.",
   "user_goal_kb_refs": [
-    "KB-003",
-    "KB-043",
-    "KB-045",
-    "KB-052",
-    "KB-063"
+    "image-library/_object-level#KB-003",
+    "image-library/mockup-layer-library#KB-043",
+    "image-library/mockup-layer-library#KB-045",
+    "image-library/mockup-layer-library#KB-052",
+    "image-library/mockup-layer-library#KB-063"
   ],
   "stable_since_version": null,
   "stable_since_version_note": "Feature mới, không có base; version ổn định do publish đầu tiên quyết định.",
@@ -17,13 +17,13 @@
       "role": "merchant-owner",
       "permission_observed": "Trên staging, account explorer upload, CRUD category, move, xoá đơn/hàng loạt mockup của mình mà không gặp access-denied; 'TIB Mockups' là dữ liệu của một user hệ thống khác, chỉ xem (không dropzone, không thùng rác). Chỉ một role/account được quan sát.",
       "kb_refs": [
-        "KB-006",
-        "KB-013",
-        "KB-045",
-        "KB-048",
-        "KB-059",
-        "KB-062",
-        "KB-063"
+        "image-library/_object-level#KB-006",
+        "image-library/_object-level#KB-013",
+        "image-library/mockup-layer-library#KB-045",
+        "image-library/mockup-layer-library#KB-048",
+        "image-library/mockup-layer-library#KB-059",
+        "image-library/mockup-layer-library#KB-062",
+        "image-library/mockup-layer-library#KB-063"
       ]
     }
   ],
@@ -32,15 +32,15 @@
       "path": "Trang edit product base (/products/<id>/edit) > section Mockup > nút 'Upload' → media library modal",
       "precondition": "Đã login portal; đang ở trang edit của một product base.",
       "kb_refs": [
-        "KB-003",
-        "KB-043"
+        "image-library/_object-level#KB-003",
+        "image-library/mockup-layer-library#KB-043"
       ]
     },
     {
       "path": "Không có điểm vào độc lập: sidebar và router SPA không có trang Mockup Library/Media.",
       "precondition": "Kết luận từ một account/plan merchant-owner trên staging.",
       "kb_refs": [
-        "KB-001"
+        "image-library/_object-level#KB-001"
       ],
       "is_negative_finding": true
     }
@@ -51,11 +51,11 @@
       "name": "Upload mockup vào media library (một hoặc nhiều file)",
       "description": "Chuỗi dùng chung upload-url → PUT object storage (not-oracle) → POST /api/mockup-layers/by-temporary-file {temporary_file_id, name, filewidth, fileheight, category_id} → 201; width/height lấy từ client ngay, master/url/thumbnail ''. Mockup vào category đang chọn, được tick sẵn. 5 file (4 raster + 1 svg) → 4/4 raster được xử lý (UNRESOLVED với knowledge product-base). Không có request gán mockup vào product trong luồng upload.",
       "kb_refs": [
-        "KB-006",
-        "KB-007",
-        "KB-009",
-        "KB-052",
-        "KB-054"
+        "image-library/_object-level#KB-006",
+        "image-library/_object-level#KB-007",
+        "image-library/_object-level#KB-009",
+        "image-library/mockup-layer-library#KB-052",
+        "image-library/mockup-layer-library#KB-054"
       ]
     },
     {
@@ -63,9 +63,9 @@
       "name": "Theo dõi trạng thái xử lý mockup sau upload ('Generating...' → sẵn sàng)",
       "description": "Trong lúc xử lý có thanh 'Generating...' và cột trái bị làm mờ/disable. Client tự gọi lặp GraphQL get mockup_layers(id _in ids) ~2 giây sau mỗi response (explorer ước ~3 giây) tới khi có url rồi GET lại danh sách; không cần bấm Reload (UNRESOLVED với knowledge product-base về polling). Hai bản ghi 'fake-image' cũ vẫn hiển thị 'Rendering'.",
       "kb_refs": [
-        "KB-052",
-        "KB-053",
-        "KB-056"
+        "image-library/mockup-layer-library#KB-052",
+        "image-library/mockup-layer-library#KB-053",
+        "image-library/mockup-layer-library#KB-056"
       ]
     },
     {
@@ -73,11 +73,11 @@
       "name": "Kiểm tra file khi upload mockup (loại file, nội dung, kích thước)",
       "description": "Client chặn svg/txt ngay khi chọn ('You can't upload files of this type.'). File text đổi đuôi .png qua client, upload-url 201 + PUT 200, rồi by-temporary-file 422 (không tạo bản ghi, không card 'Rendering' — UNRESOLVED với product-base KB-081). PNG 27 MB được nhận. Temporary file tạo trước khi server kiểm nội dung (not-oracle).",
       "kb_refs": [
-        "KB-008",
-        "KB-055",
-        "KB-057",
-        "KB-010",
-        "KB-011"
+        "image-library/_object-level#KB-008",
+        "image-library/mockup-layer-library#KB-055",
+        "image-library/mockup-layer-library#KB-057",
+        "image-library/_object-level#KB-010",
+        "image-library/_object-level#KB-011"
       ]
     },
     {
@@ -85,10 +85,10 @@
       "name": "Quản lý category mockup (tạo, đổi tên, xoá)",
       "description": "'+ New category' → POST /api/mockup-layer-categories {name} (không field type) 201. Bút chì → GET /{id} điền sẵn → PUT /{id} 200 + toast 'Success' / 'Your category has been updated'. Thùng rác → 'Are you sure to delete <tên category>' → DELETE 204 + toast 'Your category has been deleted'; mockup bên trong được giữ, thành không có category.",
       "kb_refs": [
-        "KB-048",
-        "KB-049",
-        "KB-050",
-        "KB-051"
+        "image-library/mockup-layer-library#KB-048",
+        "image-library/mockup-layer-library#KB-049",
+        "image-library/mockup-layer-library#KB-050",
+        "image-library/mockup-layer-library#KB-051"
       ]
     },
     {
@@ -96,11 +96,11 @@
       "name": "Duyệt, tìm kiếm, lọc theo category và phân trang mockup của mình",
       "description": "Lưới card (checkbox, thumbnail, tên in đậm dạng text thường, WxH, ngày, thùng rác). GET /api/mockup-layers?page&per_page=20&sort=created_at&sort_type=desc — paginator kiểu Laravel (offset), category qua GET /api/mockup-layer-categories (mảng trần). Search 'Search..' (Enter) → tham số s= phía server; category → category_id=. Rỗng: 'Empty data' + 'Showing 1 to 0 of 0 entries'; dropzone vẫn dùng được. Page size 20/50/100/250/500; chưa thử quá trang 1.",
       "kb_refs": [
-        "KB-043",
-        "KB-044",
-        "KB-046",
-        "KB-047",
-        "KB-060"
+        "image-library/mockup-layer-library#KB-043",
+        "image-library/mockup-layer-library#KB-044",
+        "image-library/mockup-layer-library#KB-046",
+        "image-library/mockup-layer-library#KB-047",
+        "image-library/mockup-layer-library#KB-060"
       ]
     },
     {
@@ -108,7 +108,7 @@
       "name": "Xem bộ mockup dựng sẵn 'TIB Mockups' (chỉ xem)",
       "description": "Mục 'TIB Mockups' ở cột trái gọi GET /api/mockup-layers?public&... trả mockup của user hệ thống; không có dropzone và thùng rác; không phải bản ghi category.",
       "kb_refs": [
-        "KB-045"
+        "image-library/mockup-layer-library#KB-045"
       ]
     },
     {
@@ -116,8 +116,8 @@
       "name": "Chuyển mockup sang category khác (hàng loạt)",
       "description": "Tick mockup → 'Move to category' (dialog tải lại category) → Move → PUT /api/mockup-layers/move {category_id, ids} 200 trả mảng bản ghi; danh sách tải lại; lựa chọn vẫn giữ sau move (khác image library). Giá trị field trên trang product không bị đổi dù listbox render tách rời cạnh combobox của trang.",
       "kb_refs": [
-        "KB-059",
-        "KB-060"
+        "image-library/mockup-layer-library#KB-059",
+        "image-library/mockup-layer-library#KB-060"
       ]
     },
     {
@@ -125,10 +125,10 @@
       "name": "Xoá mockup khỏi thư viện (đơn và hàng loạt) kèm kiểm tra in-use",
       "description": "Xoá đơn: thùng rác → 'Are you sure to remove ?' (thiếu tên) → DELETE /api/mockup-layers/{id} không body → 200 'Successfully deleted the layer.'; không gọi in-use trước. Xoá hàng loạt: nút đỏ 'Delete' → 'Are you sure you want to remove N selected images?' → POST /api/mockup-layers/in-use {ids} (không templates) → in_use_ids [] → DELETE từng mockup → tải lại. in_use_ids khác rỗng chưa quan sát.",
       "kb_refs": [
-        "KB-061",
-        "KB-062",
-        "KB-063",
-        "KB-060"
+        "image-library/mockup-layer-library#KB-061",
+        "image-library/mockup-layer-library#KB-062",
+        "image-library/mockup-layer-library#KB-063",
+        "image-library/mockup-layer-library#KB-060"
       ]
     },
     {
@@ -137,9 +137,9 @@
       "description": "Chỉ quan sát được sự hiện diện của nút 'Select' / 'Select N images' ở chân modal và việc luồng upload không tự gán vào product. Hành vi chọn/gán chưa được explore (persistence_guard: chọn trong modal ghi ngay vào product base không do run tạo).",
       "coverage_status": "NOT_COVERED",
       "kb_refs": [
-        "KB-043",
-        "KB-060",
-        "KB-052"
+        "image-library/mockup-layer-library#KB-043",
+        "image-library/mockup-layer-library#KB-060",
+        "image-library/mockup-layer-library#KB-052"
       ]
     }
   ],
@@ -150,8 +150,8 @@
       "trigger": "POST /api/mockup-layers/by-temporary-file → 201",
       "condition": "upload-url 201 và PUT 200 trước đó",
       "kb_refs": [
-        "KB-006",
-        "KB-052"
+        "image-library/_object-level#KB-006",
+        "image-library/mockup-layer-library#KB-052"
       ]
     },
     {
@@ -160,8 +160,8 @@
       "trigger": "polling GraphQL get mockup_layers trả url → client GET lại danh sách",
       "condition": "trong media library modal ngay sau upload, chưa gán product; UNRESOLVED CONF-image-library-R1026-03",
       "kb_refs": [
-        "KB-053",
-        "KB-052"
+        "image-library/mockup-layer-library#KB-053",
+        "image-library/mockup-layer-library#KB-052"
       ],
       "markers": [
         "UNRESOLVED",
@@ -174,7 +174,7 @@
       "trigger": "chọn file qua file chooser",
       "condition": "client-side",
       "kb_refs": [
-        "KB-008"
+        "image-library/_object-level#KB-008"
       ]
     },
     {
@@ -183,8 +183,8 @@
       "trigger": "POST /api/mockup-layers/by-temporary-file → 422",
       "condition": "UNRESOLVED CONF-image-library-R1026-01 (product-base KB-081 ghi backend nhận và kẹt 'Rendering')",
       "kb_refs": [
-        "KB-055",
-        "KB-010"
+        "image-library/mockup-layer-library#KB-055",
+        "image-library/_object-level#KB-010"
       ],
       "markers": [
         "UNRESOLVED",
@@ -197,7 +197,7 @@
       "trigger": "Remove → DELETE /api/mockup-layer-categories/{id} → 204",
       "condition": "1 mẫu (4 mockup)",
       "kb_refs": [
-        "KB-051"
+        "image-library/mockup-layer-library#KB-051"
       ]
     },
     {
@@ -206,7 +206,7 @@
       "trigger": "Move → PUT /api/mockup-layers/move → 200",
       "condition": "",
       "kb_refs": [
-        "KB-059"
+        "image-library/mockup-layer-library#KB-059"
       ]
     },
     {
@@ -215,7 +215,7 @@
       "trigger": "Remove (đơn) → DELETE /api/mockup-layers/{id} → 200",
       "condition": "không có bước in-use ở đường xoá đơn; mockup đang gán product chưa thử",
       "kb_refs": [
-        "KB-062"
+        "image-library/mockup-layer-library#KB-062"
       ]
     },
     {
@@ -224,7 +224,7 @@
       "trigger": "Remove (hàng loạt) → POST in-use → in_use_ids [] → DELETE từng cái",
       "condition": "in_use_ids khác rỗng chưa quan sát",
       "kb_refs": [
-        "KB-063"
+        "image-library/mockup-layer-library#KB-063"
       ]
     }
   ],
@@ -236,8 +236,8 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-001",
-        "KB-003"
+        "image-library/_object-level#KB-001",
+        "image-library/_object-level#KB-003"
       ]
     },
     {
@@ -245,7 +245,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-005"
+        "image-library/_object-level#KB-005"
       ]
     },
     {
@@ -253,8 +253,8 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "HIGH",
       "kb_refs": [
-        "KB-006",
-        "KB-052"
+        "image-library/_object-level#KB-006",
+        "image-library/mockup-layer-library#KB-052"
       ]
     },
     {
@@ -262,7 +262,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-007"
+        "image-library/_object-level#KB-007"
       ],
       "markers": [
         "host_not_in_expected_api_base",
@@ -275,8 +275,8 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-009",
-        "KB-043"
+        "image-library/_object-level#KB-009",
+        "image-library/mockup-layer-library#KB-043"
       ]
     },
     {
@@ -284,7 +284,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-010"
+        "image-library/_object-level#KB-010"
       ],
       "markers": [
         "suspected-defect",
@@ -298,7 +298,7 @@
       "knowledge_kind": "INFERRED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-011"
+        "image-library/_object-level#KB-011"
       ],
       "markers": [
         "suspected-defect",
@@ -311,7 +311,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-012"
+        "image-library/_object-level#KB-012"
       ]
     },
     {
@@ -319,7 +319,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-043"
+        "image-library/mockup-layer-library#KB-043"
       ]
     },
     {
@@ -327,7 +327,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "HIGH",
       "kb_refs": [
-        "KB-044"
+        "image-library/mockup-layer-library#KB-044"
       ]
     },
     {
@@ -335,7 +335,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-045"
+        "image-library/mockup-layer-library#KB-045"
       ]
     },
     {
@@ -343,7 +343,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-046"
+        "image-library/mockup-layer-library#KB-046"
       ],
       "markers": [
         "suspected-defect"
@@ -355,7 +355,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-047"
+        "image-library/mockup-layer-library#KB-047"
       ],
       "markers": [
         "suspected-defect"
@@ -367,7 +367,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-048"
+        "image-library/mockup-layer-library#KB-048"
       ]
     },
     {
@@ -375,7 +375,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-049"
+        "image-library/mockup-layer-library#KB-049"
       ],
       "markers": [
         "suspected-defect"
@@ -387,7 +387,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-050"
+        "image-library/mockup-layer-library#KB-050"
       ]
     },
     {
@@ -395,7 +395,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-051"
+        "image-library/mockup-layer-library#KB-051"
       ]
     },
     {
@@ -403,7 +403,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-052"
+        "image-library/mockup-layer-library#KB-052"
       ]
     },
     {
@@ -411,7 +411,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-053"
+        "image-library/mockup-layer-library#KB-053"
       ],
       "markers": [
         "UNRESOLVED",
@@ -425,7 +425,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-054"
+        "image-library/mockup-layer-library#KB-054"
       ],
       "markers": [
         "UNRESOLVED",
@@ -439,7 +439,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-055"
+        "image-library/mockup-layer-library#KB-055"
       ],
       "markers": [
         "UNRESOLVED",
@@ -453,7 +453,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-056"
+        "image-library/mockup-layer-library#KB-056"
       ],
       "markers": [
         "cross-object-conflict (supporting evidence CONF-image-library-R1026-01)"
@@ -465,7 +465,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-057"
+        "image-library/mockup-layer-library#KB-057"
       ],
       "markers": [
         "suspected-defect"
@@ -477,7 +477,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-058"
+        "image-library/mockup-layer-library#KB-058"
       ]
     },
     {
@@ -485,7 +485,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-059"
+        "image-library/mockup-layer-library#KB-059"
       ]
     },
     {
@@ -493,7 +493,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-060"
+        "image-library/mockup-layer-library#KB-060"
       ]
     },
     {
@@ -501,7 +501,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-061"
+        "image-library/mockup-layer-library#KB-061"
       ],
       "markers": [
         "suspected-defect"
@@ -513,7 +513,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-062"
+        "image-library/mockup-layer-library#KB-062"
       ],
       "markers": [
         "suspected-defect",
@@ -526,7 +526,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-063"
+        "image-library/mockup-layer-library#KB-063"
       ]
     }
   ],
@@ -542,7 +542,7 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-049"
+        "image-library/mockup-layer-library#KB-049"
       ]
     },
     {
@@ -554,7 +554,7 @@
       "rule_confidence": "LOW",
       "note": "KB-008 gộp 4 mẫu trên cả hai thư viện; 2 mẫu thuộc feature này. Không suy danh sách loại file được phép.",
       "kb_refs": [
-        "KB-008"
+        "image-library/_object-level#KB-008"
       ]
     },
     {
@@ -569,7 +569,7 @@
       ],
       "note": "Mâu thuẫn với product-base/mockup-attachment KB-081 (backend nhận, kẹt 'Rendering'); không dùng làm oracle cho tới khi conflict được quyết.",
       "kb_refs": [
-        "KB-055"
+        "image-library/mockup-layer-library#KB-055"
       ]
     },
     {
@@ -583,7 +583,7 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-057"
+        "image-library/mockup-layer-library#KB-057"
       ]
     },
     {
@@ -594,7 +594,7 @@
       "observed_count": 1,
       "rule_confidence": "LOW",
       "kb_refs": [
-        "KB-063"
+        "image-library/mockup-layer-library#KB-063"
       ]
     }
   ],
@@ -602,21 +602,21 @@
     {
       "statement": "Chỉ quan sát một role (merchant-owner, một account/plan).",
       "kb_refs": [
-        "KB-001",
-        "KB-013"
+        "image-library/_object-level#KB-001",
+        "image-library/_object-level#KB-013"
       ]
     },
     {
       "statement": "Mockup và category của user thuộc account đang đăng nhập; 'TIB Mockups' thuộc user hệ thống khác và chỉ xem được (không thùng rác, không dropzone).",
       "kb_refs": [
-        "KB-045",
-        "KB-048"
+        "image-library/mockup-layer-library#KB-045",
+        "image-library/mockup-layer-library#KB-048"
       ]
     },
     {
       "statement": "Tenant isolation cho id mockup/category và ràng buộc x-acting-user-id với phiên chưa được kiểm.",
       "kb_refs": [
-        "KB-013"
+        "image-library/_object-level#KB-013"
       ]
     }
   ],
@@ -625,41 +625,41 @@
       {
         "item": "Trang edit product base > section Mockup > 'Upload' → media library modal",
         "kb_refs": [
-          "KB-003",
-          "KB-043"
+          "image-library/_object-level#KB-003",
+          "image-library/mockup-layer-library#KB-043"
         ]
       },
       {
         "item": "Cột trái: 'All', 'TIB Mockups', category của user, '+ New category'",
         "kb_refs": [
-          "KB-043",
-          "KB-045"
+          "image-library/mockup-layer-library#KB-043",
+          "image-library/mockup-layer-library#KB-045"
         ]
       },
       {
         "item": "Dropzone + thanh 'Generating...' + danh sách trạng thái upload",
         "kb_refs": [
-          "KB-009",
-          "KB-052"
+          "image-library/_object-level#KB-009",
+          "image-library/mockup-layer-library#KB-052"
         ]
       },
       {
         "item": "Dialog category, Confirm (Remove/Cancel), 'Move to category'; toast 'Success'",
         "kb_refs": [
-          "KB-048",
-          "KB-050",
-          "KB-051",
-          "KB-059",
-          "KB-061",
-          "KB-063"
+          "image-library/mockup-layer-library#KB-048",
+          "image-library/mockup-layer-library#KB-050",
+          "image-library/mockup-layer-library#KB-051",
+          "image-library/mockup-layer-library#KB-059",
+          "image-library/mockup-layer-library#KB-061",
+          "image-library/mockup-layer-library#KB-063"
         ]
       },
       {
         "item": "Chân modal: 'Move to category', 'Deselect all', 'Select N images' / 'Select'; nút đỏ 'Delete'; bộ đếm 'Showing x to y of z entries'",
         "kb_refs": [
-          "KB-043",
-          "KB-046",
-          "KB-060"
+          "image-library/mockup-layer-library#KB-043",
+          "image-library/mockup-layer-library#KB-046",
+          "image-library/mockup-layer-library#KB-060"
         ]
       }
     ],
@@ -668,14 +668,14 @@
       {
         "item": "POST /api/users/{user_id}/temporary-files/upload-url",
         "kb_refs": [
-          "KB-006",
-          "KB-010"
+          "image-library/_object-level#KB-006",
+          "image-library/_object-level#KB-010"
         ]
       },
       {
         "item": "PUT presigned URL lên oe-cdn.sgp1.digitaloceanspaces.com (host ngoài expected_api_base, not-oracle)",
         "kb_refs": [
-          "KB-007"
+          "image-library/_object-level#KB-007"
         ],
         "markers": [
           "host_not_in_expected_api_base",
@@ -685,15 +685,15 @@
       {
         "item": "POST /api/mockup-layers/by-temporary-file (201 / 422)",
         "kb_refs": [
-          "KB-052",
-          "KB-055",
-          "KB-057"
+          "image-library/mockup-layer-library#KB-052",
+          "image-library/mockup-layer-library#KB-055",
+          "image-library/mockup-layer-library#KB-057"
         ]
       },
       {
         "item": "POST /api/graphql operation get — mockup_layers(where id _in ids) (polling)",
         "kb_refs": [
-          "KB-053"
+          "image-library/mockup-layer-library#KB-053"
         ],
         "markers": [
           "UNRESOLVED",
@@ -703,40 +703,40 @@
       {
         "item": "GET /api/mockup-layers?page&per_page&sort&sort_type[&s][&category_id] (offset); GET /api/mockup-layers?public (TIB Mockups)",
         "kb_refs": [
-          "KB-044",
-          "KB-045",
-          "KB-046",
-          "KB-047"
+          "image-library/mockup-layer-library#KB-044",
+          "image-library/mockup-layer-library#KB-045",
+          "image-library/mockup-layer-library#KB-046",
+          "image-library/mockup-layer-library#KB-047"
         ]
       },
       {
         "item": "GET/POST /api/mockup-layer-categories; GET/PUT/DELETE /api/mockup-layer-categories/{id}",
         "kb_refs": [
-          "KB-044",
-          "KB-048",
-          "KB-049",
-          "KB-050",
-          "KB-051"
+          "image-library/mockup-layer-library#KB-044",
+          "image-library/mockup-layer-library#KB-048",
+          "image-library/mockup-layer-library#KB-049",
+          "image-library/mockup-layer-library#KB-050",
+          "image-library/mockup-layer-library#KB-051"
         ]
       },
       {
         "item": "PUT /api/mockup-layers/move",
         "kb_refs": [
-          "KB-059"
+          "image-library/mockup-layer-library#KB-059"
         ]
       },
       {
         "item": "DELETE /api/mockup-layers/{id} (không body)",
         "kb_refs": [
-          "KB-062",
-          "KB-063"
+          "image-library/mockup-layer-library#KB-062",
+          "image-library/mockup-layer-library#KB-063"
         ]
       },
       {
         "item": "POST /api/mockup-layers/in-use {ids}",
         "kb_refs": [
-          "KB-063",
-          "KB-012"
+          "image-library/mockup-layer-library#KB-063",
+          "image-library/_object-level#KB-012"
         ]
       }
     ],
@@ -744,24 +744,24 @@
       {
         "item": "Bản ghi mockup layer: name, master/url/thumbnail ('' khi đang xử lý), width/height (từ client lúc tạo), category_id; bản ghi legacy 'fake-image' width/height 0",
         "kb_refs": [
-          "KB-044",
-          "KB-052",
-          "KB-056"
+          "image-library/mockup-layer-library#KB-044",
+          "image-library/mockup-layer-library#KB-052",
+          "image-library/mockup-layer-library#KB-056"
         ]
       },
       {
         "item": "Mockup layer category: name, không có type, thuộc account; xoá category không xoá mockup",
         "kb_refs": [
-          "KB-044",
-          "KB-048",
-          "KB-051"
+          "image-library/mockup-layer-library#KB-044",
+          "image-library/mockup-layer-library#KB-048",
+          "image-library/mockup-layer-library#KB-051"
         ]
       },
       {
         "item": "Temporary file trên object storage",
         "kb_refs": [
-          "KB-007",
-          "KB-010"
+          "image-library/_object-level#KB-007",
+          "image-library/_object-level#KB-010"
         ],
         "markers": [
           "not-oracle"
@@ -775,18 +775,18 @@
       "target": "Luồng upload dùng chung của object image-library",
       "relation": "CAP-MCK-01/02/03 dùng chung với FEAT-01-image-layer-library",
       "kb_refs": [
-        "KB-006",
-        "KB-007",
-        "KB-008",
-        "KB-009",
-        "KB-010"
+        "image-library/_object-level#KB-006",
+        "image-library/_object-level#KB-007",
+        "image-library/_object-level#KB-008",
+        "image-library/_object-level#KB-009",
+        "image-library/_object-level#KB-010"
       ]
     },
     {
       "target": "Object storage oe-cdn.sgp1.digitaloceanspaces.com",
       "relation": "Bước PUT file; host chưa xác nhận → not-oracle",
       "kb_refs": [
-        "KB-007"
+        "image-library/_object-level#KB-007"
       ],
       "markers": [
         "host_not_in_expected_api_base",
@@ -797,11 +797,11 @@
       "target": "product-base / mockup-attachment (object khác)",
       "relation": "Host của điểm vào (section Mockup); bước gán mockup (POST /api/products/{id}/mockups, Assign mockups) nằm ở feature đó và không chạy trong run này; ba conflict UNRESOLVED với knowledge đã publish của feature đó",
       "kb_refs": [
-        "KB-003",
-        "KB-052",
-        "KB-053",
-        "KB-054",
-        "KB-055"
+        "image-library/_object-level#KB-003",
+        "image-library/mockup-layer-library#KB-052",
+        "image-library/mockup-layer-library#KB-053",
+        "image-library/mockup-layer-library#KB-054",
+        "image-library/mockup-layer-library#KB-055"
       ],
       "cross_object_refs": [
         "product-base/mockup-attachment#KB-081",
@@ -823,8 +823,8 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-062",
-        "KB-063"
+        "image-library/mockup-layer-library#KB-062",
+        "image-library/mockup-layer-library#KB-063"
       ]
     },
     {
@@ -838,9 +838,9 @@
         "CONF-image-library-R1026-03"
       ],
       "kb_refs": [
-        "KB-053",
-        "KB-054",
-        "KB-055"
+        "image-library/mockup-layer-library#KB-053",
+        "image-library/mockup-layer-library#KB-054",
+        "image-library/mockup-layer-library#KB-055"
       ]
     },
     {
@@ -851,7 +851,7 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-057"
+        "image-library/mockup-layer-library#KB-057"
       ]
     },
     {
@@ -862,7 +862,7 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-061"
+        "image-library/mockup-layer-library#KB-061"
       ]
     },
     {
@@ -873,8 +873,8 @@
         "suspected-defect"
       ],
       "kb_refs": [
-        "KB-046",
-        "KB-047"
+        "image-library/mockup-layer-library#KB-046",
+        "image-library/mockup-layer-library#KB-047"
       ]
     },
     {
@@ -882,7 +882,7 @@
       "severity": "LOW",
       "category": "legacy-data",
       "kb_refs": [
-        "KB-056"
+        "image-library/mockup-layer-library#KB-056"
       ]
     },
     {
@@ -890,7 +890,7 @@
       "severity": "LOW",
       "category": "capability-gap",
       "kb_refs": [
-        "KB-058"
+        "image-library/mockup-layer-library#KB-058"
       ]
     }
   ],
@@ -907,8 +907,8 @@
       "question": "Upload file không phải ảnh (text đổi đuôi .png) làm mockup: hành vi hiện hành/expected là 422 không tạo bản ghi (quan sát 2026-10-26) hay backend nhận và kẹt 'Rendering' (product-base KB-081)? KB-081 còn đúng không?",
       "why_it_matters": "Quyết định oracle cho validation nội dung file mockup; owner là product-base.",
       "kb_refs": [
-        "KB-055",
-        "KB-056"
+        "image-library/mockup-layer-library#KB-055",
+        "image-library/mockup-layer-library#KB-056"
       ],
       "cross_object_refs": [
         "product-base/mockup-attachment#KB-081"
@@ -923,8 +923,8 @@
       "question": "Giới hạn ~3 file khi chọn nhiều file upload mockup (product-base KB-083) còn không? Cần retest đúng 5 file raster cùng lúc.",
       "why_it_matters": "Mẫu quan sát chỉ 4 raster + 1 svg, không cùng điều kiện; chưa có oracle cho upload nhiều file.",
       "kb_refs": [
-        "KB-054",
-        "KB-025"
+        "image-library/mockup-layer-library#KB-054",
+        "image-library/image-layer-library#KB-025"
       ],
       "cross_object_refs": [
         "product-base/mockup-attachment#KB-083"
@@ -939,7 +939,7 @@
       "question": "Polling tự động trong media library modal (mockup_layers, ngay sau upload) và việc không có polling trên card mockup đã gán (mockups, icon Refresh) là hai cơ chế khác scope hay là mâu thuẫn?",
       "why_it_matters": "product-base KB-084 là CONFIRMED_EXPECTED legacy không có confirmation_source; cần quyết scope trước khi viết oracle polling.",
       "kb_refs": [
-        "KB-053"
+        "image-library/mockup-layer-library#KB-053"
       ],
       "cross_object_refs": [
         "product-base/mockup-attachment#KB-084",
@@ -954,7 +954,7 @@
       "question": "Confirm xoá một mockup ghi 'Are you sure to remove ?' (thiếu tên) có phải lỗi hiển thị?",
       "why_it_matters": "Quyết định expected copy của dialog xoá đơn.",
       "kb_refs": [
-        "KB-061"
+        "image-library/mockup-layer-library#KB-061"
       ],
       "oq_id": "OQ-image-library-009"
     },
@@ -965,8 +965,8 @@
       "question": "Bộ đếm 'Showing 1 to 0 of 0 entries' khi kết quả rỗng có phải lỗi hiển thị?",
       "why_it_matters": "Quyết định expected copy trạng thái rỗng.",
       "kb_refs": [
-        "KB-046",
-        "KB-047"
+        "image-library/mockup-layer-library#KB-046",
+        "image-library/mockup-layer-library#KB-047"
       ],
       "oq_id": "OQ-image-library-014"
     },
@@ -977,8 +977,8 @@
       "question": "Server có chặn xoá mockup đang được product dùng ở đường xoá đơn (không gọi in-use) không? Khi in_use_ids khác rỗng, xoá hàng loạt bị chặn và báo gì?",
       "why_it_matters": "Rủi ro xoá mockup đang gán product; không explore được vì cần mockup đã gán product (persistence_guard).",
       "kb_refs": [
-        "KB-062",
-        "KB-063"
+        "image-library/mockup-layer-library#KB-062",
+        "image-library/mockup-layer-library#KB-063"
       ],
       "oq_id": "OQ-image-library-017"
     },
@@ -989,9 +989,9 @@
       "question": "Chọn mockup ('Select' / 'Select N images') gán vào product base hoạt động thế nào, và xoá một mockup đã gán thì product base ra sao?",
       "why_it_matters": "CAP-MCK-09 NOT_COVERED: chọn trong modal ghi ngay vào product base không do run tạo nên bị persistence_guard cấm; cần product base QA do run tạo.",
       "kb_refs": [
-        "KB-043",
-        "KB-052",
-        "KB-060"
+        "image-library/mockup-layer-library#KB-043",
+        "image-library/mockup-layer-library#KB-052",
+        "image-library/mockup-layer-library#KB-060"
       ],
       "oq_id": "OQ-image-library-031"
     },
@@ -1002,8 +1002,8 @@
       "question": "Khi mockup library có 0 mockup của user, modal hiển thị gì và 'Select' có bị chặn không?",
       "why_it_matters": "10 mockup có sẵn (kể cả 2 'fake-image') không do run tạo nên không xoá được.",
       "kb_refs": [
-        "KB-043",
-        "KB-047"
+        "image-library/mockup-layer-library#KB-043",
+        "image-library/mockup-layer-library#KB-047"
       ],
       "oq_id": "OQ-image-library-032"
     },
@@ -1014,7 +1014,7 @@
       "question": "Đổi tên mockup có được hỗ trợ ở nơi khác (endpoint/UI) không, hay mockup không đổi tên được theo thiết kế?",
       "why_it_matters": "Không có UI hay endpoint quan sát được; khác image library.",
       "kb_refs": [
-        "KB-058"
+        "image-library/mockup-layer-library#KB-058"
       ],
       "oq_id": "OQ-image-library-033"
     },
@@ -1025,8 +1025,8 @@
       "question": "Phân trang offset quá trang 1 và đổi page size 50/100/250/500 hoạt động thế nào? Lựa chọn có giữ qua trang như image library không?",
       "why_it_matters": "Tối đa 16 mockup khi quan sát, dưới page size 20.",
       "kb_refs": [
-        "KB-044",
-        "KB-060"
+        "image-library/mockup-layer-library#KB-044",
+        "image-library/mockup-layer-library#KB-060"
       ],
       "oq_id": "OQ-image-library-034"
     },
@@ -1037,7 +1037,7 @@
       "question": "PUT /api/mockup-layers/move với category_id null có được chấp nhận như image library không?",
       "why_it_matters": "Chỉ thử ở image library (Move không chọn category vẫn 200 ở đó).",
       "kb_refs": [
-        "KB-059"
+        "image-library/mockup-layer-library#KB-059"
       ],
       "oq_id": "OQ-image-library-035"
     },
@@ -1053,9 +1053,9 @@
       "question": "Host object storage oe-cdn.sgp1.digitaloceanspaces.com (PUT presigned của luồng upload cả hai thư viện) có phải host hợp lệ của staging để thêm vào environments.staging.additional_api_hosts không?",
       "why_it_matters": "Cho tới khi xác nhận, KB-007/KB-010/KB-011 không làm oracle; mọi check chạm bước PUT phải giữ BASELINE/NONE.",
       "kb_refs": [
-        "KB-007",
-        "KB-010",
-        "KB-011"
+        "image-library/_object-level#KB-007",
+        "image-library/_object-level#KB-010",
+        "image-library/_object-level#KB-011"
       ],
       "oq_id": "OQ-image-library-007"
     },
@@ -1070,8 +1070,8 @@
       "question": "Tên category toàn khoảng trắng làm Create bật và nhận lỗi 422 dưới toast chung 'Something went wrong!' — client có nên chặn trước/hiển thị lỗi tại field?",
       "why_it_matters": "Quyết định expected result validation tên category ở cả hai thư viện.",
       "kb_refs": [
-        "KB-020",
-        "KB-049"
+        "image-library/image-layer-library#KB-020",
+        "image-library/mockup-layer-library#KB-049"
       ],
       "oq_id": "OQ-image-library-012"
     },
@@ -1086,8 +1086,8 @@
       "question": "Có giới hạn kích thước file mong đợi cho upload ảnh/mockup không? Nếu có thì bao nhiêu? (PNG 27 MB được nhận; file lớn hơn chưa thử.)",
       "why_it_matters": "Không có boundary kích thước để làm oracle.",
       "kb_refs": [
-        "KB-028",
-        "KB-057"
+        "image-library/image-layer-library#KB-028",
+        "image-library/mockup-layer-library#KB-057"
       ],
       "oq_id": "OQ-image-library-013"
     },
@@ -1102,8 +1102,8 @@
       "question": "Có cơ chế dọn temporary file phía server (TTL/cron) cho upload bị từ chối 422 không?",
       "why_it_matters": "Không có UI/endpoint để kiểm; KB-011 chỉ là suy luận.",
       "kb_refs": [
-        "KB-010",
-        "KB-011"
+        "image-library/_object-level#KB-010",
+        "image-library/_object-level#KB-011"
       ],
       "oq_id": "OQ-image-library-016"
     },
@@ -1118,7 +1118,7 @@
       "question": "Upload bằng kéo-thả vào dropzone có cùng hành vi với click-to-upload không?",
       "why_it_matters": "Dropzone ghi 'Drag and drop, or click to upload!' nhưng chỉ click-to-upload được thử.",
       "kb_refs": [
-        "KB-009"
+        "image-library/_object-level#KB-009"
       ],
       "oq_id": "OQ-image-library-018"
     },
@@ -1133,9 +1133,9 @@
       "question": "GIF và WebP (được nêu trong câu lỗi 422) có thực sự upload được vào hai thư viện không?",
       "why_it_matters": "Không suy danh sách loại file được phép từ câu lỗi; test file không có GIF/WebP.",
       "kb_refs": [
-        "KB-008",
-        "KB-027",
-        "KB-055"
+        "image-library/_object-level#KB-008",
+        "image-library/image-layer-library#KB-027",
+        "image-library/mockup-layer-library#KB-055"
       ],
       "oq_id": "OQ-image-library-021"
     },
@@ -1150,8 +1150,8 @@
       "question": "Account khác (hoặc token forbidden/invalid) có đọc/sửa/xoá được ảnh, mockup, category theo id của account này không? Server có ràng buộc x-acting-user-id với phiên không?",
       "why_it_matters": "Tenant isolation và quyền chưa được kiểm; chỉ một account quan sát.",
       "kb_refs": [
-        "KB-013",
-        "KB-006"
+        "image-library/_object-level#KB-013",
+        "image-library/_object-level#KB-006"
       ],
       "oq_id": "OQ-image-library-022"
     },
@@ -1166,7 +1166,7 @@
       "question": "Khi vượt x-ratelimit-limit (vd 60 cho in-use, 1000 cho by-temporary-file) thì client/server phản ứng thế nào? Chu kỳ quota có đúng theo ngày không?",
       "why_it_matters": "Bulk delete/upload lớn có thể chạm limit; hành vi vượt limit chưa thử.",
       "kb_refs": [
-        "KB-012"
+        "image-library/_object-level#KB-012"
       ],
       "oq_id": "OQ-image-library-023"
     },
@@ -1181,14 +1181,14 @@
       "question": "Plan/role khác có trang thư viện độc lập hoặc điểm vào khác không? Spec OpenAPI có liệt kê thêm operation nào của layer-images/mockup-layers ngoài các operation đã trace không?",
       "why_it_matters": "Kết luận 'không có trang độc lập' dựa trên một account/plan; API inventory chỉ từ runtime trace.",
       "kb_refs": [
-        "KB-001"
+        "image-library/_object-level#KB-001"
       ],
       "oq_id": "OQ-image-library-024"
     }
   ],
   "last_updated": {
-    "date": "2026-10-26",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "coverage_matrix": [
     {
@@ -1199,8 +1199,8 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-043",
-        "KB-044"
+        "image-library/mockup-layer-library#KB-043",
+        "image-library/mockup-layer-library#KB-044"
       ]
     },
     {
@@ -1211,7 +1211,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-045"
+        "image-library/mockup-layer-library#KB-045"
       ]
     },
     {
@@ -1222,8 +1222,8 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-052",
-        "KB-054"
+        "image-library/mockup-layer-library#KB-052",
+        "image-library/mockup-layer-library#KB-054"
       ]
     },
     {
@@ -1234,7 +1234,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-054"
+        "image-library/mockup-layer-library#KB-054"
       ]
     },
     {
@@ -1246,7 +1246,7 @@
       "covered": true,
       "note": "UNRESOLVED CONF-image-library-R1026-03",
       "kb_refs": [
-        "KB-053"
+        "image-library/mockup-layer-library#KB-053"
       ]
     },
     {
@@ -1258,7 +1258,7 @@
       "covered": true,
       "note": "host_not_in_expected_api_base, not-oracle",
       "kb_refs": [
-        "KB-007"
+        "image-library/_object-level#KB-007"
       ]
     },
     {
@@ -1269,7 +1269,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-008"
+        "image-library/_object-level#KB-008"
       ]
     },
     {
@@ -1281,7 +1281,7 @@
       "covered": true,
       "note": "UNRESOLVED CONF-image-library-R1026-01",
       "kb_refs": [
-        "KB-055"
+        "image-library/mockup-layer-library#KB-055"
       ]
     },
     {
@@ -1292,7 +1292,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-057"
+        "image-library/mockup-layer-library#KB-057"
       ]
     },
     {
@@ -1303,7 +1303,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-056"
+        "image-library/mockup-layer-library#KB-056"
       ]
     },
     {
@@ -1314,10 +1314,10 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-048",
-        "KB-049",
-        "KB-050",
-        "KB-051"
+        "image-library/mockup-layer-library#KB-048",
+        "image-library/mockup-layer-library#KB-049",
+        "image-library/mockup-layer-library#KB-050",
+        "image-library/mockup-layer-library#KB-051"
       ]
     },
     {
@@ -1328,8 +1328,8 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-046",
-        "KB-047"
+        "image-library/mockup-layer-library#KB-046",
+        "image-library/mockup-layer-library#KB-047"
       ]
     },
     {
@@ -1340,7 +1340,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-043"
+        "image-library/mockup-layer-library#KB-043"
       ]
     },
     {
@@ -1351,7 +1351,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-044"
+        "image-library/mockup-layer-library#KB-044"
       ]
     },
     {
@@ -1363,7 +1363,7 @@
       "covered": true,
       "note": "absence observed",
       "kb_refs": [
-        "KB-058"
+        "image-library/mockup-layer-library#KB-058"
       ]
     },
     {
@@ -1374,7 +1374,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-059"
+        "image-library/mockup-layer-library#KB-059"
       ]
     },
     {
@@ -1385,7 +1385,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-059"
+        "image-library/mockup-layer-library#KB-059"
       ]
     },
     {
@@ -1396,9 +1396,9 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-061",
-        "KB-062",
-        "KB-063"
+        "image-library/mockup-layer-library#KB-061",
+        "image-library/mockup-layer-library#KB-062",
+        "image-library/mockup-layer-library#KB-063"
       ]
     },
     {
@@ -1409,8 +1409,8 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-062",
-        "KB-063"
+        "image-library/mockup-layer-library#KB-062",
+        "image-library/mockup-layer-library#KB-063"
       ]
     },
     {
@@ -1421,8 +1421,8 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-043",
-        "KB-060"
+        "image-library/mockup-layer-library#KB-043",
+        "image-library/mockup-layer-library#KB-060"
       ]
     },
     {
@@ -1433,7 +1433,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-013"
+        "image-library/_object-level#KB-013"
       ]
     },
     {
@@ -1469,8 +1469,8 @@
       "conflict_group": "CONF-image-library-R1026-01",
       "topic": "Upload file không phải ảnh (text đổi đuôi .png) vào mockup library",
       "kb_refs": [
-        "KB-055",
-        "KB-056"
+        "image-library/mockup-layer-library#KB-055",
+        "image-library/mockup-layer-library#KB-056"
       ],
       "cross_object_refs": [
         "product-base/mockup-attachment#KB-081"
@@ -1482,7 +1482,7 @@
       "conflict_group": "CONF-image-library-R1026-02",
       "topic": "Giới hạn ~3 file khi chọn nhiều file upload mockup",
       "kb_refs": [
-        "KB-054"
+        "image-library/mockup-layer-library#KB-054"
       ],
       "cross_object_refs": [
         "product-base/mockup-attachment#KB-083"
@@ -1494,7 +1494,7 @@
       "conflict_group": "CONF-image-library-R1026-03",
       "topic": "Polling tự động trạng thái render mockup",
       "kb_refs": [
-        "KB-053"
+        "image-library/mockup-layer-library#KB-053"
       ],
       "cross_object_refs": [
         "product-base/mockup-attachment#KB-084",
@@ -1510,11 +1510,11 @@
       "to": "FEAT-01-image-layer-library",
       "relation": "Cùng object, dùng chung luồng upload/validation client/thông báo 422/component dialog; dữ liệu tách biệt. Khác biệt quan sát: mockup không đổi tên được, move giữ lựa chọn, rename/delete category có toast, xoá đơn không gọi in-use.",
       "kb_refs": [
-        "KB-005",
-        "KB-050",
-        "KB-058",
-        "KB-059",
-        "KB-062"
+        "image-library/_object-level#KB-005",
+        "image-library/mockup-layer-library#KB-050",
+        "image-library/mockup-layer-library#KB-058",
+        "image-library/mockup-layer-library#KB-059",
+        "image-library/mockup-layer-library#KB-062"
       ]
     }
   ]

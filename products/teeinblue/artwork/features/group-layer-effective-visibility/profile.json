@@ -4,10 +4,10 @@
   "name": "Effective visibility của Group layer (ẩn Group ẩn cả nhánh, giữ cờ riêng của layer con)",
   "user_goal": "Store owner ẩn/hiện một Group trong Artwork Editor 2.0 để tạm ẩn cả nhánh layer bên dưới (kể cả Group lồng, Group có mask) mà không làm mất cờ ẩn/hiện riêng của từng layer con; layer panel cho biết layer nào đang ẩn do Group; và mọi nơi render design (canvas editor, Live preview portal, MCP render-design-preview, print file) đều chỉ vẽ layer có cờ của chính nó và mọi Group tổ tiên cùng ON.",
   "user_goal_kb_refs": [
-    "KB-158",
-    "KB-159",
-    "KB-162",
-    "KB-168"
+    "artwork/group-layer-effective-visibility#KB-158",
+    "artwork/group-layer-effective-visibility#KB-159",
+    "artwork/group-layer-effective-visibility#KB-162",
+    "artwork/group-layer-effective-visibility#KB-168"
   ],
   "stable_since_version": null,
   "stable_since_version_note": "Feature mới; TIB-5584 Done nhưng shipped UNKNOWN (chưa xác nhận deploy production), chưa có version ổn định.",
@@ -16,20 +16,20 @@
       "role": "merchant-owner (store owner/staff, instance 520 nprice1)",
       "permission_observed": "Ẩn/hiện Group và layer con qua mắt trong layer panel, Undo/Redo, Save (PUT /api/artworks/{id} trả 200), mở Live preview của portal.",
       "kb_refs": [
-        "KB-158",
-        "KB-159",
-        "KB-160",
-        "KB-162",
-        "KB-164",
-        "KB-165",
-        "KB-166"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-160",
+        "artwork/group-layer-effective-visibility#KB-162",
+        "artwork/group-layer-effective-visibility#KB-164",
+        "artwork/group-layer-effective-visibility#KB-165",
+        "artwork/group-layer-effective-visibility#KB-166"
       ]
     },
     {
       "role": "người gọi MCP teeinblue (render-design-preview-tool)",
       "permission_observed": "Gọi render-design-preview-tool cho artwork có Group ẩn và nhận ảnh render.",
       "kb_refs": [
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-168"
       ]
     }
   ],
@@ -38,40 +38,40 @@
       "path": "Artwork Editor 2.0 → layer panel → mắt (visible) của Group / layer con",
       "precondition": "Artwork new-schema có ≥1 Group; phần lớn fixture 'Group ẩn + con visible:true' dựng qua MCP/API (Q11 treo)",
       "kb_refs": [
-        "KB-158",
-        "KB-159",
-        "KB-160",
-        "KB-162",
-        "KB-164"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-160",
+        "artwork/group-layer-effective-visibility#KB-162",
+        "artwork/group-layer-effective-visibility#KB-164"
       ]
     },
     {
       "path": "Artwork Editor 2.0 → Undo/Redo sau khi toggle mắt Group",
       "precondition": "Đã toggle mắt Group trong phiên editor",
       "kb_refs": [
-        "KB-165"
+        "artwork/group-layer-effective-visibility#KB-165"
       ]
     },
     {
       "path": "Artwork Editor 2.0 → chọn Group có mask đang ẩn → quick toolbar",
       "precondition": "Group có mask, đang ẩn",
       "kb_refs": [
-        "KB-163",
-        "KB-167"
+        "artwork/group-layer-effective-visibility#KB-163",
+        "artwork/group-layer-effective-visibility#KB-167"
       ]
     },
     {
       "path": "Portal → tab Live preview của artwork",
       "precondition": "Artwork có layer/Group thiếu key visible (ghi qua MCP/API)",
       "kb_refs": [
-        "KB-166"
+        "artwork/group-layer-effective-visibility#KB-166"
       ]
     },
     {
       "path": "MCP teeinblue → render-design-preview-tool",
       "precondition": "Artwork có Group ẩn, con giữ cờ ON",
       "kb_refs": [
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-168"
       ]
     }
   ],
@@ -80,47 +80,47 @@
       "name": "Ẩn cả nhánh layer bằng một Group (kể cả Group lồng nhiều cấp)",
       "description": "Layer chỉ render trên canvas khi cờ visible của chính nó và mọi Group tổ tiên tới gốc đều ON (AND cả chuỗi): ẩn Group cấp 1 thì cả nhánh ngừng render; Group cấp 1 ON mà ẩn Group cấp 2 thì chỉ nhánh cấp 2 ngừng render, layer ngoài nhánh vẫn render.",
       "kb_refs": [
-        "KB-158"
+        "artwork/group-layer-effective-visibility#KB-158"
       ]
     },
     {
       "name": "Ẩn/hiện Group mà không làm mất cờ riêng của layer con",
       "description": "Toggle Group chỉ đổi cờ của Group; hiện Group lại thì con có cờ ON hiện lại, con tự ẩn vẫn ẩn. Toggle một con khi Group ON chỉ đổi cờ của con đó. Save + reload giữ cờ riêng (con ON vẫn lưu visible=true khi Group ẩn). Undo/Redo khôi phục đúng cờ từng con. Ẩn hết con thì Group không tự OFF (theo QA plan dev, chưa chạy test).",
       "kb_refs": [
-        "KB-159",
-        "KB-160",
-        "KB-161",
-        "KB-165"
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-160",
+        "artwork/group-layer-effective-visibility#KB-161",
+        "artwork/group-layer-effective-visibility#KB-165"
       ]
     },
     {
       "name": "Nhận biết layer đang ẩn do Group trong layer panel",
       "description": "Khi Group ẩn: dòng con dimmed (opacity 0.3), mắt con ON màu amber, mắt con OFF gạch chéo; mắt con vẫn click được, không khoá, không tooltip (thay phần Portal của TIB-5581). Group rỗng không có badge/icon riêng, toggle không render gì và hệ thống không tự đổi cờ Group.",
       "kb_refs": [
-        "KB-162",
-        "KB-164"
+        "artwork/group-layer-effective-visibility#KB-162",
+        "artwork/group-layer-effective-visibility#KB-164"
       ]
     },
     {
       "name": "Group có mask khi ẩn",
       "description": "Ẩn Group có mask thì mask ngừng áp và không con nào được vẽ (không tràn ngoài vùng mask). Quick toolbar khi chọn Group có mask đang ẩn: mục Mask/Edit mask biến mất (quan sát, expected 'ẩn' hay 'disable' chưa chốt).",
       "kb_refs": [
-        "KB-163",
-        "KB-167"
+        "artwork/group-layer-effective-visibility#KB-163",
+        "artwork/group-layer-effective-visibility#KB-167"
       ]
     },
     {
       "name": "Dữ liệu thiếu key visible được coi là visible",
       "description": "Layer hoặc Group không có key visible (ghi qua MCP/API) được coi là visible ở canvas editor và Live preview portal; con của Group thiếu key render theo cờ riêng. Render phía server cho trường hợp này chưa đối chiếu.",
       "kb_refs": [
-        "KB-166"
+        "artwork/group-layer-effective-visibility#KB-166"
       ]
     },
     {
       "name": "Render design phía server theo effective visibility",
       "description": "MCP render-design-preview-tool cho artwork có Group ẩn (con cờ ON) trả ảnh không có con của Group, chỉ có layer ngoài Group, khớp print file của cùng artwork.",
       "kb_refs": [
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-168"
       ]
     }
   ],
@@ -131,9 +131,9 @@
       "trigger": "click mắt Group (ẩn)",
       "condition": "Artwork Editor 2.0",
       "kb_refs": [
-        "KB-158",
-        "KB-159",
-        "KB-162"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-162"
       ]
     },
     {
@@ -142,7 +142,7 @@
       "trigger": "click mắt Group (hiện)",
       "condition": "—",
       "kb_refs": [
-        "KB-159"
+        "artwork/group-layer-effective-visibility#KB-159"
       ]
     },
     {
@@ -151,7 +151,7 @@
       "trigger": "ẩn Group cấp 2",
       "condition": "Group lồng",
       "kb_refs": [
-        "KB-158"
+        "artwork/group-layer-effective-visibility#KB-158"
       ]
     },
     {
@@ -160,7 +160,7 @@
       "trigger": "click mắt một layer con",
       "condition": "Group đang ON",
       "kb_refs": [
-        "KB-160"
+        "artwork/group-layer-effective-visibility#KB-160"
       ]
     },
     {
@@ -169,7 +169,7 @@
       "trigger": "click mắt layer con",
       "condition": "Group đang ẩn",
       "kb_refs": [
-        "KB-162"
+        "artwork/group-layer-effective-visibility#KB-162"
       ]
     },
     {
@@ -178,7 +178,7 @@
       "trigger": "ẩn lần lượt hết mọi con",
       "condition": "theo QA plan dev; TC-TIB-6159/6160 chưa chạy",
       "kb_refs": [
-        "KB-161"
+        "artwork/group-layer-effective-visibility#KB-161"
       ]
     },
     {
@@ -187,7 +187,7 @@
       "trigger": "Undo / Redo",
       "condition": "—",
       "kb_refs": [
-        "KB-165"
+        "artwork/group-layer-effective-visibility#KB-165"
       ]
     },
     {
@@ -196,8 +196,8 @@
       "trigger": "Save rồi reload",
       "condition": "—",
       "kb_refs": [
-        "KB-159",
-        "KB-164"
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-164"
       ]
     },
     {
@@ -206,8 +206,8 @@
       "trigger": "ẩn Group có mask",
       "condition": "—",
       "kb_refs": [
-        "KB-163",
-        "KB-167"
+        "artwork/group-layer-effective-visibility#KB-163",
+        "artwork/group-layer-effective-visibility#KB-167"
       ]
     }
   ],
@@ -218,7 +218,7 @@
       "confidence": "MEDIUM",
       "confirmation_source_type": "test_case",
       "kb_refs": [
-        "KB-158"
+        "artwork/group-layer-effective-visibility#KB-158"
       ]
     },
     {
@@ -227,7 +227,7 @@
       "confidence": "MEDIUM",
       "confirmation_source_type": "test_case",
       "kb_refs": [
-        "KB-159"
+        "artwork/group-layer-effective-visibility#KB-159"
       ]
     },
     {
@@ -236,7 +236,7 @@
       "confidence": "MEDIUM",
       "confirmation_source_type": "test_case",
       "kb_refs": [
-        "KB-160"
+        "artwork/group-layer-effective-visibility#KB-160"
       ]
     },
     {
@@ -246,7 +246,7 @@
       "confirmation_source_type": "po_dev_confirm",
       "note": "Xác nhận của dev (QA plan #54766); test case chưa chạy.",
       "kb_refs": [
-        "KB-161"
+        "artwork/group-layer-effective-visibility#KB-161"
       ]
     },
     {
@@ -255,7 +255,7 @@
       "confidence": "MEDIUM",
       "confirmation_source_type": "test_case",
       "kb_refs": [
-        "KB-162"
+        "artwork/group-layer-effective-visibility#KB-162"
       ]
     },
     {
@@ -264,7 +264,7 @@
       "confidence": "MEDIUM",
       "confirmation_source_type": "test_case",
       "kb_refs": [
-        "KB-163"
+        "artwork/group-layer-effective-visibility#KB-163"
       ]
     },
     {
@@ -273,7 +273,7 @@
       "confidence": "MEDIUM",
       "confirmation_source_type": "test_case",
       "kb_refs": [
-        "KB-164"
+        "artwork/group-layer-effective-visibility#KB-164"
       ]
     },
     {
@@ -282,7 +282,7 @@
       "confidence": "MEDIUM",
       "confirmation_source_type": "test_case",
       "kb_refs": [
-        "KB-165"
+        "artwork/group-layer-effective-visibility#KB-165"
       ]
     },
     {
@@ -291,7 +291,7 @@
       "confidence": "MEDIUM",
       "confirmation_source_type": "test_case",
       "kb_refs": [
-        "KB-166"
+        "artwork/group-layer-effective-visibility#KB-166"
       ]
     },
     {
@@ -300,7 +300,7 @@
       "confidence": "MEDIUM",
       "confirmation_source_type": "test_case",
       "kb_refs": [
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-168"
       ]
     }
   ],
@@ -311,7 +311,7 @@
       "confidence": "LOW",
       "observed_count": null,
       "kb_refs": [
-        "KB-167"
+        "artwork/group-layer-effective-visibility#KB-167"
       ]
     }
   ],
@@ -321,29 +321,29 @@
     {
       "statement": "Mọi quan sát trên staging instance 520 (nprice1), lượt chạy 2026-10-16 trước khi 3 PR còn mở được merge; build hash không rõ; production và bản ship chưa xác nhận (shipped UNKNOWN).",
       "kb_refs": [
-        "KB-158",
-        "KB-159",
-        "KB-160",
-        "KB-161",
-        "KB-162",
-        "KB-163",
-        "KB-164",
-        "KB-165",
-        "KB-166",
-        "KB-167",
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-160",
+        "artwork/group-layer-effective-visibility#KB-161",
+        "artwork/group-layer-effective-visibility#KB-162",
+        "artwork/group-layer-effective-visibility#KB-163",
+        "artwork/group-layer-effective-visibility#KB-164",
+        "artwork/group-layer-effective-visibility#KB-165",
+        "artwork/group-layer-effective-visibility#KB-166",
+        "artwork/group-layer-effective-visibility#KB-167",
+        "artwork/group-layer-effective-visibility#KB-168"
       ]
     },
     {
       "statement": "Chỉ phủ Artwork 2.0; Artwork 1.0 có hỗ trợ Group hay không chưa rõ (Q10b).",
       "kb_refs": [
-        "KB-158"
+        "artwork/group-layer-effective-visibility#KB-158"
       ]
     },
     {
       "statement": "Thiếu-key-visible chỉ phủ canvas editor và Live preview portal, không phủ render phía server.",
       "kb_refs": [
-        "KB-166"
+        "artwork/group-layer-effective-visibility#KB-166"
       ]
     }
   ],
@@ -353,11 +353,11 @@
       "capability": "ẩn/hiện Group và layer con, Undo/Redo, Save artwork",
       "observed": true,
       "kb_refs": [
-        "KB-158",
-        "KB-159",
-        "KB-160",
-        "KB-162",
-        "KB-165"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-160",
+        "artwork/group-layer-effective-visibility#KB-162",
+        "artwork/group-layer-effective-visibility#KB-165"
       ]
     },
     {
@@ -365,7 +365,7 @@
       "capability": "gọi render-design-preview-tool",
       "observed": true,
       "kb_refs": [
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-168"
       ]
     }
   ],
@@ -374,37 +374,37 @@
       {
         "item": "Artwork Editor 2.0 → canvas: render theo effective visibility (Group lồng, Group có mask, Group rỗng)",
         "kb_refs": [
-          "KB-158",
-          "KB-161",
-          "KB-163",
-          "KB-164"
+          "artwork/group-layer-effective-visibility#KB-158",
+          "artwork/group-layer-effective-visibility#KB-161",
+          "artwork/group-layer-effective-visibility#KB-163",
+          "artwork/group-layer-effective-visibility#KB-164"
         ]
       },
       {
         "item": "Artwork Editor 2.0 → layer panel: mắt Group/con, dòng con dimmed (opacity 0.3), mắt amber rgb(201,169,78), mắt gạch chéo, không tooltip/khoá",
         "kb_refs": [
-          "KB-159",
-          "KB-160",
-          "KB-162",
-          "KB-164"
+          "artwork/group-layer-effective-visibility#KB-159",
+          "artwork/group-layer-effective-visibility#KB-160",
+          "artwork/group-layer-effective-visibility#KB-162",
+          "artwork/group-layer-effective-visibility#KB-164"
         ]
       },
       {
         "item": "Artwork Editor 2.0 → Undo/Redo",
         "kb_refs": [
-          "KB-165"
+          "artwork/group-layer-effective-visibility#KB-165"
         ]
       },
       {
         "item": "Artwork Editor 2.0 → quick toolbar của Group có mask đang ẩn (Mask / Edit mask)",
         "kb_refs": [
-          "KB-167"
+          "artwork/group-layer-effective-visibility#KB-167"
         ]
       },
       {
         "item": "Portal → tab Live preview",
         "kb_refs": [
-          "KB-166"
+          "artwork/group-layer-effective-visibility#KB-166"
         ]
       }
     ],
@@ -413,15 +413,15 @@
       {
         "item": "PUT /api/artworks/{id} — layer.visible của Group và từng con lưu riêng",
         "kb_refs": [
-          "KB-159",
-          "KB-160",
-          "KB-164"
+          "artwork/group-layer-effective-visibility#KB-159",
+          "artwork/group-layer-effective-visibility#KB-160",
+          "artwork/group-layer-effective-visibility#KB-164"
         ]
       },
       {
         "item": "MCP teeinblue render-design-preview-tool",
         "kb_refs": [
-          "KB-168"
+          "artwork/group-layer-effective-visibility#KB-168"
         ]
       }
     ],
@@ -429,8 +429,8 @@
       {
         "item": "layer.visible (true/false; thiếu key được coi là visible ở canvas và Live preview)",
         "kb_refs": [
-          "KB-159",
-          "KB-166"
+          "artwork/group-layer-effective-visibility#KB-159",
+          "artwork/group-layer-effective-visibility#KB-166"
         ]
       }
     ],
@@ -440,24 +440,24 @@
     {
       "statement": "Cờ visible chỉ persist qua PUT /api/artworks/{id} (feature artwork-save-persist).",
       "kb_refs": [
-        "KB-159",
-        "KB-164"
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-164"
       ]
     },
     {
       "statement": "Print file (order design) theo cùng quy tắc effective visibility — object order.",
       "kb_refs": [
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-168"
       ]
     },
     {
       "statement": "Phần lớn test case dùng fixture 'Group ẩn + con visible:true' dựng qua MCP/API; repair command artwork:show-hidden-groups-with-visible-children đã chạy nên dữ liệu thật có thể không còn trạng thái này (Q11).",
       "kb_refs": [
-        "KB-158",
-        "KB-159",
-        "KB-162",
-        "KB-163",
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-162",
+        "artwork/group-layer-effective-visibility#KB-163",
+        "artwork/group-layer-effective-visibility#KB-168"
       ]
     }
   ],
@@ -465,45 +465,45 @@
     {
       "risk": "Lượt PASS 2026-10-16 chạy trước khi 3 PR còn mở được merge; chưa chạy lại trên build sau đó — build ship có thể khác.",
       "kb_refs": [
-        "KB-158",
-        "KB-159",
-        "KB-160",
-        "KB-162",
-        "KB-163",
-        "KB-164",
-        "KB-165",
-        "KB-166",
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-160",
+        "artwork/group-layer-effective-visibility#KB-162",
+        "artwork/group-layer-effective-visibility#KB-163",
+        "artwork/group-layer-effective-visibility#KB-164",
+        "artwork/group-layer-effective-visibility#KB-165",
+        "artwork/group-layer-effective-visibility#KB-166",
+        "artwork/group-layer-effective-visibility#KB-168"
       ]
     },
     {
       "risk": "Fixture Group ẩn + con visible:true có thể không phải dữ liệu hợp lệ (Q11 treo) — check dựa trên fixture này có thể không phản ánh dữ liệu seller thật.",
       "kb_refs": [
-        "KB-158",
-        "KB-159",
-        "KB-162",
-        "KB-163",
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-162",
+        "artwork/group-layer-effective-visibility#KB-163",
+        "artwork/group-layer-effective-visibility#KB-168"
       ]
     },
     {
       "risk": "KB-161 chỉ dựa QA plan của dev, test case chưa chạy.",
       "kb_refs": [
-        "KB-161"
+        "artwork/group-layer-effective-visibility#KB-161"
       ]
     },
     {
       "risk": "Status Testlane TC-TIB-6060 'passed' trong khi actualResult khác expectedResult — không dùng status làm bằng chứng.",
       "kb_refs": [
-        "KB-167"
+        "artwork/group-layer-effective-visibility#KB-167"
       ]
     },
     {
       "risk": "Mọi test case do test-executor [AI] chạy; Testlane không lưu ngày/build trong record.",
       "kb_refs": [
-        "KB-158",
-        "KB-162",
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-162",
+        "artwork/group-layer-effective-visibility#KB-168"
       ]
     }
   ],
@@ -516,7 +516,7 @@
       "question": "Khi chọn Group có mask đang ẩn, mục Mask/nút Edit mask nên biến mất (như quan sát) hay hiển thị ở trạng thái disable (như expected của TC-TIB-6060 và R16/Q6d)?",
       "why_it_matters": "Check quick toolbar cho Group ẩn có mask không có expected result; quan sát hiện tại khác expected của test case.",
       "kb_refs": [
-        "KB-167"
+        "artwork/group-layer-effective-visibility#KB-167"
       ],
       "oq_type": "NEEDS_CONFIRMATION",
       "oq_id": "OQ-artwork-138"
@@ -525,7 +525,7 @@
       "question": "Render phía server (print file, render-design-preview) cho layer hoặc Group thiếu key visible có coi là visible như canvas editor và Live preview portal không?",
       "why_it_matters": "Bước render server của TC-TIB-6055 không chạy; nếu server xử lý khác thì print file lệch preview với dữ liệu ghi qua MCP/API.",
       "kb_refs": [
-        "KB-166"
+        "artwork/group-layer-effective-visibility#KB-166"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-artwork-139"
@@ -534,11 +534,11 @@
       "question": "Fixture 'Group ẩn + con visible:true' (dựng qua MCP/API) có phải dữ liệu hợp lệ theo PO/dev không, và sau repair command artwork:show-hidden-groups-with-visible-children dữ liệu thật còn trạng thái này không?",
       "why_it_matters": "Phần lớn check của feature dựa trên fixture này; nếu không hợp lệ thì cần dựng lại test data bằng đường editor.",
       "kb_refs": [
-        "KB-158",
-        "KB-159",
-        "KB-162",
-        "KB-163",
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-162",
+        "artwork/group-layer-effective-visibility#KB-163",
+        "artwork/group-layer-effective-visibility#KB-168"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-artwork-140"
@@ -547,7 +547,7 @@
       "question": "Artwork 1.0 có hỗ trợ Group không, và nếu có thì effective visibility áp thế nào?",
       "why_it_matters": "Mọi item của feature chỉ phủ Artwork 2.0; checklist không biết có cần check Artwork 1.0.",
       "kb_refs": [
-        "KB-158"
+        "artwork/group-layer-effective-visibility#KB-158"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-artwork-141"
@@ -556,8 +556,8 @@
       "question": "Các mục 'Not for QA' trong QA plan dev (#54766) — dependency trên Group bị bỏ qua, layer trỏ tới Group không tồn tại render ở top level, MCP form preview khớp storefront form — hoạt động thế nào?",
       "why_it_matters": "Chưa có test, không được nạp; đây là các nhánh lân cận quy tắc effective visibility và render MCP.",
       "kb_refs": [
-        "KB-158",
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-168"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-artwork-142"
@@ -566,7 +566,7 @@
       "question": "Ẩn hết mọi con thì Group vẫn ON và canvas không vẽ gì — hành vi có đúng như QA plan dev khi chạy TC-TIB-6159/6160 không?",
       "why_it_matters": "Rule hiện chỉ dựa xác nhận của dev, chưa có lượt chạy test nào.",
       "kb_refs": [
-        "KB-161"
+        "artwork/group-layer-effective-visibility#KB-161"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-artwork-143"
@@ -575,18 +575,18 @@
       "question": "TIB-5584 đã deploy production ở bản release nào, và hành vi có giữ nguyên trên build sau khi 3 PR còn mở lúc 16:14 16/10 được merge không?",
       "why_it_matters": "Lượt PASS chạy trước khi đủ PR merge; chưa chạy lại; production chưa kiểm.",
       "kb_refs": [
-        "KB-158",
-        "KB-159",
-        "KB-162",
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-162",
+        "artwork/group-layer-effective-visibility#KB-168"
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-artwork-144"
     }
   ],
   "last_updated": {
-    "date": "2026-10-30",
-    "ccr_ref": "CBS-006"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "coverage_matrix": [
     {
@@ -597,9 +597,9 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-158",
-        "KB-163",
-        "KB-164"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-163",
+        "artwork/group-layer-effective-visibility#KB-164"
       ]
     },
     {
@@ -610,10 +610,10 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-159",
-        "KB-160",
-        "KB-162",
-        "KB-165"
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-160",
+        "artwork/group-layer-effective-visibility#KB-162",
+        "artwork/group-layer-effective-visibility#KB-165"
       ]
     },
     {
@@ -624,7 +624,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-161"
+        "artwork/group-layer-effective-visibility#KB-161"
       ],
       "basis": "chỉ QA plan dev; TC-TIB-6159/6160 chưa chạy"
     },
@@ -636,7 +636,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-167"
+        "artwork/group-layer-effective-visibility#KB-167"
       ],
       "basis": "OBSERVED_CURRENT/LOW, expected chưa chốt"
     },
@@ -648,9 +648,9 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-159",
-        "KB-160",
-        "KB-164"
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-160",
+        "artwork/group-layer-effective-visibility#KB-164"
       ]
     },
     {
@@ -661,7 +661,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-166"
+        "artwork/group-layer-effective-visibility#KB-166"
       ]
     },
     {
@@ -672,7 +672,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-166"
+        "artwork/group-layer-effective-visibility#KB-166"
       ]
     },
     {
@@ -683,7 +683,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-168"
       ]
     },
     {
@@ -694,7 +694,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-158"
+        "artwork/group-layer-effective-visibility#KB-158"
       ],
       "basis": "không có KB trong feature này; xem FEAT-07-storefront-buyer-facing (object sdk)"
     },
@@ -706,7 +706,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-158"
+        "artwork/group-layer-effective-visibility#KB-158"
       ]
     },
     {
@@ -717,7 +717,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-158"
+        "artwork/group-layer-effective-visibility#KB-158"
       ]
     },
     {
@@ -728,7 +728,7 @@
       "environment": "production",
       "covered": false,
       "kb_refs": [
-        "KB-158"
+        "artwork/group-layer-effective-visibility#KB-158"
       ],
       "basis": "shipped UNKNOWN"
     }
@@ -741,8 +741,8 @@
       "relation": "constrains",
       "note": "Chọn Group đang ẩn thay đổi selection box/quick toolbar/quick editor (KB-169..KB-172 ở FEAT-03); quy tắc gốc là effective visibility.",
       "kb_refs": [
-        "KB-158",
-        "KB-167"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-167"
       ]
     },
     {
@@ -751,7 +751,7 @@
       "relation": "related",
       "note": "Lock và display setting của Group cascade xuống con (KB-174/KB-175 ở FEAT-04) — cơ chế cascade cùng cấu trúc Group, khác với visible (không cascade ghi đè).",
       "kb_refs": [
-        "KB-159"
+        "artwork/group-layer-effective-visibility#KB-159"
       ]
     },
     {
@@ -760,8 +760,8 @@
       "relation": "extended_by",
       "note": "Linked template kế thừa cờ visible=null từ global (KB-176/KB-177 ở FEAT-02), áp cùng quy tắc Group ẩn kéo con dimmed/không render.",
       "kb_refs": [
-        "KB-158",
-        "KB-162"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-162"
       ]
     },
     {
@@ -770,8 +770,8 @@
       "relation": "applies_to",
       "note": "Artwork tạo từ PSD có folder ẩn áp quy tắc effective visibility và hiển thị layer panel (KB-178 ở FEAT-23).",
       "kb_refs": [
-        "KB-158",
-        "KB-162"
+        "artwork/group-layer-effective-visibility#KB-158",
+        "artwork/group-layer-effective-visibility#KB-162"
       ]
     },
     {
@@ -780,8 +780,8 @@
       "relation": "depends_on",
       "note": "Cờ visible persist qua PUT /api/artworks/{id}.",
       "kb_refs": [
-        "KB-159",
-        "KB-164"
+        "artwork/group-layer-effective-visibility#KB-159",
+        "artwork/group-layer-effective-visibility#KB-164"
       ]
     },
     {
@@ -791,7 +791,7 @@
       "relation": "same_rule_applies",
       "note": "Print file PNG/PDF theo cùng quy tắc (KB-182 ở object order).",
       "kb_refs": [
-        "KB-168"
+        "artwork/group-layer-effective-visibility#KB-168"
       ]
     },
     {
@@ -801,7 +801,7 @@
       "relation": "same_rule_applies",
       "note": "Buyer preview storefront theo effective visibility và known defect form/required của con trong Group ẩn (KB-179..KB-181 ở object sdk).",
       "kb_refs": [
-        "KB-158"
+        "artwork/group-layer-effective-visibility#KB-158"
       ]
     }
   ]

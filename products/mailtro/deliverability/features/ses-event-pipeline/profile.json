@@ -9,16 +9,16 @@
       "role": "system (SNS / SQS / worker)",
       "permission_observed": "Worker chỉ nhận message có chữ ký SNS hợp lệ và `TopicArn` nằm trong whitelist; không có thao tác người dùng.",
       "kb_refs": [
-        "KB-058",
-        "KB-060",
-        "KB-061"
+        "deliverability/ses-event-pipeline#KB-058",
+        "deliverability/ses-event-pipeline#KB-060",
+        "deliverability/ses-event-pipeline#KB-061"
       ]
     },
     {
       "role": "người nhận cảnh báo (AdminNotification + Slack, role không nêu)",
       "permission_observed": "Nhận cảnh báo khi một region active câm; tài liệu không nêu role cụ thể.",
       "kb_refs": [
-        "KB-071"
+        "deliverability/ses-event-pipeline#KB-071"
       ]
     }
   ],
@@ -27,23 +27,23 @@
       "path": "SES phát event qua SNS → SQS → worker, từ 10 nguồn (5 region × 2 AWS account)",
       "precondition": "Subscription SNS → SQS để raw message delivery OFF.",
       "kb_refs": [
-        "KB-058",
-        "KB-059",
-        "KB-P-073"
+        "deliverability/ses-event-pipeline#KB-058",
+        "deliverability/ses-event-pipeline#KB-059",
+        "_product-level#KB-P-073"
       ]
     },
     {
       "path": "Message `SubscriptionConfirmation` của SNS",
       "precondition": "Khi SNS xác nhận subscription.",
       "kb_refs": [
-        "KB-062"
+        "deliverability/ses-event-pipeline#KB-062"
       ]
     },
     {
       "path": "Scheduled command quét các region active",
       "precondition": "Lịch chạy chưa được mô tả.",
       "kb_refs": [
-        "KB-071"
+        "deliverability/ses-event-pipeline#KB-071"
       ]
     }
   ],
@@ -52,38 +52,38 @@
       "name": "Nhận và xác thực event",
       "description": "Worker validate chữ ký SNS, đối chiếu `TopicArn` với whitelist `sending_account_regions.sns_topic_arn`, tự xử lý `SubscriptionConfirmation`; event không khớp whitelist hoặc thiếu tag attribution bị log rồi drop, không lưu và không tạo suppression.",
       "kb_refs": [
-        "KB-058",
-        "KB-059",
-        "KB-060",
-        "KB-061",
-        "KB-062",
-        "KB-063"
+        "deliverability/ses-event-pipeline#KB-058",
+        "deliverability/ses-event-pipeline#KB-059",
+        "deliverability/ses-event-pipeline#KB-060",
+        "deliverability/ses-event-pipeline#KB-061",
+        "deliverability/ses-event-pipeline#KB-062",
+        "deliverability/ses-event-pipeline#KB-063"
       ]
     },
     {
       "name": "Lưu event kèm attribution",
       "description": "Bảng `ses_events` lưu mọi loại event (kể cả open / click native của AWS) kèm `team_id`, `campaign_id`, `campaign_broadcast_recipient_id`, `source_domain` (lowercase) và các trường chẩn đoán; có index `message_id`, `occurred_at`; không lưu raw payload.",
       "kb_refs": [
-        "KB-064",
-        "KB-065",
-        "KB-066",
-        "KB-067"
+        "deliverability/ses-event-pipeline#KB-064",
+        "deliverability/ses-event-pipeline#KB-065",
+        "deliverability/ses-event-pipeline#KB-066",
+        "deliverability/ses-event-pipeline#KB-067"
       ]
     },
     {
       "name": "Tính số liệu gửi lúc đọc",
       "description": "Không có bảng analytics riêng; 6 số liệu delivery của campaign tính bằng COUNT trên `ses_events` tại thời điểm đọc, không cache.",
       "kb_refs": [
-        "KB-068",
-        "KB-069"
+        "deliverability/ses-event-pipeline#KB-068",
+        "deliverability/ses-event-pipeline#KB-069"
       ]
     },
     {
       "name": "Giám sát region câm",
       "description": "Worker stamp `last_event_at` lên region khớp trong bước kiểm whitelist; scheduled command cảnh báo (AdminNotification + Slack) khi region active chưa từng nhận event hoặc câm bất thường trong lúc vẫn có broadcast gửi qua đó. Ngưỡng và lịch chạy chưa mô tả.",
       "kb_refs": [
-        "KB-070",
-        "KB-071"
+        "deliverability/ses-event-pipeline#KB-070",
+        "deliverability/ses-event-pipeline#KB-071"
       ]
     }
   ],
@@ -94,10 +94,10 @@
       "trigger": "Worker xử lý message",
       "condition": "Chữ ký hợp lệ, `TopicArn` trong whitelist, có tag attribution",
       "kb_refs": [
-        "KB-060",
-        "KB-061",
-        "KB-063",
-        "KB-064"
+        "deliverability/ses-event-pipeline#KB-060",
+        "deliverability/ses-event-pipeline#KB-061",
+        "deliverability/ses-event-pipeline#KB-063",
+        "deliverability/ses-event-pipeline#KB-064"
       ]
     },
     {
@@ -106,7 +106,7 @@
       "trigger": "Worker xử lý message",
       "condition": "`TopicArn` không khớp whitelist hoặc thiếu tag attribution",
       "kb_refs": [
-        "KB-063"
+        "deliverability/ses-event-pipeline#KB-063"
       ]
     },
     {
@@ -115,7 +115,7 @@
       "trigger": "Nhận event hợp lệ từ region đó",
       "condition": "Stamp ngay trong bước kiểm whitelist",
       "kb_refs": [
-        "KB-070"
+        "deliverability/ses-event-pipeline#KB-070"
       ]
     },
     {
@@ -124,7 +124,7 @@
       "trigger": "Scheduled command quét region",
       "condition": "Chưa từng nhận event, hoặc câm bất thường khi vẫn có broadcast; ngưỡng chưa mô tả",
       "kb_refs": [
-        "KB-071"
+        "deliverability/ses-event-pipeline#KB-071"
       ]
     }
   ],
@@ -134,7 +134,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-058"
+        "deliverability/ses-event-pipeline#KB-058"
       ]
     },
     {
@@ -142,7 +142,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-059"
+        "deliverability/ses-event-pipeline#KB-059"
       ]
     },
     {
@@ -150,7 +150,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-060"
+        "deliverability/ses-event-pipeline#KB-060"
       ]
     },
     {
@@ -158,7 +158,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-061"
+        "deliverability/ses-event-pipeline#KB-061"
       ]
     },
     {
@@ -166,7 +166,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-062"
+        "deliverability/ses-event-pipeline#KB-062"
       ]
     },
     {
@@ -174,7 +174,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-063"
+        "deliverability/ses-event-pipeline#KB-063"
       ]
     },
     {
@@ -182,7 +182,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-064"
+        "deliverability/ses-event-pipeline#KB-064"
       ]
     },
     {
@@ -190,7 +190,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-065"
+        "deliverability/ses-event-pipeline#KB-065"
       ]
     },
     {
@@ -198,7 +198,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-066"
+        "deliverability/ses-event-pipeline#KB-066"
       ]
     },
     {
@@ -206,7 +206,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-067"
+        "deliverability/ses-event-pipeline#KB-067"
       ]
     },
     {
@@ -214,7 +214,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-068"
+        "deliverability/ses-event-pipeline#KB-068"
       ]
     },
     {
@@ -222,7 +222,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-069"
+        "deliverability/ses-event-pipeline#KB-069"
       ]
     },
     {
@@ -230,7 +230,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-070"
+        "deliverability/ses-event-pipeline#KB-070"
       ]
     },
     {
@@ -238,7 +238,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-071"
+        "deliverability/ses-event-pipeline#KB-071"
       ]
     }
   ],
@@ -253,24 +253,24 @@
       {
         "item": "Bảng `ses_events`: mọi loại event, attribution, `source_domain`, trường chẩn đoán, index `message_id` / `occurred_at`, không raw payload",
         "kb_refs": [
-          "KB-064",
-          "KB-065",
-          "KB-066",
-          "KB-067"
+          "deliverability/ses-event-pipeline#KB-064",
+          "deliverability/ses-event-pipeline#KB-065",
+          "deliverability/ses-event-pipeline#KB-066",
+          "deliverability/ses-event-pipeline#KB-067"
         ]
       },
       {
         "item": "Bảng `sending_account_regions`: `sns_topic_arn` (whitelist), `last_event_at` (heartbeat)",
         "kb_refs": [
-          "KB-061",
-          "KB-070"
+          "deliverability/ses-event-pipeline#KB-061",
+          "deliverability/ses-event-pipeline#KB-070"
         ]
       },
       {
         "item": "Không có bảng analytics; số liệu = COUNT trên `ses_events`",
         "kb_refs": [
-          "KB-068",
-          "KB-069"
+          "deliverability/ses-event-pipeline#KB-068",
+          "deliverability/ses-event-pipeline#KB-069"
         ]
       }
     ],
@@ -278,8 +278,8 @@
       {
         "item": "Worker SQS validate chữ ký bằng `aws/aws-php-sns-message-validator`; scheduled command cảnh báo region câm (theo tài liệu, không có mã nguồn)",
         "kb_refs": [
-          "KB-060",
-          "KB-071"
+          "deliverability/ses-event-pipeline#KB-060",
+          "deliverability/ses-event-pipeline#KB-071"
         ]
       }
     ]
@@ -290,8 +290,8 @@
       "relation": "infrastructure",
       "note": "Fact cấp sản phẩm.",
       "kb_refs": [
-        "KB-P-073",
-        "KB-058"
+        "_product-level#KB-P-073",
+        "deliverability/ses-event-pipeline#KB-058"
       ]
     },
     {
@@ -299,9 +299,9 @@
       "relation": "downstream",
       "note": "Event hợp lệ là đầu vào của quyết định suppress; provenance suppression nằm ở `ses_events`.",
       "kb_refs": [
-        "KB-029",
-        "KB-042",
-        "KB-063"
+        "deliverability/bounce-complaint-suppression#KB-029",
+        "deliverability/bounce-complaint-suppression#KB-042",
+        "deliverability/ses-event-pipeline#KB-063"
       ]
     },
     {
@@ -309,7 +309,7 @@
       "relation": "near_duplicate_different_view",
       "note": "6 số liệu delivery của campaign đọc từ `ses_events`; object campaigns có item gần trùng — giữ cả hai vì khác góc nhìn: campaigns sở hữu oracle hiển thị trên report, profile này giữ nguồn dữ liệu / không cache.",
       "kb_refs": [
-        "KB-069"
+        "deliverability/ses-event-pipeline#KB-069"
       ]
     }
   ],
@@ -321,7 +321,7 @@
       "status": null,
       "conflict_group": null,
       "kb_refs": [
-        "KB-072"
+        "deliverability/ses-event-pipeline#KB-072"
       ]
     },
     {
@@ -331,10 +331,10 @@
       "status": null,
       "conflict_group": null,
       "kb_refs": [
-        "KB-058",
-        "KB-063",
-        "KB-070",
-        "KB-071"
+        "deliverability/ses-event-pipeline#KB-058",
+        "deliverability/ses-event-pipeline#KB-063",
+        "deliverability/ses-event-pipeline#KB-070",
+        "deliverability/ses-event-pipeline#KB-071"
       ]
     },
     {
@@ -344,8 +344,8 @@
       "status": null,
       "conflict_group": null,
       "kb_refs": [
-        "KB-058",
-        "KB-031"
+        "deliverability/ses-event-pipeline#KB-058",
+        "deliverability/bounce-complaint-suppression#KB-031"
       ]
     }
   ],
@@ -358,8 +358,8 @@
       "question": "Worker có dedupe message SQS (giao at-least-once) không — event trùng có làm counter soft bounce tăng hai lần?",
       "why_it_matters": "Ảnh hưởng trực tiếp tới ngưỡng soft bounce và số liệu đếm.",
       "kb_refs": [
-        "KB-058",
-        "KB-031"
+        "deliverability/ses-event-pipeline#KB-058",
+        "deliverability/bounce-complaint-suppression#KB-031"
       ],
       "oq_id": "OQ-deliverability-016"
     },
@@ -367,7 +367,7 @@
       "question": "Message SNS có chữ ký sai bị xử lý thế nào (drop, log, cảnh báo)?",
       "why_it_matters": "Rule chỉ nói worker validate chữ ký, không nói hậu quả.",
       "kb_refs": [
-        "KB-060"
+        "deliverability/ses-event-pipeline#KB-060"
       ],
       "oq_id": "OQ-deliverability-016"
     },
@@ -375,7 +375,7 @@
       "question": "Ngưỡng 'câm bất thường' và lịch chạy của scheduled command cảnh báo region là gì?",
       "why_it_matters": "Không có expected về thời điểm cảnh báo.",
       "kb_refs": [
-        "KB-071"
+        "deliverability/ses-event-pipeline#KB-071"
       ],
       "oq_id": "OQ-deliverability-017"
     },
@@ -383,17 +383,17 @@
       "question": "Khi nào QA có quyền AWS / DB staging để quan sát trực tiếp pipeline (whitelist, drop, `ses_events`, `last_event_at`)?",
       "why_it_matters": "Toàn bộ feature hiện chỉ có tài liệu; mọi check đều chưa có baseline staging.",
       "kb_refs": [
-        "KB-058",
-        "KB-063",
-        "KB-070",
-        "KB-071"
+        "deliverability/ses-event-pipeline#KB-058",
+        "deliverability/ses-event-pipeline#KB-063",
+        "deliverability/ses-event-pipeline#KB-070",
+        "deliverability/ses-event-pipeline#KB-071"
       ],
       "oq_id": "OQ-deliverability-017"
     }
   ],
   "last_updated": {
-    "date": "2026-10-08",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "coverage_matrix": [
     {
@@ -476,8 +476,8 @@
       "to": "bounce-complaint-suppression",
       "relation": "FEEDS_EVENTS_TO",
       "kb_refs": [
-        "KB-058",
-        "KB-029"
+        "deliverability/ses-event-pipeline#KB-058",
+        "deliverability/bounce-complaint-suppression#KB-029"
       ]
     },
     {
@@ -485,8 +485,8 @@
       "to": "suppression-list-management",
       "relation": "SUPPORTS",
       "kb_refs": [
-        "KB-015",
-        "KB-061"
+        "deliverability/suppression-list-management#KB-015",
+        "deliverability/ses-event-pipeline#KB-061"
       ]
     }
   ]

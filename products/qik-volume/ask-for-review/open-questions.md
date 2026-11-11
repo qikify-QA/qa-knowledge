@@ -96,3 +96,26 @@ Tổng: 6 mục (NEEDS_CONFIRMATION/CONFLICT/OPEN_ISSUE). Sinh từ bootstrap DO
 }
 ```
 
+```json
+{"oq_id":"OQ-ask-for-review-007","type":"NEEDS_CONFIRMATION","feature_id":"ask-for-review","summary":"Khi mot AI-generated offer bi merchant discard (khong luu), overlay Ask for Review co chac chan khong hien ra (khong co false-positive) khong? Tai lieu suy luan dieu nay tu viec trigger yeu cau 'after saving', nhung tu yeu cau 'confirm no false-positive' — chua co xac nhan doc lap."}
+```
+
+```json
+{"oq_id":"OQ-ask-for-review-008","type":"NEEDS_CONFIRMATION","feature_id":"ask-for-review","summary":"Khi merchant dong overlay (X) ma khong chon star nao, he thong co ghi reviewAction='dismissed' kem reviewRating=null hay khong? Tai lieu noi dieu nay 'matches the schema' nhung tu nhan la 'worth an explicit test' — chua duoc xac nhan, chi suy luan tu tinh nullable cua field."}
+```
+
+```json
+{"oq_id":"OQ-ask-for-review-009","type":"NEEDS_CONFIRMATION","feature_id":"ask-for-review","summary":"Textarea feedback o nhanh 1-4 sao co bat buoc nhap (required) hay cho phep submit rong? Tai lieu tu danh dau 'Need confirm' — khong co validation rule nao duoc xac nhan cho field nay."}
+```
+
+```json
+{"oq_id":"OQ-ask-for-review-010","type":"NEEDS_CONFIRMATION","feature_id":"ask-for-review","summary":"UI co thuc su cho phep merchant doi lai muc star da chon (vd chon 5 roi doi sang 2), hay chi la one-shot pick? QVD-173 ky vong 'last star_selected wins' cho metric star distribution, nhung tai lieu khong xac nhan UI co ho tro doi lua chon hay khong — neu khong, metric do khong bao gio xay ra tren thuc te."}
+```
+
+```json
+{"oq_id":"OQ-ask-for-review-011","type":"NEEDS_CONFIRMATION","feature_id":"ask-for-review","summary":"Overlay Ask for Review hien ra cho moi merchant staff co quyen tao offer, hay chi merchant owner/admin? Tai lieu chi noi chung 'merchant', khong phan biet role/permission cu the — checklist se khong biet test voi role nao de bao phu day du."}
+```
+
+```json
+{"oq_id":"OQ-ask-for-review-012","type":"NEEDS_CONFIRMATION","feature_id":"ask-for-review","summary":"Mot offer duoc tao thu cong, sau do merchant sua lai bang AI assistant (neu flow do ton tai) — offer do co duoc gan nguoc (retroactive) co isAiGenerated va trigger overlay o lan save tiep theo khong? Tai lieu tu danh dau 'Need confirm PO/Dev' va goi day la 'crux cua toan bo trigger condition' cua tinh nang nay (xem KB-023, INFERRED/LOW, suy luan hien tai nghieng ve 'khong' nhung chua xac nhan)."}
+```

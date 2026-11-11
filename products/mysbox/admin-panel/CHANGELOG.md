@@ -8,3 +8,4 @@
 - 2026-10-17 (`bootstrap`, REFRESH) — portal-release-version-control:CHK-010 — added oracle —→NONE: Vùng mới từ quan sát KB-014 (asset trang khách staging). KB-014 mang tag host_not_in_expected_api_base nên không đủ điều kiện làm oracle — chỉ vào related_kb_ids; oracle NONE, expected_result để trống, gắn câu hỏi mở về host và cơ chế version.
 - 2026-10-17 (`bootstrap`, REFRESH) — thêm 4 open question: OQ-admin-panel-096, OQ-admin-panel-097, OQ-admin-panel-098, OQ-admin-panel-099.
 - 2026-10-17 (`bootstrap`, REFRESH) — ghi chú quan sát staging (staging_observation) vào open question đang mở, không resolve: OQ-admin-panel-061, OQ-admin-panel-092.
+- 2026-11-08 (maintenance-2026-11-08) — Chuẩn hoá reference theo namespace; sửa OQ và phân loại oracle/expected theo nguồn hiện có. Không xác nhận thêm requirement hoặc thay đổi hành vi sản phẩm.

@@ -4,13 +4,13 @@
   "name": "Xem danh sách member của company location (quyền read_members và chế độ view-only)",
   "user_goal": "Buyer của một company location mở trang Company member trong Customer Account để xem ai đang là member của location hiện tại; member có quyền read_members thấy bảng member, member thiếu quyền thấy banner no permission, trừ khi merchant được bật cờ cho mọi member xem bảng ở chế độ view-only (không có thao tác ghi).",
   "user_goal_kb_refs": [
-    "KB-001",
-    "KB-002",
-    "KB-003",
-    "KB-006",
-    "KB-007",
-    "KB-008",
-    "KB-013"
+    "company-member/member-list-view-access#KB-001",
+    "company-member/member-list-view-access#KB-002",
+    "company-member/member-list-view-access#KB-003",
+    "company-member/member-list-view-access#KB-006",
+    "company-member/member-list-view-access#KB-007",
+    "company-member/member-list-view-access#KB-008",
+    "company-member/member-list-view-access#KB-013"
   ],
   "stable_since_version": "v1",
   "never_supersede_topics": [
@@ -21,42 +21,42 @@
       "role": "buyer (member thiếu read_members, shop không bật cờ view-only)",
       "permission_observed": "Theo Dev BE 15/09/2026 và TC-DUOS-080 PASS 30/09/2026: thấy banner \"no permission\" trên trang; API list member trả 403. Chưa quan sát trên staging trong khảo sát 08/10/2026.",
       "kb_refs": [
-        "KB-001",
-        "KB-002"
+        "company-member/member-list-view-access#KB-001",
+        "company-member/member-list-view-access#KB-002"
       ]
     },
     {
       "role": "buyer (mọi member đã đăng nhập, kể cả không có role hoặc custom role thiếu read_members) khi shop bật cờ view-only",
       "permission_observed": "Theo Dev BE 15/09/2026: API list member trả 200, thấy bảng ở chế độ view-only, không có Invite / edit / delete, tên role không dẫn tới trang role; các thao tác ghi vẫn cần write_members (403 nếu thiếu).",
       "kb_refs": [
-        "KB-006",
-        "KB-007",
-        "KB-010"
+        "company-member/member-list-view-access#KB-006",
+        "company-member/member-list-view-access#KB-007",
+        "company-member/member-list-view-access#KB-010"
       ]
     },
     {
       "role": "buyer-admin",
       "permission_observed": "Theo Dev BE 15/09/2026: khi shop bật cờ view-only, Admin vẫn có đủ Invite / edit / delete. Link role của Admin chỉ có ở kết quả TC-DUOS-079 (chưa PO/Dev xác nhận). Ma trận role mặc định → read_members chưa có trong tài liệu.",
       "kb_refs": [
-        "KB-008",
-        "KB-009",
-        "KB-013"
+        "company-member/member-list-view-access#KB-008",
+        "company-member/member-list-view-access#KB-009",
+        "company-member/member-list-view-access#KB-013"
       ]
     },
     {
       "role": "internal-ops (admin panel nội bộ)",
       "permission_observed": "Bật cờ view-only theo từng shop bằng key `customer-permission.allow_all_members_read_members` trong users.config qua JSON editor; Portal không có setting tương ứng.",
       "kb_refs": [
-        "KB-003",
-        "KB-P-030",
-        "KB-P-031"
+        "company-member/member-list-view-access#KB-003",
+        "_product-level#KB-P-030",
+        "_product-level#KB-P-031"
       ]
     },
     {
       "role": "merchant (Portal)",
       "permission_observed": "Trên staging 08/10/2026 (store Free plan, extension \"Users & permissions\" Inactive) chỉ thấy alert block Company member chưa activate và hướng dẫn mở Customer account editor; Portal không có màn danh sách member theo company.",
       "kb_refs": [
-        "KB-018"
+        "company-member/member-list-view-access#KB-018"
       ]
     }
   ],
@@ -65,35 +65,35 @@
       "path": "Customer Account › trang Company member (Customer Account extension của Duos)",
       "precondition": "Buyer đã đăng nhập Customer Account và thuộc một company location; block Company member đã được merchant activate trong Customer account editor.",
       "kb_refs": [
-        "KB-001",
-        "KB-006",
-        "KB-013",
-        "KB-018",
-        "KB-P-008"
+        "company-member/member-list-view-access#KB-001",
+        "company-member/member-list-view-access#KB-006",
+        "company-member/member-list-view-access#KB-013",
+        "company-member/member-list-view-access#KB-018",
+        "_product-level#KB-P-008"
       ]
     },
     {
       "path": "API `GET customer-account/company-locations/{id}/customers` (list member)",
       "precondition": "Member đã đăng nhập; kết quả phụ thuộc permission read_members và cờ view-only của shop.",
       "kb_refs": [
-        "KB-002",
-        "KB-006"
+        "company-member/member-list-view-access#KB-002",
+        "company-member/member-list-view-access#KB-006"
       ]
     },
     {
       "path": "Admin panel nội bộ › JSON editor users.config của shop (key `customer-permission.allow_all_members_read_members`)",
       "precondition": "Thao tác của internal-ops; không có UI tương ứng trên Portal.",
       "kb_refs": [
-        "KB-003",
-        "KB-P-030",
-        "KB-P-031"
+        "company-member/member-list-view-access#KB-003",
+        "_product-level#KB-P-030",
+        "_product-level#KB-P-031"
       ]
     },
     {
       "path": "Portal › trang \"Users & permission\" (alert block Company member chưa activate)",
       "precondition": "Merchant đăng nhập Portal; quan sát trên store Free plan với extension Inactive.",
       "kb_refs": [
-        "KB-018"
+        "company-member/member-list-view-access#KB-018"
       ]
     }
   ],
@@ -102,39 +102,39 @@
       "name": "Xem bảng member của location hiện tại",
       "description": "Member có quyền xem nhận danh sách member của company location đang chọn trên trang Company member. Phát biểu về mục đích trang chỉ là tóm tắt QA từ Jira DUOS-412 (chưa verify trên staging).",
       "kb_refs": [
-        "KB-013",
-        "KB-006",
-        "KB-P-008"
+        "company-member/member-list-view-access#KB-013",
+        "company-member/member-list-view-access#KB-006",
+        "_product-level#KB-P-008"
       ]
     },
     {
       "name": "Chặn member thiếu read_members",
       "description": "Khi shop không bật cờ view-only, member thiếu read_members thấy banner \"no permission\" và API list member trả 403.",
       "kb_refs": [
-        "KB-001",
-        "KB-002"
+        "company-member/member-list-view-access#KB-001",
+        "company-member/member-list-view-access#KB-002"
       ]
     },
     {
       "name": "Chế độ view-only cho mọi member theo cấu hình shop",
       "description": "Bật key `customer-permission.allow_all_members_read_members` (giá trị đọc theo FILTER_VALIDATE_BOOLEAN) → mọi member đã đăng nhập thấy bảng view-only: không Invite / edit / delete, tên role không dẫn tới trang role; Admin vẫn đủ thao tác; cờ không cấp quyền ghi (PUT / DELETE / kiểm email tồn tại vẫn cần write_members).",
       "kb_refs": [
-        "KB-003",
-        "KB-004",
-        "KB-006",
-        "KB-007",
-        "KB-008",
-        "KB-010"
+        "company-member/member-list-view-access#KB-003",
+        "company-member/member-list-view-access#KB-004",
+        "company-member/member-list-view-access#KB-006",
+        "company-member/member-list-view-access#KB-007",
+        "company-member/member-list-view-access#KB-008",
+        "company-member/member-list-view-access#KB-010"
       ]
     },
     {
       "name": "Hiển thị bảng member (cột, kiểu dòng) và dữ liệu nguồn",
       "description": "Theo ticket To Do Jira DUOS-416/417: bỏ tooltip ở cột Email / Role, dòng có bottom border, tên customer màu đen, bỏ cột Phone (API vẫn trả `default_phone_number`); list member lấy từ `Company.contacts` theo bản phân tích QA. Tất cả chưa có PO/Dev xác nhận và chưa verify trên staging.",
       "kb_refs": [
-        "KB-014",
-        "KB-015",
-        "KB-016",
-        "KB-017"
+        "company-member/member-list-view-access#KB-014",
+        "company-member/member-list-view-access#KB-015",
+        "company-member/member-list-view-access#KB-016",
+        "company-member/member-list-view-access#KB-017"
       ]
     }
   ],
@@ -146,12 +146,12 @@
       "condition": "Áp theo từng shop; giá trị/khi vắng key được coi là tắt chưa được tài liệu nêu.",
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "kb_refs": [
-        "KB-001",
-        "KB-002",
-        "KB-003",
-        "KB-004",
-        "KB-006",
-        "KB-005"
+        "company-member/member-list-view-access#KB-001",
+        "company-member/member-list-view-access#KB-002",
+        "company-member/member-list-view-access#KB-003",
+        "company-member/member-list-view-access#KB-004",
+        "company-member/member-list-view-access#KB-006",
+        "company-member/member-list-view-access#KB-005"
       ]
     },
     {
@@ -161,7 +161,7 @@
       "condition": "Chỉ quan sát được trạng thái chưa activate (store Free plan, extension Inactive); trạng thái sau khi activate chưa quan sát.",
       "knowledge_kind": "OBSERVED_CURRENT",
       "kb_refs": [
-        "KB-018"
+        "company-member/member-list-view-access#KB-018"
       ]
     }
   ],
@@ -174,7 +174,7 @@
         "permission"
       ],
       "kb_refs": [
-        "KB-001"
+        "company-member/member-list-view-access#KB-001"
       ]
     },
     {
@@ -185,7 +185,7 @@
         "permission"
       ],
       "kb_refs": [
-        "KB-002"
+        "company-member/member-list-view-access#KB-002"
       ]
     },
     {
@@ -196,7 +196,7 @@
         "permission"
       ],
       "kb_refs": [
-        "KB-003"
+        "company-member/member-list-view-access#KB-003"
       ]
     },
     {
@@ -207,7 +207,7 @@
         "permission"
       ],
       "kb_refs": [
-        "KB-004"
+        "company-member/member-list-view-access#KB-004"
       ]
     },
     {
@@ -218,7 +218,7 @@
         "permission"
       ],
       "kb_refs": [
-        "KB-006"
+        "company-member/member-list-view-access#KB-006"
       ]
     },
     {
@@ -230,7 +230,7 @@
         "data-deletion"
       ],
       "kb_refs": [
-        "KB-007"
+        "company-member/member-list-view-access#KB-007"
       ]
     },
     {
@@ -242,7 +242,7 @@
         "data-deletion"
       ],
       "kb_refs": [
-        "KB-008"
+        "company-member/member-list-view-access#KB-008"
       ]
     },
     {
@@ -254,7 +254,7 @@
         "data-deletion"
       ],
       "kb_refs": [
-        "KB-010"
+        "company-member/member-list-view-access#KB-010"
       ]
     }
   ],
@@ -265,7 +265,7 @@
       "confidence": "MEDIUM",
       "status": "CURRENT_STATE",
       "kb_refs": [
-        "KB-018"
+        "company-member/member-list-view-access#KB-018"
       ]
     },
     {
@@ -274,7 +274,7 @@
       "confidence": "LOW",
       "status": "CURRENT_STATE",
       "kb_refs": [
-        "KB-009"
+        "company-member/member-list-view-access#KB-009"
       ]
     },
     {
@@ -283,7 +283,7 @@
       "confidence": "LOW",
       "status": "CURRENT_STATE",
       "kb_refs": [
-        "KB-012"
+        "company-member/member-list-view-access#KB-012"
       ]
     }
   ],
@@ -292,29 +292,29 @@
     {
       "statement": "Xem danh sách member cần permission read_members, trừ khi shop bật cờ view-only cho mọi member.",
       "kb_refs": [
-        "KB-001",
-        "KB-002",
-        "KB-006"
+        "company-member/member-list-view-access#KB-001",
+        "company-member/member-list-view-access#KB-002",
+        "company-member/member-list-view-access#KB-006"
       ]
     },
     {
       "statement": "Cờ view-only chỉ mở quyền đọc: update / delete member và kiểm email tồn tại vẫn cần write_members, thiếu thì 403.",
       "kb_refs": [
-        "KB-010"
+        "company-member/member-list-view-access#KB-010"
       ]
     },
     {
       "statement": "Buyer Admin giữ đủ Invite / edit / delete khi cờ view-only bật.",
       "kb_refs": [
-        "KB-008"
+        "company-member/member-list-view-access#KB-008"
       ]
     },
     {
       "statement": "Role mặc định nào (Admin, member, custom role) mang read_members chưa có ma trận trong tài liệu.",
       "kb_refs": [
-        "KB-001",
-        "KB-006",
-        "KB-013"
+        "company-member/member-list-view-access#KB-001",
+        "company-member/member-list-view-access#KB-006",
+        "company-member/member-list-view-access#KB-013"
       ]
     }
   ],
@@ -323,7 +323,7 @@
       {
         "item": "Trang \"Users & permission\": alert \"The Company member extension block is not activated yet.\", nút \"Open theme editor\", \"Watch tutorial\"; không có màn danh sách member theo company",
         "kb_refs": [
-          "KB-018"
+          "company-member/member-list-view-access#KB-018"
         ]
       }
     ],
@@ -331,18 +331,18 @@
       {
         "item": "Customer Account extension › trang Company member: banner \"no permission\" / bảng member / bảng view-only",
         "kb_refs": [
-          "KB-001",
-          "KB-006",
-          "KB-007",
-          "KB-013",
-          "KB-P-008"
+          "company-member/member-list-view-access#KB-001",
+          "company-member/member-list-view-access#KB-006",
+          "company-member/member-list-view-access#KB-007",
+          "company-member/member-list-view-access#KB-013",
+          "_product-level#KB-P-008"
         ]
       },
       {
         "item": "Customer Account extension › bảng member: cột Email, Role (không tooltip), dòng có bottom border, không cột Phone (theo ticket To Do)",
         "kb_refs": [
-          "KB-014",
-          "KB-015"
+          "company-member/member-list-view-access#KB-014",
+          "company-member/member-list-view-access#KB-015"
         ]
       }
     ],
@@ -350,21 +350,21 @@
       {
         "item": "`GET customer-account/company-locations/{id}/customers` — 403 khi thiếu read_members và cờ tắt; 200 cho mọi member khi cờ bật",
         "kb_refs": [
-          "KB-002",
-          "KB-006"
+          "company-member/member-list-view-access#KB-002",
+          "company-member/member-list-view-access#KB-006"
         ]
       },
       {
         "item": "PUT update member, DELETE member, `GET customers/existed` — cần write_members kể cả khi cờ view-only bật",
         "kb_refs": [
-          "KB-010"
+          "company-member/member-list-view-access#KB-010"
         ]
       },
       {
         "item": "Response list member vẫn có `default_phone_number` (admin extension dùng chung service)",
         "kb_refs": [
-          "KB-016",
-          "KB-P-005"
+          "company-member/member-list-view-access#KB-016",
+          "_product-level#KB-P-005"
         ]
       }
     ],
@@ -372,16 +372,16 @@
       {
         "item": "users.config key `customer-permission.allow_all_members_read_members` (boolean theo FILTER_VALIDATE_BOOLEAN)",
         "kb_refs": [
-          "KB-003",
-          "KB-004",
-          "KB-005",
-          "KB-P-029"
+          "company-member/member-list-view-access#KB-003",
+          "company-member/member-list-view-access#KB-004",
+          "company-member/member-list-view-access#KB-005",
+          "_product-level#KB-P-029"
         ]
       },
       {
         "item": "Nguồn list member: `Company.contacts` cho mọi request (trước đây `CompanyLocation.roleAssignments`)",
         "kb_refs": [
-          "KB-017"
+          "company-member/member-list-view-access#KB-017"
         ]
       }
     ],
@@ -389,7 +389,7 @@
       {
         "item": "Tên key cờ trong spec Dev FE: `customerPermissionSettings.allowAllMembersReadMembers` (khác key backend, chưa thống nhất)",
         "kb_refs": [
-          "KB-011"
+          "company-member/member-list-view-access#KB-011"
         ]
       }
     ]
@@ -400,10 +400,10 @@
       "relation": "config_source",
       "note": "Cờ view-only là một key users.config theo shop, sửa ở admin panel nội bộ, không có UI Portal.",
       "kb_refs": [
-        "KB-003",
-        "KB-P-029",
-        "KB-P-030",
-        "KB-P-031"
+        "company-member/member-list-view-access#KB-003",
+        "_product-level#KB-P-029",
+        "_product-level#KB-P-030",
+        "_product-level#KB-P-031"
       ]
     },
     {
@@ -411,9 +411,9 @@
       "relation": "permission_source",
       "note": "read_members / write_members thuộc mô hình role (Admin, member, custom role) do roles-permissions sở hữu; badge Main Contact trong bảng member cũng thuộc object đó.",
       "kb_refs": [
-        "KB-006",
-        "KB-007",
-        "KB-010"
+        "company-member/member-list-view-access#KB-006",
+        "company-member/member-list-view-access#KB-007",
+        "company-member/member-list-view-access#KB-010"
       ]
     },
     {
@@ -421,9 +421,9 @@
       "relation": "shared_data_path",
       "note": "Admin extension dùng chung service list member; việc đổi nguồn sang Company.contacts ảnh hưởng cả admin extension.",
       "kb_refs": [
-        "KB-016",
-        "KB-017",
-        "KB-P-005"
+        "company-member/member-list-view-access#KB-016",
+        "company-member/member-list-view-access#KB-017",
+        "_product-level#KB-P-005"
       ]
     },
     {
@@ -431,8 +431,8 @@
       "relation": "entitlement",
       "note": "Company member thuộc module User & Permission; gating theo gói / Plus và trạng thái extension do pricing-subscription sở hữu.",
       "kb_refs": [
-        "KB-018",
-        "KB-P-032"
+        "company-member/member-list-view-access#KB-018",
+        "_product-level#KB-P-032"
       ]
     }
   ],
@@ -442,9 +442,9 @@
       "knowledge_kind": "INFERRED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-011",
-        "KB-012",
-        "KB-003"
+        "company-member/member-list-view-access#KB-011",
+        "company-member/member-list-view-access#KB-012",
+        "company-member/member-list-view-access#KB-003"
       ]
     },
     {
@@ -452,8 +452,8 @@
       "knowledge_kind": "INFERRED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-005",
-        "KB-004"
+        "company-member/member-list-view-access#KB-005",
+        "company-member/member-list-view-access#KB-004"
       ]
     },
     {
@@ -461,10 +461,10 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-018",
-        "KB-013",
-        "KB-014",
-        "KB-015"
+        "company-member/member-list-view-access#KB-018",
+        "company-member/member-list-view-access#KB-013",
+        "company-member/member-list-view-access#KB-014",
+        "company-member/member-list-view-access#KB-015"
       ]
     },
     {
@@ -472,9 +472,9 @@
       "knowledge_kind": "INFERRED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-017",
-        "KB-016",
-        "KB-P-005"
+        "company-member/member-list-view-access#KB-017",
+        "company-member/member-list-view-access#KB-016",
+        "_product-level#KB-P-005"
       ]
     },
     {
@@ -482,7 +482,7 @@
       "knowledge_kind": "INFERRED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-019"
+        "company-member/member-list-view-access#KB-019"
       ]
     }
   ],
@@ -491,10 +491,10 @@
       "question": "Role mặc định nào (Admin, member, custom role) mang permission read_members, và có role nào ngoài Admin xem được bảng member khi cờ view-only tắt?",
       "why_it_matters": "Không có ma trận role → permission thì không viết được kết quả mong đợi theo role cho trang Company member.",
       "kb_refs": [
-        "KB-001",
-        "KB-006",
-        "KB-008",
-        "KB-013"
+        "company-member/member-list-view-access#KB-001",
+        "company-member/member-list-view-access#KB-006",
+        "company-member/member-list-view-access#KB-008",
+        "company-member/member-list-view-access#KB-013"
       ],
       "oq_id": "OQ-company-member-001"
     },
@@ -502,9 +502,9 @@
       "question": "Frontend đọc cờ view-only theo key backend `customer-permission.allow_all_members_read_members` hay key `customerPermissionSettings.allowAllMembersReadMembers` trong spec Dev FE, và tên key chính thức là gì?",
       "why_it_matters": "Key lệch có thể làm UI view-only không khớp quyền API.",
       "kb_refs": [
-        "KB-003",
-        "KB-011",
-        "KB-012"
+        "company-member/member-list-view-access#KB-003",
+        "company-member/member-list-view-access#KB-011",
+        "company-member/member-list-view-access#KB-012"
       ],
       "oq_id": "OQ-company-member-002"
     },
@@ -512,8 +512,8 @@
       "question": "Khi key view-only vắng mặt trong users.config thì cờ có mặc định tắt không, và những giá trị nào được coi là tắt?",
       "why_it_matters": "Tài liệu chỉ liệt kê giá trị coi là bật; boundary tắt chưa có oracle.",
       "kb_refs": [
-        "KB-004",
-        "KB-005"
+        "company-member/member-list-view-access#KB-004",
+        "company-member/member-list-view-access#KB-005"
       ],
       "oq_id": "OQ-company-member-002"
     },
@@ -521,9 +521,9 @@
       "question": "Khi shop bật cờ view-only, endpoint lấy danh sách role có chặn member không có read_members không, và member ở chế độ view-only có còn thấy role filter trên bảng member không? (GAP-03 task Testlane DUOS-003)",
       "why_it_matters": "Thiếu kết quả mong đợi cho UI view-only khi cờ bật.",
       "kb_refs": [
-        "KB-006",
-        "KB-007",
-        "KB-034"
+        "company-member/member-list-view-access#KB-006",
+        "company-member/member-list-view-access#KB-007",
+        "company-member/member-search-sort-filter#KB-034"
       ],
       "oq_id": "OQ-company-member-003"
     },
@@ -531,8 +531,8 @@
       "question": "Link role của buyer Admin trên bảng member khi cờ view-only bật có phải hành vi mong đợi không (hiện chỉ có kết quả TC-DUOS-079, chưa PO/Dev xác nhận)?",
       "why_it_matters": "Chi tiết này chưa có authority, chỉ dùng được như hiện trạng.",
       "kb_refs": [
-        "KB-009",
-        "KB-008"
+        "company-member/member-list-view-access#KB-009",
+        "company-member/member-list-view-access#KB-008"
       ],
       "oq_id": "OQ-company-member-004"
     },
@@ -540,9 +540,9 @@
       "question": "Bảng member hiện tại trên Customer Account đã áp các thay đổi UI của Jira DUOS-416/417 (bỏ tooltip, bottom border, tên màu đen, bỏ cột Phone) chưa, và PO/Dev có xác nhận đây là hành vi mong đợi?",
       "why_it_matters": "Ticket còn To Do, chưa verify trên staging; không viết expected UI được.",
       "kb_refs": [
-        "KB-014",
-        "KB-015",
-        "KB-016"
+        "company-member/member-list-view-access#KB-014",
+        "company-member/member-list-view-access#KB-015",
+        "company-member/member-list-view-access#KB-016"
       ],
       "oq_id": "OQ-company-member-006"
     },
@@ -550,8 +550,8 @@
       "question": "List member có thực sự lấy từ `Company.contacts` cho mọi request (kể cả không param) không, và danh sách mặc định ở Customer Account / admin extension thay đổi thế nào so với trước?",
       "why_it_matters": "Chỉ có bản phân tích QA; ảnh hưởng tới dữ liệu hiển thị ở hai surface.",
       "kb_refs": [
-        "KB-017",
-        "KB-016"
+        "company-member/member-list-view-access#KB-017",
+        "company-member/member-list-view-access#KB-016"
       ],
       "oq_id": "OQ-company-member-011"
     },
@@ -559,8 +559,8 @@
       "question": "Giới hạn \"Customer Account extension API không lấy được current company location\" ảnh hưởng thế nào tới trang Company member (location nào được hiển thị khi buyer thuộc nhiều location)?",
       "why_it_matters": "Known issue chỉ có tiêu đề; phạm vi \"location hiện tại\" là nền của mọi rule của trang.",
       "kb_refs": [
-        "KB-019",
-        "KB-026"
+        "company-member/member-list-view-access#KB-019",
+        "company-member/member-search-sort-filter#KB-026"
       ],
       "oq_id": "OQ-company-member-005"
     },
@@ -568,9 +568,9 @@
       "question": "Trang Company member hiển thị và hoạt động thế nào trên staging khi block được activate và có tài khoản buyer (Admin, member thường, custom role)?",
       "why_it_matters": "Chưa có quan sát Customer Account nào; mọi check UI hiện không có baseline staging.",
       "kb_refs": [
-        "KB-018",
-        "KB-001",
-        "KB-006"
+        "company-member/member-list-view-access#KB-018",
+        "company-member/member-list-view-access#KB-001",
+        "company-member/member-list-view-access#KB-006"
       ],
       "oq_id": "OQ-company-member-004"
     },
@@ -578,9 +578,9 @@
       "question": "Yêu cầu mobile responsiveness của bảng member (Jira DUOS-418, ticket trống), ảnh design Jira DUOS-415/417, RISK-01 (giả định Shopify API, member thuộc > 5 location), tài liệu sản phẩm Duos phần Company member và Jira DUOS-323 (alias email nhiều company) có nội dung gì ảnh hưởng tới bảng member?",
       "why_it_matters": "Các nguồn này được nhắc nhưng không có trong bộ tài liệu; không suy diễn nội dung.",
       "kb_refs": [
-        "KB-015",
-        "KB-017",
-        "KB-019"
+        "company-member/member-list-view-access#KB-015",
+        "company-member/member-list-view-access#KB-017",
+        "company-member/member-list-view-access#KB-019"
       ],
       "oq_id": "OQ-company-member-005"
     }
@@ -591,8 +591,8 @@
     "basis": "Ngày nguồn mới nhất trong các KB item được tham chiếu (khảo sát staging 08/10/2026 trên Portal); quyết định Dev BE 15/09/2026, TC-DUOS-080 30/09/2026. Không có quan sát runtime trong lần chạy này."
   },
   "last_updated": {
-    "date": "2026-10-09",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "coverage_matrix": [
     {
@@ -741,9 +741,9 @@
       "resolution": "UNRESOLVED",
       "impact": "Khác phạm vi (key runtime backend vs tên trong spec frontend) nên không mở conflict_group; rule backend giữ là confirmed, check UI view-only theo cờ cần ghi rõ key backend.",
       "kb_refs": [
-        "KB-003",
-        "KB-011",
-        "KB-012"
+        "company-member/member-list-view-access#KB-003",
+        "company-member/member-list-view-access#KB-011",
+        "company-member/member-list-view-access#KB-012"
       ]
     }
   ],
@@ -753,9 +753,9 @@
       "to": "member-invite-and-edit",
       "relation": "GOVERNS_WRITE_ACCESS",
       "kb_refs": [
-        "KB-007",
-        "KB-008",
-        "KB-010"
+        "company-member/member-list-view-access#KB-007",
+        "company-member/member-list-view-access#KB-008",
+        "company-member/member-list-view-access#KB-010"
       ]
     },
     {
@@ -763,9 +763,9 @@
       "to": "member-search-sort-filter",
       "relation": "SHARES_ENDPOINT",
       "kb_refs": [
-        "KB-002",
-        "KB-006",
-        "KB-027"
+        "company-member/member-list-view-access#KB-002",
+        "company-member/member-list-view-access#KB-006",
+        "company-member/member-search-sort-filter#KB-027"
       ]
     },
     {
@@ -773,8 +773,8 @@
       "to": "roles-permissions/default-and-custom-roles",
       "relation": "GOVERNED_BY",
       "kb_refs": [
-        "KB-006",
-        "KB-010"
+        "company-member/member-list-view-access#KB-006",
+        "company-member/member-list-view-access#KB-010"
       ]
     },
     {
@@ -782,8 +782,8 @@
       "to": "roles-permissions/member-role-assignment-sync",
       "relation": "SHARES_DATA_PATH",
       "kb_refs": [
-        "KB-016",
-        "KB-017"
+        "company-member/member-list-view-access#KB-016",
+        "company-member/member-list-view-access#KB-017"
       ]
     },
     {
@@ -791,8 +791,8 @@
       "to": "pricing-subscription/module-entitlement-gating",
       "relation": "GATED_BY",
       "kb_refs": [
-        "KB-018",
-        "KB-P-032"
+        "company-member/member-list-view-access#KB-018",
+        "_product-level#KB-P-032"
       ]
     }
   ]

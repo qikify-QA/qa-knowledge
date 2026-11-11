@@ -1,5 +1,5 @@
 # Hạ tầng tích hợp: xác thực từng kênh gọi API (portal nhúng, extension, Flow) và nhận webhook Shopify/EventBridge
-**Published context version:** 2
+**Published context version:** 3
 
 **Product:** mysbox · **Object:** `integrations` · **Mode:** REFRESH (trên nền DOC_BOOTSTRAP v1) · **Environment:** documented + staging · **Published:** 2026-10-17
 

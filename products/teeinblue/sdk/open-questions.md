@@ -1401,3 +1401,127 @@
 ```json
 {"oq_id":"OQ-sdk-186","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"KB-015 (shape của teeinblue-customizations, quan sát 2026-09) không liệt kê key position; sau TIB-5566 localStorage có key position dạng 0–1 (KB-491, KB-499). KB-015 và check BASELINE dựa trên nó có thể đã lỗi thời.","kb_ids":["KB-015"],"needs":"Quan sát lại shape localStorage trên SDK hiện tại."}
 ```
+
+```json
+{"oq_id":"OQ-sdk-187","type":"NEEDS_CONFIRMATION","feature_id":"product-page-settings-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-012 “Gap: luong Upload logo day du (chon file, preview, luu) hoan toan chua test -- khong co duong revert an toan xac dinh duoc trong run nay” của feature product-page-settings-config. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-188","type":"NEEDS_CONFIRMATION","feature_id":"product-page-settings-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-016 “Gap: gia tri hex chinh xac cua ~13 color-picker va lua chon dang chon cua cac icon-only swatch (Font size, Toggle style, Alignment, Field's border radius) KHONG doc duoc qua accessibility tree” của feature product-page-settings-config. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-189","type":"NEEDS_CONFIRMATION","feature_id":"product-page-settings-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-017 “GET /api/instances?trashed tra ve field sdk_version va .config (~27 key) cho ca 2 instance trong 1 lan goi account-wide” của feature product-page-settings-config. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-190","type":"NEEDS_CONFIRMATION","feature_id":"product-page-settings-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-018 “Tuong quan (INFERRED, KHONG PHAI contract da xac nhan) giua ~27 key trong .config va cac control UI da quan sat -- khong duoc dung nhu data contract field-by-field” của feature product-page-settings-config. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-191","type":"NEEDS_CONFIRMATION","feature_id":"product-page-settings-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-019 “GET /api/settings fire tren trang nay nhung CHUA khop field cu the nao voi 1 trong 67 control da quan sat” của feature product-page-settings-config. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-192","type":"NEEDS_CONFIRMATION","feature_id":"product-page-settings-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-020 “CFL-005 UNRESOLVED: config_registry.instance.config (~38 key schema, APIOP-002) khong khop .config thuc te (~27 key, APIOP-001) -- chi 1 ten key trung, KHONG tu resolve” của feature product-page-settings-config. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-193","type":"NEEDS_CONFIRMATION","feature_id":"product-page-settings-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-021 “CFL-004 UNRESOLVED (goc rieng cua FEAT-08): sdk_version=2 ca 2 instance (evidence_b) doi lap voi baseline storefront 2026-09-12 (store1=v1) va hoi tu voi storefront re-check 2026-09-21 -- khong tu chon phia dung” của feature product-page-settings-config. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-194","type":"NEEDS_CONFIRMATION","feature_id":"product-page-settings-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-022 “Gap: write-path (Save/Reset) hoan toan chua co evidence -- nut hien dien/enabled nhung chua tung duoc click” của feature product-page-settings-config. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-195","type":"NEEDS_CONFIRMATION","feature_id":"product-page-settings-config","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-023 “Gap: bien thien permission/role tren /product-page-settings hoan toan chua duoc quan sat -- chi 1 role (owner) duoc test” của feature product-page-settings-config. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-196","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-002 “Chọn variant (Color/Size) cập nhật giá hiển thị đúng (SDK v1, store1)” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-197","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-003 “Personalization dependency 2 cấp: chọn template hé lộ đúng bộ field phụ thuộc; chọn breed cấp cha hé lộ thêm field con bắt buộc (SDK v1, store1, template 1 và 2)” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-198","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-004 “Validation chặn submit khi thiếu field cá nhân hoá, hiện lỗi inline theo field (SDK v1, store1)” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-199","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-005 “Personalization dependency cha-con: chọn field cấp cha hé lộ field con lồng, cặp cha+con là 1 đơn vị required (SDK v2, store2, template 2)” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-200","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-006 “Validation 'This field is required!' vẫn gắn với heading cha cho tới khi field con lồng cũng được chọn (SDK v2, store2)” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-201","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-007 “Add-to-cart sau khi điền đủ personalization (SDK v1, store1) — CFL-001 UNRESOLVED, chưa thể kết luận pass hay fail” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-202","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-008 “Add-to-cart hoàn tất thành công toàn trình sau khi điền đủ personalization (SDK v2, store2)” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-203","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-009 “Cập nhật quantity trong cart tăng total_price tuyến tính, cleanup về 0 thành công (SDK v2, store2)” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-204","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-011 “Nút Preview mở lightbox mockup TĨNH, ảnh không đổi theo lựa chọn cá nhân hoá (SDK v1, store1, 1 sample)” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-205","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-012 “Mockup SVG sống cập nhật theo layer-id khớp field-id (SDK v2, store2, 1 sample)” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-206","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-015 “Pre-flight check khi theme app-block CHƯA enable (enabled=false) hoặc endpoint lỗi — chưa test” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-207","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-017 “Xác minh nhãn hiển thị nhất quán giữa heading nhóm field (cha) và field con cùng khung (SDK v2, store2) — CFL-002, không khẳng định là bug” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-208","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-018 “Coverage gap: template 1 và 3 chưa test (cả 2 SDK); đường 'edit personalization từ cart' chưa xác nhận tồn tại (SDK v2)” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-209","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-019 “Hành vi field cá nhân hoá khi buyer đổi variant SAU KHI đã điền — reset hay giữ nguyên? (chưa test, cả 2 SDK)” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-210","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-020 “Buyer đã login, non-US market/locale/currency, mobile/tablet viewport — chưa test” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-211","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-021 “Storefront phân biệt đúng campaign ĐÃ publish (truy cập/mua được) với object CHƯA publish (không truy cập được) — chưa re-test với credential hợp lệ trong run này” của feature storefront-buyer-facing. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-sdk-212","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-022 “'Generate test design' / preview storefront trước khi publish — chưa khám phá” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-213","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-026 “Field grouped_clipart (Hairstyle, Cat Breed #1/#2) yêu cầu ĐỦ 2 bước (click radio nhóm + click thumbnail con) mới có giá trị hợp lệ; ADD TO CART thất bại thật nếu thiếu bước con (SDK v2, store2, template 2)” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-214","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-030 “Gap: Post-ATC persistence của localStorage draft trên SDK v1 (store1) — CHƯA xác nhận vì store1 chưa từng tới ATC trong bất kỳ run nào” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-215","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-032 “CFL-003 UNRESOLVED: liệu framing 'ATC store2/SDK v2 known-working' kế thừa từ 2026-09-12 có do automation bỏ sót bước click con của grouped_clipart, hay 2-step thực sự luôn là điều kiện đã tồn tại từ trước — chưa thể kết luận” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-216","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-033 “SDK bundle/version marker phuc vu cho campaign 2595 (script src + widget root class) -- re-check baseline, lien quan CFL-004, KHONG khang dinh phien ban nao 'dung'” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-sdk-217","type":"NEEDS_CONFIRMATION","feature_id":"storefront-buyer-facing","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-038 “CFL-004 UNRESOLVED: SDK version thuc su dang serve cho tung store (campaign 2595) mau thuan giua 3 nguon evidence portal+storefront -- KHONG tu chon 1 phia lam oracle mac dinh” của feature storefront-buyer-facing. missing_or_unresolved_oracle"}
+```

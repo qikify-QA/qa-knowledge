@@ -4,11 +4,11 @@
   "name": "Dọn token khi uninstall, nhận token mới khi reinstall",
   "user_goal": "Khi shop gỡ app, session và mọi field token của shop được dọn sạch và hệ thống ngừng refresh token / gửi email reconnect cho shop đó; khi cài lại, shop luôn nhận token expiring sạch và chạy luồng reinstall bình thường.",
   "user_goal_kb_refs": [
-    "KB-037",
-    "KB-039",
-    "KB-040",
-    "KB-041",
-    "KB-044"
+    "auth-token/uninstall-reinstall-token-cleanup#KB-037",
+    "auth-token/uninstall-reinstall-token-cleanup#KB-039",
+    "auth-token/uninstall-reinstall-token-cleanup#KB-040",
+    "auth-token/uninstall-reinstall-token-cleanup#KB-041",
+    "auth-token/uninstall-reinstall-token-cleanup#KB-044"
   ],
   "stable_since_version": "v1",
   "actors": [
@@ -16,20 +16,20 @@
       "role": "system (backend xử lý uninstall / reinstall)",
       "permission_observed": "Theo rule Jira DUOS-399: xoá session, clear field token, clear cached shop, soft-delete shop khi uninstall; khi reinstall clear field cũ còn sót, ghi token expiring mới, sync dữ liệu và gửi email reinstall.",
       "kb_refs": [
-        "KB-037",
-        "KB-038",
-        "KB-039",
-        "KB-040",
-        "KB-041",
-        "KB-042"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-037",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-038",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-039",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-040",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-041",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-042"
       ]
     },
     {
       "role": "shop / merchant (gỡ hoặc cài lại app trên Shopify)",
       "permission_observed": "Tài liệu chỉ nêu sự kiện uninstall / reinstall của shop, không nêu ai thao tác.",
       "kb_refs": [
-        "KB-037",
-        "KB-040"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-037",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-040"
       ]
     }
   ],
@@ -38,17 +38,17 @@
       "path": "Shop uninstall app (webhook uninstall)",
       "precondition": "Shop đang cài app (có thể đang chờ reconnect).",
       "kb_refs": [
-        "KB-037",
-        "KB-041",
-        "KB-043"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-037",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-041",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-043"
       ]
     },
     {
       "path": "Shop reinstall app → lần login mới",
       "precondition": "Shop đã uninstall trước đó (có thể còn field token cũ sót nếu lỡ webhook uninstall).",
       "kb_refs": [
-        "KB-040",
-        "KB-041"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-040",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-041"
       ]
     }
   ],
@@ -57,41 +57,41 @@
       "name": "Dọn session và token khi uninstall",
       "description": "Xoá session; clear `Access Token Expires At`, `Refresh Token`, `Refresh Token Expires At`, `Re-auth Required At`; clear cached shop; soft-delete shop (uninstalled).",
       "kb_refs": [
-        "KB-037",
-        "KB-038",
-        "KB-039"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-037",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-038",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-039"
       ]
     },
     {
       "name": "Uninstall khi shop đang chờ reconnect",
       "description": "Shop bị soft-delete, `Re-auth Required At` bị clear; sau đó không còn email reconnect và không còn refresh token (trừ khi reinstall). Luồng email reopen cũng bỏ qua shop đã uninstall.",
       "kb_refs": [
-        "KB-043",
-        "KB-044",
-        "KB-012"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-043",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-044",
+        "auth-token/dead-token-detection-and-reconnect#KB-012"
       ]
     },
     {
       "name": "Ngừng job token cho shop đã uninstall",
       "description": "Cả `tokens:refresh-expiring` và `tokens:migrate-legacy` bỏ qua shop đã uninstall.",
       "kb_refs": [
-        "KB-025",
-        "KB-044"
+        "auth-token/token-refresh-and-legacy-migration#KB-025",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-044"
       ]
     },
     {
       "name": "Reinstall nhận token expiring sạch",
       "description": "Lần login mới luôn nhận token expiring (app luôn request expiring); app clear field token cũ còn sót (safety net khi lỡ webhook uninstall) trước khi ghi token mới.",
       "kb_refs": [
-        "KB-040",
-        "KB-041"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-040",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-041"
       ]
     },
     {
       "name": "Luồng reinstall thông thường",
       "description": "Reinstall kích hoạt sync dữ liệu và gửi email reinstall; phạm vi sync và nội dung email chưa nêu.",
       "kb_refs": [
-        "KB-042"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-042"
       ]
     }
   ],
@@ -102,9 +102,9 @@
       "trigger": "Shop uninstall app",
       "condition": "—",
       "kb_refs": [
-        "KB-037",
-        "KB-038",
-        "KB-039"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-037",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-038",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-039"
       ]
     },
     {
@@ -113,8 +113,8 @@
       "trigger": "Shop uninstall app",
       "condition": "—",
       "kb_refs": [
-        "KB-043",
-        "KB-044"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-043",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-044"
       ]
     },
     {
@@ -123,9 +123,9 @@
       "trigger": "Shop reinstall và login",
       "condition": "Field token cũ còn sót được clear trước khi ghi token mới",
       "kb_refs": [
-        "KB-040",
-        "KB-041",
-        "KB-042"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-040",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-041",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-042"
       ]
     }
   ],
@@ -135,7 +135,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-037"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-037"
       ]
     },
     {
@@ -143,7 +143,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-038"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-038"
       ]
     },
     {
@@ -151,7 +151,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-039"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-039"
       ]
     },
     {
@@ -159,7 +159,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-040"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-040"
       ]
     },
     {
@@ -167,7 +167,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-041"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-041"
       ]
     },
     {
@@ -175,7 +175,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-042"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-042"
       ]
     },
     {
@@ -183,7 +183,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-043"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-043"
       ]
     },
     {
@@ -191,7 +191,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-044"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-044"
       ]
     }
   ],
@@ -201,8 +201,8 @@
     {
       "statement": "Rule chỉ mô tả hành vi hệ thống khi shop uninstall / reinstall, không nêu ràng buộc role.",
       "kb_refs": [
-        "KB-037",
-        "KB-040"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-037",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-040"
       ]
     }
   ],
@@ -213,13 +213,13 @@
       {
         "item": "Webhook uninstall của Shopify (lỡ webhook được bù bằng safety net khi reinstall)",
         "kb_refs": [
-          "KB-041"
+          "auth-token/uninstall-reinstall-token-cleanup#KB-041"
         ]
       },
       {
         "item": "Login mới khi reinstall luôn request token expiring",
         "kb_refs": [
-          "KB-040"
+          "auth-token/uninstall-reinstall-token-cleanup#KB-040"
         ]
       }
     ],
@@ -227,21 +227,21 @@
       {
         "item": "Session của shop (xoá khi uninstall)",
         "kb_refs": [
-          "KB-037"
+          "auth-token/uninstall-reinstall-token-cleanup#KB-037"
         ]
       },
       {
         "item": "`Access Token Expires At`, `Refresh Token`, `Refresh Token Expires At`, `Re-auth Required At` (clear khi uninstall và khi reinstall còn sót)",
         "kb_refs": [
-          "KB-037",
-          "KB-041"
+          "auth-token/uninstall-reinstall-token-cleanup#KB-037",
+          "auth-token/uninstall-reinstall-token-cleanup#KB-041"
         ]
       },
       {
         "item": "Cached shop; trạng thái soft-delete uninstalled",
         "kb_refs": [
-          "KB-038",
-          "KB-039"
+          "auth-token/uninstall-reinstall-token-cleanup#KB-038",
+          "auth-token/uninstall-reinstall-token-cleanup#KB-039"
         ]
       }
     ],
@@ -250,7 +250,7 @@
       {
         "item": "Email reinstall và sync dữ liệu khi reinstall",
         "kb_refs": [
-          "KB-042"
+          "auth-token/uninstall-reinstall-token-cleanup#KB-042"
         ]
       }
     ]
@@ -261,9 +261,9 @@
       "relation": "constrains",
       "note": "Uninstall chấm dứt trạng thái chờ reconnect và email reconnect; luồng reopen bỏ qua shop đã uninstall.",
       "kb_refs": [
-        "KB-043",
-        "KB-044",
-        "KB-012"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-043",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-044",
+        "auth-token/dead-token-detection-and-reconnect#KB-012"
       ]
     },
     {
@@ -271,7 +271,7 @@
       "relation": "constrains",
       "note": "Job refresh và migrate bỏ qua shop đã uninstall.",
       "kb_refs": [
-        "KB-025"
+        "auth-token/token-refresh-and-legacy-migration#KB-025"
       ]
     },
     {
@@ -279,7 +279,7 @@
       "relation": "read_by",
       "note": "Các field token được clear cũng là các field admin panel hiển thị.",
       "kb_refs": [
-        "KB-046"
+        "auth-token/admin-token-and-scopes#KB-046"
       ]
     }
   ],
@@ -289,9 +289,9 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-041",
-        "KB-025",
-        "KB-044"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-041",
+        "auth-token/token-refresh-and-legacy-migration#KB-025",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-044"
       ]
     },
     {
@@ -299,8 +299,8 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-039",
-        "KB-037"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-039",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-037"
       ]
     },
     {
@@ -308,7 +308,7 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-057"
+        "auth-token/_object-level#KB-057"
       ],
       "status": "KNOWN_DEFECT"
     }
@@ -318,7 +318,7 @@
       "question": "Email reinstall có tiêu đề, nội dung, người nhận và ngôn ngữ nào, và luồng reinstall sync những dữ liệu gì?",
       "why_it_matters": "Rule chỉ nói có sync và gửi email reinstall.",
       "kb_refs": [
-        "KB-042"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-042"
       ],
       "oq_id": "OQ-auth-token-017"
     },
@@ -326,8 +326,8 @@
       "question": "Soft-delete khi uninstall ảnh hưởng những dữ liệu nào ngoài session, field token và cached shop (company, quote, ledger, cấu hình…), và reinstall có khôi phục chúng không?",
       "why_it_matters": "Phạm vi dữ liệu bị xoá/giữ quyết định check sau reinstall.",
       "kb_refs": [
-        "KB-039",
-        "KB-042"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-039",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-042"
       ],
       "oq_id": "OQ-auth-token-016"
     },
@@ -335,8 +335,8 @@
       "question": "Khi lỡ webhook uninstall, có cơ chế nào khác ngoài safety net lúc reinstall để dọn field token cũ và ngừng job/email cho shop không?",
       "why_it_matters": "Rule chỉ nêu safety net khi reinstall.",
       "kb_refs": [
-        "KB-041",
-        "KB-025"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-041",
+        "auth-token/token-refresh-and-legacy-migration#KB-025"
       ],
       "oq_id": "OQ-auth-token-015"
     },
@@ -344,7 +344,7 @@
       "question": "Shop uninstall có làm token legacy cũ chết ngay phía Shopify không?",
       "why_it_matters": "Chỉ có trong tóm tắt QA về các tình huống token legacy chết.",
       "kb_refs": [
-        "KB-008"
+        "auth-token/dead-token-detection-and-reconnect#KB-008"
       ],
       "oq_id": "OQ-auth-token-002"
     },
@@ -352,7 +352,7 @@
       "question": "BUG-36 (gắn TC-DUOS-001, trạng thái \"open?\") là lỗi gì, thuộc hành vi token nào (phát hiện token chết, refresh/migrate, re-auth khi mở app, uninstall/reinstall hay admin panel), còn mở hay đã fix?",
       "why_it_matters": "Nếu lỗi chạm hành vi của tính năng này thì check theo rule tương ứng cần theo dõi regression; test case liên quan đang passed nên không phải bằng chứng PASS.",
       "kb_refs": [
-        "KB-057"
+        "auth-token/_object-level#KB-057"
       ],
       "oq_id": "OQ-auth-token-003"
     }
@@ -363,8 +363,8 @@
     "basis": "Ngày nguồn mới nhất trong các KB item được tham chiếu (ngày cập nhật Jira trong rule, ngày phân tích QA, ngày cập nhật danh sách lỗi); không có quan sát runtime trong lần chạy này."
   },
   "last_updated": {
-    "date": "2026-10-09",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "coverage_matrix": [
     {
@@ -465,8 +465,8 @@
       "to": "dead-token-detection-and-reconnect",
       "relation": "CONSTRAINS",
       "kb_refs": [
-        "KB-043",
-        "KB-044"
+        "auth-token/uninstall-reinstall-token-cleanup#KB-043",
+        "auth-token/uninstall-reinstall-token-cleanup#KB-044"
       ]
     },
     {
@@ -474,7 +474,7 @@
       "to": "token-refresh-and-legacy-migration",
       "relation": "CONSTRAINS",
       "kb_refs": [
-        "KB-025"
+        "auth-token/token-refresh-and-legacy-migration#KB-025"
       ]
     },
     {
@@ -482,7 +482,7 @@
       "to": "admin-token-and-scopes",
       "relation": "READ_BY",
       "kb_refs": [
-        "KB-046"
+        "auth-token/admin-token-and-scopes#KB-046"
       ]
     }
   ]

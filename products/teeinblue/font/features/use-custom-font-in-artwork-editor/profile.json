@@ -7,26 +7,51 @@
     {
       "role": "owner",
       "permission_observed": "Chọn font từ picker 'Your Custom Fonts' cho text layer trong artwork editor",
-      "kb_refs": ["KB-008"]
+      "kb_refs": [
+        "font/use-custom-font-in-artwork-editor#KB-008"
+      ]
     }
   ],
   "entry_points": [
     {
       "path": "Artwork editor > chọn text layer > Font type = Custom Fonts",
       "precondition": "Artwork đã có text layer, ít nhất 1 custom font tồn tại trên store",
-      "kb_refs": ["KB-008"]
+      "kb_refs": [
+        "font/use-custom-font-in-artwork-editor#KB-008"
+      ]
     }
   ],
   "capabilities": [
     {
       "name": "Font picker trong editor dùng chung data/component với /fonts",
       "description": "Picker 'Your Custom Fonts' gọi cùng GraphQL query getData như trang /fonts, hiển thị đủ font hiện có kể cả font vừa upload trong cùng phiên",
-      "kb_refs": ["KB-008", "KB-009"]
+      "kb_refs": [
+        "font/use-custom-font-in-artwork-editor#KB-008",
+        "font/view-and-configure-font-list#KB-009"
+      ]
     },
     {
       "name": "Áp dụng font đã chọn trực tiếp cho text layer",
       "description": "Font vừa upload dùng được ngay làm font cho text layer, không cần qua bước Font Category riêng",
-      "kb_refs": ["KB-008"]
+      "kb_refs": [
+        "font/use-custom-font-in-artwork-editor#KB-008"
+      ]
+    },
+    {
+      "name": "Hành vi PROPOSED chưa xác nhận: ký tự CJK/RTL với font chỉ hỗ trợ Latin",
+      "description": "PROPOSED (rule QA, chưa Dev/PO xác nhận): ký tự CJK/RTL không render (trắng hoặc tofu) khi text layer dùng font chỉ hỗ trợ Latin được coi là do font, không phải lỗi; merchant cần upload custom font hỗ trợ bộ chữ đó. Tác động của Font Settings và hành vi storefront chưa kiểm. Không dùng làm oracle.",
+      "kb_refs": [
+        "font/use-custom-font-in-artwork-editor#KB-020",
+        "font/use-custom-font-in-artwork-editor#KB-008"
+      ]
+    },
+    {
+      "name": "Hành vi PROPOSED chưa xác nhận: chặn save khi Font type = Custom Fonts chưa chọn font",
+      "description": "PROPOSED (rule QA, chưa Dev/PO xác nhận): text layer đặt Font type = Custom Fonts mà chưa chọn font cụ thể thì artwork không save được; toolbar hiện 'Empty fonts!!!' và banner đỏ hiện lỗi JS thô \"Cannot read properties of undefined (reading 'family')\". Chặn save được QA coi là đúng thiết kế; thông báo lỗi thô chưa xác nhận là mong muốn. Chỉ ghi nhận khi thao tác bằng JS, chưa kiểm bằng chuột. Không dùng làm oracle.",
+      "kb_refs": [
+        "font/use-custom-font-in-artwork-editor#KB-021",
+        "font/use-custom-font-in-artwork-editor#KB-008"
+      ]
     }
   ],
   "state_transitions": [
@@ -35,14 +60,18 @@
       "to": "Text layer dùng custom font vừa chọn",
       "trigger": "Chọn font trong picker 'Your Custom Fonts'",
       "condition": "Font đã tồn tại trong danh sách /fonts của store",
-      "kb_refs": ["KB-008"]
+      "kb_refs": [
+        "font/use-custom-font-in-artwork-editor#KB-008"
+      ]
     }
   ],
   "confirmed_rules": [],
   "observed_behavior": [
     {
       "note": "Picker không cần bước Font Category riêng — dùng trực tiếp font vừa upload cho text layer.",
-      "kb_refs": ["KB-008"]
+      "kb_refs": [
+        "font/use-custom-font-in-artwork-editor#KB-008"
+      ]
     }
   ],
   "observed_validations": [],
@@ -50,27 +79,41 @@
     {
       "role": "owner",
       "scope": "Chọn bất kỳ custom font nào của store cho text layer đang chỉnh sửa",
-      "kb_refs": ["KB-008"]
+      "kb_refs": [
+        "font/use-custom-font-in-artwork-editor#KB-008"
+      ]
     }
   ],
   "surface_mapping": {
     "portal": [
       {
         "item": "Artwork editor, panel text layer 'Paragraph', dropdown Font type = Custom Fonts, picker 'Your Custom Fonts'",
-        "kb_refs": ["KB-008"]
+        "kb_refs": [
+          "font/use-custom-font-in-artwork-editor#KB-008"
+        ]
+      },
+      {
+        "item": "Artwork editor, text layer Font type = Custom Fonts chưa chọn font: toolbar 'Empty fonts!!!' và banner đỏ lỗi khi save (PROPOSED, chưa xác nhận)",
+        "kb_refs": [
+          "font/use-custom-font-in-artwork-editor#KB-021"
+        ]
       }
     ],
     "storefront": [],
     "api": [
       {
         "item": "Dùng lại GraphQL POST /v1beta1/relay operation getData (custom_fonts_connection) — cùng query với /fonts",
-        "kb_refs": ["KB-009"]
+        "kb_refs": [
+          "font/view-and-configure-font-list#KB-009"
+        ]
       }
     ],
     "data": [
       {
         "item": "custom_fonts_connection (cùng entity với /fonts)",
-        "kb_refs": ["KB-009"]
+        "kb_refs": [
+          "font/view-and-configure-font-list#KB-009"
+        ]
       }
     ],
     "code": []
@@ -79,23 +122,42 @@
     {
       "on": "FEAT-01-view-and-configure-font-list",
       "note": "Dùng chung GraphQL query getData để lấy danh sách font cho picker",
-      "kb_refs": ["KB-009"]
+      "kb_refs": [
+        "font/view-and-configure-font-list#KB-009"
+      ]
     },
     {
       "on": "FEAT-02-upload-custom-font",
       "note": "Font phải được upload trước mới xuất hiện trong picker (verify bằng chính font vừa tạo, id 920)",
-      "kb_refs": ["KB-008", "KB-011"]
+      "kb_refs": [
+        "font/use-custom-font-in-artwork-editor#KB-008",
+        "font/upload-custom-font#KB-011"
+      ]
     }
   ],
   "risks": [
     {
       "risk": "Chỉ có 1 sample (1 artwork, 1 text layer, 1 lần chọn font) — chưa test các layer type khác ngoài 'Paragraph', chưa test khi danh sách font nhiều/paginated trong picker.",
-      "kb_refs": ["KB-008"]
+      "kb_refs": [
+        "font/use-custom-font-in-artwork-editor#KB-008"
+      ]
+    },
+    {
+      "risk": "Ký tự CJK/RTL hiện trắng hoặc tofu khi font chỉ hỗ trợ Latin; chưa rõ có cảnh báo/fallback cho merchant hay không, và Font Settings tác động thế nào (PROPOSED, chưa xác nhận).",
+      "kb_refs": [
+        "font/use-custom-font-in-artwork-editor#KB-020"
+      ]
+    },
+    {
+      "risk": "Save bị chặn bằng lỗi JS thô thay vì validation thân thiện khi chưa chọn font cụ thể; chỉ ghi nhận qua thao tác JS (PROPOSED, chưa xác nhận).",
+      "kb_refs": [
+        "font/use-custom-font-in-artwork-editor#KB-021"
+      ]
     }
   ],
   "last_updated": {
-    "date": "2026-09-10",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "unknown_areas": [
     {
@@ -109,6 +171,16 @@
     {
       "question": "Ảnh hưởng của font lên storefront khách hàng khi xem sản phẩm đã áp dụng font này?",
       "why_it_matters": "Storefront hoàn toàn chưa được test trong phạm vi khám phá tới nay."
+    },
+    {
+      "question": "Ký tự CJK/RTL không render với font chỉ hỗ trợ Latin có phải hành vi mong muốn không, có cần cảnh báo hoặc fallback cho merchant, và Font Settings (Block rendering / Replace with space / Fallback to a custom font) cùng banner ký tự không hỗ trợ tác động thế nào ở artwork editor và storefront?",
+      "why_it_matters": "Chỉ là rule QA chưa Dev/PO xác nhận (OQ-font-022); chưa thể dùng làm oracle.",
+      "oq_id": "OQ-font-022"
+    },
+    {
+      "question": "Chặn save khi Font type = Custom Fonts chưa chọn font có phải thiết kế không, và lỗi JS thô trên banner đỏ có phải thông báo mong muốn hay nên là validation thân thiện?",
+      "why_it_matters": "Chỉ là rule QA chưa Dev/PO xác nhận, chỉ kiểm bằng thao tác JS (OQ-font-023); chưa thể dùng làm oracle.",
+      "oq_id": "OQ-font-023"
     }
   ],
   "profile_relationships": [
@@ -116,13 +188,18 @@
       "from_feature_id": "FEAT-04-use-custom-font-in-artwork-editor",
       "to_feature_id": "FEAT-01-view-and-configure-font-list",
       "relationship": "shares_data_query",
-      "kb_refs": ["KB-009"]
+      "kb_refs": [
+        "font/view-and-configure-font-list#KB-009"
+      ]
     },
     {
       "from_feature_id": "FEAT-04-use-custom-font-in-artwork-editor",
       "to_feature_id": "FEAT-02-upload-custom-font",
       "relationship": "depends_on_data_created_by",
-      "kb_refs": ["KB-008", "KB-011"]
+      "kb_refs": [
+        "font/use-custom-font-in-artwork-editor#KB-008",
+        "font/upload-custom-font#KB-011"
+      ]
     }
   ],
   "coverage_matrix": [
@@ -173,6 +250,23 @@
       "state": "n/a",
       "environment": "staging",
       "covered": false
+    },
+    {
+      "feature_id": "FEAT-04-use-custom-font-in-artwork-editor",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "text layer dùng font chỉ hỗ trợ Latin, nhập ký tự CJK/RTL",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-04-use-custom-font-in-artwork-editor",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Font type = Custom Fonts chưa chọn font, bấm Save artwork",
+      "environment": "staging",
+      "covered": false
     }
-  ]
+  ],
+  "profile_conflicts": []
 }

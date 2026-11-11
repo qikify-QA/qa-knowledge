@@ -1,5 +1,5 @@
 # Plan, capacity chu kỳ 30 ngày, usage fee, daily usage charge + Charge, đổi/huỷ gói, promote code, billing discount, catalog Plan
-**Published context version:** 2
+**Published context version:** 3
 
 **Product:** mysbox · **Object:** `plans-billing` · **Mode:** REFRESH (trên nền DOC_BOOTSTRAP v1) · **Environment:** documented + staging · **Published:** 2026-10-17
 

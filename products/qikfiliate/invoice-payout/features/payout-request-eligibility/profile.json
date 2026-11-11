@@ -8,12 +8,12 @@
       "role": "affiliate",
       "permission_observed": "canCreateByUser được tính theo context của chính affiliate đang đăng nhập (balance, payment info, is_vip, số shop có Conversion của affiliate đó). Không có evidence về admin tạo invoice hộ affiliate qua cùng điều kiện này.",
       "kb_refs": [
-        "KB-001",
-        "KB-002",
-        "KB-003",
-        "KB-004",
-        "KB-005",
-        "KB-008"
+        "invoice-payout/payout-request-eligibility#KB-001",
+        "invoice-payout/payout-request-eligibility#KB-002",
+        "invoice-payout/payout-request-eligibility#KB-003",
+        "invoice-payout/payout-request-eligibility#KB-004",
+        "invoice-payout/payout-request-eligibility#KB-005",
+        "invoice-payout/payout-request-eligibility#KB-008"
       ]
     }
   ],
@@ -22,15 +22,15 @@
       "path": "Portal dashboard — nút 'Request Payment' (ẩn/hiện hoặc disable theo điều kiện)",
       "precondition": "Affiliate đã đăng nhập; đã có payment_method_id + formatted_payment_info hợp lệ",
       "kb_refs": [
-        "KB-001",
-        "KB-009"
+        "invoice-payout/payout-request-eligibility#KB-001",
+        "invoice-payout/payout-request-eligibility#KB-009"
       ]
     },
     {
       "path": "POST /invoices (gọi trực tiếp API)",
       "precondition": "Không có precondition riêng ở tầng gọi — vẫn bị middleware check_can_create_invoice chặn nếu không đủ điều kiện, nên không thể bypass qua đây",
       "kb_refs": [
-        "KB-009"
+        "invoice-payout/payout-request-eligibility#KB-009"
       ]
     }
   ],
@@ -39,40 +39,40 @@
       "name": "Kiểm tra điều kiện chung (payment info hợp lệ + balance > transfer_fee)",
       "description": "điều_kiện_chung = affiliate có payment method + payment info hợp lệ (hasPaymentInfo) VÀ balance > transfer_fee (strict, không phải >=) của payment method đã chọn. Không thoả điều_kiện_chung → canCreateByUser = false ngay, không xét 2 điều kiện bổ sung.",
       "kb_refs": [
-        "KB-001",
-        "KB-002",
-        "KB-003"
+        "invoice-payout/payout-request-eligibility#KB-001",
+        "invoice-payout/payout-request-eligibility#KB-002",
+        "invoice-payout/payout-request-eligibility#KB-003"
       ]
     },
     {
       "name": "Áp ngoại lệ cho affiliate VIP",
       "description": "Nếu affiliate.is_vip = true và đã thoả điều_kiện_chung, canCreateByUser trả về true ngay, bỏ qua hoàn toàn 2 điều kiện bổ sung (số shop và ngưỡng balance $50).",
       "kb_refs": [
-        "KB-004"
+        "invoice-payout/payout-request-eligibility#KB-004"
       ]
     },
     {
       "name": "Kiểm tra 2 điều kiện bổ sung cho affiliate không VIP",
       "description": "Nếu không phải VIP, cần thêm CẢ HAI (phép VÀ, không phải một trong hai): (1) điều kiện bổ sung #1 — tiêu chí đếm số shop, ĐANG CONFLICT (OQ-invoice-payout-003, xem profile_conflicts) nên KHÔNG dùng làm oracle đơn lẻ cho tới khi PO/dev xác nhận; (2) điều kiện bổ sung #2 — balance >= min_balance_to_create_invoice (mặc định $50, cấu hình qua MIN_BALANCE_TO_CREATE_INVOICE/.env).",
       "kb_refs": [
-        "KB-005",
-        "KB-006",
-        "KB-007",
-        "KB-008"
+        "invoice-payout/payout-request-eligibility#KB-005",
+        "invoice-payout/payout-request-eligibility#KB-006",
+        "invoice-payout/payout-request-eligibility#KB-007",
+        "invoice-payout/payout-request-eligibility#KB-008"
       ]
     },
     {
       "name": "Chặn bypass qua API bằng middleware check_can_create_invoice",
       "description": "Điều kiện được kiểm tra cả ở giao diện lẫn backend (middleware check_can_create_invoice); affiliate không thể lách bằng cách gọi thẳng POST /invoices.",
       "kb_refs": [
-        "KB-009"
+        "invoice-payout/payout-request-eligibility#KB-009"
       ]
     },
     {
       "name": "Điều kiện thật luôn là InvoiceService::canCreateByUser, không phụ thuộc ID payment method",
       "description": "Điều kiện thực để được tạo yêu cầu thanh toán luôn là InvoiceService::canCreateByUser như mô tả ở trên, áp dụng như nhau cho mọi payment method bất kể ID cụ thể — khác với điều kiện HIỂN THỊ trên UI có thể bị hardcode sai (xem known defect ở feature affiliate-payment-info-setup, object payment-method).",
       "kb_refs": [
-        "KB-010"
+        "invoice-payout/payout-request-eligibility#KB-010"
       ]
     }
   ],
@@ -83,7 +83,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "HIGH",
       "kb_refs": [
-        "KB-001"
+        "invoice-payout/payout-request-eligibility#KB-001"
       ]
     },
     {
@@ -91,7 +91,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "HIGH",
       "kb_refs": [
-        "KB-002"
+        "invoice-payout/payout-request-eligibility#KB-002"
       ]
     },
     {
@@ -99,7 +99,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-003"
+        "invoice-payout/payout-request-eligibility#KB-003"
       ]
     },
     {
@@ -107,7 +107,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "HIGH",
       "kb_refs": [
-        "KB-004"
+        "invoice-payout/payout-request-eligibility#KB-004"
       ]
     },
     {
@@ -115,7 +115,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "HIGH",
       "kb_refs": [
-        "KB-005"
+        "invoice-payout/payout-request-eligibility#KB-005"
       ]
     },
     {
@@ -123,7 +123,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "HIGH",
       "kb_refs": [
-        "KB-008"
+        "invoice-payout/payout-request-eligibility#KB-008"
       ]
     },
     {
@@ -131,7 +131,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "HIGH",
       "kb_refs": [
-        "KB-009"
+        "invoice-payout/payout-request-eligibility#KB-009"
       ]
     },
     {
@@ -139,7 +139,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-010"
+        "invoice-payout/payout-request-eligibility#KB-010"
       ]
     }
   ],
@@ -171,15 +171,15 @@
     {
       "risk": "OQ-invoice-payout-003 chưa ngã ngũ: nếu test case dựng theo 1 trong 2 cách đếm 'số shop' mà PO/dev xác nhận điều ngược lại, mọi test case điều kiện bổ sung #1 sẽ sai oracle hàng loạt.",
       "kb_refs": [
-        "KB-006",
-        "KB-007"
+        "invoice-payout/payout-request-eligibility#KB-006",
+        "invoice-payout/payout-request-eligibility#KB-007"
       ],
       "severity": "MEDIUM"
     },
     {
       "risk": "KB-010 xác nhận điều kiện thật không phụ thuộc payment_method_id, nhưng UI của feature khác (affiliate-payment-info-setup) hardcode ID 1/2 để hiển thị điều kiện — rủi ro hiển thị sai nằm ở feature đó, không ở backend của feature này (xem affiliate-payment-info-setup KB-007/KB-008/KB-010).",
       "kb_refs": [
-        "KB-010"
+        "invoice-payout/payout-request-eligibility#KB-010"
       ],
       "severity": "LOW"
     }
@@ -207,8 +207,8 @@
     }
   ],
   "last_updated": {
-    "date": "2026-10-05",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "profile_relationships": [
     {
@@ -242,14 +242,14 @@
         {
           "statement": "KB-006: điều kiện bổ sung thứ nhất là số shop có ít nhất 1 Conversion (BẤT KỲ LOẠI) >= min_total_paid_customers (mặc định 3, cấu hình qua MIN_TOTAL_PAID_CUSTOMERS/.env).",
           "kb_refs": [
-            "KB-006"
+            "invoice-payout/payout-request-eligibility#KB-006"
           ],
           "confidence": "LOW"
         },
         {
           "statement": "KB-007: các ví dụ số liệu minh hoạ điều kiện bổ sung thứ nhất bằng thuật ngữ 'shop TRẢ PHÍ' — một khái niệm có thể hẹp hơn 'bất kỳ Conversion' nếu tồn tại Conversion không-phải-subscription (usage charge, refund...).",
           "kb_refs": [
-            "KB-007"
+            "invoice-payout/payout-request-eligibility#KB-007"
           ],
           "confidence": "LOW"
         }

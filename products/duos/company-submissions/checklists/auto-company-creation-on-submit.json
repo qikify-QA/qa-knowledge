@@ -25,8 +25,8 @@
       "expected_result": "Form storefront báo success; job tạo trên Shopify Company + 1 Company Location (địa chỉ lấy từ form) + customer làm Main Contact (Shopify role Location admin) + role Admin của app, rồi ghi `data.company_id` vào submission; status submission vẫn `pending` cho tới khi merchant Approve (company đã live trước Approve).",
       "oracle": {
         "kb_ids": [
-          "KB-049",
-          "KB-050"
+          "company-submissions/auto-company-creation-on-submit#KB-049",
+          "company-submissions/auto-company-creation-on-submit#KB-050"
         ],
         "oracle_strength": "STRONG"
       },
@@ -61,8 +61,8 @@
       "expected_result": "Portal không có UI bật/tắt cờ (cờ nằm ở root users.config, sửa qua JSON editor của admin panel nội bộ); cờ chỉ ON với `true` (boolean) hoặc \"true\" (chuỗi) — company được tạo lúc submit; mọi giá trị khác hoặc thiếu key là OFF — không có company tạo lúc submit.",
       "oracle": {
         "kb_ids": [
-          "KB-047",
-          "KB-048"
+          "company-submissions/auto-company-creation-on-submit#KB-047",
+          "company-submissions/auto-company-creation-on-submit#KB-048"
         ],
         "oracle_strength": "STRONG"
       },
@@ -96,7 +96,7 @@
       "expected_result": "Job không lọc theo country và gán các catalog liệt kê trong `company_creation_catalog_ids`.",
       "oracle": {
         "kb_ids": [
-          "KB-051"
+          "company-submissions/auto-company-creation-on-submit#KB-051"
         ],
         "oracle_strength": "STRONG"
       },
@@ -104,7 +104,7 @@
       "open_question_draft": null,
       "related_kb_ids": [],
       "regression_watch_kb_ids": [
-        "KB-058"
+        "company-submissions/auto-company-creation-on-submit#KB-058"
       ],
       "risk_refs": [
         "RISK-auto-creation-02"
@@ -133,16 +133,16 @@
       "expected_result": "Job lỗi trước bước `companyCreate` (customer đã là contact company khác): submission chuyển `failed` (badge đỏ \"Failed\"), ghi `company_creation_error`, không có `company_id`; hệ thống báo `customer_in_other_company` và không tạo company.",
       "oracle": {
         "kb_ids": [
-          "KB-053",
-          "KB-042",
-          "KB-003"
+          "company-submissions/auto-company-creation-on-submit#KB-053",
+          "company-submissions/customer-matching#KB-042",
+          "company-submissions/submission-review-and-decision#KB-003"
         ],
         "oracle_strength": "STRONG"
       },
       "status": "READY",
       "open_question_draft": null,
       "related_kb_ids": [
-        "KB-044"
+        "company-submissions/customer-matching#KB-044"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -172,7 +172,7 @@
       "expected_result": "Không rollback: company vẫn còn trên Shopify, submission giữ `company_id`, ghi `company_creation_error` và status vẫn `pending`.",
       "oracle": {
         "kb_ids": [
-          "KB-054"
+          "company-submissions/auto-company-creation-on-submit#KB-054"
         ],
         "oracle_strength": "STRONG"
       },
@@ -206,7 +206,7 @@
       "expected_result": "Job chạy đúng 1 lần, không retry; job bỏ qua submission đã có `company_id` hoặc không còn `pending` (không tạo company thêm).",
       "oracle": {
         "kb_ids": [
-          "KB-052"
+          "company-submissions/auto-company-creation-on-submit#KB-052"
         ],
         "oracle_strength": "STRONG"
       },
@@ -242,8 +242,8 @@
       "expected_result": "Tạo company tự động bị giới hạn theo shop (mặc định 10 lần/phút và 50 lần/ngày, override được bằng `company_creation_rate_limit {per_minute, per_day}`); submission vượt giới hạn vẫn được lưu với status `pending` (không phải Failed), chỉ thêm `company_creation_error = \"rate_limited\"`, và không có company nào được tạo.",
       "oracle": {
         "kb_ids": [
-          "KB-055",
-          "KB-056"
+          "company-submissions/auto-company-creation-on-submit#KB-055",
+          "company-submissions/auto-company-creation-on-submit#KB-056"
         ],
         "oracle_strength": "STRONG"
       },
@@ -275,7 +275,7 @@
         "Nếu app có thao tác loại bỏ, thực hiện rồi kiểm tra lại company trên Shopify."
       ],
       "observation_point": "Thao tác loại bỏ / gỡ trong app; trạng thái company và khả năng đặt hàng trước và sau thao tác.",
-      "expected_result": "Chưa có căn cứ: ghi lại app có thao tác nào gỡ company không, company còn live / đặt hàng được hay không trước và sau thao tác; không đánh giá pass/fail cho tới khi PO/Dev trả lời.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [],
         "oracle_strength": "NONE"
@@ -283,10 +283,10 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Khi store bật cờ, Company + Location + Main contact do job tạo cho một submission spam hoặc không đạt có cách nào được dọn từ app không (Reject, xoá submission, thao tác riêng), hay chỉ gỡ được trong Shopify admin? Mô tả hiện có dựa trên một phía của tranh chấp Reject/Delete chưa chốt (PO 30/09/2026, chuyển lời qua QA lead) và phạm vi bulk xoá chưa chốt.",
       "related_kb_ids": [
-        "KB-057",
-        "KB-011",
-        "KB-008",
-        "KB-009"
+        "company-submissions/auto-company-creation-on-submit#KB-057",
+        "company-submissions/submission-review-and-decision#KB-011",
+        "company-submissions/submission-review-and-decision#KB-008",
+        "company-submissions/submission-review-and-decision#KB-009"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -294,7 +294,8 @@
       ],
       "priority": "P1",
       "automation_suitability": "HYBRID",
-      "oq_id": "OQ-company-submissions-024"
+      "oq_id": "OQ-company-submissions-024",
+      "observation_guidance": "Chưa có căn cứ: ghi lại app có thao tác nào gỡ company không, company còn live / đặt hàng được hay không trước và sau thao tác; không đánh giá pass/fail cho tới khi PO/Dev trả lời."
     },
     {
       "check_id": "CHK-009",
@@ -313,18 +314,18 @@
         "Chờ job xong; đếm Company trên Shopify cho buyer đó; xem dữ liệu submission."
       ],
       "observation_point": "Số company được tạo và dữ liệu submission.",
-      "expected_result": "Chưa có căn cứ: ghi lại số company tạo ra và nhánh Approve đã chạy; không đánh giá pass/fail cho tới khi PO/Dev trả lời.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [
-          "KB-061"
+          "company-submissions/auto-company-creation-on-submit#KB-061"
         ],
         "oracle_strength": "NONE"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Nếu merchant Approve đúng lúc job tạo company chưa ghi `company_id` thì Portal đi luồng cũ và có thể tạo company thứ hai. PO/Dev có chặn race này không, và kết quả mong đợi là gì (task Testlane GAP-21)?",
       "related_kb_ids": [
-        "KB-052",
-        "KB-018"
+        "company-submissions/auto-company-creation-on-submit#KB-052",
+        "company-submissions/approve-company-creation#KB-018"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -332,7 +333,8 @@
       ],
       "priority": "P1",
       "automation_suitability": "NOT_SUITABLE",
-      "oq_id": "OQ-company-submissions-022"
+      "oq_id": "OQ-company-submissions-022",
+      "observation_guidance": "Chưa có căn cứ: ghi lại số company tạo ra và nhánh Approve đã chạy; không đánh giá pass/fail cho tới khi PO/Dev trả lời."
     },
     {
       "check_id": "CHK-010",
@@ -354,7 +356,7 @@
       "expected_result": "Theo hiện trạng staging (quan sát qua TC-DUOS-153, store bật cờ, ngày và build không ghi), lệch = cần điều tra: buyer đăng nhập được bằng Shopify login code trước khi submission được Approve. Đây có phải hành vi mong đợi hay không đang chờ PO xác nhận.",
       "oracle": {
         "kb_ids": [
-          "KB-060"
+          "company-submissions/auto-company-creation-on-submit#KB-060"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -386,17 +388,17 @@
         "Kiểm tra hộp thư; xem trang Notifications của Portal tìm setting liên quan email kích hoạt."
       ],
       "observation_point": "Email nhận được và setting liên quan trong Notifications.",
-      "expected_result": "Chưa có căn cứ: ghi lại email kích hoạt có được gửi không, nội dung, và setting nào trong Notifications điều khiển nó; không đánh giá pass/fail cho tới khi PO/Dev trả lời.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [
-          "KB-059"
+          "company-submissions/auto-company-creation-on-submit#KB-059"
         ],
         "oracle_strength": "NONE"
       },
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Khi store bật cờ, email kích hoạt tài khoản cho buyer có \"setting riêng ở phần Notification\" (PO 30/09/2026) — đó là setting nào, email có được gửi lúc submit hay lúc Approve (task Testlane GAP-25, GAP-26)?",
       "related_kb_ids": [
-        "KB-060"
+        "company-submissions/auto-company-creation-on-submit#KB-060"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -404,7 +406,8 @@
       ],
       "priority": "P3",
       "automation_suitability": "HYBRID",
-      "oq_id": "OQ-company-submissions-021"
+      "oq_id": "OQ-company-submissions-021",
+      "observation_guidance": "Chưa có căn cứ: ghi lại email kích hoạt có được gửi không, nội dung, và setting nào trong Notifications điều khiển nó; không đánh giá pass/fail cho tới khi PO/Dev trả lời."
     },
     {
       "check_id": "CHK-012",
@@ -423,7 +426,7 @@
         "Xem dữ liệu submission được lưu và hành vi của job / Approve sau đó."
       ],
       "observation_point": "`company_id` lưu trong submission và company bị tác động.",
-      "expected_result": "Chưa có căn cứ: ghi lại `company_id` có bị nhận từ body không và Approve sau đó tác động company nào; không đánh giá pass/fail cho tới khi PO/Dev trả lời.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [],
         "oracle_strength": "NONE"
@@ -431,8 +434,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Backend có bỏ qua field `company_id` gửi kèm body khi submit registration form không (mass assignment, TC-DUOS-220 — Need confirm)? Nếu không, Approve submission đó sẽ chỉ bắn trigger cho company của người khác.",
       "related_kb_ids": [
-        "KB-049",
-        "KB-018"
+        "company-submissions/auto-company-creation-on-submit#KB-049",
+        "company-submissions/approve-company-creation#KB-018"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -440,7 +443,8 @@
       ],
       "priority": "P1",
       "automation_suitability": "SUITABLE",
-      "oq_id": "OQ-company-submissions-025"
+      "oq_id": "OQ-company-submissions-025",
+      "observation_guidance": "Chưa có căn cứ: ghi lại `company_id` có bị nhận từ body không và Approve sau đó tác động company nào; không đánh giá pass/fail cho tới khi PO/Dev trả lời."
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -548,7 +552,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-10-09",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   }
 }

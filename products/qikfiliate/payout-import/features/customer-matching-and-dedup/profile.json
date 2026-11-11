@@ -8,8 +8,8 @@
       "role": "unspecified",
       "permission_observed": "Cơ chế khớp Customer và dedup chạy ở tầng xử lý dữ liệu khi import (cả màn hình Upload payout file và Populate/reconcile đều gọi tới); không có claim permission riêng cho bước này trong shard.",
       "kb_refs": [
-        "KB-001",
-        "KB-002"
+        "payout-import/customer-matching-and-dedup#KB-001",
+        "payout-import/customer-matching-and-dedup#KB-002"
       ]
     }
   ],
@@ -19,29 +19,29 @@
       "name": "Khớp Customer cho 1 dòng payout mới",
       "description": "Vì Shopify và Qikfiliate là 2 hệ thống độc lập, không chia sẻ khoá chính nào cho 1 charge, hệ thống phải suy luận Customer bằng cách khớp theo tổ hợp field có sẵn trong CSV: (1) Customer.name = cột Shop; (2) Customer.program_id → Program.slug = cột app_slug. Nếu không tìm thấy Customer nào khớp cả 2 điều kiện, dòng bị bỏ qua hoàn toàn, không tạo Conversion.",
       "kb_refs": [
-        "KB-001",
-        "KB-002",
-        "KB-003",
-        "KB-004"
+        "payout-import/customer-matching-and-dedup#KB-001",
+        "payout-import/customer-matching-and-dedup#KB-002",
+        "payout-import/customer-matching-and-dedup#KB-003",
+        "payout-import/customer-matching-and-dedup#KB-004"
       ]
     },
     {
       "name": "Chống trùng lặp (dedup) khi re-upload cùng dữ liệu",
       "description": "Hệ thống coi 1 dòng CSV là 'đã tồn tại' (bỏ qua, không tạo Conversion mới) nếu tìm thấy 1 Conversion sẵn có của đúng Customer đó khớp các điều kiện: payout_date giống nhau; charge_type giống nhau; charge_creation_time giống nhau theo NGÀY (không theo giờ/phút/giây); partner_share giống nhau trong sai số 0.005 (không so tuyệt đối, vì float có thể lệch bit khi lưu DB). Vai trò của điều kiện charge_id trong tổ hợp này ĐANG CONFLICTED (xem profile_conflicts — OQ-payout-import-021): KHÔNG khẳng định charge_id có hay không tham gia điều kiện AND này ở đây.",
       "kb_refs": [
-        "KB-006",
-        "KB-007",
-        "KB-008",
-        "KB-009",
-        "KB-010",
-        "KB-011"
+        "payout-import/customer-matching-and-dedup#KB-006",
+        "payout-import/customer-matching-and-dedup#KB-007",
+        "payout-import/customer-matching-and-dedup#KB-008",
+        "payout-import/customer-matching-and-dedup#KB-009",
+        "payout-import/customer-matching-and-dedup#KB-010",
+        "payout-import/customer-matching-and-dedup#KB-011"
       ]
     },
     {
       "name": "Ví dụ minh hoạ: upload lại đúng file cũ",
       "description": "Trong 1 ví dụ minh hoạ của tài liệu, khi admin upload lại đúng file cũ, banner báo '0 conversions created' (hoặc số nhỏ hơn số dòng thật nếu chỉ 1 phần trùng) — tài liệu khẳng định đây là hành vi ĐÚNG, không phải lỗi. Đây là EXAMPLE_ONLY, KHÔNG dùng để suy ra số lượng/boundary cụ thể cho test case.",
       "kb_refs": [
-        "KB-012"
+        "payout-import/customer-matching-and-dedup#KB-012"
       ]
     }
   ],
@@ -52,7 +52,7 @@
       "trigger": "Customer.name == cột Shop VÀ Customer.program_id→Program.slug == cột app_slug",
       "condition": "Khớp cả 2 điều kiện cùng lúc.",
       "kb_refs": [
-        "KB-003"
+        "payout-import/customer-matching-and-dedup#KB-003"
       ]
     },
     {
@@ -61,8 +61,8 @@
       "trigger": "Không có Customer nào khớp cả 2 điều kiện",
       "condition": "Dòng bị bỏ qua hoàn toàn, không tạo Conversion, không log.",
       "kb_refs": [
-        "KB-004",
-        "KB-005"
+        "payout-import/customer-matching-and-dedup#KB-004",
+        "payout-import/customer-matching-and-dedup#KB-005"
       ]
     },
     {
@@ -71,11 +71,11 @@
       "trigger": "Tồn tại 1 Conversion cũ của đúng Customer khớp payout_date + charge_type + charge_creation_time(ngày) + partner_share(±0.005) [+ vai trò charge_id: CONFLICTED]",
       "condition": "Toàn bộ điều kiện AND (trừ charge_id — đang CONFLICTED) khớp với 1 Conversion sẵn có.",
       "kb_refs": [
-        "KB-006",
-        "KB-007",
-        "KB-008",
-        "KB-009",
-        "KB-010"
+        "payout-import/customer-matching-and-dedup#KB-006",
+        "payout-import/customer-matching-and-dedup#KB-007",
+        "payout-import/customer-matching-and-dedup#KB-008",
+        "payout-import/customer-matching-and-dedup#KB-009",
+        "payout-import/customer-matching-and-dedup#KB-010"
       ]
     }
   ],
@@ -83,61 +83,61 @@
     {
       "statement": "KB-001: Shopify và Qikfiliate là 2 hệ thống độc lập, không chia sẻ khoá chính nào cho 1 charge.",
       "kb_refs": [
-        "KB-001"
+        "payout-import/customer-matching-and-dedup#KB-001"
       ]
     },
     {
       "statement": "KB-002: Hệ thống phải suy luận Customer bằng cách khớp theo tổ hợp field có sẵn trong CSV.",
       "kb_refs": [
-        "KB-002"
+        "payout-import/customer-matching-and-dedup#KB-002"
       ]
     },
     {
       "statement": "KB-003: Khớp Customer đòi 2 điều kiện cùng lúc: Customer.name = cột Shop; Customer.program_id→Program.slug = cột app_slug.",
       "kb_refs": [
-        "KB-003"
+        "payout-import/customer-matching-and-dedup#KB-003"
       ]
     },
     {
       "statement": "KB-004: Không khớp Customer nào → dòng bị bỏ qua hoàn toàn, không tạo Conversion.",
       "kb_refs": [
-        "KB-004"
+        "payout-import/customer-matching-and-dedup#KB-004"
       ]
     },
     {
       "statement": "KB-006: Dedup coi 1 dòng là đã tồn tại nếu khớp toàn bộ điều kiện với 1 Conversion sẵn có (payout_date, charge_type, charge_creation_time theo ngày, partner_share ±0.005; vai trò charge_id CONFLICTED — xem profile_conflicts).",
       "kb_refs": [
-        "KB-006"
+        "payout-import/customer-matching-and-dedup#KB-006"
       ]
     },
     {
       "statement": "KB-007: payout_date giống nhau là 1 điều kiện dedup.",
       "kb_refs": [
-        "KB-007"
+        "payout-import/customer-matching-and-dedup#KB-007"
       ]
     },
     {
       "statement": "KB-008: charge_type giống nhau là 1 điều kiện dedup.",
       "kb_refs": [
-        "KB-008"
+        "payout-import/customer-matching-and-dedup#KB-008"
       ]
     },
     {
       "statement": "KB-009: charge_creation_time được so theo NGÀY, không theo giờ/phút/giây (cột DB bị cast về đầu ngày).",
       "kb_refs": [
-        "KB-009"
+        "payout-import/customer-matching-and-dedup#KB-009"
       ]
     },
     {
       "statement": "KB-010: partner_share được so trong sai số 0.005, không so tuyệt đối (float có thể lệch bit khi lưu DB).",
       "kb_refs": [
-        "KB-010"
+        "payout-import/customer-matching-and-dedup#KB-010"
       ]
     },
     {
       "statement": "KB-011: Các dòng downgrade/credit của Shopify không có Charge ID.",
       "kb_refs": [
-        "KB-011"
+        "payout-import/customer-matching-and-dedup#KB-011"
       ]
     }
   ],
@@ -162,7 +162,7 @@
     {
       "risk": "KNOWN_DEFECT (KB-005): Dòng bị bỏ qua vì không khớp Customer không được ghi log — cùng loại observability gap với KB-024 của feature payout-csv-upload, khác nguyên nhân skip.",
       "kb_refs": [
-        "KB-005"
+        "payout-import/customer-matching-and-dedup#KB-005"
       ]
     }
   ],
@@ -177,8 +177,8 @@
     }
   ],
   "last_updated": {
-    "date": "2026-10-05",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "profile_relationships": [
     {
@@ -204,14 +204,14 @@
           "side": "A",
           "statement": "KB-014 (nguồn `qikfiliate/payout - charge type reference`): cơ chế chống trùng lặp (dedup) KHÔNG dùng charge_id làm khoá chính cho các dòng loại refund/downgrade.",
           "kb_refs": [
-            "KB-014"
+            "payout-import/customer-matching-and-dedup#KB-014"
           ]
         },
         {
           "side": "B",
           "statement": "KB-013 (nguồn `qikfiliate/payout - dedup and reconciliation`): charge_id giống nhau LÀ 1 trong các điều kiện AND bắt buộc của dedup; riêng trường hợp charge_id rỗng (dòng downgrade/credit không có Charge ID) được coi là NULL khi so sánh, không so = với chuỗi rỗng.",
           "kb_refs": [
-            "KB-013"
+            "payout-import/customer-matching-and-dedup#KB-013"
           ]
         }
       ],

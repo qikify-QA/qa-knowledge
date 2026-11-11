@@ -7,19 +7,19 @@
       "role": "merchant",
       "permission_observed": "Truy cập AI Offer Assistant panel và manual template picker trên trang offer creation (production store); bị giới hạn bởi usage limit (ai_prompt_limit) khi dùng AI generation; không truy cập được feature này trên development store (UI bị hidden/disable).",
       "kb_refs": [
-        "KB-001",
-        "KB-003",
-        "KB-011",
-        "KB-013",
-        "KB-014"
+        "ai-offer-creation/ai-offer-creation#KB-001",
+        "ai-offer-creation/ai-offer-creation#KB-003",
+        "ai-offer-creation/ai-offer-creation#KB-011",
+        "ai-offer-creation/ai-offer-creation#KB-013",
+        "ai-offer-creation/ai-offer-creation#KB-014"
       ]
     },
     {
       "role": "staff",
       "permission_observed": "Admin page có quyền thêm/sửa field `ai_prompt_limit` trong Config của một store để cấp thêm lượt AI generation cho merchant đó — cơ chế thật dùng cho cả production grant và QA testing, không chỉ QA-only bypass.",
       "kb_refs": [
-        "KB-015",
-        "KB-029"
+        "ai-offer-creation/ai-offer-creation#KB-015",
+        "ai-offer-creation/ai-offer-creation#KB-029"
       ]
     }
   ],
@@ -28,24 +28,24 @@
       "path": "Trang offer creation (Portal) — AI Offer Assistant panel, nằm ở đầu trang, phía trên manual template picker",
       "precondition": "Merchant đang ở trang offer creation trên một store không phải development store, và chưa đạt usage limit hiện tại của `ai_prompt_limit`",
       "kb_refs": [
-        "KB-001",
-        "KB-003",
-        "KB-013",
-        "KB-014"
+        "ai-offer-creation/ai-offer-creation#KB-001",
+        "ai-offer-creation/ai-offer-creation#KB-003",
+        "ai-offer-creation/ai-offer-creation#KB-013",
+        "ai-offer-creation/ai-offer-creation#KB-014"
       ]
     },
     {
       "path": "Trang offer creation (Portal) — manual template picker, phía dưới divider \"or pick a template manually\"",
       "precondition": "Merchant không dùng AI (hoặc đã dùng rồi muốn tạo thủ công); hiển thị toàn bộ 5 offer type dưới dạng card",
       "kb_refs": [
-        "KB-011"
+        "ai-offer-creation/ai-offer-creation#KB-011"
       ]
     },
     {
       "path": "Admin page — Config của store (staff/admin only)",
       "precondition": "Staff cần cấp thêm lượt AI generation cho một store cụ thể",
       "kb_refs": [
-        "KB-015"
+        "ai-offer-creation/ai-offer-creation#KB-015"
       ]
     }
   ],
@@ -54,66 +54,66 @@
       "name": "Generate offer config từ natural-language prompt (AI Offer Assistant panel)",
       "description": "Panel ở đầu trang offer creation cho merchant nhập một free-text prompt (bất kỳ ngôn ngữ nào, tối đa 2.000 ký tự) kèm example prompts, char counter, hint text, rồi bấm CTA \"Generate offer\" để AI nhận diện offer type phù hợp và pre-fill config — merchant review/edit trước khi lưu. AI Offer Creation là một generator cho 3 offer type kia (Quantity Break/Multibuy/Wholesale Pricing), không phải một offer type riêng biệt.",
       "kb_refs": [
-        "KB-001",
-        "KB-002",
-        "KB-003",
-        "KB-004",
-        "KB-005",
-        "KB-006",
-        "KB-007",
-        "KB-010",
-        "KB-012"
+        "ai-offer-creation/ai-offer-creation#KB-001",
+        "ai-offer-creation/ai-offer-creation#KB-002",
+        "ai-offer-creation/ai-offer-creation#KB-003",
+        "ai-offer-creation/ai-offer-creation#KB-004",
+        "ai-offer-creation/ai-offer-creation#KB-005",
+        "ai-offer-creation/ai-offer-creation#KB-006",
+        "ai-offer-creation/ai-offer-creation#KB-007",
+        "ai-offer-creation/ai-offer-creation#KB-010",
+        "ai-offer-creation/ai-offer-creation#KB-012"
       ]
     },
     {
       "name": "Manual fallback — tạo offer không qua AI",
       "description": "Bên dưới AI Offer Assistant panel, sau divider \"or pick a template manually\", hiển thị toàn bộ 5 offer type dưới dạng card (Quantity Breaks, Buy X Get Y Free, Volume Discount for Subscription, Multibuy, Wholesale Pricing) để merchant chọn tạo thủ công, song song và độc lập với đường AI.",
       "kb_refs": [
-        "KB-011",
-        "KB-012"
+        "ai-offer-creation/ai-offer-creation#KB-011",
+        "ai-offer-creation/ai-offer-creation#KB-012"
       ]
     },
     {
       "name": "Validate & route prompt trước khi generate",
       "description": "Prompt rỗng hoặc <5 ký tự → disable nút Generate (không submit được). Prompt gibberish/không map được vào 1 trong 5 offer type, hoặc yêu cầu một offer type ngoài 5 loại hỗ trợ → warning banner (không hallucinate config). Prompt ambiguous giữa 2 offer type → AI tự chọn theo một internal \"closest-matching offer type\" priority rule, không có bước clarification. Prompt bị hard-cutoff tại 2.000 ký tự, không thể nhập vượt.",
       "kb_refs": [
-        "KB-019",
-        "KB-020",
-        "KB-021",
-        "KB-022",
-        "KB-023"
+        "ai-offer-creation/ai-offer-creation#KB-019",
+        "ai-offer-creation/ai-offer-creation#KB-020",
+        "ai-offer-creation/ai-offer-creation#KB-021",
+        "ai-offer-creation/ai-offer-creation#KB-022",
+        "ai-offer-creation/ai-offer-creation#KB-023"
       ]
     },
     {
       "name": "Quản lý usage limit cho AI generation",
       "description": "Usage counter dạng \"AI generations: X/Y\" phản ánh `ai_prompt_limit` hiện tại. Production hiện hành (PO-confirmed, thay thế written AC gốc của QVD-169): cap 1 lần dùng/instance, KHÔNG tự reset — limit tính per store/instance (không phải per staff account), và việc edit/regenerate một offer đã AI-tạo trước đó cũng tính vào usage limit. Khi đạt limit: UI hiện message \"limit reached\" + disable prompt input, không hàm ý sẽ có reset. Admin có thể nâng `ai_prompt_limit` qua Config (Admin page) — khi đó live counter cập nhật theo limit mới ngay; đây cũng là cách duy nhất để QA test được scenario at-limit/over-limit vì không có daily reset để chờ.",
       "kb_refs": [
-        "KB-008",
-        "KB-009",
-        "KB-014",
-        "KB-015",
-        "KB-016",
-        "KB-026",
-        "KB-027",
-        "KB-028",
-        "KB-029"
+        "ai-offer-creation/ai-offer-creation#KB-008",
+        "ai-offer-creation/ai-offer-creation#KB-009",
+        "ai-offer-creation/ai-offer-creation#KB-014",
+        "ai-offer-creation/ai-offer-creation#KB-015",
+        "ai-offer-creation/ai-offer-creation#KB-016",
+        "ai-offer-creation/ai-offer-creation#KB-026",
+        "ai-offer-creation/ai-offer-creation#KB-027",
+        "ai-offer-creation/ai-offer-creation#KB-028",
+        "ai-offer-creation/ai-offer-creation#KB-029"
       ]
     },
     {
       "name": "Giới hạn khả dụng trên development store",
       "description": "Trên development store, feature AI Offer Creation hoàn toàn bị disable/hidden kèm message giải thích — bao gồm cả trường hợp merchant truy cập qua một stale URL/direct link tới Generate flow (UI vẫn hidden, kèm banner). Xác nhận này chỉ ở UI-level, chưa xác nhận server-side enforcement.",
       "kb_refs": [
-        "KB-013",
-        "KB-025"
+        "ai-offer-creation/ai-offer-creation#KB-013",
+        "ai-offer-creation/ai-offer-creation#KB-025"
       ]
     },
     {
       "name": "Đánh dấu offer là AI-generated & kích hoạt review flow downstream",
       "description": "Khi lưu một offer được tạo bởi AI, một flag `isAiGenerated` được persist vào dữ liệu offer (lưu tại lúc tạo, không derive lại từ edit path — nên vẫn persist dù merchant edit config trước khi save). Flag này trigger flow Ask for Review (không áp dụng cho offer tạo thủ công).",
       "kb_refs": [
-        "KB-017",
-        "KB-018",
-        "KB-024"
+        "ai-offer-creation/ai-offer-creation#KB-017",
+        "ai-offer-creation/ai-offer-creation#KB-018",
+        "ai-offer-creation/ai-offer-creation#KB-024"
       ]
     }
   ],
@@ -124,10 +124,10 @@
       "trigger": "Merchant bấm \"Generate offer\" với prompt hợp lệ (≥5, ≤2000 ký tự, map được vào 1 trong 5 offer type được hỗ trợ)",
       "condition": "Chưa đạt usage limit hiện tại; store không phải development store",
       "kb_refs": [
-        "KB-005",
-        "KB-014",
-        "KB-021",
-        "KB-023"
+        "ai-offer-creation/ai-offer-creation#KB-005",
+        "ai-offer-creation/ai-offer-creation#KB-014",
+        "ai-offer-creation/ai-offer-creation#KB-021",
+        "ai-offer-creation/ai-offer-creation#KB-023"
       ]
     },
     {
@@ -136,8 +136,8 @@
       "trigger": "Merchant submit prompt gibberish/không map được, hoặc yêu cầu offer type ngoài 5 loại hỗ trợ",
       "condition": "",
       "kb_refs": [
-        "KB-019",
-        "KB-023"
+        "ai-offer-creation/ai-offer-creation#KB-019",
+        "ai-offer-creation/ai-offer-creation#KB-023"
       ]
     },
     {
@@ -146,7 +146,7 @@
       "trigger": "Prompt rỗng hoặc <5 ký tự",
       "condition": "",
       "kb_refs": [
-        "KB-020"
+        "ai-offer-creation/ai-offer-creation#KB-020"
       ]
     },
     {
@@ -155,9 +155,9 @@
       "trigger": "Merchant lưu offer (đã/chưa edit config trước khi save)",
       "condition": "isAiGenerated=true được persist vào dữ liệu offer tại lúc save",
       "kb_refs": [
-        "KB-017",
-        "KB-018",
-        "KB-024"
+        "ai-offer-creation/ai-offer-creation#KB-017",
+        "ai-offer-creation/ai-offer-creation#KB-018",
+        "ai-offer-creation/ai-offer-creation#KB-024"
       ]
     },
     {
@@ -166,9 +166,9 @@
       "trigger": "Merchant dùng hết lượt generate/edit/regenerate được phép theo `ai_prompt_limit` hiện tại",
       "condition": "Production: cap 1 use/instance mặc định, không tự reset",
       "kb_refs": [
-        "KB-014",
-        "KB-026",
-        "KB-027"
+        "ai-offer-creation/ai-offer-creation#KB-014",
+        "ai-offer-creation/ai-offer-creation#KB-026",
+        "ai-offer-creation/ai-offer-creation#KB-027"
       ]
     },
     {
@@ -177,8 +177,8 @@
       "trigger": "Admin thêm/nâng `ai_prompt_limit` trong Config (Admin page)",
       "condition": "",
       "kb_refs": [
-        "KB-015",
-        "KB-028"
+        "ai-offer-creation/ai-offer-creation#KB-015",
+        "ai-offer-creation/ai-offer-creation#KB-028"
       ]
     },
     {
@@ -187,8 +187,8 @@
       "trigger": "Merchant truy cập trang offer creation (hoặc Generate flow qua stale link) trên một development store",
       "condition": "",
       "kb_refs": [
-        "KB-013",
-        "KB-025"
+        "ai-offer-creation/ai-offer-creation#KB-013",
+        "ai-offer-creation/ai-offer-creation#KB-025"
       ]
     }
   ],
@@ -198,7 +198,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-004"
+        "ai-offer-creation/ai-offer-creation#KB-004"
       ]
     },
     {
@@ -206,7 +206,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-022"
+        "ai-offer-creation/ai-offer-creation#KB-022"
       ]
     },
     {
@@ -214,7 +214,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-020"
+        "ai-offer-creation/ai-offer-creation#KB-020"
       ]
     },
     {
@@ -222,7 +222,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-019"
+        "ai-offer-creation/ai-offer-creation#KB-019"
       ]
     },
     {
@@ -230,7 +230,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-023"
+        "ai-offer-creation/ai-offer-creation#KB-023"
       ]
     },
     {
@@ -238,7 +238,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-021"
+        "ai-offer-creation/ai-offer-creation#KB-021"
       ]
     },
     {
@@ -246,7 +246,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-014"
+        "ai-offer-creation/ai-offer-creation#KB-014"
       ]
     },
     {
@@ -254,7 +254,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-016"
+        "ai-offer-creation/ai-offer-creation#KB-016"
       ]
     },
     {
@@ -262,7 +262,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-026"
+        "ai-offer-creation/ai-offer-creation#KB-026"
       ]
     },
     {
@@ -270,7 +270,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-027"
+        "ai-offer-creation/ai-offer-creation#KB-027"
       ]
     },
     {
@@ -278,7 +278,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-015"
+        "ai-offer-creation/ai-offer-creation#KB-015"
       ]
     },
     {
@@ -286,7 +286,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-028"
+        "ai-offer-creation/ai-offer-creation#KB-028"
       ]
     },
     {
@@ -294,7 +294,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-029"
+        "ai-offer-creation/ai-offer-creation#KB-029"
       ]
     },
     {
@@ -302,7 +302,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-013"
+        "ai-offer-creation/ai-offer-creation#KB-013"
       ]
     },
     {
@@ -310,7 +310,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-025"
+        "ai-offer-creation/ai-offer-creation#KB-025"
       ]
     },
     {
@@ -318,7 +318,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-017"
+        "ai-offer-creation/ai-offer-creation#KB-017"
       ]
     },
     {
@@ -326,7 +326,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-018"
+        "ai-offer-creation/ai-offer-creation#KB-018"
       ]
     },
     {
@@ -334,7 +334,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-024"
+        "ai-offer-creation/ai-offer-creation#KB-024"
       ]
     },
     {
@@ -342,7 +342,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-012"
+        "ai-offer-creation/ai-offer-creation#KB-012"
       ]
     },
     {
@@ -350,7 +350,7 @@
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
       "kb_refs": [
-        "KB-010"
+        "ai-offer-creation/ai-offer-creation#KB-010"
       ]
     }
   ],
@@ -389,7 +389,7 @@
       "knowledge_kind": "INFERRED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-009"
+        "ai-offer-creation/ai-offer-creation#KB-009"
       ]
     },
     {
@@ -397,7 +397,7 @@
       "knowledge_kind": "INFERRED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-030"
+        "ai-offer-creation/ai-offer-creation#KB-030"
       ]
     }
   ],
@@ -512,5 +512,9 @@
       "to": "ask-for-review",
       "relation": "FEEDS_INTO"
     }
-  ]
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
 }

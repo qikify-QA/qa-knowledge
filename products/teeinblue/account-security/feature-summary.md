@@ -1,5 +1,5 @@
 # Object: Account & Security (product: teeinblue) — Feature Profile Summary
-**Published context version:** 2
+**Published context version:** 3
 
 - **Object:** login portal gồm Google login, trạng thái bảo mật staff, thao tác nhạy cảm, header acting-user, quyền ghi qua Hasura, webhook giá của Paddle. Không gồm quyền riêng của campaign (`campaign/campaign-security-permissions`).
 - **Quan sát:** staging, role `merchant-owner`, một account owner đang 2FA off. Explorer không chủ động ghi gì ngoài một lần login hợp lệ; các POST tự phát sau login chưa xác định, xem OQ-account-security-015.

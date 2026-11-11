@@ -104,3 +104,55 @@
   "summary": "tracking_id của mỗi TrackingInformation là duy nhất (unique), không trùng giữa các bản ghi. Oracle STRONG cua check 'CHK-004' hien trace toi kb_id (KB-003) co confirmation_source.derivation=code_artifact (suy ra tu doc code/schema, khong phai phat bieu nghiep vu tuong minh). Theo luat 'phanh derivation' cua C5, STRONG chi hop le khi MOI oracle kb_id deu CONFIRMED_EXPECTED va derivation=prose. Ha xuong BASELINE cho toi khi PO/Dev xac nhan hanh vi nay dung la chu y thiet ke, khong phai tac dung phu cua viec doc code."
 }
 ```
+
+```json
+{"oq_id":"OQ-referral-attribution-014","type":"NEEDS_CONFIRMATION","feature_id":"click-to-install-attribution","summary":"Oracle STRONG cua check 'CHK-001' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-referral-attribution-015","type":"NEEDS_CONFIRMATION","feature_id":"click-to-install-attribution","summary":"Oracle STRONG cua check 'CHK-005' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-referral-attribution-016","type":"NEEDS_CONFIRMATION","feature_id":"click-to-install-attribution","summary":"Oracle STRONG cua check 'CHK-006' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-referral-attribution-017","type":"NEEDS_CONFIRMATION","feature_id":"click-to-install-attribution","summary":"Response body/status chính xác khi tracking_id không tồn tại hoặc đã quá hạn là gì (tổng quát, không chỉ ví dụ minh hoạ)? Cần PO/Dev xác nhận trước khi dùng làm assert chính thức trong automation."}
+```
+
+```json
+{"oq_id":"OQ-referral-attribution-018","type":"NEEDS_CONFIRMATION","feature_id":"click-to-install-attribution","summary":"Khi có nhiều TrackingInformation hợp lệ đồng thời của cùng affiliate, có ràng buộc/ưu tiên nào từ phía server không, hay hoàn toàn phụ thuộc client app chọn? KB-010 (hedged) không đủ làm oracle."}
+```
+
+```json
+{"oq_id":"OQ-referral-attribution-019","type":"NEEDS_CONFIRMATION","feature_id":"click-to-install-attribution","summary":"Cần PO/Dev xác nhận phát biểu tổng quát (không chỉ ví dụ minh hoạ) rằng Customer.user_id/program_id luôn khớp đúng affiliate/Program đã dẫn tới lượt click, trong mọi trường hợp — đây là hành vi lõi của toàn bộ cơ chế attribution nên cần oracle chắc chắn hơn EXAMPLE_ONLY."}
+```
+
+```json
+{"oq_id":"OQ-referral-attribution-020","type":"NEEDS_CONFIRMATION","feature_id":"click-to-install-attribution","summary":"Oracle STRONG cua check 'CHK-012' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-referral-attribution-021","type":"NEEDS_CONFIRMATION","feature_id":"click-to-install-attribution","summary":"Có job/cron dọn các bản ghi TrackingInformation đã hết hạn không, hay tồn tại vô thời hạn trong DB? Ảnh hưởng test data cleanup và giả định performance."}
+```
+
+```json
+{"oq_id":"OQ-referral-attribution-022","type":"NEEDS_CONFIRMATION","feature_id":"click-to-install-attribution","summary":"Một shop đã gắn cho affiliate A thì click link của affiliate B sau đó có đổi ghi công không? Cần PO/Dev xác nhận quy tắc last-click/first-click — ảnh hưởng trực tiếp tới commission."}
+```
+
+```json
+{"oq_id":"OQ-referral-attribution-023","type":"NEEDS_CONFIRMATION","feature_id":"tracking-information-log","summary":"Màn hình Tracking Information có lọc/tìm được theo tracking_id hoặc theo affiliate không, và expires_at 45 ngày có cấu hình được ở đâu không? Cần PO/Dev xác nhận trước khi viết test search/filter hoặc thay đổi default TTL."}
+```
+
+```json
+{"oq_id":"OQ-referral-attribution-024","type":"NEEDS_CONFIRMATION","feature_id":"tracking-link-generation","summary":"Oracle STRONG cua check 'CHK-002' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-referral-attribution-025","type":"NEEDS_CONFIRMATION","feature_id":"tracking-link-generation","summary":"Oracle STRONG cua check 'CHK-004' hien trace toi kb_id (KB-003) co confirmation_source.derivation=code_artifact (suy ra tu doc code/schema, khong phai phat bieu nghiep vu tuong minh). Theo luat 'phanh derivation' cua C5, STRONG chi hop le khi MOI oracle kb_id deu CONFIRMED_EXPECTED va derivation=prose. Ha xuong BASELINE cho toi khi PO/Dev xac nhan hanh vi nay dung la chu y thiet ke, khong phai tac dung phu cua viec doc code."}
+```
+
+```json
+{"oq_id":"OQ-referral-attribution-026","type":"NEEDS_CONFIRMATION","feature_id":"tracking-link-generation","summary":"ref_url được cấu tạo thế nào (domain, query param) và affiliate lấy nó ở đâu ngoài nút 'Get Link'? KB-001 chỉ INFERRED (IMPLIED_BY_CODE_ARTIFACT đơn lẻ) — cần PO/Dev xác nhận công thức chính xác và nguồn lấy link khác (nếu có) trước khi dùng làm oracle cho test data bước click."}
+```

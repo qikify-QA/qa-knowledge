@@ -12,3 +12,4 @@
 - 2026-10-17 (`bootstrap`, REFRESH) — webhook-ingestion:CHK-018 — oracle_upgraded oracle NONE→BASELINE: Quan sát KB-043 (đơn test Bogus được tạo đơn, bốc thăm, mở được, quà thêm vào đơn Shopify) và KB-045 (Box sales limit không tăng) cho baseline một đơn; KB-044 (host_not_in_expected_api_base) chỉ related. Ghi usage billing chưa quan sát → giữ oq_id.
 - 2026-10-17 (`bootstrap`, REFRESH) — thêm 4 open question: OQ-integrations-031, OQ-integrations-032, OQ-integrations-033, OQ-integrations-034.
 - 2026-10-17 (`bootstrap`, REFRESH) — ghi chú quan sát staging (staging_observation) vào open question đang mở, không resolve: OQ-integrations-009, OQ-integrations-021, OQ-integrations-025, OQ-integrations-026, OQ-integrations-030.
+- 2026-11-08 (maintenance-2026-11-08) — Chuẩn hoá reference theo namespace; sửa OQ và phân loại oracle/expected theo nguồn hiện có. Không xác nhận thêm requirement hoặc thay đổi hành vi sản phẩm.

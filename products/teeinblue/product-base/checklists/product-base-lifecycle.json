@@ -23,8 +23,8 @@
       "expected_result": "Khong co dialog xac nhan; POST /api/products/{id}/archive chay ngay, status doi tu 0 sang 1",
       "oracle": {
         "kb_ids": [
-          "KB-054",
-          "KB-055"
+          "product-base/product-base-lifecycle#KB-054",
+          "product-base/product-base-lifecycle#KB-055"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -54,7 +54,7 @@
       "expected_result": "Ban sao co: title = title goc + ' copy'; label va internal_tags GIU NGUYEN; printarea moi (id moi, sao chep name/width/height/position); variant moi (id moi, SKU GIU NGUYEN); mockup moi (id moi); cau hinh Display settings (enable_custom_printarea, color_custom_label, colors_position, sizes_position) deu duoc sao chep",
       "oracle": {
         "kb_ids": [
-          "KB-057"
+          "product-base/product-base-lifecycle#KB-057"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -85,8 +85,8 @@
       "expected_result": "deletion-check tra {policy:'allowed', reason:null, token:null}; dialog xac nhan hien ra voi ten product; sau khi xac nhan, DELETE /api/products/{id} tra 204 khong body",
       "oracle": {
         "kb_ids": [
-          "KB-058",
-          "KB-059"
+          "product-base/product-base-lifecycle#KB-058",
+          "product-base/product-base-lifecycle#KB-059"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -114,17 +114,19 @@
         "Xac nhan KHONG co request DELETE nao duoc gui di"
       ],
       "observation_point": "Response deletion-check + noi dung dialog + su vang mat cua request DELETE",
-      "expected_result": "Khi bam Delete tren product base dang duoc it nhat 1 campaign su dung, UI hien nut 'View campaign list' thay vi cho xoa; neu bypass UI goi thang DELETE /api/products/{id}, server tra 403 Forbidden va KHONG xoa - day la enforcement that o tang server, khong chi la goi y UI. (Chi tiet: GET /api/products/{id}/deletion-check tra {policy:'blocked', reason:'IN_CAMPAIGNS'}; UI hien dialog Warning nguyen van ('... currently being used in Campaigns. Please remove it from all campaigns before deleting...') voi 2 nut 'View campaigns list'/'Cancel', KHONG CO request DELETE nao duoc gui qua duong UI; tren mot product khac cung dang link campaign, goi THANG DELETE /api/products/{id} bang script bypass hoan toan UI, server tra 403 Forbidden voi body {\"message\":\"Product cannot be deleted due to policy restrictions or invalid confirmation token\"}, re-query xac nhan product KHONG bi xoa.) CONFIRMED_EXPECTED, dong dut diem risk HIGH 'unverified-server-enforcement' cua v1 bang evidence DELETE that o tang server (khong chi suy tu hanh vi an nut cua UI).",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [
-          "KB-088"
+          "product-base/product-base-lifecycle#KB-088"
         ],
-        "oracle_strength": "STRONG"
+        "oracle_strength": "NONE"
       },
-      "status": "READY",
+      "status": "NEEDS_CONFIRMATION",
       "risk_refs": [],
       "priority": "P1",
-      "automation_suitability": "SUITABLE"
+      "automation_suitability": "SUITABLE",
+      "observation_guidance": "Khi bam Delete tren product base dang duoc it nhat 1 campaign su dung, UI hien nut 'View campaign list' thay vi cho xoa; neu bypass UI goi thang DELETE /api/products/{id}, server tra 403 Forbidden va KHONG xoa - day la enforcement that o tang server, khong chi la goi y UI. (Chi tiet: GET /api/products/{id}/deletion-check tra {policy:'blocked', reason:'IN_CAMPAIGNS'}; UI hien dialog Warning nguyen van ('... currently being used in Campaigns. Please remove it from all campaigns before deleting...') voi 2 nut 'View campaigns list'/'Cancel', KHONG CO request DELETE nao duoc gui qua duong UI; tren mot product khac cung dang link campaign, goi THANG DELETE /api/products/{id} bang script bypass hoan toan UI, server tra 403 Forbidden voi body {\"message\":\"Product cannot be deleted due to policy restrictions or invalid confirmation token\"}, re-query xac nhan product KHONG bi xoa.) CONFIRMED_EXPECTED, dong dut diem risk HIGH 'unverified-server-enforcement' cua v1 bang evidence DELETE that o tang server (khong chi suy tu hanh vi an nut cua UI).",
+      "oq_id": "OQ-product-base-096"
     },
     {
       "check_id": "CHK-07-005",
@@ -144,17 +146,19 @@
         "Quan sat ket qua DELETE"
       ],
       "observation_point": "Response deletion-check + response DELETE cho truong hop product ACTIVE",
-      "expected_result": "CONFIRMED_EXPECTED (PO xac nhan 'co duoc chap nhan va behavior giong active', 2026-09-13 ): khi bam Delete tren product base MOI TAO, status ACTIVE, CHUA TUNG archive, GET deletion-check tra {policy:'allowed'}, DELETE /api/products/{id} tra 204 - GIONG HET hanh vi cua product da archive truoc do (KB-059). KHONG bat buoc phai archive truoc khi xoa.",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [
-          "KB-089"
+          "product-base/product-base-lifecycle#KB-089"
         ],
-        "oracle_strength": "STRONG"
+        "oracle_strength": "NONE"
       },
-      "status": "READY",
+      "status": "NEEDS_CONFIRMATION",
       "risk_refs": [],
       "priority": "P2",
-      "automation_suitability": "SUITABLE"
+      "automation_suitability": "SUITABLE",
+      "observation_guidance": "CONFIRMED_EXPECTED (PO xac nhan 'co duoc chap nhan va behavior giong active', 2026-09-13 ): khi bam Delete tren product base MOI TAO, status ACTIVE, CHUA TUNG archive, GET deletion-check tra {policy:'allowed'}, DELETE /api/products/{id} tra 204 - GIONG HET hanh vi cua product da archive truoc do (KB-059). KHONG bat buoc phai archive truoc khi xoa.",
+      "oq_id": "OQ-product-base-097"
     },
     {
       "check_id": "CHK-07-006",
@@ -178,7 +182,7 @@
       "expected_result": "Hien tai quan sat thay (BASELINE, LAN DAU co evidence that cho endpoint /unarchive): Archive (POST /api/products/{id}/archive -> 200) roi Unarchive (POST /api/products/{id}/unarchive -> 200) tren product dang lien ket 1 campaign, status quay lai dung gia tri ban dau (0 -> 1 -> 0); campaign_products (id=4057) va campaign_instances.need_sync HOAN TOAN KHONG DOI qua ca archive lan unarchive. PO chi de nghi 'thuc hien va kiem tra... xem co anh huong gi khong' (instruction, khong assert truoc ket qua cu the) nen giu OBSERVED_CURRENT/BASELINE, du ket qua phu hop voi ky vong ngam cua PO (khong anh huong).",
       "oracle": {
         "kb_ids": [
-          "KB-090"
+          "product-base/product-base-lifecycle#KB-090"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -211,7 +215,7 @@
       "expected_result": "BASELINE: xoa printarea - chay ngay khong hoi; archive - khong hoi; duplicate - khong hoi; delete product base - CO dialog 'Delete Product / Are you sure...?' + goi deletion-check truoc. Muc xac nhan khong nhat quan giua cac thao tac pha huy/khong the hoan tac (archive/duplicate) - rui ro thao tac nham",
       "oracle": {
         "kb_ids": [
-          "KB-054"
+          "product-base/product-base-lifecycle#KB-054"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -243,7 +247,7 @@
       "expected_result": "BASELINE: response 200 cua POST /api/products/{id}/clone la CHINH record NGUON (id khong doi), KHONG phai record moi. Portal chi biet id ban sao qua REFETCH lai list, khong dieu huong sang ban sao. Bat ky consumer nao goi API clone truc tiep (ngoai portal) se KHONG lay duoc id vua tao tu response - can workaround (refetch/query rieng) neu tich hop voi API nay",
       "oracle": {
         "kb_ids": [
-          "KB-056"
+          "product-base/product-base-lifecycle#KB-056"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -270,19 +274,21 @@
         "Khong can thuc hien evidence-gathering them; PO da xac nhan truc tiep day la NO_EXPLORATION_NEEDED"
       ],
       "observation_point": "Khong ap dung - business decision",
-      "expected_result": "CONFIRMED_EXPECTED (PO xac nhan truc tiep, 2026-09-13, NO_EXPLORATION_NEEDED: 'note lai vao open issue va hien tai thi khong anh huong gi'): field 'token' trong response deletion-check (luon null o moi sample quan sat duoc, ca 2 branch allowed/blocked) hien KHONG anh huong chuc nang. Day la known-limitation duoc PO CHAP NHAN, ghi lai nhu open issue, KHONG can dieu tra them o thoi diem nay - khong lien quan toi rui ro server-enforcement cua CHK-07-004 (da CONFIRMED rieng bang evidence khac).",
+      "expected_result": "",
       "oracle": {
         "kb_ids": [
-          "KB-091"
+          "product-base/product-base-lifecycle#KB-091"
         ],
-        "oracle_strength": "STRONG"
+        "oracle_strength": "NONE"
       },
-      "status": "READY",
+      "status": "NEEDS_CONFIRMATION",
       "risk_refs": [
         "KB-058 unclear-contract (da dong theo business decision KB-091)"
       ],
       "priority": "P3",
-      "automation_suitability": "UNKNOWN"
+      "automation_suitability": "UNKNOWN",
+      "observation_guidance": "CONFIRMED_EXPECTED (PO xac nhan truc tiep, 2026-09-13, NO_EXPLORATION_NEEDED: 'note lai vao open issue va hien tai thi khong anh huong gi'): field 'token' trong response deletion-check (luon null o moi sample quan sat duoc, ca 2 branch allowed/blocked) hien KHONG anh huong chuc nang. Day la known-limitation duoc PO CHAP NHAN, ghi lai nhu open issue, KHONG can dieu tra them o thoi diem nay - khong lien quan toi rui ro server-enforcement cua CHK-07-004 (da CONFIRMED rieng bang evidence khac).",
+      "oq_id": "OQ-product-base-098"
     },
     {
       "check_id": "CHK-07-010",
@@ -305,7 +311,7 @@
       "expected_result": "BASELINE: response archive tra full record, chua 2 field variants_position va print_provider_id CHUA tung xuat hien o response nao khac trong capture. Dung baseline nay de theo doi neu bo mat du lieu API thay doi",
       "oracle": {
         "kb_ids": [
-          "KB-055"
+          "product-base/product-base-lifecycle#KB-055"
         ],
         "oracle_strength": "BASELINE"
       },
@@ -316,5 +322,9 @@
       "priority": "P3",
       "automation_suitability": "SUITABLE"
     }
-  ]
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
 }

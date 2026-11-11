@@ -161,3 +161,7 @@
   "summary": "Field country chỉ nhận đúng 1 quốc gia (không nhận cả khu vực/nhiều giá trị); để trống country → method hiển thị cho affiliate của MỌI quốc gia. Oracle của cả 2 check dựa trên KB-004, derivation=code_artifact — theo phanh derivation không đủ làm oracle STRONG. Cần xác nhận từ nguồn mạnh hơn."
 }
 ```
+
+```json
+{"oq_id":"OQ-payment-method-019","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-payment-info-setup","summary":"[object Object]"}
+```

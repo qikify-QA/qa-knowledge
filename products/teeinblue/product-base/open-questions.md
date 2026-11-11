@@ -299,3 +299,215 @@
 ```json
 {"oq_id":"OQ-product-base-050","type":"OPEN_ISSUE","feature_id":"printarea-definition","summary":"Message ghi \"whole number\" nhưng KB-513 không phát biểu về số thập phân, nên chưa check nào assert. DPI thập phân bị xử lý thế nào? Cần: Dev xác nhận.","kb_ids":["KB-513"],"check_ids":["CHK-04-017","CHK-04-018"]}
 ```
+
+```json
+{"oq_id":"OQ-product-base-051","type":"NEEDS_CONFIRMATION","feature_id":"mockup-attachment","summary":"Cần nguồn thẩm quyền để xác nhận product-base/mockup-attachment#KB-082. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-052","type":"NEEDS_CONFIRMATION","feature_id":"mockup-attachment","summary":"Cần nguồn thẩm quyền để xác nhận product-base/mockup-attachment#KB-084. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-053","type":"NEEDS_CONFIRMATION","feature_id":"mockup-attachment","summary":"Cần nguồn thẩm quyền để xác nhận product-base/mockup-attachment#KB-085. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-054","type":"NEEDS_CONFIRMATION","feature_id":"printarea-definition","summary":"Cần nguồn thẩm quyền để xác nhận product-base/printarea-definition#KB-074. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-055","type":"NEEDS_CONFIRMATION","feature_id":"printarea-definition","summary":"Cần nguồn thẩm quyền để xác nhận product-base/printarea-definition#KB-076. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-056","type":"NEEDS_CONFIRMATION","feature_id":"printarea-definition","summary":"Cần nguồn thẩm quyền để xác nhận product-base/printarea-definition#KB-077. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-057","type":"NEEDS_CONFIRMATION","feature_id":"printarea-definition","summary":"Cần nguồn thẩm quyền để xác nhận product-base/printarea-definition#KB-096. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-058","type":"NEEDS_CONFIRMATION","feature_id":"product-base-browse","summary":"Cần nguồn thẩm quyền để xác nhận product-base/product-base-browse#KB-066. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-059","type":"NEEDS_CONFIRMATION","feature_id":"product-base-campaign-link","summary":"Cần nguồn thẩm quyền để xác nhận product-base/product-base-campaign-link#KB-092. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-060","type":"NEEDS_CONFIRMATION","feature_id":"product-base-campaign-link","summary":"Cần nguồn thẩm quyền để xác nhận product-base/product-base-campaign-link#KB-093. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-061","type":"NEEDS_CONFIRMATION","feature_id":"product-base-campaign-link","summary":"Cần nguồn thẩm quyền để xác nhận product-base/product-base-campaign-link#KB-097. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-062","type":"NEEDS_CONFIRMATION","feature_id":"product-base-create","summary":"Cần nguồn thẩm quyền để xác nhận product-base/product-base-create#KB-067. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-063","type":"NEEDS_CONFIRMATION","feature_id":"product-base-create","summary":"Cần nguồn thẩm quyền để xác nhận product-base/product-base-create#KB-070. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-064","type":"NEEDS_CONFIRMATION","feature_id":"product-base-identity","summary":"Cần nguồn thẩm quyền để xác nhận product-base/product-base-identity#KB-071. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-065","type":"NEEDS_CONFIRMATION","feature_id":"product-base-identity","summary":"Cần nguồn thẩm quyền để xác nhận product-base/product-base-identity#KB-072. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-066","type":"NEEDS_CONFIRMATION","feature_id":"product-base-identity","summary":"Cần nguồn thẩm quyền để xác nhận product-base/product-base-identity#KB-073. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-067","type":"NEEDS_CONFIRMATION","feature_id":"product-base-lifecycle","summary":"Cần nguồn thẩm quyền để xác nhận product-base/product-base-lifecycle#KB-088. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-068","type":"NEEDS_CONFIRMATION","feature_id":"product-base-lifecycle","summary":"Cần nguồn thẩm quyền để xác nhận product-base/product-base-lifecycle#KB-089. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-069","type":"NEEDS_CONFIRMATION","feature_id":"product-base-lifecycle","summary":"Cần nguồn thẩm quyền để xác nhận product-base/product-base-lifecycle#KB-091. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-070","type":"NEEDS_CONFIRMATION","feature_id":"variant-catalog","summary":"Cần nguồn thẩm quyền để xác nhận product-base/variant-catalog#KB-078. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-071","type":"NEEDS_CONFIRMATION","feature_id":"variant-catalog","summary":"Cần nguồn thẩm quyền để xác nhận product-base/variant-catalog#KB-080. Nhãn confirmed legacy thiếu nguồn đã được hạ xuống INFERRED; chưa đủ bằng chứng để coi là requirement hoặc quan sát runtime."}
+```
+
+```json
+{"oq_id":"OQ-product-base-072","type":"NEEDS_CONFIRMATION","feature_id":"mockup-attachment","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-06-004 “[SEC-004] Upload file sai dinh dang (vd.txt doi ten.png) khong bi chan client, ket qua 'Rendering' vinh vien, khong bao loi ro cho user” của feature mockup-attachment. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-product-base-073","type":"NEEDS_CONFIRMATION","feature_id":"mockup-attachment","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-06-005 “Khong co gioi han kich thuoc file nao duoc ap dung o buoc lay presigned upload URL (CONFIRMED); TTL/scope cua URL van redact/chua xac nhan” của feature mockup-attachment. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-074","type":"NEEDS_CONFIRMATION","feature_id":"mockup-attachment","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-06-007 “Khong co co che polling tu dong cho trang thai render mockup; user phai tu bam icon Refresh ('.la-sync') (CONFIRMED)” của feature mockup-attachment. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-075","type":"NEEDS_CONFIRMATION","feature_id":"mockup-attachment","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-06-009 “Modal 'Assign mockups' Save thuc su gan mockup cho variant qua mutation GraphQL that, doc lap voi Custom variant's printarea (CONFIRMED)” của feature mockup-attachment. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-076","type":"NEEDS_CONFIRMATION","feature_id":"mockup-attachment","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-06-011 “[MISMATCH-003, moi] 'Sync to campaigns' tren mockup bi chan o CLIENT du product DANG lien ket campaign that - chua ket luan bug hay by-design” của feature mockup-attachment. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-product-base-077","type":"NEEDS_CONFIRMATION","feature_id":"mockup-attachment","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-06-012 “[Tach tu CHK-06-005, cap nhat 2026-09-14] Nguong pixel thuc su kich hoat resize mockup: da loai tru <=1001px (999px va 1001px upload RIENG LE deu KHONG resize) qua 2 lan kiem chung doc lap; NGUONG THAT (neu co) VAN CHUA XAC DINH (CONF-CHK-06-005-001, UNRESOLVED)” của feature mockup-attachment. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-product-base-078","type":"NEEDS_CONFIRMATION","feature_id":"printarea-definition","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-04-008 “[Business decision] Khong validate boundary numeric (0/am/thap phan/so rat lon) cho Width/Height cua Printarea” của feature printarea-definition. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-079","type":"NEEDS_CONFIRMATION","feature_id":"printarea-definition","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-04-009 “[Khia canh VARIANT] Xoa printarea dang gan cho variant: variant.printarea_id giu nguyen null; lien ket cu duoc GIU LAI duoi dang ORPHAN ROW trong variant_printareas (VI TRI DU LIEU CONFIRMED qua KB-096; bug-vs-accepted VAN MO, xem CONF-CHK-04-009-001)” của feature printarea-definition. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-080","type":"NEEDS_CONFIRMATION","feature_id":"printarea-definition","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-04-013 “RUI RO P1: Pham vi cot/hang thuc su duoc phep _set qua Hasura mutation insert_printareas/update_printareas voi JWT user thuong - VAN DEFERRED, cho TIB_USER_B_*” của feature printarea-definition. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-product-base-081","type":"NEEDS_CONFIRMATION","feature_id":"printarea-definition","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-04-016 “[Tach tu CHK-04-013, moi] Role owner co the sua Width/Height cua Printarea qua UI thanh cong voi gia tri so hop le (CONFIRMED)” của feature printarea-definition. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-082","type":"NEEDS_CONFIRMATION","feature_id":"product-base-browse","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-01-009 “Hanh vi phan trang cursor khi store co nhieu hon 1 trang du lieu (>20 record)” của feature product-base-browse. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-product-base-083","type":"NEEDS_CONFIRMATION","feature_id":"product-base-browse","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-01-011 “URL-sync: roi /products/:id/edit roi bam Back trinh duyet khoi phuc CHINH XAC filter/tab/trang truoc do (CONFIRMED_EXPECTED, mot phan cua CONF-001 da reverify)” của feature product-base-browse. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-084","type":"NEEDS_CONFIRMATION","feature_id":"product-base-browse","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-01-012 “Cursor ghi trong URL co the bi stale neu tao product base moi trong luc dang o trang edit roi quay lai bang URL cu” của feature product-base-browse. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-product-base-085","type":"NEEDS_CONFIRMATION","feature_id":"product-base-campaign-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-08-007 “Icon rocket 'Update campaign' mo modal LIET KE cac campaign dang dung product de nguoi dung TU MO campaign - KHONG phai co che tu dong day (push) thay doi vao campaign (CONFIRMED)” của feature product-base-campaign-link. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-086","type":"NEEDS_CONFIRMATION","feature_id":"product-base-campaign-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-08-008 “Them 1 product base vao campaign co san qua modal 'Select your product': click card la ap dung NGAY, campaign_products la mang ho tro nhieu product base (CONFIRMED)” của feature product-base-campaign-link. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-087","type":"NEEDS_CONFIRMATION","feature_id":"product-base-campaign-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-08-010 “Activity Log (product_activities) RONG HOAN TOAN qua ca 3 loai update that (Internal tags/printarea/variant) trong 1 session - MAU THUAN voi ham y cua PO (CONF-CHK-08-010-001, RESOLVED cho phan cau truc qua KB-097/CHK-08-012; quan sat goc VAN DUNG)” của feature product-base-campaign-link. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-product-base-088","type":"NEEDS_CONFIRMATION","feature_id":"product-base-campaign-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-08-012 “[MOI, 2026-09-14] He thong Logs rieng theo Product Base (object-level, link 'Logs' tren /products/{id}/edit) TACH BIET voi /activity-logs toan cuc - CONFIRMED cau truc qua KB-097; dong dut diem CONF-CHK-08-010-001 cho phan cau truc” của feature product-base-campaign-link. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-089","type":"NEEDS_CONFIRMATION","feature_id":"product-base-campaign-link","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-08-013 “[MOI, 2026-09-14, CONF-CHK-08-010-002] Do tin cay cua viec ghi log Printarea 'added' qua he thong Logs object-level KHONG NHAT QUAN giua 2 session khac nhau cho CUNG 1 loai hanh dong - KHONG duoc gia dinh log LUON (hay KHONG BAO GIO) xuat hien sau khi tao printarea” của feature product-base-campaign-link. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-090","type":"NEEDS_CONFIRMATION","feature_id":"product-base-create","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-008 “Product title voi gia tri bien (whitespace-only, rat dai) - whitespace-only da CONFIRMED, do dai van chua test” của feature product-base-create. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-091","type":"NEEDS_CONFIRMATION","feature_id":"product-base-create","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-012 “[Business decision] 'Advanced options' duoc nap tu du lieu import cua nha in; TeeInBlue khong phu trach yeu cau fulfillment cu the tung nha in” của feature product-base-create. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-092","type":"NEEDS_CONFIRMATION","feature_id":"product-base-create","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-02-014 “[SEC-002, P1] Title/label chap nhan HTML tho; escape KHONG NHAT QUAN giua dong link tieu de (escape dung) va dong label ben duoi (KHONG escape)” của feature product-base-create. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-product-base-093","type":"NEEDS_CONFIRMATION","feature_id":"product-base-identity","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-03-004 “Xoa sach Product title trong Basic information (trang edit) ap dung DUNG rule bat buoc giong het luong tao moi” của feature product-base-identity. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-094","type":"NEEDS_CONFIRMATION","feature_id":"product-base-identity","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-03-005 “Thumbnail chap nhan anh 50x50 den 2000x2000px (2 dau bao gom), resize thuc te ve 250x250 webp; vuot 2000px bi chan client khong thong bao” của feature product-base-identity. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-095","type":"NEEDS_CONFIRMATION","feature_id":"product-base-identity","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-03-006 “[Business decision] Khong co co che optimistic locking/canh bao xung dot khi 2 phien cung sua Basic information” của feature product-base-identity. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-096","type":"NEEDS_CONFIRMATION","feature_id":"product-base-lifecycle","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-07-004 “DELETE product base khi deletion-check.policy='blocked' (IN_CAMPAIGNS): server THUC SU CHAN, khong chi la goi y UI (CONFIRMED)” của feature product-base-lifecycle. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-097","type":"NEEDS_CONFIRMATION","feature_id":"product-base-lifecycle","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-07-005 “DELETE product base dang o trang thai ACTIVE (chua archive) duoc chap nhan, hanh vi giong het product da archive (CONFIRMED)” của feature product-base-lifecycle. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-098","type":"NEEDS_CONFIRMATION","feature_id":"product-base-lifecycle","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-07-009 “[Business decision] Muc dich cua field 'token' trong response deletion-check - luon null, khong anh huong chuc nang hien tai” của feature product-base-lifecycle. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-099","type":"NEEDS_CONFIRMATION","feature_id":"variant-catalog","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-05-007 “Pham vi unique SKU: CHI trong 1 Product Base, KHONG unique toan store (CONFIRMED bang evidence that)” của feature variant-catalog. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-100","type":"NEEDS_CONFIRMATION","feature_id":"variant-catalog","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-05-011 “Duong UI thuc su de gan Custom Printareas rieng cho tung variant: click 1 lan SAU KHI bat toggle - DA TIM DUOC (CONFIRMED, supersede KB-046)” của feature variant-catalog. insufficient_authority"}
+```
+
+```json
+{"oq_id":"OQ-product-base-101","type":"NEEDS_CONFIRMATION","feature_id":"variant-catalog","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-05-014 “[SEC-001, P1, moi] Import 1 file Excel HOP LE qua modal Import tra HTTP 500 - can dev xac nhan bug can fix hay hanh vi tam thoi” của feature variant-catalog. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-product-base-102","type":"NEEDS_CONFIRMATION","feature_id":"printarea-definition","summary":"Cần xác định KB đích cho các reference của printarea-definition: CONF-CHK-04-009-001. Chưa có đích duy nhất; các ref được tách khỏi liên kết đang hoạt động, không dùng chúng làm căn cứ kết luận."}
+```
+
+```json
+{"oq_id":"OQ-product-base-103","type":"NEEDS_CONFIRMATION","feature_id":"product-base-campaign-link","summary":"Cần xác định KB đích cho các reference của product-base-campaign-link: CONF-CHK-08-010-002. Chưa có đích duy nhất; các ref được tách khỏi liên kết đang hoạt động, không dùng chúng làm căn cứ kết luận."}
+```

@@ -14,13 +14,13 @@ _Regenerated từ nguồn thật (kb.json conflicts, checklist items NEEDS_CONFI
 ## OQ-font-001 — CONFLICT
 
 ```json
-{"oq_id": "OQ-font-001", "type": "CONFLICT", "feature_id": "upload-custom-font", "summary": "Data source của thao tác Font: hoàn toàn Hasura GraphQL (documented, KB cũ) vs REST cho create/download/delete (observed). Áp dụng cho create (upload-custom-font), download và delete (manage-uploaded-font).", "side_a": "'/fonts' không đi qua REST mà qua Hasura GraphQL — List (query getData, /v1beta1/relay) và Detail (query get/fonts_by_pk, /v1/graphql) đều là GraphQL. Nguồn: KB legacy "portal-fonts", mục 'Data source' — quan sát 2026-09-09, staging, role user-a (id 255), store linh-tib-staging.myshopify.com. File này TỰ NHẬN 'Upload thật... chưa kiểm tra' và 'Delete... chưa test - read-only', tức claim 'hoàn toàn GraphQL' chưa từng được đối chiếu với hành vi write thật.", "side_b": "List/search/pagination (query getData) và rename (mutation update_custom_fonts) đi qua Hasura GraphQL — khớp KB cũ. Nhưng create (POST /api/custom-fonts, KB-011), download (GET /api/custom-fonts/{id}/download, KB-015), và delete (DELETE /api/custom-fonts/{id}, KB-016) là REST, không phải GraphQL. Nguồn: quan sát 2026-09-10, staging, role owner (sub=273), store linh-explorer.myshopify.com."}
+{"oq_id": "OQ-font-001", "type": "CONFLICT", "feature_id": "upload-custom-font", "summary": "Data source của thao tác Font: hoàn toàn Hasura GraphQL (documented, KB cũ) vs REST cho create/download/delete (observed). Áp dụng cho create (upload-custom-font), download và delete (manage-uploaded-font).", "side_a": "'/fonts' không đi qua REST mà qua Hasura GraphQL — List (query getData, /v1beta1/relay) và Detail (query get/fonts_by_pk, /v1/graphql) đều là GraphQL. Nguồn: KB legacy \"portal-fonts\", mục 'Data source' — quan sát 2026-09-09, staging, role user-a (id 255), store linh-tib-staging.myshopify.com. File này TỰ NHẬN 'Upload thật... chưa kiểm tra' và 'Delete... chưa test - read-only', tức claim 'hoàn toàn GraphQL' chưa từng được đối chiếu với hành vi write thật.", "side_b": "List/search/pagination (query getData) và rename (mutation update_custom_fonts) đi qua Hasura GraphQL — khớp KB cũ. Nhưng create (POST /api/custom-fonts, KB-011), download (GET /api/custom-fonts/{id}/download, KB-015), và delete (DELETE /api/custom-fonts/{id}, KB-016) là REST, không phải GraphQL. Nguồn: quan sát 2026-09-10, staging, role owner (sub=273), store linh-explorer.myshopify.com."}
 ```
 
 ## OQ-font-002 — CONFLICT
 
 ```json
-{"oq_id": "OQ-font-002", "type": "CONFLICT", "feature_id": "upload-custom-font", "summary": "Nút 'Upload fonts' mở modal (observed) vs mở thẳng OS file picker không modal (documented, KB cũ).", "side_a": "Nút Upload fonts mở thẳng file picker OS, không có modal. Input accept='.otf,.ttf', multiple. Nguồn: KB legacy "portal-fonts", mục 'Behavior đã xác nhận' — cùng nguồn/store/ngày với OQ-font-001 (2026-09-09, store linh-tib-staging.myshopify.com, role user-a id 255).", "side_b": "Bấm 'Upload fonts' mở MỘT MODAL trước ('Browse fonts to upload:', banner nhắc convert TTF qua transfonter.org, nút 'Choose File'); bấm 'Choose File' mới mở OS file picker. Nguồn: quan sát 2026-09-10, staging, role owner (sub=273), store linh-explorer.myshopify.com (KB-005). Khả năng cao là khác biệt do khác store/version, nhưng chưa có evidence để kết luận chắc chắn — cần chạy lại trên cùng 1 store để xác minh, hoặc hỏi dev về khả năng feature-flag theo store."}
+{"oq_id": "OQ-font-002", "type": "CONFLICT", "feature_id": "upload-custom-font", "summary": "Nút 'Upload fonts' mở modal (observed) vs mở thẳng OS file picker không modal (documented, KB cũ).", "side_a": "Nút Upload fonts mở thẳng file picker OS, không có modal. Input accept='.otf,.ttf', multiple. Nguồn: KB legacy \"portal-fonts\", mục 'Behavior đã xác nhận' — cùng nguồn/store/ngày với OQ-font-001 (2026-09-09, store linh-tib-staging.myshopify.com, role user-a id 255).", "side_b": "Bấm 'Upload fonts' mở MỘT MODAL trước ('Browse fonts to upload:', banner nhắc convert TTF qua transfonter.org, nút 'Choose File'); bấm 'Choose File' mới mở OS file picker. Nguồn: quan sát 2026-09-10, staging, role owner (sub=273), store linh-explorer.myshopify.com (KB-005). Khả năng cao là khác biệt do khác store/version, nhưng chưa có evidence để kết luận chắc chắn — cần chạy lại trên cùng 1 store để xác minh, hoặc hỏi dev về khả năng feature-flag theo store."}
 ```
 
 ## OQ-font-003 — NEEDS_CONFIRMATION
@@ -44,7 +44,7 @@ _Regenerated từ nguồn thật (kb.json conflicts, checklist items NEEDS_CONFI
 ## OQ-font-006 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id": "OQ-font-006", "type": "NEEDS_CONFIRMATION", "feature_id": "manage-uploaded-font", "summary": "[SEC-002] File font trên CDN có công khai truy cập được không cần auth không? 0 request nào tới CDN được quan sát trong toàn bộ evidence capture tới nay; claim cũ 'CDN công khai không cần auth' (kế thừa từ KB legacy "portal-fonts", chưa phải KB item chính thức của object này) chưa được re-verify. Nếu công khai, ai biết path (vd qua response API) đều tải được file — cần đánh giá security exposure."}
+{"oq_id": "OQ-font-006", "type": "NEEDS_CONFIRMATION", "feature_id": "manage-uploaded-font", "summary": "[SEC-002] File font trên CDN có công khai truy cập được không cần auth không? 0 request nào tới CDN được quan sát trong toàn bộ evidence capture tới nay; claim cũ 'CDN công khai không cần auth' (kế thừa từ KB legacy \"portal-fonts\", chưa phải KB item chính thức của object này) chưa được re-verify. Nếu công khai, ai biết path (vd qua response API) đều tải được file — cần đánh giá security exposure."}
 ```
 
 ## OQ-font-007 — NEEDS_CONFIRMATION
@@ -128,11 +128,115 @@ _Regenerated từ nguồn thật (kb.json conflicts, checklist items NEEDS_CONFI
 ## OQ-font-020 — OPEN_ISSUE
 
 ```json
-{"oq_id": "OQ-font-020", "type": "OPEN_ISSUE", "feature_id": "view-and-configure-font-list", "summary": "Route /fonts/:id — KB cũ (KB legacy "portal-fonts") ghi nhận đây là 'dead route' (lỗi ApolloError field 'url' not found in type 'fonts'). Chưa được test lại trên store hiện tại — không thể xác nhận hay phủ định claim này ở thời điểm hiện tại."}
+{"oq_id": "OQ-font-020", "type": "OPEN_ISSUE", "feature_id": "view-and-configure-font-list", "summary": "Route /fonts/:id — KB cũ (KB legacy \"portal-fonts\") ghi nhận đây là 'dead route' (lỗi ApolloError field 'url' not found in type 'fonts'). Chưa được test lại trên store hiện tại — không thể xác nhận hay phủ định claim này ở thời điểm hiện tại."}
 ```
 
 ## OQ-font-021 — OPEN_ISSUE
 
 ```json
 {"oq_id": "OQ-font-021", "type": "OPEN_ISSUE", "feature_id": null, "summary": "0/5 write operation của object Font (create, rename, download, delete, Font Settings Save) có sample lỗi 4xx/5xx nào được quan sát — không thể kết luận hệ thống 'không có validation lỗi', chỉ là CHƯA CÓ sample lỗi ở bất kỳ thao tác ghi nào. Đây là gap mang tính hệ thống, không riêng 1 checklist item."}
+```
+
+## OQ-font-022 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-font-022", "type": "NEEDS_CONFIRMATION", "feature_id": "use-custom-font-in-artwork-editor", "summary": "Dev/PO xác nhận: ký tự CJK/RTL không render (trắng hoặc tofu) khi layer dùng font chỉ hỗ trợ Latin (KB-020, rule QA, PROPOSED) có phải hành vi mong muốn không, có cần cảnh báo hoặc fallback cho merchant không, và Font Settings (Block rendering / Replace with space / Fallback to a custom font) cùng banner ký tự không hỗ trợ (KB-002, KB-006) tác động thế nào ở artwork editor và storefront. Liên quan OQ-font-011, OQ-font-015."}
+```
+
+## OQ-font-023 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-font-023", "type": "NEEDS_CONFIRMATION", "feature_id": "use-custom-font-in-artwork-editor", "summary": "Dev/PO xác nhận: chặn save artwork khi Font type = Custom Fonts mà chưa chọn font (KB-021, rule QA, PROPOSED) có phải thiết kế không, và banner đỏ hiện lỗi JS thô \"Cannot read properties of undefined (reading 'family')\" có phải thông báo mong muốn hay nên là validation thân thiện (so với artwork KB-051). Mới quan sát khi thao tác bằng JS, chưa thử bằng chuột."}
+```
+
+```json
+{"oq_id":"OQ-font-024","type":"NEEDS_CONFIRMATION","feature_id":"manage-uploaded-font","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-002 “[SEC-001, risk P2] Mutation update_custom_fonts chỉ cho phép _set các field dự kiến (name/updated_at), không cho set field nhạy cảm khác” của feature manage-uploaded-font. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-font-025","type":"NEEDS_CONFIRMATION","feature_id":"manage-uploaded-font","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-004 “Rename thành chuỗi rỗng hoặc trùng tên với font khác đã tồn tại” của feature manage-uploaded-font. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-026","type":"NEEDS_CONFIRMATION","feature_id":"manage-uploaded-font","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-005 “Download file font qua REST GET /api/custom-fonts/{id}/download trả về đúng nội dung” của feature manage-uploaded-font. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-027","type":"NEEDS_CONFIRMATION","feature_id":"manage-uploaded-font","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-006 “Xoá font (không đang dùng) qua dialog xác nhận custom + REST DELETE thành công” của feature manage-uploaded-font. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-028","type":"NEEDS_CONFIRMATION","feature_id":"manage-uploaded-font","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-007 “Xoá 1 font ĐANG được dùng thật trong artwork/font category” của feature manage-uploaded-font. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-029","type":"NEEDS_CONFIRMATION","feature_id":"manage-uploaded-font","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-008 “[CONFLICT-001 — cần verify lại] Xác minh data source của Download và Delete: REST hay GraphQL” của feature manage-uploaded-font. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-030","type":"NEEDS_CONFIRMATION","feature_id":"manage-uploaded-font","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-009 “[SEC-002] File font có thể tải trực tiếp từ CDN mà không cần qua endpoint REST/auth hay không” của feature manage-uploaded-font. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-031","type":"NEEDS_CONFIRMATION","feature_id":"upload-custom-font","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-001 “Upload 1 file .ttf hợp lệ tạo font mới thành công qua REST POST /api/custom-fonts” của feature upload-custom-font. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-032","type":"NEEDS_CONFIRMATION","feature_id":"upload-custom-font","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-003 “[CONFLICT-002 — cần verify lại] Xác minh luồng mở Upload fonts: modal trước hay mở thẳng OS file picker” của feature upload-custom-font. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-033","type":"NEEDS_CONFIRMATION","feature_id":"upload-custom-font","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-004 “[CONFLICT-001 — cần verify lại] Xác minh data source của thao tác Create font: REST hay GraphQL” của feature upload-custom-font. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-034","type":"NEEDS_CONFIRMATION","feature_id":"upload-custom-font","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-005 “Upload lại đúng tên font đã tồn tại — server chấp nhận, không có uniqueness validation quan sát được” của feature upload-custom-font. current_behavior_only"}
+```
+
+```json
+{"oq_id":"OQ-font-035","type":"NEEDS_CONFIRMATION","feature_id":"upload-custom-font","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-007 “Server có validate/reject định dạng file sai khi request thực sự tới được server hay không” của feature upload-custom-font. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-036","type":"NEEDS_CONFIRMATION","feature_id":"upload-custom-font","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-008 “Upload nhiều file cùng lúc qua input 'multiple'” của feature upload-custom-font. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-037","type":"NEEDS_CONFIRMATION","feature_id":"upload-custom-font","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-009 “Giới hạn dung lượng file và hành vi với file font hỏng/corrupt” của feature upload-custom-font. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-038","type":"NEEDS_CONFIRMATION","feature_id":"upload-custom-font","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-010 “Sau khi create font thành công, danh sách /fonts tự refetch và hiện font mới, không cần reload thủ công” của feature upload-custom-font. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-039","type":"NEEDS_CONFIRMATION","feature_id":"use-custom-font-in-artwork-editor","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-002 “Chọn 1 font trong picker rồi Save áp dụng font đó cho text layer thành công, persist qua reload” của feature use-custom-font-in-artwork-editor. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-040","type":"NEEDS_CONFIRMATION","feature_id":"use-custom-font-in-artwork-editor","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-003 “Picker hiển thị thế nào khi store chưa có custom font nào (empty state)” của feature use-custom-font-in-artwork-editor. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-041","type":"NEEDS_CONFIRMATION","feature_id":"use-custom-font-in-artwork-editor","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-004 “Picker hỗ trợ search/phân trang khi danh sách font dài” của feature use-custom-font-in-artwork-editor. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-042","type":"NEEDS_CONFIRMATION","feature_id":"use-custom-font-in-artwork-editor","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-005 “Áp dụng custom font cho layer type khác ngoài 'Paragraph' hoạt động giống nhau” của feature use-custom-font-in-artwork-editor. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-043","type":"NEEDS_CONFIRMATION","feature_id":"use-custom-font-in-artwork-editor","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-006 “Sản phẩm dùng custom font hiển thị đúng font phía storefront khách hàng” của feature use-custom-font-in-artwork-editor. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-044","type":"NEEDS_CONFIRMATION","feature_id":"view-and-configure-font-list","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-009 “Bấm 'Save' trong Font Settings popover lưu cấu hình Unsupported Character Settings” của feature view-and-configure-font-list. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-045","type":"NEEDS_CONFIRMATION","feature_id":"view-and-configure-font-list","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-010 “Điều khiển phân trang '‹ ›' hoạt động đúng khi danh sách có nhiều hơn 1 trang (hasNextPage=true)” của feature view-and-configure-font-list. missing_or_unresolved_oracle"}
+```
+
+```json
+{"oq_id":"OQ-font-046","type":"NEEDS_CONFIRMATION","feature_id":"view-and-configure-font-list","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-011 “Các giá trị Show entries khác 50 (20/100/250/500) bind và query đúng limit tương ứng” của feature view-and-configure-font-list. current_behavior_only"}
 ```

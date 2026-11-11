@@ -162,3 +162,7 @@
   "summary": "Catalog trang Links chỉ liệt kê Program có visible=true; Program visible=false không xuất hiện và không lấy được link qua UI catalog; Program biến mất khỏi catalog ngay khi visible bị tắt (không cache theo session cũ). Oracle của cả 3 check dựa trên KB-PCA-003, derivation=code_artifact — theo phanh derivation không đủ làm oracle STRONG. Cần xác nhận từ nguồn mạnh hơn."
 }
 ```
+
+```json
+{"oq_id":"OQ-program-017","type":"NEEDS_CONFIRMATION","feature_id":"program-catalog-for-affiliates","summary":"[object Object]"}
+```

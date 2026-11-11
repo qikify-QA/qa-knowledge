@@ -201,3 +201,54 @@ Tổng: 13 mục (NEEDS_CONFIRMATION/CONFLICT/OPEN_ISSUE). Sinh từ bootstrap D
 }
 ```
 
+```json
+{"oq_id":"OQ-translate-portal-014","type":"NEEDS_CONFIRMATION","feature_id":"translate-portal","summary":"Jira QVD-159 ('Portal Translation, New Feature', Done) Sprint 23 goal field chỉ liệt kê 7 ngôn ngữ non-English (German, French, Spanish, Portuguese Brazil, Portuguese Portugal, Italian, Vietnamese) — thiếu Japanese — trong khi \"Translate Portal\" khẳng định Japanese đang live là 1 trong 9 option hiện tại của Portal (KB-004). Japanese được thêm ở một lần làm sau không track trong Jira, hay goal field/changelog đã lỗi thời so với build hiện tại?"}
+```
+
+```json
+{"oq_id":"OQ-translate-portal-015","type":"NEEDS_CONFIRMATION","feature_id":"translate-portal","summary":"Tài liệu không mô tả hành vi khi bản dịch của một ngôn ngữ fail load (lỗi network/API) — Portal có fallback về English, hiển thị UI dịch nửa chừng, hay lỗi UI? Cần PO/Dev xác nhận behavior mong đợi."}
+```
+
+```json
+{"oq_id":"OQ-translate-portal-016","type":"NEEDS_CONFIRMATION","feature_id":"translate-portal","summary":"Português (Brasil) và Português (Portugal) trong dropdown có cho ra nội dung chuỗi dịch khác nhau thực sự, hay chỉ khác locale code còn nội dung dịch giống nhau? Cần PO/Dev xác nhận để quyết định có cần 2 test case riêng hay 1."}
+```
+
+```json
+{"oq_id":"OQ-translate-portal-017","type":"NEEDS_CONFIRMATION","feature_id":"translate-portal","summary":"Route `/apps/staging-bk-volume` (KB-003) có phải app-proxy handle riêng của dev store test-vl-1 (per-installation) hay giống nhau cho mọi merchant install? Cần xác nhận trước khi hardcode route này trong automation."}
+```
+
+```json
+{"oq_id":"OQ-translate-portal-018","type":"NEEDS_CONFIRMATION","feature_id":"translate-portal","summary":"\"Translate Portal\" dùng cả 'merchant' và 'staff' khi mô tả token hiển thị tên trong greeting (KB-009) nhưng không xác nhận có giới hạn quyền nào giữa các role khác nhau dưới một merchant account đối với việc thấy/dùng language switcher. Cần PO/Dev xác nhận."}
+```
+
+```json
+{"oq_id":"OQ-translate-portal-019","type":"NEEDS_CONFIRMATION","feature_id":"translate-portal","summary":"Lựa chọn ngôn ngữ Portal có persist qua session/reload trang không, và nếu có thì theo merchant-user, theo store, hay chỉ client-side/cookie? Cần PO/Dev xác nhận để thiết kế được test case cho hành vi reload/re-login."}
+```
+
+```json
+{"oq_id":"OQ-translate-portal-020","type":"NEEDS_CONFIRMATION","feature_id":"translate-portal","summary":"Dropdown ngôn ngữ (và lựa chọn ngôn ngữ đã chọn) ở Dashboard có áp dụng/xuất hiện trên các trang Portal khác (Manage offers, Translations, Variant swatches, Analytics, Feature requests, trang cài đặt offer riêng lẻ) hay không? Cần PO/Dev xác nhận phạm vi áp dụng."}
+```
+
+```json
+{"oq_id":"OQ-translate-portal-021","type":"NEEDS_CONFIRMATION","feature_id":"translate-portal","summary":"Ví dụ 'Dashboard'→'Bảng điều khiển' (tab title, Tiếng Việt) chỉ là 1 lần live-test minh hoạ (chỉ dựa trên 1 ví dụ quan sát được/INFERRED, LOW, single-source). Có nên coi đây là business rule bắt buộc (exact string) hay chỉ là ví dụ minh hoạ có thể thay đổi? Cần PO/Dev xác nhận."}
+```
+
+```json
+{"oq_id":"OQ-translate-portal-022","type":"NEEDS_CONFIRMATION","feature_id":"translate-portal","summary":"Các cặp chuỗi left-nav dịch cụ thể (ví dụ 'Manage offers'→'Quản lý ưu đãi'...) chỉ là ví dụ minh hoạ từ 1 lần live-test (chỉ dựa trên 1 ví dụ quan sát được/INFERRED, LOW). Đây có phải bản dịch chính thức/ổn định hay chỉ là ví dụ nhất thời? Cần PO/Dev xác nhận."}
+```
+
+```json
+{"oq_id":"OQ-translate-portal-023","type":"NEEDS_CONFIRMATION","feature_id":"translate-portal","summary":"Cặp chuỗi greeting cụ thể ('Hi [REDACTED]!'→'Xin chào [REDACTED]!') chỉ là ví dụ minh hoạ từ 1 lần live-test (chỉ dựa trên 1 ví dụ quan sát được/INFERRED, LOW). Cần PO/Dev xác nhận format dịch này có cố định/business rule hay có thể thay đổi."}
+```
+
+```json
+{"oq_id":"OQ-translate-portal-024","type":"NEEDS_CONFIRMATION","feature_id":"translate-portal","summary":"Các cặp chuỗi column header bảng offers dịch cụ thể ('Internal name'→'Tên nội bộ'...) chỉ là ví dụ minh hoạ từ 1 lần live-test (chỉ dựa trên 1 ví dụ quan sát được/INFERRED, LOW). Cần PO/Dev xác nhận đây có phải bản dịch chính thức ổn định hay có thể thay đổi."}
+```
+
+```json
+{"oq_id":"OQ-translate-portal-025","type":"NEEDS_CONFIRMATION","feature_id":"translate-portal","summary":"Các cặp giá trị cell bảng offers dịch cụ thể, đặc biệt 'Multibuy' được giữ nguyên không dịch trong ví dụ gốc, chỉ là ví dụ minh hoạ từ 1 lần live-test (chỉ dựa trên 1 ví dụ quan sát được/INFERRED, LOW). Cần PO/Dev xác nhận 'Multibuy' không dịch là chủ ý hay là gap/bug chưa dịch."}
+```
+
+```json
+{"oq_id":"OQ-translate-portal-026","type":"NEEDS_CONFIRMATION","feature_id":"translate-portal","summary":"Cặp chuỗi nhãn dropdown ('Language:'→'Ngôn ngữ:') chỉ là ví dụ minh hoạ từ 1 lần live-test (chỉ dựa trên 1 ví dụ quan sát được/INFERRED, LOW). Cần PO/Dev xác nhận đây có phải bản dịch ổn định cho chính nhãn control hay có thể đổi."}
+```

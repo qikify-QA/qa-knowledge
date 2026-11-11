@@ -1,5 +1,5 @@
 # Variant Swatches (global per-variant-option display config)
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** qik-volume · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-05
 

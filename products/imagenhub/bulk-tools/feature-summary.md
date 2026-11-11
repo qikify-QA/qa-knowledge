@@ -1,5 +1,5 @@
 # Bulk tools (Beta) — Batch (1 template cho nhiều ảnh) và Design (mockup → file in)
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** ImagenHub · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-08
 

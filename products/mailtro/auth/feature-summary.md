@@ -1,5 +1,5 @@
 # Mailtro ID — đăng ký, xác minh email, tạo workspace đầu tiên, đăng nhập, 2FA, quên/đặt lại mật khẩu, chọn workspace và bảo mật tài khoản cá nhân (Account settings & 2FA)
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** Mailtro · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-08
 

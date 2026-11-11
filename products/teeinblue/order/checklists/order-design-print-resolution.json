@@ -1,0 +1,163 @@
+{
+  "feature_id": "FEAT-06-order-design-print-resolution",
+  "feature_key": "order-design-print-resolution",
+  "object_id": "order",
+  "checklist_version": "8",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "Regenerate design khi print area DPI trống: file order design PNG ghi 300 DPI, pixel giữ nguyên",
+      "applicability": {
+        "role": "merchant-owner (store owner/staff có quyền manage-products)",
+        "state": "Print area DPI trống (null); order đã có design",
+        "environment": "staging và production (test case gốc PASS cả hai)",
+        "surface_or_device": "portal + file order design PNG (CDN), công cụ đọc metadata PNG"
+      },
+      "precondition": "Có product base với print area để trống DPI và một order dùng print area đó; ghi lại kích thước pixel của file design hiện tại làm mốc.",
+      "steps": [
+        "Regenerate design của order trên portal.",
+        "Tải file order design PNG của print area.",
+        "Đọc metadata resolution và kích thước pixel của file bằng công cụ đọc PNG."
+      ],
+      "observation_point": "Resolution và kích thước pixel trong metadata file PNG.",
+      "expected_result": "Resolution 300 DPI (công cụ có thể hiện dạng pixels per centimeter); kích thước pixel bằng mốc trước khi regenerate.",
+      "oracle": {
+        "kb_ids": [
+          "order/order-design-print-resolution#KB-769"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "order/order-design-print-resolution#KB-770",
+        "order/order-design-print-resolution#KB-771"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "File order design ghi sai resolution làm in sai kích thước vật lý (mất tiền)"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "Đổi DPI của print area rồi regenerate design: file order design PNG ghi DPI mới, pixel không đổi",
+      "applicability": {
+        "role": "merchant-owner (store owner/staff có quyền manage-products)",
+        "state": "Print area đã đổi DPI sang giá trị khác 300 (vd 150) sau khi order có design",
+        "environment": "staging và production (test case gốc PASS cả hai)",
+        "surface_or_device": "portal + file order design PNG (CDN), công cụ đọc metadata PNG"
+      },
+      "precondition": "Order đã có design; ghi lại kích thước pixel của file design hiện tại làm mốc.",
+      "steps": [
+        "Đổi DPI của print area sang giá trị mới (vd 150) ở product base.",
+        "Regenerate design của order.",
+        "Tải file order design PNG và đọc metadata resolution cùng kích thước pixel."
+      ],
+      "observation_point": "Resolution và kích thước pixel trong metadata file PNG sau regenerate.",
+      "expected_result": "Resolution bằng DPI mới (vd 150 DPI, có thể hiện ≈ 59.06 pixels per centimeter); kích thước pixel không đổi so với mốc trước khi đổi DPI.",
+      "oracle": {
+        "kb_ids": [
+          "order/order-design-print-resolution#KB-770"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "order/order-design-print-resolution#KB-769",
+        "order/order-design-print-resolution#KB-771"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "File order design ghi sai resolution làm in sai kích thước vật lý (mất tiền)"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "Tạo order mới với print area có DPI đã đặt: file order design PNG ghi đúng DPI đó",
+      "applicability": {
+        "role": "merchant-owner (store owner/staff có quyền manage-products)",
+        "state": "Print area có DPI đã đặt (vd 200) trước khi tạo order",
+        "environment": "staging và production (test case gốc PASS cả hai)",
+        "surface_or_device": "portal + file order design PNG (CDN), công cụ đọc metadata PNG"
+      },
+      "precondition": "Product base có print area với DPI đã đặt (khác 300) và campaign dùng print area đó trên store explore.",
+      "steps": [
+        "Đặt DPI cho print area (vd 200) rồi lưu.",
+        "Đặt một order test cho sản phẩm dùng print area đó.",
+        "Tải file order design PNG của print area và đọc metadata resolution."
+      ],
+      "observation_point": "Resolution trong metadata file PNG của order mới.",
+      "expected_result": "Resolution bằng DPI đã đặt (vd 200 DPI).",
+      "oracle": {
+        "kb_ids": [
+          "order/order-design-print-resolution#KB-771"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "order/order-design-print-resolution#KB-769",
+        "order/order-design-print-resolution#KB-770"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "File order design ghi sai resolution làm in sai kích thước vật lý (mất tiền)"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-06-order-design-print-resolution",
+      "risk": "File order design ghi sai resolution làm in sai kích thước vật lý (mất tiền)",
+      "check_ids": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-003"
+      ]
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Validation DPI (72–300) và xoá trống DPI thuộc product-base, đã có KB-513 và KB-510 ở product-base/printarea-definition; order không có check riêng. Không còn unknown."
+    },
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Biên DPI 72–300 chưa kiểm (không thuộc claim); KB chỉ có 300 (null), 150, 200."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "KB chỉ quan sát merchant-owner; không có ranh giới quyền để làm oracle."
+    },
+    {
+      "dimension": "STATE_DATA",
+      "reason": "Không có tri thức về persistence/dữ liệu cũ ngoài hai trạng thái regenerate đã có ở CORE."
+    },
+    {
+      "dimension": "INTEGRATION",
+      "reason": "Không có tích hợp ngoài phạm vi claim: import provider là import print area vào product base (KB-506..508, product-base), không phải luồng của order; JPG/PDF đã có KB-505 (product-base), order chưa có test_case nên không tạo check."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Feature mới, không có base để so; không có item KNOWN_DEFECT."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
+}

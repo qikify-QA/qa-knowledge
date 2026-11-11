@@ -1,5 +1,5 @@
 # Quick order CSV & SKU Order — đặt nhanh theo SKU / CSV ở Customer Account, hành động sau khi buyer tạo order, tải catalog CSV
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** Duos B2B · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-09
 

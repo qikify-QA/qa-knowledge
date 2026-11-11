@@ -4,9 +4,9 @@
   "name": "Translate merchant-entered dynamic content (Option Title, Product base name, Variants name)",
   "user_goal": "As a merchant (owner), translate content I typed myself — personalization Option Titles, Product base names, Variants names — into another store language, either by typing pairs manually or importing them, so buyers see it in their language.",
   "user_goal_kb_refs": [
-    "KB-007",
-    "KB-010",
-    "KB-029"
+    "translation/dynamic-translations#KB-007",
+    "translation/dynamic-translations#KB-010",
+    "translation/dynamic-translations#KB-029"
   ],
   "stable_since_version": null,
   "actors": [
@@ -14,32 +14,32 @@
       "role": "owner (merchant, portal)",
       "permission_observed": "user_id=266 (Linh explorer) successfully created, viewed and deleted entries via authenticated cookie session + x-xsrf-token + x-acting-user-id header. No cross-tenant/forbidden-token test performed.",
       "kb_refs": [
-        "KB-007",
-        "KB-010",
-        "KB-012"
+        "translation/dynamic-translations#KB-007",
+        "translation/dynamic-translations#KB-010",
+        "translation/dynamic-translations#KB-012"
       ]
     },
     {
       "role": "GUEST buyer (storefront, not logged in) — consumer of the delivered Dynamic Translations dictionary",
       "permission_observed": "[MỚI, CBS-001, staging build TIB-5352] Buyer GUEST nhận dictionary qua HTML inline (window.teeinblueShopTranslations) hoặc qua GET /api/merchant/translations/<locale>.json?shop=<domain>&v=<translation_version> do SDK gọi; endpoint được ghi nhận là public (scope 'GUEST buyer (endpoint public)'). Permission cross-shop chưa test (coverage gap của shard).",
       "kb_refs": [
-        "KB-022",
-        "KB-025",
-        "KB-029"
+        "translation/dynamic-translations#KB-022",
+        "translation/dynamic-translations#KB-025",
+        "translation/dynamic-translations#KB-029"
       ]
     },
     {
       "role": "[MỚI, CBS-076] merchant (owner/staff) — dùng Import to Translation trên portal",
       "permission_observed": "KB-030 ghi scope role 'merchant (owner/staff)'; KB không có quan sát về quyền.",
       "kb_refs": [
-        "KB-030"
+        "translation/dynamic-translations#KB-030"
       ]
     },
     {
       "role": "[MỚI, CBS-076] buyer (storefront) — thấy placeholder date picker",
       "permission_observed": "KB-031 ghi scope role 'buyer', không nêu GUEST hay đã đăng nhập; KB không có quan sát về quyền.",
       "kb_refs": [
-        "KB-031"
+        "translation/dynamic-translations#KB-031"
       ]
     }
   ],
@@ -48,23 +48,23 @@
       "path": "Portal sidebar > Extras > Dynamic Translations (/artwork-translations)",
       "precondition": "role=owner, authenticated portal session",
       "kb_refs": [
-        "KB-007"
+        "translation/dynamic-translations#KB-007"
       ]
     },
     {
       "path": "[MỚI] Storefront product page theo locale prefix (vd /vi-vn/ — API path, /zh-zh/ — inline path) và modal 'Edit design' ở cart",
       "precondition": "Staging SDK app-v1.js build TIB-5352 (chưa release production); locale đã có bản dịch Dynamic Translations; campaign có personalization form (campaign 2740 trong test)",
       "kb_refs": [
-        "KB-022",
-        "KB-029"
+        "translation/dynamic-translations#KB-022",
+        "translation/dynamic-translations#KB-029"
       ]
     },
     {
       "path": "[MỚI] GET /api/merchant/translations/<locale>.json?shop=<domain>&v=<translation_version>",
       "precondition": "Do SDK gọi khi HTML chỉ chứa translation_version (locale >= ngưỡng key, 1000 trên staging); cũng gọi trực tiếp được (endpoint public) — build TIB-5352 staging",
       "kb_refs": [
-        "KB-022",
-        "KB-025"
+        "translation/dynamic-translations#KB-022",
+        "translation/dynamic-translations#KB-025"
       ]
     }
   ],
@@ -73,109 +73,109 @@
       "name": "Declared field scope (self-stated by UI)",
       "description": "Info banner on the page states verbatim the supported scope: 'Currently support translating: Option Title in the personalization form, Product base and Variants name.' No mention of 'layer placeholder', 'artwork custom name', or 'campaign custom name/label' was observed anywhere on the page — narrower/differently-worded than the initial business-context assumption. Absence of these terms is recorded as NOT_OBSERVED, not confirmed-unsupported.",
       "kb_refs": [
-        "KB-007"
+        "translation/dynamic-translations#KB-007"
       ]
     },
     {
       "name": "Manual entry table (Default -> target locale)",
       "description": "2-column table: 'Default' (free-text source) and the currently selected locale's name (target). Trash-can icon deletes a row (client-side only until Save); '+ Add new translation' appends a blank row; a 'Search...' box and 'Auto translate' button sit above the table (Auto translate not tested); Import/Export buttons top-right.",
       "kb_refs": [
-        "KB-008"
+        "translation/dynamic-translations#KB-008"
       ]
     },
     {
       "name": "Import is file-upload, not an entity picker",
       "description": "Clicking 'Import' opens a native OS file-chooser immediately (upload control), NOT a dropdown to pick source entities from Artworks/Product Base/Campaigns list pages, contradicting the initial business-context assumption that import pulls from those list pages. No file was submitted in this run (stopped at safe checkpoint per mutation policy) — actual upload behavior is untested.",
       "kb_refs": [
-        "KB-009"
+        "translation/dynamic-translations#KB-009"
       ]
     },
     {
       "name": "Save: create entry via bulk endpoint, free-text key",
       "description": "Save sends POST /api/translations/bulk with body {translations:[{locale, name, data:{<free-text Default source>: <translation>}}]}. Response 200 returns the created record ({id, user_id, is_default, locale, data, created_at, updated_at, name}). Storage key is the literal source string the merchant typed, NOT a fixed semantic key (contrast with Product Page Content's config-translations).",
       "kb_refs": [
-        "KB-010",
-        "KB-019"
+        "translation/dynamic-translations#KB-010",
+        "translation/dynamic-translations#KB-019"
       ]
     },
     {
       "name": "Load existing entries (GET /api/translations)",
       "description": "GET /api/translations fires on page load; first observed instance (KB-011) had no captured response body (role INFERRED). A later observation during cleanup captured the response as a flat array of translation records for the currently selected locale, confirming the load role — but this is a single later sample, not independently re-verified across multiple runs.",
       "kb_refs": [
-        "KB-011"
+        "translation/dynamic-translations#KB-011"
       ]
     },
     {
       "name": "Delete entry via full-set replace, not delete-by-id",
       "description": "Deleting a row (trash-can + confirm dialog + Save) does NOT call a delete-by-id endpoint. Instead, Save sends POST /api/translations/bulk with the FULL remaining entry set for the selected locale (observed: {translations:[]} when the only entry was removed). Response echoes the new full set. Only the targeted locale's entries are affected; other locales/entries are untouched (verified in the single-entry case only).",
       "kb_refs": [
-        "KB-012"
+        "translation/dynamic-translations#KB-012"
       ]
     },
     {
       "name": "[MỚI] Storefront delivery of the per-locale dictionary (inline HTML vs translations API, by translated-key count)",
       "description": "CONFIRMED_EXPECTED trên staging build TIB-5352 (chưa production). Cách giao dictionary xét riêng từng locale theo số key có value không rỗng: dưới ngưỡng (999 key; zh-TW 50 key) → dictionary đầy đủ nhúng trong HTML qua window.teeinblueShopTranslations, 0 request translations/<locale>.json; từ ngưỡng trở lên (vi 1000 và 1249 key) → HTML chỉ chứa translation_version và SDK gọi GET /api/merchant/translations/<locale>.json?shop=<domain>&v=<translation_version>; key rỗng không được đếm (1000 key có 5 rỗng → inline 995 key). Ngưỡng 1000 là giá trị quan sát trên staging, cấu hình được qua biến môi trường (tên biến/giá trị production chưa biết). Không bao gồm nhánh 0 key (chưa verify). Hành vi của chính endpoint khi bị gọi với tham số lạ (v thiếu/sai, locale không tồn tại, hoa/thường, dị dạng) chỉ là OBSERVED_CURRENT/LOW — xem observed_behavior.",
       "kb_refs": [
-        "KB-022",
-        "KB-025",
-        "KB-026",
-        "KB-027",
-        "KB-028"
+        "translation/dynamic-translations#KB-022",
+        "translation/dynamic-translations#KB-025",
+        "translation/dynamic-translations#KB-026",
+        "translation/dynamic-translations#KB-027",
+        "translation/dynamic-translations#KB-028"
       ]
     },
     {
       "name": "[MỚI] Save on Portal propagates to storefront via translation_version",
       "description": "CONFIRMED_EXPECTED trên staging build TIB-5352 (chưa production), locale API path (vi 1249 key): sau khi owner sửa value và Save, GET translations/vi.json ngay lập tức trả giá trị mới; translation_version trong HTML storefront sau đó đổi; SDK gọi lại translations/vi.json với v mới và widget hiện giá trị mới; số key các locale khác không đổi. Độ trễ để HTML nhận version mới (30–45s ở 1 lần đo, ~30–70s theo tổng hợp người gửi) chỉ là OBSERVED_CURRENT/LOW, không phải SLA.",
       "kb_refs": [
-        "KB-023",
-        "KB-024"
+        "translation/dynamic-translations#KB-023",
+        "translation/dynamic-translations#KB-024"
       ]
     },
     {
       "name": "[MỚI] Buyer sees personalization-form strings translated (product page and cart 'Edit design')",
       "description": "CONFIRMED_EXPECTED trên staging build TIB-5352 (chưa production), campaign 2740: label/option title, placeholder và nhãn photo layer của personalization form hiển thị theo locale — en 'QA5352 Your name' / 'QA5352 Enter name' / 'QA5352 Your photo'; vi (API path) 'QA5352 Tên của bạn' / 'QA5352 Nhập tên' / 'QA5352 Ảnh của bạn', kể cả trong modal 'Edit design' ở cart; zh-TW (inline path) placeholder 'QA5352 請輸入名字'; chuyển locale qua lại không lẫn ngôn ngữ. Chỉ nói về chuỗi personalization form, KHÔNG nói về tên Product base (KB-016, CONFLICT-001 vẫn UNRESOLVED).",
       "kb_refs": [
-        "KB-029",
-        "KB-022"
+        "translation/dynamic-translations#KB-029",
+        "translation/dynamic-translations#KB-022"
       ]
     },
     {
       "name": "[MỚI, CBS-076] Translate the date picker placeholder format",
       "description": "CONFIRMED_EXPECTED, staging. Import to Translation gợi ý key format cho date layer đến từ Global Option như layer thường, mỗi format một lần; Global Option có Placeholder riêng hoặc không phải Date picker thì không gợi ý. Điều kiện chạy, không thuộc kết quả của case: popup chỉ hiện key chưa có trong dictionary. Trên storefront, placeholder date picker tra dictionary bằng nguyên chuỗi format viết thường (dd.mm.yyyy); entry một ký tự không bao giờ khớp. Entry DD.MM.YYYY, dd.MM.yyyy (KB-040) chưa xác nhận nên không thuộc capability này, xem unknown_areas. KB-030 không nêu vị trí mở Import to Translation; không suy đây là nút Import của KB-009.",
       "kb_refs": [
-        "KB-030",
-        "KB-031"
+        "translation/dynamic-translations#KB-030",
+        "translation/dynamic-translations#KB-031"
       ]
     },
     {
       "name": "[MỚI, CBS-076] Keep leading and trailing spaces in manually entered translations",
       "description": "CONFIRMED_EXPECTED theo dev, staging, role chưa chốt, shipped UNKNOWN. Giá trị dịch nhập tay giữ khoảng trắng đầu/cuối khi Save, còn sau reload và hiển thị nguyên trạng trên storefront. Ô dịch chỉ chứa dấu cách được lưu như một bản dịch; storefront hiện tiêu đề option thành khoảng trắng, không quay về tiêu đề gốc. Vẫn cắt theo chủ định với kết quả Auto translate và bản dịch đã lưu ở dạng cắt trước fix; merchant muốn có dấu cách thì nhập lại. Thay đổi áp cho toàn bộ thao tác Save của trang, gồm xoá dòng dịch, trên mọi nền tảng. Không áp cho tên Product base, Variants name (KB-016, OQ-translation-001, OQ-translation-011; CONFLICT-001 vẫn UNRESOLVED).",
       "kb_refs": [
-        "KB-032",
-        "KB-035",
-        "KB-036",
-        "KB-037"
+        "translation/dynamic-translations#KB-032",
+        "translation/dynamic-translations#KB-035",
+        "translation/dynamic-translations#KB-036",
+        "translation/dynamic-translations#KB-037"
       ]
     },
     {
       "name": "[MỚI, CBS-076] Widget still shows when the translations API fails",
       "description": "CONFIRMED_EXPECTED theo dev, staging, role chưa chốt, shipped UNKNOWN. Nếu API translations lỗi hoặc quá 5 giây chưa phản hồi thì widget vẫn hiện, ở chữ gốc. Hành vi thử lại (KB-039) chưa xác nhận nên không thuộc capability này, xem unknown_areas.",
       "kb_refs": [
-        "KB-033"
+        "translation/dynamic-translations#KB-033"
       ]
     },
     {
       "name": "[MỚI, CBS-076] Translatable layer fields exclude prefix and suffix",
       "description": "CONFIRMED_EXPECTED theo dev, staging, role chưa chốt, shipped UNKNOWN. prefix và suffix không còn trong LAYER_TRANSLATABLE_FIELDS; các entry còn lại của danh sách là form copy.",
       "kb_refs": [
-        "KB-034"
+        "translation/dynamic-translations#KB-034"
       ]
     },
     {
       "name": "[MỚI, CBS-076] Embed outside Shopify loads translations without a version code",
       "description": "CONFIRMED_EXPECTED theo dev, staging, role chưa chốt, shipped UNKNOWN. Embed (ngoài Shopify) vẫn gọi API translations như cũ, không có mã phiên bản. KB không nêu endpoint cụ thể của luồng này.",
       "kb_refs": [
-        "KB-038"
+        "translation/dynamic-translations#KB-038"
       ]
     }
   ],
@@ -186,7 +186,7 @@
       "trigger": "owner fills Default + target-locale text in the manual entry table and clicks Save",
       "condition": "POST /api/translations/bulk returns 200 with the created record",
       "kb_refs": [
-        "KB-010"
+        "translation/dynamic-translations#KB-010"
       ]
     },
     {
@@ -195,7 +195,7 @@
       "trigger": "owner clicks trash-can icon on a row, confirms 'Are you sure to remove <text>?', then clicks page-level Save",
       "condition": "POST /api/translations/bulk with the full remaining set returns 200",
       "kb_refs": [
-        "KB-012"
+        "translation/dynamic-translations#KB-012"
       ]
     },
     {
@@ -204,7 +204,7 @@
       "trigger": "buyer requests the product page under the overridden locale's URL prefix",
       "condition": "UNRESOLVED — CONFLICT-001. For the ONE sub-scope tested (Product base name, campaign 2595), this transition was observed as NOT happening: the source text still renders in English at both the DOM layer (Shopify-native <variant-selects>) and the teeinblue campaign-config API layer, with no vi-locale variant appearing anywhere. This does NOT confirm the transition fails for the other declared sub-scopes ('Option Title in the personalization form', 'Variants name'), which had no testable field on the one campaign used in this run. See open-questions.md OQ-translation-001 — this transition is deliberately recorded as UNRESOLVED, not as a confirmed negative or positive rule.",
       "kb_refs": [
-        "KB-016"
+        "translation/dynamic-translations#KB-016"
       ]
     },
     {
@@ -213,7 +213,7 @@
       "trigger": "số key đã dịch không rỗng của locale tăng từ 999 lên 1000 (staging)",
       "condition": "Staging build TIB-5352; ngưỡng 1000 là giá trị staging, cấu hình qua biến môi trường; key rỗng không được đếm. Nhánh 0 key không thuộc transition này (chưa verify).",
       "kb_refs": [
-        "KB-022"
+        "translation/dynamic-translations#KB-022"
       ]
     },
     {
@@ -222,8 +222,8 @@
       "trigger": "owner sửa value của locale (API path) trên Portal Dynamic Translations và Save",
       "condition": "Staging build TIB-5352; API phản ánh ngay sau Save, HTML đổi version sau một khoảng trễ quan sát 30–45s (1 lần đo) / ~30–70s (tổng hợp, OBSERVED/LOW, không phải SLA); locale khác không đổi số key.",
       "kb_refs": [
-        "KB-023",
-        "KB-024"
+        "translation/dynamic-translations#KB-023",
+        "translation/dynamic-translations#KB-024"
       ]
     },
     {
@@ -232,7 +232,7 @@
       "trigger": "Save trên trang Dynamic Translations",
       "condition": "Staging; role chưa chốt; shipped UNKNOWN. Chỉ áp cho bản dịch nhập tay. Nguồn không nêu sub-scope; không áp cho tên Product base, Variants name (KB-016, OQ-translation-001, OQ-translation-011).",
       "kb_refs": [
-        "KB-032"
+        "translation/dynamic-translations#KB-032"
       ]
     },
     {
@@ -241,7 +241,7 @@
       "trigger": "Save trên trang Dynamic Translations",
       "condition": "Staging; role chưa chốt; shipped UNKNOWN. Nói về tiêu đề option, không nói về tên Product base.",
       "kb_refs": [
-        "KB-036"
+        "translation/dynamic-translations#KB-036"
       ]
     },
     {
@@ -250,8 +250,8 @@
       "trigger": "merchant nhập lại bản dịch",
       "condition": "Staging; shipped UNKNOWN. Nếu không nhập lại, bản dịch cũ vẫn ở dạng đã cắt.",
       "kb_refs": [
-        "KB-035",
-        "KB-032"
+        "translation/dynamic-translations#KB-035",
+        "translation/dynamic-translations#KB-032"
       ]
     },
     {
@@ -260,7 +260,7 @@
       "trigger": "API translations lỗi hoặc quá 5 giây chưa phản hồi",
       "condition": "Staging; role chưa chốt; shipped UNKNOWN. OQ-sdk-051 vẫn mở.",
       "kb_refs": [
-        "KB-033"
+        "translation/dynamic-translations#KB-033"
       ]
     }
   ],
@@ -273,7 +273,7 @@
       "caveats": "Ngưỡng 1000 là giá trị staging, cấu hình qua biến môi trường — không dùng 1000 làm boundary production khi chưa có xác nhận (OQ-translation-024). Không bao gồm nhánh 0 key (OQ-translation-025).",
       "confirmation_ref": "Testlane TC-TIB-4690, 4691, 4692, 4698, 4700 PASS",
       "kb_refs": [
-        "KB-022"
+        "translation/dynamic-translations#KB-022"
       ]
     },
     {
@@ -284,7 +284,7 @@
       "caveats": "Rule không gồm khoảng trễ cụ thể; độ trễ 30–70s chỉ là quan sát (KB-024, OQ-translation-026).",
       "confirmation_ref": "Testlane TC-TIB-4699 PASS",
       "kb_refs": [
-        "KB-023"
+        "translation/dynamic-translations#KB-023"
       ]
     },
     {
@@ -295,7 +295,7 @@
       "caveats": "Không áp dụng cho tên Product base (KB-016, CONFLICT-001). Không dùng để đóng OQ-translation-001/010 khi chưa release production.",
       "confirmation_ref": "Testlane TC-TIB-4690, 4694, 4700, 4701 PASS",
       "kb_refs": [
-        "KB-029"
+        "translation/dynamic-translations#KB-029"
       ]
     },
     {
@@ -307,7 +307,7 @@
       "caveats": "Giới hạn của lượt chạy: chưa kiểm đúng key dd.mm.yyyy khi key chưa tồn tại, đã kiểm cùng luồng bằng dd/mm/yyyy. Điều kiện chạy, không thuộc kết quả của case: popup chỉ hiện key chưa có trong dictionary. Vế không gợi ý dựa trên expected từ Jira TIB-5608 comment #56471. Rule chỉ nói key format, không nói Placeholder text của Global Option (còn mở ở unknown_areas). Testlane field Production ghi kiểm một phần (2026-11-06: có gợi ý key từ Global Option; chưa kiểm Add+Save, Global Option có Placeholder, Global Option không phải Date picker).",
       "confirmation_ref": "Testlane TC-TIB-8308 PASS (re-run 2026-11-05, staging portal merge 39b4073)",
       "kb_refs": [
-        "KB-030"
+        "translation/dynamic-translations#KB-030"
       ]
     },
     {
@@ -319,7 +319,7 @@
       "caveats": "Comment #56400 là comment Solution viết trước khi code; rule chỉ giữ điều comment phát biểu. Rule không nói về entry DD.MM.YYYY, dd.MM.yyyy: vế đó là KB-040 (PROPOSED), còn mở ở unknown_areas. Căn cứ shipped là field Production của TC-TIB-8300 (cùng thay đổi SDK), không phải kiểm trực tiếp rule này trên production.",
       "confirmation_ref": "Jira TIB-5608 comment #56400 (dev), 2026-11-04",
       "kb_refs": [
-        "KB-031"
+        "translation/dynamic-translations#KB-031"
       ]
     },
     {
@@ -331,7 +331,7 @@
       "caveats": "Chỉ nói giá trị nhập tay, không nói bản dịch qua Import file. Nguồn không nêu sub-scope; rule không áp cho tên Product base, Variants name (KB-016, OQ-translation-001, OQ-translation-011).",
       "confirmation_ref": "Jira TIB-5585 comment #55043 (dev), 2026-10-19",
       "kb_refs": [
-        "KB-032"
+        "translation/dynamic-translations#KB-032"
       ]
     },
     {
@@ -343,7 +343,7 @@
       "caveats": "OQ-sdk-051 vẫn mở, rule này không gỡ. Không gồm hành vi thử lại (KB-039, PROPOSED).",
       "confirmation_ref": "Jira TIB-5352 comment #52985 (dev), 2026-10-01",
       "kb_refs": [
-        "KB-033"
+        "translation/dynamic-translations#KB-033"
       ]
     },
     {
@@ -355,7 +355,7 @@
       "caveats": "Thay đổi chỉ ở SDK, portal nhận khi bump submodule SDK; không có căn cứ về thời điểm portal nhận.",
       "confirmation_ref": "Jira TIB-5414 comment #50357 (dev), 2026-09-09",
       "kb_refs": [
-        "KB-034"
+        "translation/dynamic-translations#KB-034"
       ]
     },
     {
@@ -367,7 +367,7 @@
       "caveats": "Comment ghi mục này ở phần Không phải bug.",
       "confirmation_ref": "Jira TIB-5585 comment #55043 (dev), 2026-10-19",
       "kb_refs": [
-        "KB-035"
+        "translation/dynamic-translations#KB-035"
       ]
     },
     {
@@ -379,7 +379,7 @@
       "caveats": "Nói về tiêu đề option, không nói về tên Product base; không vào CONFLICT-001. OQ-translation-001 và OQ-translation-010 vẫn mở.",
       "confirmation_ref": "Jira TIB-5585 comment #55043 (dev), 2026-10-19",
       "kb_refs": [
-        "KB-036"
+        "translation/dynamic-translations#KB-036"
       ]
     },
     {
@@ -391,7 +391,7 @@
       "caveats": "Rule không gồm vế thêm, sửa, xoá ngôn ngữ của cùng câu trong comment; vế đó còn mở ở unknown_areas.",
       "confirmation_ref": "Jira TIB-5585 comment #55043 (dev), 2026-10-19",
       "kb_refs": [
-        "KB-037"
+        "translation/dynamic-translations#KB-037"
       ]
     },
     {
@@ -403,7 +403,7 @@
       "caveats": "Chạm vế embed của OQ-translation-031; OQ đó vẫn mở, rule này không gỡ.",
       "confirmation_ref": "Jira TIB-5352 comment #52985 (dev), 2026-10-01",
       "kb_refs": [
-        "KB-038"
+        "translation/dynamic-translations#KB-038"
       ]
     }
   ],
@@ -416,7 +416,7 @@
       "confidence": "LOW",
       "scope": "staging build TIB-5352, chưa production",
       "kb_refs": [
-        "KB-024"
+        "translation/dynamic-translations#KB-024"
       ]
     },
     {
@@ -425,7 +425,7 @@
       "confidence": "LOW",
       "scope": "staging build TIB-5352, chưa production",
       "kb_refs": [
-        "KB-025"
+        "translation/dynamic-translations#KB-025"
       ]
     },
     {
@@ -434,7 +434,7 @@
       "confidence": "LOW",
       "scope": "staging build TIB-5352, chưa production",
       "kb_refs": [
-        "KB-026"
+        "translation/dynamic-translations#KB-026"
       ]
     },
     {
@@ -443,7 +443,7 @@
       "confidence": "LOW",
       "scope": "staging build TIB-5352, chưa production",
       "kb_refs": [
-        "KB-027"
+        "translation/dynamic-translations#KB-027"
       ]
     },
     {
@@ -452,7 +452,7 @@
       "confidence": "LOW",
       "scope": "staging build TIB-5352, chưa production",
       "kb_refs": [
-        "KB-028"
+        "translation/dynamic-translations#KB-028"
       ]
     }
   ],
@@ -526,8 +526,8 @@
     "observed_at": "2026-11-06"
   },
   "last_updated": {
-    "date": "2026-11-06",
-    "ccr_ref": "CBS-076"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "unknown_areas": [
     {
@@ -551,14 +551,14 @@
       "why_it_matters": "Hiện chỉ verify trên staging build TIB-5352 (chưa release production); checklist production không được dựa vào các item này cho tới khi re-verify hoặc có xác nhận.",
       "type": "OPEN_ISSUE",
       "kb_refs": [
-        "KB-022",
-        "KB-023",
-        "KB-024",
-        "KB-025",
-        "KB-026",
-        "KB-027",
-        "KB-028",
-        "KB-029"
+        "translation/dynamic-translations#KB-022",
+        "translation/dynamic-translations#KB-023",
+        "translation/dynamic-translations#KB-024",
+        "translation/dynamic-translations#KB-025",
+        "translation/dynamic-translations#KB-026",
+        "translation/dynamic-translations#KB-027",
+        "translation/dynamic-translations#KB-028",
+        "translation/dynamic-translations#KB-029"
       ],
       "oq_id": "OQ-translation-023"
     },
@@ -567,7 +567,7 @@
       "why_it_matters": "Boundary 999/1000 key là oracle chính của delivery; nếu production khác, test boundary sẽ sai.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-022"
+        "translation/dynamic-translations#KB-022"
       ],
       "oq_id": "OQ-translation-024"
     },
@@ -576,7 +576,7 @@
       "why_it_matters": "Nhánh 0 key bị cố ý loại khỏi KB-022; checklist không có oracle cho trường hợp shop có locale publish nhưng chưa dịch gì.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-022"
+        "translation/dynamic-translations#KB-022"
       ],
       "oq_id": "OQ-translation-025"
     },
@@ -585,7 +585,7 @@
       "why_it_matters": "Chỉ có số đo 30–45s / ~30–70s (KB-024); không có ngưỡng để checklist phán pass/fail cho propagation.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-024"
+        "translation/dynamic-translations#KB-024"
       ],
       "oq_id": "OQ-translation-026"
     },
@@ -594,7 +594,7 @@
       "why_it_matters": "Quyết định có phải test cache/version như một contract hay coi là defect tiềm năng.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-025"
+        "translation/dynamic-translations#KB-025"
       ],
       "oq_id": "OQ-translation-027"
     },
@@ -603,7 +603,7 @@
       "why_it_matters": "Hành vi hiện tại có thể che lỗi cấu hình; CCR cấm coi là expected khi chưa xác nhận.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-026"
+        "translation/dynamic-translations#KB-026"
       ],
       "oq_id": "OQ-translation-028"
     },
@@ -612,7 +612,7 @@
       "why_it_matters": "Liên quan known issue Dev nêu về hoa/thường khi ghi metafield (chưa verify); ảnh hưởng oracle cho locale có mã vùng.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-027"
+        "translation/dynamic-translations#KB-027"
       ],
       "oq_id": "OQ-translation-029"
     },
@@ -621,7 +621,7 @@
       "why_it_matters": "Cần xác nhận trước khi dùng làm expected cho test input-validation/security của endpoint public.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-028"
+        "translation/dynamic-translations#KB-028"
       ],
       "oq_id": "OQ-translation-030"
     },
@@ -637,14 +637,14 @@
       "why_it_matters": "scope.role của 8 item đang là 'unspecified' có chủ ý vì CCR ghi không rõ; checklist chưa biết chạy các item này với role nào.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-032",
-        "KB-033",
-        "KB-034",
-        "KB-035",
-        "KB-036",
-        "KB-037",
-        "KB-038",
-        "KB-039"
+        "translation/dynamic-translations#KB-032",
+        "translation/dynamic-translations#KB-033",
+        "translation/dynamic-translations#KB-034",
+        "translation/dynamic-translations#KB-035",
+        "translation/dynamic-translations#KB-036",
+        "translation/dynamic-translations#KB-037",
+        "translation/dynamic-translations#KB-038",
+        "translation/dynamic-translations#KB-039"
       ],
       "oq_id": "OQ-translation-034"
     },
@@ -653,7 +653,7 @@
       "why_it_matters": "KB-037 chỉ nêu xoá dòng dịch và mọi nền tảng. Jira TIB-5585 comment #55043 có vế 'gồm thêm, sửa, xoá ngôn ngữ', còn ghi chú QA 2026-10-30 nói danh sách và tên ngôn ngữ đồng bộ từ Shopify, Portal không có UI add, rename, xoá ngôn ngữ. Chưa ai chốt nên vế ngôn ngữ chưa có oracle.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-037"
+        "translation/dynamic-translations#KB-037"
       ],
       "oq_id": "OQ-translation-035"
     },
@@ -662,7 +662,7 @@
       "why_it_matters": "TC-TIB-8308 ghi quan sát chưa có expected: Placeholder riêng của Global Option không được gợi ý, trong khi Placeholder của layer thường có. KB-030 chỉ nói key format, không nói Placeholder text, nên checklist chưa có oracle cho trường hợp này.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-030"
+        "translation/dynamic-translations#KB-030"
       ],
       "oq_id": "OQ-translation-037"
     },
@@ -671,7 +671,7 @@
       "why_it_matters": "Jira TIB-5585 comment #55043 có nhắc luồng này, nhưng KB-032 chỉ nói giá trị nhập tay; không được mở rộng rule sang Import file khi chưa có Dev xác nhận hoặc test case PASS.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
-        "KB-032"
+        "translation/dynamic-translations#KB-032"
       ],
       "oq_id": "OQ-translation-038"
     },
@@ -682,7 +682,7 @@
       "knowledge_kind": "PROPOSED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-039"
+        "translation/dynamic-translations#KB-039"
       ],
       "related_oq_ids": [
         "OQ-sdk-053"
@@ -696,7 +696,7 @@
       "knowledge_kind": "PROPOSED",
       "confidence": "LOW",
       "kb_refs": [
-        "KB-040"
+        "translation/dynamic-translations#KB-040"
       ],
       "oq_id": "OQ-translation-042"
     }
@@ -798,7 +798,7 @@
       "environment": "staging (build TIB-5352)",
       "covered": true,
       "kb_refs": [
-        "KB-022"
+        "translation/dynamic-translations#KB-022"
       ]
     },
     {
@@ -809,7 +809,7 @@
       "environment": "staging (build TIB-5352)",
       "covered": true,
       "kb_refs": [
-        "KB-022"
+        "translation/dynamic-translations#KB-022"
       ]
     },
     {
@@ -820,7 +820,7 @@
       "environment": "staging (build TIB-5352)",
       "covered": false,
       "kb_refs": [
-        "KB-022"
+        "translation/dynamic-translations#KB-022"
       ]
     },
     {
@@ -831,8 +831,8 @@
       "environment": "staging (build TIB-5352)",
       "covered": true,
       "kb_refs": [
-        "KB-023",
-        "KB-024"
+        "translation/dynamic-translations#KB-023",
+        "translation/dynamic-translations#KB-024"
       ]
     },
     {
@@ -843,7 +843,7 @@
       "environment": "staging (build TIB-5352)",
       "covered": true,
       "kb_refs": [
-        "KB-029"
+        "translation/dynamic-translations#KB-029"
       ]
     },
     {
@@ -854,10 +854,10 @@
       "environment": "staging (build TIB-5352)",
       "covered": true,
       "kb_refs": [
-        "KB-025",
-        "KB-026",
-        "KB-027",
-        "KB-028"
+        "translation/dynamic-translations#KB-025",
+        "translation/dynamic-translations#KB-026",
+        "translation/dynamic-translations#KB-027",
+        "translation/dynamic-translations#KB-028"
       ]
     },
     {
@@ -895,9 +895,9 @@
       "environment": "production",
       "covered": false,
       "kb_refs": [
-        "KB-022",
-        "KB-023",
-        "KB-029"
+        "translation/dynamic-translations#KB-022",
+        "translation/dynamic-translations#KB-023",
+        "translation/dynamic-translations#KB-029"
       ]
     },
     {
@@ -908,7 +908,7 @@
       "environment": "staging",
       "covered": true,
       "kb_refs": [
-        "KB-030"
+        "translation/dynamic-translations#KB-030"
       ]
     },
     {
@@ -919,7 +919,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-030"
+        "translation/dynamic-translations#KB-030"
       ]
     },
     {
@@ -930,7 +930,7 @@
       "environment": "production",
       "covered": true,
       "kb_refs": [
-        "KB-030"
+        "translation/dynamic-translations#KB-030"
       ]
     },
     {
@@ -941,7 +941,7 @@
       "environment": "production",
       "covered": false,
       "kb_refs": [
-        "KB-030"
+        "translation/dynamic-translations#KB-030"
       ]
     },
     {
@@ -952,7 +952,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-031"
+        "translation/dynamic-translations#KB-031"
       ]
     },
     {
@@ -963,10 +963,10 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-032",
-        "KB-035",
-        "KB-036",
-        "KB-037"
+        "translation/dynamic-translations#KB-032",
+        "translation/dynamic-translations#KB-035",
+        "translation/dynamic-translations#KB-036",
+        "translation/dynamic-translations#KB-037"
       ]
     },
     {
@@ -977,7 +977,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-032"
+        "translation/dynamic-translations#KB-032"
       ]
     },
     {
@@ -988,8 +988,8 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-032",
-        "KB-036"
+        "translation/dynamic-translations#KB-032",
+        "translation/dynamic-translations#KB-036"
       ]
     },
     {
@@ -1000,7 +1000,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-033"
+        "translation/dynamic-translations#KB-033"
       ]
     },
     {
@@ -1011,7 +1011,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-034"
+        "translation/dynamic-translations#KB-034"
       ]
     },
     {
@@ -1022,7 +1022,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-038"
+        "translation/dynamic-translations#KB-038"
       ]
     },
     {
@@ -1033,7 +1033,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-039"
+        "translation/dynamic-translations#KB-039"
       ]
     },
     {
@@ -1044,14 +1044,14 @@
       "environment": "production",
       "covered": false,
       "kb_refs": [
-        "KB-032",
-        "KB-033",
-        "KB-034",
-        "KB-035",
-        "KB-036",
-        "KB-037",
-        "KB-038",
-        "KB-039"
+        "translation/dynamic-translations#KB-032",
+        "translation/dynamic-translations#KB-033",
+        "translation/dynamic-translations#KB-034",
+        "translation/dynamic-translations#KB-035",
+        "translation/dynamic-translations#KB-036",
+        "translation/dynamic-translations#KB-037",
+        "translation/dynamic-translations#KB-038",
+        "translation/dynamic-translations#KB-039"
       ]
     },
     {
@@ -1062,7 +1062,7 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "KB-040"
+        "translation/dynamic-translations#KB-040"
       ]
     }
   ],
@@ -1076,24 +1076,24 @@
       "type": "STALE_CANDIDATE_NOT_APPLIED",
       "detail": "KB-017 (không thấy endpoint translations riêng trên storefront, campaign 2595, trước TIB-5352) vs KB-022/KB-025/KB-026 (có endpoint translations/<locale>.json trên build TIB-5352). Normalizer đánh giá không CONTRADICTS (khác build/object_state). Profile không sửa KB-017; diff analyzer quyết định stale khi TIB-5352 lên production.",
       "kb_refs": [
-        "KB-017",
-        "KB-022"
+        "translation/dynamic-translations#KB-017",
+        "translation/dynamic-translations#KB-022"
       ]
     },
     {
       "type": "RELATED_OPEN_CONFLICT",
       "detail": "[MỚI, CBS-076] KB-032, KB-036 nói bản dịch nhập tay hiển thị trên storefront; KB-016 (OBSERVED_CURRENT, UNRESOLVED) nói bản dịch tên Product base không xuất hiện, một mẫu. Không hoà giải: KB-036 nói về tiêu đề option, KB-016 nói về tên Product base, KB-032 không nêu sub-scope và không áp cho tên Product base, Variants name. KB-032, KB-036 không vào CONFLICT-001; OQ-translation-001 vẫn mở.",
       "kb_refs": [
-        "KB-016",
-        "KB-032",
-        "KB-036"
+        "translation/dynamic-translations#KB-016",
+        "translation/dynamic-translations#KB-032",
+        "translation/dynamic-translations#KB-036"
       ]
     },
     {
       "type": "CROSS_OBJECT_SOURCE_VS_OBSERVATION",
       "detail": "[MỚI, CBS-076] KB-039 (PROPOSED): SDK thử lại đúng 1 lần, không nêu điều kiện. sdk KB-054, KB-057 (OBSERVED_CURRENT): một lần load trang chỉ có 1 request translations, lần fetch thứ hai chỉ ở lần gọi kế tiếp trong cùng page session; TC-TIB-4696 FAILED ở kỳ vọng retry. Không hoà giải, không sửa item sdk; OQ-sdk-053 đang mở.",
       "kb_refs": [
-        "KB-039"
+        "translation/dynamic-translations#KB-039"
       ]
     }
   ],
@@ -1117,8 +1117,8 @@
       "relationship": "delivered_and_rendered_by (cross-object: sdk)",
       "note": "[MỚI, CBS-001] Dictionary Dynamic Translations (inline / translations/<locale>.json) được SDK storefront đọc và render; fallback timeout/lỗi, retry, nhãn thiếu trong dictionary thuộc profile storefront-buyer-facing (sdk KB-053, KB-054, KB-057, KB-058, KB-059 theo cross_layer_evidence_map). Staging build TIB-5352 only.",
       "kb_refs": [
-        "KB-022",
-        "KB-029"
+        "translation/dynamic-translations#KB-022",
+        "translation/dynamic-translations#KB-029"
       ]
     },
     {
@@ -1128,8 +1128,8 @@
       "relationship": "related_feature (cross-object: sdk)",
       "note": "[MỚI, CBS-076] KB-033 liên quan sdk KB-053 (quá 5 giây, chữ gốc), KB-054 (500/503/abort, chữ gốc, quan sát). KB-039 (PROPOSED) liên quan sdk KB-057 (retry lazy, quan sát), KB-054 (1 request mỗi lần load, quan sát) và OQ-sdk-053 đang mở. Không sửa item sdk.",
       "kb_refs": [
-        "KB-033",
-        "KB-039"
+        "translation/dynamic-translations#KB-033",
+        "translation/dynamic-translations#KB-039"
       ]
     }
   ]

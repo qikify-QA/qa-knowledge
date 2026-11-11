@@ -92,3 +92,47 @@
   "summary": "Customer uninstalled (soft-deleted) vẫn tính vào cap lifetime usage-charge — nhất quán với object-level invariant. Oracle STRONG cua check 'CHK-012' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1. Oracle nay cung trace toi kb_id (_object-level:KB-001) co confirmation_source.derivation=code_artifact (suy ra tu doc code/schema, khong phai phat bieu nghiep vu tuong minh - prose). Theo luat 'phanh derivation' cua C5, STRONG chi hop le khi MOI oracle kb_id deu CONFIRMED_EXPECTED va derivation=prose. Ha xuong BASELINE cho toi khi co test_case PASS hoac PO/Dev xac nhan truc tiep (po_dev_confirm) ve hanh vi nay."
 }
 ```
+
+```json
+{"oq_id":"OQ-customer-shop-011","type":"NEEDS_CONFIRMATION","feature_id":"customer-lifecycle-state","summary":"Oracle STRONG cua check 'CHK-001' hien trace toi kb_id (KB-002) co confirmation_source.derivation=code_artifact (suy ra tu doc code/schema, khong phai phat bieu nghiep vu tuong minh). Theo luat 'phanh derivation' cua C5, STRONG chi hop le khi MOI oracle kb_id deu CONFIRMED_EXPECTED va derivation=prose. Ha xuong BASELINE cho toi khi PO/Dev xac nhan hanh vi nay dung la chu y thiet ke, khong phai tac dung phu cua viec doc code."}
+```
+
+```json
+{"oq_id":"OQ-customer-shop-012","type":"NEEDS_CONFIRMATION","feature_id":"customer-lifecycle-state","summary":"Oracle STRONG cua check 'CHK-002' hien trace toi kb_id (KB-003) co confirmation_source.derivation=code_artifact (suy ra tu doc code/schema, khong phai phat bieu nghiep vu tuong minh). Theo luat 'phanh derivation' cua C5, STRONG chi hop le khi MOI oracle kb_id deu CONFIRMED_EXPECTED va derivation=prose. Ha xuong BASELINE cho toi khi PO/Dev xac nhan hanh vi nay dung la chu y thiet ke, khong phai tac dung phu cua viec doc code."}
+```
+
+```json
+{"oq_id":"OQ-customer-shop-013","type":"NEEDS_CONFIRMATION","feature_id":"customer-lifecycle-state","summary":"Oracle STRONG cua check 'CHK-003' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-customer-shop-014","type":"NEEDS_CONFIRMATION","feature_id":"customer-lifecycle-state","summary":"Nhãn màu của 2 trạng thái còn lại (upgraded, canceled) là gì? Tài liệu chỉ nêu 4/6 rồi bỏ lửng — không đủ để viết test case UI đầy đủ cho toàn bộ 6 trạng thái màu."}
+```
+
+```json
+{"oq_id":"OQ-customer-shop-015","type":"NEEDS_CONFIRMATION","feature_id":"customer-lifecycle-state","summary":"KB item KB-012 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-011' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-customer-shop-016","type":"NEEDS_CONFIRMATION","feature_id":"customer-lifecycle-state","summary":"Oracle STRONG cua check 'CHK-012' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1. Oracle nay cung trace toi kb_id (_object-level:KB-001) co confirmation_source.derivation=code_artifact (suy ra tu doc code/schema, khong phai phat bieu nghiep vu tuong minh - prose). Theo luat 'phanh derivation' cua C5, STRONG chi hop le khi MOI oracle kb_id deu CONFIRMED_EXPECTED va derivation=prose. Ha xuong BASELINE cho toi khi co test_case PASS hoac PO/Dev xac nhan truc tiep (po_dev_confirm) ve hanh vi nay."}
+```
+
+```json
+{"oq_id":"OQ-customer-shop-017","type":"NEEDS_CONFIRMATION","feature_id":"customer-shop-registry","summary":"Oracle STRONG cua check 'CHK-001' hien trace toi kb_id (KB-004, KB-005) co confirmation_source.derivation=code_artifact (suy ra tu doc code/schema, khong phai phat bieu nghiep vu tuong minh). Theo luat 'phanh derivation' cua C5, STRONG chi hop le khi MOI oracle kb_id deu CONFIRMED_EXPECTED va derivation=prose. Ha xuong BASELINE cho toi khi PO/Dev xac nhan hanh vi nay dung la chu y thiet ke, khong phai tac dung phu cua viec doc code."}
+```
+
+```json
+{"oq_id":"OQ-customer-shop-018","type":"NEEDS_CONFIRMATION","feature_id":"customer-shop-registry","summary":"Màn hình Customer list mặc định trên admin có còn hiển thị shop đã soft-delete (gỡ app) không, hay chỉ hiển thị shop active? Cần PO/Dev xác nhận trước khi viết oracle cho test state soft-deleted ở tầng UI."}
+```
+
+```json
+{"oq_id":"OQ-customer-shop-019","type":"NEEDS_CONFIRMATION","feature_id":"customer-shop-registry","summary":"Oracle STRONG cua check 'CHK-007' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1. Oracle nay cung trace toi kb_id (_object-level:KB-001) co confirmation_source.derivation=code_artifact (suy ra tu doc code/schema, khong phai phat bieu nghiep vu tuong minh - prose). Theo luat 'phanh derivation' cua C5, STRONG chi hop le khi MOI oracle kb_id deu CONFIRMED_EXPECTED va derivation=prose. Ha xuong BASELINE cho toi khi co test_case PASS hoac PO/Dev xac nhan truc tiep (po_dev_confirm) ve hanh vi nay."}
+```
+
+```json
+{"oq_id":"OQ-customer-shop-020","type":"NEEDS_CONFIRMATION","feature_id":"customer-shop-registry","summary":"Admin có hành động xoá/khôi phục Customer trực tiếp từ UI không, hay soft-delete chỉ xảy ra tự động khi shop gỡ app? Nếu admin có quyền xoá tay, cần test case khác với trigger tự động."}
+```
+
+```json
+{"oq_id":"OQ-customer-shop-021","type":"NEEDS_CONFIRMATION","feature_id":"customer-shop-registry","summary":"Xoá (soft-delete) 1 Customer từ admin (nếu tồn tại action này) có ảnh hưởng gì khác so với trigger tự động (client app uninstall) tới Conversion đã có và tới cap lifetime usage của affiliate? Chưa được tài liệu nhóm admin trả lời trực tiếp."}
+```

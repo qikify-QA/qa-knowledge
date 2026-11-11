@@ -8,8 +8,8 @@
       "role": "admin",
       "permission_observed": "Admin/Ops chọn màn hình Populate/reconcile (route riêng admin/conversion/form-upload-populate) khi Shopify gửi lại dữ liệu cho 1 kỳ đã import trước đó. Quyền truy cập route này cho role nào trong admin panel KHÔNG được tài liệu xác nhận (cùng gap với payout-csv-upload, xem unknown_areas của feature đó).",
       "kb_refs": [
-        "KB-001",
-        "KB-006"
+        "payout-import/populate-reconcile-late-data#KB-001",
+        "payout-import/populate-reconcile-late-data#KB-006"
       ]
     }
   ],
@@ -18,8 +18,8 @@
       "path": "admin/conversion/form-upload-populate",
       "precondition": "Kỳ payout này ĐÃ được import trước đó qua Upload payout file (có Conversion sẵn có); Shopify gửi lại/cập nhật dữ liệu cho đúng kỳ đó.",
       "kb_refs": [
-        "KB-001",
-        "KB-006"
+        "payout-import/populate-reconcile-late-data#KB-001",
+        "payout-import/populate-reconcile-late-data#KB-006"
       ]
     }
   ],
@@ -28,36 +28,36 @@
       "name": "Chọn đúng màn hình khi Shopify gửi lại dữ liệu cho kỳ đã import",
       "description": "Khi Shopify gửi lại/cập nhật dữ liệu cho 1 kỳ đã import trước đó (dữ liệu settle muộn), dùng màn hình Populate/reconcile — chỉ cập nhật Conversion đã có, không tạo mới. Màn hình có route riêng (admin/conversion/form-upload-populate), KHÔNG dùng lại màn hình upload thường.",
       "kb_refs": [
-        "KB-001",
-        "KB-006"
+        "payout-import/populate-reconcile-late-data#KB-001",
+        "payout-import/populate-reconcile-late-data#KB-006"
       ]
     },
     {
       "name": "Cập nhật Conversion đã có theo khoá khớp riêng của populate",
       "description": "Với mỗi dòng trong file populate, hệ thống KHÔNG tạo Conversion mới; chỉ tìm Conversion đã có khớp theo (customer_id, payout_date, charge_creation_time, date_from, date_to). Nếu khớp, cập nhật lại các field: partner_share, charge_creation_time, charge_type, charge_id, và tính lại percentage (= amount hiện có / partner_share mới × 100). Dòng không khớp Conversion nào thì không có tác dụng gì, không tạo mới.",
       "kb_refs": [
-        "KB-007",
-        "KB-008",
-        "KB-009",
-        "KB-010",
-        "KB-016"
+        "payout-import/populate-reconcile-late-data#KB-007",
+        "payout-import/populate-reconcile-late-data#KB-008",
+        "payout-import/populate-reconcile-late-data#KB-009",
+        "payout-import/populate-reconcile-late-data#KB-010",
+        "payout-import/populate-reconcile-late-data#KB-016"
       ]
     },
     {
       "name": "Chống cập nhật lặp trong 1 khoảng thời gian (idempotent)",
       "description": "Mỗi Conversion chỉ được phép cập nhật qua populate 1 lần trong 1 khoảng thời gian nhất định, dùng khoá cache dạng conversion_id:{id} với thời hạn cấu hình ở config('cache.conversion_time') (giá trị cụ thể không được nêu). Nếu Ops chạy lại đúng file populate đó lần 2 trong cùng khoảng thời gian, các dòng đã cập nhật ở lần 1 sẽ không bị cập nhật lại lần nữa.",
       "kb_refs": [
-        "KB-012",
-        "KB-013",
-        "KB-014",
-        "KB-015"
+        "payout-import/populate-reconcile-late-data#KB-012",
+        "payout-import/populate-reconcile-late-data#KB-013",
+        "payout-import/populate-reconcile-late-data#KB-014",
+        "payout-import/populate-reconcile-late-data#KB-015"
       ]
     },
     {
       "name": "Hành vi lỗi: dừng toàn bộ import ngay khi gặp 1 dòng lỗi (all-or-nothing)",
       "description": "Ở màn hình Populate/reconcile, 1 dòng bị lỗi validate làm toàn bộ import dừng lại ngay lập tức (throw exception) — các dòng chưa xử lý tới trong file sẽ KHÔNG được cập nhật. Đối lập trực tiếp với hành vi của Upload payout file (1 dòng lỗi chỉ skip âm thầm, các dòng khác vẫn tiếp tục — xem KB-034 của feature payout-csv-upload); sự bất đối xứng này là có thật (xem risks).",
       "kb_refs": [
-        "KB-017"
+        "payout-import/populate-reconcile-late-data#KB-017"
       ]
     }
   ],
@@ -68,9 +68,9 @@
       "trigger": "Dòng trong file populate khớp (customer_id, payout_date, charge_creation_time, date_from, date_to) với 1 Conversion sẵn có",
       "condition": "Khớp đủ khoá khớp của populate.",
       "kb_refs": [
-        "KB-008",
-        "KB-009",
-        "KB-010"
+        "payout-import/populate-reconcile-late-data#KB-008",
+        "payout-import/populate-reconcile-late-data#KB-009",
+        "payout-import/populate-reconcile-late-data#KB-010"
       ]
     },
     {
@@ -79,7 +79,7 @@
       "trigger": "Dòng không khớp Conversion nào",
       "condition": "Không có Conversion nào khớp khoá khớp của populate.",
       "kb_refs": [
-        "KB-016"
+        "payout-import/populate-reconcile-late-data#KB-016"
       ]
     },
     {
@@ -88,10 +88,10 @@
       "trigger": "Chạy lại đúng file populate lần 2 trong cùng khoảng thời gian (trong hạn cache conversion_id:{id})",
       "condition": "Khoá cache chưa hết hạn.",
       "kb_refs": [
-        "KB-012",
-        "KB-013",
-        "KB-014",
-        "KB-015"
+        "payout-import/populate-reconcile-late-data#KB-012",
+        "payout-import/populate-reconcile-late-data#KB-013",
+        "payout-import/populate-reconcile-late-data#KB-014",
+        "payout-import/populate-reconcile-late-data#KB-015"
       ]
     },
     {
@@ -100,8 +100,8 @@
       "trigger": "1 dòng bị lỗi validate (ví dụ thiếu charge_creation_time)",
       "condition": "Toàn bộ import dừng ngay lập tức (throw exception); các dòng chưa xử lý tới KHÔNG được cập nhật, kể cả khi hợp lệ.",
       "kb_refs": [
-        "KB-017",
-        "KB-019"
+        "payout-import/populate-reconcile-late-data#KB-017",
+        "payout-import/populate-reconcile-late-data#KB-019"
       ]
     }
   ],
@@ -109,68 +109,68 @@
     {
       "statement": "KB-001: Khi Shopify gửi lại/cập nhật dữ liệu cho 1 kỳ đã import trước đó, dùng màn hình Populate/reconcile (chỉ cập nhật, không tạo mới).",
       "kb_refs": [
-        "KB-001"
+        "payout-import/populate-reconcile-late-data#KB-001"
       ]
     },
     {
       "statement": "KB-006: Populate/reconcile có route riêng admin/conversion/form-upload-populate, KHÔNG dùng lại màn hình upload thường.",
       "kb_refs": [
-        "KB-006"
+        "payout-import/populate-reconcile-late-data#KB-006"
       ]
     },
     {
       "statement": "KB-007: Với mỗi dòng trong file mới, hệ thống KHÔNG tạo Conversion mới.",
       "kb_refs": [
-        "KB-007"
+        "payout-import/populate-reconcile-late-data#KB-007"
       ]
     },
     {
       "statement": "KB-008: Populate chỉ tìm Conversion khớp theo (customer_id, payout_date, charge_creation_time, date_from, date_to).",
       "kb_refs": [
-        "KB-008"
+        "payout-import/populate-reconcile-late-data#KB-008"
       ]
     },
     {
       "statement": "KB-009: Khi khớp, populate cập nhật lại partner_share, charge_creation_time, charge_type, charge_id.",
       "kb_refs": [
-        "KB-009"
+        "payout-import/populate-reconcile-late-data#KB-009"
       ]
     },
     {
       "statement": "KB-010: Populate tính lại percentage (= amount hiện có / partner_share mới × 100).",
       "kb_refs": [
-        "KB-010"
+        "payout-import/populate-reconcile-late-data#KB-010"
       ]
     },
     {
       "statement": "KB-012: Mỗi Conversion chỉ được phép cập nhật qua populate 1 lần trong 1 khoảng thời gian nhất định.",
       "kb_refs": [
-        "KB-012"
+        "payout-import/populate-reconcile-late-data#KB-012"
       ]
     },
     {
       "statement": "KB-013/KB-014: Khoá chống lặp là cache key conversion_id:{id}, thời hạn cấu hình ở config('cache.conversion_time') (giá trị cụ thể không nêu).",
       "kb_refs": [
-        "KB-013",
-        "KB-014"
+        "payout-import/populate-reconcile-late-data#KB-013",
+        "payout-import/populate-reconcile-late-data#KB-014"
       ]
     },
     {
       "statement": "KB-015: Chạy lại populate lần 2 trong cùng window: idempotent, không cập nhật lại.",
       "kb_refs": [
-        "KB-015"
+        "payout-import/populate-reconcile-late-data#KB-015"
       ]
     },
     {
       "statement": "KB-016: Dòng populate không khớp Conversion nào: không có tác dụng gì, không tạo mới.",
       "kb_refs": [
-        "KB-016"
+        "payout-import/populate-reconcile-late-data#KB-016"
       ]
     },
     {
       "statement": "KB-017: 1 dòng lỗi validate ở Populate/reconcile làm toàn bộ import dừng lại ngay lập tức (throw exception), các dòng chưa xử lý tới KHÔNG được cập nhật.",
       "kb_refs": [
-        "KB-017"
+        "payout-import/populate-reconcile-late-data#KB-017"
       ]
     }
   ],
@@ -199,31 +199,31 @@
     {
       "risk": "KNOWN_DEFECT (KB-002): Rất dễ nhầm giữa 2 màn hình Upload payout file và Populate/reconcile — 2 màn hình gần giống nhau trên cùng menu Conversion.",
       "kb_refs": [
-        "KB-002"
+        "payout-import/populate-reconcile-late-data#KB-002"
       ]
     },
     {
       "risk": "KNOWN_DEFECT (KB-005): Nếu dùng lại màn hình Upload payout file (tạo mới) cho lần export sau của cùng kỳ, cơ chế dedup của màn hình đó không nhận ra đây là dữ liệu cần cập nhật (vì partner_share đã đổi, vượt sai số 0.005) — hệ thống hiểu nhầm là dòng mới hoàn toàn và tạo Conversion trùng.",
       "kb_refs": [
-        "KB-005"
+        "payout-import/populate-reconcile-late-data#KB-005"
       ]
     },
     {
       "risk": "KNOWN_DEFECT (KB-011): amount (số tiền hoa hồng affiliate đã nhận) KHÔNG được tính lại khi populate, chỉ percentage hiển thị được cập nhật lại cho khớp partner_share mới — chưa xác nhận có quy trình bù trừ nào cho chênh lệch này.",
       "kb_refs": [
-        "KB-011"
+        "payout-import/populate-reconcile-late-data#KB-011"
       ]
     },
     {
       "risk": "KNOWN_DEFECT (KB-018): Sự bất đối xứng hành vi lỗi giữa Upload payout file (skip âm thầm, tiếp tục — KB-034 của feature payout-csv-upload) và Populate/reconcile (dừng toàn bộ ngay lập tức — KB-017) là có thật; tài liệu tự đề nghị PO xác nhận có đúng chủ đích hay không.",
       "kb_refs": [
-        "KB-018"
+        "payout-import/populate-reconcile-late-data#KB-018"
       ]
     },
     {
       "risk": "KNOWN_DEFECT (KB-019): 1 dòng lỗi trong file populate (ví dụ thiếu charge_creation_time do lỗi export) chặn đứng việc cập nhật TOÀN BỘ các dòng hợp lệ khác phía sau nó trong file, kể cả khi phần lớn file hoàn toàn hợp lệ.",
       "kb_refs": [
-        "KB-019"
+        "payout-import/populate-reconcile-late-data#KB-019"
       ]
     }
   ],
@@ -258,8 +258,8 @@
     }
   ],
   "last_updated": {
-    "date": "2026-10-05",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "profile_relationships": [
     {

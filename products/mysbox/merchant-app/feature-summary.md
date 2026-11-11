@@ -1,5 +1,5 @@
 # Merchant app (portal nhúng): cài app/onboarding, dashboard/analytics, General Settings, trạng thái shop (kill switch, re-auth, uninstall/reinstall, frozen), GDPR
-**Published context version:** 2
+**Published context version:** 3
 
 **Product:** mysbox · **Object:** `merchant-app` · **Mode:** REFRESH (trên nền DOC_BOOTSTRAP v1) · **Environment:** documented + staging · **Published:** 2026-10-17
 

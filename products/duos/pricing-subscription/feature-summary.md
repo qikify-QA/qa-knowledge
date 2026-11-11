@@ -1,5 +1,5 @@
 # Pricing & Subscription — modular pricing theo module, tier theo Shopify plan, trang Subscription, gói gợi ý / trial, banner giữ giá cũ, khoá tính năng theo module đã mua và theo Shopify Plus
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** Duos B2B · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-09
 

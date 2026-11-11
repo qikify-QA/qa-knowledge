@@ -1,5 +1,5 @@
 # Contacts — danh sách/tìm kiếm, tạo/sửa, chi tiết, import/export CSV và custom field dùng chung
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** Mailtro · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-08
 

@@ -1,5 +1,5 @@
 # Segments — tập contact động theo điều kiện (list, builder, cách đánh giá audience)
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** Mailtro · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-08
 

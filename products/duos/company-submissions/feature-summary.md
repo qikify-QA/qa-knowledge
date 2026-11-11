@@ -1,5 +1,5 @@
 # Company submissions — duyệt submission đăng ký, tìm customer có sẵn, tạo B2B company (luồng Approve và luồng tạo tự động lúc submit theo cờ store), trigger Flow company approved
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** Duos B2B · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-09
 

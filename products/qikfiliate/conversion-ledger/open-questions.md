@@ -211,3 +211,87 @@
   "summary": "Badge 'cap reached' (is_capped=true) ẩn hoàn toàn khi amount cap về đúng $0. Oracle dựa trên KB-002, derivation=code_artifact — theo phanh derivation không đủ làm oracle STRONG. Cần xác nhận từ nguồn mạnh hơn."
 }
 ```
+
+```json
+{"oq_id":"OQ-conversion-ledger-023","type":"NEEDS_CONFIRMATION","feature_id":"admin-conversion-review","summary":"Oracle STRONG cua check 'CHK-005' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-024","type":"NEEDS_CONFIRMATION","feature_id":"admin-conversion-review","summary":"Oracle STRONG cua check 'CHK-006' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-025","type":"NEEDS_CONFIRMATION","feature_id":"admin-conversion-review","summary":"Role không phải admin (hoặc chưa đăng nhập) truy cập trực tiếp route admin Conversion screen thì hệ thống phản hồi thế nào (redirect/403/404)? Tài liệu chỉ nêu precondition role=admin cho luồng chính, không phát biểu tường minh cơ chế chặn."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-026","type":"NEEDS_CONFIRMATION","feature_id":"admin-conversion-review","summary":"KB item KB-007 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-008' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-027","type":"NEEDS_CONFIRMATION","feature_id":"admin-conversion-review","summary":"Sửa/xoá tay 1 dòng Conversion có cập nhật lại balance của affiliate không, và có audit trail không? Impact tiền nghiêm trọng nếu đoán sai — cần PO/Dev xác nhận trước khi viết oracle hoặc automation assert."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-028","type":"NEEDS_CONFIRMATION","feature_id":"admin-conversion-review","summary":"Banner kết quả import CSV Payout có báo số dòng bị bỏ qua/lỗi không, hay chỉ báo số Conversion đã tạo? Ảnh hưởng khả năng phát hiện dòng CSV bị skip âm thầm khi admin đối soát Conversion mới sinh — cần đối chiếu với object payout-import (ngoài quyền ghi run này)."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-029","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-conversion-view","summary":"Oracle nay cung trace toi kb_id (_object-level:KB-002, _object-level:KB-003) co confirmation_source.derivation=code_artifact (suy ra tu doc code/schema, khong phai phat bieu nghiep vu tuong minh - prose). Theo luat 'phanh derivation' cua C5, STRONG chi hop le khi MOI oracle kb_id deu CONFIRMED_EXPECTED va derivation=prose. Ha xuong BASELINE cho toi khi co test_case PASS hoac PO/Dev xac nhan truc tiep (po_dev_confirm) ve hanh vi nay."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-030","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-conversion-view","summary":"Oracle STRONG cua check 'CHK-004' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-031","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-conversion-view","summary":"Conversions page của affiliate dashboard có phân trang/giới hạn số dòng không, và công thức của 4 tiêu chí sắp xếp là gì? Cần PO/Dev xác nhận trước khi viết oracle cho test phân trang/sắp xếp."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-032","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-conversion-view","summary":"[object Object]"}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-033","type":"NEEDS_CONFIRMATION","feature_id":"affiliate-conversion-view","summary":"percentage hiển thị trên dòng Conversion bị cap có đúng là % hiệu lực thực tế tính ngược từ amount/partner_share hay là field khác? Tài liệu nguồn tự đánh dấu đây là suy luận, chưa xác nhận PO — cần PO/Dev confirm công thức chính xác trước khi dùng làm oracle."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-034","type":"NEEDS_CONFIRMATION","feature_id":"custom-conversion-entry","summary":"Oracle STRONG cua check 'CHK-002' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-035","type":"NEEDS_CONFIRMATION","feature_id":"custom-conversion-entry","summary":"Oracle STRONG cua check 'CHK-003' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-036","type":"NEEDS_CONFIRMATION","feature_id":"custom-conversion-entry","summary":"Oracle STRONG cua check 'CHK-013' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-037","type":"NEEDS_CONFIRMATION","feature_id":"custom-conversion-entry","summary":"Oracle STRONG cua check 'CHK-015' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-038","type":"NEEDS_CONFIRMATION","feature_id":"custom-conversion-entry","summary":"Oracle STRONG cua check 'CHK-016' hien trace toi kb_id (KB-016) co confirmation_source.derivation=code_artifact (suy ra tu doc code/schema, khong phai phat bieu nghiep vu tuong minh). Theo luat 'phanh derivation' cua C5, STRONG chi hop le khi MOI oracle kb_id deu CONFIRMED_EXPECTED va derivation=prose. Ha xuong BASELINE cho toi khi PO/Dev xac nhan hanh vi nay dung la chu y thiet ke, khong phai tac dung phu cua viec doc code."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-039","type":"NEEDS_CONFIRMATION","feature_id":"custom-conversion-entry","summary":"Oracle STRONG cua check 'CHK-018' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-040","type":"NEEDS_CONFIRMATION","feature_id":"custom-conversion-entry","summary":"Oracle STRONG cua check 'CHK-019' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-041","type":"NEEDS_CONFIRMATION","feature_id":"custom-conversion-entry","summary":"Phân quyền cụ thể nào trong admin được phép tạo Custom Conversion? Tài liệu chỉ biết chung là 'admin', chưa phân quyền cụ thể — cần PO/Dev xác nhận trước khi viết negative test phân quyền."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-042","type":"NEEDS_CONFIRMATION","feature_id":"custom-conversion-entry","summary":"Custom Conversion đã tạo có sửa/xoá được không, và nếu được thì balance có tính lại? Impact tiền — cần PO/Dev xác nhận trước khi viết oracle."}
+```
+
+```json
+{"oq_id":"OQ-conversion-ledger-043","type":"NEEDS_CONFIRMATION","feature_id":"custom-conversion-entry","summary":"Có ràng buộc nào trên reason (độ dài) và trên date_from/date_to/payout_date (thứ tự, phạm vi) không? Không biết biên dữ liệu thì không viết được test boundary chính xác."}
+```

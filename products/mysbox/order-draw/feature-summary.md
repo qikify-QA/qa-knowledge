@@ -1,5 +1,5 @@
 # Order và bốc thăm: webhook orders/paid → order + opening request, chốt quà (winning), trạng thái đơn, đưa quà vào đơn Shopify, box physical vs digital
-**Published context version:** 3
+**Published context version:** 4
 
 **Product:** mysbox · **Object:** `order-draw` · **Mode:** REFRESH (trên nền DOC_BOOTSTRAP v1) · **Environment:** documented + staging · **Published:** 2026-10-17
 

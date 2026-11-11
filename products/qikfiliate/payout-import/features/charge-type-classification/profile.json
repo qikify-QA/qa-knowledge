@@ -8,8 +8,8 @@
       "role": "unspecified",
       "permission_observed": "Cơ chế phân loại chạy hoàn toàn ở tầng xử lý dữ liệu (db/code) khi import payout, không có actor người dùng trực tiếp tương tác với bước phân loại này. Không có claim permission nào trong shard cho bước này.",
       "kb_refs": [
-        "KB-001",
-        "KB-002"
+        "payout-import/charge-type-classification#KB-001",
+        "payout-import/charge-type-classification#KB-002"
       ]
     }
   ],
@@ -19,28 +19,28 @@
       "name": "Phân loại Charge Type bằng substring match, không phân biệt hoa/thường",
       "description": "Charge Type là cụm từ mô tả do Shopify sinh ra, không phải mã ngắn cố định trong 1 enum. Hệ thống phân loại chỉ bằng cách kiểm tra chuỗi Charge Type có chứa 1 chuỗi con nào đó hay không, không phân biệt hoa/thường — không so khớp chính xác toàn bộ chuỗi. Đây là quyết định thiết kế có chủ đích để chịu được việc Shopify thay đổi cách đặt tên.",
       "kb_refs": [
-        "KB-001",
-        "KB-002",
-        "KB-003"
+        "payout-import/charge-type-classification#KB-001",
+        "payout-import/charge-type-classification#KB-002",
+        "payout-import/charge-type-classification#KB-003"
       ]
     },
     {
       "name": "Định tuyến theo kết quả match: Recurring/First-month vs Usage-charge vs loại bỏ one-time",
       "description": "Chuỗi không chứa 'usage' và không chứa 'one-time' → nhánh Recurring/First-month (phí subscription định kỳ bình thường). Chuỗi chứa 'usage' → nhánh Usage-charge (metered billing, charge ID dạng gid://shopify/AppUsageRecord/...). Chuỗi chứa 'one-time' → bị loại hoàn toàn, không tính hoa hồng — đây là quyết định nghiệp vụ có chủ đích, được lập trình rõ ràng, không phải sót.",
       "kb_refs": [
-        "KB-005",
-        "KB-006",
-        "KB-007",
-        "KB-008",
-        "KB-009"
+        "payout-import/charge-type-classification#KB-005",
+        "payout-import/charge-type-classification#KB-006",
+        "payout-import/charge-type-classification#KB-007",
+        "payout-import/charge-type-classification#KB-008",
+        "payout-import/charge-type-classification#KB-009"
       ]
     },
     {
       "name": "Nhận diện refund/downgrade qua dấu hiệu số âm, không qua cột riêng",
       "description": "File CSV không có cột/flag 'is refund' riêng. Cột Category vẫn giữ nguyên giá trị 'App revenue' ở dòng refund/downgrade, nên không dùng được để phát hiện refund — việc nhận diện refund dựa vào dấu hiệu khác (số âm ở cột tiền), không dựa vào charge_type hay Category.",
       "kb_refs": [
-        "KB-010",
-        "KB-011"
+        "payout-import/charge-type-classification#KB-010",
+        "payout-import/charge-type-classification#KB-011"
       ]
     }
   ],
@@ -51,7 +51,7 @@
       "trigger": "Str::contains(Str::lower(charge_type), 'usage') == false VÀ Str::contains(..., 'one-time') == false",
       "condition": "Chuỗi Charge Type không chứa 'usage' và không chứa 'one-time'.",
       "kb_refs": [
-        "KB-005"
+        "payout-import/charge-type-classification#KB-005"
       ]
     },
     {
@@ -60,8 +60,8 @@
       "trigger": "Str::contains(Str::lower(charge_type), 'usage') == true",
       "condition": "Chuỗi Charge Type chứa 'usage' (ví dụ \"App sale – usage\").",
       "kb_refs": [
-        "KB-006",
-        "KB-007"
+        "payout-import/charge-type-classification#KB-006",
+        "payout-import/charge-type-classification#KB-007"
       ]
     },
     {
@@ -70,8 +70,8 @@
       "trigger": "Str::contains(Str::lower(charge_type), 'one-time') == true",
       "condition": "Chuỗi Charge Type chứa 'one-time' — bị loại hoàn toàn, không tính hoa hồng.",
       "kb_refs": [
-        "KB-008",
-        "KB-009"
+        "payout-import/charge-type-classification#KB-008",
+        "payout-import/charge-type-classification#KB-009"
       ]
     }
   ],
@@ -79,57 +79,57 @@
     {
       "statement": "KB-001: Charge Type là cụm từ mô tả do Shopify sinh ra, không phải enum cố định.",
       "kb_refs": [
-        "KB-001"
+        "payout-import/charge-type-classification#KB-001"
       ]
     },
     {
       "statement": "KB-002: Phân loại bằng match chuỗi con, không phân biệt hoa/thường — không so khớp chính xác toàn bộ chuỗi.",
       "kb_refs": [
-        "KB-002"
+        "payout-import/charge-type-classification#KB-002"
       ]
     },
     {
       "statement": "KB-003: Match chuỗi con là quyết định thiết kế có chủ đích để chịu được việc Shopify đổi cách đặt tên.",
       "kb_refs": [
-        "KB-003"
+        "payout-import/charge-type-classification#KB-003"
       ]
     },
     {
       "statement": "KB-005: Chuỗi không chứa 'usage' và không chứa 'one-time' → nhánh Recurring/First-month.",
       "kb_refs": [
-        "KB-005"
+        "payout-import/charge-type-classification#KB-005"
       ]
     },
     {
       "statement": "KB-006/KB-007: Chuỗi chứa 'usage' → nhánh Usage-charge; charge ID dạng gid://shopify/AppUsageRecord/...",
       "kb_refs": [
-        "KB-006",
-        "KB-007"
+        "payout-import/charge-type-classification#KB-006",
+        "payout-import/charge-type-classification#KB-007"
       ]
     },
     {
       "statement": "KB-008/KB-009: Chuỗi chứa 'one-time' → bị loại hoàn toàn, không tính hoa hồng — quyết định nghiệp vụ có chủ đích.",
       "kb_refs": [
-        "KB-008",
-        "KB-009"
+        "payout-import/charge-type-classification#KB-008",
+        "payout-import/charge-type-classification#KB-009"
       ]
     },
     {
       "statement": "KB-010: File CSV không có cột/flag 'is refund' riêng.",
       "kb_refs": [
-        "KB-010"
+        "payout-import/charge-type-classification#KB-010"
       ]
     },
     {
       "statement": "KB-011: Category vẫn giữ 'App revenue' ở dòng refund/downgrade — không dùng được để phát hiện refund.",
       "kb_refs": [
-        "KB-011"
+        "payout-import/charge-type-classification#KB-011"
       ]
     },
     {
       "statement": "KB-013: Shopify tuyên bố không cam kết ổn định các giá trị/cột trong export này.",
       "kb_refs": [
-        "KB-013"
+        "payout-import/charge-type-classification#KB-013"
       ]
     }
   ],
@@ -156,43 +156,43 @@
     {
       "risk": "KNOWN_DEFECT (KB-004): Không có gì đảm bảo Shopify luôn dùng đúng chuỗi đã quan sát — Shopify tự nêu cột/giá trị export 'có thể thay đổi bất cứ lúc nào'.",
       "kb_refs": [
-        "KB-004"
+        "payout-import/charge-type-classification#KB-004"
       ]
     },
     {
       "risk": "KNOWN_DEFECT (KB-012): Nhìn từ code, phân loại dựa vào Str::contains(Str::lower($charge_type), 'usage'/'one-time') — chuỗi con, không phân biệt hoa thường, không enum cố định; tài liệu tự đánh giá đây là rủi ro 'âm thầm' nhất trong toàn hệ thống.",
       "kb_refs": [
-        "KB-012"
+        "payout-import/charge-type-classification#KB-012"
       ]
     },
     {
       "risk": "KNOWN_DEFECT (KB-014): Nếu Shopify phát hành charge_type mới không khớp cả 2 từ khoá hiện có (ví dụ 'App proration credit'), dòng tự động rơi vào nhánh recurring/first-month.",
       "kb_refs": [
-        "KB-014"
+        "payout-import/charge-type-classification#KB-014"
       ]
     },
     {
       "risk": "KNOWN_DEFECT (KB-015): Không có log cảnh báo cho charge_type lạ chưa từng thấy.",
       "kb_refs": [
-        "KB-015"
+        "payout-import/charge-type-classification#KB-015"
       ]
     },
     {
       "risk": "KNOWN_DEFECT (KB-016): Nếu charge_type refund/downgrade từng chứa 'usage' (ví dụ 'App sale – usage refund'), dòng đi qua UsageCommissionCapper (nhánh usage) thay vì nhánh recurring như refund/downgrade thông thường.",
       "kb_refs": [
-        "KB-016"
+        "payout-import/charge-type-classification#KB-016"
       ]
     },
     {
       "risk": "KNOWN_DEFECT (KB-017): Sai định tuyến không gây lỗi/crash, chỉ ra số tiền hoa hồng sai — rất khó phát hiện qua kiểm tra thông thường.",
       "kb_refs": [
-        "KB-017"
+        "payout-import/charge-type-classification#KB-017"
       ]
     },
     {
       "risk": "OBSERVED_CURRENT + KNOWN_DEFECT (KB-018): Nếu Shopify đặt tên generic 'App refund' (không chứa 'usage') cho dòng refund của 1 usage charge, dòng đó bị định tuyến NHẦM vào nhánh recurring/first-month — sai rate và sai cơ chế cap. Rủi ro thiết kế thực sự, chưa có dữ liệu thật để xác nhận; cần QA test ngay khi có dòng refund-usage-charge đầu tiên, và PO cần xác nhận hành vi mong muốn trước.",
       "kb_refs": [
-        "KB-018"
+        "payout-import/charge-type-classification#KB-018"
       ]
     }
   ],
@@ -215,8 +215,8 @@
     }
   ],
   "last_updated": {
-    "date": "2026-10-05",
-    "ccr_ref": "bootstrap"
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
   },
   "profile_relationships": [
     {

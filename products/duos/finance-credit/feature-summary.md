@@ -1,5 +1,5 @@
 # B2B Finance & Credit — credit limit theo location (payment term Net), giao dịch & financial ledger, validate credit ở checkout / draft order (Shopify Function), Finance & payment cho buyer
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** Duos B2B · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-09
 

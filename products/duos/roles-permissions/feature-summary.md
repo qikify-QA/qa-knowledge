@@ -1,5 +1,5 @@
 # User & Permission — role Duos mặc định/custom, ánh xạ contact role Shopify (Location admin / Ordering only), gán/đổi role và đồng bộ member-sync, Shopify Flow action 'assign role', bulk assign admin, tuỳ biến role theo merchant (users.config), chặn checkout theo permission
-**Published context version:** 1
+**Published context version:** 2
 
 **Product:** Duos B2B · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-09
 

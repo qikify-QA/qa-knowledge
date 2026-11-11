@@ -422,3 +422,167 @@
   "summary": "[REGRESSION-watch] Bất đối xứng hành vi lỗi giữa Upload (skip âm thầm, tiếp tục) và Populate (dừng toàn bộ ngay lập tức) là có thật — cần PO xác nhận chủ đích. KB item KB-018 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-PRL-013' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."
 }
 ```
+
+```json
+{"oq_id":"OQ-payout-import-060","type":"NEEDS_CONFIRMATION","feature_id":"charge-type-classification","summary":"Khi 1 giá trị Charge Type chứa CẢ chuỗi con 'usage' và 'one-time', hệ thống ưu tiên nhánh nào (loại bỏ hoàn toàn hay vẫn tính usage-charge)? Cần đọc thứ tự điều kiện if/else thật trong code hoặc hỏi dev — hiện case này hoàn toàn giả định, chưa quan sát được dữ liệu thật dạng này."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-061","type":"NEEDS_CONFIRMATION","feature_id":"charge-type-classification","summary":"KB item KB-014 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-CTC-007' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-062","type":"NEEDS_CONFIRMATION","feature_id":"charge-type-classification","summary":"KB item KB-015 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-CTC-008' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-063","type":"NEEDS_CONFIRMATION","feature_id":"charge-type-classification","summary":"KB item KB-016 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-CTC-009' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-064","type":"NEEDS_CONFIRMATION","feature_id":"charge-type-classification","summary":"Khi có dòng refund của 1 usage-charge thật đầu tiên: (1) Shopify dùng literal charge_type nào cho dòng này (có chứa 'usage' hay không)? (2) Hành vi mong muốn của PO là gì nếu literal đó không chứa 'usage' — có cần thêm logic đặc biệt để nhận diện refund-of-usage hay giữ nguyên cơ chế match chuỗi con hiện tại? Đây là rủi ro tài chính trực tiếp (sai rate + sai cơ chế cap), cần QA test ngay khi có dữ liệu thật, và PO xác nhận trước khi dùng làm oracle chính thức."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-065","type":"NEEDS_CONFIRMATION","feature_id":"charge-type-classification","summary":"Khi cột Charge Type của 1 dòng rỗng/null, hệ thống phân loại dòng đó vào nhánh nào, hay fail validate và skip (tương tự cơ chế thiếu field bắt buộc khác ở payout-csv-upload)? Cần dev xác nhận Str::contains(null, ...) không gây lỗi runtime và hành vi thực tế là gì."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-066","type":"NEEDS_CONFIRMATION","feature_id":"charge-type-classification","summary":"Cột Category của file payout Shopify có những giá trị nào khác ngoài 'App revenue'? Nếu có giá trị khác, cơ chế phân loại charge_type có bị ảnh hưởng không?"}
+```
+
+```json
+{"oq_id":"OQ-payout-import-067","type":"NEEDS_CONFIRMATION","feature_id":"customer-matching-and-dedup","summary":"KB item KB-005 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-CMD-003' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-068","type":"NEEDS_CONFIRMATION","feature_id":"customer-matching-and-dedup","summary":"Oracle STRONG cua check 'CHK-CMD-004' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-069","type":"NEEDS_CONFIRMATION","feature_id":"customer-matching-and-dedup","summary":"Với dòng REFUND (có thể có charge_id riêng của chính nó, khác charge gốc bị hoàn): charge_id có tham gia điều kiện AND của cơ chế dedup hay không? `qikfiliate/payout - charge type reference` nói dedup không dùng charge_id làm khoá chính cho dòng loại này; `qikfiliate/payout - dedup and reconciliation` nói charge_id giống nhau là 1 điều kiện AND bắt buộc. Câu hỏi then chốt: dòng refund có charge_id riêng (khác charge gốc, không rỗng) hay luôn rỗng như downgrade/credit? Cần dev xác nhận trực tiếp trong source code hoặc PO xác nhận hành vi mong muốn — hệ quả nếu hiểu sai: bỏ sót dòng refund thật (coi nhầm là trùng) hoặc tạo Conversion refund trùng lặp, cả hai đều là lỗi tài chính trực tiếp lên balance affiliate. Topic 'payout' thuộc never_supersede_topics — không tự ngã ngũ dù CCR sau có nguồn mạnh hơn."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-070","type":"NEEDS_CONFIRMATION","feature_id":"customer-matching-and-dedup","summary":"Với dòng DOWNGRADE/CREDIT (Charge ID luôn rỗng, không tranh cãi): khi dedup so sánh charge_id, giá trị rỗng được xử lý theo cơ chế NULL-safe (loại khỏi điều kiện AND, như `qikfiliate/payout - dedup and reconciliation` mô tả) hay charge_id hoàn toàn không tham gia so sánh cho nhóm dòng này (như `qikfiliate/payout - charge type reference` mô tả)? Hai cách đọc cho kết quả GIỐNG NHAU khi cả 2 dòng đều rỗng (không bị coi là khoá phân biệt), nhưng khác nhau về mặt cơ chế và có thể khác nhau khi 1 trong 2 dòng bất ngờ có charge_id. Cần dev xác nhận trực tiếp trong code."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-071","type":"NEEDS_CONFIRMATION","feature_id":"payout-csv-upload","summary":"Khi admin chọn file có đuôi không thuộc .csv/.txt/.xls/.xlsx, hệ thống báo lỗi gì (validation message ở tầng nào) hay chặn luôn ở input file picker của browser? Cần dev xác nhận để viết oracle cho case negative này."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-072","type":"NEEDS_CONFIRMATION","feature_id":"payout-csv-upload","summary":"KB item KB-008, KB-011 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-PCU-007' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-073","type":"NEEDS_CONFIRMATION","feature_id":"payout-csv-upload","summary":"Oracle STRONG cua check 'CHK-PCU-010' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-074","type":"NEEDS_CONFIRMATION","feature_id":"payout-csv-upload","summary":"Oracle STRONG cua check 'CHK-PCU-011' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-075","type":"NEEDS_CONFIRMATION","feature_id":"payout-csv-upload","summary":"KB item KB-031 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-PCU-012' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-076","type":"NEEDS_CONFIRMATION","feature_id":"payout-csv-upload","summary":"KB item KB-007 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-PCU-015' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-077","type":"NEEDS_CONFIRMATION","feature_id":"payout-csv-upload","summary":"KB item KB-008, KB-032 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-PCU-016' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-078","type":"NEEDS_CONFIRMATION","feature_id":"payout-csv-upload","summary":"KB item KB-033 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-PCU-017' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-079","type":"NEEDS_CONFIRMATION","feature_id":"payout-csv-upload","summary":"Danh sách đầy đủ các lý do khiến 1 dòng payout CSV bị bỏ qua (skip) khi import là gì? Tài liệu hiện chỉ nêu 4 lý do (thiếu app_slug, thiếu partner_share, không khớp Customer, chứa 'one-time') và tự đánh dấu chưa đầy đủ bằng dấu '...'. Cần dev xác nhận toàn bộ điều kiện trong ShopifyPayoutImport::rules/onFailure để viết đủ test case negative."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-080","type":"NEEDS_CONFIRMATION","feature_id":"payout-csv-upload","summary":"Route admin/conversion/form-upload (và admin/conversion/form-upload-populate) được cấp quyền truy cập cho đúng role nào? Có chặn được truy cập từ role affiliate hoặc user chưa đăng nhập không? Đây là thao tác tạo/sửa Conversion (tiền hoa hồng) trực tiếp — cần dev xác nhận cơ chế authorization của 2 route này trước khi coi là an toàn."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-081","type":"NEEDS_CONFIRMATION","feature_id":"payout-csv-upload","summary":"Có giới hạn kích thước file, số dòng tối đa, hay timeout nào được cấu hình cho việc import file payout (cả Upload và Populate) không? Cần dev xác nhận để quyết có cần test boundary/performance riêng hay không."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-082","type":"NEEDS_CONFIRMATION","feature_id":"payout-csv-upload","summary":"Có bảng DB nào lưu lịch sử từng lần upload file payout (ai, lúc nào, file nào, kết quả) hay không, cho cả Upload và Populate? Quyết định QA có thể đối soát 'lần import nào tạo Conversion nào' trên 1 đường dữ liệu tiền hay không."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-083","type":"NEEDS_CONFIRMATION","feature_id":"payout-csv-upload","summary":"Hệ thống xử lý đơn vị tiền tệ của các cột tiền trong file payout thế nào — chỉ hỗ trợ USD, hay có quy đổi đa tiền tệ? Cần xác nhận trước khi dựng test data cho các check tính Partner Share/commission."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-084","type":"NEEDS_CONFIRMATION","feature_id":"payout-csv-upload","summary":"KB item KB-024 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-PCU-024' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-085","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"KB item KB-002 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-PRL-002' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-086","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"Oracle STRONG cua check 'CHK-PRL-004' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-087","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"Oracle STRONG cua check 'CHK-PRL-005' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-088","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"KB item KB-011 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-PRL-006' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-089","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"Oracle STRONG cua check 'CHK-PRL-007' hien trace toi kb_id (KB-013) co confirmation_source.derivation=code_artifact (suy ra tu doc code/schema, khong phai phat bieu nghiep vu tuong minh). Theo luat 'phanh derivation' cua C5, STRONG chi hop le khi MOI oracle kb_id deu CONFIRMED_EXPECTED va derivation=prose. Ha xuong BASELINE cho toi khi PO/Dev xac nhan hanh vi nay dung la chu y thiet ke, khong phai tac dung phu cua viec doc code."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-090","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"Giá trị thực tế (số giờ/phút) của config('cache.conversion_time') là bao nhiêu? Cần giá trị này để viết test boundary 'chạy lại populate sau N phút thì có được cập nhật lại hay không'."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-091","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"Oracle STRONG cua check 'CHK-PRL-009' hien trace toi kb_id (KB-013) co confirmation_source.derivation=code_artifact (suy ra tu doc code/schema, khong phai phat bieu nghiep vu tuong minh). Theo luat 'phanh derivation' cua C5, STRONG chi hop le khi MOI oracle kb_id deu CONFIRMED_EXPECTED va derivation=prose. Ha xuong BASELINE cho toi khi PO/Dev xac nhan hanh vi nay dung la chu y thiet ke, khong phai tac dung phu cua viec doc code."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-092","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"Oracle STRONG cua check 'CHK-PRL-011' hien chi dua tren KB item nguon dev_doc (toan bo KB cua run nay khong co spec_doc/po_dev_confirm/test_case nao). Theo luat C5, dev_doc khong duoc la oracle STRONG duy nhat cho check priority P1 (mat du lieu/tien/permission). Ha xuong BASELINE cho toi khi co test_case PASS xac nhan hanh vi, hoac PO/Dev xac nhan truc tiep (po_dev_confirm)."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-093","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"KB item KB-019 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-PRL-012' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-094","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"KB item KB-018 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-PRL-013' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-095","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"Khi populate báo lỗi và dừng giữa file, có công cụ/cơ chế nào (log, UI, export) giúp xác định chính xác dòng nào đã cập nhật và dòng nào chưa trước khi sửa lỗi và chạy lại? Ảnh hưởng trực tiếp tới quy trình khôi phục sau lỗi của Ops."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-096","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"KB item KB-005 mang status=KNOWN_DEFECT da bi go khoi oracle.kb_ids (khong duoc dung lam oracle theo luat C5 'known_defect khong phai expected result'). Check 'CHK-PRL-015' hien khong con oracle hop le nao. Can PO/Dev xac nhan: hanh vi mo ta trong expected_result la known defect can tiep tuc theo doi (regression-watch, khong oracle) hay can mot kb_id CONFIRMED_EXPECTED khac thay the lam oracle."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-097","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"Ở màn hình Populate/reconcile, charge_creation_time trong khoá khớp (customer_id, payout_date, charge_creation_time, date_from, date_to) được so theo NGÀY (như dedup của Upload) hay theo timestamp đầy đủ? Nếu khác granularity với Upload, dòng settle muộn hoàn toàn hợp lệ có thể bị bỏ sót âm thầm — cần dev xác nhận trong code trước khi coi đây là rủi ro thật."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-098","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"date_from/date_to của Conversion (2 trong 5 field trong khoá khớp của populate) được xác định từ đâu trong file CSV populate (cột trực tiếp, hay tính toán từ payout_date/kỳ)? Cần xác nhận để dựng test data hợp lệ cho các check CHK-PRL-003/004/005."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-099","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"Màn hình Populate/reconcile có validate sự tồn tại của cột Charge Creation Time (báo lỗi ngay nếu thiếu, như Upload) và có tự sort dòng trước khi xử lý (như Upload) không? Tài liệu không xác nhận cho màn hình này — cần dev xác nhận trước khi viết test case negative tương tự CHK-PCU-008/009 cho Populate."}
+```
+
+```json
+{"oq_id":"OQ-payout-import-100","type":"NEEDS_CONFIRMATION","feature_id":"populate-reconcile-late-data","summary":"Route admin/conversion/form-upload-populate được cấp quyền truy cập cho đúng role nào? Có chặn được truy cập từ role affiliate hoặc user chưa đăng nhập không? (Cùng gap với CHK-PCU-020 của feature payout-csv-upload — route riêng, cần xác nhận riêng vì có thể có authorization rule khác nhau giữa 2 route.)"}
+```
