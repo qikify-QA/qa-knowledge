@@ -1,0 +1,338 @@
+{
+  "feature_id": "FEAT-07-fulfillment-provider-request",
+  "feature_key": "fulfillment-provider-request",
+  "object_id": "order",
+  "checklist_version": "10",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "Đơn pickup gửi Myze: payload có pickUp true và Myze nhận request",
+      "applicability": {
+        "role": "merchant-owner — account explore, store explorer (xác minh account theo playbook trước khi thao tác)",
+        "state": "đơn pickup (shippingAddress null), line item map vào Myze",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal gửi fulfill + request_data đã lưu của request gửi Myze"
+      },
+      "precondition": "Store explorer đã kết nối Myze trên staging; sản phẩm của store explorer có variant map vào Myze. Tạo một đơn pickup (shippingAddress null) trên store explorer.",
+      "steps": [
+        "Gửi fulfill đơn pickup tới Myze theo luồng của build đang test.",
+        "Đọc request_data đã lưu của request gửi Myze cho đơn đó.",
+        "Ghi kiểu dữ liệu và giá trị của pickUp, và response/trạng thái request từ Myze."
+      ],
+      "observation_point": "Field pickUp trong request_data; response của Myze cho request.",
+      "expected_result": "pickUp có mặt, giá trị true; Myze nhận request, không reject. Ghi kiểu dữ liệu quan sát được (lượt trước quan sát boolean).",
+      "oracle": {
+        "kb_ids": [
+          "KB-772"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-772"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle một test case (QA-3348 TC-3/TC-1), MEDIUM."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "Payload Create Order gửi PosterFlow không có field giá/pricing/cost",
+      "applicability": {
+        "role": "merchant-owner — account explore, store explorer (xác minh account theo playbook trước khi thao tác)",
+        "state": "đơn có line item map vào PosterFlow",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "request_data đã lưu của request Create Order gửi PosterFlow"
+      },
+      "precondition": "Store explorer đã kết nối PosterFlow trên staging; sản phẩm của store explorer có variant map vào PosterFlow. Không dùng store/campaign trong CCR. Khi đọc payload chỉ ghi tên key, không ghi giá trị tham số token. Tạo một đơn thường (có shipping address) trên store explorer.",
+      "steps": [
+        "Gửi fulfill đơn tới PosterFlow.",
+        "Đọc request_data đã lưu của request Create Order.",
+        "Liệt kê đệ quy mọi key (top-level, shipping_address, line_items[]) và tìm key có nghĩa giá/cost/pricing/amount."
+      ],
+      "observation_point": "Danh sách key của request_data.",
+      "expected_result": "Không có key nào mang giá, pricing hay cost ở mọi cấp của payload.",
+      "oracle": {
+        "kb_ids": [
+          "KB-774"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-774",
+        "KB-775"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chỉ PosterFlow trên staging; provider khác chưa kiểm.",
+        "Oracle một test case (QA-3365 TC-14), MEDIUM."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Ghi nhận shape payload Create Order gửi PosterFlow (key id, shipping_address.state)",
+      "applicability": {
+        "role": "merchant-owner — account explore, store explorer (xác minh account theo playbook trước khi thao tác)",
+        "state": "đơn có line item map vào PosterFlow",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "request_data đã lưu + shipping_address trên order"
+      },
+      "precondition": "Store explorer đã kết nối PosterFlow trên staging; sản phẩm của store explorer có variant map vào PosterFlow. Không dùng store/campaign trong CCR. Khi đọc payload chỉ ghi tên key, không ghi giá trị tham số token.",
+      "steps": [
+        "Gửi fulfill một đơn tới PosterFlow.",
+        "Ghi danh sách top-level key của request_data, có key id hay không.",
+        "Ghi danh sách key của shipping_address trong request_data, có state hay không và giá trị; so với key của shipping_address lưu trên order."
+      ],
+      "observation_point": "Top-level key và key shipping_address của request_data.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-775"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-775",
+        "KB-774"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "CONF-CBS-112-01: assert theo bất kỳ phía nào cũng có thể sai."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-order-077"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "STATE_DATA",
+      "layer": "db",
+      "title": "Response PosterFlow được lưu ở fulfillers của đơn (baseline)",
+      "applicability": {
+        "role": "merchant-owner — account explore, store explorer (xác minh account theo playbook trước khi thao tác)",
+        "state": "đơn PosterFlow sau Create Order thành công",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "bản ghi fulfillers của đơn"
+      },
+      "precondition": "Store explorer đã kết nối PosterFlow trên staging; sản phẩm của store explorer có variant map vào PosterFlow. Không dùng store/campaign trong CCR. Khi đọc payload chỉ ghi tên key, không ghi giá trị tham số token.",
+      "steps": [
+        "Gửi fulfill một đơn tới PosterFlow và chờ response.",
+        "Đọc bản ghi fulfillers của đơn: metadata và fulfillment_linked_id."
+      ],
+      "observation_point": "fulfillers.metadata, fulfillers.fulfillment_linked_id.",
+      "expected_result": "Baseline quan sát (chưa xác nhận là đúng): metadata chứa id, status, reference_order_id của response PosterFlow; fulfillment_linked_id được set. Lệch là cần điều tra, không mặc định là bug.",
+      "oracle": {
+        "kb_ids": [
+          "KB-773"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-773"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không kiểm Portal trong check này."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-order-076"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "INTEGRATION",
+      "layer": "db",
+      "title": "order_combine_by = 1: đơn nhiều line item cùng PosterFlow sinh một request (baseline)",
+      "applicability": {
+        "role": "merchant-owner — account explore, store explorer (xác minh account theo playbook trước khi thao tác)",
+        "state": "order_combine_by = 1; đơn 2 line item cùng map vào PosterFlow",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "request row của đơn + request_data"
+      },
+      "precondition": "Store explorer đã kết nối PosterFlow trên staging; sản phẩm của store explorer có variant map vào PosterFlow. Không dùng store/campaign trong CCR. Khi đọc payload chỉ ghi tên key, không ghi giá trị tham số token. Ghi giá trị order_combine_by đang áp dụng (phải là 1).",
+      "steps": [
+        "Tạo đơn 2 line item, cả hai map vào PosterFlow.",
+        "Gửi fulfill tới PosterFlow.",
+        "Đếm request row của đơn và số line item trong mỗi payload."
+      ],
+      "observation_point": "Số request row của đơn; line_items trong payload.",
+      "expected_result": "Baseline quan sát (chưa xác nhận là đúng): đúng một request row, payload chứa cả hai line item. Lệch là cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "KB-776"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-776",
+        "KB-777"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Gộp sai có thể gửi trùng/thiếu item cho nhà in."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-order-080"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "INTEGRATION",
+      "layer": "db",
+      "title": "Đơn có line item của PosterFlow và provider khác sinh một request mỗi provider (baseline)",
+      "applicability": {
+        "role": "merchant-owner — account explore, store explorer (xác minh account theo playbook trước khi thao tác)",
+        "state": "đơn có line item map vào PosterFlow và line item map vào một provider khác",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "request row của đơn"
+      },
+      "precondition": "Store explorer đã kết nối PosterFlow trên staging; sản phẩm của store explorer có variant map vào PosterFlow. Không dùng store/campaign trong CCR. Khi đọc payload chỉ ghi tên key, không ghi giá trị tham số token. Store explorer cũng kết nối một provider API khác; ghi giá trị order_combine_by đang áp dụng.",
+      "steps": [
+        "Tạo đơn có ít nhất một line item PosterFlow và một line item của provider kia.",
+        "Gửi fulfill.",
+        "Ghi số request row, provider của từng row và line item trong từng payload."
+      ],
+      "observation_point": "Request row theo provider.",
+      "expected_result": "Baseline quan sát (chưa xác nhận là đúng): một request row cho mỗi provider; item PosterFlow ở một row, item provider kia ở row khác. Lệch là cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "KB-777"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-777",
+        "KB-776"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Gộp nhầm provider có thể gửi item sai nhà in."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-order-080"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "shipment_notification_url trong payload PosterFlow và trang settings PosterFlow không có ô nhập (baseline)",
+      "applicability": {
+        "role": "merchant-owner — account explore, store explorer (xác minh account theo playbook trước khi thao tác)",
+        "state": "đơn có line item map vào PosterFlow",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "request_data + portal /fulfillments/posterflow"
+      },
+      "precondition": "Store explorer đã kết nối PosterFlow trên staging; sản phẩm của store explorer có variant map vào PosterFlow. Không dùng store/campaign trong CCR. Khi đọc payload chỉ ghi tên key, không ghi giá trị tham số token.",
+      "steps": [
+        "Gửi fulfill một đơn tới PosterFlow.",
+        "Đọc shipment_notification_url trong request_data; chỉ ghi path và tên tham số query, che giá trị.",
+        "Mở trang settings PosterFlow trong portal; đếm ô input/textarea."
+      ],
+      "observation_point": "Path và tên tham số của shipment_notification_url; ô nhập trên trang settings PosterFlow.",
+      "expected_result": "Baseline quan sát (chưa xác nhận là đúng): path /api/webhook/general với tham số user_id, token, order_token; trang settings PosterFlow không có ô input/textarea. Lệch là cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "KB-778"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-778"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không ghi giá trị token vào evidence."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-order-081"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "item": "Capability: payload gửi Myze (KB-772)",
+      "check_ids": [
+        "CHK-001"
+      ],
+      "oracle": "STRONG"
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "item": "Capability: payload Create Order gửi PosterFlow (KB-774, KB-775, KB-778)",
+      "check_ids": [
+        "CHK-002",
+        "CHK-003",
+        "CHK-007"
+      ],
+      "oracle": "STRONG (CHK-002); NONE conflict (CHK-003); BASELINE (CHK-007)"
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "item": "Capability: tách/gộp request theo provider (KB-776, KB-777)",
+      "check_ids": [
+        "CHK-005",
+        "CHK-006"
+      ],
+      "oracle": "BASELINE"
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "item": "Capability: lưu response provider (KB-773)",
+      "check_ids": [
+        "CHK-004"
+      ],
+      "oracle": "BASELINE"
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "item": "Risk: shape payload chưa chốt (CONF-CBS-112-01)",
+      "check_ids": [
+        "CHK-003"
+      ],
+      "oracle": "NONE"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Không có KB về xử lý lỗi provider, retry hay input sai; claim liên quan là S0 (chỉ OQ)."
+    },
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Không có KB về giới hạn kích thước/số lượng."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "Không có KB về quyền hay role khởi tạo việc gửi."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Feature mới, không có hành vi base bị đổi, không có item KNOWN_DEFECT."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-10",
+    "ccr_ref": "CBS-112"
+  }
+}

@@ -1,0 +1,70 @@
+[
+  {
+    "kb_id": "KB-519",
+    "topic": "Import product từ catalog nhà in gọi POST /api/products/import qua REST proxy backend TIB",
+    "statement": "Theo CCR CBS-119 (CLAIM-01; QA-3365 TC-7, PASS 2026-10-08, staging, provider PosterFlow), import product từ catalog nhà in gọi POST /api/products/import (REST proxy trên backend TIB, body {\"fulfillment_id\":<id>,\"catalog_id\":\"<id>\"}), không phải PosterFlow trả trực tiếp cho browser; theo nội dung claim, Product Base được tạo mang title, description, mockups, printareas, variants của catalog — trích dẫn verbatim (Hasura introspection) chỉ xác nhận trực tiếp phần mockups/printareas/variants, phần title/description là mô tả của claim, chưa có quote riêng. Claim dựa trên kết quả test_case PASS nhưng CCR không ghi 'Căn cứ expected', nên strength S1, chưa đủ coi là hợp đồng API chính thức.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal, api",
+      "brand": null
+    },
+    "tags": [
+      "fulfillment-provider",
+      "import"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-119"
+    }
+  },
+  {
+    "kb_id": "KB-520",
+    "topic": "Danh sách catalog có phân trang thật tới total=241, portal hiện đủ qua các trang",
+    "statement": "Theo CCR CBS-119 (QA-3365 TC-6, PASS 2026-10-08, staging, provider PosterFlow), danh sách catalog có phân trang thật: GET /api/fulfillments/{id}/catalogs?page=&per_page= (portal proxy) và upstream GET /v1/catalogs?page=&per_page= trả meta.{page, per_page, total}; ví dụ quan sát total=241, portal hiện 'Showing 1 to 20 of 241 entries' và đủ 241 item truy cập được qua các trang. Claim dựa trên kết quả test_case PASS nhưng CCR không ghi 'Căn cứ expected', nên strength S1.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "api, portal",
+      "brand": null
+    },
+    "tags": [
+      "fulfillment-provider",
+      "import",
+      "pagination"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-119"
+    }
+  },
+  {
+    "kb_id": "KB-521",
+    "topic": "Response list catalog chỉ có 4 field, không lộ variants/availability trước khi import",
+    "statement": "Theo CCR CBS-119 (QA-3365 TC-46, quan sát trực tiếp qua REPL 2026-10-08, staging, provider PosterFlow, quét 241/241 item mọi per_page), response của portal proxy GET /api/fulfillments/{id}/catalogs chỉ có 4 field (fulfillment_catalog_id, title, images, base_cost), không có variants hay availability — khác với mô tả trước đó dựa trên lời dev kể lại (Jira comment 2026-09-18). Muốn xem availability phải import xong rồi tra GraphQL products_by_pk (field variants.available). Chỉ mới đo ở provider PosterFlow, chưa đo provider khác; câu hỏi mở còn treo về endpoint lộ stock trước khi import.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal proxy, api, db",
+      "brand": null
+    },
+    "tags": [
+      "fulfillment-provider",
+      "import",
+      "availability"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-119"
+    }
+  }
+]

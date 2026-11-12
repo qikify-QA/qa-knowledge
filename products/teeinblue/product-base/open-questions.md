@@ -511,3 +511,35 @@
 ```json
 {"oq_id":"OQ-product-base-103","type":"NEEDS_CONFIRMATION","feature_id":"product-base-campaign-link","summary":"Cần xác định KB đích cho các reference của product-base-campaign-link: CONF-CHK-08-010-002. Chưa có đích duy nhất; các ref được tách khỏi liên kết đang hoạt động, không dùng chúng làm căn cứ kết luận."}
 ```
+
+```json
+{"oq_id":"OQ-product-base-104","type":"NEEDS_CONFIRMATION","feature_id":"provider-catalog-import","summary":"Endpoint POST /api/products/import và body {fulfillment_id, catalog_id} có phải hợp đồng API chính thức không, hay chỉ quan sát qua test (QA-3365 TC-7)? Nếu coi là hợp đồng mà thực ra không được dev xác nhận, checklist sẽ báo false positive khi dev đổi response shape."}
+```
+
+```json
+{"oq_id":"OQ-product-base-105","type":"NEEDS_CONFIRMATION","feature_id":"provider-catalog-import","summary":"Hành vi phân trang catalog (meta.page/per_page/total, ví dụ total=241) có phải contract ổn định không, hay chỉ quan sát qua test trên staging (QA-3365 TC-6)? Nếu dev đổi shape phân trang, checklist CHK-11-002 cần biết đây chỉ là quan sát để không coi lệch là bug chắc chắn."}
+```
+
+```json
+{"oq_id":"OQ-product-base-106","type":"OPEN_ISSUE","feature_id":"provider-catalog-import","summary":"Có endpoint nào lộ stock/availability của catalog trước khi import không? Mới đo ở provider PosterFlow (QA-3365 TC-46), chưa đo provider khác. Ảnh hưởng tới UX merchant (không thấy hết hàng trước khi import) và tới rủi ro bảo mật nếu endpoint khác có lộ."}
+```
+
+```json
+{"oq_id":"OQ-product-base-107","type":"NEEDS_CONFIRMATION","feature_id":"provider-catalog-import","summary":"PO có thật sự chấp nhận import lại catalog đã import tạo Product Base thứ 2 (duplicate câm) không? Chỉ có dòng 'PO confirmed 2026-09-16 (RQ14)' không quote. Nếu PO không xác nhận, đây có thể là bug cần fix, không phải behavior chấp nhận."}
+```
+
+```json
+{"oq_id":"OQ-product-base-108","type":"NEEDS_CONFIRMATION","feature_id":"fulfillment-provider-connection","summary":"Hành vi rotate API key (key mới có hiệu lực ngay, key sai bị từ chối, key cũ giữ nguyên) có phải contract chính thức không, hay chỉ quan sát qua test (QA-3365 TC-43)? Ảnh hưởng tới mức độ tin cậy khi dùng checklist này để phát hiện regression."}
+```
+
+```json
+{"oq_id":"OQ-product-base-109","type":"OPEN_ISSUE","feature_id":"fulfillment-provider-connection","summary":"Dev/PO có chấp nhận api_key trả raw qua GraphQL user_fulfillments (không mask, mọi provider) là chủ ý thiết kế không? BUG-03 chỉ bị đóng vì ngoài scope, không phải vì được xác nhận đúng. Nếu không được chấp nhận, đây là lỗ hổng bảo mật cần fix, không phải behavior ổn định để giữ nguyên."}
+```
+
+```json
+{"oq_id":"OQ-product-base-110","type":"NEEDS_CONFIRMATION","feature_id":"fulfillment-provider-connection","summary":"Nguyên văn toast lỗi key sai là 'Something went wrong! Invalid API key' hay 'Invalid key' (ghi trong product_facts nội bộ FACT-081)? Hai nguồn tự lệch nhau. Checklist cần oracle chính xác cho expected_result nếu dùng string match."}
+```
+
+```json
+{"oq_id":"OQ-product-base-111","type":"NEEDS_CONFIRMATION","feature_id":"fulfillment-provider-connection","summary":"Trang Fulfillments có thật sự không có Disconnect và không có role/permission gate riêng không? Nguồn là Dev nói qua Slack (không quote), TC-29 bị skip vì thiếu store B độc lập. Nếu có gate thực sự, thiếu nó trong checklist sẽ khiến bỏ sót regression về permission."}
+```

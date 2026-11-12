@@ -301,7 +301,7 @@
     },
     {
       "name": "Personalization: grouped_clipart field cần 2-step (radio nhóm + click con) mới thực sự hợp lệ (SDK v2, store2) — bổ sung chi tiết mới, liên quan CFL-003",
-      "description": "MỚI (2026-09-12), làm rõ hơn capability 'dependency cha-con' đã có ở v1. Với field dạng grouped_clipart (Hairstyle, Cat Breed #1/#2): click radio cấp NHÓM check=true và lộ field con bắt buộc (grid ~9-12 thumbnail), nhưng giá trị field trong localStorage KHÔNG ổn định ở giá trị nhóm thô — chỉ có giá trị thật (asset path thumbnail con) sau khi thumbnail con CŨNG được click. Nếu điền đủ chuỗi field còn lại nhưng CHỈ click radio nhóm cho field grouped_clipart (bỏ qua click con), Add-to-cart THẤT BẠI THẬT: banner lỗi chung, lỗi inline dưới đúng các field đó, GET /cart.js xác nhận item_count=0, và ZERO request tới APIOP-051 (client-side validation chặn trước khi gửi). Đây chính là nguyên nhân của lần ATC ĐẦU TIÊN thất bại trong run này trên store2 — xem CFL-003.",
+      "description": "MỚI (2026-09-12), làm rõ hơn capability 'dependency cha-con' đã có ở v1. Với field dạng grouped_clipart (Hairstyle, Cat Breed #1/#2): click radio cấp NHÓM check=true và lộ field con bắt buộc (grid ~9-12 thumbnail), nhưng giá trị field trong localStorage KHÔNG ổn định ở giá trị nhóm thô — chỉ có giá trị thật (asset path thumbnail con) sau khi thumbnail con CŨNG được click. Nếu điền đủ chuỗi field còn lại nhưng CHỈ click radio nhóm cho field grouped_clipart (bỏ qua click con), Add-to-cart THẤT BẠI THẬT: banner lỗi chung, lỗi inline dưới đúng các field đó, GET /cart.js xác nhận item_count=0, và ZERO request tới API-OP-051 (client-side validation chặn trước khi gửi). Đây chính là nguyên nhân của lần ATC ĐẦU TIÊN thất bại trong run này trên store2 — xem CFL-003.",
       "kb_refs": [
         "sdk/storefront-buyer-facing#KB-018"
       ]
@@ -338,7 +338,7 @@
     },
     {
       "name": "Add-to-cart — hoàn tất thành công toàn trình, NHƯNG lần thử đầu tiên có thể fail thật nếu bỏ sót bước con của grouped_clipart (SDK v2, store2)",
-      "description": "CẬP NHẬT (2026-09-12). Sau khi điền đủ mọi field VÀ đã click cả radio nhóm lẫn thumbnail con của mọi field grouped_clipart, POST /cart/add trả 200, cart.item_count 0->1, giá khớp hiển thị; tăng quantity qua /cart/change.js tăng tuyến tính; cleanup (set quantity 0) thành công. Tuy nhiên run này ghi nhận: lần thử ATC ĐẦU TIÊN trong phiên (chỉ click radio nhóm, chưa click con của 3 field grouped_clipart) THẤT BẠI THẬT — không phải automation artifact — với banner lỗi, lỗi inline, item_count=0, và 0 request tới APIOP-051. ATC chỉ thành công ở lần thử THỨ HAI sau khi bổ sung click con. Đây là CFL-003 (mới) vì mâu thuẫn với khung nhìn 'ATC store2 đã là đường known-working' kế thừa từ 2026-09-12.",
+      "description": "CẬP NHẬT (2026-09-12). Sau khi điền đủ mọi field VÀ đã click cả radio nhóm lẫn thumbnail con của mọi field grouped_clipart, POST /cart/add trả 200, cart.item_count 0->1, giá khớp hiển thị; tăng quantity qua /cart/change.js tăng tuyến tính; cleanup (set quantity 0) thành công. Tuy nhiên run này ghi nhận: lần thử ATC ĐẦU TIÊN trong phiên (chỉ click radio nhóm, chưa click con của 3 field grouped_clipart) THẤT BẠI THẬT — không phải automation artifact — với banner lỗi, lỗi inline, item_count=0, và 0 request tới API-OP-051. ATC chỉ thành công ở lần thử THỨ HAI sau khi bổ sung click con. Đây là CFL-003 (mới) vì mâu thuẫn với khung nhìn 'ATC store2 đã là đường known-working' kế thừa từ 2026-09-12.",
       "kb_refs": [
         "sdk/storefront-buyer-facing#KB-008",
         "sdk/storefront-buyer-facing#KB-018",
@@ -353,8 +353,8 @@
       ]
     },
     {
-      "name": "Server sync tại thời điểm Add-to-cart (APIOP-051) — MỚI",
-      "description": "MỚI (2026-09-12). Trong suốt quá trình điền field cá nhân hoá (cả 2 store), ZERO request XHR/fetch tới host teeinblue-owned nào được ghi nhận — localStorage hoạt động thuần như buffer client-side. Request teeinblue-owned ĐẦU TIÊN trong phiên chỉ xuất hiện tại thời điểm Add-to-cart trên store2: POST https://staging-api.teeinblue.com/api/merchant/shopify/customization (APIOP-051), ngay trước /cart/add gốc của Shopify. Khi lần thử ATC thất bại (thiếu click con grouped_clipart), APIOP-051 KHÔNG xuất hiện — xác nhận validation client-side chặn trước khi gửi request server. Store1/SDK v1 CHƯA xác nhận có gọi APIOP-051 hay endpoint tương đương tại ATC hay không vì chưa từng tới được bước ATC.",
+      "name": "Server sync tại thời điểm Add-to-cart (API-OP-051) — MỚI",
+      "description": "MỚI (2026-09-12). Trong suốt quá trình điền field cá nhân hoá (cả 2 store), ZERO request XHR/fetch tới host teeinblue-owned nào được ghi nhận — localStorage hoạt động thuần như buffer client-side. Request teeinblue-owned ĐẦU TIÊN trong phiên chỉ xuất hiện tại thời điểm Add-to-cart trên store2: POST https://staging-api.teeinblue.com/api/merchant/shopify/customization (API-OP-051), ngay trước /cart/add gốc của Shopify. Khi lần thử ATC thất bại (thiếu click con grouped_clipart), API-OP-051 KHÔNG xuất hiện — xác nhận validation client-side chặn trước khi gửi request server. Store1/SDK v1 CHƯA xác nhận có gọi API-OP-051 hay endpoint tương đương tại ATC hay không vì chưa từng tới được bước ATC.",
       "kb_refs": [
         "sdk/storefront-buyer-facing#KB-022"
       ]
@@ -699,7 +699,7 @@
     },
     {
       "from": "field grouped_clipart chỉ có radio nhóm được click (chưa click con)",
-      "to": "ADD TO CART thất bại thật, banner lỗi chung, lỗi inline dưới field grouped_clipart, item_count=0, 0 request APIOP-051",
+      "to": "ADD TO CART thất bại thật, banner lỗi chung, lỗi inline dưới field grouped_clipart, item_count=0, 0 request API-OP-051",
       "trigger": "click ADD TO CART khi field grouped_clipart còn thiếu bước click con",
       "condition": "(SDK v2, store2) — quan sát ở lần thử ĐẦU TIÊN trong lần quan sát 2026-09-12, xem CFL-003",
       "kb_refs": [
@@ -708,7 +708,7 @@
     },
     {
       "from": "mọi field cá nhân hoá đã điền đủ (bao gồm cả bước click con của grouped_clipart)",
-      "to": "cart.item_count 0 -> 1, giá khớp hiển thị, POST APIOP-051 fire đúng 1 lần ngay trước /cart/add",
+      "to": "cart.item_count 0 -> 1, giá khớp hiển thị, POST API-OP-051 fire đúng 1 lần ngay trước /cart/add",
       "trigger": "click Add to cart -> POST /cart/add 200",
       "condition": "(SDK v2, store2) — lần thử THỨ HAI trong run này",
       "kb_refs": [
@@ -1364,7 +1364,7 @@
       ]
     },
     {
-      "statement": "(SDK v1 và SDK v2 — GIỐNG NHAU) trong lúc điền field, KHÔNG có bất kỳ request XHR/fetch nào tới host teeinblue-owned; toàn bộ tương tác chỉ ghi vào localStorage phía client. Request teeinblue-owned đầu tiên trong phiên chỉ xuất hiện tại ATC (APIOP-051, store2).",
+      "statement": "(SDK v1 và SDK v2 — GIỐNG NHAU) trong lúc điền field, KHÔNG có bất kỳ request XHR/fetch nào tới host teeinblue-owned; toàn bộ tương tác chỉ ghi vào localStorage phía client. Request teeinblue-owned đầu tiên trong phiên chỉ xuất hiện tại ATC (API-OP-051, store2).",
       "kb_refs": [
         "sdk/storefront-buyer-facing#KB-022"
       ]
@@ -2090,7 +2090,7 @@
         ]
       },
       {
-        "path": "POST https://staging-api.teeinblue.com/api/merchant/shopify/customization (APIOP-051) — chỉ fire tại thời điểm ATC (SDK v2, store2), 0 lần khi field-fill, absent khi ATC thất bại do thiếu click con grouped_clipart",
+        "path": "POST https://staging-api.teeinblue.com/api/merchant/shopify/customization (API-OP-051) — chỉ fire tại thời điểm ATC (SDK v2, store2), 0 lần khi field-fill, absent khi ATC thất bại do thiếu click con grouped_clipart",
         "kb_refs": [
           "sdk/storefront-buyer-facing#KB-018",
           "sdk/storefront-buyer-facing#KB-022"
@@ -2364,7 +2364,7 @@
       ]
     },
     {
-      "description": "MỚI — CFL-003 UNRESOLVED: mâu thuẫn giữa khung task-input (coi ATC store2/SDK v2 là đường đi 'known-working' có thể tái dùng nguyên trạng từ 2026-09-12) và bằng chứng thực tế trong run này rằng lần thử ATC ĐẦU TIÊN thất bại THẬT (banner lỗi, item_count=0, 0 request APIOP-051) vì thiếu bước click thumbnail con của 3 field grouped_clipart; ATC chỉ thành công ở lần thử thứ hai. Hai khả năng KHÔNG kết luận, đều là INFERRED: (a) tooling automation của 2026-09-12 có thể đã vô tình bao gồm bước click con như một phần thao tác click nhóm bình thường, không ghi chú tách riêng trong log gốc; (b) synthetic/scripted click (label[for], .check({force:true}), dispatch event thủ công) có thể khác pointer click thật về số lần re-render DOM, dẫn tới kết quả khác nhau giữa các lần chạy. Ghi chú thêm (KHÔNG merge, CHƯA XÁC NHẬN): dạng 'cần thao tác thêm mới thoả điều kiện' ở đây CÓ THỂ liên hệ với hypothesis 'automation-interaction gap' của CFL-001 (KB-006), nhưng đây là 2 field/2 SDK version khác nhau (store2 grouped_clipart vs store1 toàn bộ chuỗi ATC) — mối liên hệ này CHƯA được xác nhận, để orchestrator/reviewer tự quyết.",
+      "description": "MỚI — CFL-003 UNRESOLVED: mâu thuẫn giữa khung task-input (coi ATC store2/SDK v2 là đường đi 'known-working' có thể tái dùng nguyên trạng từ 2026-09-12) và bằng chứng thực tế trong run này rằng lần thử ATC ĐẦU TIÊN thất bại THẬT (banner lỗi, item_count=0, 0 request API-OP-051) vì thiếu bước click thumbnail con của 3 field grouped_clipart; ATC chỉ thành công ở lần thử thứ hai. Hai khả năng KHÔNG kết luận, đều là INFERRED: (a) tooling automation của 2026-09-12 có thể đã vô tình bao gồm bước click con như một phần thao tác click nhóm bình thường, không ghi chú tách riêng trong log gốc; (b) synthetic/scripted click (label[for], .check({force:true}), dispatch event thủ công) có thể khác pointer click thật về số lần re-render DOM, dẫn tới kết quả khác nhau giữa các lần chạy. Ghi chú thêm (KHÔNG merge, CHƯA XÁC NHẬN): dạng 'cần thao tác thêm mới thoả điều kiện' ở đây CÓ THỂ liên hệ với hypothesis 'automation-interaction gap' của CFL-001 (KB-006), nhưng đây là 2 field/2 SDK version khác nhau (store2 grouped_clipart vs store1 toàn bộ chuỗi ATC) — mối liên hệ này CHƯA được xác nhận, để orchestrator/reviewer tự quyết.",
       "kb_refs": [
         "sdk/storefront-buyer-facing#KB-018"
       ]
@@ -2706,7 +2706,7 @@
       "why_it_matters": "Toàn bộ evidence vẫn chỉ ở guest/desktop/US-default — 3 chiều biến thiên phổ biến này hoàn toàn chưa kiểm chứng."
     },
     {
-      "question": "SDK v1 (store1) có hành vi post-ATC persistence và server sync (APIOP-051 hoặc tương đương) giống SDK v2 hay không?",
+      "question": "SDK v1 (store1) có hành vi post-ATC persistence và server sync (API-OP-051 hoặc tương đương) giống SDK v2 hay không?",
       "why_it_matters": "Chưa xác nhận vì store1 chưa từng tới ATC trong bất kỳ run nào tính tới nay — không thể suy diễn hành vi này là giống nhau giữa 2 SDK dù các cơ chế localStorage khác (KB-014..017, KB-019) đã xác nhận giống nhau."
     },
     {
@@ -3362,7 +3362,7 @@
       "feature_id": "FEAT-07-storefront-buyer-facing",
       "layer": "api",
       "role": "guest",
-      "state": "any, store2, bao gồm APIOP-051 presence/absence tại ATC",
+      "state": "any, store2, bao gồm API-OP-051 presence/absence tại ATC",
       "environment": "staging",
       "covered": true,
       "kb_refs": [
@@ -3376,7 +3376,7 @@
       "feature_id": "FEAT-07-storefront-buyer-facing",
       "layer": "api",
       "role": "guest",
-      "state": "APIOP-051 full request/response body, auth, error-path (4xx/5xx)",
+      "state": "API-OP-051 full request/response body, auth, error-path (4xx/5xx)",
       "environment": "staging",
       "covered": false,
       "kb_refs": [

@@ -237,7 +237,7 @@
 ## OQ-artwork-040 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id": "OQ-artwork-040", "type": "NEEDS_CONFIRMATION", "feature_id": "conditional-setting-config", "summary": "CONF-001: network_ref của action nguồn (ACT-02-01-001) trong evidence gốc trỏ nhầm vào 1 file mô tả action khác (không chứa PUT nào). Check này VẪN dùng được vì oracle chính là quan sát UI (screenshot), nhưng nếu cần verify thêm ở tầng API cho đúng action này, kết quả API-side hiện KHÔNG đáng tin cho tới khi CONF-001 được làm rõ."}
+{"oq_id": "OQ-artwork-040", "type": "NEEDS_CONFIRMATION", "feature_id": "conditional-setting-config", "summary": "CONF-001: network_ref của action nguồn (chọn nguồn Toggle, giá trị On) trong evidence gốc trỏ nhầm vào 1 file mô tả action khác (không chứa PUT nào). Check này VẪN dùng được vì oracle chính là quan sát UI (screenshot), nhưng nếu cần verify thêm ở tầng API cho đúng action này, kết quả API-side hiện KHÔNG đáng tin cho tới khi CONF-001 được làm rõ."}
 ```
 
 ## OQ-artwork-041 — NEEDS_CONFIRMATION

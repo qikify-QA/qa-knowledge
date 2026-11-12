@@ -813,10 +813,10 @@
       "steps": [
         "Điền đủ mọi field khác của template 2",
         "Với mỗi field grouped_clipart: chỉ click radio cấp nhóm, KHÔNG click thumbnail con lồng bên trong",
-        "Bấm ADD TO CART; quan sát banner lỗi, lỗi inline; gọi GET /cart.js kiểm tra item_count; kiểm tra network log có request tới APIOP-051 (POST /api/merchant/shopify/customization) hay không",
-        "Bổ sung click thumbnail con cho cả 3 field, bấm lại ADD TO CART, quan sát lại toàn bộ (banner, item_count, APIOP-051)"
+        "Bấm ADD TO CART; quan sát banner lỗi, lỗi inline; gọi GET /cart.js kiểm tra item_count; kiểm tra network log có request tới API-OP-051 (POST /api/merchant/shopify/customization) hay không",
+        "Bổ sung click thumbnail con cho cả 3 field, bấm lại ADD TO CART, quan sát lại toàn bộ (banner, item_count, API-OP-051)"
       ],
-      "observation_point": "Banner lỗi + vị trí lỗi inline; item_count trước/sau mỗi lần thử; presence/absence của request APIOP-051 trong network log",
+      "observation_point": "Banner lỗi + vị trí lỗi inline; item_count trước/sau mỗi lần thử; presence/absence của request API-OP-051 trong network log",
       "expected_result": "",
       "oracle": {
         "kb_ids": [
@@ -830,7 +830,7 @@
       ],
       "priority": "P1",
       "automation_suitability": "HYBRID",
-      "observation_guidance": "Ở trạng thái CHỈ có radio nhóm (thiếu click con): ADD TO CART bị chặn — banner lỗi chung 'Error: Some fields are required or invalid data', lỗi inline 'This field is required!' dưới cả 3 field grouped_clipart, GET /cart.js xác nhận item_count=0, và ZERO request tới APIOP-051 (client-side validation chặn trước khi gửi). Sau khi bổ sung click con cho cả 3 field: ADD TO CART thành công, APIOP-051 fire đúng 1 lần ngay trước /cart/add, item_count 0->1. Quan sát này có confidence HIGH trong run này (3 field mẫu, corroborate cross-layer UI+network — theo KB-018). CHỈ xác nhận cho template 2/campaign 2595/store2 trong lần quan sát 2026-09-12 — KHÔNG khẳng định đây là rule tuyệt đối áp dụng cho template 1/3 hay cho mọi campaign có field grouped_clipart khác (xem gap template 1/3, CHK-018 v1). Kết quả check này cũng liên quan CFL-003 (xem CHK-032) về việc liệu framing 'ATC store2 known-working' từ 2026-09-12 có bỏ sót bước này hay không — bản thân yêu cầu 2-step KHÔNG bị nghi ngờ (well-observed trong run này), nhưng ý nghĩa của nó đối với baseline trước đó thì UNRESOLVED, KHÔNG được diễn giải check này như đã 'giải quyết' CFL-003.",
+      "observation_guidance": "Ở trạng thái CHỈ có radio nhóm (thiếu click con): ADD TO CART bị chặn — banner lỗi chung 'Error: Some fields are required or invalid data', lỗi inline 'This field is required!' dưới cả 3 field grouped_clipart, GET /cart.js xác nhận item_count=0, và ZERO request tới API-OP-051 (client-side validation chặn trước khi gửi). Sau khi bổ sung click con cho cả 3 field: ADD TO CART thành công, API-OP-051 fire đúng 1 lần ngay trước /cart/add, item_count 0->1. Quan sát này có confidence HIGH trong run này (3 field mẫu, corroborate cross-layer UI+network — theo KB-018). CHỈ xác nhận cho template 2/campaign 2595/store2 trong lần quan sát 2026-09-12 — KHÔNG khẳng định đây là rule tuyệt đối áp dụng cho template 1/3 hay cho mọi campaign có field grouped_clipart khác (xem gap template 1/3, CHK-018 v1). Kết quả check này cũng liên quan CFL-003 (xem CHK-032) về việc liệu framing 'ATC store2 known-working' từ 2026-09-12 có bỏ sót bước này hay không — bản thân yêu cầu 2-step KHÔNG bị nghi ngờ (well-observed trong run này), nhưng ý nghĩa của nó đối với baseline trước đó thì UNRESOLVED, KHÔNG được diễn giải check này như đã 'giải quyết' CFL-003.",
       "oq_id": "OQ-sdk-213"
     },
     {
@@ -961,7 +961,7 @@
       "check_id": "CHK-031",
       "dimension": "INTEGRATION",
       "layer": "api",
-      "title": "Server sync (APIOP-051) chỉ gọi tại thời điểm Add-to-cart, KHÔNG gọi trong lúc điền field (0 XHR/fetch tới host teeinblue trong lúc field-fill, cả 2 store)",
+      "title": "Server sync (API-OP-051) chỉ gọi tại thời điểm Add-to-cart, KHÔNG gọi trong lúc điền field (0 XHR/fetch tới host teeinblue trong lúc field-fill, cả 2 store)",
       "applicability": {
         "role": "guest",
         "state": "trong lúc điền field cá nhân hoá (cả 2 store) và tại thời điểm ATC (store2, cả lần thành công và lần thất bại)",
@@ -973,10 +973,10 @@
         "Bắt đầu ghi network log từ lúc chọn template đến khi điền đủ toàn bộ field (chưa ATC)",
         "Kiểm tra log: có request XHR/fetch nào tới host teeinblue-owned (staging-api.teeinblue.com, staging-sdk.teeinblue.com) không",
         "Thực hiện ATC (thành công theo CHK-026), quan sát request teeinblue-owned đầu tiên trong toàn phiên và thời điểm nó fire so với /cart/add",
-        "Với lần ATC thất bại (thiếu click con grouped_clipart, theo CHK-026), kiểm tra log có request APIOP-051 không"
+        "Với lần ATC thất bại (thiếu click con grouped_clipart, theo CHK-026), kiểm tra log có request API-OP-051 không"
       ],
       "observation_point": "Danh sách request tới host teeinblue-owned tại từng mốc (field-fill, ATC thành công, ATC thất bại)",
-      "expected_result": "Trong suốt lúc điền field (cả 2 store): ZERO request XHR/fetch tới host teeinblue-owned nào. Request teeinblue-owned ĐẦU TIÊN trong toàn phiên chỉ xuất hiện tại ATC trên store2: POST .../api/merchant/shopify/customization (APIOP-051), ngay trước /cart/add gốc Shopify. Khi ATC thất bại do thiếu click con grouped_clipart: APIOP-051 KHÔNG xuất hiện — xác nhận validation client-side chặn trước khi gửi request server. Store1 chỉ có 1 sample ngắn (~1.2s quanh 1 click) xác nhận 0 request trong lúc field-fill; store1 CHƯA tới được ATC nên chưa biết endpoint tương ứng (nếu có) của SDK v1 tại ATC.",
+      "expected_result": "Trong suốt lúc điền field (cả 2 store): ZERO request XHR/fetch tới host teeinblue-owned nào. Request teeinblue-owned ĐẦU TIÊN trong toàn phiên chỉ xuất hiện tại ATC trên store2: POST .../api/merchant/shopify/customization (API-OP-051), ngay trước /cart/add gốc Shopify. Khi ATC thất bại do thiếu click con grouped_clipart: API-OP-051 KHÔNG xuất hiện — xác nhận validation client-side chặn trước khi gửi request server. Store1 chỉ có 1 sample ngắn (~1.2s quanh 1 click) xác nhận 0 request trong lúc field-fill; store1 CHƯA tới được ATC nên chưa biết endpoint tương ứng (nếu có) của SDK v1 tại ATC.",
       "oracle": {
         "kb_ids": [
           "sdk/storefront-buyer-facing#KB-022"

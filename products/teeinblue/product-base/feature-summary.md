@@ -1,8 +1,9 @@
 # Object: Product Base (product: teeinblue) — Feature Profile Summary
-**Published context version:** 9
+**Published context version:** 10
 
 - **Phạm vi đã kiểm thử:** role `owner` (Linh explorer, sub=273), 1 organization, store `linh-explorer.myshopify.com`, environment staging. Chưa có evidence cho role khác (không có tài khoản thứ 2 để test permission/cross-tenant).
-- **9/9 feature có profile:** product-base-browse, product-base-create, product-base-identity, printarea-definition, variant-catalog, variant-add-to-campaigns, mockup-attachment, product-base-lifecycle, product-base-campaign-link. Confidence tổng thể object: MEDIUM. `product-base-campaign-link` là feature yếu nhất (confidence LOW, gần như không có bằng chứng cho đường ghi dữ liệu).
+- **11/11 feature có profile:** product-base-browse, product-base-create, product-base-identity, printarea-definition, variant-catalog, variant-add-to-campaigns, mockup-attachment, product-base-lifecycle, product-base-campaign-link, fulfillment-provider-connection, provider-catalog-import. Confidence tổng thể object: MEDIUM. `product-base-campaign-link` là feature yếu nhất (confidence LOW, gần như không có bằng chứng cho đường ghi dữ liệu).
+- **Cập nhật CBS-119 (TIB-4778/QA-3365, provider PosterFlow, staging):** thêm 2 feature mới `fulfillment-provider-connection` (FEAT-10, trang Fulfillments: rotate API key, API key không mask) và `provider-catalog-import` (FEAT-11, import product từ catalog nhà in, danh sách catalog phân trang). Nguồn gốc là knowledge QA local (product_facts.md), không phải quan sát trực tiếp; mọi KB item ở mức OBSERVED_CURRENT/LOW, không có claim nào đạt CONFIRMED_EXPECTED. 8 open question mới (OQ-product-base-104..111).
 - Lịch sử thay đổi chi tiết: xem `CHANGELOG.md`. Câu hỏi/mâu thuẫn còn mở: xem `open-questions.md`.
 
 ---
@@ -241,3 +242,42 @@
 - **MEDIUM:** độ tin cậy của Activity Log object-level không ổn định — xem OQ-002/OQ-008
 
 **Cập nhật CBS-009 (TIB-5428, quan sát, chưa làm oracle):** campaign tạo từ Product Base (thêm PB / bulk create) mang theo assignment video ↔ variant của Product Base (KB-329, OBSERVED_CURRENT/LOW). **Known defect BUG-361 (KB-330, High):** video sang campaign tạo từ Product Base mất URL và thumbnail, storefront hiện slide trống — output hiện tại, không phải hành vi đúng (OQ-product-base-035; PO xác nhận ý định ở OQ-product-base-036).
+
+---
+
+## Import Product từ Catalog Nhà in (`provider-catalog-import`)
+**Goal:** Import 1 sản phẩm từ catalog của provider in ấn (vd PosterFlow) qua modal Import, tạo Product Base mang sẵn title/description/mockup/printarea/variant của catalog đó.
+**Entry points:** `/products` (modal Import product, chọn provider đã kết nối → catalog)
+**Nguồn:** CBS-119 (TIB-4778/QA-3365), knowledge QA local (product_facts.md), mọi lượt chạy trên staging provider PosterFlow; production chưa xác nhận.
+
+**Capabilities (OBSERVED_CURRENT, LOW):**
+1. Import gọi `POST /api/products/import` (REST proxy trên backend TIB, body `{fulfillment_id, catalog_id}`), không phải PosterFlow trả trực tiếp cho browser; Product Base tạo ra mang title/description/mockups/printareas/variants của catalog — trích dẫn verbatim (Hasura introspection) chỉ xác nhận trực tiếp phần mockups/printareas/variants, title/description là mô tả của claim, chưa có quote riêng (KB-519)
+2. Danh sách catalog phân trang thật qua `GET /api/fulfillments/{id}/catalogs?page=&per_page=`, ví dụ thật `meta.total=241`, portal hiện "Showing 1 to 20 of 241 entries" và truy cập đủ 241 item qua các trang (KB-520)
+3. Response list catalog chỉ có 4 field (`fulfillment_catalog_id`, `title`, `images`, `base_cost`) ở mọi `per_page`, không có `variants`/`availability` — muốn xem availability phải import xong rồi tra GraphQL `products_by_pk` (KB-521)
+4. Import lại một catalog đã import không bị chặn, tạo Product Base thứ 2 (duplicate câm) — ghi nhận là PO chấp nhận nhưng chưa có quote/tên xác nhận (xem OQ-product-base-107)
+
+**Coverage:** api (import call, pagination, list schema) ✅ · portal (modal Import, hiển thị catalog) ✅ · import-lại-tạo-duplicate chỉ có precondition note, chưa có test case riêng (OQ-product-base-107) · provider khác ngoài PosterFlow ❌ · production ❌
+**Confidence:** LOW
+**Risks:**
+- Endpoint/body import và dạng phân trang chỉ là quan sát qua test (QA-3365 TC-6/TC-7), chưa xác nhận là hợp đồng API chính thức — xem OQ-product-base-104, OQ-product-base-105
+- Chưa xác nhận có endpoint nào lộ stock/availability trước khi import ở provider khác PosterFlow — xem OQ-product-base-106
+
+---
+
+## Kết nối & Quản lý Fulfillment Provider (`fulfillment-provider-connection`)
+**Goal:** Kết nối, xem và đổi API key của 1 fulfillment provider (vd PosterFlow) qua trang Fulfillments, để dùng cho import catalog và gửi đơn in.
+**Entry points:** `/fulfillments` (trang Fulfillments: kết nối provider, API key)
+**Nguồn:** CBS-119 (TIB-4778/QA-3365), knowledge QA local (product_facts.md), mọi lượt chạy trên staging provider PosterFlow; production chưa xác nhận.
+
+**Capabilities (OBSERVED_CURRENT, LOW):**
+1. Rotate API key: Save key mới thì request sau dùng key mới (không cache key cũ); key sai bị từ chối bằng toast lỗi, key cũ được giữ nguyên (KB-522)
+2. API key không mask sau khi Save, áp dụng CHUNG mọi provider (customcat/printify/picanova/dreamship/printway/shirtee/posterflow) — GraphQL `{ user_fulfillments { id api_key } }` qua portal proxy trả raw key cho mọi provider (KB-523)
+3. Khi nhập API key sai, toast lỗi chỉ báo lỗi chung ("Something went wrong! Invalid API key"), không echo lại giá trị đã nhập (KB-524)
+4. Trang Fulfillments không có Disconnect và không có role/permission gate riêng — nguồn là Dev nói qua Slack, chưa có quote/test case riêng (xem OQ-product-base-111)
+
+**Coverage:** api (rotate key, GraphQL user_fulfillments) ✅ · portal (Save key sai, toast lỗi) ✅ · Disconnect/permission gate chỉ có lời kể, chưa test case (OQ-product-base-111) · provider khác ngoài PosterFlow ❌ · production ❌
+**Confidence:** LOW
+**Risks:**
+- **[Bảo mật, chưa phân xử]** API key trả raw qua GraphQL, không mask, mọi provider — chưa rõ Dev/PO có chấp nhận là chủ ý thiết kế không; BUG-03 chỉ bị QA đóng vì ngoài scope, không phải vì được xác nhận đúng — xem OQ-product-base-109
+- Nguyên văn toast lỗi key sai lệch giữa 2 nguồn ghi nhận ("Invalid API key" vs "Invalid key") — xem OQ-product-base-110
+- Rotate API key chỉ xác nhận qua test case, chưa có xác nhận Dev/PO là hợp đồng chính thức — xem OQ-product-base-108
