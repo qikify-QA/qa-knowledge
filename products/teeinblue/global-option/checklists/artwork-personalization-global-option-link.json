@@ -671,7 +671,7 @@
       "applicability": {
         "role": "guest đặt order trên storefront; owner — account của TIB_STAGING_EMAIL xem order trên portal",
         "state": "campaign có artwork với 1 layer gắn GO Additional Option nguồn inline và 1 layer gắn GO nguồn category; cả 2 GO đã điền 'Option Title' (input form_label), vd 'Color' và 'Size'",
-        "environment": "staging (staging-portal.teeinblue.com; store linh-tib-staging.myshopify.com, non-Plus; build sau deploy TIB-5467)",
+        "environment": "staging (staging-portal.teeinblue.com; store TIB_USER_B_STORE_URL, non-Plus; build sau deploy TIB-5467)",
         "surface_or_device": "storefront (đặt order) + portal (customization data của order), desktop browser"
       },
       "precondition": "Trên /global-options/<id>/edit > Settings của cả 2 GO, field 'Option Title' có giá trị (vd GO 986 = 'Color', GO 987 = 'Size'). Campaign dùng artwork đó đã publish lên store staging (vd campaign 2730).",
@@ -710,7 +710,7 @@
       "applicability": {
         "role": "guest đặt order; owner — account của TIB_STAGING_EMAIL cấu hình GO và xem order",
         "state": "GO Additional Option (inline và/hoặc category) với 'Option Title' (form_label) rỗng, đang gắn vào layer của campaign",
-        "environment": "staging (staging-portal.teeinblue.com; store linh-tib-staging.myshopify.com, non-Plus; build sau deploy TIB-5467)",
+        "environment": "staging (staging-portal.teeinblue.com; store TIB_USER_B_STORE_URL, non-Plus; build sau deploy TIB-5467)",
         "surface_or_device": "storefront (đặt order) + portal (Settings của GO, customization data của order), desktop browser"
       },
       "precondition": "Dùng GO throwaway (vd Duplicate GO inline và GO category) để không đổi fixture dùng chung; xoá trống 'Option Title' ở Settings rồi Save; gắn vào layer của 1 campaign đã publish lên store staging.",
@@ -826,7 +826,7 @@
       "applicability": {
         "role": "guest",
         "state": "campaign dùng artwork có layer A gắn GO Additional Option inline và layer B có Conditional Setting 'is any of: <item X>' nhắm layer A (vd GO 986, layer-513136, X = 'Apple'); campaign đã publish/Update lên store staging",
-        "environment": "staging (store linh-tib-staging.myshopify.com, non-Plus; build sau deploy TIB-5467)",
+        "environment": "staging (store TIB_USER_B_STORE_URL, non-Plus; build sau deploy TIB-5467)",
         "surface_or_device": "storefront product page, desktop browser"
       },
       "precondition": "Đã cấu hình điều kiện như CHK-02-024 với item X; chọn thêm 1 item Y của cùng GO không nằm trong điều kiện.",
@@ -896,7 +896,7 @@
       "applicability": {
         "role": "owner — account của TIB_STAGING_EMAIL; guest cho bước storefront",
         "state": "artwork có layer A gắn GO Additional Option nguồn category (vd GO 987) và một layer B khác",
-        "environment": "staging (staging-portal.teeinblue.com; store linh-tib-staging.myshopify.com, non-Plus; build sau deploy TIB-5467)",
+        "environment": "staging (staging-portal.teeinblue.com; store TIB_USER_B_STORE_URL, non-Plus; build sau deploy TIB-5467)",
         "surface_or_device": "portal artwork editor + storefront product page, desktop browser"
       },
       "precondition": "Ghi lại danh sách item của category mà GO đang trỏ tới.",
@@ -933,7 +933,7 @@
       "layer": "portal",
       "title": "[CBS-013] Campaign editor (portal), mục 'Personalization form': layer gắn Global Option dạng dropdown hiển thị kèm đủ lựa chọn của Global Option, preview mockup hiển thị — chưa xác nhận",
       "applicability": {
-        "role": "merchant owner/staff — account explore (verify GET /api/user id=266 sau mỗi lần login)",
+        "role": "merchant owner/staff — account explore (verify GET /api/user id=<explorer> sau mỗi lần login)",
         "state": "campaign đã gán artwork có layer text, layer clipart và một layer gắn Global Option dạng dropdown (fixture gốc: campaign #3270, design AW-GO, Color A1 = Red/Blue/Green)",
         "environment": "staging, ghi build (lượt quan sát gốc ~06:00 UTC 2026-10-28, trước lần redeploy dev yêu cầu recheck và trước khi 2 PR TIB-5203 merge 2026-10-29; production chưa kiểm)",
         "surface_or_device": "portal campaign editor (/campaigns/<id>/edit, mục Personalization form) + network GET /api/campaigns/<id>, desktop browser"
@@ -1164,6 +1164,105 @@
       "priority": "P2",
       "automation_suitability": "NOT_SUITABLE",
       "oq_id": "OQ-global-option-049"
+    },
+    {
+      "check_id": "CHK-02-034",
+      "dimension": "FUNCTIONAL",
+      "layer": "api",
+      "title": "[CBS-131, chua xac nhan] Save artwork khi 2 layer cung Global Option: layer B bi strip retrieval_layer/retrieval_value/retrieval_value_enabled (populate cleanup, TIB-5274)",
+      "applicability": {
+        "role": "store owner",
+        "state": "artwork co 2 layer A va B cung 1 Global Option, layer B con retrieval_* populate-content",
+        "environment": "staging; ghi build",
+        "theme_or_device": "portal Artwork Editor + API (artwork JSON sau Save), desktop browser"
+      },
+      "precondition": "Tren store explorer co artwork throwaway: layer A va B cung 1 GO; B co retrieval_layer=A, retrieval_value, retrieval_value_enabled=true (xac nhan qua GraphQL truoc save).",
+      "steps": [
+        "Mo artwork trong editor, Save & Close (khong sua gi).",
+        "Doc PUT payload cua layer B va GraphQL sau save."
+      ],
+      "observation_point": "PUT payload cua layer B khi Save; GraphQL sau save.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "global-option/artwork-personalization-global-option-link#KB-730"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [
+        "Strip populate khi save co the lam mat du lieu retrieval_* cu; nguon test_case khong trich duoc can cu expected, build khong ghi lai (KB-730)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "observation_guidance": "KB-730 (TC-01 QA-3347 staging ✅ AI, LOW): B PUT payload khong con 3 field retrieval_*, A giu nguyen, toast 'Success'. Oracle NONE, giu NEEDS_CONFIRMATION toi khi Dev xac nhan (OQ-global-option-076). TIB-5274 len production 2026-09-17 (ngoai canon staging).",
+      "oq_id": "OQ-global-option-076"
+    },
+    {
+      "check_id": "CHK-02-035",
+      "dimension": "FUNCTIONAL",
+      "layer": "storefront",
+      "title": "[CBS-131, chua xac nhan] Storefront dedup-render N layer Text cung 1 Global Option: chi 1 input 'global-option-<id>' theo layer dau theo thu tu",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "N layer Text visible:true cung 1 Global Option, chung 1 template (da test: GO Single-line Text)",
+        "environment": "staging; ghi build SDK",
+        "theme_or_device": "storefront product page, desktop browser"
+      },
+      "precondition": "Tren store explorer co artwork/campaign co >=2 layer Text cung 1 GO Single-line Text, deu visible:true.",
+      "steps": [
+        "Mo storefront product page (guest).",
+        "Kiem DOM cac input name='global-option-<id>' va GraphQL."
+      ],
+      "observation_point": "DOM storefront (input name='global-option-<id>') va GraphQL.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "global-option/artwork-personalization-global-option-link#KB-731"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [
+        "Chi kiem GO Single-line Text tren 1 artwork; 'layer dau theo thu tu' chua phu moi type GO (KB-731). Canon KB-028 da noi dedupe theo GO id."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "observation_guidance": "KB-731 (TC-20 QA-3399, LOW): DOM chi co dung 1 input theo layer dau; layer thu 2 tro di khong co input/label. Oracle NONE, giu NEEDS_CONFIRMATION toi khi Dev xac nhan cho moi type GO (OQ-global-option-077).",
+      "oq_id": "OQ-global-option-077"
+    },
+    {
+      "check_id": "CHK-02-036",
+      "dimension": "FUNCTIONAL",
+      "layer": "storefront",
+      "title": "[CBS-131, chua xac nhan] GO dung chung N layer: set qua 1 field duy nhat (title theo layer dau) dat gia tri cho moi layer; khoa prefill la title cua layer",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "Global Option dung chung N layer (chi 1 field hien ra), GO Single-line Text",
+        "environment": "staging; ghi build SDK",
+        "theme_or_device": "storefront product page, desktop browser"
+      },
+      "precondition": "Tren store explorer co artwork co >=2 layer cung 1 GO Single-line Text (vd layer title GOLayerA, GOLayerB).",
+      "steps": [
+        "Mo storefront product page (guest), set gia tri qua field duy nhat (go tay hoac URL prefill ?<title layer>=...).",
+        "Quan sat preview cac layer va customization value."
+      ],
+      "observation_point": "Preview cac layer + customization value 'global-option-<id>'.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "global-option/artwork-personalization-global-option-link#KB-732"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [
+        "FACT-112 do AI suy tu FACT-111, chi kiem GO Single-line Text, khong trich duoc REQ-06 goc (KB-732). De sai neu viet TC 'moi layer hien 1 field rieng'."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "observation_guidance": "KB-732 (TC-20 QA-3399, LOW): ?GOLayerA=Hello -> ca 2 layer deu 'Hello'; khoa prefill la title cua layer. Oracle NONE, giu NEEDS_CONFIRMATION toi khi Dev/PO xac nhan (OQ-global-option-078). Canon KB-029 cung huong.",
+      "oq_id": "OQ-global-option-078"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1393,7 +1492,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-131"
   }
 }

@@ -847,6 +847,345 @@
       "priority": "P2",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-artwork-335"
+    },
+    {
+      "check_id": "CHK-026",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[CBS-109] Chọn format file order design ở field 'Artwork design format' của dialog 'Artwork details' (multi-select), Save, rồi đối chiếu design file của order",
+      "applicability": {
+        "role": "merchant-owner (store owner/staff)",
+        "state": "artwork throwaway gắn campaign đã publish; chọn một hoặc nhiều format trong Artwork design format",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork Editor (dialog Artwork details); body PUT; design file của line item"
+      },
+      "precondition": "Store explorer; artwork throwaway gắn campaign đã publish, store cho phép order test; capture được body PUT khi Save.",
+      "steps": [
+        "Trên artwork editor ghi lại có hay không control Export/Download design riêng.",
+        "Mở dialog Artwork details (bút chì cạnh tên artwork), ghi danh sách format của field Artwork design format; chọn một format (ví dụ PDF), Save; capture body PUT và ghi field chứa format.",
+        "Đặt 1 order test, chờ design generate, tải design file; ghi định dạng file thật.",
+        "Lặp lại với nhiều format cùng lúc (ví dụ PNG_RGB + SVG); ghi số file và định dạng sinh ra cho line item, kèm build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Nơi chọn format file design; field và dạng giá trị lưu format trong body PUT; định dạng và số design file của line item ứng với lựa chọn.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/artwork-save-persist#KB-986",
+        "artwork/artwork-save-persist#KB-053",
+        "artwork/layer-config-vector#KB-418"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-986 là rule QA chưa kiểm end-to-end; TC giả định nút Export/Download design riêng có thể sai bước."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-454"
+    },
+    {
+      "check_id": "CHK-027",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-143] Save / Save & Close bị chặn khi có layer ảnh không có ảnh (static-photo; photo / clipart-category / group-clipart-categories No personalization)",
+      "applicability": {
+        "role": "merchant-owner (store owner / staff) — account explore, store explorer",
+        "state": "artwork có một layer ảnh không có ảnh, lần lượt từng loại",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop) + DevTools Network"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway dựng trên store explorer, không dùng artwork/campaign/store nêu trong CCR. Trạng thái layer không ảnh: thêm layer Photo Upload không ảnh mặc định rồi convert sang Static Image (chưa Save), hoặc đổi Personalization sang No personalization; editor không có thao tác xoá ảnh khỏi Static Image.",
+      "steps": [
+        "Dựng layer static-photo không ảnh theo precondition, bấm Save rồi Save & Close.",
+        "Lặp lại với layer photo, clipart-category, group-clipart-categories đặt No personalization không có ảnh mặc định.",
+        "Thêm ảnh cho layer rồi Save.",
+        "Ghi toast, request mạng, build và ngày chạy."
+      ],
+      "observation_point": "Toast lỗi, có/không request PUT /api/artworks/{id}, editor còn mở hay không",
+      "expected_result": "Baseline theo change note dev TIB-5446 (không phải expected đã chốt): mỗi lần Save / Save & Close artwork không được lưu, toast dạng 'Template - <tên template>: <tên layer>: - This layer has no image. Add an image or delete the layer.', không có PUT; sau khi thêm ảnh thì Save thành công (PUT 200).",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-save-persist#KB-1017"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/artwork-save-persist#KB-1017",
+        "artwork/artwork-save-persist#KB-051",
+        "artwork/artwork-save-persist#KB-050"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1017 theo change note dev, chưa PO chốt."
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-494"
+    },
+    {
+      "check_id": "CHK-028",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-143] Save ngay sau khi chọn ảnh mới cho layer (ảnh chưa upload) không bị chặn",
+      "applicability": {
+        "role": "merchant-owner (store owner / staff) — account explore, store explorer",
+        "state": "layer ảnh không có ảnh, vừa chọn ảnh mới",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor + DevTools Network"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway dựng trên store explorer, không dùng artwork/campaign/store nêu trong CCR. Trạng thái layer không ảnh: thêm layer Photo Upload không ảnh mặc định rồi convert sang Static Image (chưa Save), hoặc đổi Personalization sang No personalization; editor không có thao tác xoá ảnh khỏi Static Image.",
+      "steps": [
+        "Chọn ảnh từ máy cho layer static-photo không ảnh.",
+        "Bấm Save ngay khi có thể.",
+        "Ghi toast, request upload và PUT, ghi rõ có dựng được trạng thái chưa upload xong hay không."
+      ],
+      "observation_point": "Có toast 'This layer has no image' không; PUT /api/artworks/{id} và url của layer trong body",
+      "expected_result": "Baseline theo change note dev TIB-5446 (không phải expected đã chốt): artwork lưu bình thường, không có toast 'This layer has no image'.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-save-persist#KB-1018"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/artwork-save-persist#KB-1018"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Trạng thái chưa upload chưa dựng được ở lượt test trước."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-495"
+    },
+    {
+      "check_id": "CHK-029",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-143] REST tạo mới / cập nhật artwork có layer ảnh không có url trả 422 nêu template + layer",
+      "applicability": {
+        "role": "merchant-owner (store owner / staff) — account explore, store explorer",
+        "state": "payload artwork có layer static-photo không url, và photo / clipart-category / group-clipart-categories No personalization không url",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "api (REST, session portal)"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway dựng trên store explorer, không dùng artwork/campaign/store nêu trong CCR. Trạng thái layer không ảnh: thêm layer Photo Upload không ảnh mặc định rồi convert sang Static Image (chưa Save), hoặc đổi Personalization sang No personalization; editor không có thao tác xoá ảnh khỏi Static Image.",
+      "steps": [
+        "Chỉ chạy khi quy tắc chạy test cho phép gọi route ghi (vd qua API test script); nếu không thì ghi Blocked.",
+        "Gửi request cập nhật PUT /api/artworks/{id} của artwork throwaway với layer static-photo bỏ url.",
+        "Lặp với ba loại No personalization; nếu biết route tạo mới thì lặp với tạo mới.",
+        "Ghi status, body, build và ngày chạy; đọc lại artwork để xác nhận không đổi."
+      ],
+      "observation_point": "HTTP status, body lỗi (tên template, tên layer, message), dữ liệu artwork sau request",
+      "expected_result": "Baseline theo change note dev TIB-5446 (không phải expected đã chốt): request bị từ chối HTTP 422, lỗi nêu tên template và layer kèm 'This layer has no image. Add an image or delete the layer.'; artwork không đổi.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-save-persist#KB-1019"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/artwork-save-persist#KB-1019",
+        "artwork/artwork-save-persist#KB-052"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1019 chưa quan sát; route tạo mới chưa rõ."
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-496"
+    },
+    {
+      "check_id": "CHK-030",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-143] Layer replica / linked / global option / ẩn / form-only không có ảnh: Save có bị chặn không",
+      "applicability": {
+        "role": "merchant-owner (store owner / staff) — account explore, store explorer",
+        "state": "artwork có layer photo không ảnh ở từng dạng replica, linked, global option, ẩn, form-only; và layer linked đã convert sang Static Image",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor + DevTools Network"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway dựng trên store explorer, không dùng artwork/campaign/store nêu trong CCR. Trạng thái layer không ảnh: thêm layer Photo Upload không ảnh mặc định rồi convert sang Static Image (chưa Save), hoặc đổi Personalization sang No personalization; editor không có thao tác xoá ảnh khỏi Static Image.",
+      "steps": [
+        "Dựng từng dạng layer không ảnh trên artwork throwaway.",
+        "Bấm Save, ghi toast và PUT.",
+        "Convert layer linked sang Static Image rồi Save, ghi kết quả.",
+        "Ghi build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Toast lỗi và PUT cho từng dạng layer",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/artwork-save-persist#KB-1020",
+        "artwork/artwork-save-persist#KB-1017"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Cách xác định 'linked' và định nghĩa 'replica' đang có OQ CONFLICT."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-497"
+    },
+    {
+      "check_id": "CHK-031",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-143] Artwork đã hỏng sẵn (layer ảnh không url) bị khoá Save tới khi thêm ảnh hoặc xoá layer",
+      "applicability": {
+        "role": "merchant-owner (store owner / staff) — account explore, store explorer",
+        "state": "artwork đã lưu từ trước có layer ảnh không url (chỉ dùng artwork throwaway của store explorer; không sửa artwork hỏng của người khác)",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor + DevTools Network"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway dựng trên store explorer, không dùng artwork/campaign/store nêu trong CCR. Trạng thái layer không ảnh: thêm layer Photo Upload không ảnh mặc định rồi convert sang Static Image (chưa Save), hoặc đổi Personalization sang No personalization; editor không có thao tác xoá ảnh khỏi Static Image.",
+      "steps": [
+        "Nếu store explorer không có artwork hỏng sẵn thì ghi Blocked, không sửa dữ liệu ngoài phạm vi.",
+        "Mở artwork, sửa một layer text khác, bấm Save.",
+        "Xoá layer lỗi (hoặc thêm ảnh), bấm Save.",
+        "Ghi toast, PUT, build và ngày chạy."
+      ],
+      "observation_point": "Toast lỗi ở lần Save đầu; PUT ở lần Save sau",
+      "expected_result": "Baseline theo change note dev TIB-5446 (không phải expected đã chốt): lần Save đầu bị chặn với toast nêu layer; sau khi thêm ảnh hoặc xoá layer thì Save thành công.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-save-persist#KB-1021"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/artwork-save-persist#KB-1021",
+        "artwork/no-personalization-photo-render#KB-938"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Seller không lưu được thay đổi khác trên artwork cũ cho tới khi sửa layer lỗi; không có backfill."
+      ],
+      "priority": "P1",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-artwork-498"
+    },
+    {
+      "check_id": "CHK-032",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "[CBS-107] Tạo hoặc duplicate artwork quá 5 lần trong một phút bởi cùng một staff bị từ chối tới hết phút",
+      "applicability": {
+        "role": "merchant-owner (staff có quyền manage artworks)",
+        "state": "một staff tạo/duplicate artwork throwaway liên tiếp trong cùng một phút",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Save artwork mới / Duplicate, hoặc API lưu artwork mới"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); chỉ dùng artwork/campaign throwaway dựng trên store explorer, không dùng artwork hay campaign thật. Đếm và ghi thời điểm từng request; dọn artwork throwaway sau khi chạy.",
+      "steps": [
+        "Trong cùng một phút, cùng một staff tạo (hoặc duplicate) 6 artwork throwaway liên tiếp; ghi thời điểm và kết quả từng request.",
+        "Sau khi phút đó qua, tạo thêm một artwork; ghi kết quả.",
+        "Ghi status code và body của request bị từ chối (không phán dạng response)."
+      ],
+      "observation_point": "Kết quả request thứ 1..6 trong phút và request đầu tiên của phút sau.",
+      "expected_result": "5 request đầu được lưu; request thứ 6 trong cùng phút bị từ chối; sang phút mới thì tạo được lại.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-save-persist#KB-1029"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/artwork-save-persist#KB-1030",
+        "artwork/artwork-save-persist#KB-061"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "dựng fixture hàng loạt bị chặn giữa chừng"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-033",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "[CBS-107] Lưu thay đổi một artwork có sẵn quá 60 lần trong một phút bởi cùng một staff",
+      "applicability": {
+        "role": "merchant-owner (staff có quyền manage artworks)",
+        "state": "một staff lưu thay đổi artwork throwaway liên tiếp trong cùng một phút",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "API lưu thay đổi artwork có sẵn"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); chỉ dùng artwork/campaign throwaway dựng trên store explorer, không dùng artwork hay campaign thật. Ghi giá trị header rate limit nếu response có.",
+      "steps": [
+        "Trong cùng một phút, cùng một staff lưu thay đổi một artwork throwaway 61 lần liên tiếp; ghi thời điểm và kết quả từng request.",
+        "Ghi request đầu tiên bị từ chối là lần thứ mấy, status code, header và body; không phán pass hay fail."
+      ],
+      "observation_point": "Số request được chấp nhận trong một phút, request đầu tiên bị từ chối.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/artwork-save-persist#KB-1029",
+        "artwork/artwork-save-persist#KB-061"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "ngưỡng 60 là setting server, staging/production có thể khác"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-507"
+    },
+    {
+      "check_id": "CHK-034",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-107] Dạng response khi vượt rate limit lưu artwork (status, Content-Type, body)",
+      "applicability": {
+        "role": "merchant-owner (staff có quyền manage artworks)",
+        "state": "request lưu artwork bị từ chối do vượt rate limit (từ CHK-032)",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "API lưu artwork"
+      },
+      "precondition": "Đã chạy CHK-032 và capture được request bị từ chối.",
+      "steps": [
+        "Từ request bị từ chối của CHK-032, ghi status code, Content-Type, body (HTML hay JSON) và header rate limit; không phán pass hay fail."
+      ],
+      "observation_point": "Status, Content-Type, body của response bị từ chối.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/artwork-save-persist#KB-1030",
+        "artwork/artwork-save-persist#KB-1029"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "rule QA FACT-050 ghi 429 trang HTML, chưa Dev xác nhận"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-507"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -916,6 +1255,36 @@
         "CHK-023"
       ],
       "covered": "REGRESSION watch, expected_result rỗng."
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "item": "[CBS-109] Gap: nơi chọn format file order design (Artwork design format, multi-select) và file sinh ra theo lựa chọn",
+      "check_ids": [
+        "CHK-026"
+      ],
+      "oracle": "NONE (KB-986 PROPOSED)"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "capability": "[CBS-143] Chặn lưu layer ảnh không có ảnh (KB-1017..KB-1021)",
+      "checks": [
+        "CHK-027",
+        "CHK-028",
+        "CHK-029",
+        "CHK-030",
+        "CHK-031"
+      ],
+      "covered": "BASELINE (OBSERVED_CURRENT từ change note dev); CHK-030 NONE + NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "capability": "[CBS-107] Rate limit lưu artwork theo staff",
+      "checks": [
+        "CHK-032",
+        "CHK-033",
+        "CHK-034"
+      ],
+      "covered": "STRONG (KB-1029) cho CHK-032; NONE + NEEDS_CONFIRMATION cho CHK-033 (ngưỡng 60 setting server) và CHK-034 (KB-1030 PROPOSED)"
     }
   ],
   "excluded_dimensions": [
@@ -929,7 +1298,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-107"
   }
 }

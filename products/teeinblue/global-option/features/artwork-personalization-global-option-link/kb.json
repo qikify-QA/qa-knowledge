@@ -397,12 +397,12 @@
   {
     "kb_id": "KB-371",
     "topic": "Campaign editor portal: mục Personalization form hiện layer gắn Global Option kèm đủ lựa chọn, preview mockup bình thường",
-    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7401, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trong campaign editor portal của campaign #3270 (Nprice1, design AW-GO), mục \"Personalization form\" hiển thị Name, Dog (4 clipart) và Color A1 (dropdown Red/Blue/Green, layer gắn Global Option); preview mockup hiển thị bình thường; GET /api/campaigns/3270 → 200.",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7401, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trong campaign editor portal của campaign #3270 (store không thuộc explorer, design AW-GO), mục \"Personalization form\" hiển thị Name, Dog (4 clipart) và Color A1 (dropdown Red/Blue/Green, layer gắn Global Option); preview mockup hiển thị bình thường; GET /api/campaigns/3270 → 200.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "merchant-owner (store owner/staff, portal staging, instance 520 Nprice1)",
+      "role": "merchant-owner (store owner/staff, portal staging, instance 520 store không thuộc explorer)",
       "surface": "portal (campaign editor, mục Personalization form)",
       "brand": null
     },
@@ -439,6 +439,10 @@
       "surface": "storefront",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
     "tags": [
       "photo-layer",
       "position",
@@ -451,11 +455,7 @@
     "related_kb_ids": [
       "global-option/artwork-personalization-global-option-link#KB-029"
     ],
-    "status": "KNOWN_DEFECT",
-    "last_updated": {
-      "date": "2026-11-08",
-      "ccr_ref": "maintenance-2026-11-08"
-    }
+    "status": "KNOWN_DEFECT"
   },
   {
     "kb_id": "KB-725",
@@ -468,6 +468,10 @@
       "role": "merchant-owner",
       "surface": "portal",
       "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
     },
     "tags": [
       "run-effects",
@@ -485,10 +489,6 @@
       "ref": "Jira TIB-5470 description (PO), bản sửa 2026-10-19, mục Portal › Run effects, bullet Global Option",
       "authored_on": "2026-10-19",
       "derivation": "prose"
-    },
-    "last_updated": {
-      "date": "2026-11-08",
-      "ccr_ref": "maintenance-2026-11-08"
     }
   },
   {
@@ -503,6 +503,10 @@
       "surface": "portal",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
     "tags": [
       "run-effects",
       "layer-image",
@@ -513,11 +517,7 @@
     "related_kb_ids": [
       "global-option/artwork-personalization-global-option-link#KB-725",
       "global-option/artwork-personalization-global-option-link#KB-727"
-    ],
-    "last_updated": {
-      "date": "2026-11-08",
-      "ccr_ref": "maintenance-2026-11-08"
-    }
+    ]
   },
   {
     "kb_id": "KB-727",
@@ -530,6 +530,10 @@
       "role": "merchant-owner",
       "surface": "portal",
       "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
     },
     "tags": [
       "run-effects",
@@ -550,10 +554,6 @@
       "ref": "Jira TIB-5470 description (PO), bản sửa 2026-10-26, mục Update: Prompt variables › Saved values",
       "authored_on": "2026-10-26",
       "derivation": "prose"
-    },
-    "last_updated": {
-      "date": "2026-11-08",
-      "ccr_ref": "maintenance-2026-11-08"
     }
   },
   {
@@ -568,6 +568,10 @@
       "surface": "portal",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
     "tags": [
       "run-effects",
       "disabled",
@@ -578,10 +582,89 @@
     ],
     "related_kb_ids": [
       "global-option/artwork-personalization-global-option-link#KB-725"
+    ]
+  },
+  {
+    "kb_id": "KB-730",
+    "topic": "TIB-5274: khi Save artwork, layer cùng Global Option với layer khác bị strip retrieval_layer/retrieval_value/retrieval_value_enabled (populate cleanup)",
+    "statement": "Theo test case TC-01 (QA-3347, dev TIB-5274; staging 2026-09-07 ✅ AI, build không ghi lại), khi mở một artwork có 2 layer A và B cùng một Global Option mà layer B còn các field populate-content (retrieval_layer=A, retrieval_value={{value.capitalonly}}, retrieval_value_enabled=true) rồi Save & Close (không sửa gì) ở role store owner, quan sát thấy PUT payload của B KHÔNG CÒN 3 field retrieval_* (B chỉ còn customization_type=global_option, global_option=<id>); layer A giữ nguyên; toast chỉ 'Success — Your artwork has been updated' (silent). Đây là một bước dọn thêm lúc save (strip populate khi hai layer cùng GO). Nguồn là test_case PASS nhưng không trích được căn cứ expected nguyên văn (mô tả gốc ticket không có trong Proposal) và build không ghi lại, nên là quan sát confidence LOW, chưa coi là expected đã duyệt. CLAIM-10 ghi TIB-5274 đã lên production 2026-09-17 (release-verification PASS); production là môi trường ngoài canon staging. Canon KB-026 nói hai layer cùng GO không live-share ở portal-editor (không mâu thuẫn).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "store owner",
+      "surface": "portal (Artwork Editor) + api (artwork JSON sau Save)",
+      "brand": null
+    },
+    "tags": [
+      "global-option",
+      "populate-content",
+      "retrieval",
+      "save",
+      "artwork",
+      "TIB-5274"
+    ],
+    "related_kb_ids": [
+      "KB-026"
     ],
     "last_updated": {
-      "date": "2026-11-08",
-      "ccr_ref": "maintenance-2026-11-08"
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-131"
+    }
+  },
+  {
+    "kb_id": "KB-731",
+    "topic": "Storefront dedup-render N layer Text cùng một Global Option: chỉ một input 'global-option-<id>' theo layer đầu theo thứ tự",
+    "statement": "Theo test case TC-20 (QA-3399, dev TIB-4703; PASS 2026-10-19 staging, chỉ kiểm GO type Single-line Text trên một artwork; build không ghi lại; BUG-04 'thiếu field cho layer thứ 2' bị discard not_a_bug), khi N layer Text cùng một Global Option (cùng global_option, đều visible:true, chung một template), quan sát thấy DOM storefront ở role buyer (guest) chỉ có ĐÚNG MỘT input name='global-option-<id>' (id của layer ĐẦU theo thứ tự); layer thứ hai trở đi không có input hay label — buyer không bao giờ thấy field riêng cho chúng dù layer đó visible:true và cấu hình đầy đủ. Cùng cơ chế dedup-render với GO Addon Charge, không riêng một type. Mới kiểm với GO Single-line Text trên một artwork; chưa biết 'layer đầu theo thứ tự' có đúng cho mọi type GO (Clipart Category, Photo, Toggle...). Nguồn test_case nhưng expected được sửa khớp hành vi quan sát sau khi chạy (không có căn cứ expected PO/Dev), build không ghi lại, nên là quan sát confidence LOW. Canon KB-028 đã nói dedupe theo Global Option id; mục này thêm chi tiết 'layer đầu theo thứ tự' (không mâu thuẫn).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (guest)",
+      "surface": "storefront (GraphQL, DOM)",
+      "brand": null
+    },
+    "tags": [
+      "global-option",
+      "storefront",
+      "dedup-render",
+      "layer",
+      "DOM"
+    ],
+    "related_kb_ids": [
+      "KB-028"
+    ],
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-131"
+    }
+  },
+  {
+    "kb_id": "KB-732",
+    "topic": "GO dùng chung N layer: một field duy nhất (title theo layer đầu) đặt giá trị cho mọi layer trong group; khoá prefill là title của layer",
+    "statement": "Theo test case TC-20 (QA-3399, dev TIB-4703; staging, chỉ kiểm GO type Single-line Text; build không ghi lại), với một Global Option dùng chung N layer chỉ có MỘT field hiện ra (title lấy theo layer đầu), và field đó phản ánh giá trị dùng chung cho group: set giá trị qua field duy nhất đó (gõ tay hoặc URL prefill ?<title layer>=...) coi như đã set cho MỌI layer trong group (customization value 'global-option-<id>' dùng chung). Quan sát 2026-10-09: ?GOLayerA=Hello → field='Hello', preview cả hai layer (GOLayerA+GOLayerB) đều 'Hello'; ?GOLayerB=World tương tự ra 'World' ở cả hai. Khoá prefill khớp là title của layer, không phải tên quản lý của Global Option. Không viết TC/expected kiểu 'mỗi layer dùng chung GO hiện một field riêng, cả N field đều ra giá trị X'. Statement cốt lõi do AI suy từ quan sát TC-20 (không có căn cứ expected PO/Dev trích được), chỉ kiểm GO Single-line Text, build không ghi lại, nên là quan sát confidence LOW. Canon KB-029 cùng hướng (giá trị áp cho mọi nơi dùng Global Option); mục này thêm chi tiết về field/khoá prefill.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (guest)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "tags": [
+      "global-option",
+      "storefront",
+      "prefill",
+      "share-value",
+      "layer-title"
+    ],
+    "related_kb_ids": [
+      "KB-029",
+      "KB-028"
+    ],
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-131"
     }
   }
 ]

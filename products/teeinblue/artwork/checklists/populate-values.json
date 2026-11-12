@@ -376,7 +376,7 @@
       "title": "Font category dropdown filter loại trừ category soft-delete (trạng thái DỮ LIỆU STORE, không phải bug)",
       "applicability": {
         "role": "store owner / staff",
-        "state": "store linh-explorer, dropdown chọn font category cho layer Font",
+        "state": "store TIB_STORE_URL_1, dropdown chọn font category cho layer Font",
         "environment": "staging",
         "theme_or_device": ""
       },
@@ -1551,6 +1551,569 @@
       "priority": "P2",
       "automation_suitability": "NOT_SUITABLE",
       "oq_id": "OQ-artwork-256"
+    },
+    {
+      "check_id": "CHK-046",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-110] Token đúng shape nhưng nội dung sai (context đơn vị sai/typo, formula sai, .N hỏng trong ngoặc): ghi kết quả layer đích",
+      "applicability": {
+        "role": "merchant-owner (cấu hình) · buyer value nhập qua Live Preview",
+        "state": "artwork throwaway trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer; artwork throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Trên artwork throwaway của store explorer, tạo layer text nguồn và layer đích bật Populate Content từ nguồn đó.",
+        "Lần lượt đặt Value của layer đích: {{value.context.yearToFortnight}}, {{value.context.yaerToMonth}}, {{value.formula(origin/0)}}, {{value.formula(origin%2)}}, {{value.formula(origin.2+1)}}.",
+        "Nhập giá trị nguồn là số (ví dụ 40 hoặc 10) trong Live Preview; ghi layer đích hiện gì (rỗng/Default text, giá trị nguồn, NaN/Infinity, chuỗi token), kèm build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Nội dung layer đích trong Live Preview với từng token.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-987",
+        "artwork/populate-values#KB-078"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-987 là rule QA chưa PO/Dev xác nhận; viết expected theo rule QA có thể sai."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-455"
+    },
+    {
+      "check_id": "CHK-047",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-110] Token value.* không hoàn chỉnh: ghi layer đích hiện giá trị nguồn hay rỗng",
+      "applicability": {
+        "role": "merchant-owner (cấu hình) · buyer value nhập qua Live Preview",
+        "state": "artwork throwaway trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer; artwork throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Cùng fixture CHK-046.",
+        "Lần lượt đặt Value: {{value.context.yearTo}}, {{value.context}}, {{value.wibble}}, {{value.contextt.yearToMonth}}, {{value.formula(origin+}}, {{value.formula(origin/3).abc}}.",
+        "Nhập giá trị nguồn số; ghi layer đích hiện gì, kèm build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Nội dung layer đích: giá trị nguồn, rỗng, kết quả phép tính hay chuỗi token.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-988",
+        "artwork/populate-values#KB-078"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-988 là rule QA chưa PO/Dev xác nhận; viết expected theo rule QA có thể sai."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-456"
+    },
+    {
+      "check_id": "CHK-048",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-110] Token không prefix value trong layer populate ({{7*7}}, {{foobar}}): ghi kết quả, kiểm không tính biểu thức",
+      "applicability": {
+        "role": "merchant-owner (cấu hình) · buyer value nhập qua Live Preview",
+        "state": "artwork throwaway trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer; artwork throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Cùng fixture CHK-046.",
+        "Đặt Value lần lượt: {{7*7}}, {{foobar}}, {{name}}, rồi 'prefix {{7*7}} {{value.formula(origin+1)}} suffix'.",
+        "Nhập giá trị nguồn 5; ghi layer đích hiện gì (có 49 không, có chuỗi token không), kèm build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Nội dung layer đích; có biểu thức nào được tính ngoài token value. hay không.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-989",
+        "artwork/populate-values#KB-078"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-989 là rule QA chưa PO/Dev xác nhận; viết expected theo rule QA có thể sai."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-457"
+    },
+    {
+      "check_id": "CHK-049",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[CBS-110] Nguồn Date picker với {{value}}, {{value.context.dayToHour}}, {{value.formula(origin+1)}}",
+      "applicability": {
+        "role": "merchant-owner (cấu hình) · buyer value nhập qua Live Preview",
+        "state": "artwork throwaway trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer; artwork throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Trên artwork throwaway, đặt layer text nguồn có Input type = Date picker; layer đích bật Populate Content từ nguồn.",
+        "Lần lượt đặt Value: {{value}}, {{value.context.dayToHour}}, {{value.formula(origin+1)}}.",
+        "Chọn một ngày trong Live Preview; ghi layer đích hiện gì; ghi trong Browse values nhóm Text & Curve Text có token ngày/now không; kèm build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Nội dung layer đích với từng token; danh sách token của nhóm Text & Curve Text.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-990",
+        "artwork/populate-values#KB-078"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-990 là rule QA chưa PO/Dev xác nhận; viết expected theo rule QA có thể sai."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-458"
+    },
+    {
+      "check_id": "CHK-050",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-110] Hằng số năm của {{value.context.*}}: ghi kết quả yearToDay / yearToSecond / yearToWeek",
+      "applicability": {
+        "role": "merchant-owner (cấu hình) · buyer value nhập qua Live Preview",
+        "state": "artwork throwaway trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer; artwork throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Cùng fixture CHK-046.",
+        "Lần lượt đặt Value: {{value.context.yearToDay}}, {{value.context.yearToSecond}}, {{value.context.yearToWeek}}; nhập nguồn 1, 40, 2026.",
+        "Ghi kết quả từng tổ hợp và ghi có tuỳ chọn số ngày/năm nào trên UI không; kèm build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Giá trị layer đích cho mỗi tổ hợp; có UI chọn hằng số không.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-991",
+        "artwork/populate-values#KB-078"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-991 là rule QA chưa PO/Dev xác nhận; viết expected theo rule QA có thể sai."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-459"
+    },
+    {
+      "check_id": "CHK-051",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-110] Tham số X của {{value.<N>char}}: 0, vượt độ dài, chữ, âm, thập phân",
+      "applicability": {
+        "role": "merchant-owner (cấu hình) · buyer value nhập qua Live Preview",
+        "state": "artwork throwaway trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer; artwork throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Cùng fixture CHK-046, nguồn là chuỗi 15 ký tự.",
+        "Lần lượt đặt Value: {{value.0char}}, {{value.999999999999char}}, {{value.abcchar}}, {{value.-1char}}, {{value.1.5char}}; đối chiếu {{value.initialofword.-1}}.",
+        "Ghi kết quả từng token, kèm build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Nội dung layer đích cho từng giá trị X.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-992",
+        "artwork/populate-values#KB-078"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-992 là rule QA chưa PO/Dev xác nhận; viết expected theo rule QA có thể sai."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-460"
+    },
+    {
+      "check_id": "CHK-052",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-110] Text layer tĩnh có content {{7*7}} / <b>x</b>: ghi canvas editor, sau Save & Close, và Preview/mockup",
+      "applicability": {
+        "role": "merchant-owner (cấu hình) · buyer value nhập qua Live Preview",
+        "state": "artwork throwaway trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer; artwork throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Trên artwork throwaway, thêm text layer thường (không bật populate/personalization), content '{{7*7}} <b>x</b>'.",
+        "Ghi chữ hiện trên canvas editor; Save & Close rồi mở lại, ghi content đã lưu.",
+        "Mở Preview/mockup ở kích thước đọc được chữ; ghi chữ hiện ra; kèm build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Chữ hiện ở editor, giá trị lưu, và chữ ở render server-side.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-993",
+        "artwork/populate-values#KB-078"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-993 là rule QA chưa PO/Dev xác nhận; viết expected theo rule QA có thể sai."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-461"
+    },
+    {
+      "check_id": "CHK-053",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-115] {{value.initialofword.X}} trên từng loại layer đích: Available values có option không và layer hiện gì",
+      "applicability": {
+        "role": "merchant-owner (cấu hình) · buyer value nhập qua Live Preview",
+        "state": "artwork throwaway có layer text nguồn",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Tạo layer text nguồn và lần lượt các layer đích Single-line Text, Curve Text, Warp Text, Paragraph, QR Code, Spiral Text, Clipart Category; mỗi layer bật Populate Content từ nguồn.",
+        "Mở Browse values của từng layer đích, ghi có option {{value.initialofword.X}} không.",
+        "Đặt Value {{value.initialofword.1}}, nhập nguồn \"Daniel & Sophie\" trong Live Preview; ghi layer đích hiện gì (QR: giải mã chuỗi); ghi kết quả kèm build và ngày chạy, không phán pass hay fail.",
+        "Mở popup Select a layer type, ghi danh sách tên type có mặt."
+      ],
+      "observation_point": "Option trong Browse values và nội dung layer đích theo từng loại layer; danh sách tên type trong popup.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-994",
+        "artwork/populate-values#KB-995",
+        "artwork/populate-values#KB-078"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-994/KB-995 là rule QA chưa PO/Dev xác nhận; viết expected theo rule có thể sai."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-462"
+    },
+    {
+      "check_id": "CHK-054",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-115] Spiral Text và Clipart Category làm đích: Browse values có nhóm token text không (sau TIB-5271)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "artwork throwaway có layer đích Spiral Text và Clipart Category",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Thêm layer đích Spiral Text và Clipart Category, mở POPULATE VALUES > Browse values.",
+        "Ghi tên các nhóm trong dropdown nhóm và layer text có được chọn làm nguồn Populate Content không; ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Tên nhóm trong Browse values (vd có \"Text, Curve Text, Warp Text & Spiral Text\" hay không) và dropdown nguồn.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-995",
+        "artwork/populate-values#KB-078"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Vế Spiral của KB-995 có thể lỗi thời sau TIB-5271."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-463"
+    },
+    {
+      "check_id": "CHK-055",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-115] Nguồn của Populate X là layer, không phải Global Option",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "artwork throwaway có một Global Option nhóm layer color và layer clipart-category",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Tạo Global Option chứa một layer color và một layer clipart-category; tạo layer đích bật Populate Color và Populate Background.",
+        "Mở dropdown nguồn của từng kênh, ghi mục liệt kê là tên layer hay tên Global Option.",
+        "Lưu và đọc retrieval_styles.<channel>.layer trong JSON layer; ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Mục trong dropdown nguồn và id lưu ở retrieval_styles.<channel>.layer.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-997",
+        "artwork/populate-values#KB-076"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-997 là rule QA chưa PO/Dev xác nhận."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-464"
+    },
+    {
+      "check_id": "CHK-056",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-115] Dropdown nguồn của Populate Content/Color/Background lọc theo type layer",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "artwork throwaway có layer nguồn Single-line Text, Paragraph, color, clipart-category, group-clipart-categories",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Trên layer đích text, mở dropdown nguồn của Populate Content, Populate Color, Populate Background; ghi layer nào được liệt kê.",
+        "Ghi Populate Color có hiện \"List is empty\" khi artwork chỉ có layer text không.",
+        "Đọc lại (không ghi qua API trên dữ liệu thật) retrieval_styles.color của layer đích; ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Danh sách nguồn từng kênh; thông báo khi rỗng.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-998",
+        "artwork/populate-values#KB-076",
+        "artwork/populate-values#KB-079"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-998 là rule QA; vế Paragraph có thể lỗi thời sau TIB-5271."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-465"
+    },
+    {
+      "check_id": "CHK-057",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-115] Populate Color của shape/vector/text: nguồn là layer Color cùng artwork, không có lựa chọn Shopify Color variant",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "artwork throwaway có layer shape/vector và một layer Color option thường (không cần product nhiều Color variant)",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Bật Populate Color trên layer shape/vector, mở dropdown nguồn.",
+        "Ghi các lựa chọn có mặt (layer Color trong artwork, có mục nào liên quan Shopify variant không); ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Danh sách nguồn của Populate Color.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-999",
+        "artwork/populate-values#KB-998"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-999 gắn TIB-4726 chưa ship; rule QA chưa xác nhận."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-466"
+    },
+    {
+      "check_id": "CHK-058",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "[CBS-115] Dynamic Clipart by Text chọn clipart theo tên clipart khớp ký tự input",
+      "applicability": {
+        "role": "buyer",
+        "state": "campaign throwaway trên store explorer có layer Dynamic Clipart by Text gắn category clipart đặt tên theo ký tự (tên clipart khác tên file)",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Trên store explorer, dựng category clipart có clipart tên \"A\" với tên file khác (vd x1.png).",
+        "Gắn vào layer Dynamic Clipart by Text, publish campaign throwaway.",
+        "Trên storefront nhập text bắt đầu bằng \"A\"; ghi clipart hiển thị; ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Clipart hiển thị trong preview.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-1000",
+        "artwork/layer-config-image#KB-957"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1000 là rule QA; cơ chế chuẩn hoá tên chưa rõ (OQ-artwork-323)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-323"
+    },
+    {
+      "check_id": "CHK-059",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "[CBS-118, KNOWN_DEFECT watch] Từ bắt đầu bằng ký tự astral (emoji) với {{value.initialofword.X}} và bare {{value.initialofword}}",
+      "applicability": {
+        "role": "merchant-owner (cấu hình) · buyer value nhập qua Live Preview",
+        "state": "artwork throwaway có layer text nguồn và hai layer đích populate bằng {{value.initialofword.1}} và {{value.initialofword}}",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Tạo layer text nguồn và hai layer đích text bật Populate Content, Value lần lượt {{value.initialofword.1}} và {{value.initialofword}}.",
+        "Nhập nguồn \"😀 Sophie\" trong Live Preview; ghi nội dung hai layer đích (glyph vỡ, ký tự đơn lẻ hay emoji đầy đủ).",
+        "Nếu có, ghi thêm kết quả artwork render; ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Nội dung layer đích của từng token với từ bắt đầu bằng emoji.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-078",
+        "artwork/populate-values#KB-994"
+      ],
+      "regression_watch_kb_ids": [
+        "artwork/populate-values#KB-1025",
+        "artwork/populate-values#KB-1026"
+      ],
+      "risk_refs": [
+        "Hành vi lỗi hiện tại (KNOWN_DEFECT theo change note dev): '😀 Sophie' ra '\\ud83d' tại .1 và '\\ud83dS' với bare token. Ghi lại mỗi lần chạy xem lỗi còn hay đã đổi."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "known_defect_behavior": "{{value.initialofword.1}} với '😀 Sophie' ra một \\ud83d đơn lẻ; bare {{value.initialofword}} ra '\\ud83dS' (change note dev TIB-5331, 2026-09-09). Known issue, không phải expected.",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-503"
+    },
+    {
+      "check_id": "CHK-060",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-118] Họ token initialofword với từ bắt đầu bằng chữ Latin có dấu / tiếng Việt (É, Đ)",
+      "applicability": {
+        "role": "merchant-owner (cấu hình) · buyer value nhập qua Live Preview",
+        "state": "artwork throwaway có layer text nguồn và layer đích populate bằng {{value.initialofword.1}}, {{value.initialofword.2}} và {{value.initialofword}}",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Tạo layer text nguồn và các layer đích text bật Populate Content với Value {{value.initialofword.1}}, {{value.initialofword.2}}, {{value.initialofword}}.",
+        "Nhập nguồn \"Élodie Đức\" trong Live Preview.",
+        "Ghi nội dung từng layer đích kèm build và ngày chạy."
+      ],
+      "observation_point": "Chữ đầu lấy ra có giữ nguyên ký tự có dấu (É, Đ) hay bị vỡ.",
+      "expected_result": "Chữ đầu có dấu được lấy đúng, không glyph vỡ: .1 hiện 'É', .2 hiện 'Đ', bare token hiện 'ÉĐ' (baseline theo change note dev, chưa PO/Dev xác nhận là hành vi đúng; lệch là cần điều tra).",
+      "oracle": {
+        "kb_ids": [
+          "artwork/populate-values#KB-1027"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-078",
+        "artwork/populate-values#KB-1025",
+        "artwork/populate-values#KB-1026"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1027 chỉ là một câu của dev, chưa có test case."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-505"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1675,6 +2238,42 @@
         "CHK-045"
       ],
       "confidence": "STRONG (KB-862..865, lỗi giả lập); watch KB-867"
+    },
+    {
+      "feature_id": "FEAT-11-populate-values",
+      "risk": "[CBS-110] Resolver populate với token sai/không hoàn chỉnh/không prefix value, nguồn Date picker, hằng số năm, tham số X của Xchar; text layer tĩnh vẽ nguyên văn",
+      "covered_by": [
+        "CHK-046",
+        "CHK-047",
+        "CHK-048",
+        "CHK-049",
+        "CHK-050",
+        "CHK-051",
+        "CHK-052"
+      ],
+      "confidence": "NONE (KB-987..KB-993 PROPOSED)"
+    },
+    {
+      "feature_id": "FEAT-11-populate-values",
+      "risk": "[CBS-115] Layer nguồn/đích hợp lệ của populate (initialofword.X theo loại layer, Spiral/Clipart Category, nguồn là layer không phải Global Option, lọc theo type, Populate Color không trỏ Shopify variant, DCT so khớp tên clipart)",
+      "covered_by": [
+        "CHK-053",
+        "CHK-054",
+        "CHK-055",
+        "CHK-056",
+        "CHK-057",
+        "CHK-058"
+      ],
+      "confidence": "NONE (KB-994, KB-995, KB-997..KB-1000 PROPOSED)"
+    },
+    {
+      "feature_id": "FEAT-11-populate-values",
+      "risk": "[CBS-118] Ký tự ngoài BMP (emoji, chữ toán học) và chữ có dấu ở đầu từ với họ token initialofword",
+      "covered_by": [
+        "CHK-059",
+        "CHK-060"
+      ],
+      "confidence": "CHK-059 NONE (KNOWN_DEFECT watch, KB-1025/KB-1026); CHK-060 BASELINE (KB-1027, OBSERVED_CURRENT/LOW)"
     }
   ],
   "excluded_dimensions": [
@@ -1688,7 +2287,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-118"
   }
 }

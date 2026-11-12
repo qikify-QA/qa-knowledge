@@ -174,7 +174,7 @@ Mỗi mục có 1 `oq_id` ổn định và đúng 1 `type` (`NEEDS_CONFIRMATION`
 ## OQ-campaign-029 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id": "OQ-campaign-029", "type": "NEEDS_CONFIRMATION", "feature_id": "campaign-list-browse", "summary": "Chức năng 'Mark as archive' và quan hệ với filter tab 'Archived' — Chưa từng thực thi; ảnh hưởng tới trạng thái publish/list hiện chưa rõ.", "related_checks": ["CHK-008"]}
+{"oq_id": "OQ-campaign-029", "type": "NEEDS_CONFIRMATION", "feature_id": "campaign-list-browse", "summary": "Chức năng 'Mark as archive' và quan hệ với filter tab 'Archived' — Chưa từng thực thi; ảnh hưởng tới trạng thái publish/list hiện chưa rõ. Bổ sung CBS-139 (2026-11-11): spec-hub rule campaigns-publish-guards (S2, KB-453) nêu campaign archived không publish được; chưa thực thi Mark as archive nên câu hỏi vẫn mở.", "related_checks": ["CHK-008"]}
 ```
 
 ## OQ-campaign-030 — NEEDS_CONFIRMATION
@@ -414,7 +414,7 @@ Mỗi mục có 1 `oq_id` ổn định và đúng 1 `type` (`NEEDS_CONFIRMATION`
 ## OQ-campaign-069 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id":"OQ-campaign-069","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"Re-publish campaign qua Update trong Multi-store launch (POST /api/campaigns/{id}/sync) mới quan sát 1 lượt (TC-TIB-7408) trên build trước redeploy, không thấy toast. PO xác nhận hành vi đúng (có toast thành công không; metafield version có phải đổi và khớp tham số v SDK dùng không); chạy lại sau merge. KB-308 (storefront phát URL video mới sau Update, quan sát 2026-10-22 trước khi có cache) có thể đã cũ — re-verify sau merge.","kb_ids":["KB-370","KB-308"]}
+{"oq_id": "OQ-campaign-069", "type": "NEEDS_CONFIRMATION", "feature_id": "create-campaign-by-product-base", "summary": "Re-publish campaign qua Update trong Multi-store launch (POST /api/campaigns/{id}/sync) mới quan sát 1 lượt (TC-TIB-7408) trên build trước redeploy, không thấy toast. PO xác nhận hành vi đúng (có toast thành công không; metafield version có phải đổi và khớp tham số v SDK dùng không); chạy lại sau merge. KB-308 (storefront phát URL video mới sau Update, quan sát 2026-10-22 trước khi có cache) có thể đã cũ — re-verify sau merge. Bổ sung CBS-139 (2026-11-11): spec-hub rule campaigns-publish-guards (S2, KB-453) nêu không Update được ở store chưa từng publish hoặc khi mockup còn đang publish ở store đó. Người gửi CBS-139 hỏi thêm (Dev trả lời): Update ở một store (chọn override field nào trong dialog Multi-store launch) có chỉ áp cho store đang chọn, không ảnh hưởng dữ liệu đã publish ở store khác như KB-011 mô tả không? Vế publish theo từng store của CBS-139 chưa nạp (thiếu nguồn S3 cho check P1 CHK-005).", "kb_ids": ["KB-370", "KB-308"]}
 ```
 
 ## OQ-campaign-070 — OPEN_ISSUE
@@ -520,7 +520,7 @@ Mỗi mục có 1 `oq_id` ổn định và đúng 1 `type` (`NEEDS_CONFIRMATION`
 ```
 
 ```json
-{"oq_id":"OQ-campaign-089","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-product-base","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-016 “NEEDS_CONFIRMATION: hành vi khi publish thất bại/partial (mockup xử lý bất đồng bộ lỗi)” của feature create-campaign-by-product-base. current_behavior_only"}
+{"oq_id": "OQ-campaign-089", "type": "NEEDS_CONFIRMATION", "feature_id": "create-campaign-by-product-base", "summary": "Cần xác nhận expected behavior và nguồn cho check CHK-016 “NEEDS_CONFIRMATION: hành vi khi publish thất bại/partial (mockup xử lý bất đồng bộ lỗi)” của feature create-campaign-by-product-base. current_behavior_only. Bổ sung CBS-139 (2026-11-11): spec-hub rule campaigns-publish-guards (S2, KB-453) nêu không Update được khi mockup còn đang publish ở store; không nói gì về publish thất bại/partial, câu hỏi vẫn mở."}
 ```
 
 ```json
@@ -541,4 +541,10 @@ Mỗi mục có 1 `oq_id` ổn định và đúng 1 `type` (`NEEDS_CONFIRMATION`
 
 ```json
 {"oq_id":"OQ-campaign-094","type":"NEEDS_CONFIRMATION","feature_id":"create-campaign-by-shopify","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-016 “NEEDS_CONFIRMATION: platform-product có action 'Delete' tương đương campaign hay chỉ có 'Unpublish' (archival-only)” của feature create-campaign-by-shopify. current_behavior_only"}
+```
+
+## OQ-campaign-095 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-campaign-095", "type": "NEEDS_CONFIRMATION", "feature_id": "create-campaign-by-product-base", "summary": "Theo spec-hub (rule campaigns-publish-guards; S2, KB-453, đọc từ code, chưa người review), campaign không publish được khi archived, không publish 2 lần vào cùng store, không Update được ở store chưa từng publish hoặc khi mockup còn đang publish ở store đó. Dev/PO xác nhận đây là hành vi mong muốn, và portal báo việc từ chối thế nào (thông báo lỗi, nút ẩn hay disable)? Liên quan OQ-campaign-029, OQ-campaign-069, OQ-campaign-089. Người trả lời: Dev/PO.", "kb_ids": ["KB-453"]}
 ```

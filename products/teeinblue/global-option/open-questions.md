@@ -4,10 +4,10 @@ _Tổng hợp từ `kb.json` (conflicts, tagged qua `conflict_group`), `features
 
 | Loại | Số lượng |
 |---|---|
-| CONFLICT | 5 |
-| NEEDS_CONFIRMATION | 32 |
+| CONFLICT | 6 |
+| NEEDS_CONFIRMATION | 56 |
 | OPEN_ISSUE | 16 |
-| **Tổng** | **53** |
+| **Tổng** | **78** |
 
 ## OQ-global-option-001 — CONFLICT
 
@@ -409,4 +409,19 @@ _Tổng hợp từ `kb.json` (conflicts, tagged qua `conflict_group`), `features
 
 ```json
 {"oq_id":"OQ-global-option-074","type":"NEEDS_CONFIRMATION","feature_id":"global-option-instance-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-01-019 “[security, chưa test] GraphQL query 'getData' cho phép client tự set where/order_by/offset/limit — khả năng đọc dữ liệu cross-tenant nếu 'where' bị sửa thủ công” của feature global-option-instance-management. missing_or_unresolved_oracle"}
+```
+
+## CBS-131 — vòng đời Global Option với layer và linked copy
+
+```json
+{"oq_id": "OQ-global-option-075", "type": "CONFLICT", "feature_id": "global-option-instance-management", "summary": "Xoá Global Option đang dùng (Used>0) bị chặn cứng (modal 'Caution: Option is in use', chỉ View artworks/Close) hay tự unlink khỏi layer và không chặn? CLAIM-01/KB-729 (TC-49 QA-3345 2026-09-07, LOW, build không ghi lại) quan sát chặn cứng; teeinblue supersede_policy.enabled=false nên để UNRESOLVED. Người trả lời: Dev.", "kb_ids": ["KB-729"], "conflict_group": "CFL-CBS-131-01", "side_a": "Ghi chú cũ BR-10 QA-3283/TIB-5226 + QA-3344 (2026-08-26): 'unlinks its linked layers; it does not block deletion' — xoá GO đang dùng tự unlink khỏi layer, không bị chặn.", "side_b": "CLAIM-01/KB-729 (TC-49 QA-3345 2026-09-07): xoá GO Used>0 bị chặn cứng bằng modal 'Caution: Option is in use', chỉ có View artworks/Close."}
+```
+```json
+{"oq_id": "OQ-global-option-076", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-personalization-global-option-link", "summary": "Hành vi strip retrieval_layer/retrieval_value/retrieval_value_enabled khi Save artwork (hai layer cùng Global Option, TIB-5274) hiện có đúng là canon không, và còn bước nào khác của production bị đổi không? CLAIM-10/KB-730 (TC-01 QA-3347 staging ✅ AI, LOW), nguồn test_case không trích được căn cứ expected, build không ghi lại; CHK-02-034. Người trả lời: Dev.", "kb_ids": ["KB-730"]}
+```
+```json
+{"oq_id": "OQ-global-option-077", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-personalization-global-option-link", "summary": "Quy tắc dedup-render 'chỉ một input storefront theo layer đầu theo thứ tự' có đúng cho mọi type Global Option (Clipart Category, Photo, Toggle...) không? CLAIM-11/KB-731 (TC-20 QA-3399, LOW) chỉ kiểm GO Single-line Text trên một artwork; canon KB-028 đã nói dedupe theo GO id; CHK-02-035. Người trả lời: Dev.", "kb_ids": ["KB-731"]}
+```
+```json
+{"oq_id": "OQ-global-option-078", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-personalization-global-option-link", "summary": "Dev/PO xác nhận: một field/param duy nhất đặt giá trị cho mọi layer dùng chung Global Option, và khoá prefill khớp là title của layer (không phải tên quản lý GO)? CLAIM-12/KB-732 (TC-20 QA-3399, LOW): FACT-112 do AI suy từ FACT-111, chỉ kiểm GO Single-line Text, không trích được REQ-06 gốc; CHK-02-036. Người trả lời: Dev.", "kb_ids": ["KB-732"]}
 ```

@@ -13,7 +13,7 @@ _Regenerated from `kb.json` (object-level + per-feature) and `checklists/*.json`
 ## OQ-order-001 — CONFLICT
 
 ```json
-{"oq_id": "OQ-order-001", "type": "CONFLICT", "feature_id": "place-personalized-order-storefront", "summary": "An order completed successfully at storefront checkout (confirmation JTEL87JY0) never appeared in the portal Orders list (GET /api/orders?by_teeinblue=1), even after 90+ minutes, checked across all TIB statuses, both stores, and a 30-day date range. A second order placed afterward, following the user's claim that a webhook configuration issue had been fixed, DID sync successfully (portal #1002 / id 4322). This affects both place-personalized-order-storefront (the sync step) and review-and-initiate-fulfillment-portal (the entry precondition).", "side_a": "Storefront checkout completed successfully for order confirmation JTEL87JY0 (staging store linh-explorer-2.myshopify.com, GUEST buyer), placed approximately 2026-09-13T07:08 UTC, total $63.99, single line item — the order exists as a real, completed Shopify order.", "side_b": "GET /api/orders?by_teeinblue=1 from the portal never returned this order — checked across all TIB statuses, both stores, a 30-day date range, and repeatedly over more than 90 minutes after placement. It only ever showed a different, later order (confirmation PE7AU1Y53 / portal #1002 / id 4322)."}
+{"oq_id": "OQ-order-001", "type": "CONFLICT", "feature_id": "place-personalized-order-storefront", "summary": "An order completed successfully at storefront checkout (confirmation JTEL87JY0) never appeared in the portal Orders list (GET /api/orders?by_teeinblue=1), even after 90+ minutes, checked across all TIB statuses, both stores, and a 30-day date range. A second order placed afterward, following the user's claim that a webhook configuration issue had been fixed, DID sync successfully (portal #1002 / id 4322). This affects both place-personalized-order-storefront (the sync step) and review-and-initiate-fulfillment-portal (the entry precondition).", "side_a": "Storefront checkout completed successfully for order confirmation JTEL87JY0 (staging store TIB_STORE_URL_2, GUEST buyer), placed approximately 2026-09-13T07:08 UTC, total $63.99, single line item — the order exists as a real, completed Shopify order.", "side_b": "GET /api/orders?by_teeinblue=1 from the portal never returned this order — checked across all TIB statuses, both stores, a 30-day date range, and repeatedly over more than 90 minutes after placement. It only ever showed a different, later order (confirmation PE7AU1Y53 / portal #1002 / id 4322)."}
 ```
 
 Root cause (claimed webhook configuration fix) has never been independently verified by dev/infra logs or backend records — the user's statement is recorded as an unverified claim, not a confirmed fact. Do not mark this resolved based on that claim alone.
@@ -63,7 +63,7 @@ Root cause (claimed webhook configuration fix) has never been independently veri
 ## OQ-order-009 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id": "OQ-order-009", "type": "NEEDS_CONFIRMATION", "feature_id": "review-and-initiate-fulfillment-portal", "summary": "Does any non-owner/restricted-permission portal role see the same orders list, order-details, and fulfill/status actions as the owner (sub=273)? Never tested — only the owner role was exercised against every capability of this feature."}
+{"oq_id": "OQ-order-009", "type": "NEEDS_CONFIRMATION", "feature_id": "review-and-initiate-fulfillment-portal", "summary": "Does any non-owner/restricted-permission portal role see the same orders list, order-details, and fulfill/status actions as the owner (sub=<explorer>)? Never tested — only the owner role was exercised against every capability of this feature."}
 ```
 
 ## OQ-order-010 — NEEDS_CONFIRMATION
@@ -87,7 +87,7 @@ Root cause (claimed webhook configuration fix) has never been independently veri
 ## OQ-order-013 — OPEN_ISSUE
 
 ```json
-{"oq_id": "OQ-order-013", "type": "OPEN_ISSUE", "feature_id": "place-personalized-order-storefront", "summary": "Exploration for this KB version ran against store linh-explorer-2.myshopify.com, not the originally-intended linh-explorer.myshopify.com. linh-explorer.myshopify.com is known (from a separate prior observation) to have an add-to-cart failure that never completes for the same campaign, so no order could be placed there with available evidence. Any future work targeting linh-explorer.myshopify.com specifically must treat this object's storefront findings as unverified there and should first re-investigate that store's add-to-cart issue."}
+{"oq_id": "OQ-order-013", "type": "OPEN_ISSUE", "feature_id": "place-personalized-order-storefront", "summary": "Exploration for this KB version ran against store TIB_STORE_URL_2, not the originally-intended store TIB_STORE_URL_1. store TIB_STORE_URL_1 is known (from a separate prior observation) to have an add-to-cart failure that never completes for the same campaign, so no order could be placed there with available evidence. Any future work targeting store TIB_STORE_URL_1 specifically must treat this object's storefront findings as unverified there and should first re-investigate that store's add-to-cart issue."}
 ```
 
 ## OQ-order-014 — OPEN_ISSUE
@@ -177,7 +177,7 @@ Root cause (claimed webhook configuration fix) has never been independently veri
 ## OQ-order-028 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id":"OQ-order-028","type":"NEEDS_CONFIRMATION","feature_id":"review-and-initiate-fulfillment-portal","summary":"Dev/PO: toast 'put your design in queue' khi Regenerate và việc Item Activity logs không ghi dòng 'is generating' cho lần regenerate chỉ có ở actualResult của TC-TIB-7630 — có phải hành vi mong đợi không? Tương tự cho việc order vẫn ở trạng thái Ready sau Regenerate (chỉ ở actualResult TC-TIB-7630). Không dùng để diễn giải lại chuỗi sự kiện Item Activity logs hiện có.","kb_ids":["KB-393"]}
+{"oq_id":"OQ-order-028","type":"NEEDS_CONFIRMATION","feature_id":"review-and-initiate-fulfillment-portal","summary":"Dev/PO: toast 'put your design in queue' khi Regenerate và việc Item Activity logs không ghi dòng 'is generating' cho lần regenerate chỉ có ở actualResult của TC-TIB-7630 — có phải hành vi mong đợi không? Tương tự cho việc order vẫn ở trạng thái Ready sau Regenerate (chỉ ở actualResult TC-TIB-7630). Không dùng để diễn giải lại chuỗi sự kiện Item Activity logs hiện có. Bổ sung CBS-138 (2026-11-11): spec-hub rule design-generation-ready (S2, KB-782) nêu item active/personalized thành Ready khi design file lưu xong, và item đã fulfilled được re-generate vẫn fulfilled; phần CCR trích không nói item đang Ready ở trạng thái nào sau re-generate, nên câu hỏi về trạng thái sau Regenerate vẫn mở. Xem OQ-order-085.","kb_ids":["KB-393","KB-782"]}
 ```
 
 ## OQ-order-029 — OPEN_ISSUE
@@ -291,7 +291,7 @@ Root cause (claimed webhook configuration fix) has never been independently veri
 ## OQ-order-047 — OPEN_ISSUE
 
 ```json
-{"oq_id":"OQ-order-047","type":"OPEN_ISSUE","feature_id":"shopify-order-import","summary":"Hành vi chưa ship (TIB-5563): khôi phục customization qua cart token chạy theo đơn, chỉ khi không line nào có id số/UUID hợp lệ, và line có property không bao giờ được khôi phục (KB-762). Chưa quan sát. CHK-006 chờ câu trả lời này.","kb_ids":["KB-762"]}
+{"oq_id":"OQ-order-047","type":"OPEN_ISSUE","feature_id":"shopify-order-import","summary":"Hành vi chưa ship (TIB-5563): khôi phục customization qua cart token chạy theo đơn, chỉ khi không line nào có id số/UUID hợp lệ, và line có property không bao giờ được khôi phục (KB-762). Chưa quan sát. CHK-006 chờ câu trả lời này. Bổ sung CBS-138 (2026-11-11): spec-hub rule order-sync-match-personalization (S2, KB-783, mô tả code hiện tại) nêu nhánh cart chỉ chạy khi không item nào trong order có id, khớp cùng cart + cùng variant trong một tháng dương lịch, mỗi personalization một item; cùng chiều 'chạy theo đơn' của KB-762, nhưng không nói id thế nào là hợp lệ và không phải nguồn của bản fix TIB-5563. Câu hỏi vẫn mở. Xem OQ-order-086.","kb_ids":["KB-762","KB-783"]}
 ```
 
 ## OQ-order-048 — OPEN_ISSUE
@@ -435,7 +435,7 @@ Root cause (claimed webhook configuration fix) has never been independently veri
 ```
 
 ```json
-{"oq_id": "OQ-order-080", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "KB-776, KB-777: với order_combine_by khác 1, các line item cùng provider được gửi thế nào (một request cho mỗi line item?), và việc tách theo provider có luôn xảy ra ở mọi giá trị order_combine_by không? QA-3365 TC-33 chỉ chạy với giá trị 1; expected của TC-34 ghi \"Dev-confirmed 2026-09-22 (RQ6)\" không có tên hay quote. Người trả lời: Dev.", "kb_ids": ["KB-776", "KB-777"]}
+{"oq_id": "OQ-order-080", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "KB-776, KB-777: với order_combine_by khác 1, các line item cùng provider được gửi thế nào (một request cho mỗi line item?), và việc tách theo provider có luôn xảy ra ở mọi giá trị order_combine_by không? QA-3365 TC-33 chỉ chạy với giá trị 1; expected của TC-34 ghi \"Dev-confirmed 2026-09-22 (RQ6)\" không có tên hay quote. Người trả lời: Dev. Bổ sung CBS-138 (2026-11-11): spec-hub rule bulk-fulfill-grouping (S2, KB-784) nêu Confirm & Send gom item theo print provider rồi theo order, hoặc theo shipping address khi store gộp đơn theo shipping address; mỗi nhóm một provider order. Rule cùng chiều việc tách theo provider nhưng không nêu tên hay giá trị của setting gộp đơn, nên không trả lời câu hỏi về order_combine_by khác 1. Tên setting: OQ-order-087.", "kb_ids": ["KB-776", "KB-777", "KB-784"]}
 ```
 
 ```json
@@ -443,7 +443,7 @@ Root cause (claimed webhook configuration fix) has never been independently veri
 ```
 
 ```json
-{"oq_id": "OQ-order-082", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "KB-779: QA (không phải PO/Dev) xác nhận khi chạy QA-3353 TC-76 rằng Re-generate design với mặc định \"No, keep current artwork version\" trên order đã đặt dựng lại bản render byte-identical, không áp populate config (Value/formula/GO/màu) đổi sau khi đặt. Dev/PO xác nhận: đây có phải hành vi mong muốn không (customization đóng băng lúc đặt hàng, Re-generate chỉ re-apply format/layout), và có áp cho mọi populate format không? Liên quan OQ-order-011 (không đóng OQ đó). Người trả lời: Dev/PO.", "kb_ids": ["KB-779"]}
+{"oq_id": "OQ-order-082", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "KB-779: QA (không phải PO/Dev) xác nhận khi chạy QA-3353 TC-76 rằng Re-generate design với mặc định \"No, keep current artwork version\" trên order đã đặt dựng lại bản render byte-identical, không áp populate config (Value/formula/GO/màu) đổi sau khi đặt. Dev/PO xác nhận: đây có phải hành vi mong muốn không (customization đóng băng lúc đặt hàng, Re-generate chỉ re-apply format/layout), và có áp cho mọi populate format không? Liên quan OQ-order-011 (không đóng OQ đó). Người trả lời: Dev/PO. Bổ sung CBS-138 (2026-11-11): spec-hub rule design-generation-artwork-version và artwork-versions-orders-keep-version (S2, KB-781, đọc từ code, chưa người review) nêu design của order render từ artwork version shopper đã personalize, sửa/restore artwork sau khi đặt không đổi design, trừ khi merchant chọn upgrade. Cùng chiều KB-779, chưa phải xác nhận của Dev/PO; câu hỏi vẫn mở.", "kb_ids": ["KB-779", "KB-781"]}
 ```
 
 ```json
@@ -451,5 +451,23 @@ Root cause (claimed webhook configuration fix) has never been independently veri
 ```
 
 ```json
-{"oq_id": "OQ-order-084", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "Re-generate với radio \"Yes. Upgrade latest artwork version.\" có thật sự đưa thay đổi artwork (vd mask override mới) vào order đã đặt không? Chưa có TC nào chạy nhánh này và PASS (liên quan OQ-order-011). Người trả lời: Dev."}
+{"oq_id": "OQ-order-084", "type": "NEEDS_CONFIRMATION", "feature_id": "edit-customization-after-order", "summary": "Re-generate với radio \"Yes. Upgrade latest artwork version.\" có thật sự đưa thay đổi artwork (vd mask override mới) vào order đã đặt không? Chưa có TC nào chạy nhánh này và PASS (liên quan OQ-order-011). Người trả lời: Dev. Bổ sung CBS-138 (2026-11-11): spec-hub rule design-generation-artwork-version (KB-781) chỉ nói merchant có thể chọn upgrade khi re-generate, không nói nhánh upgrade đưa những thay đổi nào vào bản render; câu hỏi vẫn mở."}
+```
+
+## OQ-order-085 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-085", "type": "NEEDS_CONFIRMATION", "feature_id": "review-and-initiate-fulfillment-portal", "summary": "Theo spec-hub (rule design-generation-ready; S2, KB-782), khi design file được lưu, item active hoặc personalized thành ready to fulfill khi mọi design đã xong, và item đã fulfilled trong Shopify được re-generate design vẫn fulfilled, không lùi về Ready. Dev xác nhận hành vi này; điều kiện đúng là 'active or personalized' hay 'generating or personalized' (spec-hub có rule bulk-fulfill-statuses ghi khác, không có trong CCR, không nạp); item đang Ready, Sent hoặc Paused sau re-generate ở trạng thái nào? Liên quan OQ-order-028. Người trả lời: Dev.", "kb_ids": ["KB-782"]}
+```
+
+## OQ-order-086 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-086", "type": "NEEDS_CONFIRMATION", "feature_id": "shopify-order-import", "summary": "Theo spec-hub (rule order-sync-match-personalization; S2, KB-783), Teeinblue tìm personalization theo id trên item; chỉ khi không item nào trong order có id, nó tìm personalization tạo trong cùng cart cho cùng variant trong một tháng dương lịch trở về trước, mỗi personalization dùng cho một item, không hứa dùng lần nào nếu shopper personalize cùng variant nhiều lần. Dev xác nhận hành vi này trên build hiện tại, và 'có id' nghĩa là gì so với 'id số hoặc UUID hợp lệ' của bản fix TIB-5563 (KB-762, OQ-order-047)? Người trả lời: Dev.", "kb_ids": ["KB-783"]}
+```
+
+## OQ-order-087 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-087", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "Theo spec-hub (rule bulk-fulfill-grouping; S2, KB-784), Confirm & Send gom item theo print provider rồi theo order, hoặc theo shipping address khi store gộp đơn theo shipping address; mỗi nhóm một provider order. Dev xác nhận hành vi này, và tên setting thật của việc gộp đơn là gì: KB-776 và CHK-005 gọi là order_combine_by, spec-hub không nêu tên (CCR CBS-138 CLAIM-05, câu hỏi không nguồn); giá trị nào ứng với gộp theo order và theo shipping address? Liên quan OQ-order-080. Người trả lời: Dev.", "kb_ids": ["KB-784", "KB-776"]}
 ```

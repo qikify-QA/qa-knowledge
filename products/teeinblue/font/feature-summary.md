@@ -2,8 +2,8 @@
 **Published context version:** 4
 
 - **Object:** Font (entity `custom_fonts`, trang `/fonts`, menu Assets > Upload Fonts) — riêng biệt với `font_category` (`/font-categories`, object khác, ngoài phạm vi tài liệu này). Xem KB-019.
-- **Environment quan sát:** staging, store `linh-explorer.myshopify.com`.
-- **Actor test tới nay:** duy nhất role `owner` (sub=273) — chưa có coverage cho role/tài khoản khác (xem OQ-font-019).
+- **Environment quan sát:** staging, store `store TIB_STORE_URL_1`.
+- **Actor test tới nay:** duy nhất role `owner` (sub=<explorer>) — chưa có coverage cho role/tài khoản khác (xem OQ-font-019).
 - **Toàn bộ knowledge của object là `OBSERVED_CURRENT`** (0 `CONFIRMED_EXPECTED`) — không có nguồn thẩm quyền spec/PO/ticket xác nhận, chỉ dựa trên quan sát trực tiếp trên môi trường staging.
 - **4/4 feature có profile** (view-and-configure-font-list, upload-custom-font, manage-uploaded-font, use-custom-font-in-artwork-editor). **2 conflict UNRESOLVED** với KB legacy "portal-fonts" (khác store/role/ngày) hội tụ nhiều nhất ở upload-custom-font/manage-uploaded-font — xem `open-questions.md` (OQ-font-001, OQ-font-002).
 - **18 KB item nguồn** cho các feature: 1 HIGH (list/search query, 7 sample), 5 MEDIUM, 12 LOW (đa số single-sample write operation) — theo kb.json từng feature.
@@ -117,7 +117,7 @@
 | **OQ-font-001 (data source REST vs GraphQL)** | UNRESOLVED, xuyên suốt FEAT-02 (create) và FEAT-03 (download/delete) — KB cũ (KB legacy "portal-fonts") tuyên bố toàn bộ GraphQL, quan sát hiện tại thấy REST cho create/download/delete, chỉ list/rename đi GraphQL |
 | **OQ-font-002 (modal vs no-modal upload)** | UNRESOLVED, riêng FEAT-02 — có thể do khác store/version, chưa có evidence phân biệt |
 | **SEC-001 / SEC-002** | SEC-001 (rename `_set` tuỳ ý, field-level authorization chưa test, priority P2, OQ-font-003) và SEC-002 (CDN public path, OQ-font-006) là risk/unknown, **không phải finding đã xác nhận** |
-| **RBAC / non-owner / cross-tenant** | Chưa test trên **bất kỳ** feature nào của object Font — mọi capability chỉ quan sát qua 1 tài khoản owner (sub=273); không có second account khả dụng (OQ-font-019) |
+| **RBAC / non-owner / cross-tenant** | Chưa test trên **bất kỳ** feature nào của object Font — mọi capability chỉ quan sát qua 1 tài khoản owner (sub=<explorer>); không có second account khả dụng (OQ-font-019) |
 | **Multi-page pagination (FEAT-01)** | Store luôn ≤1 trang (≤5 font) — hành vi `hasNextPage=true` (cursor/after, giữ state khi chuyển trang) hoàn toàn chưa quan sát (OQ-font-017) |
 | **Font Settings "Save" (FEAT-01)** | Nút Save chưa từng được bấm (ảnh hưởng toàn store, ngoài phạm vi mutation an toàn) — method/path/payload UNKNOWN (OQ-font-016) |
 | **Storefront-facing (FEAT-04)** | Storefront chưa được bật để test trong phạm vi quan sát tới nay — hoàn toàn chưa test ảnh hưởng font lên trải nghiệm khách hàng (OQ-font-015) |

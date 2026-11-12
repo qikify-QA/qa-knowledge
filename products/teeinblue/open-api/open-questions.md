@@ -50,7 +50,7 @@ Các mục dưới đây còn mở. Mục đã có lời dev trả lời một p
 ## OQ-open-api-007 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id":"OQ-open-api-007","type":"NEEDS_CONFIRMATION","feature_id":"open-api-asset-upload","summary":"Chính sách quota của Open API là gì: ngưỡng từng môi trường, cửa sổ đếm, phạm vi đếm, quota theo ngày, hành vi khi vượt, và header quota có mặt theo loại response như KB-011 có phải hành vi đúng không? Header chỉ cho thấy limit và remaining trên staging; chưa thấy x-ratelimit-reset, retry-after hay 429. KB-044, KB-049 trả lời một phần; ngưỡng từng môi trường, cửa sổ và phạm vi đếm còn mở. Ở asset-category (đã publish), KB-565 có lời dev về daily limit, KB-567 có lời dev về cửa sổ \"per 24 h from the first upload\", KB-568 có ghi nhận của QA về 429 và retry-after; KB-567 và KB-568 đang conflict ở OQ-asset-category-031."}
+{"oq_id":"OQ-open-api-007","type":"NEEDS_CONFIRMATION","feature_id":"open-api-asset-upload","summary":"Chính sách quota của Open API là gì: ngưỡng từng môi trường, cửa sổ đếm, phạm vi đếm, quota theo ngày, hành vi khi vượt, và header quota có mặt theo loại response như KB-011 có phải hành vi đúng không? Header chỉ cho thấy limit và remaining trên staging; chưa thấy x-ratelimit-reset, retry-after hay 429. KB-044, KB-049 trả lời một phần; ngưỡng từng môi trường, cửa sổ và phạm vi đếm còn mở. Ở asset-category (đã publish), KB-565 có lời dev về daily limit, KB-567 có lời dev về cửa sổ \"per 24 h from the first upload\", KB-568 có ghi nhận của QA về 429 và retry-after; KB-567 và KB-568 đang conflict ở OQ-asset-category-031. Bổ sung CBS-132 (2026-11-11): spec-hub rule api-tokens-asset-limits (S2, KB-053) chỉ nói \"24-hour window\", không nói cửa sổ trượt hay reset cố định, nên không trả lời câu hỏi cửa sổ và không phân xử OQ-asset-category-031; câu hỏi vẫn mở."}
 ```
 
 ## OQ-open-api-008 — OPEN_ISSUE
@@ -302,13 +302,13 @@ Các mục dưới đây còn mở. Mục đã có lời dev trả lời một p
 ## OQ-open-api-049 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id":"OQ-open-api-049","type":"NEEDS_CONFIRMATION","feature_id":"open-api-asset-upload","summary":"Giới hạn 60 request/phút và daily limit của KB-044 liên hệ thế nào với x-ratelimit-limit: 5 và remaining ở KB-010, KB-012? Header đo giới hạn nào, 60 có áp cho staging không? Tới khi có câu trả lời không dùng 60 làm ngưỡng 429 trên staging. Liên quan: CHK-009, CHK-068. Cần dev xác nhận."}
+{"oq_id":"OQ-open-api-049","type":"NEEDS_CONFIRMATION","feature_id":"open-api-asset-upload","summary":"Giới hạn 60 request/phút và daily limit của KB-044 liên hệ thế nào với x-ratelimit-limit: 5 và remaining ở KB-010, KB-012? Header đo giới hạn nào, 60 có áp cho staging không? Tới khi có câu trả lời không dùng 60 làm ngưỡng 429 trên staging. Liên quan: CHK-009, CHK-068. Cần dev xác nhận. Bổ sung CBS-132 (2026-11-11): spec-hub rule open-api-rate (S2, KB-053) nêu 60 request/phút mỗi account, cùng số với KB-044; spec-hub còn một rule khác (api-tokens-request-rates, không có trong CCR, không nạp) nêu 300/phút cho account có store Transactional. Người gửi CCR cho rằng header x-ratelimit-* là cách hiển thị daily limit, nhưng không có nguồn và x-ratelimit-limit: 5 không khớp các ngưỡng daily limit; không nạp. Câu hỏi header đo giới hạn nào vẫn mở."}
 ```
 
 ## OQ-open-api-050 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id":"OQ-open-api-050","type":"NEEDS_CONFIRMATION","feature_id":"open-api-asset-upload","summary":"Về daily limit trên staging, QA hỏi \"is there a way to reset them for testing?\" và dev trả lời \"There's no reset.\" (KB-049). Câu trả lời nghĩa là không có thao tác reset thủ công cho việc test, hay bộ đếm không tự về 0? Cùng câu hỏi với OQ-asset-category-035. KB-049 không nói gì về cửa sổ đếm; mốc cửa sổ daily limit đang conflict ở OQ-asset-category-031. Cần dev xác nhận."}
+{"oq_id":"OQ-open-api-050","type":"NEEDS_CONFIRMATION","feature_id":"open-api-asset-upload","summary":"Về daily limit trên staging, QA hỏi \"is there a way to reset them for testing?\" và dev trả lời \"There's no reset.\" (KB-049). Câu trả lời nghĩa là không có thao tác reset thủ công cho việc test, hay bộ đếm không tự về 0? Cùng câu hỏi với OQ-asset-category-035. KB-049 không nói gì về cửa sổ đếm; mốc cửa sổ daily limit đang conflict ở OQ-asset-category-031. Cần dev xác nhận. Bổ sung CBS-132 (2026-11-11): spec-hub rule api-tokens-asset-limits (KB-053) nêu message vượt ngưỡng có \"Wait until ...\", và api-tokens-see-limits (KB-054) nêu merchant thấy \"how long until it resets\"; cả hai đều S2, chưa Dev xác nhận, nên chưa đủ để hiểu câu \"There's no reset.\". Câu hỏi vẫn mở."}
 ```
 
 ## OQ-open-api-051 — NEEDS_CONFIRMATION
@@ -345,4 +345,16 @@ Các mục dưới đây còn mở. Mục đã có lời dev trả lời một p
 
 ```json
 {"oq_id":"OQ-open-api-056","type":"NEEDS_CONFIRMATION","feature_id":"open-api-asset-upload","summary":"Các hành vi chạm permission, mất dữ liệu hoặc bảo mật ở KB-044, KB-046, KB-047, KB-048 có đúng ý định sản phẩm không? Hiện chỉ có lời dev. Cần PO xác nhận."}
+```
+
+## OQ-open-api-057 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-open-api-057","type":"NEEDS_CONFIRMATION","feature_id":"open-api-asset-upload","summary":"Theo spec-hub (rule open-api-rate, api-tokens-asset-limits; S2, KB-053), Open API cho phép 60 request/phút mỗi account, và mỗi account tạo tối đa 1.000 clipart category, 4.000 clipart, 1.000 library image trong 24 giờ, chung cho portal, API và bulk upload, vượt ngưỡng trả \"Reach the limit ... Wait until ... to try again or contact support to increase.\". Dev xác nhận: các ngưỡng này có áp cho Open API trên staging không, 60 là mặc định hay áp mọi plan (spec-hub có rule khác nêu 300/phút cho account có store Transactional), và status code khi vượt daily limit? Cửa sổ 24 giờ: xem OQ-open-api-007. Cần Dev xác nhận.","kb_ids":["KB-053"]}
+```
+
+## OQ-open-api-058 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-open-api-058","type":"NEEDS_CONFIRMATION","feature_id":"open-api-asset-upload","summary":"Theo spec-hub (rule api-tokens-see-limits; S2, KB-054), merchant xem được daily limit, số còn lại và thời gian đến khi reset cho clipart, clipart category và library image. Merchant xem ở đâu (portal, response Open API), và có liên quan tới header x-ratelimit-* (KB-010, KB-011) không? Header đo giới hạn nào: xem OQ-open-api-049. Cần Dev xác nhận.","kb_ids":["KB-054"]}
 ```

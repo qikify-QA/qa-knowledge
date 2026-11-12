@@ -356,7 +356,7 @@
   {
     "kb_id": "KB-025",
     "topic": "[security surface] Tenant scoping dựa trên header client-supplied 'x-acting-user-id'",
-    "statement": "Trên mọi request REST và GraphQL của run này (12/12 request) ở role owner/staging, quan sát thấy header 'x-acting-user-id: 266' (khớp user_id của Linh explorer) được gửi kèm từ client, thay vì chỉ dựa vào giá trị server tự suy ra từ session cookie. Chưa test server có validate header này đối chiếu với session thật hay tin tưởng nguyên trạng (không có sample forged-header/cross-tenant).",
+    "statement": "Trên mọi request REST và GraphQL của run này (12/12 request) ở role owner/staging, quan sát thấy header 'x-acting-user-id: 266' (khớp user_id của explorer (TIB_STAGING_EMAIL)) được gửi kèm từ client, thay vì chỉ dựa vào giá trị server tự suy ra từ session cookie. Chưa test server có validate header này đối chiếu với session thật hay tin tưởng nguyên trạng (không có sample forged-header/cross-tenant).",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "MEDIUM",
     "scope": {
@@ -481,6 +481,10 @@
       "surface": "portal+api",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
     "tags": [
       "flux",
       "4mp-limit",
@@ -500,10 +504,6 @@
       "ref": "Jira TIB-5561 comment #55697 (dev) Q4, Q7, 2026-10-27",
       "authored_on": "2026-10-27",
       "derivation": "prose"
-    },
-    "last_updated": {
-      "date": "2026-11-08",
-      "ccr_ref": "maintenance-2026-11-08"
     }
   },
   {
@@ -518,6 +518,10 @@
       "surface": "portal+api",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
     "tags": [
       "flux",
       "4mp-limit",
@@ -529,11 +533,7 @@
     "related_kb_ids": [
       "global-option/global-option-instance-management#KB-720",
       "global-option/global-option-instance-management#KB-722"
-    ],
-    "last_updated": {
-      "date": "2026-11-08",
-      "ccr_ref": "maintenance-2026-11-08"
-    }
+    ]
   },
   {
     "kb_id": "KB-722",
@@ -547,6 +547,10 @@
       "surface": "portal",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
     "tags": [
       "toast",
       "save-error",
@@ -556,11 +560,7 @@
     "related_kb_ids": [
       "global-option/global-option-instance-management#KB-721"
     ],
-    "status": "KNOWN_DEFECT",
-    "last_updated": {
-      "date": "2026-11-08",
-      "ccr_ref": "maintenance-2026-11-08"
-    }
+    "status": "KNOWN_DEFECT"
   },
   {
     "kb_id": "KB-723",
@@ -574,6 +574,10 @@
       "surface": "portal+api",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
     "tags": [
       "mcp",
       "multiple-uploads",
@@ -582,10 +586,37 @@
     ],
     "related_kb_ids": [
       "global-option/global-option-instance-management#KB-001"
+    ]
+  },
+  {
+    "kb_id": "KB-729",
+    "topic": "Xoá Global Option đang được dùng (Used>0) bị chặn cứng bằng modal 'Option is in use' (ĐANG TRANH CHẤP với ghi chú tự-unlink cũ)",
+    "statement": "Theo test case TC-49 (QA-3345, dev TIB-5265; PASS 2026-09-07 staging, chạy với layer Warp Text; build không ghi lại), khi bấm icon Delete một Global Option đang được dùng (Used>0) ở role store owner trên trang /global-options, quan sát thấy một modal CHẶN 'Caution: Option is in use — This option is being used in N layer(s) across artworks. You need to remove it from all artworks before deleting.', chỉ có nút 'View artworks' và 'Close', không có đường xoá — phải gỡ GO khỏi mọi artwork trước khi xoá được. Nguồn là test case PASS do AI chạy, expected do QA tự viết sau khi xác nhận trong chat (không có comment PO/Dev), build không ghi lại, nên đây là quan sát confidence LOW, KHÔNG phải expected đã duyệt; không coi tên modal, số N hay nhãn nút là text chuẩn đã duyệt. ĐANG TRANH CHẤP (conflict_group CFL-CBS-131-01) với ghi chú cũ 'xoá GO đang dùng thì tự unlink khỏi layer, không bị chặn' (BR-10 QA-3283/TIB-5226, QA-3344 2026-08-26) — xem OQ CONFLICT; teeinblue không auto-supersede nên giữ UNRESOLVED. Canon KB-008 chỉ quan sát xoá bản clone Used=0 (không mâu thuẫn trực tiếp).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "store owner",
+      "surface": "portal (/global-options)",
+      "brand": null
+    },
+    "tags": [
+      "global-option",
+      "delete",
+      "in-use",
+      "used-gt-0",
+      "modal",
+      "conflict"
     ],
+    "related_kb_ids": [
+      "KB-008",
+      "KB-009"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CFL-CBS-131-01",
     "last_updated": {
-      "date": "2026-11-08",
-      "ccr_ref": "maintenance-2026-11-08"
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-131"
     }
   }
 ]

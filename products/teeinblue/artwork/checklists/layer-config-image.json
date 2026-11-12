@@ -3106,6 +3106,44 @@
       "priority": "P3",
       "automation_suitability": "SUITABLE",
       "oq_id": "OQ-artwork-323"
+    },
+    {
+      "check_id": "CHK-089",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-143] Layer photo personalization thường không có ảnh mặc định vẫn Save được",
+      "applicability": {
+        "role": "merchant-owner (store owner / staff) — account explore, store explorer",
+        "state": "layer Photo Upload 'Create a new option', không ảnh mặc định",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor + DevTools Network"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway dựng trên store explorer, không dùng artwork/campaign/store nêu trong CCR. Trạng thái layer không ảnh: thêm layer Photo Upload không ảnh mặc định rồi convert sang Static Image (chưa Save), hoặc đổi Personalization sang No personalization; editor không có thao tác xoá ảnh khỏi Static Image.",
+      "steps": [
+        "Thêm layer Photo Upload, giữ personalization thường, không đặt ảnh mặc định.",
+        "Bấm Save, ghi toast và body PUT (customization_type, url).",
+        "Đổi layer sang No personalization (không ảnh) rồi Save để đối chứng với CHK-027."
+      ],
+      "observation_point": "Toast, PUT /api/artworks/{id}, customization_type và url của layer",
+      "expected_result": "Baseline theo change note dev TIB-5446 (không phải expected đã chốt): artwork lưu được (PUT 200), layer customization_type normal, không có url; đổi sang No personalization thì Save bị chặn.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/layer-config-image#KB-1024"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/layer-config-image#KB-1024",
+        "artwork/artwork-save-persist#KB-1017"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Dev ghi là giới hạn đã biết; PO chưa chốt."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-501"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -3243,6 +3281,14 @@
         "CHK-083"
       ],
       "covered": "Regression watch cho KNOWN_DEFECT; quan sát chỉ ở related_kb_ids, không làm oracle. Production chưa có check."
+    },
+    {
+      "feature_id": "FEAT-13-layer-config-image",
+      "capability": "[CBS-143] Photo personalization thường không ảnh mặc định (KB-1024)",
+      "checks": [
+        "CHK-089"
+      ],
+      "covered": "BASELINE"
     }
   ],
   "excluded_dimensions": [
@@ -3276,7 +3322,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-143"
   }
 }

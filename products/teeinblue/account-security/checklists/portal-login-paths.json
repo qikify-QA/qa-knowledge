@@ -267,7 +267,8 @@
       "open_question_draft": "Account 2FA off đăng nhập không qua bước 2FA như KB-009 có phải hành vi đúng không? Cần PO hoặc Dev xác nhận.",
       "related_kb_ids": [
         "account-security/portal-login-paths#KB-008",
-        "account-security/portal-login-paths#KB-009"
+        "account-security/portal-login-paths#KB-009",
+        "account-security/portal-login-paths#KB-039"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -348,6 +349,85 @@
       "priority": "P1",
       "automation_suitability": "SUITABLE",
       "oq_id": "OQ-account-security-014"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Account bật 2FA: password đúng chỉ mở bước 2FA",
+      "applicability": {
+        "role": "merchant-owner, staff",
+        "state": "staff đã bật 2FA, chưa có session",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Chưa có session trên portal. Có một account staff đã bật 2FA và có sẵn cách lấy mã (authenticator app hoặc email). Không bật 2FA trên account explorer chỉ để chạy check; cần operator cho phép account hoặc fixture riêng.",
+      "steps": [
+        "Mở DevTools tab Network.",
+        "Đăng nhập tại /login?staff=true bằng email và password đúng của account bật 2FA.",
+        "Quan sát màn hình và URL ngay sau khi bấm \"Log in\", ghi lại route của bước 2FA.",
+        "Nhập mã 2FA đúng trong vòng 5 phút.",
+        "Quan sát màn hình và URL sau khi gửi mã."
+      ],
+      "observation_point": "Màn hình và URL sau khi bấm \"Log in\" và sau khi gửi mã 2FA",
+      "expected_result": "Sau password đúng chưa vào portal mà hiện bước 2FA. Nhập mã đúng trong 5 phút thì đăng nhập xong.",
+      "oracle": {
+        "kb_ids": [
+          "account-security/portal-login-paths#KB-039"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "account-security/portal-login-paths#KB-008",
+        "account-security/portal-login-paths#KB-009",
+        "account-security/portal-login-paths#KB-039"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-039 là rule spec-hub đọc từ code, luồng 2FA bật chưa được quan sát; route và giao diện bước 2FA ghi lại khi chạy"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Account bật 2FA: sai 5 mã thì challenge kết thúc",
+      "applicability": {
+        "role": "merchant-owner, staff",
+        "state": "staff đã bật 2FA, đang ở bước 2FA sau password đúng",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Như CHK-010. Các lần nhập mã sai nằm trong 5 phút kể từ khi bước 2FA mở và không quá 10 lần trong một phút.",
+      "steps": [
+        "Đăng nhập tại /login?staff=true bằng email và password đúng của account bật 2FA.",
+        "Ở bước 2FA, nhập 5 mã sai liên tiếp.",
+        "Quan sát màn hình và URL sau lần sai thứ 5.",
+        "Nhập mã đúng (nếu ô nhập còn) và quan sát kết quả."
+      ],
+      "observation_point": "Màn hình, message và URL sau lần nhập sai thứ 5 và sau khi nhập mã đúng",
+      "expected_result": "Sau lần sai thứ 5 challenge kết thúc; mã đúng nhập sau đó không đưa vào portal, phải đăng nhập lại từ password.",
+      "oracle": {
+        "kb_ids": [
+          "account-security/portal-login-paths#KB-039"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "account-security/portal-login-paths#KB-039"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Message hiển thị khi challenge kết thúc chưa có nguồn, ghi lại nguyên văn khi chạy"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -413,9 +493,13 @@
     },
     {
       "feature_id": "FEAT-01-portal-login-paths",
-      "risk_or_gap_ref": "Gap: account bật 2FA và luồng /login/two-factor",
-      "covered_by_check_ids": [],
-      "coverage_status": "NOT_COVERED"
+      "risk_or_gap_ref": "Capability: đăng nhập với account bật 2FA (challenge sau password đúng)",
+      "covered_by_check_ids": [
+        "CHK-010",
+        "CHK-011"
+      ],
+      "coverage_status": "COVERED_STRONG",
+      "note": "Oracle là rule spec-hub (KB-039); luồng chưa được quan sát, route bước 2FA và hết hạn 5 phút chưa có check riêng."
     },
     {
       "feature_id": "FEAT-01-portal-login-paths",
@@ -433,7 +517,7 @@
   "excluded_dimensions": [
     {
       "dimension": "NEGATIVE",
-      "reason": "Dimension có áp dụng nhưng chưa có evidence: chưa quan sát sai credential, thiếu field, thiếu Turnstile, rate limit, hay submit form store domain. Không có căn cứ viết expected; gap đã nằm ở unknown_areas của profile."
+      "reason": "Áp dụng một phần: CHK-011 phủ nhập sai 5 mã 2FA theo KB-039. Chưa có evidence cho sai credential, thiếu field, thiếu Turnstile, rate limit hay submit form store domain; gap đã nằm ở unknown_areas của profile."
     },
     {
       "dimension": "BOUNDARY",
@@ -449,7 +533,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-137"
   }
 }

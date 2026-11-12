@@ -9,14 +9,14 @@
   ],
   "actors": [
     {
-      "role": "store owner / staff (sub=273, user_id=266, plan Blue (Test))",
+      "role": "store owner / staff (sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
       "permission_observed": "Truy cập đầy đủ 4 action + menu trên mỗi artwork row",
       "kb_refs": [
         "artwork/artwork-list-management#KB-047"
       ]
     },
     {
-      "role": "merchant-owner (store owner/staff, instance 520 nprice1)",
+      "role": "merchant-owner (store owner/staff, instance 520 store không thuộc explorer)",
       "permission_observed": "Duplicate artwork có layer đặt Conditional Setting; dùng bản copy cho campaign",
       "kb_refs": [
         "artwork/artwork-list-management#KB-229"
@@ -54,6 +54,14 @@
       "kb_refs": [
         "artwork/artwork-list-management#KB-229"
       ]
+    },
+    {
+      "name": "[MỚI, CBS-107] Xoá artwork bị chặn khi artwork đang được dùng; xoá artwork không dùng chuyển vào trash",
+      "description": "Artwork đang dùng trong campaign qua product base, bởi platform product, đã dùng cho order design hoặc có bản duplicate thì không xoá được, lỗi nêu lý do (duplicate: liệt kê tên); artwork trong campaign thì portal yêu cầu gỡ khỏi mọi campaign trước và có 'View campaigns list'. Xoá artwork chuyển nó vào trash, không xoá hẳn (spec-hub, sure green).",
+      "kb_refs": [
+        "artwork/artwork-list-management#KB-1028",
+        "artwork/artwork-list-management#KB-1031"
+      ]
     }
   ],
   "state_transitions": [
@@ -75,6 +83,16 @@
         "artwork/artwork-list-management#KB-229",
         "artwork/artwork-list-management#KB-047"
       ]
+    },
+    {
+      "from": "artwork active, không bị chặn xoá",
+      "to": "artwork trong trash (chưa bị xoá hẳn)",
+      "trigger": "[MỚI, CBS-107] Delete artwork",
+      "condition": "artwork không dùng ở campaign/platform product/order design và không có bản duplicate",
+      "kb_refs": [
+        "artwork/artwork-list-management#KB-1031",
+        "artwork/artwork-list-management#KB-1028"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -86,6 +104,26 @@
       "scope_note": "staging, test chạy 2026-10-28 (editor lượt đầu, storefront ở lượt retest) trước khi PR merge; production chưa xác nhận",
       "kb_refs": [
         "artwork/artwork-list-management#KB-229"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-107] Artwork đang dùng trong campaign qua product base, bởi platform product, đã dùng cho order design hoặc có bản duplicate thì không xoá được; lỗi nêu lý do, trường hợp duplicate liệt kê tên các bản duplicate.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope_note": "spec-hub feature artwork-editor v3, rule artwork-editor-delete-blocked-when-used, đọc 2026-11-12; rule không nói status code/body của API",
+      "kb_refs": [
+        "artwork/artwork-list-management#KB-1028"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-107] Xoá artwork chuyển nó vào trash, không xoá hẳn.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope_note": "spec-hub feature artwork-editor v3, rule artwork-editor-delete-to-trash, đọc 2026-11-12; cơ chế lưu và thời hạn xoá hẳn chưa có trong rule",
+      "kb_refs": [
+        "artwork/artwork-list-management#KB-1031"
       ]
     }
   ],
@@ -194,6 +232,12 @@
         "artwork/layer-condition-value-binding#KB-067"
       ],
       "conflict_id": "CONF-artwork-dependency-action-01"
+    },
+    {
+      "risk": "[MỚI, CBS-107] Xoá artwork là thao tác P1 (mất dữ liệu). QA từng đo DELETE /api/artworks/{id} cho artwork gắn campaign nhận 403 trang HTML Laravel trần, trong khi spec-hub nói lỗi nêu lý do: oracle tầng API chưa có, chỉ dùng oracle tầng portal.",
+      "kb_refs": [
+        "artwork/artwork-list-management#KB-1028"
+      ]
     }
   ],
   "freshness": {
@@ -237,11 +281,39 @@
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-artwork-160"
+    },
+    {
+      "question": "[MỚI, CBS-107] Gọi thẳng DELETE /api/artworks/{id} cho artwork đang gắn campaign thì response đúng thiết kế là gì (status code, body JSON có nêu lý do không)? Trang HTML 'Forbidden' 403 QA đo 2026-09-07 có phải lỗi không?",
+      "why_it_matters": "Spec-hub nói lỗi nêu lý do, QA đo được 403 HTML trần; check tầng API không có oracle tới khi Dev trả lời.",
+      "type": "CONFLICT",
+      "kb_refs": [
+        "artwork/artwork-list-management#KB-1028"
+      ],
+      "oq_id": "OQ-artwork-506"
+    },
+    {
+      "question": "[CBS-107] Xoá vào trash (KB-1031) được lưu bằng cột deleted_at trên bảng artworks không (GraphQL vẫn trả row nếu query không lọc deleted_at), và artwork bị xoá hẳn khỏi DB sau 365 ngày (spec-hub trash-permanent-cleanup) không?",
+      "why_it_matters": "Ảnh hưởng cách query dọn fixture và cách kiểm hậu quả xoá ở tầng API/DB.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/artwork-list-management#KB-1031"
+      ],
+      "oq_id": "OQ-artwork-016"
+    },
+    {
+      "question": "[MỚI, CBS-107] PO xác nhận hai luật xoá artwork đọc từ code (spec-hub) là hành vi chủ đích: artwork đang dùng (campaign, platform product, order design, có duplicate) không xoá được, artwork đã dùng cho order design chỉ archive được; xoá artwork chuyển vào trash.",
+      "why_it_matters": "Thao tác xoá là P1 (mất dữ liệu); KB-1028/KB-1031 làm oracle STRONG cho CHK-013/014/016 dựa trên rule đọc từ code, chưa có PO chốt.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/artwork-list-management#KB-1028",
+        "artwork/artwork-list-management#KB-1031"
+      ],
+      "oq_id": "OQ-artwork-508"
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-107"
   },
   "coverage_matrix": [
     {
@@ -308,6 +380,31 @@
       "kb_refs": [
         "artwork/artwork-list-management#KB-229"
       ]
+    },
+    {
+      "feature_id": "FEAT-01-artwork-list-management",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-107] xoá artwork đang dùng (campaign / có duplicate) và artwork không dùng",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/artwork-list-management#KB-1028",
+        "artwork/artwork-list-management#KB-1031"
+      ],
+      "basis": "spec-hub sure green (po_dev_confirm), chưa chạy"
+    },
+    {
+      "feature_id": "FEAT-01-artwork-list-management",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-107] DELETE /api/artworks/{id} cho artwork đang gắn campaign",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/artwork-list-management#KB-1028"
+      ],
+      "basis": "chưa có oracle response API (OQ CONFLICT)"
     }
   ],
   "profile_conflicts": [],

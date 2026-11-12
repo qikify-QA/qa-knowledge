@@ -232,3 +232,9 @@ _Mọi mục dưới đây chưa có nguồn thẩm quyền (spec/PO/Dev/test ca
 ```json
 {"oq_id": "OQ-image-library-037", "type": "NEEDS_CONFIRMATION", "feature_id": "mockup-layer-library", "summary": "Các check BASELINE của mockup-layer-library chỉ dựa trên hành vi quan sát (OBSERVED_CURRENT), chưa có nguồn thẩm quyền (spec/PO/Dev/test case PASS) xác nhận là expected: CHK-001, CHK-002, CHK-005, CHK-010, CHK-012, CHK-014, CHK-015, CHK-019, CHK-021, CHK-025. Cần PO/Dev xác nhận hành vi hiện tại là đúng trước khi dùng làm expected result."}
 ```
+
+## OQ-image-library-038 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-image-library-038", "type": "NEEDS_CONFIRMATION", "feature_id": "mockup-layer-library", "kb_ids": ["image-library/mockup-layer-library#KB-064"], "owner": "PO", "summary": "KB-064 (spec-hub: ảnh mockup library đang được dùng ở mockup thì không xoá được, báo 'The layer has already been used!') chạm hành vi xoá dữ liệu. PO xác nhận rule áp cho cả xoá một ảnh (đường xoá đơn không gọi kiểm tra in-use, KB-062) lẫn xoá nhiều ảnh cùng lúc (KB-063)."}
+```

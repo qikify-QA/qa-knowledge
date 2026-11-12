@@ -7,7 +7,7 @@
     "confidence": "LOW",
     "scope": {
       "environment": "staging (staging-portal.teeinblue.com)",
-      "role": "store owner / staff account Linh explorer (linh-explorer.myshopify.com, staff sub=273, user_id=266, plan Blue (Test))",
+      "role": "store owner / staff account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, staff sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
       "surface": "portal"
     },
     "last_updated": {
@@ -23,7 +23,7 @@
     "confidence": "LOW",
     "scope": {
       "environment": "staging (staging-portal.teeinblue.com)",
-      "role": "store owner / staff account Linh explorer (linh-explorer.myshopify.com, staff sub=273, user_id=266, plan Blue (Test))",
+      "role": "store owner / staff account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, staff sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
       "surface": "portal"
     },
     "last_updated": {
@@ -39,7 +39,7 @@
     "confidence": "LOW",
     "scope": {
       "environment": "staging (staging-portal.teeinblue.com)",
-      "role": "store owner / staff account Linh explorer (linh-explorer.myshopify.com, staff sub=273, user_id=266, plan Blue (Test))",
+      "role": "store owner / staff account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, staff sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
       "surface": "portal"
     },
     "last_updated": {
@@ -55,7 +55,7 @@
     "confidence": "LOW",
     "scope": {
       "environment": "staging (staging-portal.teeinblue.com)",
-      "role": "store owner / staff account Linh explorer (linh-explorer.myshopify.com, staff sub=273, user_id=266, plan Blue (Test))",
+      "role": "store owner / staff account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, staff sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
       "surface": "portal"
     },
     "last_updated": {
@@ -66,7 +66,7 @@
   {
     "kb_id": "KB-157",
     "topic": "Curve Text (curve-text) trong Artwork Editor: không có tuỳ chọn căn lề text; layer lưu align center (quan sát 1 lần khi dựng fixture)",
-    "statement": "Trên staging (instance 520 / store test nprice1), lượt chạy test của agent ngày 2026-10-22 (Testlane task TIB-230, Jira TIB-5606 đang QA Review, chưa ship; order Bogus #1105), khi owner dựng layer Curve Text cho fixture trong Artwork Editor (Artwork 2.0), quan sát thấy layer Curve Text không có tuỳ chọn căn lề text (trái/giữa/phải) và layer được lưu với align center, nên không dựng được Curve Text căn phải. Quan sát 1 lần; chưa rõ đây là thiết kế hay thiếu tính năng. Chưa đối chiếu với nút \"Align\" trên canvas toolbar khi chọn layer curve-text (nút đó có thể là căn vị trí layer, không phải căn lề text).",
+    "statement": "Trên staging (instance 520 / store test store không thuộc explorer), lượt chạy test của agent ngày 2026-10-22 (Testlane task TIB-230, Jira TIB-5606 đang QA Review, chưa ship; order Bogus #1105), khi owner dựng layer Curve Text cho fixture trong Artwork Editor (Artwork 2.0), quan sát thấy layer Curve Text không có tuỳ chọn căn lề text (trái/giữa/phải) và layer được lưu với align center, nên không dựng được Curve Text căn phải. Quan sát 1 lần; chưa rõ đây là thiết kế hay thiếu tính năng. Chưa đối chiếu với nút \"Align\" trên canvas toolbar khi chọn layer curve-text (nút đó có thể là căn vị trí layer, không phải căn lề text).",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
@@ -102,6 +102,10 @@
       "surface": "storefront",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
     "tags": [
       "paragraph",
       "populate",
@@ -113,10 +117,141 @@
     ],
     "related_kb_ids": [
       "artwork/layer-config-text#KB-015"
+    ]
+  },
+  {
+    "kb_id": "KB-1066",
+    "topic": "Rule QA FACT-042: points trong payload warp_text là mảng phẳng 20 số nguyên, toạ độ pixel tuyệt đối trong [0,width]×[0,height]; resize layer không đổi points/width/height",
+    "statement": "Theo rule QA FACT-042 (AI đọc 2 payload production của 2 layer Warp Text độc lập ngày 2026-09-30 và 1 payload staging, chạy QA-3378 TC-10 trên staging 2026-10-01, trước lần giao QA lại TIB-5325; chưa được Dev/PO xác nhận), payload GET api/merchant/games/warp_text/<base64>.json có points là mảng phẳng 20 số nguyên (10 điểm, mỗi điểm x rồi y), toạ độ pixel tuyệt đối trong [0,width]×[0,height], không phải 10 object {x,y} chuẩn hoá 0-1; hai payload đọc được có width = height = 1000, ví dụ points=[100,400,300,400,500,400,700,400,900,400,100,600,300,800,500,800,700,800,900,600], payload thứ hai có giá trị 0 thật. Resize layer bằng handle trên canvas không đổi points, width, height trong payload. Số phần tử 20 và không gian khoảng 1000×1000 chưa có tài liệu dev; change note Dev TIB-5325 (KB-1067) chỉ nói payload render không đổi và vùng render 1000x1000. Panel 'Points:' trong popup Warp hiển thị dạng khác (10 object {x,y}, theo record Testlane TC-TIB-4215), không phải payload này.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (owner/staff)",
+      "surface": "api (GET api/merchant/games/warp_text/<base64>.json) · portal (artwork editor, layer Warp Text)",
+      "brand": null
+    },
+    "tags": [
+      "warp-text",
+      "warp-points",
+      "payload",
+      "FACT-042",
+      "QA-3378",
+      "TIB-5325"
+    ],
+    "related_kb_ids": [
+      "artwork/layer-config-text#KB-1067",
+      "artwork/layer-config-text#KB-013"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-042",
+      "owner_role": "QA",
+      "recorded_on": "2026-09-30",
+      "locator": "Proposal CBS-126 CLAIM-01; task Testlane TIB-136 (QA-3378) TC-TIB-4191, TC-TIB-4201"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-126"
+    }
+  },
+  {
+    "kb_id": "KB-1067",
+    "topic": "TIB-5325 không đổi payload endpoint render warp text; phần chữ nằm ngoài vùng 1000x1000 bị cắt trong ảnh render (change note Dev)",
+    "statement": "Theo change note của Dev trên Jira TIB-5325 (comment 50374 \"Summary cho QA\", sửa 2026-10-09, PR qikify/teeinblue-portal#3637; ticket Done), việc thêm chỉnh điểm warp trực tiếp trên canvas không đổi API: endpoint render warp text vẫn nhận payload như cũ, không đổi GraphQL/env/schema. Cùng change note ghi điểm warp trên canvas nay không bị giới hạn trong khung layer, nên kéo điểm ra xa thì phần chữ nằm ngoài vùng 1000x1000 bị cắt trong ảnh render, giống khi chỉnh bằng dialog. Đây là tài liệu dev mô tả code, chưa có PO/Dev xác nhận là hành vi mong muốn, chưa có test case PASS có build. Change note không nói dạng của points (xem KB-1066, chỉ là rule QA).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (owner/staff)",
+      "surface": "api (endpoint render warp text) · portal (artwork editor, kéo điểm warp trên canvas)",
+      "brand": null
+    },
+    "tags": [
+      "warp-text",
+      "warp-points",
+      "payload",
+      "render-clip",
+      "TIB-5325",
+      "dev-doc"
+    ],
+    "related_kb_ids": [
+      "artwork/layer-config-text#KB-1066"
     ],
     "last_updated": {
-      "date": "2026-11-08",
-      "ccr_ref": "maintenance-2026-11-08"
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-126"
+    }
+  },
+  {
+    "kb_id": "KB-1068",
+    "topic": "Rule QA FACT-137: popup Warp cũ có Mirror X / Mirror Y là 2 nút icon-only cạnh nút Free dưới canvas preview, DOM không có chữ 'mirror'",
+    "statement": "Theo rule QA FACT-137 (QA chỉ vị trí trên ảnh chụp popup Warp ngày 2026-09-30, AI xác định DOM; chưa được Dev/PO xác nhận), trong popup Warp cũ của layer Warp Text, Mirror X và Mirror Y là 2 nút chỉ có icon (.la-arrows-alt-h cho Mirror X, .la-arrows-alt-v cho Mirror Y) nằm trong nhóm 3 nút cuối popup dưới canvas preview, cạnh nút chữ 'Free'; không có text hay attribute nào chứa chữ \"mirror\" trong DOM. Quan sát trước lần TIB-5325 re-open (2026-10-08); change note Dev TIB-5325 (sửa 2026-10-09) ghi nút Warp trên toolbar nay mở popover 'Warp mode' (Free / Vertical / Horizontal) có nút 'Advanced editor' mở đúng dialog như trước, mirror theo trục X/Y nay làm qua Warp mode; không nói dialog còn hai nút icon này hay không. Chưa biết đã ship ở dạng này.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (owner/staff)",
+      "surface": "portal (artwork editor, layer Warp Text, popup Warp cũ / dialog Advanced editor)",
+      "brand": null
+    },
+    "tags": [
+      "warp-text",
+      "warp-popup",
+      "mirror",
+      "FACT-137",
+      "QA-3378",
+      "TIB-5325",
+      "shipped-unknown"
+    ],
+    "related_kb_ids": [
+      "artwork/layer-config-text#KB-1069"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-137",
+      "owner_role": "QA",
+      "recorded_on": "2026-09-30",
+      "locator": "Proposal CBS-126 CLAIM-02; task Testlane TIB-136 (QA-3378) TC-TIB-4195, TC-TIB-4215"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-126"
+    }
+  },
+  {
+    "kb_id": "KB-1069",
+    "topic": "Rule QA FACT-138: bật Mirror X trong popup Warp không tự lật điểm sẵn có; kéo một điểm thì điểm đối xứng nhận x' = 2×centerX − x và y bằng y của điểm vừa kéo (theo số đo)",
+    "statement": "Theo rule QA FACT-138 (AI đo bằng REPL trên staging 2026-09-30 và chạy QA-3378 TC-34 ngày 2026-10-01, chỉ có tick AI; chưa được Dev/PO xác nhận), trong popup Warp cũ của layer Warp Text, bật Mirror X không tự lật các điểm đã có (points không đổi ngay sau khi bấm). Chỉ khi kéo một điểm trong canvas preview của popup lúc Mirror X đang bật thì điểm đối xứng của nó qua trục giữa X của shape tự cập nhật x' = 2×centerX − x. Số đo của cả hai lượt cho y của điểm đối xứng bằng y của điểm vừa kéo: point[0] (100,400)→(159.18,458.70) kéo theo point[4] (900,400)→(840.82,458.70); lượt 2026-10-01 y của point[4] = 436.5782, giống point[0]. Rule ghi chữ \"y giữ nguyên\" và expected của record Testlane TC-TIB-4215 ghi \"không đổi theo điểm vừa kéo\", lệch với chính số đo; chưa có quan sát nào cho y đứng yên. Đo trước lần TIB-5325 re-open; change note Dev TIB-5325 mô tả Warp mode Vertical (điểm đối xứng qua trục dọc giữa khi kéo trên canvas), không nói Mirror X cũ hay giá trị y. Chưa biết đã ship ở dạng này.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (owner/staff)",
+      "surface": "portal (artwork editor, layer Warp Text, popup Warp cũ, canvas preview của popup)",
+      "brand": null
+    },
+    "tags": [
+      "warp-text",
+      "warp-popup",
+      "mirror",
+      "warp-points",
+      "FACT-138",
+      "QA-3378",
+      "TIB-5325",
+      "shipped-unknown"
+    ],
+    "related_kb_ids": [
+      "artwork/layer-config-text#KB-1068",
+      "artwork/layer-config-text#KB-1066"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-138",
+      "owner_role": "QA",
+      "recorded_on": "2026-09-30",
+      "locator": "Proposal CBS-126 CLAIM-03; task Testlane TIB-136 (QA-3378) TC-TIB-4215"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-126"
     }
   }
 ]

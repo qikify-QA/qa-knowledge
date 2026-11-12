@@ -941,6 +941,307 @@
         "CONF-CBS-092-02"
       ],
       "oq_id": "OQ-artwork-288"
+    },
+    {
+      "check_id": "CHK-026",
+      "dimension": "STATE",
+      "layer": "portal",
+      "title": "[CBS-127] Convert layer type: type hiện tại hiển thị ở đâu, convert có lưu lên server trước khi Save không, Cancel có hoàn lại không",
+      "applicability": {
+        "role": "merchant-owner / staff — account explore, store explorer",
+        "state": "layer bất kỳ đang chọn, mở menu ... -> Convert to another layer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal (artwork editor, popup Convert to another layer)"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork throwaway dựng trên store explorer, không dùng artwork/campaign/store trong CCR.",
+      "steps": [
+        "Chọn một layer, mở ... -> Convert to another layer; ghi nội dung dòng FROM ... TO ... và giá trị .convert-layer-popup__value.",
+        "Chọn type đích, xác nhận convert, KHÔNG bấm Save; đọc artwork qua GraphQL (hoặc reload ở tab khác) và ghi type của layer phía server.",
+        "Bấm Cancel editor; ghi confirm hiện ra (nội dung) và chấp nhận; mở lại artwork, ghi type của layer.",
+        "Ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Dòng FROM/TO, type layer phía server trước Save, type sau Cancel.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/editor-layer-workspace#KB-1009",
+        "artwork/editor-layer-workspace#KB-908"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1009 là rule QA chưa Dev xác nhận."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-483"
+    },
+    {
+      "check_id": "CHK-027",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-127] Layer vector-family: có nút Replace ở layer row, panel la-pen hay menu ... không",
+      "applicability": {
+        "role": "merchant-owner / staff — account explore, store explorer",
+        "state": "artwork có layer Static Vector, Vector Category, Vector Upload",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal (layer row, panel la-pen)"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork throwaway dựng trên store explorer, không dùng artwork/campaign/store trong CCR.",
+      "steps": [
+        "Thêm layer Static Vector, Vector Category, Vector Upload (asset từ storage của store explorer).",
+        "Với từng layer: ghi các icon trên layer row, các control trong panel la-pen và các mục trong menu ... của action bar.",
+        "Ghi có control Replace (la-exchange-alt hoặc nhãn Replace) ở đâu không; ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Icon layer row, control panel la-pen, mục menu ... của từng layer vector.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/editor-layer-workspace#KB-1011",
+        "artwork/_object-level#KB-002",
+        "artwork/editor-layer-workspace#KB-908"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1011 là rule QA chưa PO xác nhận."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-485"
+    },
+    {
+      "check_id": "CHK-028",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-127] Thumbnail layer vector trong layer panel: URL file, số lần tải SVG khi tắt/bật cache",
+      "applicability": {
+        "role": "merchant-owner / staff — account explore, store explorer",
+        "state": "artwork có layer vector (asset SVG từ storage)",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal (layer panel) · network"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork throwaway dựng trên store explorer, không dùng artwork/campaign/store trong CCR.",
+      "steps": [
+        "Thêm layer vector từ storage của store explorer; mở DevTools Network, tắt cache, reload editor.",
+        "Ghi src của thumbnail trên layer row (có hậu tố _thumbnail không) và số request tới file SVG đó.",
+        "Bật cache, reload; ghi số request và request nào trúng cache.",
+        "Ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "src thumbnail row, số request SVG khi tắt/bật cache.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/editor-layer-workspace#KB-1012"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1012 là rule QA chưa Dev xác nhận."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-486"
+    },
+    {
+      "check_id": "CHK-029",
+      "dimension": "VALIDATION",
+      "layer": "api",
+      "title": "[CBS-127] Upload SVG thiếu viewBox/kích thước làm asset vector: status API và message ở dropzone",
+      "applicability": {
+        "role": "merchant-owner / staff — account explore, store explorer",
+        "state": "upload file SVG không có viewBox và không có width/height",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "api (POST /api/layer-images/svg) · portal (dropzone upload vector)"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork throwaway dựng trên store explorer, không dùng artwork/campaign/store trong CCR.",
+      "steps": [
+        "Chuẩn bị file SVG test không có viewBox, width, height (file tự tạo, không chứa dữ liệu thật).",
+        "Upload qua dropzone vector của store explorer; ghi status và body của POST /api/layer-images/svg, nội dung dropzone hiện ra.",
+        "Kiểm file có xuất hiện trong storage không.",
+        "Ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Status/body API upload SVG, message dropzone, có vào storage không.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/editor-layer-workspace#KB-1013"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1013 là rule QA chưa Dev xác nhận."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-487"
+    },
+    {
+      "check_id": "CHK-030",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-127] Nguồn asset khi thêm layer vector: chỉ storage TIB hay còn URL/nguồn ngoài",
+      "applicability": {
+        "role": "merchant-owner / staff — account explore, store explorer",
+        "state": "thêm layer Static Vector / Vector Category / Vector Upload",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal (add vector layer)"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork throwaway dựng trên store explorer, không dùng artwork/campaign/store trong CCR.",
+      "steps": [
+        "Thêm lần lượt layer Static Vector, Vector Category, Vector Upload.",
+        "Ghi mọi đường chọn asset có trong picker (storage, upload, URL, nguồn khác).",
+        "Ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Các nguồn asset có trong picker khi thêm layer vector.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/editor-layer-workspace#KB-1014",
+        "artwork/editor-layer-workspace#KB-048"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1014 là rule QA chưa Dev xác nhận."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-488"
+    },
+    {
+      "check_id": "CHK-031",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-127] Popup Select a layer type (Artwork 2.0): 'shape text' nằm ở đâu, có mục 'clipart frame' không",
+      "applicability": {
+        "role": "merchant-owner / staff — account explore, store explorer",
+        "state": "mở + Layer trong artwork editor Artwork 2.0",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal (popup Select a layer type, Artwork 2.0)"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork throwaway dựng trên store explorer, không dùng artwork/campaign/store trong CCR.",
+      "steps": [
+        "Mở + Layer trên artwork Artwork 2.0 throwaway.",
+        "Ghi mọi mục và submenu có chữ 'shape' hoặc 'frame', và submenu của Paragraph.",
+        "Ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Mục/submenu liên quan 'shape text', 'clipart frame' trong popup.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/editor-layer-workspace#KB-1015",
+        "artwork/editor-layer-workspace#KB-001"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1015 là rule QA chưa Dev xác nhận."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-489"
+    },
+    {
+      "check_id": "CHK-032",
+      "dimension": "STATE",
+      "layer": "portal",
+      "title": "[CBS-127] Undo/Redo bằng nút toolbar và bằng Cmd/Ctrl+Z: layer đang chọn có giữ focus và overlay không",
+      "applicability": {
+        "role": "merchant-owner / staff — account explore, store explorer",
+        "state": "layer đang chọn có overlay (resize chip, warp-point-handle), thực hiện một thay đổi rồi Undo",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal (artwork editor toolbar, phím tắt)"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork throwaway dựng trên store explorer, không dùng artwork/campaign/store trong CCR.",
+      "steps": [
+        "Chọn layer Warp Text, đổi vị trí một điểm warp; bấm nút Undo trên toolbar; ghi layer còn được chọn không, warp-point-handle và 4 chip resize còn hiện không.",
+        "Lặp lại thay đổi, lần này dùng Cmd/Ctrl+Z; ghi lại.",
+        "Lặp với Redo (nút và phím tắt).",
+        "Ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Selection và overlay sau Undo/Redo theo từng cách.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/editor-layer-workspace#KB-1016",
+        "artwork/editor-layer-workspace#KB-428"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1016 là rule QA chưa Dev xác nhận."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-490"
+    },
+    {
+      "check_id": "CHK-033",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-143] Convert layer static-photo chưa có ảnh sang Photo Upload (Single Upload) bị chặn",
+      "applicability": {
+        "role": "merchant-owner (store owner / staff) — account explore, store explorer",
+        "state": "layer static-photo chưa có ảnh; đối chứng layer static-photo đã có ảnh",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway dựng trên store explorer, không dùng artwork/campaign/store nêu trong CCR. Trạng thái layer không ảnh: thêm layer Photo Upload không ảnh mặc định rồi convert sang Static Image (chưa Save), hoặc đổi Personalization sang No personalization; editor không có thao tác xoá ảnh khỏi Static Image.",
+      "steps": [
+        "Chọn layer static-photo không ảnh, mở menu ba chấm của thanh '1 selected' → Convert to another layer → Single Upload → Convert.",
+        "Tìm nút 'Convert to Photo Upload' riêng trên layer; nếu có thì bấm.",
+        "Lặp với layer static-photo đã có ảnh.",
+        "Ghi toast, loại layer sau thao tác, request mạng, build và ngày chạy."
+      ],
+      "observation_point": "Toast, loại layer trên layer panel, request API",
+      "expected_result": "Baseline theo change note dev TIB-5446 (không phải expected đã chốt): với layer chưa có ảnh: toast 'Add an image to this layer before converting it.', layer vẫn là Static Image, không có request API; layer đã có ảnh convert được.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/editor-layer-workspace#KB-1022"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/editor-layer-workspace#KB-1022",
+        "artwork/editor-layer-workspace#KB-1009"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nút Convert to Photo Upload riêng chưa thấy ở lượt test trước."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-499"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1050,6 +1351,28 @@
         "CHK-006"
       ],
       "oracle": "NONE, CONF-CBS-092-02 UNRESOLVED"
+    },
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "capability": "[CBS-127] KB-1009, KB-1011, KB-1012, KB-1013, KB-1014, KB-1015, KB-1016",
+      "checks": [
+        "CHK-026",
+        "CHK-027",
+        "CHK-028",
+        "CHK-029",
+        "CHK-030",
+        "CHK-031",
+        "CHK-032"
+      ],
+      "covered": "NONE + NEEDS_CONFIRMATION (KB PROPOSED)"
+    },
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "capability": "[CBS-143] Convert static-photo chưa có ảnh (KB-1022)",
+      "checks": [
+        "CHK-033"
+      ],
+      "covered": "BASELINE"
     }
   ],
   "excluded_dimensions": [
@@ -1075,7 +1398,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-143"
   }
 }

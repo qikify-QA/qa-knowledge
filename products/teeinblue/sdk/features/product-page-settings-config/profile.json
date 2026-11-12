@@ -12,7 +12,7 @@
   "stable_since_version": null,
   "actors": [
     {
-      "role": "owner (Linh explorer, user_id 266, staff record) -- portal",
+      "role": "owner (explorer (TIB_STAGING_EMAIL), user_id <explorer>, staff record) -- portal",
       "permission_observed": "Truy cap duoc toan bo route /product-page-settings, xem ca 2 tab, xem gia tri hien tai cua toan bo 67 control cho ca store1 va store2; nut Save/Reset hien dien + enabled nhung KHONG duoc click (forbidden_actions) nen CHUA xac nhan owner thuc su co quyen ghi hay chi co quyen doc. Chua co role/permission khac de so sanh (TIB_USER_A_*/TIB_USER_B_* khong co san run nay).",
       "kb_refs": [
         "sdk/product-page-settings-config#KB-023",
@@ -20,7 +20,7 @@
       ]
     },
     {
-      "role": "[MỚI, CBS-009] merchant-owner (store owner/staff, portal staging, instance 520 Nprice1)",
+      "role": "[MỚI, CBS-009] merchant-owner (store owner/staff, portal staging, instance 520 store không thuộc explorer)",
       "permission_observed": "Mở Store Settings → Product Page, đọc label setting lọc media theo variant (KB-318) và bật/tắt + Save setting này (KB-319, quan sát) trong lượt test 2026-10-22. Chưa thử role khác.",
       "kb_refs": [
         "sdk/product-page-settings-config#KB-318",
@@ -38,7 +38,7 @@
     },
     {
       "path": "Sidebar '.user-switcher'/'.user-switcher-toggle' (avatar + ten account/store, top sidebar) -> panel 'Switch to:' -> chon store khac -> redirect ve '/' (Home) -> phai tu re-navigate thu cong ve /product-page-settings",
-      "precondition": "account co >=2 store ket noi (account nay co dung 2: linh-explorer.myshopify.com, linh-explorer-2.myshopify.com)",
+      "precondition": "account co >=2 store ket noi (account nay co dung 2: store TIB_STORE_URL_1, store TIB_STORE_URL_2)",
       "kb_refs": [
         "sdk/product-page-settings-config#KB-024"
       ]
@@ -162,7 +162,7 @@
     },
     {
       "name": "[MỚI, CBS-009] Bật/tắt và Save setting lọc media theo variant đang chọn — quan sát write-path, chưa xác nhận",
-      "description": "OBSERVED_CURRENT/LOW (KB-319, 1 lượt 2026-10-22, instance 520 Nprice1, chỉ ở actualResult của TC-TIB-6424, TC-TIB-6430, ngoài oracle): bật/tắt setting lọc media theo variant và Save gửi PUT /api/instances/<id>/config mang key show_assigned_variant_images_only (true/false); merchant JSON của campaign trên storefront có config.show_assigned_variant_images_only cùng giá trị. Nhất quán với tên key đã liệt kê trong KB-038 (INFERRED, CFL-005) nhưng không xác nhận binding field-by-field. Label của setting này đang conflict — xem capabilities[0]. Hiệu ứng của setting lên gallery storefront thuộc storefront-buyer-facing.",
+      "description": "OBSERVED_CURRENT/LOW (KB-319, 1 lượt 2026-10-22, instance 520 store không thuộc explorer, chỉ ở actualResult của TC-TIB-6424, TC-TIB-6430, ngoài oracle): bật/tắt setting lọc media theo variant và Save gửi PUT /api/instances/<id>/config mang key show_assigned_variant_images_only (true/false); merchant JSON của campaign trên storefront có config.show_assigned_variant_images_only cùng giá trị. Nhất quán với tên key đã liệt kê trong KB-038 (INFERRED, CFL-005) nhưng không xác nhận binding field-by-field. Label của setting này đang conflict — xem capabilities[0]. Hiệu ứng của setting lên gallery storefront thuộc storefront-buyer-facing.",
       "kb_refs": [
         "sdk/product-page-settings-config#KB-319",
         "sdk/product-page-settings-config#KB-038"
@@ -170,7 +170,7 @@
     },
     {
       "name": "[MỚI, CBS-013] Save setting 'Show navigation numbers on gallery' và giá trị config storefront nhận được sau đó — quan sát, chưa xác nhận (BUG-440)",
-      "description": "OBSERVED_CURRENT/LOW (KB-368, S1, 1 lượt retest staging 2026-10-28, Testlane TC-TIB-7404, instance 520 Nprice1, trước khi 2 PR của TIB-5203 merge 2026-10-29; chưa có nguồn xác nhận đây là hành vi đúng). Đổi setting false → true và Save gửi PUT /api/instances/520/config (200, body show_navigation_numbers=true); reload storefront campaign #3270 sau khoảng 10 giây thì URL SDK GET /api/merchant/campaigns/{shopify product id}.json?shop=…&v=1 vẫn trả config.show_navigation_numbers=false, link preload v=<version> trên trang cũng trả false; chỉ URL với giá trị v chưa từng gọi trả true. Nguyên nhân (cache theo URL v=1) là suy luận, dev chưa xác nhận; thời gian trả giá trị cũ chỉ đo 1 lượt. Không xác định đây là thiết kế hay lỗi; không có nguồn xác nhận storefront phải hiện thay đổi setting ngay. Không dùng làm oracle.",
+      "description": "OBSERVED_CURRENT/LOW (KB-368, S1, 1 lượt retest staging 2026-10-28, Testlane TC-TIB-7404, instance 520 store không thuộc explorer, trước khi 2 PR của TIB-5203 merge 2026-10-29; chưa có nguồn xác nhận đây là hành vi đúng). Đổi setting false → true và Save gửi PUT /api/instances/520/config (200, body show_navigation_numbers=true); reload storefront campaign #3270 sau khoảng 10 giây thì URL SDK GET /api/merchant/campaigns/{shopify product id}.json?shop=…&v=1 vẫn trả config.show_navigation_numbers=false, link preload v=<version> trên trang cũng trả false; chỉ URL với giá trị v chưa từng gọi trả true. Nguyên nhân (cache theo URL v=1) là suy luận, dev chưa xác nhận; thời gian trả giá trị cũ chỉ đo 1 lượt. Không xác định đây là thiết kế hay lỗi; không có nguồn xác nhận storefront phải hiện thay đổi setting ngay. Không dùng làm oracle.",
       "kb_refs": [
         "sdk/product-page-settings-config#KB-368"
       ]
@@ -255,7 +255,7 @@
       ]
     },
     {
-      "statement": "[MỚI, CBS-009] CONFLICT CHƯA PHÂN XỬ (CONF-sdk-assigned-media-setting-label, cả hai item status UNRESOLVED) về chuỗi label của setting lọc media theo variant. Phía KB-025 (OBSERVED_CURRENT/MEDIUM, quan sát 2026-09-21 trên store1 instance 609 / store2 instance 613): 'Show only the assigned images of the selected variant'. Phía KB-318 (CONFIRMED_EXPECTED/MEDIUM, Testlane TC-TIB-6423 PASS 2026-10-22, staging instance 520 Nprice1, trước khi 4 PR TIB-5428 merge, shipped UNKNOWN): 'Show only the assigned images and videos of the selected variant', chuỗi cũ không còn trên trang. Profile không chọn phía; chờ PO quyết. Không dùng chuỗi nào làm oracle cho label tới khi có quyết định.",
+      "statement": "[MỚI, CBS-009] CONFLICT CHƯA PHÂN XỬ (CONF-sdk-assigned-media-setting-label, cả hai item status UNRESOLVED) về chuỗi label của setting lọc media theo variant. Phía KB-025 (OBSERVED_CURRENT/MEDIUM, quan sát 2026-09-21 trên store1 instance 609 / store2 instance 613): 'Show only the assigned images of the selected variant'. Phía KB-318 (CONFIRMED_EXPECTED/MEDIUM, Testlane TC-TIB-6423 PASS 2026-10-22, staging instance 520 store không thuộc explorer, trước khi 4 PR TIB-5428 merge, shipped UNKNOWN): 'Show only the assigned images and videos of the selected variant', chuỗi cũ không còn trên trang. Profile không chọn phía; chờ PO quyết. Không dùng chuỗi nào làm oracle cho label tới khi có quyết định.",
       "kb_refs": [
         "sdk/product-page-settings-config#KB-025",
         "sdk/product-page-settings-config#KB-318"
@@ -271,7 +271,7 @@
       "statement": "[MỚI, CBS-013] Quan sát staging 2026-10-28 (1 lượt retest, Testlane TC-TIB-7404, BUG-440; chưa có nguồn xác nhận đây là hành vi đúng): sau khi Save 'Show navigation numbers on gallery' false → true (PUT /api/instances/520/config → 200, body show_navigation_numbers=true) và reload storefront campaign #3270 sau khoảng 10 giây, URL SDK campaigns/{shopify product id}.json?shop=…&v=1 trả config.show_navigation_numbers=false (last-modified 05:29:56 GMT) và link preload v=<version> cũng trả false; chỉ URL với giá trị v chưa từng gọi trả true. Nguyên nhân (cache theo URL v=1) là suy luận, chưa được dev xác nhận; Jira TIB-5203 chuyển Passed/Done không cho biết BUG-440 được chấp nhận, hoãn hay đã sửa.",
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
-      "scope": "staging instance 520 Nprice1, setting do owner đổi trên portal, storefront campaign #3270; 1 lượt 2026-10-28, trước khi 2 PR TIB-5203 merge; shipped UNKNOWN",
+      "scope": "staging instance 520 store không thuộc explorer, setting do owner đổi trên portal, storefront campaign #3270; 1 lượt 2026-10-28, trước khi 2 PR TIB-5203 merge; shipped UNKNOWN",
       "observed_count": null,
       "kb_refs": [
         "sdk/product-page-settings-config#KB-368"
@@ -281,7 +281,7 @@
   "observed_validations": [],
   "permissions": [
     {
-      "statement": "Chi 1 role duoc test run nay: owner (Linh explorer, user_id 266). Nut Save/Reset hien dien va enabled (khong click theo policy) -- KHONG quan sat duoc gioi han quyen nao cho role nay tren trang nay. Khong co role/account thu 2 de so sanh (TIB_USER_A_*/TIB_USER_B_* khong co trong .env hien tai) -- bien thien permission CHUA duoc quan sat (NOT_OBSERVED).",
+      "statement": "Chi 1 role duoc test run nay: owner (explorer (TIB_STAGING_EMAIL), user_id <explorer>). Nut Save/Reset hien dien va enabled (khong click theo policy) -- KHONG quan sat duoc gioi han quyen nao cho role nay tren trang nay. Khong co role/account thu 2 de so sanh (TIB_USER_A_*/TIB_USER_B_* khong co trong .env hien tai) -- bien thien permission CHUA duoc quan sat (NOT_OBSERVED).",
       "kb_refs": [
         "sdk/product-page-settings-config#KB-023"
       ]
@@ -322,7 +322,7 @@
         ]
       },
       {
-        "path": "[MỚI, CBS-013] Product page settings — checkbox 'Show navigation numbers on gallery' bật/tắt + Save (instance 520 Nprice1, quan sát)",
+        "path": "[MỚI, CBS-013] Product page settings — checkbox 'Show navigation numbers on gallery' bật/tắt + Save (instance 520 store không thuộc explorer, quan sát)",
         "kb_refs": [
           "sdk/product-page-settings-config#KB-368"
         ]
@@ -693,7 +693,7 @@
     {
       "feature_id": "FEAT-08-product-page-settings-config",
       "layer": "portal",
-      "role": "merchant-owner (Nprice1)",
+      "role": "merchant-owner (store không thuộc explorer)",
       "state": "[MỚI, CBS-009] label setting lọc media theo variant",
       "environment": "staging",
       "covered": true,
@@ -706,7 +706,7 @@
     {
       "feature_id": "FEAT-08-product-page-settings-config",
       "layer": "api",
-      "role": "merchant-owner (Nprice1)",
+      "role": "merchant-owner (store không thuộc explorer)",
       "state": "[MỚI, CBS-009] Save setting lọc media theo variant → PUT /api/instances/<id>/config",
       "environment": "staging",
       "covered": true,
@@ -730,7 +730,7 @@
     {
       "feature_id": "FEAT-08-product-page-settings-config",
       "layer": "portal+api+storefront",
-      "role": "merchant-owner (Nprice1) / guest-buyer",
+      "role": "merchant-owner (store không thuộc explorer) / guest-buyer",
       "state": "[MỚI, CBS-013] Save 'Show navigation numbers on gallery' → config storefront qua URL ?v=1 / link preload / v mới",
       "environment": "staging",
       "covered": true,

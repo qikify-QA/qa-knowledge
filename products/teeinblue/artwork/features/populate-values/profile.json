@@ -14,12 +14,12 @@
     "artwork/populate-values#KB-866"
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-118"
   },
   "actors": [
     {
-      "role": "store owner / staff (sub=273, user_id=266, plan Blue (Test))",
+      "role": "store owner / staff (sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
       "permission_observed": "Full access tới accordion POPULATE VALUES và modal Browse values",
       "kb_refs": [
         "artwork/populate-values#KB-075",
@@ -376,6 +376,15 @@
       ],
       "observed_count": null,
       "rule_confidence": "LOW"
+    },
+    {
+      "statement": "[MỚI, CBS-118] Theo change note dev TIB-5331 (chưa quan sát): chữ Latin có dấu và tiếng Việt (É, Đ) không bị lỗi astral, họ token initialofword lấy đúng chữ đầu.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-1027"
+      ],
+      "observed_count": null
     }
   ],
   "observed_validations": [
@@ -552,6 +561,24 @@
         "artwork/populate-values#KB-857",
         "artwork/populate-values#KB-866"
       ]
+    },
+    {
+      "risk": "[MỚI, CBS-115] KB-994, KB-995, KB-997..KB-1000 là rule QA (PROPOSED), một phần (Spiral, Paragraph làm nguồn) có thể đã lỗi thời sau TIB-5271; KB-999 gắn TIB-4726 chưa ship.",
+      "kb_refs": [
+        "artwork/populate-values#KB-994",
+        "artwork/populate-values#KB-995",
+        "artwork/populate-values#KB-997",
+        "artwork/populate-values#KB-998",
+        "artwork/populate-values#KB-999",
+        "artwork/populate-values#KB-1000"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-118, KNOWN_DEFECT, không làm oracle] Từ bắt đầu bằng ký tự astral (emoji, chữ toán học) làm {{value.initialofword.X}} và bare {{value.initialofword}} trả nửa surrogate pair, hiển thị glyph vỡ ('😀 Sophie' ra '\\ud83d' tại .1, '\\ud83dS' với bare). Dev gọi là giới hạn kế thừa; PO chưa chốt có sửa không.",
+      "kb_refs": [
+        "artwork/populate-values#KB-1025",
+        "artwork/populate-values#KB-1026"
+      ]
     }
   ],
   "environment_differences": [],
@@ -632,6 +659,183 @@
         "artwork/populate-values#KB-861"
       ],
       "oq_id": "OQ-artwork-263"
+    },
+    {
+      "question": "[MỚI, CBS-110] Token có shape hợp lệ nhưng nội dung sai (đơn vị sai/typo của context, formula sai, hậu tố .N hỏng trong ngoặc) ra layer RỖNG (KB-987): PO xác nhận đây là hành vi đúng, hay chỉ là hành vi quan sát?",
+      "why_it_matters": "Test case về token sai cần biết expected là rỗng hay raw fallback; KB-987 là PROPOSED nên chưa làm oracle.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-987"
+      ],
+      "oq_id": "OQ-artwork-455"
+    },
+    {
+      "question": "[MỚI, CBS-110] Token value.* không hoàn chỉnh ra RAW-VALUE FALLBACK (KB-988): PO có duyệt hiện giá trị nguồn thay vì rỗng không?",
+      "why_it_matters": "Ranh giới rỗng/raw fallback quyết định expected của mọi case token sai.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-988"
+      ],
+      "oq_id": "OQ-artwork-456"
+    },
+    {
+      "question": "[MỚI, CBS-110] Token không prefix value ra RỖNG, raw fallback chỉ trong namespace value. (KB-989): PO xác nhận không?",
+      "why_it_matters": "Liên quan an toàn template (không tính {{7*7}}); KB-989 chưa có xác nhận PO/Dev.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-989"
+      ],
+      "oq_id": "OQ-artwork-457"
+    },
+    {
+      "question": "[MỚI, CBS-110] Nguồn Date picker không nuôi được context/formula (KB-990): giới hạn mong muốn hay lỗi? Có kế hoạch token ngày/now không?",
+      "why_it_matters": "Merchant có thể kỳ vọng quy đổi từ ngày; expected chưa xác định.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-990"
+      ],
+      "oq_id": "OQ-artwork-458"
+    },
+    {
+      "question": "[MỚI, CBS-110] Hằng số 365.2425 ngày/năm dựng cứng của context (KB-991): Dev xác nhận đây là hành vi chốt, và không có tuỳ chọn 365 ngày?",
+      "why_it_matters": "Case quy đổi năm/ngày cần đúng hằng số; nguồn hiện là rule QA + mô tả thay đổi của Dev.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-991"
+      ],
+      "oq_id": "OQ-artwork-459"
+    },
+    {
+      "question": "[MỚI, CBS-110] Parse X của {{value.Xchar}} khác initialofword.X (X âm cắt ký tự, nhận số thập phân) (KB-992): đúng hay lỗi, và đã ship chưa?",
+      "why_it_matters": "Không suy rule X giữa các token được; expected của Xchar chưa xác định.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-992"
+      ],
+      "oq_id": "OQ-artwork-460"
+    },
+    {
+      "question": "[MỚI, CBS-110] Text layer tĩnh vẽ nguyên văn (KB-993): Dev xác nhận cả editor lẫn render server-side Preview/mockup/design file?",
+      "why_it_matters": "Phía server-side mới chỉ thấy thumbnail sinh thành công.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-993"
+      ],
+      "oq_id": "OQ-artwork-461"
+    },
+    {
+      "question": "[MỚI, CBS-115] {{value.initialofword.X}} có và resolve đúng trên Single-line/Curve/Warp Text, Paragraph, QR Code (KB-994): Dev xác nhận danh sách layer đích này, kể cả storefront và design file?",
+      "why_it_matters": "Case về initialofword.X cần biết layer đích nào phải hỗ trợ; KB-994 là PROPOSED.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-994"
+      ],
+      "oq_id": "OQ-artwork-462"
+    },
+    {
+      "question": "[MỚI, CBS-115] Spiral Text / Clipart Category làm đích không có nhóm token text (KB-995): còn đúng sau TIB-5271 (production 2026-10-26) không?",
+      "why_it_matters": "Vế Spiral có thể đã lỗi thời; expected chưa xác định.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-995"
+      ],
+      "oq_id": "OQ-artwork-463"
+    },
+    {
+      "question": "[MỚI, CBS-115] Populate X luôn trỏ một layer, không trỏ Global Option (KB-997): Dev xác nhận đây là thiết kế đã chốt?",
+      "why_it_matters": "Quyết định cách viết nguồn trong case Populate Color/Background.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-997"
+      ],
+      "oq_id": "OQ-artwork-464"
+    },
+    {
+      "question": "[MỚI, CBS-115] Dropdown nguồn lọc theo type layer từng kênh (KB-998): Dev xác nhận, và vế Paragraph không làm nguồn Content còn đúng sau TIB-5271?",
+      "why_it_matters": "Expected của dropdown nguồn Content/Color/Background chưa xác nhận; API vẫn lưu nguồn sai type.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-998"
+      ],
+      "oq_id": "OQ-artwork-465"
+    },
+    {
+      "question": "[MỚI, CBS-115] Populate Color không có field trỏ Shopify Color variant, fixture chỉ cần một layer Color (KB-999): Dev xác nhận, TIB-4726 ship khi nào?",
+      "why_it_matters": "Quyết định fixture cho case đồng bộ màu; tính năng chưa ship.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-999"
+      ],
+      "oq_id": "OQ-artwork-466"
+    },
+    {
+      "question": "[MỚI, CBS-115] Dynamic Clipart by Text chọn clipart theo tên clipart khớp ký tự input (KB-1000): Dev/PO xác nhận? (gắn vào OQ-artwork-323)",
+      "why_it_matters": "Expected của case DCT phụ thuộc cơ chế so khớp tên.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-1000"
+      ],
+      "oq_id": "OQ-artwork-323"
+    },
+    {
+      "question": "[MỚI, CBS-118] Emoji (ký tự astral) trong tên có phải kịch bản thật không, và có mở ticket riêng cho lỗi nửa surrogate pair của họ token initialofword (KB-1025, KB-1026) không?",
+      "why_it_matters": "Quyết định lỗi astral là defect cần sửa hay giới hạn chấp nhận được; hiện chỉ là nhận định của một dev.",
+      "type": "OPEN_ISSUE",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-1025",
+        "artwork/populate-values#KB-1026"
+      ],
+      "oq_id": "OQ-artwork-503"
+    },
+    {
+      "question": "[MỚI, CBS-118] Lỗi astral ở bare {{value.initialofword}} (KB-1026) có từ trước TIB-5331, không phải regression, có đúng không?",
+      "why_it_matters": "Chưa ai đối chiếu bản trước và sau TIB-5331; ảnh hưởng cách phân loại lỗi khi gặp.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-1026"
+      ],
+      "oq_id": "OQ-artwork-504"
+    },
+    {
+      "question": "[MỚI, CBS-118] Chữ Latin có dấu và tiếng Việt (É, Đ) không bị ảnh hưởng bởi lỗi astral (KB-1027): Dev xác nhận, kèm giá trị nhập và kết quả cụ thể?",
+      "why_it_matters": "KB-1027 chỉ là một câu của dev, chưa có test case; CHK-060 dùng nó làm oracle BASELINE.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-1027"
+      ],
+      "oq_id": "OQ-artwork-505"
     }
   ],
   "coverage_matrix": [
@@ -870,6 +1074,94 @@
         "artwork/populate-values#KB-866"
       ],
       "basis": "mọi nguồn CBS-091 là staging, shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-11-populate-values",
+      "layer": "portal",
+      "role": "buyer · merchant-owner",
+      "state": "[CBS-110] token populate sai/không hoàn chỉnh/không prefix value, nguồn Date picker, quy đổi context, tham số X của Xchar, text layer tĩnh",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/populate-values#KB-987",
+        "artwork/populate-values#KB-988",
+        "artwork/populate-values#KB-989",
+        "artwork/populate-values#KB-990",
+        "artwork/populate-values#KB-991",
+        "artwork/populate-values#KB-992",
+        "artwork/populate-values#KB-993"
+      ],
+      "basis": "KB-987..KB-993 PROPOSED (rule QA), chưa PO/Dev xác nhận"
+    },
+    {
+      "feature_id": "FEAT-11-populate-values",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[CBS-110] kết quả resolver của KB-987..KB-992 trên storefront và design file",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/populate-values#KB-987",
+        "artwork/populate-values#KB-988",
+        "artwork/populate-values#KB-989",
+        "artwork/populate-values#KB-990",
+        "artwork/populate-values#KB-991",
+        "artwork/populate-values#KB-992"
+      ],
+      "basis": "rule QA chỉ dựa trên Live Preview của editor"
+    },
+    {
+      "feature_id": "FEAT-11-populate-values",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-115] layer đích/nguồn hợp lệ của populate: initialofword.X theo loại layer, Spiral/Clipart Category, nguồn là layer không phải Global Option, lọc nguồn theo type từng kênh, Populate Color không trỏ Shopify variant",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/populate-values#KB-994",
+        "artwork/populate-values#KB-995",
+        "artwork/populate-values#KB-997",
+        "artwork/populate-values#KB-998",
+        "artwork/populate-values#KB-999"
+      ],
+      "basis": "rule QA, chưa có record Testlane PASS"
+    },
+    {
+      "feature_id": "FEAT-11-populate-values",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[CBS-115] Dynamic Clipart by Text so khớp tên clipart với ký tự input",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/populate-values#KB-1000"
+      ],
+      "basis": "rule QA, release-verification local"
+    },
+    {
+      "feature_id": "FEAT-11-populate-values",
+      "layer": "portal",
+      "role": "buyer",
+      "state": "[CBS-118] từ bắt đầu bằng ký tự astral với {{value.initialofword.X}} và bare {{value.initialofword}}",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/populate-values#KB-1025",
+        "artwork/populate-values#KB-1026"
+      ],
+      "basis": "KNOWN_DEFECT theo change note dev — chỉ regression watch, không làm oracle"
+    },
+    {
+      "feature_id": "FEAT-11-populate-values",
+      "layer": "portal",
+      "role": "buyer",
+      "state": "[CBS-118] từ bắt đầu bằng chữ Latin có dấu / tiếng Việt (É, Đ) với họ token initialofword",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/populate-values#KB-1027"
+      ],
+      "basis": "change note dev, chưa quan sát"
     }
   ],
   "profile_conflicts": [

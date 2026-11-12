@@ -543,3 +543,11 @@
 ```json
 {"oq_id":"OQ-product-base-111","type":"NEEDS_CONFIRMATION","feature_id":"fulfillment-provider-connection","summary":"Trang Fulfillments có thật sự không có Disconnect và không có role/permission gate riêng không? Nguồn là Dev nói qua Slack (không quote), TC-29 bị skip vì thiếu store B độc lập. Nếu có gate thực sự, thiếu nó trong checklist sẽ khiến bỏ sót regression về permission."}
 ```
+
+```json
+{"oq_id":"OQ-product-base-112","type":"NEEDS_CONFIRMATION","feature_id":"printarea-definition","summary":"[CBS-121] Quy tắc mapping variant → artwork theo TÊN printarea trùng option value (product base chuẩn đặt tên printarea theo vị trí in, dùng chung 1 artwork cho mỗi printarea trên nhiều variant Color, không tách theo màu) có đúng với build hiện tại không? Nguồn chỉ là suy luận của QA (FACT-163, 2026-10-23), không PO/Dev, không test case. Liên quan KB-525, CHK-04-033. Người trả lời: Dev."}
+```
+
+```json
+{"oq_id":"OQ-product-base-113","type":"NEEDS_CONFIRMATION","feature_id":"variant-catalog","summary":"[CBS-121] Luồng setup custom printarea theo variant (Product base → bảng Variants → bật 'enable custom printarea' → sang Campaign gắn artwork vào printarea vừa bật, KHÔNG có bước map variant option ↔ layer) có đúng với build hiện tại không? Nguồn là QA sửa trực tiếp (FACT-180, 2026-10-29), không PO/Dev, không test case; phần 'bật toggle + click ô Custom Printareas' đã có canon KB-045/KB-080/CHK-05-011. Liên quan KB-526, CHK-05-018. Người trả lời: Dev."}
+```

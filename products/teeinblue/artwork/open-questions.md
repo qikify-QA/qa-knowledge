@@ -93,7 +93,7 @@
 ## OQ-artwork-016 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id": "OQ-artwork-016", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-list-management", "summary": "Chưa xác nhận đây là soft hay hard delete — ảnh hưởng trực tiếp policy mutation an toàn khi test. Cần dev/PO xác nhận trước khi chạy case này trên bất kỳ artwork nào ngoài artwork test chuyên dụng."}
+{"oq_id": "OQ-artwork-016", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-list-management", "kb_ids": ["KB-1031"], "summary": "Chưa xác nhận đây là soft hay hard delete — ảnh hưởng trực tiếp policy mutation an toàn khi test. Cần dev/PO xác nhận trước khi chạy case này trên bất kỳ artwork nào ngoài artwork test chuyên dụng. [Cập nhật CBS-107, 2026-11-12] Phần soft/hard đã có nguồn: spec-hub rule artwork-editor-delete-to-trash (sure green) nói xoá artwork chuyển vào trash, không xoá hẳn (KB-1031). Còn mở: cơ chế đó có phải cột deleted_at trên bảng artworks không (QA quan sát GraphQL vẫn trả row đã xoá nếu query không lọc deleted_at:{_is_null:true}), và artwork có bị xoá hẳn khỏi DB sau 365 ngày như spec-hub rule trash-permanent-cleanup (feature trash) nói không. Cần: Dev xác nhận."}
 ```
 
 ## OQ-artwork-017 — NEEDS_CONFIRMATION
@@ -525,7 +525,7 @@
 ## OQ-artwork-088 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id": "OQ-artwork-088", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "11 template biến đổi giá trị được liệt kê tên nhưng cú pháp thật sự hỗ trợ biểu thức/range gì của formula/context chưa từng được test với input cụ thể."}
+{"oq_id": "OQ-artwork-088", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "11 template biến đổi giá trị được liệt kê tên nhưng cú pháp thật sự hỗ trợ biểu thức/range gì của formula/context chưa từng được test với input cụ thể. Bổ sung CBS-110 (2026-11-11): rule QA FACT-022/FACT-024 (S2, KB-987, KB-988, KB-991) ghi kết quả của token context/formula sai, không hoàn chỉnh và hằng số năm 365.2425, chưa PO/Dev xác nhận (OQ-artwork-455, OQ-artwork-456, OQ-artwork-459); cú pháp hỗ trợ đầy đủ vẫn chưa có nguồn nên câu hỏi vẫn mở."}
 ```
 
 ## OQ-artwork-089 — NEEDS_CONFIRMATION
@@ -561,7 +561,7 @@
 ## OQ-artwork-094 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id": "OQ-artwork-094", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "Phần storefront của KB-008 (CHK-022) quan sát qua Live Preview widget với vai trò staff-authenticated PROXY cho buyer (account Linh explorer), KHÔNG PHẢI guest session thật. KHÔNG dùng làm bằng chứng hành vi buyer thật 100% (vd cross-tenant, rate-limit, hoặc UI khác biệt trên theme Shopify thật chưa loại trừ) tới khi có evidence guest thật."}
+{"oq_id": "OQ-artwork-094", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "Phần storefront của KB-008 (CHK-022) quan sát qua Live Preview widget với vai trò staff-authenticated PROXY cho buyer (account explorer (TIB_STAGING_EMAIL)), KHÔNG PHẢI guest session thật. KHÔNG dùng làm bằng chứng hành vi buyer thật 100% (vd cross-tenant, rate-limit, hoặc UI khác biệt trên theme Shopify thật chưa loại trừ) tới khi có evidence guest thật."}
 ```
 
 ## OQ-artwork-095 — OPEN_ISSUE
@@ -591,7 +591,7 @@
 ## OQ-artwork-099 — OPEN_ISSUE
 
 ```json
-{"oq_id": "OQ-artwork-099", "type": "OPEN_ISSUE", "feature_id": "object-wide", "summary": "Every run to date tested exactly one role (store owner/staff, account 'Linh explorer') on one tenant/organization — no permission or cross-tenant behavior has been verified for any Artwork feature."}
+{"oq_id": "OQ-artwork-099", "type": "OPEN_ISSUE", "feature_id": "object-wide", "summary": "Every run to date tested exactly one role (store owner/staff, account explorer (TIB_STAGING_EMAIL)) on one tenant/organization — no permission or cross-tenant behavior has been verified for any Artwork feature."}
 ```
 
 ## OQ-artwork-100 — NEEDS_CONFIRMATION
@@ -1371,7 +1371,7 @@
 ## OQ-artwork-229 — OPEN_ISSUE
 
 ```json
-{"oq_id":"OQ-artwork-229","type":"OPEN_ISSUE","feature_id":"run-image-effects","summary":"Face Cutout và Photo Enhancer có cần API key trước khi chạy hay không: chưa ai trả lời (PENDING-12). Cần: Dev trả lời nguyên văn Face Cutout / Photo Enhancer có nằm trong danh sách kiểm key không.","kb_ids":["KB-816"]}
+{"oq_id":"OQ-artwork-229","type":"OPEN_ISSUE","feature_id":"run-image-effects","summary":"Face Cutout và Photo Enhancer có cần API key trước khi chạy hay không: chưa ai trả lời (PENDING-12). Cần: Dev trả lời nguyên văn Face Cutout / Photo Enhancer có nằm trong danh sách kiểm key không. Bổ sung CBS-140 (2026-11-11): spec-hub rule image-effects-needs-key (S2, KB-985) chỉ nói effect của dịch vụ ngoài cần key và effect của Teeinblue không cần key, không nói Face cutout thuộc loại nào; câu hỏi vẫn mở.","kb_ids":["KB-816"]}
 ```
 
 ## OQ-artwork-230 — OPEN_ISSUE
@@ -1485,25 +1485,25 @@
 ## OQ-artwork-248 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id":"OQ-artwork-248","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Effect có bật dùng kích thước layer: hai layer khác kích thước thì gọi riêng, mỗi lần trừ một lượt. Không nạp KB (S0). Tên công tắc trên portal chưa biết, không có test case. Cần: Dev (giangnth) xác nhận nguyên văn, có ngày và link (ví dụ comment trên Jira TIB-5577), lời sửa câu Q2 ngày 2026-10-29; hiện chỉ là lời QA phuongbb chuyển lại, kênh gốc không rõ, không có trên Jira. Chưa xác nhận thì không nạp KB.","kb_ids":[]}
+{"oq_id":"OQ-artwork-248","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Effect có bật dùng kích thước layer: hai layer khác kích thước thì gọi riêng, mỗi lần trừ một lượt. Không nạp KB (S0). Tên công tắc trên portal chưa biết, không có test case. Cần: Dev (giangnth) xác nhận nguyên văn, có ngày và link (ví dụ comment trên Jira TIB-5577), lời sửa câu Q2 ngày 2026-10-29; hiện chỉ là lời QA QA chuyển lại, kênh gốc không rõ, không có trên Jira. Chưa xác nhận thì không nạp KB.","kb_ids":[]}
 ```
 
 ## OQ-artwork-249 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id":"OQ-artwork-249","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Effect Gen AI trên layer Photo Reposition không bật dùng kích thước layer: hai layer khác kích thước vẫn gọi chung một lần. Không nạp KB (S0), không có test case. Cần: Dev (giangnth) xác nhận nguyên văn, có ngày và link (ví dụ comment trên Jira TIB-5577), lời sửa câu Q2 ngày 2026-10-29; hiện chỉ là lời QA phuongbb chuyển lại, kênh gốc không rõ, không có trên Jira. Chưa xác nhận thì không nạp KB.","kb_ids":[]}
+{"oq_id":"OQ-artwork-249","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Effect Gen AI trên layer Photo Reposition không bật dùng kích thước layer: hai layer khác kích thước vẫn gọi chung một lần. Không nạp KB (S0), không có test case. Cần: Dev (giangnth) xác nhận nguyên văn, có ngày và link (ví dụ comment trên Jira TIB-5577), lời sửa câu Q2 ngày 2026-10-29; hiện chỉ là lời QA QA chuyển lại, kênh gốc không rõ, không có trên Jira. Chưa xác nhận thì không nạp KB.","kb_ids":[]}
 ```
 
 ## OQ-artwork-250 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id":"OQ-artwork-250","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Contour cut: khác chiều rộng thì gọi riêng, cùng chiều rộng khác chiều cao thì gọi chung. Không nạp KB (S0), không có test case; không đụng item contour cut của layer-print-effects. Cần: Dev (giangnth) xác nhận nguyên văn, có ngày và link (ví dụ comment trên Jira TIB-5577), lời sửa câu Q2 ngày 2026-10-29; hiện chỉ là lời QA phuongbb chuyển lại, kênh gốc không rõ, không có trên Jira. Chưa xác nhận thì không nạp KB. Khi được xác nhận thì đối chiếu lại item contour cut KB-391 (layer-print-effects) và KB-044.","kb_ids":[]}
+{"oq_id":"OQ-artwork-250","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Contour cut: khác chiều rộng thì gọi riêng, cùng chiều rộng khác chiều cao thì gọi chung. Không nạp KB (S0), không có test case; không đụng item contour cut của layer-print-effects. Cần: Dev (giangnth) xác nhận nguyên văn, có ngày và link (ví dụ comment trên Jira TIB-5577), lời sửa câu Q2 ngày 2026-10-29; hiện chỉ là lời QA QA chuyển lại, kênh gốc không rõ, không có trên Jira. Chưa xác nhận thì không nạp KB. Khi được xác nhận thì đối chiếu lại item contour cut KB-391 (layer-print-effects) và KB-044.","kb_ids":[]}
 ```
 
 ## OQ-artwork-251 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id":"OQ-artwork-251","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Các effect không phụ thuộc kích thước (gray_scale, remove background, watercolor, sketch…; danh sách chỉ là ví dụ) luôn gọi chung dù layer khác kích thước. Không nạp KB (S0); ngược với cách đọc rộng câu Q2 trên Jira (xem OQ CONFLICT populate-share-call-layer-size). Cần: Dev (giangnth) xác nhận nguyên văn, có ngày và link (ví dụ comment trên Jira TIB-5577), lời sửa câu Q2 ngày 2026-10-29; hiện chỉ là lời QA phuongbb chuyển lại, kênh gốc không rõ, không có trên Jira. Chưa xác nhận thì không nạp KB.","kb_ids":[]}
+{"oq_id":"OQ-artwork-251","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Các effect không phụ thuộc kích thước (gray_scale, remove background, watercolor, sketch…; danh sách chỉ là ví dụ) luôn gọi chung dù layer khác kích thước. Không nạp KB (S0); ngược với cách đọc rộng câu Q2 trên Jira (xem OQ CONFLICT populate-share-call-layer-size). Cần: Dev (giangnth) xác nhận nguyên văn, có ngày và link (ví dụ comment trên Jira TIB-5577), lời sửa câu Q2 ngày 2026-10-29; hiện chỉ là lời QA QA chuyển lại, kênh gốc không rõ, không có trên Jira. Chưa xác nhận thì không nạp KB.","kb_ids":[]}
 ```
 
 ## OQ-artwork-252 — NEEDS_CONFIRMATION
@@ -1713,13 +1713,13 @@
 ## OQ-artwork-286 — CONFLICT
 
 ```json
-{"oq_id":"OQ-artwork-286","type":"CONFLICT","feature_id":"editor-layer-workspace","summary":"Menu overflow trên layer action bar: KB-043 (bootstrap 2026-09-10) ghi action bar không có menu '...'; KB-085 (layer-config-image, bootstrap 2026-09-21) ghi panel cấu hình chỉ tiếp cận qua '...' > 'Bulk edit', không có panel single-layer; KB-908 (TC-01 2026-10-30) ghi menu More (…) có Bulk edit đứng đầu + Replace image layer, Link with another layer, Convert to another layer, 6 mục bulk cũ không còn. Cần: Operator/owner quyết resolve (supersede tắt ở teeinblue); run explore hoặc test case có căn cứ expected đọc lại action bar và panel single-layer trên build cuối; cập nhật CHK-005, CHK-015 theo kết quả. Ghi chú thêm: KB-043 và KB-085 đã lệch nhau từ base về việc có menu '...' hay không, KB-908 cùng chiều KB-085 ở điểm đó; KB-908 không nói gì về panel single-layer. Check mất oracle: CHK-005, CHK-024 (editor-layer-workspace), CHK-015 (layer-config-image).","kb_ids":["KB-043","KB-085","KB-908"],"conflict_group":"CONF-CBS-092-01","side_a":"KB-043 (OBSERVED_CURRENT, MEDIUM, 2026-09-10): không có menu overflow (CHK-005); KB-085 (OBSERVED_CURRENT, LOW, 2026-09-21): panel cấu hình chỉ qua '...' > 'Bulk edit', không panel single-layer (CHK-015).","side_b":"KB-908 (OBSERVED_CURRENT, LOW, CBS-092 CLAIM-01, TC-01 2026-10-30): menu More (…) có Bulk edit đứng đầu + 3 mục; 6 mục bulk cũ không còn.","check_ids":["CHK-005","CHK-024","CHK-015"]}
+{"oq_id": "OQ-artwork-286", "type": "CONFLICT", "feature_id": "editor-layer-workspace", "summary": "Menu overflow trên layer action bar: KB-043 (bootstrap 2026-09-10) ghi action bar không có menu '...'; KB-085 (layer-config-image, bootstrap 2026-09-21) ghi panel cấu hình chỉ tiếp cận qua '...' > 'Bulk edit', không có panel single-layer; KB-908 (TC-01 2026-10-30) ghi menu More (…) có Bulk edit đứng đầu + Replace image layer, Link with another layer, Convert to another layer, 6 mục bulk cũ không còn. Cần: Operator/owner quyết resolve (supersede tắt ở teeinblue); run explore hoặc test case có căn cứ expected đọc lại action bar và panel single-layer trên build cuối; cập nhật CHK-005, CHK-015 theo kết quả. Ghi chú thêm: KB-043 và KB-085 đã lệch nhau từ base về việc có menu '...' hay không, KB-908 cùng chiều KB-085 ở điểm đó; KB-908 không nói gì về panel single-layer. Check mất oracle: CHK-005, CHK-024 (editor-layer-workspace), CHK-015 (layer-config-image). [CBS-113] Bổ sung KB-1037 (TIB-5211, 2026-07-20, nguồn sớm hơn KB-043) và KB-1038 vào side_b; CHK-020 (layer-duplicate-link-copy) chờ resolve.", "kb_ids": ["KB-043", "KB-085", "KB-908", "artwork/layer-duplicate-link-copy#KB-1037", "artwork/layer-duplicate-link-copy#KB-1038"], "conflict_group": "CONF-CBS-092-01", "side_a": "KB-043 (OBSERVED_CURRENT, MEDIUM, 2026-09-10): không có menu overflow (CHK-005); KB-085 (OBSERVED_CURRENT, LOW, 2026-09-21): panel cấu hình chỉ qua '...' > 'Bulk edit', không panel single-layer (CHK-015).", "side_b": "KB-908 (OBSERVED_CURRENT, LOW, CBS-092 CLAIM-01, TC-01 2026-10-30): menu More (…) có Bulk edit đứng đầu + 3 mục; 6 mục bulk cũ không còn. [CBS-113] Thêm cùng phía: KB-1037 (CONFIRMED_EXPECTED, LOW, UNRESOLVED; spec_doc Jira TIB-5211 description mục Solution, 2026-07-20: 'Convert to another layer' nằm trong menu '...' More actions của layer toolbar) và KB-1038 (PROPOSED, rule QA FACT-038 2026-09-04: link layer sẵn có qua '...' → 'Link with another layer') ở layer-duplicate-link-copy.", "check_ids": ["CHK-005", "CHK-024", "CHK-015", "artwork/layer-duplicate-link-copy#CHK-020"]}
 ```
 
 ## OQ-artwork-287 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id":"OQ-artwork-287","type":"NEEDS_CONFIRMATION","feature_id":"editor-layer-workspace","summary":"KB-908: nội dung và nhãn menu More (…) (Bulk edit, Replace image layer, Link with another layer, Convert to another layer; Artwork 1.0 vẫn ghi \"Share with another layer\") chỉ là quan sát TC-01, khác nhãn trong TC expected và ticket. Đây có phải nội dung và nhãn đúng? Cần: PO hoặc Dev xác nhận nguyên văn, có ngày (Jira TIB-5299), hoặc test case PASS có căn cứ expected trên build cuối.","kb_ids":["KB-908"]}
+{"oq_id": "OQ-artwork-287", "type": "NEEDS_CONFIRMATION", "feature_id": "editor-layer-workspace", "summary": "KB-908: nội dung và nhãn menu More (…) (Bulk edit, Replace image layer, Link with another layer, Convert to another layer; Artwork 1.0 vẫn ghi \"Share with another layer\") chỉ là quan sát TC-01, khác nhãn trong TC expected và ticket. Đây có phải nội dung và nhãn đúng? Cần: PO hoặc Dev xác nhận nguyên văn, có ngày (Jira TIB-5299), hoặc test case PASS có căn cứ expected trên build cuối. [CBS-113] Rule QA FACT-038 (2026-09-04, KB-1038, PROPOSED) dùng mục 'Link with another layer' của menu '...' làm entry point link một layer sẵn có vào origin ở Artwork 2.0; cần Dev xác nhận cùng câu hỏi này.", "kb_ids": ["KB-908", "artwork/layer-duplicate-link-copy#KB-1038"]}
 ```
 
 ## OQ-artwork-288 — CONFLICT
@@ -1935,7 +1935,7 @@
 ## OQ-artwork-323 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id": "OQ-artwork-323", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": [], "summary": "CLAIM-27 (S0, không nạp KB): layer Dynamic Clipart by Text so khớp text buyer gõ với tên option clipart (origin_name/name) và group_name sau khi chuẩn hoá cả hai phía về Unicode NFC (tên lưu NFD khớp text gõ NFC và ngược lại; áp cho nguồn clipart và grouped_clipart). Chỉ có note kỹ thuật Dev TIB-5412 comment 51755 (2026-09-23), không ai xác nhận; TC QA Hub passed nhưng actualResult rỗng. Liên quan OQ-artwork-290, OQ-asset-category-045. Cần: Dev/PO xác nhận nguyên văn có ngày, PR teeinblue-sdk #2036 kèm diff (dev_doc), hoặc test case Testlane PASS có ngày, build và căn cứ expected.", "check_ids": ["CHK-088"]}
+{"oq_id": "OQ-artwork-323", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": ["artwork/populate-values#KB-1000"], "summary": "CLAIM-27 (S0, không nạp KB): layer Dynamic Clipart by Text so khớp text buyer gõ với tên option clipart (origin_name/name) và group_name sau khi chuẩn hoá cả hai phía về Unicode NFC (tên lưu NFD khớp text gõ NFC và ngược lại; áp cho nguồn clipart và grouped_clipart). Chỉ có note kỹ thuật Dev TIB-5412 comment 51755 (2026-09-23), không ai xác nhận; TC QA Hub passed nhưng actualResult rỗng. Liên quan OQ-artwork-290, OQ-asset-category-045. Cần: Dev/PO xác nhận nguyên văn có ngày, PR teeinblue-sdk #2036 kèm diff (dev_doc), hoặc test case Testlane PASS có ngày, build và căn cứ expected. Thêm (CBS-115, 2026-11-11): rule QA FACT-164 (QA ghi nhận 2026-10-26, QA-3418 RQ10; QA nói chưa chắc cơ chế) ghi Dynamic Clipart by Text chọn clipart theo tên clipart khớp ký tự input ({{char1}}...), không theo tên file/asset — nạp KB-1000 (populate-values, PROPOSED/LOW), check CHK-058 của populate-values. Vẫn cần Dev/PO xác nhận cơ chế so khớp tên (và chuẩn hoá NFC).", "check_ids": ["CHK-088", "populate-values#CHK-058"]}
 ```
 
 ## OQ-artwork-324 — NEEDS_CONFIRMATION
@@ -2467,7 +2467,7 @@
 ```
 
 ```json
-{"oq_id":"OQ-artwork-444","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-016 “Cú pháp thật của {{value.formula(<expression>)}} và {{value.context.<from>To<to>}}” của feature populate-values. missing_or_unresolved_oracle"}
+{"oq_id":"OQ-artwork-444","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-016 “Cú pháp thật của {{value.formula(<expression>)}} và {{value.context.<from>To<to>}}” của feature populate-values. missing_or_unresolved_oracle. Bổ sung CBS-110 (2026-11-11): KB-987, KB-988, KB-991 (PROPOSED, rule QA) mô tả một phần kết quả token formula/context sai; chưa đủ làm expected cho CHK-016, xem CHK-046, CHK-047, CHK-050"}
 ```
 
 ```json
@@ -2492,4 +2492,592 @@
 
 ```json
 {"oq_id":"OQ-artwork-450","type":"NEEDS_CONFIRMATION","feature_id":"populate-values","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-024 “[NEW v3, NEEDS_CONFIRMATION] Hành vi propagation (KB-008, CHK-022) có giữ nguyên trên guest session thật hay không — hiện chỉ có staff-authenticated proxy” của feature populate-values. missing_or_unresolved_oracle"}
+```
+
+## OQ-artwork-451 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-451","type":"NEEDS_CONFIRMATION","feature_id":"condition-cycle-validation","summary":"[CBS-140, KB-983, spec-hub rule conditional-options-no-loops và artwork-editor-layer-checks] Spec-hub ghi condition giữa các layer không được tạo vòng (A phụ thuộc B và B phụ thuộc A), artwork không lưu được tới khi gỡ vòng, và editor kiểm điều này trước khi save. Dev xác nhận đây là hành vi đúng không? Rule không nói server có chặn payload vòng gửi thẳng qua API (OQ-artwork-036) hay self-loop (OQ-artwork-037); nếu server cũng chặn thì Dev nêu rõ.","kb_ids":["KB-983"]}
+```
+
+## OQ-artwork-452 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-452","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"[CBS-140, KB-984, spec-hub rule photo-upload-effect-rate-limit và photo-upload-network-limit] Spec-hub ghi shopper upload ảnh có effect AI/xử lý bị giới hạn 5 lần mỗi giờ cho mỗi option (mặc định, đổi được theo shop) và 50 lần mỗi giờ cho mỗi network trên mọi option và shop; upload có effect từ portal tính vào giới hạn network. Dev xác nhận các ngưỡng mặc định này không? Lượt Run effects trong artwork editor (quota riêng KB-814) có tính vào giới hạn network 50/giờ không? Spec-hub có hai chữ thông báo cho giới hạn theo option ('You've reached the image effect upload limit for this option...' và 'Upload limit exceeded for this field...'): shopper thấy chữ nào? sdk KB-051 (Dev, Jira TIB-5460, 2026-09-17) ghi giới hạn tính theo visitor và cửa sổ trên staging là 5 phút thay vì 1 giờ: giới hạn tính theo shopper theo option hay theo visitor, và trên staging cửa sổ là bao lâu?","kb_ids":["KB-984"]}
+```
+
+## OQ-artwork-453 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-453","type":"NEEDS_CONFIRMATION","feature_id":"run-image-effects","summary":"[CBS-140, KB-985, spec-hub rule image-effects-background-remover và image-effects-needs-key] Spec-hub ghi xoá nền dùng remover merchant chọn (account remove.bg/Removal.AI/Cutout.Pro của merchant, remover built-in của Teeinblue, hoặc gói Teeinblue x Removal.ai), và khi xử lý ảnh shopper upload thì effect của dịch vụ ngoài thiếu key bị bỏ qua âm thầm, effect của Teeinblue không cần key. Rule không nêu surface; run suy scope là xử lý ảnh shopper upload từ ví dụ của rule. Dev xác nhận đây là hành vi đúng khi xử lý ảnh shopper upload không? Rule 'bỏ qua âm thầm' có áp cho cả Run effects trong artwork editor không? Nếu có thì trái KB-816 (thiếu key thì không chạy và hiện warning); nếu không thì hai đường có cố ý khác nhau không?","kb_ids":["KB-985"]}
+```
+
+## OQ-artwork-454 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-artwork-454","type":"NEEDS_CONFIRMATION","feature_id":"artwork-save-persist","summary":"[CBS-109, KB-986, rule QA FACT-179] Rule QA ghi format file order design (AI, EPS, PDF, SVG, PNG, JPEG…) do field 'Artwork design format' (multi-select) trong dialog 'Artwork details' của artwork quyết định, Save cùng artwork, và artwork editor không có nút Export/Download design riêng. Chưa có order thật đối chiếu (QA-3416 TC-29 tạm hoãn). Dev xác nhận: (1) đây có phải nơi duy nhất chọn format file design không; (2) khi chọn nhiều format thì một line item sinh file design cho mọi format đã chọn hay chỉ một; (3) lựa chọn multi-select lưu vào field nào và dạng gì, vì KB-053 mới thấy design_format là một chuỗi 'rgb' trong body PUT. Liên quan CHK-026.","kb_ids":["KB-986","KB-053"],"owner":"Dev"}
+```
+
+## OQ-artwork-455 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-455", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "[CBS-110, KB-987, rule QA FACT-022 nhóm 1] Rule QA ghi token có shape hợp lệ nhưng nội dung sai ra layer đích rỗng ('Default text'): {{value.context.<from>To<to>}} với đơn vị không hỗ trợ hoặc typo (yearToFortnight, yaerToMonth); {{value.formula(...)}} đủ ngoặc nhưng biểu thức sai (chia 0, thiếu vế, ký tự % hoặc ^); hậu tố .N hỏng nằm trong ngoặc. Mới là hành vi quan sát ở Live Preview trên staging (lượt chạy tự động QA-3353), mô tả của Dev chỉ nói 'formula/unit không hiểu thì layer để trống'. PO xác nhận đây là hành vi đúng không? Storefront và design file có cho cùng kết quả không? Liên quan CHK-046.", "kb_ids": ["KB-987"], "owner": "PO"}
+```
+
+## OQ-artwork-456 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-456", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "[CBS-110, KB-988, rule QA FACT-022 nhóm 2] Rule QA ghi token trong namespace value. không phải format hợp lệ hoàn chỉnh ({{value.context.yearTo}}, {{value.context}}, {{value.wibble}}, {{value.contextt.yearToMonth}}, {{value.formula(origin+}}, {{value.formula(origin/3).abc}}) ra raw-value fallback: layer đích hiện giá trị nguồn, không rỗng. PO có duyệt việc hiện giá trị nguồn thay vì rỗng cho các token này không, và ranh giới 'ký tự sai trong hay ngoài ngoặc' có phải hành vi chủ ý không? Liên quan CHK-047.", "kb_ids": ["KB-988"], "owner": "PO"}
+```
+
+## OQ-artwork-457 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-457", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "[CBS-110, KB-989, rule QA FACT-022 nhóm 3] Rule QA ghi token {{...}} không có prefix value ({{7*7}}, {{foobar}}, {{name}}) trong layer populate ra rỗng, không tính biểu thức, raw-value fallback chỉ áp trong namespace value. và resolver không in token chưa resolve ra nguyên văn. PO/Dev xác nhận đây là hành vi đúng không, kể cả trên storefront và design file? Liên quan CHK-048.", "kb_ids": ["KB-989"], "owner": "PO"}
+```
+
+## OQ-artwork-458 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-458", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "[CBS-110, KB-990, rule QA FACT-023] Rule QA ghi nguồn Date picker (giá trị YYYY-MM-DD) cho {{value}} ra đúng ngày nhưng {{value.context.*}} và {{value.formula(...)}} ra rỗng, và nhóm 'Text & Curve Text' không có token ngày/now nên không tính được số ngày kể từ một ngày. Đây là giới hạn mong muốn hay lỗi? Nếu là lỗi thì ghi nhận như known defect; Calendar layer với token {{date.<format>}} chưa kiểm. Liên quan CHK-049.", "kb_ids": ["KB-990"], "owner": "PO"}
+```
+
+## OQ-artwork-459 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-459", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "[CBS-110, KB-991, rule QA FACT-024] Rule QA ghi {{value.context.*}} dùng năm 365.2425 ngày, tháng 1/12 năm, dựng cứng, không có tuỳ chọn 365 ngày (đo: 40 yearToDay = 14610). Bản 'Change summary & test cases' của Dev trên Jira TIB-5385 (2026-09-07) mô tả đây là quyết định sản phẩm có chủ ý. Dev xác nhận nguyên văn có ngày đây là hành vi đã chốt và không có cấu hình khác không? Liên quan CHK-050.", "kb_ids": ["KB-991"], "owner": "Dev"}
+```
+
+## OQ-artwork-460 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-460", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "[CBS-110, KB-992, rule QA FACT-100] Rule QA đo {{value.<N>char}}: .0char rỗng, X vượt độ dài ra nguyên chuỗi, .abcchar raw fallback, .-1char cắt bớt 1 ký tự cuối (khác initialofword.-1 ra raw fallback), .1.5char nhận số thập phân. Dev xác nhận đây là hành vi đúng hay lỗi (nhất là X âm và X thập phân), và bản đo đã ship production chưa? Liên quan CHK-051.", "kb_ids": ["KB-992"], "owner": "Dev"}
+```
+
+## OQ-artwork-461 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-461", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "[CBS-110, KB-993, rule QA FACT-063] Rule QA ghi text layer tĩnh (không gắn populate/personalization config) không đi qua populate resolver, content {{7*7}} hay <b>bold</b> hiện nguyên văn ở editor và ở render server-side (Preview/mockup). Lượt chạy chỉ thấy phía server-side sinh thumbnail thành công, không đọc được chữ. Dev xác nhận nguyên văn có ngày cho cả editor, Preview/mockup và design file không? Liên quan CHK-052.", "kb_ids": ["KB-993"], "owner": "Dev"}
+```
+
+## OQ-artwork-462 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-462", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "[CBS-115, KB-994, rule QA FACT-094] Rule QA ghi option {{value.initialofword.X}} có trong Available values và resolve đúng trên Single-line Text, Curve Text, Warp Text, Paragraph (làm đích) và QR Code (QR mã hoá chuỗi đã resolve), picker không có type 'Shape Text'/'Clipart Frame'. Nguồn là lượt chạy tự động QA-3364 do AI ghi, build không rõ. Dev xác nhận danh sách layer đích này, kể cả storefront và design file? Liên quan CHK-053.", "kb_ids": ["KB-994"], "owner": "Dev"}
+```
+
+## OQ-artwork-463 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-463", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "[CBS-115, KB-995, rule QA FACT-094] Rule QA (đo 2026-09-16) ghi Spiral Text và Clipart Category làm đích không có nhóm token text trong Browse values, không chọn được layer text làm nguồn. Theo CCR QA-3393, TIB-5271 (production 2026-10-26) đổi nhóm thành 'Text, Curve Text, Warp Text & Spiral Text' và cho Spiral làm nguồn. Vế Spiral Text còn đúng không, nên bỏ hay sửa? Vế Clipart Category còn đúng không? Liên quan CHK-054.", "kb_ids": ["KB-995"], "owner": "Dev"}
+```
+
+## OQ-artwork-464 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-464", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "[CBS-115, KB-997, rule QA FACT-096] Rule QA (QA đính chính 2026-10-15, QA-2844) ghi 'Populate X from another option' luôn trỏ tới một layer cụ thể, không bao giờ trỏ trực tiếp tới Global Option; Global Option chỉ là container. Dev xác nhận đây là thiết kế đã chốt? Liên quan CHK-055.", "kb_ids": ["KB-997"], "owner": "Dev"}
+```
+
+## OQ-artwork-465 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-465", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "[CBS-115, KB-998, rule QA FACT-096] Rule QA ghi dropdown nguồn lọc theo type: Content nhận Single-line Text (Paragraph không làm nguồn), Color chỉ layer color (layer text ra 'List is empty' dù set qua API vẫn lưu field), Background chỉ clipart-category/group-clipart-categories. Dev xác nhận? Vế Paragraph không làm nguồn Content còn đúng sau TIB-5271 không? API nhận nguồn sai type là chủ ý hay thiếu validate? Liên quan CHK-056.", "kb_ids": ["KB-998"], "owner": "Dev"}
+```
+
+## OQ-artwork-466 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-466", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "summary": "[CBS-115, KB-999, rule QA FACT-162] Rule QA (2026-10-23, QA-3416 BUG-05) ghi Populate Color của shape/vector/text chỉ trỏ vào một layer Color trong cùng artwork, không có field trỏ Shopify Color variant, nên fixture chỉ cần một layer Color thường. Dev xác nhận? TIB-4726 chưa Passed: khi nào ship, và canvas editor có đồng bộ màu không (claim đồng bộ không nạp vì không nguồn)? Liên quan CHK-057, OQ-artwork-090.", "kb_ids": ["KB-999"], "owner": "Dev"}
+```
+
+## OQ-artwork-467 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-467", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "summary": "[CBS-117, KB-1001] Mô tả của dev trong description TIB-5397 (2026-09-03) ghi Artwork 2.0 khi chọn nhiều layer ở Apply for Individual: ô Width hiện width chung hoặc Mixed khi các layer khác width, và group width tính lại từ bounding box của selection sau mỗi lần đổi width của layer bất kỳ. Dev/PO xác nhận đây là hành vi mong muốn? Bản tóm tắt của QA ghi 'Width hiện width thật của từng layer' — câu nào đúng? Liên quan CHK-001, CHK-002.", "kb_ids": ["KB-1001"], "owner": "Dev"}
+```
+
+## OQ-artwork-468 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-468", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "summary": "[CBS-117, KB-1002] Change note của dev trên TIB-5397 (2026-09-10) ghi Artwork 1.0 bỏ hẳn Apply for: Group / Individual khỏi Transform popover, multi-select chỉ còn Width/Height/Top/Left/Rotate/Fit to canvas/Flip như trước TIB-5197, seller 1.0 đặt auto-scale max width theo từng layer. PO xác nhận đây là hành vi mong muốn của Artwork 1.0? Liên quan CHK-003.", "kb_ids": ["KB-1002"], "owner": "PO"}
+```
+
+## OQ-artwork-469 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-469", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": [], "summary": "[CBS-117] CLAIM-04 (S0, không nạp KB): số đo QA trên fixture Artwork 1.0 staging 2026-09-16 ghi Undo/Redo 1 bước cho cả nhóm, Fit to canvas neo top-left (không căn giữa, ghi là cả 1.0 lẫn 2.0), Flip ở Artwork 1.0 lật ảnh từng layer tại chỗ (không group-mirror), ô số 0/âm/rỗng/chữ không đổi layer nhưng ô vẫn hiện giá trị đó, 99999/12.5/1e3 được chấp nhận. Đây có phải hành vi mong muốn không? Không có nguồn PO/Dev. Cần: Dev/PO xác nhận nguyên văn có ngày, hoặc test case Testlane PASS có ngày, build và căn cứ expected; hoặc locator rule QA có path trong repo QA.", "owner": "Dev"}
+```
+
+## OQ-artwork-470 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-470", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": [], "summary": "[CBS-117] CLAIM-05 (S0, không nạp KB): kết quả test local ghi Artwork 1.0 không vẽ box cá nhân (.artwork-layer-frame) dù account đang lưu preference Individual, sau khi fix bug nội bộ BUG-127; ghi chú cũ 'Artwork 1.0 vẫn đọc preference để vẽ box' được coi là lỗi thời. Xác nhận hành vi này, và Artwork 1.0 có cần đọc preference Apply for nữa không? Cần: Dev/PO xác nhận nguyên văn có ngày, hoặc test case Testlane PASS có ngày, build và căn cứ expected; hoặc locator rule QA có path trong repo QA.", "owner": "QA lead"}
+```
+
+## OQ-artwork-471 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-471", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": [], "summary": "[CBS-117] CLAIM-06 (S0, không nạp KB): QA chốt 'Group' trong radio Apply for: Group/Individual nghĩa là coi cả multi-selection trên canvas như một khối, không liên quan loại layer group (container lồng layer con). Dev/PO xác nhận hai khái niệm độc lập? Cần: Dev/PO xác nhận nguyên văn có ngày, hoặc test case Testlane PASS có ngày, build và căn cứ expected; hoặc locator rule QA có path trong repo QA.", "owner": "Dev"}
+```
+
+## OQ-artwork-472 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-472", "type": "CONFLICT", "feature_id": "transform-multi-select", "kb_ids": [], "summary": "[CBS-117] CLAIM-07 (S0, không nạp KB): nhập 0 hoặc số âm vào ô Width/Height/Top/Left của Transform bị bỏ qua hoàn toàn hay clamp về 1px? Số đo cùng lượt QA: nhỏ nhất áp được là 1 (0.5 làm tròn lên 1), 99999 áp cho mọi layer đang chọn không có max, chữ bị input type=number lọc, để trống rồi blur trả về giá trị cũ, ô không gọi API khi blur. Hành vi mong muốn hay lỗi? Cần: Dev xác nhận nguyên văn có ngày, hoặc test case Testlane PASS có ngày, build và căn cứ expected.", "owner": "Dev", "side_a": "Dev dự đoán ở RQ6 (QA-3361, 2026-09-16, chưa có nguyên văn): 0/số âm clamp về 1px.", "side_b": "Số đo QA staging 2026-09-16 (QA-3361 TC-35, kết quả local): 0/số âm bị bỏ qua hoàn toàn, ô hiện số vừa gõ nhưng layer không đổi, chọn lại layer thì ô về giá trị cũ."}
+```
+
+## OQ-artwork-473 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-473", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": [], "summary": "[CBS-117] CLAIM-08 (S0, không nạp KB): kết quả test local ghi preference Apply for: Group/Individual lưu theo account, chỉ đọc lúc load editor, không sync live giữa các tab cùng account; tab đổi mode sau cùng là giá trị cho lần load kế tiếp. Ghi chú 'dev chốt RQ11 2026-09-16' chưa có nguyên văn. Dev xác nhận? Cần: Dev/PO xác nhận nguyên văn có ngày, hoặc test case Testlane PASS có ngày, build và căn cứ expected; hoặc locator rule QA có path trong repo QA.", "owner": "Dev"}
+```
+
+## OQ-artwork-474 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-474", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": [], "summary": "[CBS-117] CLAIM-09 (S0, không nạp KB): QA quan sát Apply for không mặc định Group khi mở popover mà là state per-account để lại từ lần trước (production thấy Individual), nên test phải tự set tường minh. Mặc định thiết kế cho account mới là gì? Cần: Dev/PO xác nhận nguyên văn có ngày, hoặc test case Testlane PASS có ngày, build và căn cứ expected; hoặc locator rule QA có path trong repo QA.", "owner": "PO"}
+```
+
+## OQ-artwork-475 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-475", "type": "OPEN_ISSUE", "feature_id": "mcp-artwork-tools", "kb_ids": ["KB-1003"], "summary": "[CBS-120] Hành vi chưa ship (TIB-5486 còn QA Review, re-open 2026-10-28; lượt QA-3423 ngày 2026-11-02 tool trả not found): KB-1003 là đề xuất theo câu trả lời của Dev 2026-10-26 (RQ16). Khi ship, cap mỗi lần gọi của import-artwork-json-tool (20 clipart category, 20 global option inline, 50 item mỗi category, không vượt cap clipart của category) có đúng không, và message lỗi khi vượt là gì? Cần: test case Testlane PASS trên build có TIB-5486, kèm căn cứ expected.", "owner": "Dev"}
+```
+
+## OQ-artwork-476 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-476", "type": "OPEN_ISSUE", "feature_id": "mcp-artwork-tools", "kb_ids": ["KB-1004"], "summary": "[CBS-120] Hành vi chưa ship: KB-1004 là đề xuất theo câu trả lời của Dev 2026-10-26 (RQ16). Khi TIB-5486 ship, quota theo ngày của import-artwork-json-tool (clipart_category 1000, clipart 4000, cửa sổ 24h; global_option không có quota ngày) có đúng không? Các số là giá trị cấu hình qua env, có thể đổi. Cần: test case Testlane PASS trên build có TIB-5486 (Dev chỉ cách hạ giới hạn bằng cột giới hạn của users cho merchant test).", "owner": "Dev"}
+```
+
+## OQ-artwork-477 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-477", "type": "CONFLICT", "feature_id": "mcp-artwork-tools", "kb_ids": [], "summary": "[CBS-120] CLAIM-03 (S0, không nạp KB): bộ đếm quota clipart và clipart_category của MCP import-artwork-json-tool dùng chung limiter với REST (POST /api/cliparts/svg, POST /api/clipart-categories) hay riêng cho tool? Câu trả lời của Dev 2026-10-26 chỉ nêu số quota và tên env, không nói chung hay riêng; chưa ai gọi REST và MCP trên cùng account rồi so bộ đếm. Cần: Dev xác nhận nguyên văn có ngày, hoặc test case Testlane PASS có ngày, build và căn cứ expected.", "owner": "Dev", "side_a": "asset-category KB-035, KB-036 (đo trên REST, staging): route tạo clipart dùng resource user_rate_limiter:clipart limit 4000, route tạo category dùng user_rate_limiter:clipart_category limit 1000 — cùng số với quota Dev nêu cho MCP import, gợi ý có thể cùng limiter.", "side_b": "Rule QA FACT-171 (kho QA local, không có path mở lại được; suy diễn của QA, không phải lời Dev/PO): quota clipart và clipart_category của import tool là riêng cho tool này, không phải baseline portal-api chung."}
+```
+
+## OQ-artwork-478 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-478", "type": "OPEN_ISSUE", "feature_id": "mcp-artwork-tools", "kb_ids": ["KB-1005"], "summary": "[CBS-120] Hành vi chưa ship: KB-1005 là đề xuất theo câu trả lời của Dev 2026-10-26 (RQ17): clipart category tạo qua import-artwork-json-tool hay create-clipart-category-tool đều có source = mcp. Response của create-clipart-category-tool không trả field source (QA-3423 TC-32), nên đọc source ở đâu để kiểm (DB, GraphQL, UI)? Source của clipart item có cũng là mcp không (câu trả lời chỉ nói category)? Cần: Dev chỉ nơi đọc, và test case Testlane PASS trên build có TIB-5486.", "owner": "Dev"}
+```
+
+## OQ-artwork-479 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-479", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-puzzles", "kb_ids": ["KB-1006"], "summary": "[CBS-123] KB-1006 (rule QA FACT-004): layer Word Cloud luôn required, buyer không thể để trống. PO xác nhận đây là hành vi đúng đã ship? Thêm: field có hiện dấu bắt buộc và aria-required không, và 'Default words (only for preview)' chỉ dùng cho preview trong editor hay là fallback khi input rỗng (vế này chưa nạp vì chỉ có ghi chú QA không mã rule và test local). Liên quan CHK-009. Cần: PO/Dev xác nhận nguyên văn có ngày, hoặc test case Testlane PASS kèm căn cứ expected."}
+```
+
+## OQ-artwork-480 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-480", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-puzzles", "kb_ids": ["KB-1007"], "summary": "[CBS-123] KB-1007 (rule QA FACT-009): dedupe từ trùng của Word Cloud là case-sensitive và chạy sau transform Text case (Normal giữ Love/love/LOVE là 3 từ; UPPERCASE/lowercase/Capitalize gộp thành 1). Dev xác nhận, kể cả nhánh Capitalize (phân tích yêu cầu còn ghi cần kiểm phía nào của transform áp dụng, chưa có test case riêng)? Liên quan CHK-010."}
+```
+
+## OQ-artwork-481 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-481", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-puzzles", "kb_ids": ["KB-1008"], "summary": "[CBS-123] KB-1008 (rule QA FACT-012): Word Cloud có Drop shadow và shadow của origin propagate sang linked copy. Dev xác nhận đã ship? Linked copy có control shadow riêng không (vế này chưa nạp, chỉ có kết quả test local)? KB-031 hiện không liệt kê Drop shadow trong Design settings. Liên quan CHK-011."}
+```
+
+## OQ-artwork-482 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-482", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-puzzles", "kb_ids": [], "summary": "[CBS-123] CLAIM-02 (S0, không nạp KB): bấm 'Regenerate layout' nhiều lần ra layout khác nhau là đúng (mỗi lần bấm seed tăng 1, từ/shape/màu/số từ giữ nguyên, chỉ layout đổi)? Đã ship chưa? Mới thấy qua seed và request render trong test local, chưa so ảnh. Cần: Dev xác nhận nguyên văn có ngày, hoặc test case Testlane PASS kèm căn cứ expected, hoặc rule QA FACT-005 kèm ngày ghi nhận."}
+```
+
+## OQ-artwork-483 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-483", "type": "NEEDS_CONFIRMATION", "feature_id": "editor-layer-workspace", "kb_ids": ["KB-1009"], "summary": "[CBS-127] KB-1009 (rule QA FACT-032): popup Convert to another layer hiện type hiện tại ở dòng 'FROM X TO Y' (.convert-layer-popup__value là type đích chọn sẵn); convert tự áp dụng không cần Save nhưng chỉ ghi vào draft local của browser, GraphQL trả bản cũ tới khi Save; Cancel editor + confirm native thì hoàn lại. Dev xác nhận đây là hành vi chủ ý đã ship? Liên quan CHK-026. Cần: Dev/PO xác nhận nguyên văn có ngày, hoặc test case Testlane PASS kèm căn cứ expected."}
+```
+
+## OQ-artwork-484 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-484", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-common-config", "kb_ids": ["KB-1010"], "summary": "[CBS-127] KB-1010 (rule QA FACT-048): bộ property cấu hình (design/personalization) của layer khác nhau theo từng layer type, không có danh sách dùng chung; font size ở typography.size lồng bên trong, Word Cloud có font_size_min/max riêng; convert để lại key thừa. Dev xác nhận còn đúng và có schema theo type để đối chiếu không? Rule không chạm 7 field common envelope của KB-055. Liên quan CHK-014 (layer-common-config). Cần: Dev xác nhận nguyên văn có ngày."}
+```
+
+## OQ-artwork-485 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-485", "type": "NEEDS_CONFIRMATION", "feature_id": "editor-layer-workspace", "kb_ids": ["KB-1011"], "summary": "[CBS-127] KB-1011 (rule QA FACT-073): layer vector-family (static-vector, vector-category, vector-upload, legacy vector) không có nút Replace (la-exchange-alt) ở layer row lẫn panel la-pen. PO xác nhận đây là thiết kế đã ship? ('đúng thiết kế' trong rule là lời QA chốt khi test). Vế image-family có Replace chưa nạp, chờ operator quyết cách đọc so với KB-002 (5 icon trên layer row). Liên quan CHK-027. Cần: PO xác nhận nguyên văn có ngày."}
+```
+
+## OQ-artwork-486 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-486", "type": "NEEDS_CONFIRMATION", "feature_id": "editor-layer-workspace", "kb_ids": ["KB-1012"], "summary": "[CBS-127] KB-1012 (rule QA FACT-074): thumbnail layer vector trong layer panel là file .svg gốc trong img, không có biến thể _thumbnail; tắt cache thì SVG tải 2 lần (canvas + row 28px), bật cache thì lần 2 trúng HTTP cache. Dev xác nhận là thiết kế được chấp nhận? (bug draft đã rút 2026-09-11, chỉ là QA chấp nhận). Liên quan CHK-028. Cần: Dev xác nhận nguyên văn có ngày."}
+```
+
+## OQ-artwork-487 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-487", "type": "NEEDS_CONFIRMATION", "feature_id": "editor-layer-workspace", "kb_ids": ["KB-1013"], "summary": "[CBS-127] KB-1013 (rule QA FACT-074): SVG thiếu viewBox/kích thước không upload được: POST /api/layer-images/svg trả 500, dropzone hiện '[object Object]' (rule ghi là bug riêng mức Low). Dev xác nhận còn hiện hành không, expected đúng khi từ chối file là gì (status, message), và bug đã có ticket chưa? Liên quan CHK-029. Cần: Dev xác nhận nguyên văn có ngày."}
+```
+
+## OQ-artwork-488 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-488", "type": "NEEDS_CONFIRMATION", "feature_id": "editor-layer-workspace", "kb_ids": ["KB-1014"], "summary": "[CBS-127] KB-1014 (rule QA FACT-074): layer vector chỉ được thêm vào editor từ storage của TIB, không có nguồn vector bên ngoài. Dev xác nhận? (nguồn chỉ là 'user chốt' trong rule). Liên quan CHK-030. Cần: Dev xác nhận nguyên văn có ngày."}
+```
+
+## OQ-artwork-489 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-489", "type": "NEEDS_CONFIRMATION", "feature_id": "editor-layer-workspace", "kb_ids": ["KB-1015"], "summary": "[CBS-127] KB-1015 (rule QA FACT-098): trong popup 'Select a layer type' của Artwork 2.0, 'shape text' là layer Paragraph (không phải type riêng) và 'clipart frame' không tồn tại. Dev xác nhận? Liên quan CHK-031. Danh sách 28 type của rule so với 29 item/35 type của KB-001 chưa nạp, chờ operator quyết. Cần: Dev xác nhận nguyên văn có ngày."}
+```
+
+## OQ-artwork-490 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-490", "type": "NEEDS_CONFIRMATION", "feature_id": "editor-layer-workspace", "kb_ids": ["KB-1016"], "summary": "[CBS-127] KB-1016 (rule QA FACT-140): bấm nút Undo/Redo trên toolbar làm layer đang chọn mất focus (warp-point-handle, chip resize ẩn), còn Cmd/Ctrl+Z thì không. Dev xác nhận đây là hành vi chủ ý hay lỗi, đã ship chưa? Liên quan CHK-032. Cần: Dev xác nhận nguyên văn có ngày."}
+```
+
+## OQ-artwork-491 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-491", "type": "CONFLICT", "feature_id": "editor-layer-workspace", "kb_ids": [], "summary": "[CBS-127] CLAIM-08 (S0, không nạp KB): TIB đã có layer type 'shape' (Rectangle/Ellipse/Line) chưa, và danh sách layer type hiện hành sau TIB-4726 (Add basic shapes, đang QA Review) gồm những type nào? Hai ghi chép của QA ngược nhau; KB-001 (29 item / 35 data-type, oracle CHK-001/CHK-009) giữ nguyên, không vào conflict_group. Cần: Dev xác nhận nguyên văn có ngày danh sách type hiện hành.", "side_a": "Ghi chép QA (CBS-127 CLAIM-08): đo qua MCP schema 2026-09-17 (QA-3361) thấy 33 layer type, không type nào tên shape.", "side_b": "Ghi chép QA FACT-158 (2026-10) nêu trong CBS-127: popup type có Rectangle/Ellipse/Line, nhiều khả năng do TIB-4726; base KB-001 ghi 35 data-type."}
+```
+
+## OQ-artwork-492 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-492", "type": "CONFLICT", "feature_id": "editor-layer-workspace", "kb_ids": [], "summary": "[CBS-127] CLAIM-03 vế b (chưa nạp KB, chờ quyết định): layer image-family (static-photo, photo, clipart-category, group-clipart-categories, dynamic-by-text, legacy clipart) có nút Replace ở đâu — icon la-exchange-alt trên layer row (khi đó layer row có hơn 5 icon), hay chỉ trong panel la-pen / menu More (…)? PO xác nhận thiết kế. KB-002 (object-level, oracle BASELINE nhiều check) giữ nguyên, không vào conflict_group. Cần: PO trả lời nguyên văn có ngày.", "side_a": "Rule QA FACT-073 nêu trong CBS-127 (QA chốt 2026-09-11): chỉ image-family có Replace; câu rule ghi vector-family không có Replace 'ở row (la-exchange-alt) lẫn trong panel la-pen', ngụ ý image-family có Replace ở row.", "side_b": "Base KB-002 (bootstrap 2026-09-10): layer row của 34/35 type có đúng 5 icon la-eye · la-unlock · la-pen · la-copy · la-trash-alt, không có la-exchange-alt; KB-908 ghi menu More (…) có mục 'Replace image layer'."}
+```
+
+## OQ-artwork-493 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-493", "type": "CONFLICT", "feature_id": "editor-layer-workspace", "kb_ids": [], "summary": "[CBS-127] CLAIM-07 vế b (chưa nạp KB, chờ quyết định): popup 'Select a layer type' của Artwork 2.0 hiện có bao nhiêu type và gồm những gì — danh sách 28 tên của rule QA hay 29 item / 35 data-type của KB-001, và có thêm Rectangle/Ellipse/Line sau TIB-4726 không? Dev xác nhận danh sách hiện hành. KB-001 (oracle BASELINE của CHK-001, CHK-009) giữ nguyên, không vào conflict_group. Liên quan OQ-artwork-491. Cần: Dev trả lời nguyên văn có ngày.", "side_a": "Rule QA FACT-098 nêu trong CBS-127 (QA xác nhận 2026-09-17): danh sách đủ 28 type (Single-line Text, Paragraph, Curve Text, Warp Text, Spiral Text, Static Image, Clipart Category, Photo Upload, Text to Image (AI), Dynamic Clipart by Text, Static Vector, Vector Category, Vector Upload, Street/Route/Star Maps, Moon Phase, Scrabble, Word Search/Cloud, Song Search, Calendar, QR Code, Clock, Toggle Switch, Additional Option, Addon Charge, JSON List, Font, Color).", "side_b": "Base KB-001 (bootstrap 2026-09-10): 29 item chia 7 nhóm, 6 item có submenu, tổng 35 data-type; ghi chép FACT-158 (2026-10) nêu trong CBS-127 thấy thêm Rectangle/Ellipse/Line."}
+```
+
+## OQ-artwork-494 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-494", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-save-persist", "kb_ids": ["KB-1017"], "summary": "[CBS-143] KB-1017: Artwork editor chặn Save / Save & Close khi có layer static-photo không ảnh hoặc photo / clipart-category / group-clipart-categories No personalization không ảnh, toast nêu template + layer — PO/Dev xác nhận đây là hành vi mong muốn và cho biết đã lên production chưa. Thêm: layer photo No personalization không có ảnh mặc định nhưng có retrieval value (KB-937, KB-938) có bị chặn không? Nguồn hiện tại là change note của Dev (TIB-5446, 2026-11-06)."}
+```
+
+## OQ-artwork-495 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-495", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-save-persist", "kb_ids": ["KB-1018"], "summary": "[CBS-143] KB-1018: ảnh vừa chọn nhưng chưa upload vẫn tính là có ảnh khi Save — trạng thái này xảy ra ở đường thao tác nào trên portal (hộp chọn ảnh upload xong mới cho Select)? Dev/PO xác nhận."}
+```
+
+## OQ-artwork-496 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-496", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-save-persist", "kb_ids": ["KB-1019"], "summary": "[CBS-143] KB-1019: REST lưu artwork (tạo mới / cập nhật) trả 422 khi có layer ảnh không có ảnh — route tạo mới là gì, body lỗi 422 có shape nào (tên template, tên layer ở field nào)? Chưa quan sát; cần lượt test được phép gọi route ghi."}
+```
+
+## OQ-artwork-497 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-497", "type": "CONFLICT", "feature_id": "artwork-save-persist", "kb_ids": ["KB-1020"], "summary": "[CBS-143] KB-1020: kiểm tra 'layer ảnh phải có ảnh' bỏ qua layer linked theo trường nào, và 'replica' là loại layer nào? Item không khẳng định trường hợp layer linked đã convert sang Static Image. Không có conflict_group (căng nằm trong claim, không với item base).", "side_a": "Change note Dev TIB-5446 (2026-11-06, mục API): bỏ qua layer replica, linked, global option, layer ẩn và form-only vì chúng lấy ảnh nơi khác hoặc không render.", "side_b": "Lượt test portal staging 2026-11-09: một layer linked sau khi convert sang Static Image (customization_type no_customization, vẫn giữ trường linked) bị chặn như layer thường; layer replica chưa kiểm vì chưa có định nghĩa."}
+```
+
+## OQ-artwork-498 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-498", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-save-persist", "kb_ids": ["KB-1021"], "summary": "[CBS-143] KB-1021: artwork đã hỏng sẵn (layer ảnh không url) không Save được tới khi thêm ảnh hoặc xoá layer, không backfill — PO xác nhận chấp nhận hành vi này (seller không lưu được thay đổi khác trên artwork cũ) và có kế hoạch backfill riêng không? Chưa có lượt test."}
+```
+
+## OQ-artwork-499 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-499", "type": "NEEDS_CONFIRMATION", "feature_id": "editor-layer-workspace", "kb_ids": ["KB-1022"], "summary": "[CBS-143] KB-1022: change note Dev nói convert static-photo chưa có ảnh bị chặn ở cả nút 'Convert to Photo Upload' trên layer và popup 'Convert to another layer'; lượt test chỉ thấy popup. Nút riêng hiện ở đâu / với layer nào (vd layer cần convert type)?"}
+```
+
+## OQ-artwork-500 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-500", "type": "NEEDS_CONFIRMATION", "feature_id": "mcp-artwork-tools", "kb_ids": ["KB-1023"], "summary": "[CBS-143] KB-1023: kiểm tra artwork của MCP có chặn layer static-photo và photo No personalization không có ảnh không (AC5 TIB-5446 nói API hoặc MCP save không được tạo layer static-photo không url), và áp ở tool MCP nào? Change note chỉ nói chặn thêm clipart-category / group-clipart-categories."}
+```
+
+## OQ-artwork-501 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-501", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-image", "kb_ids": ["KB-1024"], "summary": "[CBS-143] KB-1024: layer photo personalization thường không có ảnh mặc định vẫn lưu được trên portal / REST (Dev ghi là giới hạn đã biết, MCP vẫn chặn) — PO có muốn giữ hành vi này không?"}
+```
+
+## OQ-artwork-502 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-502", "type": "CONFLICT", "feature_id": "editor-layer-workspace", "kb_ids": [], "summary": "[CBS-143] CLAIM-09 (chưa nạp KB, chờ PO quyết AC3 TIB-5446): convert Artwork 1.0 → 2.0 với text layer có background_image — layer tạo ra phải là static-photo có url hay clipart-category có url, và AC3 có tính là đạt với converter hiện tại không? Canon chưa có feature cho convert 1.0 → 2.0. Cần: PO trả lời nguyên văn có ngày.", "side_a": "Description TIB-5446 (Dev, 2026-09-15): Root cause #2 nói convert là bug đã xác nhận — layer static-photo tạo từ background của text layer không được gán url khi text layer có background_image; AC3 yêu cầu ra layer static-photo có url.", "side_b": "Change note Dev TIB-5446 (2026-11-06, Known limitations): convert Artwork 1.0 có background image đã đúng sẵn trên dev (layer tạo ra có url), không sửa; câu hỏi kèm đọc code trên ticket (2026-10-31) nói layer tạo ra là clipart-category, không phải static-photo."}
+```
+
+## OQ-artwork-503 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-503", "type": "OPEN_ISSUE", "feature_id": "populate-values", "kb_ids": ["KB-1025", "KB-1026"], "summary": "[CBS-118] KB-1025, KB-1026 (known defect): từ bắt đầu bằng ký tự astral (emoji, chữ toán học) làm {{value.initialofword.X}} và bare {{value.initialofword}} trả nửa surrogate pair, hiển thị glyph vỡ. Emoji trong tên có phải kịch bản thật không, và nếu có thì có mở ticket riêng như dev gợi ý không? 'Giới hạn kế thừa, không phải regression' mới là nhận định của một dev, chưa qua PO. Cần: PO trả lời."}
+```
+
+## OQ-artwork-504 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-504", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "kb_ids": ["KB-1026"], "summary": "[CBS-118] KB-1026: lỗi astral ở bare {{value.initialofword}} có từ trước TIB-5331, không phải regression do nhánh TIB-5331, có đúng không? Chưa ai đối chiếu bare token trước và sau TIB-5331. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-505 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-505", "type": "NEEDS_CONFIRMATION", "feature_id": "populate-values", "kb_ids": ["KB-1027"], "summary": "[CBS-118] KB-1027: chữ Latin có dấu và tiếng Việt (É, Đ) không bị ảnh hưởng bởi lỗi astral, họ token initialofword lấy đúng chữ đầu — đúng không, với giá trị nhập và kết quả cụ thể nào? Mới là một câu của dev, chưa có test case kiểm độc lập. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-506 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-506", "type": "CONFLICT", "feature_id": "artwork-list-management", "kb_ids": ["KB-1028"], "summary": "[CBS-107] Gọi thẳng DELETE /api/artworks/{id} cho artwork đang gắn campaign thì response đúng thiết kế là gì (status code, body JSON có nêu lý do không), và trang HTML 'Forbidden' 403 của Laravel mà QA đo được có phải lỗi không? Hai phía chưa ai phân xử; check tầng API CHK-015 chưa có oracle, check tầng portal CHK-013 dùng KB-1028. Cần: Dev trả lời.", "side_a": "spec-hub rule artwork-editor-delete-blocked-when-used (sure green, đọc 2026-11-12, KB-1028): lỗi khi xoá artwork đang dùng nêu lý do; với artwork trong campaign, portal yêu cầu gỡ khỏi mọi campaign trước và có 'View campaigns list'.", "side_b": "QA đo bằng API trên staging 2026-09-07 (rule QA FACT-049, chưa nạp vì xoá dữ liệu là P1): artwork có liên kết campaign nhận 403 với trang HTML 'Forbidden' trần của Laravel, không phải JSON; artwork không liên kết xoá được (204)."}
+```
+
+## OQ-artwork-507 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-507", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-save-persist", "kb_ids": ["KB-1029", "KB-1030"], "summary": "[CBS-107] (1) Ngưỡng 60 lần/phút cho lưu thay đổi artwork có sẵn (KB-1029) là setting server: staging và production có cùng giá trị không? (2) Khi vượt rate limit, response là 429 'Too Many Requests' dạng trang HTML (rule QA FACT-050, KB-1030, PROPOSED) có phải thiết kế không, hay phải là JSON? CHK-033 và CHK-034 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-508 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-508", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-list-management", "kb_ids": ["KB-1028", "KB-1031"], "summary": "[CBS-107] Thao tác xoá là P1 (mất dữ liệu). KB-1028 và KB-1031 là rule spec-hub đọc từ code (sure green): artwork đang dùng (campaign, platform product, order design, có duplicate) không xoá được, artwork đã dùng cho order design chỉ archive được; xoá artwork chuyển vào trash. Đây có phải hành vi chủ đích không? CHK-013, CHK-014, CHK-016 đang dùng hai item này làm oracle STRONG. Cần: PO xác nhận."}
+```
+
+## OQ-artwork-509 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-509", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-duplicate-link-copy", "kb_ids": ["KB-1032"], "check_ids": ["CHK-015"], "summary": "[CBS-113] Rule QA FACT-013/FACT-037 (KB-1032, PROPOSED): Duplicate & Link trên một layer đã là linked copy thì bản mới link về layer origin gốc, không tạo chain và không bị chặn (đã thấy với Word Cloud, Warp Text). Đây có phải rule chung của cơ chế link cho mọi type nhóm LINKED không? Nguồn là kết quả QA/AI trước lần dev sửa TIB-5265 ngày 2026-09-08. CHK-015 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-510 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-510", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-duplicate-link-copy", "kb_ids": ["KB-1033"], "check_ids": ["CHK-016"], "summary": "[CBS-113] Rule QA FACT-015 (KB-1033, PROPOSED): Duplicate & Link trên multi-select có lẫn layer type không support link thì type đó được duplicate thường (bản copy độc lập), không bị bỏ qua. Đúng không? Comment dev TIB-5265 2026-08-18 chỉ nói 'only the allowed types get linked'. CHK-016 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-511 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-511", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-duplicate-link-copy", "kb_ids": ["KB-1034"], "check_ids": ["CHK-017"], "summary": "[CBS-113] Rule QA FACT-036 (KB-1034, PROPOSED): Duplicate & Link áp dụng ngay, không có bước xác nhận, cho Warp Text và mọi type khác. Còn đúng sau lần dev sửa TIB-5265 ngày 2026-09-08 không? CHK-017 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-512 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-512", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-duplicate-link-copy", "kb_ids": ["KB-1036"], "check_ids": ["CHK-019"], "summary": "[CBS-113] KB-1036 (OBSERVED_CURRENT, LOW): theo checklist dev sinh từ branch diff (comment TIB-5265, 2026-08-18), Warp Text layer legacy ở Artwork 1.0 không có Duplicate & Link. Đây có phải hành vi chủ đích không? Testlane case Artwork 1.0 (TC-TIB-1212) bị skip. Cần: Dev hoặc PO xác nhận."}
+```
+
+## OQ-artwork-513 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-513", "type": "CONFLICT", "feature_id": "layer-duplicate-link-copy", "kb_ids": ["KB-1039"], "check_ids": ["CHK-021"], "conflict_group": "CONF-CBS-113-01", "summary": "[CBS-113] Option 'Share with another layer' ở Artwork 2.0 đã bị bỏ hẳn hay vẫn còn trong Bulk edit khi chọn nhiều layer? Supersede tắt ở teeinblue, không chọn phe; KB-1039 và CHK-021 không làm oracle. Cần: Dev trả lời.", "side_a": "Rule QA FACT-038 (QA, 2026-09-04, QA-3345; KB-1039 PROPOSED): radio 'Share with another layer' trong Personalization Options đã bỏ ở AW2.0 (disabled + display:none ở mọi layer type), thấy nó ẩn không phải regression.", "side_b": "spec-hub teeinblue feature artwork-editor v3, rule artwork-editor-bulk-edit (sure yellow, suy ra; nguồn code và TIB-4024/4026/4025 năm 2025): khi chọn nhiều layer, bulk edit đổi được option 'Share with another layer'."}
+```
+
+## OQ-artwork-514 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-514", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-duplicate-link-copy", "kb_ids": ["KB-1040"], "check_ids": ["CHK-023"], "summary": "[CBS-113] KB-1040 (TIB-5211): convert một linked layer thì gỡ link và thành 'independent layer (No personalization)'. (1) Layer sau convert có mất hết personalization (thành layer tĩnh) không? (2) Origin và các linked copy còn lại có giữ nguyên type và link không (ticket không nói)? (3) Quy tắc có áp cho Warp Text sau TIB-5265 không? CHK-023 chỉ phán phần gỡ link và đổi type của layer vừa convert; các phần còn lại chỉ ghi quan sát. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-515 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-515", "type": "CONFLICT", "feature_id": "layer-duplicate-link-copy", "kb_ids": ["KB-1041"], "check_ids": ["CHK-024"], "conflict_group": "CONF-CBS-113-02", "summary": "[CBS-113] Convert Single-line Text origin có linked copy sang Warp Text trên build hiện tại có còn gỡ link của linked copy không? Expected theo TIB-5211 (KB-1040) là giữ link; hai phía về trạng thái build mâu thuẫn, không chọn phe; KB-1041 và CHK-024 không làm oracle. Cần: QA chạy lại TC-44 và ghi record Testlane có ngày chạy + build; nếu vẫn gỡ link thì Dev trả lời; kèm xác nhận đã lên production chưa.", "side_a": "Testlane TC-TIB-1580 (QA-3345 TC-44, task TIB-046): status passed nhưng actualResult 'source conversion drops the link' (❌), không ngày chạy, không build.", "side_b": "Rule QA FACT-031 (recheck 2026-09-08; KB-1041 PROPOSED): lỗi gỡ link đã được dev sửa; convert origin sang Warp Text thì cả nhóm convert cùng, linked copy giữ link."}
+```
+
+## OQ-artwork-516 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-516", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-duplicate-link-copy", "kb_ids": ["KB-1042"], "check_ids": ["CHK-025"], "summary": "[CBS-113] Rule QA FACT-045 (KB-1042, PROPOSED): Duplicate & Link trên Color layer chạy như Duplicate thường (copy default_value một lần, customization_type 'normal', không field linked, sửa origin không lan sang copy). Đây có phải thiết kế, và đúng trên production không (release-verification TIB-5241 không kiểm Duplicate & Link)? CHK-025 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-517 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-517", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-duplicate-link-copy", "kb_ids": ["KB-1043"], "check_ids": ["CHK-026"], "summary": "[CBS-116] Rule QA FACT-014/FACT-043 (KB-1043, PROPOSED): ẩn origin (con mắt) thì linked copy vẫn hiện ở editor preview nhưng bị loại khỏi final render (storefront và bản in), cho cả Word Cloud và Warp Text. Đúng thiết kế không, và áp cho mọi type nhóm LINKED không? Cả hai bề mặt chưa được verify đủ: record Testlane TC-TIB-1112 (QA-3343 TC-56) đang passed với kết quả trống, còn nợ phần generated design. CHK-026 chưa có oracle. Cần: Dev xác nhận; QA chạy lại TC-56 phần generated design và ghi record có kết quả, ngày chạy, build."}
+```
+
+## OQ-artwork-518 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-518", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-duplicate-link-copy", "kb_ids": ["KB-1044"], "check_ids": ["CHK-027"], "summary": "[CBS-116] Rule QA FACT-035 (KB-1044, PROPOSED): background của linked layer hành xử y hệt origin (lệch là sai lệch cần báo). Có đúng trên build sau lần dev sửa TIB-5265 ngày 2026-09-08 không (ảnh chụp kiểm trước lần sửa)? Checklist dev TIB-5265 ghi cover crop canh theo box của linked layer và fallback contain khi không đo được ảnh; đó có phải expected không? CHK-027 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-519 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-519", "type": "CONFLICT", "feature_id": "layer-duplicate-link-copy", "kb_ids": ["KB-1045", "KB-1046"], "check_ids": ["CHK-028"], "conflict_group": "CONF-CBS-116-01", "summary": "[CBS-116] Thay background image đã lưu của Warp Text origin thì linked copy có render theo trên build hiện tại không? Hai phía mâu thuẫn, supersede tắt ở teeinblue, không chọn phe; KB-1045, KB-1046 và CHK-028 không làm oracle. Liên quan OQ-artwork-081 (đồng bộ sau khi sửa origin). Cần: QA chạy lại TC-25 và ghi record Testlane có ngày chạy + build + ảnh; nếu canvas copy không đổi thì Dev trả lời đó là bug hay giới hạn đã biết; kèm xác nhận trên production.", "side_a": "Testlane TC-TIB-1229 (QA-3345 TC-25, task TIB-046): status passed nhưng actualResult và expectedResult ghi 'replacing the saved background does not refresh the rendered image' (❌), không ngày chạy, không build, không ảnh.", "side_b": "Rule QA FACT-030 (QA ghi nhận 2026-09-08 bằng ảnh canvas staging; KB-1045 PROPOSED): linked copy không lưu background_image riêng, canvas đổi theo origin ngay khi origin đổi background rồi Save; cùng hướng checklist dev TIB-5265 #48238 2026-08-18 (KB-1046 OBSERVED_CURRENT LOW): 'Set / change / remove a background image on the origin → reflected on the linked copy.'"}
+```
+
+## OQ-artwork-520 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-520", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-duplicate-link-copy", "kb_ids": ["KB-1047"], "check_ids": ["CHK-029"], "summary": "[CBS-116] Rule QA FACT-040 (KB-1047, PROPOSED): linked Warp Text copy chỉ sửa được accordion Extra và các action trong menu '...' (align, geometry, duplicate, delete); design, typography, warp preset, control point, background read-only. Có đúng sau lần dev sửa TIB-5265 ngày 2026-09-08 không? CHK-029 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-521 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-521", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-duplicate-link-copy", "kb_ids": ["KB-1048"], "check_ids": ["CHK-030"], "summary": "[CBS-116] Rule QA FACT-011 (KB-1048, PROPOSED; chính QA đính chính câu trả lời đầu 'word cloud không có align' cùng ngày 2026-08-26): Word Cloud có Align, Align nằm trong nhóm sửa được của linked copy và chỉ dịch copy; hợp lệ trên origin, linked copy và multi-selection. Đúng thiết kế không? CHK-030 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-522 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-522", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-duplicate-link-copy", "kb_ids": ["KB-1049"], "check_ids": ["CHK-031"], "summary": "[CBS-116] Rule QA FACT-044 (KB-1049, PROPOSED): Align hợp lệ trên linked Warp Text copy và chỉ dịch box của copy, không đổi origin (record Testlane TC-TIB-1238 ghi giả định giống Word Cloud). Có đúng sau lần dev sửa TIB-5265 ngày 2026-09-08 không? CHK-031 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-523 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-523", "type": "CONFLICT", "feature_id": "layer-duplicate-link-copy", "kb_ids": ["KB-1050", "KB-1051"], "check_ids": ["CHK-032"], "conflict_group": "CONF-CBS-116-02", "summary": "[CBS-116] Sau khi xoá origin của linked Warp Text, linked copy hiển thị gì ở editor, storefront render và design file? Hai rule QA mâu thuẫn, supersede tắt ở teeinblue, không chọn phe; KB-1050, KB-1051 và CHK-032 không làm oracle. Checklist dev sinh từ branch diff (TIB-5265 2026-08-18: 'degrades gracefully (no crash, no blank canvas)'; TIB-5242 2026-08-24: 'no crash, sensible fallback') không nói copy hiển thị gì. Cần: Dev trả lời.", "side_a": "Rule QA FACT-033 (QA ghi nhận 2026-08-26, TIB-5265; KB-1050 PROPOSED; cũng là expectedResult của Testlane TC-TIB-1239): xoá origin thì linked copy render rỗng (không ẩn layer, không tự gỡ link, không placeholder).", "side_b": "Kết quả QA recheck 2026-09-07 (QA-3345 TC-35, cặp clone; KB-1051 PROPOSED; actualResult của TC-TIB-1239): linked copy Warp Text vẫn hiện nội dung origin đã xoá, giống hệt Single-line Text, QA ghi là đúng hành vi."}
+```
+
+## OQ-artwork-524 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-524", "type": "NEEDS_CONFIRMATION", "feature_id": "mcp-artwork-tools", "kb_ids": ["KB-1052"], "check_ids": ["CHK-005"], "summary": "[CBS-122] Rule QA FACT-174 (KB-1052, PROPOSED): khi đọc qua get-artwork-tool / archive-artwork-tool, status của artwork Archived có đúng là 1 (\"Status Archive\") và Active là 0 (\"Status Default\") không? Change note Dev TIB-5488 chỉ nêu 0 = Active, 2 = Pending, 3 = Importing, 4 = Import failed, không nêu giá trị Archived. Record Testlane TC-TIB-6943 (QA-3425 TC-27) đang skipped. CHK-005 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-525 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-525", "type": "OPEN_ISSUE", "feature_id": "mcp-artwork-tools", "kb_ids": ["KB-1052", "KB-1053"], "check_ids": ["CHK-006"], "summary": "[CBS-122] Hành vi chưa ship: KB-1052 và KB-1053 thuộc đợt TIB-5488 (QA Review, PR #4050 còn mở ngày 2026-11-12). KB-1053 (update-artwork-tool trên artwork Active/Archived không đổi status) theo change note Dev 2026-10-22, dòng Regression, tức Dev coi là hành vi có từ trước TIB-5488. Cần: Dev cho biết hành vi này đã live trước TIB-5488 chưa; operator chọn giữ PROPOSED tới khi TIB-5488 Done, hay gửi CCR sau khai SHIPPED (nguồn change note dev chỉ cho OBSERVED_CURRENT; muốn làm expected cần Dev xác nhận trực tiếp hoặc test case PASS có build). Khi ship, QA chạy lại TC-27 cả dòng artwork activate từ PSD, ghi build. CHK-006 chưa có oracle."}
+```
+
+## OQ-artwork-526 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-526", "type": "NEEDS_CONFIRMATION", "feature_id": "mcp-artwork-tools", "kb_ids": ["KB-1054", "KB-1055"], "check_ids": ["CHK-007"], "summary": "[CBS-122] KB-1054 (OBSERVED_CURRENT, change note Dev TIB-5572 2026-10-15): update/validate tool của MCP từ chối artwork 1.0, message trỏ tới bulk-convert-artworks-tool. KB-1055 (PROPOSED, rule QA FACT-176): mã lỗi là artwork.schema_version.not_2, tool chỉ đọc được 1.0, message gợi ý cả convert tay trong portal. Mã lỗi và nội dung message có đúng không, và có phải hành vi mong muốn không? CHK-007 chỉ có oracle BASELINE theo KB-1054. Cần: Dev xác nhận; QA chạy CHK-007 trên build có TIB-5572, ghi build."}
+```
+
+## OQ-artwork-527 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-527", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": ["KB-1056", "KB-1057"], "check_ids": ["CHK-011"], "summary": "[CBS-124] Rule QA FACT-064 (KB-1057, PROPOSED): flag flip lưu bằng flip_horizontal_enabled / flip_vertical_enabled chỉ trên layer ảnh (photo/clipart); text và curve-text không bao giờ có hai field này. Change note Dev TIB-5435 (2026-09-14, KB-1056 OBSERVED_CURRENT) chỉ nói text/curve text được mirror vị trí và đảo góc, nội dung không lật gương; không nêu tên field. Hai điều này có đúng và là hành vi mong muốn không? CHK-011 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-528 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-528", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": ["KB-1058"], "check_ids": ["CHK-010"], "summary": "[CBS-124] Rule QA FACT-065 (KB-1058, PROPOSED): mọi thay đổi trong popover Transform (Flip, Width/Height/Top/Left/Rotate) chỉ được lưu khi bấm Save & Close, không autosave hay debounce. Đây có phải hành vi thiết kế không? spec-hub rule artwork-editor-unsaved-warning chỉ nói có hỏi xác nhận khi đóng editor còn thay đổi chưa lưu. CHK-010 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-529 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-529", "type": "CONFLICT", "feature_id": "transform-multi-select", "kb_ids": ["KB-1059"], "check_ids": ["CHK-006"], "conflict_group": "CONF-CBS-124-01", "summary": "[CBS-124] Đổi Apply for Group → Individual khi Flip H đang tick: layer tính lại từ vị trí gốc hay giữ vị trí đã lật? Hai phía mâu thuẫn, supersede tắt ở teeinblue, không chọn phe; KB-1059 và CHK-006 không làm oracle. Change note Dev TIB-5435 chỉ nói Individual lật tại chỗ, không nói trường hợp đổi mode khi đang tick. Nếu chọn side_a thì expected của TC-TIB-3105 cần sửa. Cần: PO/Dev chọn.", "side_a": "Rule QA QA-3362 BR-2 mở rộng 2026-09-24 (quyết định QA, BUG-126 đóng by design; KB-1059 PROPOSED): đổi sang Individual thì layer tính lại từ vị trí gốc (về 100/250, photo vẫn mirror), đổi lại Group cho đúng giá trị lần tick đầu.", "side_b": "Record Testlane TC-TIB-3105 (QA-3362 TC-16, status passed, gắn BUG-126), expectedResult: layer giữ nguyên vị trí đã đảo ở step 1, đổi mode không tự đưa layer về vị trí gốc."}
+```
+
+## OQ-artwork-530 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-530", "type": "CONFLICT", "feature_id": "transform-multi-select", "kb_ids": ["KB-1060"], "check_ids": ["CHK-007"], "conflict_group": "CONF-CBS-124-02", "summary": "[CBS-124] Layer hidden trong vùng chọn có bị dịch khi Group flip không? Hai phía mâu thuẫn, supersede tắt ở teeinblue, không chọn phe; KB-1060 và CHK-007 không làm oracle. Change note Dev TIB-5355 (2026-09-10, box cá nhân) nói layer ẩn hoặc khoá không nằm trong vùng chọn hợp lệ của Transform nhưng không nói về Flip. Cần: Dev trả lời.", "side_a": "RQ1 cũ trong phân tích QA-3362 (QA thuật lại câu trả lời Dev, không có nguyên văn Dev): layer hidden vẫn bị dịch khi Group flip.", "side_b": "Rule QA FACT-068 (QA chốt 2026-09-16, TC-17 / TC-TIB-3106; KB-1060 PROPOSED): layer hidden được đối xử như locked, không vào bounding box và giữ nguyên vị trí/góc."}
+```
+
+## OQ-artwork-531 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-531", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": ["KB-1061", "KB-1062"], "check_ids": ["CHK-004", "CHK-005"], "summary": "[CBS-124] KB-1061 (OBSERVED_CURRENT, change note Dev TIB-5435 2026-09-14): Group flip lật cả vùng chọn như một khối (mirror qua tâm khung vùng chọn, góc đảo dấu, ảnh lật), Individual lật tại chỗ, bỏ tick về vị trí/góc ban đầu — có phải hành vi mong muốn đã chốt không? KB-1062 (PROPOSED, rule QA FACT-069): tick cả Flip H và Flip V ở Group thì rotate giữ nguyên (30° vẫn là 30°, không thành −30° hay 30°+180°) — có đúng không? CHK-004 chỉ có oracle BASELINE; CHK-005 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-532 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-532", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": ["KB-1063"], "check_ids": [], "summary": "[CBS-124] Rule QA FACT-070 (KB-1063, PROPOSED): vị trí đo thật sau Group flip lệch khoảng 20px mỗi layer, theo hướng ngược nhau, so với công thức newLeft = 2·cx − left − width; cơ chế chưa rõ, chưa hỏi Dev. Nguyên nhân độ lệch là gì và vị trí nào mới đúng? Tới khi có câu trả lời, check Group flip chỉ kiểm invariant (thứ tự đảo, flag, bỏ tick về giá trị ban đầu). Cần: Dev trả lời."}
+```
+
+## OQ-artwork-533 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-artwork-533", "type": "OPEN_ISSUE", "feature_id": "transform-multi-select", "kb_ids": ["KB-1064"], "check_ids": ["CHK-009"], "summary": "[CBS-124] KB-1064 (CONFIRMED_EXPECTED theo spec TIB-5440): Reverse reposition direction bật thì ảnh buyer kéo đi ngược chiều theo trục đã lật. Record Testlane TC-TIB-3320 và TC-TIB-3321 (task TIB-117) có status passed nhưng actualResult ghi Fail: kéo ngang (Flip H) và kéo dọc (Flip V) không bị đảo chiều, tham chiếu BUG-160/BUG-161; không ngày chạy, không build. Lỗi này đã sửa chưa, trên build nào? Change note Dev TIB-5440 (2026-09-16) còn nêu artwork v1 không có checkbox và layer No personalization vẫn hiện checkbox nhưng không có tác dụng — chưa nạp. Cần: QA chạy lại CHK-009 và ghi record Testlane có ngày chạy + build; Dev cho biết trạng thái BUG-160/161."}
+```
+
+## OQ-artwork-534 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-534", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": ["KB-1065"], "check_ids": [], "summary": "[CBS-124] Rule QA FACT-072 (KB-1065, PROPOSED): khi chỉ chọn một layer (nhất là text), ô Top/Left trong popover Transform hiện và ghi giá trị khác field top/left thật (đặt 100 thì GraphQL đọc 153.89). Đây là hành vi mong muốn hay lỗi? Cần: Dev trả lời."}
+```
+
+## OQ-artwork-535 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-535", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-text", "kb_ids": ["KB-1066", "KB-1067"], "check_ids": ["CHK-011"], "owner": "Dev", "summary": "[CBS-126] Rule QA FACT-042 (KB-1066, PROPOSED): payload GET api/merchant/games/warp_text/<base64>.json có points là mảng phẳng 20 số (10 điểm, x rồi y), toạ độ pixel tuyệt đối trong [0,width]×[0,height] với width = height = 1000, không phải 10 object {x,y} chuẩn hoá 0-1; resize layer không đổi points/width/height. Nguồn là lượt AI đọc payload 2026-09-30/10-01, trước lần giao QA lại TIB-5325. Change note Dev TIB-5325 (KB-1067, 2026-10-09) chỉ nói payload render không đổi và vùng render 1000x1000, không nói dạng points hay ảnh hưởng của resize. Đây có phải hợp đồng API không? CHK-011 chưa có oracle. Cần: Dev xác nhận nguyên văn có ngày."}
+```
+
+## OQ-artwork-536 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-536", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-text", "kb_ids": ["KB-1068"], "check_ids": ["CHK-012"], "owner": "Dev", "summary": "[CBS-126] Rule QA FACT-137 (KB-1068, PROPOSED, đo 2026-09-30 trước khi TIB-5325 re-open): popup Warp cũ có Mirror X (.la-arrows-alt-h) và Mirror Y (.la-arrows-alt-v) là 2 nút icon cạnh nút Free dưới canvas preview, không có chữ 'mirror' trong DOM. Sau TIB-5325, dialog 'Advanced editor' còn hai nút này không, hay đã thay bằng lựa chọn Vertical/Horizontal của Warp mode (change note Dev ghi chế độ dùng chung hai chiều giữa popover và dialog)? Record Testlane TC-TIB-4195 (TC-14) có expected 'Mirror X/Y không có khi kéo trên canvas, chỉ có trong popup' dựa trên giới hạn mà change note Dev nay ghi đã làm xong, có thể cần sửa. CHK-012 chưa có oracle. Cần: Dev xác nhận nguyên văn có ngày."}
+```
+
+## OQ-artwork-537 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-537", "type": "NEEDS_CONFIRMATION", "feature_id": "layer-config-text", "kb_ids": ["KB-1069"], "check_ids": ["CHK-013"], "owner": "Dev", "summary": "[CBS-126] Rule QA FACT-138 (KB-1069, PROPOSED, AI đo staging 2026-09-30 và TC-34 2026-10-01): bật Mirror X trong popup Warp không tự lật điểm sẵn có; kéo một điểm thì điểm đối xứng nhận x' = 2×centerX − x, và theo cả hai lượt đo y của điểm đối xứng bằng y của điểm vừa kéo (point[4] y 400→458.70 theo point[0]; lượt 2 y = 436.5782). Câu chữ 'y giữ nguyên' trong rule và 'không đổi theo điểm vừa kéo' trong expected record Testlane TC-TIB-4215 lệch với số đo; không có quan sát nào cho y đứng yên nên không mở CONFLICT. Dev: khi mirror theo trục dọc (Mirror X cũ hoặc Warp mode Vertical), điểm đối xứng có nhận x' = 2×centerX − x và y bằng đúng y điểm vừa kéo không, và bật mirror có tự lật điểm đã có không? Nếu đúng, expected của TC-TIB-4215 cần sửa câu chữ. CHK-013 chưa có oracle. Cần: Dev xác nhận nguyên văn có ngày."}
+```
+
+## OQ-artwork-538 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-538", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": ["KB-1070", "KB-1071"], "check_ids": ["CHK-012", "CHK-013"], "owner": "Dev", "summary": "[CBS-129] Rule QA FACT-063 (KB-1071, PROPOSED): lock/hide một layer giữa multi-selection thì layer đó vẫn được tính là đang chọn (\"N selected\" không đổi), box nhóm chỉ bao các layer không khoá/ẩn và co lại ngay khi lock/hide (nở lại khi unlock/unhide), stepper +/- ở ô Top/Left/Width/Height chỉ dịch layer không khoá/ẩn. Change note Dev TIB-5355 (2026-09-10, KB-1070 OBSERVED_CURRENT) chỉ nói layer ẩn/khoá không được vẽ khung riêng vì không nằm trong vùng chọn hợp lệ của Transform. Các điều này có đúng và là hành vi mong muốn không? CHK-013 chưa có oracle, CHK-012 chỉ BASELINE. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-539 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-539", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": ["KB-1072"], "check_ids": ["CHK-014"], "owner": "Dev", "summary": "[CBS-129] Rule QA FACT-063 (KB-1072, PROPOSED): ở Apply for: Individual, khi selection 2–3 layer chỉ còn đúng 1 layer không khoá/ẩn thì canvas xử lý như chọn 1 layer — không box cá nhân, box nhóm co về layer đó, popover Transform mất radio Apply for và hiện số đo của layer đó. Ghi chú \"dev chốt by design 2026-09-16\" là QA thuật lại, chưa có nguyên văn Dev; change note TIB-5355 chỉ nói khung riêng hiện khi chọn từ 2 layer. Dev có xác nhận đây là chủ ý không? CHK-014 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-540 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-540", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": ["KB-1073"], "check_ids": ["CHK-015"], "owner": "Dev", "summary": "[CBS-129] Rule QA FACT-063 (KB-1073, PROPOSED): double-click sửa text khi đang chọn nhiều layer thì selection thu về đúng layer đó; ô cỡ chữ trên quick toolbar (.qte-font-size) chỉ hiện khi mọi layer đang chọn là text, giá trị nhập áp cho tất cả, selection lẫn photo thì ô ẩn hẳn. spec-hub artwork-editor-bulk-edit (yellow) không nói hai điều này. Có đúng và là hành vi mong muốn không? CHK-015 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-541 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-541", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": ["KB-1074"], "check_ids": ["CHK-016"], "owner": "Dev", "summary": "[CBS-129] Rule QA FACT-063 (KB-1074, PROPOSED): box cá nhân (.artwork-layer-frame) viền solid 1px và box nhóm (.drr::before) viền dashed 2px, cùng màu #00c4cc, cả hai không nhận chuột, không box-shadow. Change note TIB-5355 chỉ nói khung riêng chỉ để nhìn. Màu và kiểu nét này có phải thiết kế chủ đích không? CHK-016 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-542 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-542", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": ["KB-1075"], "check_ids": ["CHK-017"], "owner": "Dev/PO", "summary": "[CBS-129] Delete khi chọn nhiều layer (KB-1075, OBSERVED_CURRENT/LOW, record Testlane TC-TIB-3086 chỉ tick [AI], không ngày chạy, không build): Delete xoá cả 3 layer đang chọn, Ctrl+Z trả lại 3 layer nhưng selection rỗng; expected của test case ghi Undo khôi phục cả box Individual. Expected đúng là gì (Undo có khôi phục selection và box không)? Có cách xoá riêng 1 layer trong khi vẫn giữ các layer khác đang chọn không (QA chốt là không, chưa có nguồn)? Đây là hành vi xoá dữ liệu (P1): cần test case Testlane PASS có ngày chạy, build và căn cứ expected, hoặc Dev/PO xác nhận nguyên văn có ngày. CHK-017 (P1) chưa có oracle. Cần: Dev/PO xác nhận."}
+```
+
+## OQ-artwork-543 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-543", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": ["KB-1076"], "check_ids": ["CHK-018"], "owner": "Dev", "summary": "[CBS-129] Rule QA FACT-063 (KB-1076, PROPOSED, QA chốt 2026-09-16): Align dùng target riêng \"Align to:\", không theo radio Apply for; editor không có phím tắt Ctrl+D để duplicate và không có phím mũi tên để nudge layer, di chuyển bằng số là stepper +/- ở ô Transform. spec-hub artwork-editor-shortcuts (yellow) liệt kê Ctrl+J duplicate, không có Ctrl+D hay phím mũi tên, nhưng không nói thẳng là không có. Có đúng không? CHK-018 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-544 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-544", "type": "NEEDS_CONFIRMATION", "feature_id": "transform-multi-select", "kb_ids": ["KB-1077"], "check_ids": ["CHK-019"], "owner": "Dev", "summary": "[CBS-129] Rule QA FACT-063 (KB-1077, PROPOSED): chọn layer con trong Group qua layer panel (Cmd/Ctrl/Shift-click) không nâng lên chọn Group cha, mỗi con có box riêng; chọn chính Group container kéo theo mọi layer con; box nhóm bao union mọi layer, luôn axis-aligned. Ghi chú \"dev chốt RQ5 2026-09-16\" là QA thuật lại, chưa có nguyên văn Dev. Có đúng và là chủ ý không? CHK-019 chưa có oracle. Cần: Dev xác nhận."}
+```
+
+## OQ-artwork-545 — CONFLICT
+
+```json
+{"oq_id": "OQ-artwork-545", "type": "CONFLICT", "feature_id": "transform-multi-select", "kb_ids": ["KB-1078"], "check_ids": ["CHK-020"], "conflict_group": "CONF-CBS-129-01", "owner": "Dev", "summary": "[CBS-129] Group layer (container) trong selection Apply for: Individual có box cá nhân không? Hai phía mâu thuẫn, supersede tắt ở teeinblue, không chọn phe; KB-1078 và CHK-020 không làm oracle. Cả hai phía đều từ QA (side_a là QA thuật lại câu Dev, không có nguyên văn). Nếu chọn side_a thì expected của TC-TIB-3059 cần sửa. Cần: Dev chọn.", "side_a": "RQ13 trong phân tích QA-3361 (QA thuật lại câu Dev trả lời 2026-09-16, không có nguyên văn Dev): Group layer có individual box bằng union bounding box của các layer con.", "side_b": "Rule QA FACT-063 + expected Testlane TC-TIB-3059 (QA-3361 TC-6, đo trên staging 2026-09-16/17; KB-1078 PROPOSED): Group container không bao giờ có .artwork-layer-frame, chỉ từng layer con có box riêng."}
+```
+
+## OQ-artwork-546 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-546", "type": "NEEDS_CONFIRMATION", "feature_id": "mcp-artwork-tools", "kb_ids": ["KB-1079"], "check_ids": ["CHK-008"], "owner": "Dev", "summary": "[CBS-108] Rule QA FACT-182 (KB-1079, PROPOSED): khi dựng fixture Artwork 1.0 cho test convert, sửa field qua API (vd đổi font của layer linked có nguồn là layer date) có tự đổi customization_type của layer từ linked sang no_customization trên server không, và đó có phải cơ chế chủ ý? Change note Dev TIB-5572 (2026-10-15) không nói side-effect này, mà nói converter map layer linked khác design nguồn thành populate layer và đưa layer linked có nguồn date input vào has-dropped-layers. Lượt API của QA-3409 TC-66 ra would-convert là do customization_type đã bị đổi, hay do layer đã khác design nguồn sau khi đổi font nên được map sang populate? Layer linked có nguồn date input nhưng khác design nguồn thì dry_run phải chặn hay cho convert? Nếu side-effect là có thật trên artwork của merchant (mất link khi sửa font qua API) thì cần đánh giá lại như hành vi P1 và gửi bằng test case Testlane. CHK-008 chưa có oracle. Cần: Dev xác nhận; QA chạy CHK-008 trên build có TIB-5572, ghi build."}
+```
+
+## OQ-artwork-547 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-547", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-template-management", "kb_ids": ["KB-1080"], "check_ids": ["CHK-016"], "owner": "Dev", "summary": "[CBS-111] Rule QA FACT-010 (KB-1080, PROPOSED; rule QA không có ngày cụ thể, có trước 2026-09-11, ngày ghi nhận lấy theo ngày gửi Proposal 2026-11-10): ở template không phải global của artwork có Global Template, layer đồng bộ chỉ khoá font family, còn màu chữ, font size min/max, drop shadow, background, Transform, Align sửa được, và các panel settings không mở được. Có đúng và còn hiện hành không? 'Panel settings không mở được' là những panel nào? spec-hub không có rule về việc này. CHK-016 chưa có oracle. Cần: Dev xác nhận nguyên văn có ngày, hoặc test case Testlane PASS có ngày chạy, build, căn cứ expected."}
+```
+
+## OQ-artwork-548 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-artwork-548", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-template-management", "kb_ids": ["KB-1081"], "check_ids": ["CHK-017"], "owner": "Dev", "summary": "[CBS-111] Rule QA FACT-016 (KB-1081, PROPOSED; ngày ghi nhận lấy theo ngày gửi Proposal 2026-11-10): Global Template chỉ global trong một artwork (đồng bộ giữa các template của artwork đó), không dùng chung giữa các artwork. Có đúng không? Mô tả dữ liệu 'Templates' của feature artwork-editor trên spec-hub (không phải rule) chỉ nói layer của template global lặp lại ở mọi template khác và giữ đồng bộ, không nói giữa các artwork. Phủ một phần OQ-artwork-024 / OQ-artwork-360 (CHK-009, kết quả sau Convert to Global Template), các OQ đó giữ mở. CHK-017 chưa có oracle. Cần: Dev xác nhận nguyên văn có ngày, hoặc test case Testlane PASS có ngày chạy, build, căn cứ expected."}
 ```

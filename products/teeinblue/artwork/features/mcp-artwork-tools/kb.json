@@ -1,0 +1,294 @@
+[
+  {
+    "kb_id": "KB-1003",
+    "topic": "MCP import-artwork-json-tool: cap mỗi lần gọi — tối đa 20 clipart category, 20 global option inline, 50 item mỗi category và không vượt cap clipart của category",
+    "statement": "Theo câu trả lời của Dev trên Jira TIB-5486 comment 55629 (2026-10-26; hành vi chưa ship, TIB-5486 còn QA Review, chưa có test case PASS), mỗi lần gọi MCP tool import-artwork-json-tool chỉ nhận tối đa 20 clipart category và tối đa 20 global option khai inline trong definition; mỗi category tối đa 50 item, và tổng item không được vượt số clipart tối đa của một category (mặc định 300, hoặc theo users.config.clipart_max_per_category của merchant). Quota theo ngày của tool xem KB-1004. Change note của Dev (2026-10-21) nói cap và rate limit được kiểm cho cả definition trước khi ghi, và import chạy trong một transaction. Các con số là giá trị cấu hình trong code, có thể đổi, không phải spec PO.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "api (MCP Artwork server)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-120"
+    },
+    "tags": [
+      "mcp",
+      "import-artwork-json-tool",
+      "per-call-cap",
+      "not-shipped",
+      "TIB-5486",
+      "QA-3423"
+    ],
+    "related_kb_ids": [
+      "artwork/mcp-artwork-tools#KB-1004",
+      "asset-category/asset-category-item-management#KB-561",
+      "asset-category/asset-category-item-management#KB-564"
+    ]
+  },
+  {
+    "kb_id": "KB-1004",
+    "topic": "MCP import-artwork-json-tool: quota theo ngày (24h, Redis) — clipart_category 1000, clipart 4000; global_option không có quota ngày",
+    "statement": "Theo câu trả lời của Dev trên Jira TIB-5486 comment 55629 (2026-10-26; hành vi chưa ship, chưa có test case PASS), import-artwork-json-tool có quota mỗi ngày theo cửa sổ 24h, đếm bằng Redis: clipart_category 1000 mỗi ngày (env USER_RATE_LIMITER_CLIPART_CATEGORY_MAX_ATTEMPTS) và clipart 4000 mỗi ngày (env USER_RATE_LIMITER_CLIPART_MAX_ATTEMPTS); global_option không có quota theo ngày, chỉ có cap 20 mỗi lần gọi (KB-1003). Hai số 4000 và 1000 trùng giá trị x-ratelimit-limit đo trên REST ở asset-category KB-035 và KB-036, nhưng Dev không nói bộ đếm của MCP import dùng chung hay riêng với REST (OQ CONFLICT riêng); item này không khẳng định điều đó.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "api (MCP Artwork server); db (cột giới hạn của users)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-120"
+    },
+    "tags": [
+      "mcp",
+      "import-artwork-json-tool",
+      "daily-quota",
+      "rate-limit",
+      "not-shipped",
+      "TIB-5486",
+      "QA-3423"
+    ],
+    "related_kb_ids": [
+      "artwork/mcp-artwork-tools#KB-1003",
+      "asset-category/_object-level#KB-035",
+      "asset-category/_object-level#KB-036"
+    ]
+  },
+  {
+    "kb_id": "KB-1005",
+    "topic": "MCP: clipart category tạo qua import-artwork-json-tool hay create-clipart-category-tool đều có source = mcp",
+    "statement": "Theo câu trả lời của Dev trên Jira TIB-5486 comment 55629 (2026-10-26, RQ17; hành vi chưa ship, chưa có test case PASS), cả import-artwork-json-tool và create-clipart-category-tool đều tạo clipart category qua ClipartCategoryCreator với ClipartCategorySource::Mcp, nên field source của category tạo bằng hai đường này đều là mcp; field source vì vậy không phân biệt được category tạo bằng import hay bằng create-clipart-category-tool. Câu trả lời chỉ nói về clipart category, không nói source của clipart item. Theo lượt chạy QA-3423 TC-32 nêu trong CCR (chưa được Dev xác nhận), response của create-clipart-category-tool không trả field source, nên chưa rõ đọc giá trị này ở đâu (DB, GraphQL hay UI).",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "api (MCP Artwork server); db (field source của clipart category; tên cột theo CCR, chưa xác nhận)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-120"
+    },
+    "tags": [
+      "mcp",
+      "import-artwork-json-tool",
+      "create-clipart-category-tool",
+      "clipart-category-source",
+      "not-shipped",
+      "TIB-5486",
+      "QA-3423"
+    ],
+    "related_kb_ids": [
+      "artwork/mcp-artwork-tools#KB-1003"
+    ]
+  },
+  {
+    "kb_id": "KB-1023",
+    "topic": "Kiểm tra artwork của MCP chặn thêm layer clipart-category / group-clipart-categories No personalization không có ảnh (theo change note, chưa quan sát)",
+    "statement": "Theo change note của Dev trên Jira TIB-5446 (comment 'Summary cho QA', 2026-11-06; mô tả code đã đổi, chưa có PO/Dev xác nhận đây là hành vi mong muốn, chưa rõ đã lên production) (mục API), kiểm tra artwork của MCP chặn thêm layer clipart-category / group-clipart-categories đặt \"No personalization\" không có ảnh. Change note không nói kiểm tra của MCP xử lý layer static-photo hay photo \"No personalization\" không có ảnh thế nào, và không nêu tool MCP nào áp kiểm tra này; cùng change note ghi MCP vẫn chặn layer photo personalization thường không có ảnh mặc định như trước (KB-1024). Chưa có lượt test MCP.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "api (MCP Artwork server — kiểm tra artwork)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-143"
+    },
+    "tags": [
+      "TIB-5446",
+      "mcp",
+      "artwork-validator",
+      "no-personalization",
+      "shipped-unknown"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-save-persist#KB-1019",
+      "artwork/layer-config-image#KB-1024"
+    ]
+  },
+  {
+    "kb_id": "KB-1052",
+    "topic": "Rule QA FACT-174: enum status của artwork đọc qua MCP — 0 'Status Default' (Active), 1 'Status Archive' (Archived) (chưa ship)",
+    "statement": "Theo rule QA FACT-174 (AI đo trên staging 2026-10-26, lặp 2026-10-28, QA duyệt; chưa được Dev/PO xác nhận), khi đọc artwork qua MCP (archive-artwork-tool, get-artwork-tool), field status có giá trị 0 = \"Status Default\" (Active) và 1 = \"Status Archive\" (Archived). Change note của Dev trên Jira TIB-5488 (2026-10-22, 2026-10-29, 2026-11-05) chỉ nêu 0 = Active, 2 = Pending (chờ review sau import PSD), 3 = Importing, 4 = Import failed; không nêu giá trị của Archived. Hành vi thuộc đợt TIB-5488 chưa ship (ticket còn QA Review, PR mở); record Testlane TC-TIB-6943 (QA-3425 TC-27) đang skipped. Không dùng làm expected.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "api (MCP Artwork server: get-artwork-tool, archive-artwork-tool)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-122"
+    },
+    "tags": [
+      "mcp",
+      "artwork-status",
+      "archive-artwork-tool",
+      "get-artwork-tool",
+      "FACT-174",
+      "not-shipped",
+      "TIB-5488",
+      "QA-3425"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-list-management#KB-047",
+      "artwork/mcp-artwork-tools#KB-1053"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-174",
+      "owner_role": "QA",
+      "recorded_on": "2026-10-26",
+      "locator": "Proposal CBS-122 CLAIM-01; task Testlane TIB-237 (QA-3425)"
+    }
+  },
+  {
+    "kb_id": "KB-1053",
+    "topic": "update-artwork-tool trên artwork Archived hoặc Active không đổi status (theo change note Dev TIB-5488, chưa ship)",
+    "statement": "Theo change note của Dev trên Jira TIB-5488 (comment 'Summary cho QA', 2026-10-22, mục Gợi ý test, dòng Regression), update-artwork-tool trên artwork Active hoặc Archived bình thường không đổi status, tức artwork Archived không được kích hoạt lại khi sửa qua MCP. Lượt QA (FACT-175, AI 2026-10-26 và 2026-10-28) ghi archive rồi đổi name thì get-artwork-tool trả status 1 cả trước và sau update. Khác với artwork Pending sau import PSD: lần update đầu tiên chuyển nó sang Active (0) (KB-1052). Dev đặt câu này ở dòng Regression, tức coi là hành vi có từ trước TIB-5488, nhưng ticket chưa ship (QA Review, PR mở) và chưa có nguồn xác nhận hành vi đã live; đây là tài liệu dev, chưa phải expected.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "api (MCP Artwork server: update-artwork-tool)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-122"
+    },
+    "tags": [
+      "mcp",
+      "update-artwork-tool",
+      "artwork-status",
+      "archived",
+      "regression",
+      "not-shipped",
+      "TIB-5488",
+      "QA-3425",
+      "dev-doc"
+    ],
+    "related_kb_ids": [
+      "artwork/mcp-artwork-tools#KB-1052"
+    ]
+  },
+  {
+    "kb_id": "KB-1054",
+    "topic": "Change note Dev TIB-5572: update/validate tool của MCP từ chối artwork 1.0, message trỏ tới bulk-convert-artworks-tool; sửa artwork 2.0 không ảnh hưởng",
+    "statement": "Theo change note của Dev trên Jira TIB-5572 (comment 54642, 2026-10-15, PR qikify/teeinblue-api#4008; ticket Done, resolution 2026-10-24), các tool update/validate của MCP Artwork server vẫn từ chối artwork Artwork 1.0 (schema_version 1), và message của guard 1.0 nay trỏ tới tool bulk-convert-artworks-tool; sửa artwork 2.0 bình thường không bị ảnh hưởng. Đây là tài liệu dev mô tả code, chưa có PO/Dev xác nhận hay test case PASS có build. Mã lỗi và nội dung message cụ thể xem KB-1055 (chỉ là rule QA).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "api (MCP Artwork server: update-artwork-tool, validate tool)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-122"
+    },
+    "tags": [
+      "mcp",
+      "update-artwork-tool",
+      "schema-version-guard",
+      "artwork-1.0",
+      "bulk-convert-artworks-tool",
+      "TIB-5572",
+      "dev-doc"
+    ],
+    "related_kb_ids": [
+      "artwork/mcp-artwork-tools#KB-1055"
+    ]
+  },
+  {
+    "kb_id": "KB-1055",
+    "topic": "Rule QA FACT-176: update-artwork-tool trên artwork 1.0 trả lỗi artwork.schema_version.not_2, chỉ đọc được 1.0, gợi ý convert",
+    "statement": "Theo rule QA FACT-176 (AI thử trên staging 2026-10-26, QA duyệt; chưa được Dev/PO xác nhận), update-artwork-tool từ chối artwork schema_version 1 với mã lỗi artwork.schema_version.not_2: tool chỉ đọc được artwork 1.0, không ghi được, và hướng dẫn dùng bulk-convert-artworks-tool hoặc convert tay trong portal trước; QA coi đây là hành vi thiết kế, không phải bug. Change note Dev TIB-5572 (KB-1054) xác nhận việc từ chối và message trỏ tới bulk-convert-artworks-tool, nhưng không nêu mã lỗi, không nói convert tay trong portal.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "api (MCP Artwork server: update-artwork-tool)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-122"
+    },
+    "tags": [
+      "mcp",
+      "update-artwork-tool",
+      "schema-version-guard",
+      "artwork-1.0",
+      "FACT-176",
+      "TIB-5572",
+      "QA-3425"
+    ],
+    "related_kb_ids": [
+      "artwork/mcp-artwork-tools#KB-1054"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-176",
+      "owner_role": "QA",
+      "recorded_on": "2026-10-26",
+      "locator": "Proposal CBS-122 CLAIM-03; task Testlane TIB-237 (QA-3425)"
+    }
+  },
+  {
+    "kb_id": "KB-1079",
+    "topic": "Rule QA FACT-182: cảnh báo dựng fixture convert 1.0 → 2.0 — sửa field qua API có thể đổi customization_type của layer linked sang no_customization, làm dry_run của bulk-convert-artworks-tool không chặn",
+    "statement": "Theo rule QA FACT-182 (QA và AI ghi nhận 2026-10-23 khi đối chiếu hai lượt chạy của QA-3409 TC-66; chưa tái hiện có chủ đích, chưa được Dev/PO xác nhận), khi dựng fixture Artwork 1.0 để test convert sang 2.0 bằng cách sửa field qua API (ví dụ đổi font của layer linked có nguồn là layer date), server có thể tự đổi customization_type của layer đó từ linked sang no_customization; tới lúc gọi bulk-convert-artworks-tool với dry_run, layer không còn là linked nên không bị chặn, dễ kết luận nhầm là dry_run không validate. Lượt qua API ra would-convert và convert được, còn lượt trên UI thật bị chặn. Vì vậy phải đọc lại layer qua GraphQL ngay sau khi sửa fixture, trước khi gọi dry_run hoặc convert, để chắc còn đúng precondition linked + nguồn date. Đây là cảnh báo cách dựng fixture, không phải kết luận bug hay hành vi đúng. Change note Dev TIB-5572 (2026-10-15) không nói gì về side-effect này; nó nêu converter map layer linked khác design nguồn thành populate layer và đưa layer linked có nguồn date input vào has-dropped-layers (artwork giữ 1.0), nên lượt would-convert cũng có thể do layer đã khác design nguồn sau khi đổi font. Không dùng làm expected.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "api (REST PUT artwork khi dựng fixture; MCP Artwork server: bulk-convert-artworks-tool dry_run); data customization_type của layer",
+      "brand": null
+    },
+    "tags": [
+      "mcp",
+      "bulk-convert-artworks-tool",
+      "dry-run",
+      "artwork-1.0",
+      "convert-1-to-2",
+      "linked-layer",
+      "customization_type",
+      "fixture",
+      "FACT-182",
+      "TIB-5572",
+      "QA-3409"
+    ],
+    "related_kb_ids": [
+      "artwork/mcp-artwork-tools#KB-1054",
+      "artwork/mcp-artwork-tools#KB-1055",
+      "artwork/layer-bulk-edit#KB-890",
+      "artwork/layer-duplicate-link-copy#KB-1040"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-182",
+      "owner_role": "QA",
+      "recorded_on": "2026-10-23",
+      "locator": "Proposal CBS-108 CLAIM-01; task Testlane TIB-208 (QA-3409) TC-66 = TC-TIB-6901"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-108"
+    }
+  }
+]

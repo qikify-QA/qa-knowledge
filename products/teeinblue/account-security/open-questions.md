@@ -352,3 +352,15 @@ Các mục dưới đây còn mở. Mục đã có lời dev trả lời một p
 ```json
 {"oq_id":"OQ-account-security-057","type":"NEEDS_CONFIRMATION","feature_id":"staff-security-status","summary":"KB-031 là đề xuất chưa xác nhận: cột Security hiện một chip cho mỗi cách đăng nhập (Password, Shopify SSO, Google sau lần Google login đầu tiên của staff), rồi tới chip 2FA; \"2FA via Shopify\" chỉ hiện khi Shopify là cách vào duy nhất của staff. Câu này chỉ có ở description của Jira TIB-5334, không có comment id, ngày gốc chưa rõ. Quy tắc này có đúng không? KB-031 không làm oracle tới khi có câu trả lời. Liên quan: CHK-004, CHK-007. Cần dev hoặc PO xác nhận nguyên văn, kèm người viết và ngày."}
 ```
+
+## OQ-account-security-058 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-account-security-058","type":"NEEDS_CONFIRMATION","feature_id":"portal-login-paths","summary":"Đúng ý đồ sản phẩm là 2FA chỉ tuỳ chọn theo từng staff, owner không ép được 2FA cho cả organization, và khi bật thì challenge sau password có hiệu lực 5 phút, sai 5 mã phải làm lại như KB-039? KB-039 lấy từ rule spec-hub mô tả code hiện tại và là oracle của CHK-010, CHK-011; spec-hub cũng đang hỏi PO owner có nên ép được 2FA cho mọi staff không. Cần PO xác nhận."}
+```
+
+## OQ-account-security-059 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-account-security-059","type":"NEEDS_CONFIRMATION","feature_id":"confirm-password-dialog","summary":"Xoá role không hỏi xác nhận password như KB-040 có phải ý đồ sản phẩm không, hay xoá role cũng nên hỏi xác nhận như tạo và sửa role (KB-019)? KB-040 lấy từ rule spec-hub mô tả code hiện tại và là oracle của CHK-014; spec-hub cũng đang treo câu hỏi này cho PO. Cần PO xác nhận."}
+```

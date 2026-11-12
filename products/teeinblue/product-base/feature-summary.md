@@ -1,8 +1,9 @@
 # Object: Product Base (product: teeinblue) — Feature Profile Summary
-**Published context version:** 10
+**Published context version:** 11
 
-- **Phạm vi đã kiểm thử:** role `owner` (Linh explorer, sub=273), 1 organization, store `linh-explorer.myshopify.com`, environment staging. Chưa có evidence cho role khác (không có tài khoản thứ 2 để test permission/cross-tenant).
+- **Phạm vi đã kiểm thử:** role `owner` (explorer (TIB_STAGING_EMAIL), sub=<explorer>), 1 organization, store `store TIB_STORE_URL_1`, environment staging. Chưa có evidence cho role khác (không có tài khoản thứ 2 để test permission/cross-tenant).
 - **11/11 feature có profile:** product-base-browse, product-base-create, product-base-identity, printarea-definition, variant-catalog, variant-add-to-campaigns, mockup-attachment, product-base-lifecycle, product-base-campaign-link, fulfillment-provider-connection, provider-catalog-import. Confidence tổng thể object: MEDIUM. `product-base-campaign-link` là feature yếu nhất (confidence LOW, gần như không có bằng chứng cho đường ghi dữ liệu).
+- **Cập nhật CBS-121 (QA-3416, gộp từ CBS-046):** `printarea-definition` thêm KB-525 (quy tắc mapping variant→artwork theo tên printarea; product base chuẩn dùng chung 1 artwork cho mỗi printarea) và `variant-catalog` thêm KB-526 (luồng setup custom printarea không có bước map option↔layer, gắn artwork ở Campaign). Cả 2 ở mức PROPOSED/LOW với qa_rule_ref (FACT-163, FACT-180) — nguồn QA suy luận/sửa trực tiếp, không PO/Dev, không test case; không item nào đạt CONFIRMED_EXPECTED. 2 open question mới (OQ-product-base-112, OQ-product-base-113) chờ Dev xác nhận.
 - **Cập nhật CBS-119 (TIB-4778/QA-3365, provider PosterFlow, staging):** thêm 2 feature mới `fulfillment-provider-connection` (FEAT-10, trang Fulfillments: rotate API key, API key không mask) và `provider-catalog-import` (FEAT-11, import product từ catalog nhà in, danh sách catalog phân trang). Nguồn gốc là knowledge QA local (product_facts.md), không phải quan sát trực tiếp; mọi KB item ở mức OBSERVED_CURRENT/LOW, không có claim nào đạt CONFIRMED_EXPECTED. 8 open question mới (OQ-product-base-104..111).
 - Lịch sử thay đổi chi tiết: xem `CHANGELOG.md`. Câu hỏi/mâu thuẫn còn mở: xem `open-questions.md`.
 

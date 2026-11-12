@@ -186,7 +186,7 @@
     },
     {
       "name": "[MỚI, CBS-013] Campaign editor portal hiện layer gắn Global Option trong mục 'Personalization form' — quan sát, chưa xác nhận",
-      "description": "OBSERVED_CURRENT/LOW (KB-371, S1, 1 lượt staging 2026-10-28 ~06:00 UTC, Testlane TC-TIB-7401, Jira TIB-5203, trước lần redeploy mà dev yêu cầu recheck, chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng). Trong campaign editor portal của campaign #3270 (Nprice1, design AW-GO), mục 'Personalization form' hiển thị Name, Dog (4 clipart) và Color A1 (dropdown Red/Blue/Green, layer gắn Global Option); preview mockup hiển thị bình thường; GET /api/campaigns/3270 → 200. Không dùng làm oracle.",
+      "description": "OBSERVED_CURRENT/LOW (KB-371, S1, 1 lượt staging 2026-10-28 ~06:00 UTC, Testlane TC-TIB-7401, Jira TIB-5203, trước lần redeploy mà dev yêu cầu recheck, chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng). Trong campaign editor portal của campaign #3270 (store không thuộc explorer, design AW-GO), mục 'Personalization form' hiển thị Name, Dog (4 clipart) và Color A1 (dropdown Red/Blue/Green, layer gắn Global Option); preview mockup hiển thị bình thường; GET /api/campaigns/3270 → 200. Không dùng làm oracle.",
       "kb_refs": [
         "global-option/artwork-personalization-global-option-link#KB-371"
       ]
@@ -436,10 +436,10 @@
       ]
     },
     {
-      "statement": "[MỚI, CBS-013] Quan sát staging 2026-10-28 (1 lượt ~06:00 UTC, Testlane TC-TIB-7401, Jira TIB-5203, trước lần redeploy dev yêu cầu recheck, chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): campaign editor portal của campaign #3270 (Nprice1, design AW-GO), mục 'Personalization form' hiển thị Name, Dog (4 clipart) và Color A1 (dropdown Red/Blue/Green, layer gắn Global Option); preview mockup hiển thị bình thường; GET /api/campaigns/3270 → 200. Cùng chiều với quan sát base về campaign editor liệt kê field theo Global Option (KB-028), không thay thế nó.",
+      "statement": "[MỚI, CBS-013] Quan sát staging 2026-10-28 (1 lượt ~06:00 UTC, Testlane TC-TIB-7401, Jira TIB-5203, trước lần redeploy dev yêu cầu recheck, chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): campaign editor portal của campaign #3270 (store không thuộc explorer, design AW-GO), mục 'Personalization form' hiển thị Name, Dog (4 clipart) và Color A1 (dropdown Red/Blue/Green, layer gắn Global Option); preview mockup hiển thị bình thường; GET /api/campaigns/3270 → 200. Cùng chiều với quan sát base về campaign editor liệt kê field theo Global Option (KB-028), không thay thế nó.",
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
-      "scope": "staging Nprice1 (instance 520), merchant-owner, portal campaign editor; 1 lượt 2026-10-28; shipped UNKNOWN",
+      "scope": "staging store không thuộc explorer (instance 520), merchant-owner, portal campaign editor; 1 lượt 2026-10-28; shipped UNKNOWN",
       "observed_count": null,
       "kb_refs": [
         "global-option/artwork-personalization-global-option-link#KB-371"
@@ -551,7 +551,7 @@
       "[CBS-004] /artworks editor > Conditional Setting ('is any of' = item inline của GO Additional Option — KB-037)",
       "[CBS-004] /artworks editor > Quick-fill 'Populate Content from another option' > 'Source option' (loại trừ layer GO Additional Option — KB-039)",
       "[CBS-004] customization data của order (dòng '<Option Title>: <item>'; surface portal vs API public chưa tách — KB-035, KB-036)",
-      "[MỚI, CBS-013] campaign editor campaign #3270 (Nprice1) > mục 'Personalization form' hiện layer gắn Global Option (Color A1 dropdown) + preview mockup (quan sát — KB-371)",
+      "[MỚI, CBS-013] campaign editor campaign #3270 (store không thuộc explorer) > mục 'Personalization form' hiện layer gắn Global Option (Color A1 dropdown) + preview mockup (quan sát — KB-371)",
       "[CBS-100] artwork editor > Global Option summary của layer: `Image effects (N)` + nút `Run effects` + danh sách `[Effect name] · [Effect settings]` theo thứ tự trong GO (KB-725); N = 0 thì nút disabled (KB-728, quan sát)",
       "[CBS-100] popover `Fill in variables` của Run effects khi prompt có biến; giá trị lưu theo layer (KB-727)"
     ],
@@ -923,11 +923,38 @@
       "draft_id": "OQ-global-option-051",
       "oq_type": "NEEDS_CONFIRMATION",
       "oq_id": "OQ-global-option-051"
+    },
+    {
+      "question": "[MỚI, CBS-131] Hành vi strip retrieval_layer/retrieval_value/retrieval_value_enabled khi Save artwork (hai layer cùng Global Option) hiện có đúng là canon không, và còn bước nào khác của production bị TIB-5274 đổi không?",
+      "why_it_matters": "CLAIM-10/KB-730 (TC-01 QA-3347 staging ✅ AI, LOW) quan sát strip populate khi save; nguồn test_case không trích được căn cứ expected, build không ghi lại, TIB-5274 lên production 2026-09-17 (ngoài canon staging). Cần Dev xác nhận trước khi dùng làm oracle cho CHK-02-034.",
+      "kb_refs": [
+        "global-option/artwork-personalization-global-option-link#KB-730"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-global-option-076"
+    },
+    {
+      "question": "[MỚI, CBS-131] Quy tắc dedup-render 'chỉ một input storefront theo layer đầu theo thứ tự' có đúng cho mọi type Global Option (Clipart Category, Photo, Toggle...) không?",
+      "why_it_matters": "CLAIM-11/KB-731 (TC-20 QA-3399, LOW) mới kiểm GO Single-line Text trên một artwork; nguồn test_case expected sửa khớp hành vi sau khi chạy, build không ghi lại. Canon KB-028 đã nói dedupe theo GO id; chi tiết 'layer đầu' chưa phủ các type khác.",
+      "kb_refs": [
+        "global-option/artwork-personalization-global-option-link#KB-731"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-global-option-077"
+    },
+    {
+      "question": "[MỚI, CBS-131] Một field/param duy nhất đặt giá trị cho mọi layer dùng chung Global Option, và khoá prefill khớp là title của layer (không phải tên quản lý GO)?",
+      "why_it_matters": "CLAIM-12/KB-732 (TC-20 QA-3399, LOW): FACT-112 do AI suy từ FACT-111, chỉ kiểm GO Single-line Text, không trích được REQ-06 gốc, build không ghi lại. Ảnh hưởng cách viết TC prefill/verify giá trị dùng chung; cần Dev/PO xác nhận.",
+      "kb_refs": [
+        "global-option/artwork-personalization-global-option-link#KB-732"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-global-option-078"
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-131"
   },
   "coverage_matrix": [
     {
@@ -1123,7 +1150,7 @@
     {
       "feature_id": "FEAT-02-artwork-personalization-global-option-link",
       "layer": "portal+api",
-      "role": "merchant-owner (Nprice1)",
+      "role": "merchant-owner (store không thuộc explorer)",
       "state": "[MỚI, CBS-013] campaign editor mục Personalization form hiện layer gắn Global Option (campaign #3270) + preview mockup",
       "environment": "staging",
       "covered": true,
