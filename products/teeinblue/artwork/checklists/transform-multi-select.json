@@ -1,0 +1,762 @@
+{
+  "feature_id": "FEAT-32-transform-multi-select",
+  "feature_key": "transform-multi-select",
+  "object_id": "artwork",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Artwork 2.0, Individual: Width hiện Mixed khi layer khác width, hiện width chung khi cùng width",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, chọn 2 layer",
+        "environment": "staging",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có 2 layer width khác nhau và 2 layer cùng width. Fixture tự dựng trên store test của explorer ở staging (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "steps": [
+        "Chọn 2 layer khác width, mở Transform, chọn Apply for: Individual",
+        "Đọc ô Width",
+        "Chọn 2 layer cùng width, mở Transform ở Individual, đọc ô Width"
+      ],
+      "observation_point": "Ô Width trong Transform popover",
+      "expected_result": "Baseline theo mô tả dev TIB-5397 (không phải expected đã chốt): layer khác width → ô Width hiện Mixed; cùng width → hiện width chung.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/transform-multi-select#KB-1001"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1001"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-467"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Artwork 2.0: đổi width một layer thì group width tính lại theo bounding box selection",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, chọn 2 layer",
+        "environment": "staging",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có 2 layer đặt cạnh nhau theo chiều ngang. Fixture tự dựng trên store test của explorer ở staging (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "steps": [
+        "Chọn 2 layer, mở Transform ở Individual (hoặc chọn riêng một layer) và đổi width của một layer",
+        "Chọn lại cả 2 layer, chuyển Apply for: Group",
+        "Đọc group Width và đối chiếu với khoảng từ mép trái layer trái nhất tới mép phải layer phải nhất"
+      ],
+      "observation_point": "Group Width trong Transform popover; toạ độ/kích thước layer",
+      "expected_result": "Baseline theo mô tả dev TIB-5397: group Width bằng bề rộng bounding box của selection sau khi đổi width layer, không giữ giá trị cũ.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/transform-multi-select#KB-1001"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1001"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-467"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Artwork 1.0: Transform popover khi chọn nhiều layer không có Apply for, chỉ còn Width/Height/Top/Left/Rotate/Fit to canvas/Flip",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 1.0, chọn 2 layer",
+        "environment": "staging",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork schema 1 (Artwork 1.0) có ít nhất 2 layer. Fixture tự dựng trên store test của explorer ở staging (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "steps": [
+        "Mở artwork 1.0, chọn 2 layer",
+        "Mở Transform",
+        "Ghi các control có trong popover"
+      ],
+      "observation_point": "Danh sách control trong Transform popover",
+      "expected_result": "Baseline theo change note dev TIB-5397 (2026-09-10): không có control Apply for: Group / Individual; còn Width/Height/Top/Left/Rotate/Fit to canvas/Flip như trước TIB-5197.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/transform-multi-select#KB-1002"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1002"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-468"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-124] Group flip H: vùng chọn lật như một khối (thứ tự đảo quanh tâm, góc đảo dấu, ảnh lật, text không lật nội dung); bỏ tick về giá trị ban đầu",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, chọn 2–3 layer (photo ảnh không đối xứng + text + curve text), Apply for: Group",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có photo (ảnh không đối xứng, xoay 30°), text, curve text ở vị trí khác nhau. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Ghi Left/Top/rotate của từng layer.",
+        "Chọn cả vùng, Transform → Apply for: Group → tick Flip horizontal.",
+        "Ghi Left/Top/rotate mới, ảnh có lật không, text/curve text có lật nội dung không.",
+        "Bỏ tick Flip horizontal; ghi lại Left/Top/rotate.",
+        "Lặp với Apply for: Individual để đối chiếu."
+      ],
+      "observation_point": "Toạ độ, góc từng layer; nội dung ảnh/text trên canvas.",
+      "expected_result": "Baseline theo change note dev TIB-5435 (không phải expected đã chốt): ở Group, thứ tự trái-phải của các layer đảo quanh tâm khung vùng chọn, góc xoay đổi dấu (30° → −30°), ảnh lật, text/curve text không lật nội dung; bỏ tick về đúng giá trị ban đầu; ở Individual mỗi layer lật tại chỗ, vị trí không đổi. Không assert toạ độ tuyệt đối (lệch ~20px theo rule QA, KB-1063).",
+      "oracle": {
+        "kb_ids": [
+          "artwork/transform-multi-select#KB-1061",
+          "artwork/transform-multi-select#KB-1056"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1061",
+        "artwork/transform-multi-select#KB-1056",
+        "artwork/transform-multi-select#KB-1063"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-531"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-124] Group flip tick cả H và V trên layer đã xoay: ghi góc sau flip",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, chọn ≥2 layer, một layer đã xoay 30°, Apply for: Group",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có photo xoay 30° và text 0°. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Tick Flip horizontal và Flip vertical; ghi rotate từng layer.",
+        "Bỏ tick H, giữ V; ghi rotate và vị trí, so với khi chỉ tick V."
+      ],
+      "observation_point": "rotate của từng layer; flag flip.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1062",
+        "artwork/transform-multi-select#KB-1061"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-531",
+      "observation_guidance": "Rule QA FACT-069 ghi góc giữ nguyên khi tick cả H+V; chưa Dev xác nhận. Ghi kết quả kèm build, không phán pass/fail."
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-124] Đổi Apply for Group ⇄ Individual khi Flip H đang tick: ghi vị trí layer (CONF-CBS-124-01)",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, chọn 2 layer, Group + Flip H đang tick",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có text và photo ở vị trí khác nhau. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Group, tick Flip H; ghi Left/Top.",
+        "Không bỏ tick, đổi Apply for sang Individual; ghi Left/Top và trạng thái lật ảnh.",
+        "Đổi lại Group; ghi Left/Top, so với bước 1 và với vị trí gốc."
+      ],
+      "observation_point": "Left/Top của từng layer sau mỗi lần đổi mode.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1059"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-529",
+      "conflict_refs": [
+        "CONF-CBS-124-01"
+      ],
+      "observation_guidance": "Rule QA (tính lại từ vị trí gốc) mâu thuẫn expected Testlane TC-TIB-3105 (giữ vị trí đã lật); ghi kết quả kèm build, không phán pass/fail."
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-124] Group flip với layer hidden trong vùng chọn: ghi vị trí layer hidden và các layer khác (CONF-CBS-124-02)",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, chọn 3 layer trong đó 1 layer hidden ở xa, Apply for: Group",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có text, photo và một layer hidden đặt xa hai layer kia. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Ghi Left/Top của cả 3 layer.",
+        "Tick Flip H; ghi Left/Top của cả 3 layer.",
+        "So vị trí text/photo với lượt không có layer hidden."
+      ],
+      "observation_point": "Vị trí layer hidden; vị trí text/photo có bị kéo lệch bởi layer hidden không.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1060"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-530",
+      "conflict_refs": [
+        "CONF-CBS-124-02"
+      ],
+      "observation_guidance": "Rule QA FACT-068 (hidden như locked) mâu thuẫn RQ1 cũ (hidden vẫn bị dịch); ghi kết quả kèm build."
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-124] Reverse reposition direction chỉ hiện trên layer Photo Upload (hoặc linked tới Photo Upload) đang Flip, đúng vị trí và helper text, mặc định tắt",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "layer Photo Upload, layer linked tới Photo Upload, clipart, text; Flip tắt rồi bật",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có layer Photo Upload, một layer linked tới nó, một clipart, một text. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Chọn layer Photo Upload chưa Flip, mở Transform; ghi có checkbox không.",
+        "Tick Flip horizontal; ghi checkbox, vị trí, helper text, trạng thái tick.",
+        "Lặp với Flip vertical, với layer linked tới Photo Upload.",
+        "Tick Flip trên clipart, trên text (nếu có Flip); ghi có checkbox không."
+      ],
+      "observation_point": "Panel Transform: checkbox Reverse reposition direction, helper text, trạng thái mặc định.",
+      "expected_result": "Checkbox chỉ hiện khi Flip H hoặc V bật và layer là Photo Upload hoặc linked tới Photo Upload; nằm dưới Flip horizontal / Flip vertical; helper text đúng nguyên văn \"When on, this layer repositions in the opposite direction to the way the buyer moves it.\"; mặc định không tick. Clipart, text không có checkbox.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/transform-multi-select#KB-1064"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1064"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[CBS-124] Storefront: Reverse ON trên layer đã Flip làm ảnh buyer reposition ngược chiều theo trục đã lật; OFF thì theo chiều kéo",
+      "applicability": {
+        "role": "merchant-owner cấu hình; buyer trên storefront",
+        "state": "layer Photo Upload dùng reposition, Flip H (rồi Flip V), Reverse ON / OFF",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "storefront reposition popup (desktop)"
+      },
+      "precondition": "Campaign/sản phẩm test dùng artwork có layer Photo Upload dùng reposition. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Layer Flip H + Reverse ON, Save; trên storefront upload ảnh, mở reposition, kéo phải rồi kéo lên; ghi chiều ảnh di chuyển.",
+        "Đổi sang Flip V + Reverse ON; kéo xuống rồi kéo phải; ghi.",
+        "Tắt Reverse; lặp kéo; ghi."
+      ],
+      "observation_point": "Chiều di chuyển của ảnh trong layer so với chiều kéo của buyer.",
+      "expected_result": "Reverse ON + Flip horizontal: kéo trái/phải thì ảnh đi ngược chiều, lên/xuống theo chiều kéo. Reverse ON + Flip vertical: lên/xuống ngược chiều, trái/phải theo chiều kéo. Reverse OFF: ảnh theo chiều kéo.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/transform-multi-select#KB-1064"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1064"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-533",
+      "observation_guidance": "Testlane TC-TIB-3320/3321 từng ghi Fail (BUG-160/161); nếu vẫn không đảo chiều thì ghi build và tham chiếu bug đó."
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-124] Thay đổi trong popover Transform chỉ lưu sau Save & Close: ghi dữ liệu trước và sau khi lưu",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, sửa Flip/Width/Top trong Transform",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop); GraphQL đọc artwork"
+      },
+      "precondition": "Artwork 2.0 có ít nhất 2 layer. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Đổi Flip và Width trong Transform, không lưu; đọc artwork qua GraphQL ở tab khác; ghi giá trị.",
+        "Bấm Save & Close; ghi editor đóng về đâu; đọc lại GraphQL."
+      ],
+      "observation_point": "Giá trị layer trong GraphQL trước/sau Save & Close; màn hình sau Save & Close.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1058",
+        "artwork/artwork-save-persist#KB-049"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-528",
+      "observation_guidance": "Rule QA FACT-065, chưa Dev xác nhận; ghi kết quả kèm build."
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-124] Sau Group flip + Save: ghi field flip của layer ảnh, text, curve text trong GraphQL",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, Group flip H trên photo + text + curve text, đã Save",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "GraphQL đọc artwork"
+      },
+      "precondition": "Artwork 2.0 có photo, text, curve text. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Group Flip H, Save & Close.",
+        "Đọc artwork qua GraphQL; ghi flip_horizontal_enabled / flip_vertical_enabled và left/top/rotate của từng layer."
+      ],
+      "observation_point": "Field flip và toạ độ từng layer trong GraphQL.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1057",
+        "artwork/transform-multi-select#KB-1056"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-527",
+      "observation_guidance": "Rule QA FACT-064 (flag chỉ có trên layer ảnh), chưa Dev xác nhận; ghi kết quả kèm build."
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-129] Individual: khung riêng cho mỗi layer khi chọn ≥2 layer; layer ẩn/khoá không có khung; 1 layer dùng khung đơn; khung không bấm/kéo được",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, chọn 1 rồi 3 layer, một layer khoá, Apply for Group ⇄ Individual",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có 3 text layer và 1 photo ở vị trí khác nhau. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Chọn 3 layer, Transform → Apply for: Individual; đếm khung riêng trên canvas.",
+        "Chuyển về Group; ghi khung riêng còn không.",
+        "Về Individual, khoá một layer trên layer panel; ghi layer đó có khung riêng không.",
+        "Thử click/kéo trên một khung riêng; ghi layer có bị chọn/di chuyển riêng không, kéo khung nhóm thì sao.",
+        "Chọn đúng 1 layer; ghi khung hiển thị."
+      ],
+      "observation_point": "Số khung riêng (.artwork-layer-frame), khung nhóm, phản ứng khi click/kéo khung riêng.",
+      "expected_result": "Baseline theo change note dev TIB-5355 (không phải expected đã chốt): Individual với ≥2 layer có một khung riêng cho mỗi layer không ẩn/khoá, Group thì khung riêng biến mất; layer khoá không có khung; khung riêng không bấm/kéo được, kéo/resize/xoay qua khung nhóm; chọn 1 layer dùng khung của trình sửa layer đơn.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/transform-multi-select#KB-1070"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1070",
+        "artwork/transform-multi-select#KB-1071"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-538",
+      "observation_guidance": "Lệch baseline là cần điều tra, không kết luận bug; ghi build."
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-129] Lock/hide một layer giữa multi-selection: ghi số selected, khung riêng, kích thước box nhóm và tác dụng của stepper",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, chọn 3 layer, Individual",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có 3 text layer xếp dọc. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Chọn 3 layer, Individual; ghi \"N selected\", số khung, kích thước box nhóm.",
+        "Lock layer trên cùng (không đổi selection); ghi lại.",
+        "Unlock; hide layer dưới cùng; unhide; ghi lại sau mỗi bước.",
+        "Khi một layer đang khoá, bấm ▲ ở ô Left; ghi Left của từng layer."
+      ],
+      "observation_point": "Header N selected, số khung riêng, rect của .drr, Left từng layer.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1071",
+        "artwork/transform-multi-select#KB-1070"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-538",
+      "observation_guidance": "Rule QA FACT-063 (layer vẫn trong selection, box nhóm co, stepper bỏ qua layer khoá/ẩn), chưa Dev xác nhận; ghi kết quả kèm build, không phán pass/fail."
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-129] Individual khi chỉ còn đúng 1 layer không khoá/ẩn: ghi khung riêng, radio Apply for và số đo popover",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, chọn 2 layer rồi khoá 1; chọn 3 rồi khoá 1 + ẩn 1",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có 3 text layer. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Chọn 2 layer, Individual; khoá 1; ghi N selected, số khung, popover Transform (radio Apply for, Width/Height/Top/Left).",
+        "Chọn 3 layer, khoá 1 và ẩn 1; ghi lại."
+      ],
+      "observation_point": "Khung riêng, radio Apply for, giá trị ô Transform.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1072",
+        "artwork/transform-multi-select#KB-1070"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-539",
+      "observation_guidance": "Rule QA ghi canvas xử lý như chọn 1 layer; chưa Dev xác nhận; ghi kết quả kèm build."
+    },
+    {
+      "check_id": "CHK-015",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-129] Multi-select: double-click sửa text và ô cỡ chữ toolbar với selection toàn text / lẫn photo",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, chọn 2 text (cùng cỡ), rồi text + photo",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có 2 text layer cỡ 90 và 1 photo. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Chọn text + photo; ghi quick toolbar có ô cỡ chữ không.",
+        "Double-click text trên canvas; ghi selection còn mấy layer; gõ vài ký tự; click ra ngoài.",
+        "Chọn 2 text; nhập cỡ 150 vào ô cỡ chữ (không vào edit mode); ghi cỡ chữ của cả hai."
+      ],
+      "observation_point": "Selection sau double-click, ô .qte-font-size, cỡ chữ từng layer.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1073"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-540",
+      "observation_guidance": "Rule QA FACT-063, chưa Dev xác nhận; spec-hub bulk-edit chỉ yellow. Ghi kết quả kèm build."
+    },
+    {
+      "check_id": "CHK-016",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-129] Box cá nhân và box nhóm chồng nhau: ghi màu, kiểu nét, pointer-events",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, chọn 2 layer chồng nhau, Individual",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có 2 text layer chồng lên nhau một phần. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Chọn 2 layer, Individual.",
+        "Ghi computed style của .artwork-layer-frame và .drr::before (border, pointer-events, box-shadow)."
+      ],
+      "observation_point": "Border color/style/width, pointer-events, box-shadow.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1074",
+        "artwork/transform-multi-select#KB-1070"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-541",
+      "observation_guidance": "Rule QA FACT-063 (solid 1px vs dashed 2px, cùng #00c4cc), chưa Dev xác nhận; ghi kết quả kèm build."
+    },
+    {
+      "check_id": "CHK-017",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-129] Delete khi chọn nhiều layer rồi Ctrl+Z: ghi số layer bị xoá, số layer trở lại, selection và box sau Undo",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, chọn 3 layer, Individual",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có ≥3 layer; artwork test riêng, không dùng artwork thật. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Ghi số hàng trên layer panel.",
+        "Chọn 3 layer, bấm Delete; ghi số hàng, selection.",
+        "Ctrl+Z; ghi số hàng, layer nào trở lại, selection, khung riêng/khung nhóm.",
+        "Thử bỏ chọn 1 layer khỏi selection rồi xoá riêng nó (nếu có cách); ghi."
+      ],
+      "observation_point": "Số layer, selection, khung sau Delete và sau Undo.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1075"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-542",
+      "observation_guidance": "Hành vi xoá dữ liệu, chưa có oracle: record Testlane TC-TIB-3086 không build, expected (Undo khôi phục cả box) khác kết quả ghi (selection rỗng). Ghi kết quả kèm build, không phán pass/fail; không Save artwork thật."
+    },
+    {
+      "check_id": "CHK-018",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-129] Align với nhiều layer đang chọn, Ctrl+D và phím mũi tên: ghi tác dụng",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, chọn 2 layer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có 2 layer ở vị trí khác nhau. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Mở Align, ghi các lựa chọn 'Align to:'; đổi Apply for Group/Individual, ghi Align có đổi theo không.",
+        "Bấm Ctrl+D (và Ctrl+J để đối chiếu); ghi có layer mới không.",
+        "Bấm phím mũi tên; ghi Left/Top có đổi không; bấm ▲ ở ô Left, ghi."
+      ],
+      "observation_point": "Lựa chọn Align to, số layer, Left/Top.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1076"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-543",
+      "observation_guidance": "Rule QA FACT-063 (QA chốt), spec-hub shortcuts yellow; chưa Dev xác nhận. Ghi kết quả kèm build; không assert theo trình duyệt mặc định (Ctrl+D có thể là bookmark)."
+    },
+    {
+      "check_id": "CHK-019",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-129] Chọn layer con trong Group và chọn chính Group container: ghi selection và box nhóm",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, Group có 2 layer con, một layer đã xoay",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có Group layer chứa 2 layer con và một layer xoay 30°. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Mở Group trên layer panel; Cmd/Ctrl-click 2 layer con; ghi N selected, Group cha có bị chọn không, khung riêng.",
+        "Chọn chính Group container; ghi N selected.",
+        "Thêm layer xoay vào selection; ghi .drr có axis-aligned không."
+      ],
+      "observation_point": "N selected, trạng thái chọn của Group cha, khung riêng, rect và transform của .drr.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1077"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-544",
+      "observation_guidance": "Rule QA FACT-063 ('dev chốt RQ5' là QA thuật lại); ghi kết quả kèm build."
+    },
+    {
+      "check_id": "CHK-020",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-129] Group container trong selection Individual: ghi có khung riêng cho container không (CONF-CBS-129-01)",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "Artwork 2.0, chọn leaf layer + Group có 2 con, Individual",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork 2.0 có vài leaf layer và một Group chứa 2 layer con. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Chọn các leaf và Group, Individual.",
+        "Đếm khung riêng; ghi có khung nào bao đúng union của 2 con mà không phải khung của từng con không."
+      ],
+      "observation_point": "Số và vị trí .artwork-layer-frame.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/transform-multi-select#KB-1078",
+        "artwork/transform-multi-select#KB-1077"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-545",
+      "conflict_refs": [
+        "CONF-CBS-129-01"
+      ],
+      "observation_guidance": "Rule QA (container không có khung) mâu thuẫn RQ13 (khung = union bbox các con); ghi kết quả kèm build, không phán pass/fail."
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-32-transform-multi-select",
+      "core_covered": true,
+      "p1_covered": "N/A (không có risk P1 trong scope)"
+    },
+    {
+      "feature_id": "FEAT-32-transform-multi-select",
+      "core_covered": true,
+      "p1_covered": "N/A (không có risk P1 trong scope CBS-124)",
+      "note": "CBS-124: Group flip (CHK-004..CHK-007, CHK-010, CHK-011), Reverse reposition direction (CHK-008, CHK-009)."
+    },
+    {
+      "feature_id": "FEAT-32-transform-multi-select",
+      "core_covered": true,
+      "p1_covered": "Có risk P1 (Delete xoá cả selection, KB-1075): CHK-017 P1, oracle NONE + NEEDS_CONFIRMATION tới khi có test case PASS có build",
+      "note": "CBS-129: box cá nhân/box nhóm (CHK-012..CHK-016), Delete/Undo (CHK-017), Align/phím tắt (CHK-018), Group layer (CHK-019, CHK-020)."
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Ô Width/Height/Top/Left với 0, số âm, chữ, để trống (Artwork 1.0 và 2.0) chưa có nguồn nên chưa có KB item (OQ-artwork-469, OQ-artwork-472). CBS-129: không có nguồn cho thao tác lỗi/không hợp lệ trên box cá nhân."
+    },
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Giá trị nhỏ nhất/lớn nhất áp được của ô Width/Height chưa có nguồn nên chưa có KB item (OQ-artwork-472)."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "Không có khác biệt quyền owner/staff trong nguồn. Flip nhóm (CBS-124): không có rule quyền riêng. Box cá nhân/box nhóm (CBS-129): không có rule quyền riêng."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Không có KNOWN_DEFECT trong KB của feature; hành vi mới không đổi item base. Lỗi storefront Reverse ghi ở Testlane (BUG-160/161) theo dõi qua CHK-009 và OQ-artwork-533. CBS-129: không có KNOWN_DEFECT; lệch expected/kết quả của TC-33 (Undo) theo dõi qua CHK-017 và OQ-artwork-542."
+    },
+    {
+      "dimension": "STATE_DATA",
+      "reason": "Preference Apply for lưu theo account chưa có nguồn (OQ-artwork-473, OQ-artwork-474); persist Transform qua Save & Close có CHK-006, CHK-010."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-129"
+  }
+}

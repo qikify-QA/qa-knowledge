@@ -9,7 +9,7 @@
 ## OQ-asset-category-002 — OPEN_ISSUE
 
 ```json
-{"oq_id": "OQ-asset-category-002", "type": "OPEN_ISSUE", "feature_id": "_object-level", "summary": "Cross-role và cross-tenant thiếu hoàn toàn trên cả 4 feature: môi trường test chỉ còn 1 account khả dụng (owner 'Linh explorer'), không có account store thứ 2 để kiểm tra quyền xem/thao tác category và item của store khác. Dimension PERMISSION vì vậy bị exclude ở cả 4 checklist. Riêng trường hợp cross-tenant của insert_cliparts (xem OQ-asset-category-017) còn bị chặn thêm bởi permission classifier của công cụ thực thi."}
+{"oq_id": "OQ-asset-category-002", "type": "OPEN_ISSUE", "feature_id": "_object-level", "summary": "Cross-role và cross-tenant thiếu hoàn toàn trên cả 4 feature: môi trường test chỉ còn 1 account khả dụng (owner explorer (TIB_STAGING_EMAIL)), không có account store thứ 2 để kiểm tra quyền xem/thao tác category và item của store khác. Dimension PERMISSION vì vậy bị exclude ở cả 4 checklist. Riêng trường hợp cross-tenant của insert_cliparts (xem OQ-asset-category-017) còn bị chặn thêm bởi permission classifier của công cụ thực thi."}
 ```
 
 ## OQ-asset-category-003 — OPEN_ISSUE
@@ -183,7 +183,7 @@
 ## OQ-asset-category-031 — CONFLICT
 
 ```json
-{"oq_id":"OQ-asset-category-031","type":"CONFLICT","feature_id":"asset-category-item-management","summary":"Cửa sổ daily limit upload asset tính thế nào: từ lượt upload đầu tiên hay cửa sổ trượt 24h UTC? Lượt upload của ảnh đã xoá có được đếm không, và mốc Wait until tính từ đâu? KB-567 và KB-568 đang UNRESOLVED (conflict_group CFL-003), không bên nào là oracle. Cần PO hoặc dev xác nhận. Liên quan: CHK-023; item-management CHK-017 và crud CHK-018 có thể đổi theo câu trả lời.","side_a":"Dev phát biểu ở Jira TIB-5536 comment #55888 (2026-10-28): cửa sổ daily limit tính \"per 24 h from the first upload\" (KB-567).","side_b":"QA ghi nhận trong test case (2026-10-29): cửa sổ trượt 24h UTC, đếm cả ảnh đã xoá, mốc Wait until bằng lượt upload cũ nhất cộng 24h; chưa có người xác nhận, test case không đo mốc này (KB-568)."}
+{"oq_id":"OQ-asset-category-031","type":"CONFLICT","feature_id":"asset-category-item-management","summary":"Cửa sổ daily limit upload asset tính thế nào: từ lượt upload đầu tiên hay cửa sổ trượt 24h UTC? Lượt upload của ảnh đã xoá có được đếm không, và mốc Wait until tính từ đâu? KB-567 và KB-568 đang UNRESOLVED (conflict_group CFL-003), không bên nào là oracle. Cần PO hoặc dev xác nhận. Liên quan: CHK-023; item-management CHK-017 và crud CHK-018 có thể đổi theo câu trả lời. Bổ sung CBS-135 (2026-11-11): spec-hub rule api-tokens-asset-limits (S2, KB-642) ghi giới hạn tính \"in a 24-hour window\", không nói cửa sổ trượt hay reset cố định, nên không là bằng chứng cho phía nào; conflict vẫn mở.","side_a":"Dev phát biểu ở Jira TIB-5536 comment #55888 (2026-10-28): cửa sổ daily limit tính \"per 24 h from the first upload\" (KB-567).","side_b":"QA ghi nhận trong test case (2026-10-29): cửa sổ trượt 24h UTC, đếm cả ảnh đã xoá, mốc Wait until bằng lượt upload cũ nhất cộng 24h; chưa có người xác nhận, test case không đo mốc này (KB-568)."}
 ```
 
 ## OQ-asset-category-032 — NEEDS_CONFIRMATION
@@ -300,4 +300,16 @@
 
 ```json
 {"oq_id":"OQ-asset-category-053","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-013 “Giới hạn dung lượng tối đa cho 1 file PNG/SVG khi upload đơn lẻ - CONFIRMED: warning 64MP không chặn cứng” của feature asset-category-item-management. insufficient_authority"}
+```
+
+## OQ-asset-category-054 — CONFLICT
+
+```json
+{"oq_id":"OQ-asset-category-054","type":"CONFLICT","feature_id":"asset-category-bulk-upload","summary":"[CBS-135, conflict_group CONF-CBS-135-01] Giới hạn bulk-upload zip clipart đúng là bao nhiêu? Banner plan Blue '2GB per zip / max 10 files' (KB-022) có lỗi thời, hay 'Blue' là tên của một tier (vd beta) mà spec-hub không gọi tên? '10 files at a time' của banner có phải hàng đợi 10 bulk upload không? KB-022 và KB-641 cùng UNRESOLVED, không bên nào làm oracle. Người trả lời: Dev hoặc PO (người đặt tên plan Blue). Liên quan: CHK-004, CHK-005 (asset-category-bulk-upload), OQ-asset-category-024, OQ-asset-category-027, OQ-asset-category-046.","side_a":"KB-022 (INFERRED/LOW): trên staging, plan 'Blue (Test)', trang /cliparts/bulk-upload hiện banner tĩnh phía client 'Limit max 2GB per zip and can only process max 10 files at a time.'; statement ghi PO nói giới hạn tuỳ plan (2026-09-14) nhưng chưa có nguồn hợp lệ (OQ-asset-category-046).","side_b":"KB-641 (PROPOSED/LOW, S2 spec-hub rule clipart-library-bulk-limits, đọc source teeinblue-api, 2026-11-11): zip tối đa 512 MB ở plan mặc định, 1024 MB ở Enterprise, 2024 MB với shop beta; hàng đợi tối đa 5 (mặc định) hoặc 10 (Enterprise, beta) bulk upload. Rule không có tier tên 'Blue'."}
+```
+
+## OQ-asset-category-055 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-asset-category-055","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"[CBS-135, KB-642, spec-hub rule api-tokens-asset-limits] Spec-hub ghi mỗi account tạo tối đa 1.000 clipart category, 4.000 clipart và 1.000 library image trong cửa sổ 24 giờ, dù tạo từ portal, API hay bulk upload. Dev xác nhận ngưỡng mặc định này và việc bulk upload zip ăn vào cùng bộ đếm? Cách tính cửa sổ vẫn thuộc OQ-asset-category-031; route nào ăn bộ đếm clipart xem thêm OQ-asset-category-038. Người trả lời: Dev."}
 ```

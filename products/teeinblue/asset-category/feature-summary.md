@@ -1,14 +1,14 @@
 # Object: Asset Category (product: teeinblue) — Feature Summary
-**Published context version:** 4
+**Published context version:** 5
 
 Trạng thái hiện tại của object `asset-category`: 6 loại category asset (Clipart, Vector, Color, Additional Option, Map Style, Font Category) + luồng thêm item vào category + luồng bulk-upload zip.
 
-- **Environment:** staging. **Role đã test:** duy nhất `owner` ("Linh explorer" — định danh `sub=273` trong nội dung cũ; hạ tầng hiện dùng Sanctum cookie+XSRF, verify bằng `GET /api/user` → id=266). 1 organization/store duy nhất.
+- **Environment:** staging. **Role đã test:** duy nhất `owner` ("explorer (TIB_STAGING_EMAIL)" — định danh `sub=<explorer>` trong nội dung cũ; hạ tầng hiện dùng Sanctum cookie+XSRF, verify bằng `GET /api/user` → id=<explorer>). 1 organization/store duy nhất.
 - **4 feature có profile + checklist:** `asset-category-route-entity-clarification`, `asset-category-crud`, `asset-category-item-management`, `asset-category-bulk-upload`. Feature đầu tiên KHÔNG phải tính năng user-facing (xem ghi chú riêng).
-- **KB:** 52 item. 5 item dùng chung toàn object nằm ở `kb.json`; phần còn lại nằm trong `features/<feature-key>/kb.json`.
-- **Knowledge kind:** phần lớn `OBSERVED_CURRENT`; 13 item `CONFIRMED_EXPECTED` (KB-020, KB-022, KB-023, KB-026, KB-027, KB-033 — đều có PO xác nhận trực tiếp nội dung, ghi rõ trong statement; KB-561..KB-567 theo lời dev, riêng KB-567 đang conflict); 2 item `INFERRED` (KB-019, KB-569); 2 item `PROPOSED` là phía kỳ vọng của 2 conflict chưa ngã ngũ (KB-038, KB-040).
-- **Conflict chưa ngã ngũ:** 3 nhóm — `CFL-001` (khung diễn giải naming convention field `type`) `CFL-002` (kỳ vọng `vector_category` vs giá trị thật `vector`) và `CFL-003` (cách tính cửa sổ daily limit). Xem `open-questions.md` (OQ-asset-category-006/007/031).
-- **Open question:** 45 mục trong `open-questions.md` (29 NEEDS_CONFIRMATION, 3 CONFLICT, 13 OPEN_ISSUE).
+- **KB:** 54 item. 5 item dùng chung toàn object nằm ở `kb.json`; phần còn lại nằm trong `features/<feature-key>/kb.json`.
+- **Knowledge kind:** 35 item `OBSERVED_CURRENT`; 7 item `CONFIRMED_EXPECTED` (KB-561..KB-567 theo lời dev, riêng KB-567 đang conflict); 8 item `INFERRED` (KB-019, KB-020, KB-022, KB-023, KB-026, KB-027, KB-033 — nhãn xác nhận legacy thiếu nguồn hợp lệ, có OQ hỏi nguồn; KB-569 khác biệt môi trường), trong đó KB-022 đang conflict; 4 item `PROPOSED`: KB-038, KB-040 (phía kỳ vọng của 2 conflict chưa ngã ngũ), KB-641 (rule QA spec-hub, đang conflict) và KB-642 (rule QA spec-hub).
+- **Conflict chưa ngã ngũ:** 4 nhóm — `CFL-001` (khung diễn giải naming convention field `type`), `CFL-002` (kỳ vọng `vector_category` vs giá trị thật `vector`), `CFL-003` (cách tính cửa sổ daily limit) và `CONF-CBS-135-01` (giới hạn bulk-upload zip: banner plan Blue vs tier theo spec-hub). Xem `open-questions.md` (OQ-asset-category-006/007/031/054).
+- **Open question:** 55 mục trong `open-questions.md` (38 NEEDS_CONFIRMATION, 4 CONFLICT, 13 OPEN_ISSUE).
 
 ---
 
@@ -92,7 +92,7 @@ Portal layer: form field mapping ✅ chỉ Clipart, ❌ 5 loại còn lại · s
 5. Upload vector item thật (SVG) qua dropzone — 1 bước `POST /api/cliparts/svg` multipart (KB-015); route chịu rate-limit `user_rate_limiter:clipart`, limit=4000 (KB-035).
 6. Negative đã quan sát: Vector nhận `.png` → 500 kèm stack trace + UI `[object Object]` (KB-032, known defect); Clipart nhận `.txt` → vẫn cấp presigned URL 201, bước sau chưa capture (KB-034).
 7. Cap clipart: theo dev, cap 300 có từ 2025, admin nâng được theo merchant, Open API áp cùng kiểm tra khi thêm clipart (KB-561); chạm cap ở `POST /cliparts` trả 422 (KB-562); zip bulk tạo category mới, file thừa bị skip kèm log, kết thúc done (KB-563). Số 300 là số tại thời điểm nguồn. Setup: key `clipart_max_per_category` (KB-564).
-8. Daily limit upload asset: theo dev, 1,000 layer image, 4,000 clipart, 1,000 clipart category mỗi 24h, dùng chung portal và Open API (KB-565). Setup để test 429: "… max attempts" ở admin panel, xong trả lại giá trị cũ (KB-566). Cách tính cửa sổ đang conflict, không làm oracle: KB-567 (lời dev), KB-568 (QA ghi nhận), OQ-asset-category-031.
+8. Daily limit upload asset: theo dev, 1,000 layer image, 4,000 clipart, 1,000 clipart category mỗi 24h, dùng chung portal và Open API (KB-565). Setup để test 429: "… max attempts" ở admin panel, xong trả lại giá trị cũ (KB-566). Cách tính cửa sổ đang conflict, không làm oracle: KB-567 (lời dev), KB-568 (QA ghi nhận), OQ-asset-category-031. Rule QA spec-hub ghi cùng ngưỡng và tính cả bulk upload vào bộ đếm (KB-642, PROPOSED/LOW, OQ-asset-category-055).
 9. Kết quả dropzone: QA ghi nhận trong test case kết quả hiện bằng text, không thấy icon; chưa có người xác nhận (KB-560, OBSERVED_CURRENT/LOW, OQ-asset-category-030).
 10. Thumbnail SVG có clip-path lồng qua nhiều `<clipPath>`: theo mô tả dev tự sinh từ branch diff (TIB-5350, 2026-09-23), thumbnail rasterize qua resvg trước pipeline Imagick nên hiện đúng hình đã mask, không hiện outer bounding shape. Chưa quan sát, chưa có người xác nhận, không làm oracle STRONG (KB-640, OBSERVED_CURRENT/LOW, CHK-027, OQ-asset-category-041).
 
@@ -119,14 +119,14 @@ Portal layer: form field mapping ✅ chỉ Clipart, ❌ 5 loại còn lại · s
 **Capabilities:**
 1. Upload zip và theo dõi job — luồng 5 bước: GET list job → `POST .../start` (presigned URL, TTL 600s) → PUT binary → `POST .../complete` → GET poll status (KB-016, KB-028).
 2. Tự tạo category theo tên folder trong zip, log dạng "N/5 Success enqueue" (KB-016).
-3. Giới hạn theo plan — banner tĩnh phía client cho plan Blue: "Limit max 2GB per zip and can only process max 10 files at a time." (KB-022, PO xác nhận giới hạn tuỳ plan).
+3. Giới hạn zip — chưa có giá trị xác nhận, đang conflict `CONF-CBS-135-01` (OQ-asset-category-054): banner tĩnh phía client cho plan Blue ghi "Limit max 2GB per zip and can only process max 10 files at a time." (KB-022, INFERRED/LOW); rule QA spec-hub ghi 512 MB mặc định / 1024 MB Enterprise / 2024 MB beta, hàng đợi 5 / 10, không có tier Blue (KB-641, PROPOSED/LOW). Không bên nào làm oracle; CHK-004 không có expected.
 4. Negative/error path: file không phải zip (`.txt`) → 422 `The selected mimetype is invalid.`, không tạo job (KB-025); zip hợp lệ nhưng không chứa ảnh → job kết thúc `Error`, `clipart_category_id=null`, không tạo category rỗng (KB-026).
 5. Status job: Uploading / Extracting / delayed / Done / Error — chỉ Extracting và Error có network evidence trực tiếp (KB-027).
 
 **Coverage:** upload zip hợp lệ end-to-end ✅ (1 sample) · file sai mimetype ✅ · zip không chứa ảnh ✅ · presigned URL cho luồng zip ✅ · vượt giới hạn dung lượng/số file ❌ · cấu trúc folder khác/tên trùng ❌ · cross-role/cross-tenant ❌
 **Confidence:** LOW→MEDIUM (mỗi nhánh 1 sample)
 **Last updated:** 2026-09-15
-**Risks / Unknowns:** OQ-asset-category-024 (test biên tại ngưỡng) · OQ-asset-category-025 (cấu trúc folder khác/tên trùng) · OQ-asset-category-026 (negative test presigned TTL 600s, severity MEDIUM) · OQ-asset-category-027 (server có enforce 2GB/10 file hay không; plan khác chưa verify) · OQ-asset-category-028 (3/5 status chưa network-verified) · OQ-asset-category-029 (định dạng sai khác ngoài `.txt`)
+**Risks / Unknowns:** OQ-asset-category-024 (test biên tại ngưỡng) · OQ-asset-category-025 (cấu trúc folder khác/tên trùng) · OQ-asset-category-026 (negative test presigned TTL 600s, severity MEDIUM) · OQ-asset-category-027 (server có enforce 2GB/10 file hay không; plan khác chưa verify) · OQ-asset-category-028 (3/5 status chưa network-verified) · OQ-asset-category-029 (định dạng sai khác ngoài `.txt`) · OQ-asset-category-054 (conflict giới hạn zip, CONF-CBS-135-01)
 
 ---
 
@@ -137,7 +137,7 @@ Portal layer: form field mapping ✅ chỉ Clipart, ❌ 5 loại còn lại · s
 | **Data layer (DB)** | Không có verification ở tầng DB cho object này — mọi state delta chỉ dựa trên response API/GraphQL/DOM | OQ-asset-category-001 |
 | **Cross-role / cross-tenant** | Thiếu hoàn toàn trên cả 4 feature (chỉ 1 account khả dụng); dimension PERMISSION bị exclude ở cả 4 checklist. Đáng chú ý nhất ở FEAT-03 vì `insert_cliparts` gọi thẳng Hasura từ client | OQ-asset-category-002, OQ-asset-category-017 |
 | **Rate-limit window** | Chỉ verify giá trị limit qua header; window reset 24h và việc dùng chung counter giữa 6 loại category chưa verify runtime | OQ-asset-category-003, OQ-asset-category-011, OQ-asset-category-021 |
-| **Confirmation status** | Chỉ 13/51 KB item có nguồn thẩm quyền (PO hoặc dev xác nhận nội dung, riêng KB-567 đang conflict). Các item `OBSERVED_CURRENT` còn lại KHÔNG được đối xử như business rule đã confirm — nhiều PO-answer chỉ là uỷ quyền THỰC THI test, không phải xác nhận hành vi đúng | — |
-| **3 conflict chưa ngã ngũ** | `CFL-001` (khung diễn giải naming convention field `type`), `CFL-002` (kỳ vọng `vector_category` vs giá trị thật `vector`), `CFL-003` (cách tính cửa sổ daily limit) — giữ cả 2 phía, không tự chọn | OQ-asset-category-006, OQ-asset-category-007, OQ-asset-category-031 |
+| **Confirmation status** | Chỉ 7/54 KB item có nguồn thẩm quyền hợp lệ (lời dev KB-561..KB-567, riêng KB-567 đang conflict). Các item `OBSERVED_CURRENT` còn lại KHÔNG được đối xử như business rule đã confirm — nhiều PO-answer chỉ là uỷ quyền THỰC THI test, không phải xác nhận hành vi đúng | — |
+| **4 conflict chưa ngã ngũ** | `CFL-001` (khung diễn giải naming convention field `type`), `CFL-002` (kỳ vọng `vector_category` vs giá trị thật `vector`), `CFL-003` (cách tính cửa sổ daily limit), `CONF-CBS-135-01` (giới hạn bulk-upload zip) — giữ cả 2 phía, không tự chọn | OQ-asset-category-006, OQ-asset-category-007, OQ-asset-category-031, OQ-asset-category-054 |
 | **KB bị hạ phạm vi** | KB-008 (form field: chỉ còn đúng cho Clipart), KB-010 (sidebar tree action buttons: UNVERIFIED), KB-012 (cơ chế Add new của Font: chưa re-verify độc lập) — KHÔNG ngang hàng với các KB đã network/DOM-verified đầy đủ, không dùng làm oracle | OQ-asset-category-009, OQ-asset-category-012, OQ-asset-category-014 |
 | **Global Option instance** | Ngoài phạm vi object này theo quyết định 2026-09-14 — đọc object `global-option` | OQ-asset-category-004, OQ-asset-category-005 |

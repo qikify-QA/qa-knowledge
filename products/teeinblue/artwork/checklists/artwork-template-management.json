@@ -482,6 +482,80 @@
       "priority": "P2",
       "automation_suitability": "SUITABLE",
       "oq_id": "OQ-artwork-149"
+    },
+    {
+      "check_id": "CHK-016",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-111] Ghi field nào sửa được / bị khoá ở layer đồng bộ từ Global Template trong template khác",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "artwork có Global Template, mở template không phải global",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork Artwork 2.0 có ≥2 template, một template đã Convert to Global Template, có layer text đồng bộ. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork của merchant hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Mở template không phải global, chọn layer text đồng bộ từ Global Template.",
+        "Thử sửa lần lượt: font family, màu chữ, font size min/max, drop shadow, background, Transform, Align; ghi field nào cho sửa, field nào bị khoá.",
+        "Ghi các panel/accordion settings nào không mở được.",
+        "Save, mở lại; ghi giá trị ở template này và ở Global Template."
+      ],
+      "observation_point": "Trạng thái sửa được/khoá của từng field và panel; giá trị sau Save ở template khác và ở Global Template.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/artwork-template-management#KB-1080",
+        "artwork/artwork-template-management#KB-177",
+        "artwork/editor-layer-workspace#KB-909"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-547",
+      "conflict_refs": [],
+      "observation_guidance": "Rule QA (KB-1080, PROPOSED) ghi chỉ font family bị khoá, các field style/Transform/Align sửa được, panel settings không mở được. Ghi kết quả kèm build, không phán pass/fail."
+    },
+    {
+      "check_id": "CHK-017",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-111] Ghi phạm vi đồng bộ của Global Template: trong artwork và giữa các artwork",
+      "applicability": {
+        "role": "merchant-owner (owner/staff)",
+        "state": "2 artwork trên cùng store, artwork A có Global Template",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor (desktop)"
+      },
+      "precondition": "Artwork Artwork 2.0 có ≥2 template, một template đã Convert to Global Template, có layer text đồng bộ. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork của merchant hay production). Ghi build và ngày chạy. Dựng thêm artwork B trên cùng store test, không có Global Template.",
+      "steps": [
+        "Ở artwork A, sửa một layer của Global Template, Save; mở từng template khác của A, ghi layer đồng bộ có đổi theo không.",
+        "Mở artwork B; ghi B có thấy layer hay Global Template của A không (template bar, layer panel, Import from artwork).",
+        "Duplicate artwork A thành A copy, sửa Global Template của A copy; ghi A có đổi theo không."
+      ],
+      "observation_point": "Layer đồng bộ trong các template của A; có hay không dấu vết Global Template của A ở artwork B và ở bản duplicate.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/artwork-template-management#KB-1081",
+        "artwork/artwork-template-management#KB-046"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-548",
+      "conflict_refs": [],
+      "observation_guidance": "Rule QA (KB-1081, PROPOSED) ghi Global Template chỉ đồng bộ trong một artwork, không dùng chung giữa các artwork; spec-hub data 'Templates' chỉ nói đồng bộ giữa các template. Liên quan CHK-009/OQ-artwork-024. Ghi kết quả kèm build, không phán pass/fail."
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -521,6 +595,15 @@
         "CHK-014"
       ],
       "oracle": "STRONG (KB-177)"
+    },
+    {
+      "feature_id": "FEAT-02-artwork-template-management",
+      "item": "[CBS-111] Global Template: field sửa được của layer đồng bộ ở template khác; phạm vi đồng bộ trong một artwork (rule QA, PROPOSED)",
+      "check_ids": [
+        "CHK-016",
+        "CHK-017"
+      ],
+      "oracle": "NONE (KB-1080, KB-1081 PROPOSED)"
     }
   ],
   "excluded_dimensions": [
@@ -538,7 +621,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-111"
   }
 }

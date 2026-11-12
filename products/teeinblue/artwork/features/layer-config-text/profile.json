@@ -12,7 +12,7 @@
   "stable_since_version": null,
   "actors": [
     {
-      "role": "store owner / staff (sub=273, user_id=266, plan Blue (Test))",
+      "role": "store owner / staff (sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
       "permission_observed": "Truy cập đầy đủ field/accordion riêng của các layer type nhóm TEXT",
       "kb_refs": [
         "artwork/_object-level#KB-002",
@@ -49,6 +49,15 @@
       "precondition": "Campaign có layer paragraph vừa là buyer field vừa được populate từ một field nguồn",
       "kb_refs": [
         "artwork/layer-config-text#KB-416"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-126] portal — artwork editor → chọn layer Warp Text → nút Warp trên toolbar (sau TIB-5325: popover Warp mode → Advanced editor) → popup Warp (dialog) có canvas preview và panel Points",
+      "precondition": "Artwork có ≥1 layer Warp Text; đọc payload warp_text qua network khi render",
+      "kb_refs": [
+        "artwork/layer-config-text#KB-1066",
+        "artwork/layer-config-text#KB-1068",
+        "artwork/layer-config-text#KB-1069"
       ]
     }
   ],
@@ -107,6 +116,16 @@
       "kb_refs": [
         "artwork/layer-config-text#KB-416"
       ]
+    },
+    {
+      "name": "[MỚI, CBS-126] Other › Warp Text — payload điểm warp và Mirror trong popup Warp",
+      "description": "Change note dev TIB-5325 (OBSERVED_CURRENT/LOW): TIB-5325 không đổi payload endpoint render warp text; chữ nằm ngoài vùng 1000x1000 bị cắt trong ảnh render. Chỉ rule QA (PROPOSED, không làm oracle): points trong payload là mảng phẳng 20 số nguyên toạ độ tuyệt đối, resize không đổi points/width/height (KB-1066); popup Warp cũ có Mirror X/Y là 2 nút icon cạnh Free (KB-1068); bật Mirror X không tự lật điểm, kéo một điểm thì điểm đối xứng x' = 2×centerX − x, y theo điểm vừa kéo (KB-1069).",
+      "kb_refs": [
+        "artwork/layer-config-text#KB-1067",
+        "artwork/layer-config-text#KB-1066",
+        "artwork/layer-config-text#KB-1068",
+        "artwork/layer-config-text#KB-1069"
+      ]
     }
   ],
   "state_transitions": [
@@ -141,6 +160,16 @@
       "kb_refs": [
         "artwork/layer-config-text#KB-416"
       ]
+    },
+    {
+      "statement": "[MỚI, CBS-126] Theo change note Dev TIB-5325 (2026-10-09), endpoint render warp text vẫn nhận payload như cũ (không đổi GraphQL/env/schema); kéo điểm warp ra xa thì phần chữ nằm ngoài vùng 1000x1000 bị cắt trong ảnh render, giống khi chỉnh bằng dialog. Tài liệu dev mô tả code, chưa có xác nhận là hành vi mong muốn.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging, merchant-owner, api endpoint render warp text + portal artwork editor; TIB-5325 Done",
+      "shipped": "SHIPPED",
+      "kb_refs": [
+        "artwork/layer-config-text#KB-1067"
+      ]
     }
   ],
   "observed_validations": [],
@@ -166,12 +195,15 @@
   "surface_mapping": {
     "portal": [
       "artwork editor — config panel của các layer type nhóm TEXT",
-      "[MỚI, CBS-008] Artwork Editor (Artwork 2.0) — layer Curve Text: không có tuỳ chọn căn lề text, layer lưu align center (KB-157)"
+      "[MỚI, CBS-008] Artwork Editor (Artwork 2.0) — layer Curve Text: không có tuỳ chọn căn lề text, layer lưu align center (KB-157)",
+      "[MỚI, CBS-126] Artwork editor — layer Warp Text, popup Warp cũ / dialog Advanced editor: nút icon Mirror X/Y cạnh Free (KB-1068, rule QA) và kéo điểm khi Mirror X bật (KB-1069, rule QA)"
     ],
     "storefront": [
       "[MỚI, CBS-079] Preview và design của paragraph vừa là buyer field vừa được populate: rỗng, chỉ khoảng trắng, xoá nội dung field nguồn (KB-416, quan sát)"
     ],
-    "api": [],
+    "api": [
+      "[MỚI, CBS-126] GET api/merchant/games/warp_text/<base64>.json — points mảng phẳng 20 số nguyên toạ độ tuyệt đối (KB-1066, rule QA); payload không đổi bởi TIB-5325, vùng render 1000x1000 (KB-1067, change note dev)"
+    ],
     "data": [],
     "code": [
       "bundle-registry: right_to_left_enabled (không thuộc warp-text), inner_radius/direction (spiral-text), vertical_offset (paragraph/shape-text), url/shape_url (shape-text) — INFERRED, chưa cross-check API/DB."
@@ -204,6 +236,15 @@
       "description": "[MỚI, CBS-079] Quan sát paragraph KB-416 phụ thuộc cấu hình populate của layer; cơ chế populate thuộc FEAT-11-populate-values.",
       "kb_refs": [
         "artwork/layer-config-text#KB-416"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "[MỚI, CBS-126] Hành vi chỉnh điểm warp trực tiếp trên canvas và popover Warp mode (TIB-5325) liên quan KB-1067..KB-1069 nhưng chưa nạp vào context (ngoài CCR).",
+      "kb_refs": [
+        "artwork/layer-config-text#KB-1067",
+        "artwork/layer-config-text#KB-1068",
+        "artwork/layer-config-text#KB-1069"
       ]
     }
   ],
@@ -241,6 +282,15 @@
       "kb_refs": [
         "artwork/layer-config-text#KB-416"
       ]
+    },
+    {
+      "risk": "[CBS-126] Schema points và Mirror của Warp Text chỉ có rule QA (KB-1066, KB-1068, KB-1069: PROPOSED, không làm oracle) và change note dev (KB-1067: OBSERVED_CURRENT). Lượt chạy QA-3378 chỉ có tick [AI], không build, đo trước lần TIB-5325 re-open; popup Warp cũ có thể đã đổi sau Warp mode. Expected của record Testlane TC-TIB-4215 ghi y 'không đổi theo điểm vừa kéo', lệch với số đo; TC-TIB-4195 (TC-14) dựa trên giới hạn mirror mà change note dev nay ghi đã làm xong.",
+      "kb_refs": [
+        "artwork/layer-config-text#KB-1066",
+        "artwork/layer-config-text#KB-1067",
+        "artwork/layer-config-text#KB-1068",
+        "artwork/layer-config-text#KB-1069"
+      ]
     }
   ],
   "environment_differences": [],
@@ -248,8 +298,8 @@
     "observed_at": "2026-10-26"
   },
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-126"
   },
   "unknown_areas": [
     {
@@ -294,6 +344,34 @@
         "artwork/layer-config-text#KB-416"
       ],
       "oq_id": "OQ-artwork-187"
+    },
+    {
+      "question": "[MỚI, CBS-126] points trong payload warp_text có đúng là mảng phẳng 20 số nguyên toạ độ pixel tuyệt đối trong [0,width]×[0,height] với width=height=1000, và resize layer không đổi points/width/height (rule QA FACT-042)? Change note dev chỉ nói payload không đổi và vùng 1000x1000.",
+      "why_it_matters": "KB-1066 PROPOSED; CHK-011 chưa có oracle.",
+      "kb_refs": [
+        "artwork/layer-config-text#KB-1066",
+        "artwork/layer-config-text#KB-1067"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-535"
+    },
+    {
+      "question": "[MỚI, CBS-126] Sau TIB-5325, dialog Advanced editor (popup Warp cũ) còn hai nút icon Mirror X/Y cạnh Free không, hay đã thay bằng lựa chọn Vertical/Horizontal của Warp mode (rule QA FACT-137)?",
+      "why_it_matters": "KB-1068 PROPOSED; CHK-012 chưa có oracle; locator của test case Mirror có thể đã lỗi thời.",
+      "kb_refs": [
+        "artwork/layer-config-text#KB-1068"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-536"
+    },
+    {
+      "question": "[MỚI, CBS-126] Khi mirror theo trục dọc (Mirror X cũ hoặc Warp mode Vertical), điểm đối xứng có nhận x' = 2×centerX − x và y bằng y của điểm vừa kéo, và bật mirror không tự lật điểm sẵn có (rule QA FACT-138)?",
+      "why_it_matters": "KB-1069 PROPOSED; CHK-013 chưa có oracle; expected của TC-TIB-4215 ghi 'y không đổi theo điểm vừa kéo' lệch số đo.",
+      "kb_refs": [
+        "artwork/layer-config-text#KB-1069"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-537"
     }
   ],
   "coverage_matrix": [
@@ -374,6 +452,41 @@
         "artwork/layer-config-text#KB-416"
       ],
       "basis": "shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-12-layer-config-text",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-126] payload render warp_text: dạng points, ảnh hưởng resize",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/layer-config-text#KB-1066",
+        "artwork/layer-config-text#KB-1067"
+      ]
+    },
+    {
+      "feature_id": "FEAT-12-layer-config-text",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-126] popup Warp cũ: nút Mirror X/Y, kéo điểm khi Mirror X bật (đo trước TIB-5325 re-open)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/layer-config-text#KB-1068",
+        "artwork/layer-config-text#KB-1069"
+      ]
+    },
+    {
+      "feature_id": "FEAT-12-layer-config-text",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-126] popover Warp mode Free/Vertical/Horizontal và kéo điểm trên canvas (TIB-5325)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/layer-config-text#KB-1067"
+      ]
     }
   ],
   "profile_conflicts": [

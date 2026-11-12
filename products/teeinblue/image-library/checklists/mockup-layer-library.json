@@ -2,7 +2,7 @@
   "feature_id": "FEAT-02-mockup-layer-library",
   "feature_key": "mockup-layer-library",
   "object_id": "image-library",
-  "checklist_version": "1",
+  "checklist_version": "2",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -1190,6 +1190,48 @@
       "coverage_status": "NOT_COVERED",
       "automation_suitability": "UNKNOWN",
       "oq_id": "OQ-image-library-023"
+    },
+    {
+      "check_id": "CHK-031",
+      "capability_id": "CAP-MCK-08",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-133] Xoá mockup library image đang được dùng ở mockup bị từ chối: 'The layer has already been used!'",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "mockup QA- đang được dùng ở mockup của product base QA- do người chạy tạo",
+        "environment": "staging",
+        "surface_or_device": "portal desktop — media library modal + network"
+      },
+      "precondition": "Product base QA- do người chạy tạo trên store của người chạy, có một mockup dùng mockup library image QA- X (được phép Save). Không dùng store/product base của người khác.",
+      "steps": [
+        "Mở media library, xoá đơn ảnh X (thùng rác → Remove)",
+        "Tick ảnh X (cùng ảnh QA- khác chưa dùng nếu muốn), bấm 'Delete' → Remove",
+        "Quan sát thông báo, network và lưới; mở lại product base QA-, kiểm mockup vẫn dùng X"
+      ],
+      "observation_point": "Thông báo hiển thị; response của request xoá/in-use; ảnh X trong lưới; mockup của product base",
+      "expected_result": "Ở cả xoá đơn và xoá hàng loạt, ảnh X không bị xoá: merchant thấy thông báo 'The layer has already been used!', ảnh X còn trong thư viện và mockup của product base vẫn dùng X.",
+      "observed_current_behavior": "Chưa quan sát với ảnh đang dùng (KB-062, KB-063 chỉ quan sát ảnh chưa dùng).",
+      "oracle": {
+        "kb_ids": [
+          "image-library/mockup-layer-library#KB-064"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "image-library/mockup-layer-library#KB-062",
+        "image-library/mockup-layer-library#KB-063"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "R-MCK-01"
+      ],
+      "priority": "P1",
+      "coverage_status": "NOT_COVERED",
+      "automation_suitability": "HYBRID",
+      "notes": "Trùng vùng CHK-026 (NONE, giữ nguyên vì supersede tắt và không sửa base). Đường xoá đơn không gọi in-use (KB-062): nếu ảnh X vẫn bị xoá ở đường này thì lệch STRONG = bug; liên quan OQ-image-library-017."
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1318,9 +1360,10 @@
         "CHK-025",
         "CHK-026",
         "CHK-028",
-        "CHK-030"
+        "CHK-030",
+        "CHK-031"
       ],
-      "max_oracle": "BASELINE",
+      "max_oracle": "STRONG",
       "gaps": [
         "xoá đơn không in-use, nghi defect (CHK-024)",
         "mockup đã gán (CHK-026)",
@@ -1347,7 +1390,7 @@
   ],
   "excluded_dimensions": [],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-133"
   }
 }

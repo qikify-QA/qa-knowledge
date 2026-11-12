@@ -2,7 +2,7 @@
 
 File này được SINH TỰ ĐỘNG bởi `scripts/generate-manifest.mjs` từ `open-questions.md` của từng object (§5a) — KHÔNG sửa tay. Nội dung từng câu hỏi nằm ở file của object (link ở cột Object); thêm/sửa/resolve ở đó rồi chạy lại script.
 
-Tổng: 4044 open question đang mở trên 72 object (181 conflict · 2741 cần xác nhận · 1122 open issue).
+Tổng: 4161 open question đang mở trên 72 object (198 conflict · 2835 cần xác nhận · 1128 open issue).
 
 ## Duos B2B QA context
 
@@ -98,15 +98,15 @@ Tổng: 4044 open question đang mở trên 72 object (181 conflict · 2741 cầ
 
 | Object | Conflict | Cần xác nhận | Open issue | Tổng |
 |---|---:|---:|---:|---:|
-| [account-security](../products/teeinblue/account-security/open-questions.md) | 1 | 32 | 24 | 57 |
-| [artwork](../products/teeinblue/artwork/open-questions.md) | 25 | 346 | 79 | 450 |
-| [asset-category](../products/teeinblue/asset-category/open-questions.md) | 3 | 37 | 13 | 53 |
-| [campaign](../products/teeinblue/campaign/open-questions.md) | 0 | 71 | 23 | 94 |
+| [account-security](../products/teeinblue/account-security/open-questions.md) | 1 | 34 | 24 | 59 |
+| [artwork](../products/teeinblue/artwork/open-questions.md) | 40 | 423 | 85 | 548 |
+| [asset-category](../products/teeinblue/asset-category/open-questions.md) | 4 | 38 | 13 | 55 |
+| [campaign](../products/teeinblue/campaign/open-questions.md) | 0 | 72 | 23 | 95 |
 | [font](../products/teeinblue/font/open-questions.md) | 2 | 43 | 3 | 48 |
-| [global-option](../products/teeinblue/global-option/open-questions.md) | 5 | 53 | 16 | 74 |
-| [image-library](../products/teeinblue/image-library/open-questions.md) | 5 | 13 | 19 | 37 |
-| [open-api](../products/teeinblue/open-api/open-questions.md) | 1 | 46 | 9 | 56 |
-| [order](../products/teeinblue/order/open-questions.md) | 3 | 58 | 23 | 84 |
-| [product-base](../products/teeinblue/product-base/open-questions.md) | 2 | 90 | 19 | 111 |
+| [global-option](../products/teeinblue/global-option/open-questions.md) | 6 | 56 | 16 | 78 |
+| [image-library](../products/teeinblue/image-library/open-questions.md) | 5 | 14 | 19 | 38 |
+| [open-api](../products/teeinblue/open-api/open-questions.md) | 1 | 48 | 9 | 58 |
+| [order](../products/teeinblue/order/open-questions.md) | 3 | 61 | 23 | 87 |
+| [product-base](../products/teeinblue/product-base/open-questions.md) | 2 | 92 | 19 | 113 |
 | [sdk](../products/teeinblue/sdk/open-questions.md) | 10 | 166 | 59 | 235 |
-| [translation](../products/teeinblue/translation/open-questions.md) | 1 | 51 | 10 | 62 |
+| [translation](../products/teeinblue/translation/open-questions.md) | 1 | 53 | 10 | 64 |

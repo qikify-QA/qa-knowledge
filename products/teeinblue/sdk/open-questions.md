@@ -7,7 +7,7 @@
   "oq_id": "OQ-sdk-001",
   "type": "CONFLICT",
   "feature_id": "object-level (storefront-buyer-facing + product-page-settings-config)",
-  "summary": "SDK version thực sự đang được serve cho từng store (instance 609 / linh-explorer.myshopify.com vs instance 613 / linh-explorer-2.myshopify.com) trên campaign 2595 — 3 nguồn evidence mâu thuẫn nhau, UNRESOLVED. Trực tiếp implicate tính CURRENT của KB-004/KB-005/KB-007/KB-010/KB-011 (nhãn 'store1 = SDK v1') và của mọi capability/check phân biệt v1/v2 theo store. Tương ứng conflict_group CFL-004 trên các KB item (KB-004/KB-007/KB-010/KB-011 phía cũ; KB-037/KB-040 phía mới). Chỉ orchestrator + reviewer được quyết resolution; KHÔNG tự chọn phía, KHÔNG tự đánh dấu KB nào là stale, KHÔNG dùng nhãn v1/v2 theo store làm điều kiện rẽ nhánh chắc chắn cho store1 trước khi có resolution.",
+  "summary": "SDK version thực sự đang được serve cho từng store (instance 609 / store TIB_STORE_URL_1 vs instance 613 / store TIB_STORE_URL_2) trên campaign 2595 — 3 nguồn evidence mâu thuẫn nhau, UNRESOLVED. Trực tiếp implicate tính CURRENT của KB-004/KB-005/KB-007/KB-010/KB-011 (nhãn 'store1 = SDK v1') và của mọi capability/check phân biệt v1/v2 theo store. Tương ứng conflict_group CFL-004 trên các KB item (KB-004/KB-007/KB-010/KB-011 phía cũ; KB-037/KB-040 phía mới). Chỉ orchestrator + reviewer được quyết resolution; KHÔNG tự chọn phía, KHÔNG tự đánh dấu KB nào là stale, KHÔNG dùng nhãn v1/v2 theo store làm điều kiện rẽ nhánh chắc chắn cho store1 trước khi có resolution.",
   "side_a": "store1 (instance 609) chạy storefront SDK v1 (nested radiogroup ~10 clipart, lightbox mockup TĨNH kiểu PhotoSwipe, header x-sdk-version: 1.0.3, script tag app-v1.js, container class tee-campaign-v1); store2 (instance 613) chạy SDK v2 (grouped_clipart grid ~9 clipart, SVG mockup sống với id artwork-layer--layer-<n>, script tag app-v2.js, container class tee-campaign-v2). Quan sát trực tiếp storefront runtime của campaign 2595, 2026-09-12 — HIGH confidence TẠI THỜI ĐIỂM ghi nhận, phía cũ nhất.",
   "side_b": "GET /api/instances?trashed (portal, 2026-09-21) trả field sdk_version = 2 cho CẢ instance 609 và 613; instance.config object được ghi nhận giống hệt nhau giữa 2 instance trong sample này. LOW confidence — chỉ 1 sample full-body, không byte-diff độc lập.",
   "side_c": "Storefront runtime re-check 2026-09-21 trên CÙNG URL campaign 2595 đã dùng để lập side_a: store1 nay serve https://staging-sdk.teeinblue.com/shopify/app-v2.js (+ async.js?v=2) và container class 'tee-campaign tee-campaign-v2 tee-customization-wrapper' — ngược hẳn marker app-v1.js/tee-campaign-v1 của side_a; store2 không đổi (vẫn v2). Toàn bộ DOM personalization quan sát được (element id, field label, số clipart, giá, CSS custom property) nay byte-identical giữa 2 store, cross-check bằng 2 lượt script độc lập. HIGH confidence, mới nhất, hội tụ với side_b.",
@@ -342,7 +342,7 @@
   "oq_id": "OQ-sdk-029",
   "type": "NEEDS_CONFIRMATION",
   "feature_id": "product-page-settings-config",
-  "summary": "Gap: bien thien permission/role tren /product-page-settings hoan toan chua duoc quan sat -- chi 1 role (owner) duoc test — Chi role owner (Linh explorer, user_id 266) duoc test trong run nay -- khong co credential role khac (TIB_USER_A_*/TIB_USER_B_*) san co. Khong co evidence nao cho biet role thap hon co bi gioi han xem/sua control nao tren trang nay hay khong. Can credential role khac o lan chay sau truoc khi viet duoc test case PERMISSION that cho trang nay.",
+  "summary": "Gap: bien thien permission/role tren /product-page-settings hoan toan chua duoc quan sat -- chi 1 role (owner) duoc test — Chi role owner (explorer (TIB_STAGING_EMAIL), user_id <explorer>) duoc test trong run nay -- khong co credential role khac (TIB_USER_A_*/TIB_USER_B_*) san co. Khong co evidence nao cho biet role thap hon co bi gioi han xem/sua control nao tren trang nay hay khong. Can credential role khac o lan chay sau truoc khi viet duoc test case PERMISSION that cho trang nay.",
   "related": "CHK-023 (product-page-settings-config)"
 }
 ```
@@ -458,7 +458,7 @@
   "oq_id": "OQ-sdk-039",
   "type": "NEEDS_CONFIRMATION",
   "feature_id": "genai-personalization-runtime",
-  "summary": "[NEW, NEEDS_CONFIRMATION] Toàn bộ feature — hành vi có giữ nguyên trên guest session thật hay không (hiện chỉ staff-authenticated proxy) — TOÀN BỘ evidence của feature này là staff-authenticated PROXY cho buyer (account Linh explorer dùng Live Preview widget), KHÔNG PHẢI guest session thật — mọi rate-limit, session-boundary, hoặc UI khác biệt trên theme Shopify thật CHƯA được loại trừ. KHÔNG dùng làm oracle 100% cho hành vi buyer thật tới khi có test với guest session.",
+  "summary": "[NEW, NEEDS_CONFIRMATION] Toàn bộ feature — hành vi có giữ nguyên trên guest session thật hay không (hiện chỉ staff-authenticated proxy) — TOÀN BỘ evidence của feature này là staff-authenticated PROXY cho buyer (account explorer (TIB_STAGING_EMAIL) dùng Live Preview widget), KHÔNG PHẢI guest session thật — mọi rate-limit, session-boundary, hoặc UI khác biệt trên theme Shopify thật CHƯA được loại trừ. KHÔNG dùng làm oracle 100% cho hành vi buyer thật tới khi có test với guest session.",
   "related": "CHK-013 (genai-personalization-runtime)"
 }
 ```

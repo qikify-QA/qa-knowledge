@@ -12,7 +12,7 @@
   "stable_since_version": null,
   "actors": [
     {
-      "role": "owner (Linh explorer, sub=273)",
+      "role": "owner (explorer (TIB_STAGING_EMAIL), sub=<explorer>)",
       "permission_observed": "thêm item thành công vào category Color/Additional Option/Map Style qua nút Add new; upload file thật thành công vào Clipart/Vector qua dropzone; [MỚI] thêm font có sẵn thành công vào Font category (KB-031); upload ảnh vượt 64MP vẫn thành công (KB-033); upload file sai định dạng vào Clipart (.txt) hoặc Vector (.png) cho kết quả khác nhau (KB-032/KB-034, xem risks). KHÔNG có sample cross-tenant (BLOCKED hạ tầng).",
       "kb_refs": [
         "asset-category/asset-category-item-management#KB-011",
@@ -25,7 +25,7 @@
       ]
     },
     {
-      "role": "[MỚI] merchant/owner 'Linh explorer' (id=266, identity verify GET /api/user)",
+      "role": "[MỚI] merchant/owner explorer (TIB_STAGING_EMAIL) (id=<explorer>, identity verify GET /api/user)",
       "permission_observed": "Gọi trực tiếp POST /api/cliparts/svg (3x422, thiếu field 'file') — quan sát x-ratelimit-limit=4000 giữ nguyên qua 3 lần. Gọi trực tiếp POST /api/users/266/temporary-files/upload-url (3x422, thiếu field 'filename') — quan sát KHÔNG có bất kỳ header x-ratelimit-* nào, không bị 429/403.",
       "kb_refs": [
         "asset-category/_object-level#KB-035",
@@ -432,7 +432,7 @@
   ],
   "permissions": [
     {
-      "role": "owner (sub=273)",
+      "role": "owner (sub=<explorer>)",
       "note": "đầy đủ quyền thêm item cho các loại đã test (bao gồm Font qua KB-031); không có sample cross-role hoặc cross-tenant (insert vào category không thuộc store mình) - item-management::CHK-010 GIỮ BLOCKED DO HẠ TẦNG, KHÔNG có evidence.",
       "kb_refs": [
         "asset-category/asset-category-item-management#KB-011",
@@ -441,7 +441,7 @@
       ]
     },
     {
-      "role": "[MỚI] merchant/owner 'Linh explorer'",
+      "role": "[MỚI] merchant/owner explorer (TIB_STAGING_EMAIL)",
       "note": "Gọi trực tiếp 2 endpoint upload item (cliparts/svg, temporary-files/upload-url), chịu rate-limit khác nhau theo route (1 route CÓ limit riêng, 1 route KHÔNG) - KHÔNG có sample cross-role/cross-tenant cho phần rate-limit này.",
       "kb_refs": [
         "asset-category/_object-level#KB-035",
@@ -582,13 +582,13 @@
     "note": "Run này không tự quan sát. Ngày là ngày nạp CCR CBS-099; KB-640 có nguồn ngày 2026-09-23. Item của base v2 (CBS-078) giữ freshness của nguồn tương ứng: KB-560, KB-569 ngày 2026-10-14, KB-568 ngày 2026-10-29, lời dev ngày 2026-10-28 và 2026-10-29; item bootstrap giữ freshness của các đợt quan sát 2026-09."
   },
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-135"
   },
   "unknown_areas": [
     {
       "question": "insert_cliparts có bị chặn ở tầng server khi client gửi clipart_category_id không thuộc store của mình không?",
-      "why_it_matters": "[QUAN TRỌNG, VẪN MỞ - BLOCKED HẠ TẦNG, đợt quan sát 2026-09-14] item-management::CHK-010 KHÔNG có bất kỳ evidence nào trong các đợt quan sát đã có. permission classifier của công cụ thực thi chặn Agent-launch khi prompt nhắc tới account/store B (tương tự các check cross-tenant của object product-base) - đây là BLOCKED DO HẠ TẦNG, KHÔNG PHẢI bị bỏ quên hay giảm ưu tiên. Cần authority (PO/Dev) điều phối 1 đợt quan sát riêng (có account Linh Pham hoặc cơ chế test khác) để xử lý item này trước khi có thể kết luận an toàn/không an toàn cho cross-tenant permission."
+      "why_it_matters": "[QUAN TRỌNG, VẪN MỞ - BLOCKED HẠ TẦNG, đợt quan sát 2026-09-14] item-management::CHK-010 KHÔNG có bất kỳ evidence nào trong các đợt quan sát đã có. permission classifier của công cụ thực thi chặn Agent-launch khi prompt nhắc tới account/store B (tương tự các check cross-tenant của object product-base) - đây là BLOCKED DO HẠ TẦNG, KHÔNG PHẢI bị bỏ quên hay giảm ưu tiên. Cần authority (PO/Dev) điều phối 1 đợt quan sát riêng (có account user B (TIB_USER_B_*) hoặc cơ chế test khác) để xử lý item này trước khi có thể kết luận an toàn/không an toàn cho cross-tenant permission."
     },
     {
       "question": "Map Style item có field bắt buộc nào khác ngoài 'name' (mapbox style URL/JSON) được validate ở bước sau không?",
@@ -658,6 +658,18 @@
         "asset-category/asset-category-item-management#KB-640"
       ],
       "oq_id": "OQ-asset-category-043"
+    },
+    {
+      "question": "[MỚI, CBS-135] spec-hub rule api-tokens-asset-limits (2026-11-11): mỗi account tạo tối đa 1.000 clipart category, 4.000 clipart và 1.000 library image trong cửa sổ 24 giờ, dù từ portal, API hay bulk upload. Dev xác nhận ngưỡng mặc định và việc bulk upload zip ăn vào cùng bộ đếm (KB-642)?",
+      "why_it_matters": "KB-642 ở mức PROPOSED (S2 spec-hub), không làm oracle STRONG. Nếu bulk upload tính chung bộ đếm, một zip lớn có thể chạm daily limit và chặn upload lẻ trong cùng 24 giờ (liên quan OQ-asset-category-038). Cách tính cửa sổ vẫn thuộc conflict CFL-003 (OQ-asset-category-031); rule này không phân xử.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-642",
+        "asset-category/asset-category-item-management#KB-565"
+      ],
+      "oq_id": "OQ-asset-category-055"
     }
   ],
   "coverage_matrix": [
@@ -800,7 +812,7 @@
       "kb_refs": [
         "asset-category/asset-category-item-management#KB-017"
       ],
-      "note": "[QUAN TRỌNG] BLOCKED DO HẠ TẦNG (permission classifier của công cụ thực thi chặn Agent-launch nhắc account/store B) - KHÔNG PHẢI bị bỏ quên. Cần round riêng có account Linh Pham."
+      "note": "[QUAN TRỌNG] BLOCKED DO HẠ TẦNG (permission classifier của công cụ thực thi chặn Agent-launch nhắc account/store B) - KHÔNG PHẢI bị bỏ quên. Cần round riêng có account user B (TIB_USER_B_*)."
     },
     {
       "feature_id": "FEAT-03-asset-item-management",

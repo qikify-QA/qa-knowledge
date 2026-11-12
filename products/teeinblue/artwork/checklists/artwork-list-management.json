@@ -408,6 +408,154 @@
       "automation_suitability": "SUITABLE",
       "conflict_refs": [],
       "oq_id": "OQ-artwork-160"
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-107] Xoá artwork đang gắn campaign trên Artworks list bị chặn, portal yêu cầu gỡ khỏi mọi campaign trước",
+      "applicability": {
+        "role": "merchant-owner (staff có quyền manage artworks)",
+        "state": "artwork throwaway đang gắn vào một campaign throwaway qua product base",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /artworks → menu la-ellipsis-h → Delete artwork"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); chỉ dùng artwork/campaign throwaway dựng trên store explorer, không dùng artwork hay campaign thật.",
+      "steps": [
+        "Dựng artwork throwaway và gắn nó vào một campaign throwaway qua product base.",
+        "Trên /artworks mở menu của artwork đó, chọn Delete artwork, xác nhận Remove.",
+        "Ghi nguyên văn thông báo hiện ra và các nút đi kèm; reload /artworks, ghi artwork còn trong list hay không."
+      ],
+      "observation_point": "Thông báo khi xoá artwork đang gắn campaign; artwork còn tồn tại sau thao tác.",
+      "expected_result": "Artwork không bị xoá; portal yêu cầu gỡ artwork khỏi mọi campaign trước và có nút 'View campaigns list'.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-management#KB-1028"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/artwork-list-management#KB-047",
+        "artwork/artwork-list-management#KB-1031"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "mất dữ liệu nếu artwork đang dùng bị xoá"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-107] Xoá artwork có bản duplicate làm từ nó bị chặn và lỗi liệt kê tên các bản duplicate",
+      "applicability": {
+        "role": "merchant-owner (staff có quyền manage artworks)",
+        "state": "artwork throwaway có hai bản duplicate làm từ nó, không gắn campaign",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /artworks → Duplicate (la-copy) và Delete artwork"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); chỉ dùng artwork/campaign throwaway dựng trên store explorer, không dùng artwork hay campaign thật.",
+      "steps": [
+        "Dựng artwork throwaway A (không gắn campaign), duplicate A hai lần.",
+        "Xoá A trên /artworks, xác nhận Remove.",
+        "Ghi nguyên văn lỗi; reload /artworks, ghi A còn trong list hay không."
+      ],
+      "observation_point": "Lỗi khi xoá artwork có duplicate; tên các bản duplicate trong lỗi; A còn tồn tại.",
+      "expected_result": "Xoá A thất bại và lỗi liệt kê tên hai bản duplicate.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-management#KB-1028"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/artwork-list-management#KB-229"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "mất dữ liệu nếu artwork gốc của bản duplicate bị xoá"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-015",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-107] DELETE /api/artworks/{id} cho artwork đang gắn campaign: status code và body của response",
+      "applicability": {
+        "role": "merchant-owner (staff có quyền manage artworks)",
+        "state": "artwork throwaway đang gắn campaign throwaway qua product base",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "api DELETE /api/artworks/{id}"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); chỉ dùng artwork/campaign throwaway dựng trên store explorer, không dùng artwork hay campaign thật. Capture được response của request xoá.",
+      "steps": [
+        "Gọi DELETE /api/artworks/{id} cho artwork đang gắn campaign (hoặc capture request khi xoá trên portal).",
+        "Ghi status code, Content-Type và body (HTML hay JSON, có nêu lý do không), kèm build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Status code, Content-Type, body của response xoá bị chặn.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/artwork-list-management#KB-1028"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "QA đo 2026-09-07 nhận 403 trang HTML Laravel trần, spec-hub nói lỗi nêu lý do"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-506"
+    },
+    {
+      "check_id": "CHK-016",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-107] Xoá artwork không được dùng ở đâu thì artwork vào trash, không bị xoá hẳn",
+      "applicability": {
+        "role": "merchant-owner (staff có quyền manage artworks)",
+        "state": "artwork throwaway không gắn campaign/platform product, chưa dùng cho order, không có bản duplicate",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /artworks → Delete artwork; Trash"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); chỉ dùng artwork/campaign throwaway dựng trên store explorer, không dùng artwork hay campaign thật.",
+      "steps": [
+        "Dựng artwork throwaway thoả applicability.",
+        "Xoá artwork trên /artworks, xác nhận Remove.",
+        "Mở trash của portal, lọc loại Artwork, tìm artwork vừa xoá; ghi kết quả kèm build và ngày chạy."
+      ],
+      "observation_point": "Artwork biến khỏi Artworks list và có trong trash.",
+      "expected_result": "Artwork được chuyển vào trash, không bị xoá hẳn.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-management#KB-1031"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/artwork-list-management#KB-1028",
+        "artwork/artwork-list-management#KB-047"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "mất dữ liệu không khôi phục được nếu artwork bị xoá hẳn"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": []
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -451,6 +599,17 @@
         "CHK-012"
       ],
       "oracle": "NONE"
+    },
+    {
+      "feature_id": "FEAT-01-artwork-list-management",
+      "item": "[CBS-107] Xoá artwork bị chặn khi đang dùng; xoá vào trash",
+      "check_ids": [
+        "CHK-013",
+        "CHK-014",
+        "CHK-015",
+        "CHK-016"
+      ],
+      "oracle": "STRONG (KB-1028 po_dev_confirm spec-hub) cho CHK-013/014; STRONG (KB-1031) cho CHK-016; NONE cho CHK-015 (response API, OQ CONFLICT)"
     }
   ],
   "excluded_dimensions": [
@@ -464,7 +623,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-107"
   }
 }

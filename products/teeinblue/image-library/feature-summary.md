@@ -1,5 +1,5 @@
 # Object: Image Library (product: teeinblue) — Feature Summary
-**Published context version:** 2
+**Published context version:** 3
 
 - **Object:** hai thư viện ảnh dùng chung của merchant: **image layer library** (ảnh cho layer Static Image của artwork) và **mockup layer library** (ảnh mockup gán cho product base). Đây là hai tập dữ liệu riêng, category cũng riêng; chúng chỉ dùng chung cơ chế upload, polling trạng thái xử lý và dialog xác nhận (KB-005, KB-006, KB-008, KB-009).
 - **Không có trang Image Library độc lập:** sidebar và router của portal không có mục hay route nào cho thư viện ảnh (KB-001). Nút "TIB Library" trên danh sách Artworks là thư viện **artwork template** công khai, không thuộc object này (KB-002). Điểm vào thật (KB-003):
@@ -92,6 +92,7 @@
 7. **Xoá:**
    - Xoá một mockup gọi DELETE thẳng, không qua in-use check (KB-062).
    - Xoá hàng loạt gọi `in-use` trước (KB-063).
+   - Ảnh đang được dùng ở mockup của product base, campaign hoặc store product không xoá được: merchant thấy "The layer has already been used!". Đây là expected đã xác nhận; rule không phân biệt xoá một hay xoá nhiều (KB-064).
 8. **Không có UI đổi tên mockup** (KB-058).
 
 **Hành vi đáng chú ý, nghi là defect (chờ xác nhận):**
@@ -101,6 +102,6 @@
 - Tên category chỉ gồm khoảng trắng vẫn bật nút Create (KB-049).
 
 **Chưa cover:**
-- Chọn hoặc gán mockup vào product base rồi xoá mockup đang dùng (bị chặn vì không được lưu trên product base có sẵn).
+- Chưa quan sát thực tế việc xoá ảnh đang dùng (cần dựng product base riêng của người chạy để gán mockup); expected đã có ở KB-064.
 - Thư viện mockup rỗng hoàn toàn; phân trang quá trang 1.
 - Move không chọn category; retest đúng điều kiện 5 file raster cùng lúc.

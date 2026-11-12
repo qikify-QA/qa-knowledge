@@ -1,11 +1,11 @@
 # Object: Account & Security (product: teeinblue) — Feature Profile Summary
-**Published context version:** 3
+**Published context version:** 4
 
 - **Object:** login portal gồm Google login, trạng thái bảo mật staff, thao tác nhạy cảm, header acting-user, quyền ghi qua Hasura, webhook giá của Paddle. Không gồm quyền riêng của campaign (`campaign/campaign-security-permissions`).
 - **Quan sát:** staging, role `merchant-owner`, một account owner đang 2FA off. Explorer không chủ động ghi gì ngoài một lần login hợp lệ; các POST tự phát sau login chưa xác định, xem OQ-account-security-015.
-- **Knowledge:** 38 KB item: 15 `OBSERVED_CURRENT`/`LOW` từ quan sát; 20 `CONFIRMED_EXPECTED`/`MEDIUM` từ lời dev ở Jira, chưa được quan sát đối chiếu; 2 `OBSERVED_CURRENT`/`LOW` với status `KNOWN_DEFECT` theo lời dev (KB-025, KB-038); 1 `PROPOSED`/`LOW` (KB-031). 54 check: 33 `STRONG`, 12 `BASELINE`, 9 `NONE`. Hành vi quan sát được không phải expected requirement.
+- **Knowledge:** 40 KB item: 15 `OBSERVED_CURRENT`/`LOW` từ quan sát; 22 `CONFIRMED_EXPECTED`/`MEDIUM` (20 từ lời dev ở Jira, KB-039 và KB-040 từ rule spec-hub), chưa được quan sát đối chiếu; 2 `OBSERVED_CURRENT`/`LOW` với status `KNOWN_DEFECT` theo lời dev (KB-025, KB-038); 1 `PROPOSED`/`LOW` (KB-031). 57 check: 36 `STRONG`, 12 `BASELINE`, 9 `NONE`. Hành vi quan sát được không phải expected requirement.
 - **Chưa rõ ở mức object:** role áp dụng của các item role unspecified (OQ-account-security-054), hành vi đã lên production chưa (OQ-account-security-055), ý định sản phẩm của các hành vi rủi ro cao (OQ-account-security-056).
-- **Open question:** 57 mục ở `open-questions.md`.
+- **Open question:** 59 mục ở `open-questions.md`.
 
 ---
 
@@ -18,8 +18,10 @@
 2. `/login?staff=true`: form email và password, widget Cloudflare, link Forgot password, Continue with Google, Shopify owner, Register, Re-send verification.
 3. Login hợp lệ: `POST /api/login` 200, URL về `/`, không có bước 2FA với account 2FA off.
 
+**Theo rule spec-hub (KB-039), chưa quan sát:** 2FA tuỳ chọn theo từng staff, không có setting ép cho cả organization. Khi bật, password đúng chỉ mở challenge 2FA có hiệu lực 5 phút; sai 5 mã thì phải làm lại từ đầu. Ý đồ sản phẩm chờ PO (OQ-account-security-058).
+
 **Chưa quan sát:** nhánh lỗi, social login flow (lời dev ở `social-login`), account bật 2FA và `/login/two-factor`, các trang `/forgot-password`, `/register`, `/resend-verification`, cơ chế cookie session.
-**Checklist:** 9 check `BASELINE`. **KB:** KB-001 đến KB-009.
+**Checklist:** 11 check, 9 `BASELINE`, 2 `STRONG` (CHK-010, CHK-011 cho account bật 2FA). **KB:** KB-001 đến KB-009, KB-039.
 
 ## `confirm-password-dialog` — Dialog xác nhận password (chưa quan sát được)
 
@@ -31,9 +33,11 @@ Dialog chưa quan sát được. Các quy tắc dưới đây là lời dev, ch�
 3. Dùng ở các nhóm action Staff, Role, Sessions, 2FA, API token (chỉ owner).
 4. Hidden username là email của staff đang đăng nhập, không gửi lên API.
 
+**Theo rule spec-hub (KB-040):** xoá role không yêu cầu xác nhận password, khác tạo và sửa role. Ý đồ sản phẩm chờ PO (OQ-account-security-059).
+
 **Đã quan sát:** mở 12 trang/form về staff, role, profile, Integrations và API Keys không làm dialog hiện ra. Chỉ mở, không điền, không submit (KB-010 đến KB-012). Các item này không làm oracle.
 **Chưa biết:** route và bước hiện dialog của từng action (OQ-account-security-016, OQ-account-security-035), mốc và phạm vi của 15 phút (OQ-account-security-033), request xác nhận (OQ-account-security-034).
-**Checklist:** 13 check, 10 `STRONG`, 3 `NONE`. **KB:** KB-010 đến KB-012, KB-016 đến KB-020.
+**Checklist:** 14 check, 11 `STRONG`, 3 `NONE`. **KB:** KB-010 đến KB-012, KB-016 đến KB-020, KB-040.
 
 ## `staff-security-status` — Xem cột Security của staff trên danh sách staff
 

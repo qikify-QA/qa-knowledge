@@ -11,7 +11,7 @@
   "stable_since_version": null,
   "actors": [
     {
-      "role": "store owner / staff (sub=273, user_id=266, plan Blue (Test))",
+      "role": "store owner / staff (sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
       "permission_observed": "Toàn quyền thêm/chọn/xoá/nhân bản layer trong editor",
       "kb_refs": [
         "artwork/editor-layer-workspace#KB-001",
@@ -20,7 +20,7 @@
       ]
     },
     {
-      "role": "merchant-owner (store owner/staff, instance 520 nprice1)",
+      "role": "merchant-owner (store owner/staff, instance 520 store không thuộc explorer)",
       "permission_observed": "Chọn Group/layer con trong layer panel, dùng quick toolbar (Align), kéo Group, toggle mắt layer, Save (PUT /api/artworks/{id} trả 200).",
       "kb_refs": [
         "artwork/editor-layer-workspace#KB-169",
@@ -355,6 +355,15 @@
       "kb_refs": [
         "artwork/editor-layer-workspace#KB-170"
       ]
+    },
+    {
+      "statement": "[MỚI, CBS-143] Theo change note dev TIB-5446 và lượt test staging: convert static-photo chưa có ảnh sang Photo Upload qua popup Convert to another layer bị chặn, toast 'Add an image to this layer before converting it.', layer giữ nguyên.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "artwork/editor-layer-workspace#KB-1022"
+      ],
+      "observed_count": null
     }
   ],
   "observed_validations": [],
@@ -601,6 +610,24 @@
       ],
       "conflict_group": "CONF-CBS-092-01",
       "status": "UNRESOLVED"
+    },
+    {
+      "risk": "[MỚI, CBS-127] KB-1009, KB-1011, KB-1012, KB-1013, KB-1014, KB-1015, KB-1016 là rule QA (PROPOSED), chưa rõ đã ship; viết expected theo rule có thể sai. Vị trí Replace của image-family (so với KB-002) và danh sách 28 type (so với KB-001) chưa nạp, chờ operator quyết; layer type 'shape' chưa rõ (OQ-artwork-491).",
+      "kb_refs": [
+        "artwork/editor-layer-workspace#KB-1009",
+        "artwork/editor-layer-workspace#KB-1011",
+        "artwork/editor-layer-workspace#KB-1012",
+        "artwork/editor-layer-workspace#KB-1013",
+        "artwork/editor-layer-workspace#KB-1014",
+        "artwork/editor-layer-workspace#KB-1015",
+        "artwork/editor-layer-workspace#KB-1016"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-143] KB-1022 theo change note dev (OBSERVED_CURRENT); chưa thấy nút Convert to Photo Upload riêng.",
+      "kb_refs": [
+        "artwork/editor-layer-workspace#KB-1022"
+      ]
     }
   ],
   "environment_differences": [],
@@ -610,8 +637,8 @@
     "delta_observed_at": "2026-10-30"
   },
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-143"
   },
   "unknown_areas": [
     {
@@ -726,6 +753,101 @@
       "source": "S0 CBS-092__CLAIM-24 (discarded_by_normalizer)",
       "draft_id": "OQ-artwork-290",
       "oq_id": "OQ-artwork-290"
+    },
+    {
+      "question": "[MỚI, CBS-127] Convert layer type tự áp dụng vào draft local, server giữ bản cũ tới khi Save (KB-1009): Dev xác nhận đây là hành vi chủ ý đã ship?",
+      "why_it_matters": "Expected của check convert và của việc đọc type qua GraphQL ngay sau convert chưa xác nhận; KB-1009 là PROPOSED.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/editor-layer-workspace#KB-1009"
+      ],
+      "oq_id": "OQ-artwork-483"
+    },
+    {
+      "question": "[MỚI, CBS-127] Layer vector-family không có Replace ở row lẫn panel la-pen (KB-1011): PO xác nhận đây là thiết kế?",
+      "why_it_matters": "'Đúng thiết kế' mới là lời QA chốt; vị trí Replace của image-family (row hay panel/menu) chưa nạp vì có thể mâu thuẫn KB-002.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/editor-layer-workspace#KB-1011"
+      ],
+      "oq_id": "OQ-artwork-485"
+    },
+    {
+      "question": "[MỚI, CBS-127] Thumbnail layer vector dùng .svg gốc (KB-1012): Dev xác nhận là thiết kế?",
+      "why_it_matters": "Chỉ là hành vi quan sát QA chấp nhận, bug draft đã rút; KB-1012 là PROPOSED.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/editor-layer-workspace#KB-1012"
+      ],
+      "oq_id": "OQ-artwork-486"
+    },
+    {
+      "question": "[MỚI, CBS-127] SVG thiếu viewBox không upload được, API 500 + dropzone [object Object] (KB-1013): Dev xác nhận còn hiện hành và expected đúng là gì?",
+      "why_it_matters": "Rule tự ghi phản hồi hiện tại là bug Low; expected (từ chối với message nào) chưa có.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/editor-layer-workspace#KB-1013"
+      ],
+      "oq_id": "OQ-artwork-487"
+    },
+    {
+      "question": "[MỚI, CBS-127] Layer vector chỉ thêm từ storage TIB (KB-1014): Dev xác nhận?",
+      "why_it_matters": "Nguồn chỉ là 'user chốt'; KB-1014 là PROPOSED.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/editor-layer-workspace#KB-1014"
+      ],
+      "oq_id": "OQ-artwork-488"
+    },
+    {
+      "question": "[MỚI, CBS-127] 'shape text' = Paragraph, không có 'clipart frame' (KB-1015): Dev xác nhận?",
+      "why_it_matters": "Câu hỏi BR-8 của dev được QA trả lời, chưa có Dev/PO xác nhận; KB-1015 là PROPOSED.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/editor-layer-workspace#KB-1015"
+      ],
+      "oq_id": "OQ-artwork-489"
+    },
+    {
+      "question": "[MỚI, CBS-127] Undo/Redo trên toolbar làm mất focus còn Cmd/Ctrl+Z thì không (KB-1016): chủ ý hay lỗi?",
+      "why_it_matters": "Expected của check Undo phụ thuộc overlay chưa xác nhận; KB-1016 là PROPOSED.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/editor-layer-workspace#KB-1016"
+      ],
+      "oq_id": "OQ-artwork-490"
+    },
+    {
+      "question": "[MỚI, CBS-143] Nút 'Convert to Photo Upload' riêng trên layer (KB-1022) hiện ở đâu / với layer nào — lượt test chỉ thấy popup Convert to another layer?",
+      "why_it_matters": "CHK-033 chỉ phủ đường popup.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "artwork/editor-layer-workspace#KB-1022"
+      ],
+      "oq_id": "OQ-artwork-499"
+    },
+    {
+      "question": "[MỚI, CBS-143] Convert Artwork 1.0 → 2.0 với text layer có background_image (CBS-143 CLAIM-09, chưa nạp KB): layer tạo ra phải là static-photo có url (AC3, description TIB-5446) hay clipart-category có url (Dev 2026-11-06, đọc code 2026-10-31)? PO quyết AC3; canon chưa có feature cho convert 1.0 → 2.0.",
+      "why_it_matters": "Chờ quyết định nghiệp vụ; chưa có check.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "kb_refs": [],
+      "oq_id": "OQ-artwork-502"
     }
   ],
   "coverage_matrix": [
@@ -890,6 +1012,36 @@
         "artwork/editor-layer-workspace#KB-908"
       ],
       "basis": "statement_limits của KB-908: Artwork 1.0 ghi \"Share with another layer\" chỉ được ghi nhận"
+    },
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-127] popup Convert layer hiện type hiện tại ở dòng FROM X TO Y; convert tự áp dụng và; layer vector-family không có nút Replace ở layer row lẫn panel la-pen; thumbnail layer vector trong layer panel là file .svg gốc, không có biến thể _th; SVG thiếu viewBox/kích thước không upload được (API 500, dropzone hiện [object O; layer vector chỉ được thêm vào editor từ storage của TIB; 'shape text' là layer Paragraph, 'clipart frame' không có trong popup Select a l; nút Undo/Redo trên toolbar làm layer đang chọn mất focus, phím tắt Cmd/Ctrl+Z th",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/editor-layer-workspace#KB-1009",
+        "artwork/editor-layer-workspace#KB-1011",
+        "artwork/editor-layer-workspace#KB-1012",
+        "artwork/editor-layer-workspace#KB-1013",
+        "artwork/editor-layer-workspace#KB-1014",
+        "artwork/editor-layer-workspace#KB-1015",
+        "artwork/editor-layer-workspace#KB-1016"
+      ],
+      "basis": "rule QA, chưa có record Testlane PASS"
+    },
+    {
+      "feature_id": "FEAT-03-editor-layer-workspace",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-143] convert static-photo chưa có ảnh sang Photo Upload",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/editor-layer-workspace#KB-1022"
+      ],
+      "basis": "change note dev + lượt test staging qua popup"
     }
   ],
   "profile_conflicts": [

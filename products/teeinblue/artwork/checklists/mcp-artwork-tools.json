@@ -1,0 +1,346 @@
+{
+  "feature_id": "FEAT-33-mcp-artwork-tools",
+  "feature_key": "mcp-artwork-tools",
+  "object_id": "artwork",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "[CBS-120] import-artwork-json-tool: gọi với definition vượt cap mỗi lần gọi (21 clipart category, 21 global option, category 51 item) rồi ghi kết quả",
+      "applicability": {
+        "role": "merchant-owner (qua token MCP)",
+        "state": "build có TIB-5486; definition hợp lệ trừ phần vượt cap",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP Artwork server"
+      },
+      "precondition": "Build staging có TIB-5486 (tool có trong danh sách MCP). Fixture tự dựng trên account/store test của explorer ở staging qua token MCP của explorer (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "steps": [
+        "Gọi import-artwork-json-tool với definition có đúng 20 clipart category và 20 global option inline (mỗi category ≤ 50 item); ghi response.",
+        "Lặp lại với 21 clipart category; ghi response và đếm category/artwork mới của account.",
+        "Lặp lại với 21 global option inline; ghi response và đếm record mới.",
+        "Lặp lại với một category 51 item; và với một category có số item đẩy tổng vượt cap clipart của category; ghi response, build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Response của tool (lỗi/thành công, message); số artwork, clipart category, global option mới của account sau mỗi lần gọi.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/mcp-artwork-tools#KB-1003",
+        "asset-category/asset-category-item-management#KB-561"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Tool chưa ship; số cap là cấu hình trong code."
+      ],
+      "priority": "P2",
+      "automation_suitability": "AUTOMATABLE",
+      "oq_id": "OQ-artwork-475"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "[CBS-120] import-artwork-json-tool: hết quota clipart_category / clipart trong ngày rồi ghi kết quả; global_option không bị quota ngày",
+      "applicability": {
+        "role": "merchant-owner (qua token MCP)",
+        "state": "merchant test đã hạ giới hạn quota ngày",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP Artwork server"
+      },
+      "precondition": "Build staging có TIB-5486. Merchant test của explorer có cột users.clipart_category_max_attempts hoặc users.clipart_max_attempts được hạ (ví dụ =1) — cách set theo Dev TIB-5486 comment 55629, cần quyền sửa DB staging; ghi lại giá trị cũ để trả lại. Ghi chú: chưa biết bộ đếm chung hay riêng với REST, nên không gọi REST tạo category/clipart cùng account trong 24h trước khi chạy. Fixture tự dựng trên account/store test của explorer ở staging qua token MCP của explorer (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "steps": [
+        "Với clipart_category_max_attempts = 1, import definition có 2 clipart category inline; ghi response và số category mới.",
+        "Với clipart_max_attempts nhỏ, import definition có số item vượt quota còn lại; ghi response và số record mới.",
+        "Import nhiều lần definition chỉ có global option inline (≤ 20 mỗi lần); ghi có bị chặn theo ngày không.",
+        "Trả cột giới hạn về giá trị cũ; ghi build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Response của tool (rate-limit message hay thành công); số record mới; giá trị cột giới hạn trước/sau.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/mcp-artwork-tools#KB-1004",
+        "asset-category/_object-level#KB-035",
+        "asset-category/_object-level#KB-036"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Tool chưa ship; bộ đếm có thể dùng chung với REST."
+      ],
+      "priority": "P2",
+      "automation_suitability": "AUTOMATABLE",
+      "oq_id": "OQ-artwork-476"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "[CBS-120] source của clipart category tạo qua import-artwork-json-tool và qua create-clipart-category-tool",
+      "applicability": {
+        "role": "merchant-owner (qua token MCP)",
+        "state": "build có TIB-5486; 2 category mới tạo bằng 2 đường",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP Artwork server"
+      },
+      "precondition": "Build staging có TIB-5486; có cách đọc cột source của clipart_categories (DB staging hoặc nơi Dev chỉ ra). Fixture tự dựng trên account/store test của explorer ở staging qua token MCP của explorer (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "steps": [
+        "Tạo 1 clipart category bằng create-clipart-category-tool; ghi id và response (có field source không).",
+        "Tạo 1 clipart category inline bằng import-artwork-json-tool; ghi id.",
+        "Đọc source của hai category ở nơi đọc được (ghi rõ nơi đọc); ghi build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Giá trị source của hai category và nơi đọc giá trị đó.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/mcp-artwork-tools#KB-1005"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Tool chưa ship; nơi đọc source chưa rõ."
+      ],
+      "priority": "P3",
+      "automation_suitability": "AUTOMATABLE",
+      "oq_id": "OQ-artwork-478"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-143] MCP: artwork có layer clipart-category / group-clipart-categories No personalization không có ảnh bị chặn",
+      "applicability": {
+        "role": "merchant-owner (store owner / staff) — account explore, store explorer",
+        "state": "artwork gửi qua MCP có layer clipart-category / group-clipart-categories No personalization không ảnh; đối chứng static-photo và photo No personalization không ảnh",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "api (MCP Artwork server, token MCP của store explorer)"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway dựng trên store explorer, không dùng artwork/campaign/store nêu trong CCR. Trạng thái layer không ảnh: thêm layer Photo Upload không ảnh mặc định rồi convert sang Static Image (chưa Save), hoặc đổi Personalization sang No personalization; editor không có thao tác xoá ảnh khỏi Static Image.",
+      "steps": [
+        "Dùng tool MCP tạo/cập nhật artwork trên store explorer với layer clipart-category No personalization không ảnh.",
+        "Lặp với group-clipart-categories, rồi với static-photo và photo No personalization không ảnh.",
+        "Ghi response, tên tool, build và ngày chạy."
+      ],
+      "observation_point": "Response lỗi / thành công của tool MCP theo từng loại layer",
+      "expected_result": "Baseline theo change note dev TIB-5446 (không phải expected đã chốt): MCP từ chối artwork có layer clipart-category / group-clipart-categories No personalization không ảnh. Static-photo và photo No personalization: chỉ ghi kết quả (chưa có nguồn).",
+      "oracle": {
+        "kb_ids": [
+          "artwork/mcp-artwork-tools#KB-1023"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/mcp-artwork-tools#KB-1023",
+        "artwork/artwork-save-persist#KB-1019"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Phạm vi kiểm tra của MCP với static-photo / photo chưa rõ."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-500"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "STATE",
+      "layer": "api",
+      "title": "[CBS-122] archive-artwork-tool / get-artwork-tool: ghi giá trị status của artwork Active và Archived",
+      "applicability": {
+        "role": "merchant-owner (qua token MCP)",
+        "state": "artwork Artwork 2.0 throwaway trên store explorer, Active rồi archive",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP Artwork server"
+      },
+      "precondition": "Build staging có TIB-5488 hoặc build hiện hành (ghi rõ). Fixture tự dựng trên account/store test của explorer ở staging qua token MCP của explorer (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "steps": [
+        "Tạo một artwork throwaway, gọi get-artwork-tool; ghi status.",
+        "Gọi archive-artwork-tool trên artwork đó; ghi response.",
+        "Gọi get-artwork-tool lại; ghi status, build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Field status trong response của get-artwork-tool trước và sau archive; response của archive-artwork-tool.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/mcp-artwork-tools#KB-1052",
+        "artwork/artwork-list-management#KB-047"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Giá trị 1 = Archived chỉ có ở lượt đo QA; TIB-5488 chưa ship."
+      ],
+      "priority": "P3",
+      "automation_suitability": "AUTOMATABLE",
+      "oq_id": "OQ-artwork-524"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "STATE",
+      "layer": "api",
+      "title": "[CBS-122] update-artwork-tool trên artwork Archived và Active: ghi status trước và sau update",
+      "applicability": {
+        "role": "merchant-owner (qua token MCP)",
+        "state": "artwork throwaway đã archive (và một artwork Active đối chứng)",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP Artwork server"
+      },
+      "precondition": "Build staging ghi rõ có hay không có TIB-5488. Fixture tự dựng trên account/store test của explorer ở staging qua token MCP của explorer (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "steps": [
+        "Archive artwork throwaway; get-artwork-tool ghi status.",
+        "Gọi update-artwork-tool đổi name; get-artwork-tool ghi status sau update.",
+        "Lặp lại trên một artwork Active.",
+        "Ghi build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Status trước và sau update-artwork-tool; artwork có hiện lại trong danh sách Active trên portal không.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/mcp-artwork-tools#KB-1053",
+        "artwork/mcp-artwork-tools#KB-1052"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hành vi chỉ theo change note dev của ticket chưa ship."
+      ],
+      "priority": "P2",
+      "automation_suitability": "AUTOMATABLE",
+      "oq_id": "OQ-artwork-525"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-122] update-artwork-tool trên artwork Artwork 1.0 bị từ chối, message trỏ tới bulk-convert-artworks-tool; sửa artwork 2.0 vẫn được",
+      "applicability": {
+        "role": "merchant-owner (qua token MCP)",
+        "state": "artwork Artwork 1.0 (schema_version 1) throwaway và một artwork 2.0 đối chứng",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP Artwork server"
+      },
+      "precondition": "Build staging có TIB-5572. Artwork 1.0 là bản copy throwaway trên store explorer. Fixture tự dựng trên account/store test của explorer ở staging qua token MCP của explorer (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "steps": [
+        "Gọi update-artwork-tool đổi name trên artwork 1.0; ghi response đầy đủ (mã lỗi, message).",
+        "Gọi get-artwork-tool trên artwork 1.0; ghi schema_version và name có đổi không.",
+        "Gọi update-artwork-tool tương tự trên artwork 2.0; ghi response.",
+        "Ghi build và ngày chạy."
+      ],
+      "observation_point": "Response lỗi/thành công, mã lỗi và message của update-artwork-tool; artwork 1.0 có bị ghi không.",
+      "expected_result": "Baseline theo change note dev TIB-5572 (không phải expected đã chốt): update-artwork-tool từ chối artwork 1.0 với message trỏ tới bulk-convert-artworks-tool; sửa artwork 2.0 không bị ảnh hưởng. Mã lỗi (artwork.schema_version.not_2 theo rule QA) và việc message nhắc convert tay trong portal: chỉ ghi kết quả.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/mcp-artwork-tools#KB-1054"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/mcp-artwork-tools#KB-1054",
+        "artwork/mcp-artwork-tools#KB-1055"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mã lỗi chỉ có ở rule QA."
+      ],
+      "priority": "P2",
+      "automation_suitability": "AUTOMATABLE",
+      "oq_id": "OQ-artwork-526"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "STATE",
+      "layer": "api",
+      "title": "[CBS-108] Dựng fixture convert 1.0 → 2.0: sau khi sửa field qua API, đọc lại customization_type của layer linked nguồn date rồi mới dry_run bulk-convert-artworks-tool",
+      "applicability": {
+        "role": "merchant-owner (qua token MCP)",
+        "state": "artwork Artwork 1.0 throwaway có layer date và một layer linked (Share with another layer) lấy nguồn từ layer date",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "REST PUT artwork + GraphQL đọc artwork + MCP Artwork server"
+      },
+      "precondition": "Build staging có TIB-5572. Fixture tự dựng trên account/store test của explorer ở staging qua token của explorer (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "steps": [
+        "Đọc layer linked qua GraphQL; ghi customization_type và nguồn link.",
+        "Sửa một field của layer linked qua API (vd đổi font); đọc lại layer qua GraphQL ngay sau đó; ghi customization_type và design so với layer nguồn.",
+        "Gọi bulk-convert-artworks-tool với dry_run (mặc định) cho artwork đó; ghi kết quả (would-convert / has-dropped-layers và reason).",
+        "Lặp lại bước 3 trên một bản fixture không sửa field (linked + nguồn date còn nguyên) để đối chứng; ghi build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "customization_type của layer trước và sau khi sửa field; kết quả dry_run của hai bản fixture.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/mcp-artwork-tools#KB-1079",
+        "artwork/mcp-artwork-tools#KB-1054",
+        "artwork/layer-duplicate-link-copy#KB-1040"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Cơ chế đổi customization_type chỉ có ở rule QA, chưa tái hiện có chủ đích; Dev chưa nói trường hợp linked nguồn date nhưng khác design nguồn."
+      ],
+      "priority": "P3",
+      "automation_suitability": "AUTOMATABLE",
+      "oq_id": "OQ-artwork-546"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-33-mcp-artwork-tools",
+      "capability": "[CBS-143] Kiểm tra artwork của MCP (KB-1023)",
+      "checks": [
+        "CHK-004"
+      ],
+      "covered": "BASELINE"
+    },
+    {
+      "feature_id": "FEAT-33-mcp-artwork-tools",
+      "capability": "[CBS-122] status artwork qua MCP và update trên artwork Archived (KB-1052, KB-1053)",
+      "checks": [
+        "CHK-005",
+        "CHK-006"
+      ],
+      "covered": "NONE"
+    },
+    {
+      "feature_id": "FEAT-33-mcp-artwork-tools",
+      "capability": "[CBS-122] guard Artwork 1.0 của update-artwork-tool (KB-1054, KB-1055)",
+      "checks": [
+        "CHK-007"
+      ],
+      "covered": "BASELINE"
+    },
+    {
+      "feature_id": "FEAT-33-mcp-artwork-tools",
+      "capability": "[CBS-108] dựng fixture convert 1.0 → 2.0 và dry_run của bulk-convert-artworks-tool với layer linked nguồn date (KB-1079)",
+      "checks": [
+        "CHK-008"
+      ],
+      "covered": "NONE"
+    }
+  ],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-108"
+  }
+}

@@ -69,7 +69,8 @@
         "account-security/portal-login-paths#KB-005",
         "account-security/portal-login-paths#KB-007",
         "account-security/portal-login-paths#KB-008",
-        "account-security/portal-login-paths#KB-009"
+        "account-security/portal-login-paths#KB-009",
+        "account-security/portal-login-paths#KB-039"
       ]
     },
     {
@@ -108,9 +109,36 @@
       "kb_refs": [
         "account-security/portal-login-paths#KB-009"
       ]
+    },
+    {
+      "from": "Staff đã bật 2FA, chưa có session, tại /login?staff=true",
+      "to": "Challenge 2FA mở, có hiệu lực 5 phút; chưa vào portal",
+      "trigger": "Nhập email và password đúng",
+      "condition": "Theo spec-hub rule login-two-factor-optional, chưa quan sát trên staging. Route và giao diện của bước 2FA chưa biết.",
+      "kb_refs": [
+        "account-security/portal-login-paths#KB-039"
+      ]
+    },
+    {
+      "from": "Challenge 2FA đang mở",
+      "to": "Challenge kết thúc, phải đăng nhập lại từ password",
+      "trigger": "Nhập sai mã 2FA lần thứ 5",
+      "condition": "Theo spec-hub rule login-two-factor-optional, chưa quan sát trên staging.",
+      "kb_refs": [
+        "account-security/portal-login-paths#KB-039"
+      ]
     }
   ],
-  "confirmed_rules": [],
+  "confirmed_rules": [
+    {
+      "statement": "Theo spec-hub rule login-two-factor-optional (2026-11-12), 2FA là tuỳ chọn cho từng staff, không có setting ép 2FA cho cả organization. Khi staff bật 2FA, password đúng chỉ mở một challenge 2FA có hiệu lực 5 phút; sai 5 mã thì challenge kết thúc và phải làm lại từ đầu.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "account-security/portal-login-paths#KB-039"
+      ]
+    }
+  ],
   "observed_behavior": [
     {
       "statement": "Mở /campaigns khi chưa có session: URL cuối là /login; trong cùng cửa sổ thao tác, GET /api/staff trả 401 với body {\"message\":\"Unauthenticated.\"}. Một lần quan sát, chưa thử route khác.",
@@ -311,6 +339,13 @@
         "account-security/portal-login-paths#KB-004",
         "account-security/portal-login-paths#KB-008"
       ]
+    },
+    {
+      "description": "KB-039 là rule spec-hub đọc từ code, chưa có người review và luồng account bật 2FA chưa được quan sát. Check dựa trên KB-039 cần một account staff đã bật 2FA; không bật 2FA trên account explorer chỉ để chạy check.",
+      "kb_refs": [
+        "account-security/portal-login-paths#KB-039",
+        "account-security/portal-login-paths#KB-009"
+      ]
     }
   ],
   "environment_differences": [],
@@ -334,7 +369,8 @@
       "level": "feature",
       "oq_type": "OPEN_ISSUE",
       "kb_refs": [
-        "account-security/portal-login-paths#KB-009"
+        "account-security/portal-login-paths#KB-009",
+        "account-security/portal-login-paths#KB-039"
       ],
       "oq_id": "OQ-account-security-002"
     },
@@ -418,11 +454,22 @@
       "oq_type": "OPEN_ISSUE",
       "kb_refs": [],
       "oq_id": "OQ-account-security-030"
+    },
+    {
+      "question": "Đúng ý đồ sản phẩm là 2FA chỉ tuỳ chọn theo từng staff, owner không ép được 2FA cho cả organization, và khi bật thì challenge sau password có hiệu lực 5 phút, sai 5 mã phải làm lại như KB-039? Spec-hub đang treo câu hỏi cho PO là owner có nên ép được 2FA cho mọi staff không.",
+      "why_it_matters": "KB-039 chạm kiểm soát truy cập (P1) và là oracle STRONG của CHK-010, CHK-011; nguồn là rule spec-hub mô tả code hiện tại, chưa có người review. Nếu PO đổi ý đồ thì hai check đổi expected.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "account-security/portal-login-paths#KB-039",
+        "account-security/portal-login-paths#KB-009"
+      ],
+      "oq_id": "OQ-account-security-058"
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-137"
   },
   "coverage_matrix": [
     {

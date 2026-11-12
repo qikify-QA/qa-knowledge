@@ -2,7 +2,7 @@
   {
     "kb_id": "KB-001",
     "topic": "[MERGE] Storefront password gate: (1) chặn route-agnostic khi KHÔNG có credential (giữ nguyên từ v1/2026-09-12) VÀ (2) được vượt qua khi CÓ credential hợp lệ (mới, 2026-09-12) — 2 fact bổ sung nhau theo điều kiện có/không credential, không phải fact mới phủ định fact cũ",
-    "statement": "(1) KHÔNG có credential (quan sát 2026-09-12, giữ nguyên nguyên văn từ quan sát gốc): Khi truy cập storefront linh-explorer.myshopify.com (guest, không login) ở shop root VÀ 2 URL sản phẩm đoán cho campaign 2595 (published) và platform-product 531 (unpublished), CẢ 3 lần đều redirect ngay sang '/password' với UI Shopify password-gate giống hệt nhau, TRƯỚC KHI Shopify resolve route/product state — không phân biệt được published/unpublished khi CHƯA có credential. Không có credential storefront password nào được cấp trong run đó. (2) CÓ credential hợp lệ (quan sát 2026-09-12, biến môi trường TIB_STORE_PASSWORD): Khi truy cập storefront linh-explorer.myshopify.com và linh-explorer-2.myshopify.com (guest, không login) với TIB_STORE_PASSWORD hợp lệ, gate '/password' được vượt qua NGAY LẦN THỬ ĐẦU TIÊN cho cả 2 store (redirect 302 về '/', sau đó điều hướng lại route sản phẩm thành công) cho campaign 2595 (published); trang sản phẩm render đầy đủ sau khi qua gate. Platform-product 531 (unpublished) KHÔNG được thử lại với credential trong run này — hành vi published-vs-unpublished khi CÓ credential vẫn CHƯA xác nhận, xem open-questions.md.",
+    "statement": "(1) KHÔNG có credential (quan sát 2026-09-12, giữ nguyên nguyên văn từ quan sát gốc): Khi truy cập storefront store TIB_STORE_URL_1 (guest, không login) ở shop root VÀ 2 URL sản phẩm đoán cho campaign 2595 (published) và platform-product 531 (unpublished), CẢ 3 lần đều redirect ngay sang '/password' với UI Shopify password-gate giống hệt nhau, TRƯỚC KHI Shopify resolve route/product state — không phân biệt được published/unpublished khi CHƯA có credential. Không có credential storefront password nào được cấp trong run đó. (2) CÓ credential hợp lệ (quan sát 2026-09-12, biến môi trường TIB_STORE_PASSWORD): Khi truy cập storefront store TIB_STORE_URL_1 và store TIB_STORE_URL_2 (guest, không login) với TIB_STORE_PASSWORD hợp lệ, gate '/password' được vượt qua NGAY LẦN THỬ ĐẦU TIÊN cho cả 2 store (redirect 302 về '/', sau đó điều hướng lại route sản phẩm thành công) cho campaign 2595 (published); trang sản phẩm render đầy đủ sau khi qua gate. Platform-product 531 (unpublished) KHÔNG được thử lại với credential trong run này — hành vi published-vs-unpublished khi CÓ credential vẫn CHƯA xác nhận, xem open-questions.md.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "MEDIUM",
     "scope": {
@@ -411,7 +411,7 @@
   {
     "kb_id": "KB-040",
     "topic": "[FEAT-07 addition] Storefront runtime re-check 2026-09-21, campaign 2595: store1 nay phục vụ app-v2.js / tee-campaign-v2 (KHÁC baseline 2026-09-12 store1=v1); store2 không đổi -- evidence_c của CFL-004",
-    "statement": "Khi truy cập lại CHÍNH campaign 2595 (handle qa-explore-campaign-pb-01) đã dùng để lập baseline v1/v2 ngày 2026-09-12, quan sát thấy trên store1 (linh-explorer.myshopify.com): script src = https://staging-sdk.teeinblue.com/shopify/app-v2.js + async.js?v=2 (KHÔNG PHẢI app-v1.js/&v=1 như baseline), container widget root class = 'tee-campaign tee-campaign-v2 tee-customization-wrapper' (KHÔNG PHẢI '...-v1...' như baseline). Trên store2 (linh-explorer-2.myshopify.com): app-v2.js/async.js?v=2, class 'tee-campaign-v2' -- KHÔNG đổi so với baseline (vốn đã là v2). Toàn bộ DOM cá nhân hoá quan sát được (element id, nhãn field, số clipart, giá, CSS custom property) hiện BYTE-IDENTICAL giữa 2 store, xác nhận độc lập qua 2 lượt script pass riêng biệt.",
+    "statement": "Khi truy cập lại CHÍNH campaign 2595 (handle qa-explore-campaign-pb-01) đã dùng để lập baseline v1/v2 ngày 2026-09-12, quan sát thấy trên store1 (store TIB_STORE_URL_1): script src = https://staging-sdk.teeinblue.com/shopify/app-v2.js + async.js?v=2 (KHÔNG PHẢI app-v1.js/&v=1 như baseline), container widget root class = 'tee-campaign tee-campaign-v2 tee-customization-wrapper' (KHÔNG PHẢI '...-v1...' như baseline). Trên store2 (store TIB_STORE_URL_2): app-v2.js/async.js?v=2, class 'tee-campaign-v2' -- KHÔNG đổi so với baseline (vốn đã là v2). Toàn bộ DOM cá nhân hoá quan sát được (element id, nhãn field, số clipart, giá, CSS custom property) hiện BYTE-IDENTICAL giữa 2 store, xác nhận độc lập qua 2 lượt script pass riêng biệt.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "MEDIUM",
     "scope": {
@@ -761,7 +761,7 @@
   {
     "kb_id": "KB-066",
     "topic": "localStorage 'teeinblue-customizations' giữ khoảng 10 entry gần nhất: khi thêm nhiều product, entry cũ bị đẩy ra; line item sau cùng product ghi đè entry trước (quan sát trong 1 lượt chạy)",
-    "statement": "Trên staging (instance 520 / store test nprice1), lượt chạy test của agent ngày 2026-10-22 (Testlane task TIB-230, Jira TIB-5606 đang QA Review, chưa ship; order Bogus #1105), khi guest buyer lần lượt personalize và thêm vào giỏ nhiều product khác nhau trên storefront (order 14 line item), quan sát thấy localStorage 'teeinblue-customizations' không còn giữ entry của các product đã thao tác sớm: agent ghi nhận chỉ còn khoảng 10 entry gần nhất (actualResult ghi \"chỉ giữ 10 entry cuối\"; con số chưa được đếm độc lập), entry cũ bị đẩy ra khỏi danh sách. Ngoài ra, khi đặt thêm một line item khác trên cùng product, entry của product đó bị ghi đè bằng giá trị mới. Hệ quả cho việc kiểm: đọc localStorage sau Add-to-cart chỉ tin cậy nếu đọc ngay sau từng lần thêm. Quan sát trong 1 lượt chạy, chưa có nguồn dev/spec; con số giới hạn và cách loại entry (theo thời gian hay theo thứ tự thêm) chưa được xác nhận. Status hiện tại trên Testlane không dùng làm căn cứ (đã đổi sau khi CCR được viết); chỉ dựa vào actualResult và CCR.",
+    "statement": "Trên staging (instance 520 / store test store không thuộc explorer), lượt chạy test của agent ngày 2026-10-22 (Testlane task TIB-230, Jira TIB-5606 đang QA Review, chưa ship; order Bogus #1105), khi guest buyer lần lượt personalize và thêm vào giỏ nhiều product khác nhau trên storefront (order 14 line item), quan sát thấy localStorage 'teeinblue-customizations' không còn giữ entry của các product đã thao tác sớm: agent ghi nhận chỉ còn khoảng 10 entry gần nhất (actualResult ghi \"chỉ giữ 10 entry cuối\"; con số chưa được đếm độc lập), entry cũ bị đẩy ra khỏi danh sách. Ngoài ra, khi đặt thêm một line item khác trên cùng product, entry của product đó bị ghi đè bằng giá trị mới. Hệ quả cho việc kiểm: đọc localStorage sau Add-to-cart chỉ tin cậy nếu đọc ngay sau từng lần thêm. Quan sát trong 1 lượt chạy, chưa có nguồn dev/spec; con số giới hạn và cách loại entry (theo thời gian hay theo thứ tự thêm) chưa được xác nhận. Status hiện tại trên Testlane không dùng làm căn cứ (đã đổi sau khi CCR được viết); chỉ dựa vào actualResult và CCR.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
@@ -790,7 +790,7 @@
   {
     "kb_id": "KB-179",
     "topic": "Field required nằm trong Group ẩn vẫn chặn Add to cart trên storefront (BUG-321..324, known defect)",
-    "statement": "Trên staging (instance 520 / nprice1), lượt chạy test của agent ngày 2026-10-16 (Testlane task TIB-211, Jira TIB-5584; build hash không rõ; production chưa xác nhận), trên form cá nhân hoá SDK của storefront với artwork có Group ẩn chứa một layer có field required, quan sát thấy field đó vẫn chặn Add to cart: nhập field ngoài Group rồi bấm Add to cart thì hiện 'FT2 * This field is required!' và 'Error: Some fields are required or invalid data', giỏ hàng trống và không có request lưu customization. QA plan của dev và ticket mô tả hành vi ngược lại (form không có field của layer trong Group ẩn, required không chặn) — hành vi mong đợi đó không được nạp làm expected. Bug BUG-321..324 đã tạo. TC-TIB-6064 hiện ghi 'passed' trên Testlane trong khi actualResult ghi Fail, không có lần chạy lại có ngày; TC-TIB-6063 actualResult rỗng.",
+    "statement": "Trên staging (instance 520 / store không thuộc explorer), lượt chạy test của agent ngày 2026-10-16 (Testlane task TIB-211, Jira TIB-5584; build hash không rõ; production chưa xác nhận), trên form cá nhân hoá SDK của storefront với artwork có Group ẩn chứa một layer có field required, quan sát thấy field đó vẫn chặn Add to cart: nhập field ngoài Group rồi bấm Add to cart thì hiện 'FT2 * This field is required!' và 'Error: Some fields are required or invalid data', giỏ hàng trống và không có request lưu customization. QA plan của dev và ticket mô tả hành vi ngược lại (form không có field của layer trong Group ẩn, required không chặn) — hành vi mong đợi đó không được nạp làm expected. Bug BUG-321..324 đã tạo. TC-TIB-6064 hiện ghi 'passed' trên Testlane trong khi actualResult ghi Fail, không có lần chạy lại có ngày; TC-TIB-6063 actualResult rỗng.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
@@ -828,7 +828,7 @@
   {
     "kb_id": "KB-180",
     "topic": "Field của layer con trong Group ẩn vẫn xuất hiện trong form storefront (condition thoả / layer con khác) — BUG-321, known defect",
-    "statement": "Trên staging (instance 520 / nprice1), lượt chạy test của agent ngày 2026-10-16 (Testlane task TIB-211, Jira TIB-5584; build hash không rõ; production chưa xác nhận), trên form cá nhân hoá SDK của storefront với artwork có Group ẩn, quan sát thấy: khi condition buyer-side của một layer con được thoả thì field của layer đó xuất hiện trong form dù Group cha đang ẩn (TC-TIB-6067 Fail); một layer con khác trong cùng Group ẩn vẫn có field trong form (TC-TIB-6066, cùng lỗi BUG-321); layer con bật 'Show this layer on first load' dưới Group ẩn không hiện ở lần load đầu, nhưng layer đó còn gắn condition nên chưa tách được hiệu ứng của Group ẩn với hiệu ứng của condition. TC-TIB-6067 có ghi chú '=>> Do bị cache' nhưng không có lần chạy lại có ngày; TC-TIB-6065 actualResult rỗng. Hành vi mong đợi theo QA plan của dev (condition trỏ vào layer ẩn hiệu dụng không bao giờ pass) không được nạp làm expected.",
+    "statement": "Trên staging (instance 520 / store không thuộc explorer), lượt chạy test của agent ngày 2026-10-16 (Testlane task TIB-211, Jira TIB-5584; build hash không rõ; production chưa xác nhận), trên form cá nhân hoá SDK của storefront với artwork có Group ẩn, quan sát thấy: khi condition buyer-side của một layer con được thoả thì field của layer đó xuất hiện trong form dù Group cha đang ẩn (TC-TIB-6067 Fail); một layer con khác trong cùng Group ẩn vẫn có field trong form (TC-TIB-6066, cùng lỗi BUG-321); layer con bật 'Show this layer on first load' dưới Group ẩn không hiện ở lần load đầu, nhưng layer đó còn gắn condition nên chưa tách được hiệu ứng của Group ẩn với hiệu ứng của condition. TC-TIB-6067 có ghi chú '=>> Do bị cache' nhưng không có lần chạy lại có ngày; TC-TIB-6065 actualResult rỗng. Hành vi mong đợi theo QA plan của dev (condition trỏ vào layer ẩn hiệu dụng không bao giờ pass) không được nạp làm expected.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
@@ -871,7 +871,7 @@
   {
     "kb_id": "KB-181",
     "topic": "Buyer preview storefront theo effective visibility: Group ẩn (con giữ cờ ON) thì preview chỉ còn layer ngoài Group",
-    "statement": "Theo Testlane TC-TIB-6068 PASS (Testlane task TIB-211, Jira TIB-5584; staging instance 520 (nprice1), chạy 2026-10-16 trên build staging @ 2026-10-16 13:54 sau lần giao QA cuối 2026-10-15 18:39, build hash không rõ; production chưa xác nhận), buyer preview SDK trên storefront theo effective visibility của Group: với artwork có Group ẩn (các con giữ cờ ON), preview chỉ hiển thị layer ngoài Group, khớp canvas Artwork Editor.",
+    "statement": "Theo Testlane TC-TIB-6068 PASS (Testlane task TIB-211, Jira TIB-5584; staging instance 520 (store không thuộc explorer), chạy 2026-10-16 trên build staging @ 2026-10-16 13:54 sau lần giao QA cuối 2026-10-15 18:39, build hash không rõ; production chưa xác nhận), buyer preview SDK trên storefront theo effective visibility của Group: với artwork có Group ẩn (các con giữ cờ ON), preview chỉ hiển thị layer ngoài Group, khớp canvas Artwork Editor.",
     "knowledge_kind": "CONFIRMED_EXPECTED",
     "confidence": "MEDIUM",
     "scope": {
@@ -913,7 +913,7 @@
     "confidence": "MEDIUM",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1)",
+      "role": "guest-buyer (storefront store không thuộc explorer)",
       "surface": "storefront (form + live preview, SDK app-v2.js) · api (POST /api/merchant/shopify/customization)",
       "brand": null
     },
@@ -955,7 +955,7 @@
     "confidence": "MEDIUM",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1)",
+      "role": "guest-buyer (storefront store không thuộc explorer)",
       "surface": "storefront (first load + form)",
       "brand": null
     },
@@ -1002,7 +1002,7 @@
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1)",
+      "role": "guest-buyer (storefront store không thuộc explorer)",
       "surface": "storefront",
       "brand": null
     },
@@ -1037,7 +1037,7 @@
     "confidence": "MEDIUM",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1)",
+      "role": "guest-buyer (storefront store không thuộc explorer)",
       "surface": "storefront · api (POST customization)",
       "brand": null
     },
@@ -1083,7 +1083,7 @@
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1)",
+      "role": "guest-buyer (storefront store không thuộc explorer)",
       "surface": "storefront",
       "brand": null
     },
@@ -1115,12 +1115,12 @@
   {
     "kb_id": "KB-236",
     "topic": "Regression trên SDK cũ: layer không điều kiện luôn hiện, layer Show giữ đúng chiều (chưa chạy lại trên SDK có code Hide)",
-    "statement": "Trên staging (instance 520 / nprice1), lượt chạy test đầu của agent ngày 2026-10-28 (Testlane TC-TIB-7344, task TIB-231, Jira TIB-5558) — chạy trên SDK app-v2.js bản cũ (Last-Modified 2026-10-14, chưa có code Hide), chưa chạy lại trên SDK bản 2026-10-28 03:01:11 GMT; production chưa xác nhận — quan sát thấy: layer không có điều kiện hiện trên form và preview ở mọi giá trị nguồn (chưa chọn, Cat, Dog); layer action Show với điều kiện 'Pet 1 Type is Cat' hiện khi Cat và ẩn khi Dog trên cả form lẫn preview; payload POST /api/merchant/shopify/customization và localStorage teeinblue-customizations chỉ chứa giá trị của các layer đang hiện. Hành vi này chưa được xác nhận trên SDK có code Hide.",
+    "statement": "Trên staging (instance 520 / store không thuộc explorer), lượt chạy test đầu của agent ngày 2026-10-28 (Testlane TC-TIB-7344, task TIB-231, Jira TIB-5558) — chạy trên SDK app-v2.js bản cũ (Last-Modified 2026-10-14, chưa có code Hide), chưa chạy lại trên SDK bản 2026-10-28 03:01:11 GMT; production chưa xác nhận — quan sát thấy: layer không có điều kiện hiện trên form và preview ở mọi giá trị nguồn (chưa chọn, Cat, Dog); layer action Show với điều kiện 'Pet 1 Type is Cat' hiện khi Cat và ẩn khi Dog trên cả form lẫn preview; payload POST /api/merchant/shopify/customization và localStorage teeinblue-customizations chỉ chứa giá trị của các layer đang hiện. Hành vi này chưa được xác nhận trên SDK có code Hide.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1)",
+      "role": "guest-buyer (storefront store không thuộc explorer)",
       "surface": "storefront · api (POST customization)",
       "brand": null
     },
@@ -1152,12 +1152,12 @@
   {
     "kb_id": "KB-237",
     "topic": "SDK app-v2.js có Cache-Control max-age=14400; lần load đầu nhận bản SDK cũ đã cache, trên bản cũ chiều ẩn/hiện của layer Hide bị đảo (quan sát 1 lượt)",
-    "statement": "Trên staging (store nprice1), lượt chạy test của agent ngày 2026-10-28 (Testlane TC-TIB-7323, TC-TIB-7324, task TIB-231, Jira TIB-5558; production chưa xác nhận) ghi nhận: response của SDK app-v2.js bản Last-Modified 2026-10-28 03:01:11 GMT có header Cache-Control max-age=14400; ở lần load trang đầu tiên, trước khi xoá cache, trình duyệt vẫn nhận bản SDK cũ (Last-Modified 2026-10-14, chưa có code Hide) đã bị cache; trên bản SDK cũ đó, ở lượt chạy đầu, chiều ẩn/hiện của layer action Hide bị đảo (BUG-429), và lỗi này không tái hiện sau khi trang nhận SDK bản 03:01:11 GMT. Đây là quan sát một lượt; thời gian storefront còn chạy SDK cũ sau khi deploy và cách khắc phục chưa được xác nhận — không phải quy tắc.",
+    "statement": "Trên staging (store store không thuộc explorer), lượt chạy test của agent ngày 2026-10-28 (Testlane TC-TIB-7323, TC-TIB-7324, task TIB-231, Jira TIB-5558; production chưa xác nhận) ghi nhận: response của SDK app-v2.js bản Last-Modified 2026-10-28 03:01:11 GMT có header Cache-Control max-age=14400; ở lần load trang đầu tiên, trước khi xoá cache, trình duyệt vẫn nhận bản SDK cũ (Last-Modified 2026-10-14, chưa có code Hide) đã bị cache; trên bản SDK cũ đó, ở lượt chạy đầu, chiều ẩn/hiện của layer action Hide bị đảo (BUG-429), và lỗi này không tái hiện sau khi trang nhận SDK bản 03:01:11 GMT. Đây là quan sát một lượt; thời gian storefront còn chạy SDK cũ sau khi deploy và cách khắc phục chưa được xác nhận — không phải quy tắc.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1)",
+      "role": "guest-buyer (storefront store không thuộc explorer)",
       "surface": "storefront (SDK app-v2.js, cache trình duyệt)",
       "brand": null
     },
@@ -1182,12 +1182,12 @@
   {
     "kb_id": "KB-320",
     "topic": "Setting lọc theo variant ON: gallery SDK chỉ hiện mockup + video đã gán cho variant đang chọn; đổi variant lọc lại đúng",
-    "statement": "Theo Testlane TC-TIB-6424, TC-TIB-6425, TC-TIB-6426, TC-TIB-6447 PASS (task TIB-221, Jira TIB-5428; staging instance 520 Nprice1, chạy 2026-10-22, trước khi 4 PR của TIB-5428 merge ngày 2026-10-27; production chưa xác nhận), khi setting lọc gallery theo variant đang chọn (Store Settings → Product Page, mục Gallery & Mockup; chuỗi label đang conflict, xem KB-318/KB-025) bật, gallery SDK trên storefront chỉ hiện các media (mockup và video) đã gán cho variant đang chọn; media không gán hoặc gán cho variant khác bị ẩn (kể cả khi next hết list); video đã gán hiện và bấm play phát được; đổi variant liên tục (vd Red → Blue → Green → Red) thì gallery lọc lại đúng tập của từng variant, không sót item của variant trước, media không gán không bao giờ xuất hiện.",
+    "statement": "Theo Testlane TC-TIB-6424, TC-TIB-6425, TC-TIB-6426, TC-TIB-6447 PASS (task TIB-221, Jira TIB-5428; staging instance 520 store không thuộc explorer, chạy 2026-10-22, trước khi 4 PR của TIB-5428 merge ngày 2026-10-27; production chưa xác nhận), khi setting lọc gallery theo variant đang chọn (Store Settings → Product Page, mục Gallery & Mockup; chuỗi label đang conflict, xem KB-318/KB-025) bật, gallery SDK trên storefront chỉ hiện các media (mockup và video) đã gán cho variant đang chọn; media không gán hoặc gán cho variant khác bị ẩn (kể cả khi next hết list); video đã gán hiện và bấm play phát được; đổi variant liên tục (vd Red → Blue → Green → Red) thì gallery lọc lại đúng tập của từng variant, không sót item của variant trước, media không gán không bao giờ xuất hiện.",
     "knowledge_kind": "CONFIRMED_EXPECTED",
     "confidence": "MEDIUM",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1, theme SDK)",
+      "role": "guest-buyer (storefront store không thuộc explorer, theme SDK)",
       "surface": "storefront (SDK gallery)",
       "brand": null
     },
@@ -1219,7 +1219,7 @@
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1, theme SDK)",
+      "role": "guest-buyer (storefront store không thuộc explorer, theme SDK)",
       "surface": "storefront (merchant JSON) · api (sync campaign)",
       "brand": null
     },
@@ -1240,12 +1240,12 @@
   {
     "kb_id": "KB-322",
     "topic": "Setting ON, variant chỉ gán video: gallery đúng bằng tập video đã gán, không fallback hiện tất cả mockup",
-    "statement": "Theo Testlane TC-TIB-6427 PASS (task TIB-221, Jira TIB-5428; staging instance 520 Nprice1, chạy 2026-10-22, trước khi 4 PR của TIB-5428 merge ngày 2026-10-27; production chưa xác nhận), khi setting lọc gallery theo variant đang chọn (Store Settings → Product Page, mục Gallery & Mockup; chuỗi label đang conflict, xem KB-318/KB-025) bật và variant đang chọn chỉ được gán video (0 mockup), gallery SDK hiện đúng các video đã gán cho variant đó, không kéo thêm mockup nào (không áp fallback 'variant không có mockup gán thì hiện tất cả mockup').",
+    "statement": "Theo Testlane TC-TIB-6427 PASS (task TIB-221, Jira TIB-5428; staging instance 520 store không thuộc explorer, chạy 2026-10-22, trước khi 4 PR của TIB-5428 merge ngày 2026-10-27; production chưa xác nhận), khi setting lọc gallery theo variant đang chọn (Store Settings → Product Page, mục Gallery & Mockup; chuỗi label đang conflict, xem KB-318/KB-025) bật và variant đang chọn chỉ được gán video (0 mockup), gallery SDK hiện đúng các video đã gán cho variant đó, không kéo thêm mockup nào (không áp fallback 'variant không có mockup gán thì hiện tất cả mockup').",
     "knowledge_kind": "CONFIRMED_EXPECTED",
     "confidence": "MEDIUM",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1, theme SDK)",
+      "role": "guest-buyer (storefront store không thuộc explorer, theme SDK)",
       "surface": "storefront (SDK gallery)",
       "brand": null
     },
@@ -1273,12 +1273,12 @@
   {
     "kb_id": "KB-323",
     "topic": "Setting ON, variant chỉ gán video: không render ảnh preview cá nhân hoá, không lấy mockup không gán làm nguồn preview",
-    "statement": "Theo Testlane TC-TIB-6428 PASS (task TIB-221, Jira TIB-5428; staging instance 520 Nprice1, chạy 2026-10-22, trước khi 4 PR của TIB-5428 merge ngày 2026-10-27; production chưa xác nhận), khi setting lọc gallery theo variant đang chọn (Store Settings → Product Page, mục Gallery & Mockup; chuỗi label đang conflict, xem KB-318/KB-025) bật và variant đang chọn chỉ được gán một video, gallery SDK chỉ có đúng item video đó, không chứa mockup nào của campaign; khu vực preview không render ảnh preview cá nhân hoá nào và không lấy mockup không gán của campaign làm nguồn preview. Không nói gì về form cá nhân hoá hay design của đơn hàng với variant chỉ-video.",
+    "statement": "Theo Testlane TC-TIB-6428 PASS (task TIB-221, Jira TIB-5428; staging instance 520 store không thuộc explorer, chạy 2026-10-22, trước khi 4 PR của TIB-5428 merge ngày 2026-10-27; production chưa xác nhận), khi setting lọc gallery theo variant đang chọn (Store Settings → Product Page, mục Gallery & Mockup; chuỗi label đang conflict, xem KB-318/KB-025) bật và variant đang chọn chỉ được gán một video, gallery SDK chỉ có đúng item video đó, không chứa mockup nào của campaign; khu vực preview không render ảnh preview cá nhân hoá nào và không lấy mockup không gán của campaign làm nguồn preview. Không nói gì về form cá nhân hoá hay design của đơn hàng với variant chỉ-video.",
     "knowledge_kind": "CONFIRMED_EXPECTED",
     "confidence": "MEDIUM",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1, theme SDK)",
+      "role": "guest-buyer (storefront store không thuộc explorer, theme SDK)",
       "surface": "storefront (SDK gallery, khu vực/popup Preview)",
       "brand": null
     },
@@ -1305,12 +1305,12 @@
   {
     "kb_id": "KB-324",
     "topic": "Setting ON, variant không gán gì: gallery hiện toàn bộ mockup + video của campaign",
-    "statement": "Theo Testlane TC-TIB-6429 PASS (task TIB-221, Jira TIB-5428; staging instance 520 Nprice1, chạy 2026-10-22, trước khi 4 PR của TIB-5428 merge ngày 2026-10-27; production chưa xác nhận), khi setting lọc gallery theo variant đang chọn (Store Settings → Product Page, mục Gallery & Mockup; chuỗi label đang conflict, xem KB-318/KB-025) bật và variant đang chọn không được gán mockup lẫn video nào, gallery SDK hiện toàn bộ media của campaign (mọi mockup và mọi video).",
+    "statement": "Theo Testlane TC-TIB-6429 PASS (task TIB-221, Jira TIB-5428; staging instance 520 store không thuộc explorer, chạy 2026-10-22, trước khi 4 PR của TIB-5428 merge ngày 2026-10-27; production chưa xác nhận), khi setting lọc gallery theo variant đang chọn (Store Settings → Product Page, mục Gallery & Mockup; chuỗi label đang conflict, xem KB-318/KB-025) bật và variant đang chọn không được gán mockup lẫn video nào, gallery SDK hiện toàn bộ media của campaign (mọi mockup và mọi video).",
     "knowledge_kind": "CONFIRMED_EXPECTED",
     "confidence": "MEDIUM",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1, theme SDK)",
+      "role": "guest-buyer (storefront store không thuộc explorer, theme SDK)",
       "surface": "storefront (SDK gallery)",
       "brand": null
     },
@@ -1338,12 +1338,12 @@
   {
     "kb_id": "KB-325",
     "topic": "Setting OFF: mọi variant thấy toàn bộ mockup + video; video như mockup thường; assignment không lọc",
-    "statement": "Theo Testlane TC-TIB-6430 PASS (task TIB-221, Jira TIB-5428; staging instance 520 Nprice1, chạy 2026-10-22, trước khi 4 PR của TIB-5428 merge ngày 2026-10-27; production chưa xác nhận), khi setting lọc gallery theo variant đang chọn (Store Settings → Product Page, mục Gallery & Mockup; chuỗi label đang conflict, xem KB-318/KB-025) tắt, với mọi variant gallery SDK đều hiện toàn bộ mockup và video của campaign, giống nhau giữa các variant; video hiện như một mockup bình thường và assignment video ↔ variant không có tác dụng lọc.",
+    "statement": "Theo Testlane TC-TIB-6430 PASS (task TIB-221, Jira TIB-5428; staging instance 520 store không thuộc explorer, chạy 2026-10-22, trước khi 4 PR của TIB-5428 merge ngày 2026-10-27; production chưa xác nhận), khi setting lọc gallery theo variant đang chọn (Store Settings → Product Page, mục Gallery & Mockup; chuỗi label đang conflict, xem KB-318/KB-025) tắt, với mọi variant gallery SDK đều hiện toàn bộ mockup và video của campaign, giống nhau giữa các variant; video hiện như một mockup bình thường và assignment video ↔ variant không có tác dụng lọc.",
     "knowledge_kind": "CONFIRMED_EXPECTED",
     "confidence": "MEDIUM",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1, theme SDK)",
+      "role": "guest-buyer (storefront store không thuộc explorer, theme SDK)",
       "surface": "storefront (SDK gallery)",
       "brand": null
     },
@@ -1369,12 +1369,12 @@
   {
     "kb_id": "KB-326",
     "topic": "Gallery SDK xếp theo thứ tự list media của campaign; video giữa list giữ vị trí (Always load first OFF)",
-    "statement": "Theo Testlane TC-TIB-6431 PASS (task TIB-221, Jira TIB-5428; staging instance 520 Nprice1, chạy 2026-10-22, trước khi 4 PR của TIB-5428 merge ngày 2026-10-27; production chưa xác nhận), khi setting lọc gallery theo variant đang chọn (Store Settings → Product Page, mục Gallery & Mockup; chuỗi label đang conflict, xem KB-318/KB-025) bật và video không bật 'Always load first', gallery SDK xếp các item đã gán theo đúng thứ tự list media của campaign (vd M1 → V1 → M2), video nằm giữa list giữ đúng vị trí, không bị đẩy xuống cuối hay kéo lên đầu; list media trong campaign editor có cùng thứ tự.",
+    "statement": "Theo Testlane TC-TIB-6431 PASS (task TIB-221, Jira TIB-5428; staging instance 520 store không thuộc explorer, chạy 2026-10-22, trước khi 4 PR của TIB-5428 merge ngày 2026-10-27; production chưa xác nhận), khi setting lọc gallery theo variant đang chọn (Store Settings → Product Page, mục Gallery & Mockup; chuỗi label đang conflict, xem KB-318/KB-025) bật và video không bật 'Always load first', gallery SDK xếp các item đã gán theo đúng thứ tự list media của campaign (vd M1 → V1 → M2), video nằm giữa list giữ đúng vị trí, không bị đẩy xuống cuối hay kéo lên đầu; list media trong campaign editor có cùng thứ tự.",
     "knowledge_kind": "CONFIRMED_EXPECTED",
     "confidence": "MEDIUM",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1, theme SDK)",
+      "role": "guest-buyer (storefront store không thuộc explorer, theme SDK)",
       "surface": "storefront (SDK gallery) · portal (list media)",
       "brand": null
     },
@@ -1406,7 +1406,7 @@
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1, theme SDK)",
+      "role": "guest-buyer (storefront store không thuộc explorer, theme SDK)",
       "surface": "storefront (SDK gallery) · portal (Always load first)",
       "brand": null
     },
@@ -1429,12 +1429,12 @@
   {
     "kb_id": "KB-350",
     "topic": "API storefront campaigns/{id}.json (gọi với v mới) có key resource_type và vẫn giữ config, has_subscription, is_development, is_plus, sku_enabled, shop_name",
-    "statement": "Theo Testlane TC-TIB-7507 PASS (task TIB-257, Jira TIB-5203; staging, chạy 2026-10-28 ~10:30 UTC, sau commit 8731f3a deploy staging, trước khi 2 PR merge 2026-10-29; production chưa xác nhận), response của GET /api/merchant/campaigns/{shopify product id}.json?shop=… khi gọi với tham số v chưa từng dùng (CF-Cache-Status: MISS) có đủ các key resource_type, config, has_subscription, is_development, is_plus, sku_enabled, shop_name, ở cả 4 response được kiểm: campaign #3279 trên Nprice1 và Nprice2, campaign #3270 trên Nprice1, platform product #602 trên Nprice1. Item này chỉ nói về sự có mặt của các key trên response gọi với v mới; không khẳng định giá trị của resource_type và không áp cho URL ?v=1 mà SDK gọi khi render.",
+    "statement": "Theo Testlane TC-TIB-7507 PASS (task TIB-257, Jira TIB-5203; staging, chạy 2026-10-28 ~10:30 UTC, sau commit 8731f3a deploy staging, trước khi 2 PR merge 2026-10-29; production chưa xác nhận), response của GET /api/merchant/campaigns/{shopify product id}.json?shop=… khi gọi với tham số v chưa từng dùng (CF-Cache-Status: MISS) có đủ các key resource_type, config, has_subscription, is_development, is_plus, sku_enabled, shop_name, ở cả 4 response được kiểm: campaign #3279 trên store không thuộc explorer và store không thuộc explorer, campaign #3270 trên store không thuộc explorer, platform product #602 trên store không thuộc explorer. Item này chỉ nói về sự có mặt của các key trên response gọi với v mới; không khẳng định giá trị của resource_type và không áp cho URL ?v=1 mà SDK gọi khi render.",
     "knowledge_kind": "CONFIRMED_EXPECTED",
     "confidence": "MEDIUM",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
       "surface": "api (GET /api/merchant/campaigns/{id}.json?shop=…&v=…, gọi với v chưa từng dùng)",
       "brand": null
     },
@@ -1461,12 +1461,12 @@
   {
     "kb_id": "KB-351",
     "topic": "Giá trị resource_type quan sát: \"campaign\" cho campaign, \"platform_product\" cho platform product",
-    "statement": "Quan sát staging 2026-10-28 (Testlane TC-TIB-7394, TC-TIB-7395, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): response GET /api/merchant/campaigns/{shopify product id}.json?shop=nprice1.myshopify.com trả resource_type=\"campaign\" với campaign #3270 và resource_type=\"platform_product\" với platform product #602. Lượt chạy TC-TIB-7507 ~10:30 UTC cùng ngày chỉ ghi lại resource_type=\"platform_product\" cho platform product #602; giá trị resource_type không thuộc oracle của TC-TIB-7507.",
+    "statement": "Quan sát staging 2026-10-28 (Testlane TC-TIB-7394, TC-TIB-7395, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): response GET /api/merchant/campaigns/{shopify product id}.json?shop=<store>.myshopify.com trả resource_type=\"campaign\" với campaign #3270 và resource_type=\"platform_product\" với platform product #602. Lượt chạy TC-TIB-7507 ~10:30 UTC cùng ngày chỉ ghi lại resource_type=\"platform_product\" cho platform product #602; giá trị resource_type không thuộc oracle của TC-TIB-7507.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
       "surface": "api (GET /api/merchant/campaigns/{id}.json?shop=…)",
       "brand": null
     },
@@ -1487,12 +1487,12 @@
   {
     "kb_id": "KB-352",
     "topic": "API storefront campaigns/{id}.json (gọi với v mới) không còn các field artworks/campaign_products/product/variants đã bỏ ở commit 8731f3a",
-    "statement": "Theo Testlane TC-TIB-7507 PASS (task TIB-257, Jira TIB-5203; staging, chạy 2026-10-28 ~10:30 UTC, sau commit 8731f3a deploy staging, trước khi 2 PR merge 2026-10-29; production chưa xác nhận), response của GET /api/merchant/campaigns/{shopify product id}.json?shop=… khi gọi với tham số v chưa từng dùng (CF-Cache-Status: MISS) không còn các field: artworks[].description, artworks[].is_locked, artworks[].status; campaign_products[].created_at, campaign_products[].updated_at; product.internal_tags, product.status; variants[].created_at, variants[].updated_at, variants[].deleted_at, ở cả 4 response được kiểm: campaign #3279 trên Nprice1 và Nprice2, campaign #3270 trên Nprice1, platform product #602 trên Nprice1. Không áp cho URL ?v=1 mà SDK gọi khi render.",
+    "statement": "Theo Testlane TC-TIB-7507 PASS (task TIB-257, Jira TIB-5203; staging, chạy 2026-10-28 ~10:30 UTC, sau commit 8731f3a deploy staging, trước khi 2 PR merge 2026-10-29; production chưa xác nhận), response của GET /api/merchant/campaigns/{shopify product id}.json?shop=… khi gọi với tham số v chưa từng dùng (CF-Cache-Status: MISS) không còn các field: artworks[].description, artworks[].is_locked, artworks[].status; campaign_products[].created_at, campaign_products[].updated_at; product.internal_tags, product.status; variants[].created_at, variants[].updated_at, variants[].deleted_at, ở cả 4 response được kiểm: campaign #3279 trên store không thuộc explorer và store không thuộc explorer, campaign #3270 trên store không thuộc explorer, platform product #602 trên store không thuộc explorer. Không áp cho URL ?v=1 mà SDK gọi khi render.",
     "knowledge_kind": "CONFIRMED_EXPECTED",
     "confidence": "MEDIUM",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
       "surface": "api (GET /api/merchant/campaigns/{id}.json?shop=…&v=…, gọi với v chưa từng dùng)",
       "brand": null
     },
@@ -1520,12 +1520,12 @@
   {
     "kb_id": "KB-353",
     "topic": "Danh sách key còn lại của artworks[] trong response platform product (1 sample)",
-    "statement": "Quan sát staging 2026-10-28 ~10:30 UTC (1 lượt, Testlane TC-TIB-7507, task TIB-257, Jira TIB-5203, chỉ ở actualResult, không thuộc oracle; trước khi 2 PR của TIB-5203 merge 2026-10-29; production chưa kiểm; chưa có nguồn xác nhận đây là hành vi đúng): với platform product #602 (Nprice1), GET /api/merchant/campaigns/{shopify product id}.json?shop=… gọi với v chưa từng dùng trả artworks[] (1 phần tử) chỉ còn các key current_version_id, data, design_format, global_option_ids, height, id, name, platform_variant_ids, position, schema_version, template_settings, thumbnail, width.",
+    "statement": "Quan sát staging 2026-10-28 ~10:30 UTC (1 lượt, Testlane TC-TIB-7507, task TIB-257, Jira TIB-5203, chỉ ở actualResult, không thuộc oracle; trước khi 2 PR của TIB-5203 merge 2026-10-29; production chưa kiểm; chưa có nguồn xác nhận đây là hành vi đúng): với platform product #602 (store không thuộc explorer), GET /api/merchant/campaigns/{shopify product id}.json?shop=… gọi với v chưa từng dùng trả artworks[] (1 phần tử) chỉ còn các key current_version_id, data, design_format, global_option_ids, height, id, name, platform_variant_ids, position, schema_version, template_settings, thumbnail, width.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
       "surface": "api (GET /api/merchant/campaigns/{id}.json?shop=…&v=…, gọi với v chưa từng dùng)",
       "brand": null
     },
@@ -1546,12 +1546,12 @@
   {
     "kb_id": "KB-354",
     "topic": "Shape artworks[].global_options: URL SDK ?v=1 vẫn trả bản có artworks[].global_options, URL v mới chỉ có global_option_ids (BUG-437)",
-    "statement": "Quan sát staging 2026-10-28 (1 lượt retest ~09:25–09:29 UTC, Testlane TC-TIB-7396, task TIB-257, Jira TIB-5203, BUG-437; trước khi 2 PR của TIB-5203 merge 2026-10-29; production chưa kiểm; chưa có nguồn xác nhận đây là hành vi đúng): với campaign #3270 (Nprice1), URL SDK gọi khi render GET /api/merchant/campaigns/{shopify product id}.json?shop=nprice1.myshopify.com&v=1 trả 200 (last-modified 2026-10-28 05:29:56 GMT, cache-control private, max-age=14400) với artworks[0] (#5952) có cả global_options (1 phần tử) lẫn global_option_ids=[1125], artworks[1] (#5953) có global_options (2 phần tử) lẫn global_option_ids=[1125,1126]; cùng endpoint với giá trị v mới (vd v trong link preload của trang) trả artworks[] chỉ có global_option_ids (AW-GO=[1125], AW-GO2=[1125,1126]). Ở cả hai URL, top-level global_options có GO #1125 và GO #1126, mỗi cái đúng 1 lần. Shape nào là đúng chưa được xác nhận; việc Jira TIB-5203 chuyển Passed/Done không cho biết BUG-437 được chấp nhận, hoãn hay đã sửa.",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt retest ~09:25–09:29 UTC, Testlane TC-TIB-7396, task TIB-257, Jira TIB-5203, BUG-437; trước khi 2 PR của TIB-5203 merge 2026-10-29; production chưa kiểm; chưa có nguồn xác nhận đây là hành vi đúng): với campaign #3270 (store không thuộc explorer), URL SDK gọi khi render GET /api/merchant/campaigns/{shopify product id}.json?shop=<store>.myshopify.com&v=1 trả 200 (last-modified 2026-10-28 05:29:56 GMT, cache-control private, max-age=14400) với artworks[0] (#5952) có cả global_options (1 phần tử) lẫn global_option_ids=[1125], artworks[1] (#5953) có global_options (2 phần tử) lẫn global_option_ids=[1125,1126]; cùng endpoint với giá trị v mới (vd v trong link preload của trang) trả artworks[] chỉ có global_option_ids (AW-GO=[1125], AW-GO2=[1125,1126]). Ở cả hai URL, top-level global_options có GO #1125 và GO #1126, mỗi cái đúng 1 lần. Shape nào là đúng chưa được xác nhận; việc Jira TIB-5203 chuyển Passed/Done không cho biết BUG-437 được chấp nhận, hoãn hay đã sửa.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
       "surface": "api (GET /api/merchant/campaigns/{id}.json?shop=…, v=1 so với v mới)",
       "brand": null
     },
@@ -1582,12 +1582,12 @@
   {
     "kb_id": "KB-355",
     "topic": "SDK lấy dữ liệu platform product qua campaigns/{shopify product id}.json, không thấy gọi platform-products/{uuid}.json",
-    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7391, TC-TIB-7395, task TIB-257, Jira TIB-5203, network capture của agent; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trên trang product của platform product #602 (Nprice1), SDK gọi GET /api/merchant/campaigns/9452881084657.json?shop=… (theo Shopify product id) → 200, resource_type=\"platform_product\"; không thấy request nào tới /api/merchant/platform-products/{uuid}.json. Mô tả kịch bản kiểm thử của dev cho phép cả hai đường; đường chính thức chưa được xác nhận.",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7391, TC-TIB-7395, task TIB-257, Jira TIB-5203, network capture của agent; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trên trang product của platform product #602 (store không thuộc explorer), SDK gọi GET /api/merchant/campaigns/9452881084657.json?shop=… (theo Shopify product id) → 200, resource_type=\"platform_product\"; không thấy request nào tới /api/merchant/platform-products/{uuid}.json. Mô tả kịch bản kiểm thử của dev cho phép cả hai đường; đường chính thức chưa được xác nhận.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
       "surface": "storefront · api (Network trang product platform product)",
       "brand": null
     },
@@ -1609,12 +1609,12 @@
   {
     "kb_id": "KB-356",
     "topic": "Sau Save artwork + Update/Sync campaign, URL SDK ?v=1 vẫn trả bản trước khi sửa; link preload v mới trả bản mới (BUG-446)",
-    "statement": "Quan sát staging 2026-10-28 (1 lượt retest ~09:24–09:29 UTC, Testlane TC-TIB-7402, task TIB-257, Jira TIB-5203, BUG-446; trước khi 2 PR của TIB-5203 merge 2026-10-29; production chưa kiểm; chưa có nguồn xác nhận đây là hành vi đúng): với campaign #3270 (Nprice1), sau khi sửa default text của artwork #5952 thành \"FIX5203A\" (PUT /api/artworks/5952 → 200) và Update campaign (POST /api/campaigns/3270/sync → 200), reload storefront sau ~10 giây thì SDK vẫn gọi GET /api/merchant/campaigns/{shopify product id}.json?shop=nprice1.myshopify.com&v=1 và nhận bản trước khi sửa (text \"NAME\", last-modified 05:29:56 GMT); link preload trên trang với v=<version mới> và các giá trị v mới khác trả bản đã sửa (\"FIX5203A\"). Nguyên nhân (cache theo URL v=1) là suy luận, dev chưa xác nhận; thời gian trả bản cũ chỉ đo trong 1 lượt. Không xác định đây là thiết kế hay lỗi, và không có nguồn xác nhận storefront phải hiện thay đổi ngay; việc Jira TIB-5203 chuyển Passed/Done không cho biết BUG-446 được chấp nhận, hoãn hay đã sửa.",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt retest ~09:24–09:29 UTC, Testlane TC-TIB-7402, task TIB-257, Jira TIB-5203, BUG-446; trước khi 2 PR của TIB-5203 merge 2026-10-29; production chưa kiểm; chưa có nguồn xác nhận đây là hành vi đúng): với campaign #3270 (store không thuộc explorer), sau khi sửa default text của artwork #5952 thành \"FIX5203A\" (PUT /api/artworks/5952 → 200) và Update campaign (POST /api/campaigns/3270/sync → 200), reload storefront sau ~10 giây thì SDK vẫn gọi GET /api/merchant/campaigns/{shopify product id}.json?shop=<store>.myshopify.com&v=1 và nhận bản trước khi sửa (text \"NAME\", last-modified 05:29:56 GMT); link preload trên trang với v=<version mới> và các giá trị v mới khác trả bản đã sửa (\"FIX5203A\"). Nguyên nhân (cache theo URL v=1) là suy luận, dev chưa xác nhận; thời gian trả bản cũ chỉ đo trong 1 lượt. Không xác định đây là thiết kế hay lỗi, và không có nguồn xác nhận storefront phải hiện thay đổi ngay; việc Jira TIB-5203 chuyển Passed/Done không cho biết BUG-446 được chấp nhận, hoãn hay đã sửa.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront; thay đổi do owner làm trên portal staging, instance 520 Nprice1)",
+      "role": "guest-buyer (storefront; thay đổi do owner làm trên portal staging, instance 520 store không thuộc explorer)",
       "surface": "storefront · api",
       "brand": null
     },
@@ -1645,12 +1645,12 @@
   {
     "kb_id": "KB-357",
     "topic": "Sau sửa + Publish platform product, URL SDK ?v=1 vẫn trả bản trước khi sửa; link preload v mới trả bản mới (BUG-439)",
-    "statement": "Quan sát staging 2026-10-28 (1 lượt retest ~09:29–09:31 UTC, Testlane TC-TIB-7403, task TIB-257, Jira TIB-5203, BUG-439; trước khi 2 PR của TIB-5203 merge 2026-10-29; production chưa kiểm; chưa có nguồn xác nhận đây là hành vi đúng): với platform product #602 (Nprice1), sau khi sửa default text của artwork #5952 thành \"FIX5203B\" (PUT /api/artworks/5952 → 200) và Update platform product (POST /api/platform-products/602/publish → 200), reload storefront thì SDK vẫn gọi GET /api/merchant/campaigns/9452881084657.json?shop=nprice1.myshopify.com&v=1 và nhận bản trước khi sửa (text \"NAME\", last-modified 04:59:40 GMT, cũ khoảng 4.5 giờ, artworks[] còn key global_options); link preload trên trang với v=<version mới> và các giá trị v mới khác trả bản đã sửa (\"FIX5203B\", artworks[] chỉ có global_option_ids). Trang không render form (xem quan sát BUG-310) nên chỉ đo bằng response URL SDK. Nguyên nhân (cache theo URL v=1) là suy luận, dev chưa xác nhận; thời gian trả bản cũ chỉ đo trong 1 lượt. Không xác định đây là thiết kế hay lỗi, và không có nguồn xác nhận storefront phải hiện thay đổi ngay; việc Jira TIB-5203 chuyển Passed/Done không cho biết BUG-439 được chấp nhận, hoãn hay đã sửa.",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt retest ~09:29–09:31 UTC, Testlane TC-TIB-7403, task TIB-257, Jira TIB-5203, BUG-439; trước khi 2 PR của TIB-5203 merge 2026-10-29; production chưa kiểm; chưa có nguồn xác nhận đây là hành vi đúng): với platform product #602 (store không thuộc explorer), sau khi sửa default text của artwork #5952 thành \"FIX5203B\" (PUT /api/artworks/5952 → 200) và Update platform product (POST /api/platform-products/602/publish → 200), reload storefront thì SDK vẫn gọi GET /api/merchant/campaigns/9452881084657.json?shop=<store>.myshopify.com&v=1 và nhận bản trước khi sửa (text \"NAME\", last-modified 04:59:40 GMT, cũ khoảng 4.5 giờ, artworks[] còn key global_options); link preload trên trang với v=<version mới> và các giá trị v mới khác trả bản đã sửa (\"FIX5203B\", artworks[] chỉ có global_option_ids). Trang không render form (xem quan sát BUG-310) nên chỉ đo bằng response URL SDK. Nguyên nhân (cache theo URL v=1) là suy luận, dev chưa xác nhận; thời gian trả bản cũ chỉ đo trong 1 lượt. Không xác định đây là thiết kế hay lỗi, và không có nguồn xác nhận storefront phải hiện thay đổi ngay; việc Jira TIB-5203 chuyển Passed/Done không cho biết BUG-439 được chấp nhận, hoãn hay đã sửa.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront; thay đổi do owner làm trên portal staging, instance 520 Nprice1)",
+      "role": "guest-buyer (storefront; thay đổi do owner làm trên portal staging, instance 520 store không thuộc explorer)",
       "surface": "storefront · api",
       "brand": null
     },
@@ -1674,13 +1674,13 @@
   {
     "kb_id": "KB-358",
     "topic": "Storefront campaign có Global Option: form tải đủ text/clipart/dropdown GO và mockup",
-    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7390, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trên storefront campaign #3270 (Nprice1, artwork AW-GO), form personalization hiển thị Name (text, mockup hiện default \"NAME\"), Dog (clipart 4 item), Color A1 (dropdown Red/Blue/Green, default Red) và mockup hiển thị; SDK gọi GET /api/merchant/campaigns/{shopify product id}.json?shop=nprice1.myshopify.com&v=1 → 200. Console có 2 lỗi được tester ghi là có sẵn (404 /products/<id>.js và SyntaxError liên quan BUG-310), form vẫn render.",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7390, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trên storefront campaign #3270 (store không thuộc explorer, artwork AW-GO), form personalization hiển thị Name (text, mockup hiện default \"NAME\"), Dog (clipart 4 item), Color A1 (dropdown Red/Blue/Green, default Red) và mockup hiển thị; SDK gọi GET /api/merchant/campaigns/{shopify product id}.json?shop=<store>.myshopify.com&v=1 → 200. Console có 2 lỗi được tester ghi là có sẵn (404 /products/<id>.js và SyntaxError liên quan BUG-310), form vẫn render.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
-      "surface": "storefront (CP-CACHE #3270, CP-CACHE2 #3271, CP-NOGO #3272 trên nprice1)",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
+      "surface": "storefront (CP-CACHE #3270, CP-CACHE2 #3271, CP-NOGO #3272 trên store không thuộc explorer)",
       "brand": null
     },
     "last_updated": {
@@ -1701,13 +1701,13 @@
   {
     "kb_id": "KB-359",
     "topic": "Reload nhiều lần campaign/platform product: chữ ký form giống hệt lần đầu",
-    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7393, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): reload 4 lần trang storefront của campaign #3270 và platform product #602 (Nprice1; với #602 chỉ trên HTML đã vô hiệu BUG-310) thì chữ ký form (4 clipart, dropdown Red/Blue/Green, 5 input layer) giống hệt lần đầu.",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7393, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): reload 4 lần trang storefront của campaign #3270 và platform product #602 (store không thuộc explorer; với #602 chỉ trên HTML đã vô hiệu BUG-310) thì chữ ký form (4 clipart, dropdown Red/Blue/Green, 5 input layer) giống hệt lần đầu.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
-      "surface": "storefront (CP-CACHE #3270, CP-CACHE2 #3271, CP-NOGO #3272 trên nprice1)",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
+      "surface": "storefront (CP-CACHE #3270, CP-CACHE2 #3271, CP-NOGO #3272 trên store không thuộc explorer)",
       "brand": null
     },
     "last_updated": {
@@ -1728,13 +1728,13 @@
   {
     "kb_id": "KB-360",
     "topic": "Nhập text + chọn clipart/GO: preview cập nhật text/clipart, dropdown GO additional-option không đổi hình; payload customization khớp",
-    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7392, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trên storefront campaign #3270 (Nprice1), nhập \"HELLO 5203\", chọn Color A1 = Blue và clipart #2 thì preview hiện \"HELLO 5203\" và clipart đã chọn; dropdown Global Option là additional-option nên chỉ thể hiện trên form, preview không đổi hình. POST /api/merchant/shopify/customization?shop=…&id=<shopify product id> → 201 với data layer-520311=\"HELLO 5203\", layer-520312=<đường dẫn clipart>, global-option-1125=\"blue\"; localStorage teeinblue-customizations khớp; cart/add → 200.",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7392, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trên storefront campaign #3270 (store không thuộc explorer), nhập \"HELLO 5203\", chọn Color A1 = Blue và clipart #2 thì preview hiện \"HELLO 5203\" và clipart đã chọn; dropdown Global Option là additional-option nên chỉ thể hiện trên form, preview không đổi hình. POST /api/merchant/shopify/customization?shop=…&id=<shopify product id> → 201 với data layer-520311=\"HELLO 5203\", layer-520312=<đường dẫn clipart>, global-option-1125=\"blue\"; localStorage teeinblue-customizations khớp; cart/add → 200.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
-      "surface": "storefront (CP-CACHE #3270, CP-CACHE2 #3271, CP-NOGO #3272 trên nprice1)",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
+      "surface": "storefront (CP-CACHE #3270, CP-CACHE2 #3271, CP-NOGO #3272 trên store không thuộc explorer)",
       "brand": null
     },
     "last_updated": {
@@ -1756,13 +1756,13 @@
   {
     "kb_id": "KB-361",
     "topic": "2 layer dùng chung 1 Global Option: form hiện lựa chọn mới, payload chỉ 1 giá trị global-option-<id>",
-    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7398, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trên storefront campaign #3270 (Nprice1), 2 layer Color A1/A2 cùng dùng Global Option #1125; đổi Color A1 sang \"Green\" thì form hiển thị \"Green\" (không giữ \"Blue\" cũ), preview không đổi hình (GO là additional-option), và POST /api/merchant/shopify/customization → 201 chỉ chứa một giá trị global-option-1125=\"green\".",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7398, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trên storefront campaign #3270 (store không thuộc explorer), 2 layer Color A1/A2 cùng dùng Global Option #1125; đổi Color A1 sang \"Green\" thì form hiển thị \"Green\" (không giữ \"Blue\" cũ), preview không đổi hình (GO là additional-option), và POST /api/merchant/shopify/customization → 201 chỉ chứa một giá trị global-option-1125=\"green\".",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
-      "surface": "storefront (CP-CACHE #3270, CP-CACHE2 #3271, CP-NOGO #3272 trên nprice1)",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
+      "surface": "storefront (CP-CACHE #3270, CP-CACHE2 #3271, CP-NOGO #3272 trên store không thuộc explorer)",
       "brand": null
     },
     "last_updated": {
@@ -1789,13 +1789,13 @@
   {
     "kb_id": "KB-362",
     "topic": "Lựa chọn Global Option được tự điền khi mở campaign khác dùng cùng GO trong cùng trình duyệt",
-    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7399, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): chọn GO-A trên storefront campaign #3270 rồi mở campaign #3271 (CP-CACHE2, Nprice1) trong cùng trình duyệt thì GO-A tự điền đúng giá trị đã chọn (kiểm với \"Blue\", vẫn còn khi mở platform product #602, và \"Green\" tự điền ở #3271); GO-B giữ default \"Small\". Không có request ghi nào; tester ghi trạng thái lấy từ localStorage.",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7399, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): chọn GO-A trên storefront campaign #3270 rồi mở campaign #3271 (CP-CACHE2, store không thuộc explorer) trong cùng trình duyệt thì GO-A tự điền đúng giá trị đã chọn (kiểm với \"Blue\", vẫn còn khi mở platform product #602, và \"Green\" tự điền ở #3271); GO-B giữ default \"Small\". Không có request ghi nào; tester ghi trạng thái lấy từ localStorage.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
-      "surface": "storefront (CP-CACHE #3270, CP-CACHE2 #3271, CP-NOGO #3272 trên nprice1)",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
+      "surface": "storefront (CP-CACHE #3270, CP-CACHE2 #3271, CP-NOGO #3272 trên store không thuộc explorer)",
       "brand": null
     },
     "last_updated": {
@@ -1822,13 +1822,13 @@
   {
     "kb_id": "KB-363",
     "topic": "Campaign không dùng Global Option: form chỉ có input thường, response global_options rỗng; giá trị text còn sau reload",
-    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7400, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trên storefront campaign #3272 (CP-NOGO, Nprice1), form chỉ có 1 input Text (layer-520331), không có dropdown Global Option; GET /api/merchant/campaigns/{shopify product id}.json → 200 với resource_type=\"campaign\", global_options=[] và artworks[0].global_option_ids=[]; nhập \"NOGO\" thì preview hiện, reload trang vẫn giữ \"NOGO\"; POST /api/merchant/shopify/customization chứa layer-520331=\"NOGO\".",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7400, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trên storefront campaign #3272 (CP-NOGO, store không thuộc explorer), form chỉ có 1 input Text (layer-520331), không có dropdown Global Option; GET /api/merchant/campaigns/{shopify product id}.json → 200 với resource_type=\"campaign\", global_options=[] và artworks[0].global_option_ids=[]; nhập \"NOGO\" thì preview hiện, reload trang vẫn giữ \"NOGO\"; POST /api/merchant/shopify/customization chứa layer-520331=\"NOGO\".",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
-      "surface": "storefront (CP-CACHE #3270, CP-CACHE2 #3271, CP-NOGO #3272 trên nprice1)",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
+      "surface": "storefront (CP-CACHE #3270, CP-CACHE2 #3271, CP-NOGO #3272 trên store không thuộc explorer)",
       "brand": null
     },
     "last_updated": {
@@ -1849,13 +1849,13 @@
   {
     "kb_id": "KB-364",
     "topic": "LỖI ĐÃ QUAN SÁT (BUG-310): trang storefront thật của platform product không render form personalization (console SyntaxError / \"TypeError: e is not iterable\")",
-    "statement": "Lỗi đã quan sát (BUG-310), KHÔNG phải hành vi đúng — quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7391, task TIB-257; lượt chạy ~06:00 UTC, trước lần redeploy (fix bug + commit 8731f3a) mà dev yêu cầu recheck, chưa chạy lại): trên trang storefront thật của platform product #602 (Nprice1, /products/the-complete-snowboard), không chỉnh HTML, form personalization không render; console có SyntaxError và \"TypeError: e is not iterable\" ở getDefaultVariant. Theo ghi nhận của tester (chưa có xác nhận của dev), nguyên nhân là tên category `<script>alert('xss')` không được escape làm đóng sớm thẻ script teeinblueCampaign (571KB), là lỗi có sẵn BUG-310, không do TIB-5203; platform product cũ #589 cũng bị. Trạng thái fix BUG-310 chưa rõ.",
+    "statement": "Lỗi đã quan sát (BUG-310), KHÔNG phải hành vi đúng — quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7391, task TIB-257; lượt chạy ~06:00 UTC, trước lần redeploy (fix bug + commit 8731f3a) mà dev yêu cầu recheck, chưa chạy lại): trên trang storefront thật của platform product #602 (store không thuộc explorer, /products/the-complete-snowboard), không chỉnh HTML, form personalization không render; console có SyntaxError và \"TypeError: e is not iterable\" ở getDefaultVariant. Theo ghi nhận của tester (chưa có xác nhận của dev), nguyên nhân là tên category `<script>alert('xss')` không được escape làm đóng sớm thẻ script teeinblueCampaign (571KB), là lỗi có sẵn BUG-310, không do TIB-5203; platform product cũ #589 cũng bị. Trạng thái fix BUG-310 chưa rõ.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
-      "surface": "storefront (PP-CACHE #602, /products/the-complete-snowboard, nprice1)",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
+      "surface": "storefront (PP-CACHE #602, /products/the-complete-snowboard, store không thuộc explorer)",
       "brand": null
     },
     "last_updated": {
@@ -1878,13 +1878,13 @@
   {
     "kb_id": "KB-365",
     "topic": "Storefront platform product: form render đủ khi HTML trang đã được thay chuỗi <script> của category",
-    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7391, TC-TIB-7393, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): khi chặn route HTML trang product của platform product #602 (Nprice1) và thay chuỗi `<script>alert('xss')</script>` bằng text thường, form personalization render đủ Name, Dog (4 clipart), Color A1 (Red/Blue/Green), 0 lỗi console, 0 request 4xx/5xx. Đây không phải quan sát trên trang thật (xem quan sát BUG-310).",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7391, TC-TIB-7393, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): khi chặn route HTML trang product của platform product #602 (store không thuộc explorer) và thay chuỗi `<script>alert('xss')</script>` bằng text thường, form personalization render đủ Name, Dog (4 clipart), Color A1 (Red/Blue/Green), 0 lỗi console, 0 request 4xx/5xx. Đây không phải quan sát trên trang thật (xem quan sát BUG-310).",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
-      "surface": "storefront (PP-CACHE #602, /products/the-complete-snowboard, nprice1)",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
+      "surface": "storefront (PP-CACHE #602, /products/the-complete-snowboard, store không thuộc explorer)",
       "brand": null
     },
     "last_updated": {
@@ -1904,13 +1904,13 @@
   {
     "kb_id": "KB-366",
     "topic": "Storefront campaign: mỗi lần load có 1 request 404 tới /products/<shopify product id>.js",
-    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7393, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trên storefront campaign #3270 (Nprice1), mỗi lần load trang có 1 request 404 tới /products/15271489765617.js (SDK gọi theo product id); form vẫn đúng. Chưa xác định request này có từ trước TIB-5203 hay không.",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7393, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trên storefront campaign #3270 (store không thuộc explorer), mỗi lần load trang có 1 request 404 tới /products/15271489765617.js (SDK gọi theo product id); form vẫn đúng. Chưa xác định request này có từ trước TIB-5203 hay không.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront SDK đọc response; nprice1/nprice2, staging)",
-      "surface": "storefront (CP-CACHE #3270, nprice1)",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
+      "surface": "storefront (CP-CACHE #3270, store không thuộc explorer)",
       "brand": null
     },
     "last_updated": {
@@ -1931,7 +1931,7 @@
   {
     "kb_id": "KB-367",
     "topic": "Response campaigns/{id}.json (public) không chứa access_token/token/secret/password; có config.maps_api_key dạng Mapbox public token",
-    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7409, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): quét response GET /api/merchant/campaigns/{shopify product id}.json của campaign #3270 và platform product #602 (Nprice1) theo từ khoá: không có access_token, token, secret, password; có 1 key api_key là config.maps_api_key, giá trị là Mapbox token tiền tố \"pk.\" (tester ghi là loại token công khai dùng ở trình duyệt). Việc maps_api_key được phép xuất hiện trong response public chưa được dev/PO xác nhận.",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7409, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): quét response GET /api/merchant/campaigns/{shopify product id}.json của campaign #3270 và platform product #602 (store không thuộc explorer) theo từ khoá: không có access_token, token, secret, password; có 1 key api_key là config.maps_api_key, giá trị là Mapbox token tiền tố \"pk.\" (tester ghi là loại token công khai dùng ở trình duyệt). Việc maps_api_key được phép xuất hiện trong response public chưa được dev/PO xác nhận.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
@@ -1958,12 +1958,12 @@
   {
     "kb_id": "KB-394",
     "topic": "Storefront sản phẩm có artwork group ~250 layer: popup Preview mở trong vài giây, không lỗi UI (đếm DOM toàn trang)",
-    "statement": "Trên staging (instance 520 / nprice1), lượt chạy test của agent ngày 2026-10-29 (Testlane task TIB-268, Jira TIB-5633; build hash không rõ; production chưa xác nhận), quan sát thấy trên storefront nprice1, với sản phẩm có artwork group ~250 layer ảnh, bấm Preview thì popup preview mở trong vài giây, không lỗi UI. Đếm DOM toàn trang (không phân biệt phần tử thuộc popup hay mockup chính) có 34 svg, 250 phần tử svg image và 756 thẻ g. Popup hiển thị mockup áo, không nhìn rõ từng ảnh nhỏ; không có lượt trước fix để so. Quan sát này không xác định cơ chế render của popup Preview hay của mockup chính.",
+    "statement": "Trên staging (instance 520 / store không thuộc explorer), lượt chạy test của agent ngày 2026-10-29 (Testlane task TIB-268, Jira TIB-5633; build hash không rõ; production chưa xác nhận), quan sát thấy trên storefront store không thuộc explorer, với sản phẩm có artwork group ~250 layer ảnh, bấm Preview thì popup preview mở trong vài giây, không lỗi UI. Đếm DOM toàn trang (không phân biệt phần tử thuộc popup hay mockup chính) có 34 svg, 250 phần tử svg image và 756 thẻ g. Popup hiển thị mockup áo, không nhìn rõ từng ảnh nhỏ; không có lượt trước fix để so. Quan sát này không xác định cơ chế render của popup Preview hay của mockup chính.",
     "knowledge_kind": "OBSERVED_CURRENT",
     "confidence": "LOW",
     "scope": {
       "environment": "staging",
-      "role": "guest-buyer (storefront nprice1)",
+      "role": "guest-buyer (storefront store không thuộc explorer)",
       "surface": "storefront (product page · popup Preview)",
       "brand": null
     },

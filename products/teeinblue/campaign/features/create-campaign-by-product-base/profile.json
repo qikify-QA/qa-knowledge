@@ -12,7 +12,7 @@
   "stable_since_version": null,
   "actors": [
     {
-      "role": "owner (Linh explorer, sub=273)",
+      "role": "owner (explorer (TIB_STAGING_EMAIL), sub=<explorer>)",
       "permission_observed": "Toàn quyền create/select product/assign artwork/edit listing info/publish trong flow này, không gặp permission-denied",
       "kb_refs": [
         "campaign/create-campaign-by-product-base#KB-002",
@@ -22,14 +22,14 @@
       ]
     },
     {
-      "role": "owner (store owner/staff, instance 520 nprice1)",
+      "role": "owner (store owner/staff, instance 520 store không thuộc explorer)",
       "permission_observed": "[MỚI, CBS-006] Mở Campaign Editor của campaign fixture (#3043 Group ẩn, #3036 Group hiện) và xem preview trên mockup; case chỉ xem, không có request ghi.",
       "kb_refs": [
         "campaign/create-campaign-by-product-base#KB-184"
       ]
     },
     {
-      "role": "[MỚI, CBS-009] merchant-owner (store owner/staff, portal staging, instance 520 Nprice1) — gán video cho variant trong campaign editor",
+      "role": "[MỚI, CBS-009] merchant-owner (store owner/staff, portal staging, instance 520 store không thuộc explorer) — gán video cho variant trong campaign editor",
       "permission_observed": "Chọn video trong modal Assign mockups, Save assignment, duplicate video/campaign, sửa URL video, xoá video và xoá variant khỏi campaign trong lượt test 2026-10-22; không gặp permission-denied. Chưa thử role khác.",
       "kb_refs": [
         "campaign/create-campaign-by-product-base#KB-300",
@@ -57,7 +57,7 @@
     },
     {
       "path": "[MỚI, CBS-009] Campaign editor by Product Base -> modal 'Assign mockups' (gán theo media) hoặc Edit trên dòng variant -> modal 'Assign mockups to a variant'; view 'Mockup assignments' (Group by Mockup / Group by Variant)",
-      "precondition": "Campaign by Product Base có video trong list media (video từ URL YouTube/Vimeo); staging instance 520 Nprice1, lượt test 2026-10-22 trước khi 4 PR của TIB-5428 merge 2026-10-27",
+      "precondition": "Campaign by Product Base có video trong list media (video từ URL YouTube/Vimeo); staging instance 520 store không thuộc explorer, lượt test 2026-10-22 trước khi 4 PR của TIB-5428 merge 2026-10-27",
       "kb_refs": [
         "campaign/create-campaign-by-product-base#KB-300",
         "campaign/create-campaign-by-product-base#KB-302",
@@ -116,7 +116,7 @@
     },
     {
       "name": "[MỚI, CBS-009] Chọn video trong modal Assign mockups và gán video cho variant (1-n, n-1, n-n)",
-      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-300, KB-302, KB-304; Testlane TC-TIB-6414, 6416..6421 PASS, staging instance 520 Nprice1, lượt duy nhất 2026-10-22, trước khi 4 PR TIB-5428 merge 2026-10-27, shipped UNKNOWN). Modal 'Assign mockups' của campaign by Product Base hiện mockup và video trong cùng một grid, click video thì video được chọn, không báo lỗi; mỗi video hiện bằng thumbnail của chính video (YouTube, Vimeo), không vỡ ảnh, không phải placeholder. Một video gán được cho nhiều variant, một variant nhận nhiều video, và kiểu nhiều-nhiều đều Save thành công; request lưu mang id video kèm đủ variant đã chọn; reload vẫn giữ; lần Save sau cho video khác không gửi lệnh xoá mapping của video đã gán. Chọn variant + chỉ video (0 mockup) thì Save enable và lưu được; không chọn media nào thì Save disabled, không có request lưu. Chỉ quan sát (OBSERVED_CURRENT/LOW, ngoài oracle): thứ tự item trong grid theo thứ tự list media (KB-301); request lưu là POST /api/graphql mutation AssignMockupVariantIds / update_campaign_mockups_many (KB-303).",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-300, KB-302, KB-304; Testlane TC-TIB-6414, 6416..6421 PASS, staging instance 520 store không thuộc explorer, lượt duy nhất 2026-10-22, trước khi 4 PR TIB-5428 merge 2026-10-27, shipped UNKNOWN). Modal 'Assign mockups' của campaign by Product Base hiện mockup và video trong cùng một grid, click video thì video được chọn, không báo lỗi; mỗi video hiện bằng thumbnail của chính video (YouTube, Vimeo), không vỡ ảnh, không phải placeholder. Một video gán được cho nhiều variant, một variant nhận nhiều video, và kiểu nhiều-nhiều đều Save thành công; request lưu mang id video kèm đủ variant đã chọn; reload vẫn giữ; lần Save sau cho video khác không gửi lệnh xoá mapping của video đã gán. Chọn variant + chỉ video (0 mockup) thì Save enable và lưu được; không chọn media nào thì Save disabled, không có request lưu. Chỉ quan sát (OBSERVED_CURRENT/LOW, ngoài oracle): thứ tự item trong grid theo thứ tự list media (KB-301); request lưu là POST /api/graphql mutation AssignMockupVariantIds / update_campaign_mockups_many (KB-303).",
       "kb_refs": [
         "campaign/create-campaign-by-product-base#KB-300",
         "campaign/create-campaign-by-product-base#KB-302",
@@ -158,7 +158,7 @@
     },
     {
       "name": "[MỚI, CBS-013] Re-publish campaign đã publish (nút Update cho store trong dialog Multi-store launch) — quan sát, chưa xác nhận",
-      "description": "OBSERVED_CURRENT/LOW (KB-370, S1, 1 lượt staging 2026-10-28 ~06:00 UTC, Testlane TC-TIB-7408, Jira TIB-5203, trước lần redeploy mà dev yêu cầu recheck, chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng). Với campaign #3270 đã publish trên Nprice1, bấm Update cho store Nprice1 trong dialog Multi-store launch gọi POST /api/campaigns/3270/sync → 200; link storefront (handle tib5203-cp-cache) giữ nguyên, metafield version đổi; storefront tải đủ form (Name/Dog/Color A1), reload 4 lần giống hệt, chỉ có lỗi console được tester ghi là có sẵn. Không thấy toast trong ảnh chụp (dialog launch vẫn mở). Không dùng làm oracle.",
+      "description": "OBSERVED_CURRENT/LOW (KB-370, S1, 1 lượt staging 2026-10-28 ~06:00 UTC, Testlane TC-TIB-7408, Jira TIB-5203, trước lần redeploy mà dev yêu cầu recheck, chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng). Với campaign #3270 đã publish trên store không thuộc explorer, bấm Update cho store store không thuộc explorer trong dialog Multi-store launch gọi POST /api/campaigns/3270/sync → 200; link storefront (handle tib5203-cp-cache) giữ nguyên, metafield version đổi; storefront tải đủ form (Name/Dog/Color A1), reload 4 lần giống hệt, chỉ có lỗi console được tester ghi là có sẵn. Không thấy toast trong ảnh chụp (dialog launch vẫn mở). Không dùng làm oracle.",
       "kb_refs": [
         "campaign/create-campaign-by-product-base#KB-370"
       ]
@@ -264,7 +264,7 @@
       ]
     },
     {
-      "from": "[MỚI, CBS-013] campaign đã publish trên store (Nprice1)",
+      "from": "[MỚI, CBS-013] campaign đã publish trên store (store không thuộc explorer)",
       "to": "POST /api/campaigns/{id}/sync → 200; link storefront giữ nguyên handle; metafield version đổi; storefront tải đủ form",
       "trigger": "bấm Update cho store đó trong dialog Multi-store launch",
       "condition": "OBSERVED_CURRENT/LOW, 1 lượt 2026-10-28 trước redeploy, chưa chạy lại; không thấy toast; không phải expected",
@@ -278,7 +278,7 @@
       "rule": "[MỚI, CBS-006] Preview trên mockup của Campaign Editor theo effective visibility của Group: artwork có Group ẩn thì preview không có layer con của Group; artwork có Group hiện thì preview có đủ layer, khớp canvas Artwork Editor.",
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
-      "scope": "staging (instance 520 / nprice1), owner, Campaign Editor preview; Jira TIB-5584 Done (6/6 PR merged), shipped UNKNOWN; lượt chạy 2026-10-16 trên build staging @ 2026-10-16 13:54, build hash không rõ; production chưa xác nhận",
+      "scope": "staging (instance 520 / store không thuộc explorer), owner, Campaign Editor preview; Jira TIB-5584 Done (6/6 PR merged), shipped UNKNOWN; lượt chạy 2026-10-16 trên build staging @ 2026-10-16 13:54, build hash không rõ; production chưa xác nhận",
       "caveats": "Dùng hai campaign fixture (Group ẩn #3043 / Group hiện #3036), không đổi Group trên cùng artwork. Fixture 'Group ẩn + con visible:true' dựng qua MCP/API, chưa được PO/dev xác nhận là dữ liệu hợp lệ. Lượt PASS chạy trước khi 3 PR còn OPEN merge; chưa chạy lại. Chỉ xem preview, không có request ghi.",
       "confirmation_ref": "Testlane TC-TIB-6072 PASS (task TIB-211, Jira TIB-5584), chạy 2026-10-16",
       "kb_refs": [
@@ -289,7 +289,7 @@
       "rule": "[MỚI, CBS-009] Modal 'Assign mockups' của campaign by Product Base hiển thị mockup và video của campaign trong cùng một grid; click vào video thì video được chọn, không báo lỗi.",
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
-      "scope": "staging instance 520 Nprice1, merchant-owner, campaign editor by Product Base; Jira TIB-5428, lượt duy nhất 2026-10-22 trước khi 4 PR merge 2026-10-27, build hash không rõ; shipped UNKNOWN; production chưa xác nhận",
+      "scope": "staging instance 520 store không thuộc explorer, merchant-owner, campaign editor by Product Base; Jira TIB-5428, lượt duy nhất 2026-10-22 trước khi 4 PR merge 2026-10-27, build hash không rõ; shipped UNKNOWN; production chưa xác nhận",
       "caveats": "Case chỉ đọc, chưa Save. Thứ tự item trong grid (KB-301) không thuộc rule này.",
       "confirmation_ref": "Testlane TC-TIB-6414 PASS (task TIB-221, Jira TIB-5428), chạy 2026-10-22",
       "kb_refs": [
@@ -300,7 +300,7 @@
       "rule": "[MỚI, CBS-009] Assignment video ↔ variant hỗ trợ 1-n, n-1 và n-n: Save thành công, request lưu mang id video kèm đủ các variant đã chọn (không rơi/đổi variant), reload vẫn giữ; Save lần sau cho video khác chỉ bổ sung mapping của video đó, không xoá mapping của video đã gán trước.",
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
-      "scope": "staging instance 520 Nprice1, merchant-owner, campaign editor by Product Base; lượt duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge; shipped UNKNOWN",
+      "scope": "staging instance 520 store không thuộc explorer, merchant-owner, campaign editor by Product Base; lượt duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge; shipped UNKNOWN",
       "caveats": "Một lượt chạy, 3 variant, 2 video. Tên mutation/shape payload (KB-303) không thuộc rule.",
       "confirmation_ref": "Testlane TC-TIB-6416, TC-TIB-6417, TC-TIB-6418 PASS (task TIB-221, Jira TIB-5428), chạy 2026-10-22",
       "kb_refs": [
@@ -311,7 +311,7 @@
       "rule": "[MỚI, CBS-009] Trong modal 'Assign mockups' của campaign by Product Base: chọn variant cùng chỉ một video (0 mockup) thì Save enable và lưu được, variant chỉ có video đó; chọn variant mà không chọn media nào thì Save disabled và không có request lưu assignment; mỗi video trong picker hiển thị bằng thumbnail của chính video (YouTube, Vimeo), không vỡ ảnh, không phải ô trống hay placeholder mockup.",
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
-      "scope": "staging instance 520 Nprice1, merchant-owner, campaign editor by Product Base; lượt duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge; shipped UNKNOWN",
+      "scope": "staging instance 520 store không thuộc explorer, merchant-owner, campaign editor by Product Base; lượt duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge; shipped UNKNOWN",
       "caveats": "Chỉ campaign; điều kiện Save của modal tương ứng ở Product Base editor (mockup-attachment) chưa kiểm trong lượt này.",
       "confirmation_ref": "Testlane TC-TIB-6419, TC-TIB-6420, TC-TIB-6421 PASS (task TIB-221, Jira TIB-5428), chạy 2026-10-22",
       "kb_refs": [
@@ -322,7 +322,7 @@
       "rule": "[MỚI, CBS-009] View 'Mockup assignments': khi một variant được gán một mockup và một video, Group by Mockup có dòng riêng cho mockup và dòng riêng cho video (không gộp), Group by Variant liệt kê hai mục riêng dưới variant đó.",
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
-      "scope": "staging instance 520 Nprice1, merchant-owner; lượt duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge; shipped UNKNOWN",
+      "scope": "staging instance 520 store không thuộc explorer, merchant-owner; lượt duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge; shipped UNKNOWN",
       "caveats": "Một lượt chạy, case chỉ đọc.",
       "confirmation_ref": "Testlane TC-TIB-6422 PASS (task TIB-221, Jira TIB-5428), chạy 2026-10-22",
       "kb_refs": [
@@ -333,7 +333,7 @@
       "rule": "[MỚI, CBS-009] Duplicate một video đã gán variant giữ assignment của video gốc và bản copy mang assignment giống bản gốc; 'Duplicate campaign' tạo clone có đúng assignment video ↔ variant của campaign gốc, campaign gốc giữ nguyên.",
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
-      "scope": "staging instance 520 Nprice1, merchant-owner; lượt duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge; shipped UNKNOWN",
+      "scope": "staging instance 520 store không thuộc explorer, merchant-owner; lượt duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge; shipped UNKNOWN",
       "caveats": "Chỉ phủ assignment của VIDEO. Việc giữ assignment của mockup ảnh (KB-307) chỉ là quan sát, chưa xác nhận.",
       "confirmation_ref": "Testlane TC-TIB-6437, TC-TIB-6438 PASS (task TIB-221, Jira TIB-5428), chạy 2026-10-22",
       "kb_refs": [
@@ -344,7 +344,7 @@
       "rule": "[MỚI, CBS-009] Xoá một video đã gán thì mọi assignment của video đó không còn hiển thị ở Group by Variant và Group by Mockup (không còn dòng của video), request xoá thành công, assignment của video khác giữ nguyên, và gallery storefront ở variant từng được gán không còn video đó sau khi Update campaign; xoá một variant khỏi campaign thì assignment video của variant đó không còn (không còn nhóm variant đó, dòng video chỉ còn liệt kê variant còn lại), assignment video với variant khác giữ nguyên.",
       "knowledge_kind": "CONFIRMED_EXPECTED",
       "confidence": "MEDIUM",
-      "scope": "staging instance 520 Nprice1, merchant-owner, portal + api + storefront; lượt duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge; shipped UNKNOWN",
+      "scope": "staging instance 520 store không thuộc explorer, merchant-owner, portal + api + storefront; lượt duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge; shipped UNKNOWN",
       "caveats": "Một lượt chạy trên campaign clone. Request xoá và cách xoá variant (KB-311) không thuộc rule. Bước network kiểm request load lại assignment sau khi xoá video/variant chưa xác minh trong lượt test — rule không khẳng định gì về dữ liệu assignment tải lại.",
       "confirmation_ref": "Testlane TC-TIB-6441, TC-TIB-6442 PASS (task TIB-221, Jira TIB-5428), chạy 2026-10-22",
       "kb_refs": [
@@ -426,10 +426,10 @@
       ]
     },
     {
-      "statement": "[MỚI, CBS-013] OBSERVED_CURRENT/LOW (S1, 1 lượt 2026-10-28 ~06:00 UTC, TC-TIB-7408, trước lần redeploy dev yêu cầu recheck, chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): với campaign #3270 đã publish trên Nprice1, nút Update cho store trong dialog Multi-store launch gọi POST /api/campaigns/3270/sync → 200; link storefront (handle tib5203-cp-cache) giữ nguyên, metafield version đổi; storefront tải đủ form Name/Dog/Color A1, reload 4 lần giống hệt; chỉ có lỗi console được tester ghi là có sẵn (404 /products/<id>.js, BUG-310). Không thấy toast trong ảnh chụp (dialog launch vẫn mở).",
+      "statement": "[MỚI, CBS-013] OBSERVED_CURRENT/LOW (S1, 1 lượt 2026-10-28 ~06:00 UTC, TC-TIB-7408, trước lần redeploy dev yêu cầu recheck, chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): với campaign #3270 đã publish trên store không thuộc explorer, nút Update cho store trong dialog Multi-store launch gọi POST /api/campaigns/3270/sync → 200; link storefront (handle tib5203-cp-cache) giữ nguyên, metafield version đổi; storefront tải đủ form Name/Dog/Color A1, reload 4 lần giống hệt; chỉ có lỗi console được tester ghi là có sẵn (404 /products/<id>.js, BUG-310). Không thấy toast trong ảnh chụp (dialog launch vẫn mở).",
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
-      "scope": "staging instance 520 Nprice1, merchant-owner, portal dialog Multi-store launch + storefront; 1 lượt 2026-10-28; shipped UNKNOWN",
+      "scope": "staging instance 520 store không thuộc explorer, merchant-owner, portal dialog Multi-store launch + storefront; 1 lượt 2026-10-28; shipped UNKNOWN",
       "observed_count": null,
       "kb_refs": [
         "campaign/create-campaign-by-product-base#KB-370"
@@ -541,7 +541,7 @@
         ]
       },
       {
-        "path": "[MỚI, CBS-013] Product page campaign #3270 (handle tib5203-cp-cache, Nprice1) sau re-publish — link giữ nguyên, form tải đủ (quan sát)",
+        "path": "[MỚI, CBS-013] Product page campaign #3270 (handle tib5203-cp-cache, store không thuộc explorer) sau re-publish — link giữ nguyên, form tải đủ (quan sát)",
         "kb_refs": [
           "campaign/create-campaign-by-product-base#KB-370"
         ]
@@ -917,11 +917,22 @@
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-campaign-070"
+    },
+    {
+      "question": "[CBS-139] spec-hub (rule campaigns-publish-guards) nêu campaign không publish được khi archived, không publish 2 lần vào cùng store, không Update được ở store chưa từng publish hoặc khi mockup còn đang publish ở store đó. Dev/PO xác nhận đây là hành vi mong muốn, và portal báo việc từ chối thế nào (thông báo, nút bị ẩn hay disable)?",
+      "why_it_matters": "KB-453 ở mức PROPOSED (rule spec-hub đọc từ code, chưa người review), không làm oracle; CHK-016, CHK-038 vẫn NEEDS_CONFIRMATION. Nhánh archived nối với OQ-campaign-029, nhánh mockup đang publish nối với OQ-campaign-089, nhánh Update nối với OQ-campaign-069.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "campaign/create-campaign-by-product-base#KB-453",
+        "campaign/create-campaign-by-product-base#KB-011"
+      ],
+      "oq_id": "OQ-campaign-095"
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-139"
   },
   "coverage_matrix": [
     {
@@ -983,7 +994,7 @@
     {
       "feature_id": "FEAT-01-create-campaign-by-product-base",
       "layer": "portal",
-      "role": "owner (instance 520 nprice1)",
+      "role": "owner (instance 520 store không thuộc explorer)",
       "state": "[MỚI, CBS-006] Campaign Editor preview — artwork Group ẩn / Group hiện (hai campaign fixture)",
       "environment": "staging",
       "covered": true,
@@ -1006,7 +1017,7 @@
     {
       "feature_id": "FEAT-01-create-campaign-by-product-base",
       "layer": "portal+api",
-      "role": "merchant-owner (Nprice1)",
+      "role": "merchant-owner (store không thuộc explorer)",
       "state": "[MỚI, CBS-009] modal Assign mockups: grid video, gán 1-n/n-1/n-n, Save chỉ video, Save disabled, thumbnail video",
       "environment": "staging",
       "covered": true,
@@ -1020,7 +1031,7 @@
     {
       "feature_id": "FEAT-01-create-campaign-by-product-base",
       "layer": "portal",
-      "role": "merchant-owner (Nprice1)",
+      "role": "merchant-owner (store không thuộc explorer)",
       "state": "[MỚI, CBS-009] Mockup assignments: video là dòng/mục riêng",
       "environment": "staging",
       "covered": true,
@@ -1032,7 +1043,7 @@
     {
       "feature_id": "FEAT-01-create-campaign-by-product-base",
       "layer": "portal+api",
-      "role": "merchant-owner (Nprice1)",
+      "role": "merchant-owner (store không thuộc explorer)",
       "state": "[MỚI, CBS-009] Duplicate video / Duplicate campaign giữ assignment video",
       "environment": "staging",
       "covered": true,
@@ -1056,7 +1067,7 @@
     {
       "feature_id": "FEAT-01-create-campaign-by-product-base",
       "layer": "portal+api+storefront",
-      "role": "merchant-owner (Nprice1)",
+      "role": "merchant-owner (store không thuộc explorer)",
       "state": "[MỚI, CBS-009] sửa URL video đã gán (id, assignment, storefront, thumbnail)",
       "environment": "staging",
       "covered": true,
@@ -1069,7 +1080,7 @@
     {
       "feature_id": "FEAT-01-create-campaign-by-product-base",
       "layer": "portal+api+storefront",
-      "role": "merchant-owner (Nprice1)",
+      "role": "merchant-owner (store không thuộc explorer)",
       "state": "[MỚI, CBS-009] xoá video / xoá variant → assignment và gallery storefront",
       "environment": "staging",
       "covered": true,
@@ -1107,7 +1118,7 @@
     {
       "feature_id": "FEAT-01-create-campaign-by-product-base",
       "layer": "portal+api+storefront",
-      "role": "merchant-owner (Nprice1)",
+      "role": "merchant-owner (store không thuộc explorer)",
       "state": "[MỚI, CBS-013] re-publish qua nút Update trong Multi-store launch (sync 200, link giữ, metafield version đổi, form storefront tải đủ)",
       "environment": "staging",
       "covered": true,

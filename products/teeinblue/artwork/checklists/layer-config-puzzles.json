@@ -283,6 +283,119 @@
       "priority": "P3",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-artwork-207"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "VALIDATION",
+      "layer": "storefront",
+      "title": "[CBS-123] Word Cloud để trống field nhập từ: có chặn Add to cart không, Default words có được dùng thay không",
+      "applicability": {
+        "role": "buyer (storefront) · merchant-owner (cấu hình)",
+        "state": "layer Word Cloud có Default words, không prefill, field nhập từ để trống",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "storefront form buyer"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork throwaway có layer Word Cloud, không dùng artwork/campaign thật.",
+      "steps": [
+        "Mở sản phẩm gắn artwork throwaway trên storefront, để trống field Word Cloud.",
+        "Ghi nhãn field (có dấu bắt buộc không) và thuộc tính aria-required của input.",
+        "Bấm Add to cart; ghi có bị chặn không, message hiện gì và preview dùng từ nào; ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Trạng thái Add to cart, nhãn field, nội dung preview khi field trống.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/layer-config-puzzles#KB-1006",
+        "artwork/layer-config-puzzles#KB-031"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1006 là rule QA chưa PO xác nhận; vai trò Default words khi input rỗng chưa nạp."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-479"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "[CBS-123] Dedupe từ trùng theo từng Text case (Normal / UPPERCASE / lowercase / Capitalize)",
+      "applicability": {
+        "role": "buyer",
+        "state": "layer Word Cloud, đổi Text case giữa các lượt",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "storefront form buyer (chip input) và cloud preview"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork throwaway có layer Word Cloud, không dùng artwork/campaign thật.",
+      "steps": [
+        "Với từng Text case Normal, UPPERCASE, lowercase, Capitalize: Save artwork, mở storefront.",
+        "Nhập 'Love love LOVE' và thêm một từ lặp y hệt.",
+        "Ghi số chip còn lại, các từ hiện trong cloud preview; ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Số chip và từ hiện trong cloud theo từng Text case.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/layer-config-puzzles#KB-1007",
+        "artwork/layer-config-puzzles#KB-031"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1007 là rule QA chưa Dev xác nhận; nhánh Capitalize chưa có test case riêng."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-480"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-123] Drop shadow của Word Cloud origin và linked copy (Duplicate & Link)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "layer Word Cloud origin bật Drop shadow, có linked copy tạo bằng Duplicate & Link",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "artwork editor (viewport rộng, mở hết panel và menu tràn trước khi kết luận thiếu control)"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork throwaway có layer Word Cloud, không dùng artwork/campaign thật.",
+      "steps": [
+        "Chọn layer Word Cloud origin, tìm control Drop shadow trên toolbar/panel; ghi vị trí và các field.",
+        "Bật shadow, đổi X/Y/Blur trên origin; ghi shadow của origin và linked copy trong preview editor.",
+        "Tắt shadow trên origin; ghi shadow của linked copy.",
+        "Chọn linked copy, ghi có control shadow riêng không; ghi kết quả kèm build và ngày chạy, không phán pass hay fail."
+      ],
+      "observation_point": "Control Drop shadow trên origin/linked copy và shadow hiển thị của cả hai sau mỗi thay đổi.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/layer-config-puzzles#KB-1008",
+        "artwork/layer-config-puzzles#KB-031",
+        "artwork/layer-duplicate-link-copy#KB-935"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1008 là rule QA chưa Dev xác nhận; control shadow riêng của linked copy chưa nạp."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-481"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -299,6 +412,16 @@
         "CHK-008"
       ],
       "covered": "BASELINE + NEEDS_CONFIRMATION, một lượt mỗi item"
+    },
+    {
+      "feature_id": "FEAT-16-layer-config-puzzles",
+      "capability": "[CBS-123] Word Cloud required, dedupe theo Text case, Drop shadow origin/linked copy (KB-1006, KB-1007, KB-1008)",
+      "checks": [
+        "CHK-009",
+        "CHK-010",
+        "CHK-011"
+      ],
+      "covered": "NONE + NEEDS_CONFIRMATION (KB PROPOSED)"
     }
   ],
   "excluded_dimensions": [
@@ -316,7 +439,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-123"
   }
 }

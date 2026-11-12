@@ -123,12 +123,13 @@
     {
       "capability_id": "CAP-MCK-08",
       "name": "Xoá mockup khỏi thư viện (đơn và hàng loạt) kèm kiểm tra in-use",
-      "description": "Xoá đơn: thùng rác → 'Are you sure to remove ?' (thiếu tên) → DELETE /api/mockup-layers/{id} không body → 200 'Successfully deleted the layer.'; không gọi in-use trước. Xoá hàng loạt: nút đỏ 'Delete' → 'Are you sure you want to remove N selected images?' → POST /api/mockup-layers/in-use {ids} (không templates) → in_use_ids [] → DELETE từng mockup → tải lại. in_use_ids khác rỗng chưa quan sát.",
+      "description": "Xoá đơn: thùng rác → 'Are you sure to remove ?' (thiếu tên) → DELETE /api/mockup-layers/{id} không body → 200 'Successfully deleted the layer.'; không gọi in-use trước. Xoá hàng loạt: nút đỏ 'Delete' → 'Are you sure you want to remove N selected images?' → POST /api/mockup-layers/in-use {ids} (không templates) → in_use_ids [] → DELETE từng mockup → tải lại. in_use_ids khác rỗng chưa quan sát. Theo spec-hub (rule green): ảnh đang được dùng ở mockup của product base, campaign hoặc store product không xoá được, merchant thấy 'The layer has already been used!' (KB-064).",
       "kb_refs": [
         "image-library/mockup-layer-library#KB-061",
         "image-library/mockup-layer-library#KB-062",
         "image-library/mockup-layer-library#KB-063",
-        "image-library/mockup-layer-library#KB-060"
+        "image-library/mockup-layer-library#KB-060",
+        "image-library/mockup-layer-library#KB-064"
       ]
     },
     {
@@ -228,8 +229,20 @@
       ]
     }
   ],
-  "confirmed_rules": [],
-  "confirmed_rules_note": "Run không có nguồn thẩm quyền (§3); không KB item nào là CONFIRMED_EXPECTED.",
+  "confirmed_rules": [
+    {
+      "statement": "Mockup library image đang được dùng ở bất kỳ mockup nào (product base, campaign hoặc store product) không xoá được: lệnh xoá bị từ chối, merchant thấy 'The layer has already been used!'.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, media library modal (xoá đơn và xoá hàng loạt), ảnh đang được dùng",
+      "caveats": "Một citation (rule spec-hub green). Rule không nói đường xoá nào gọi kiểm tra in-use phía client (OQ-image-library-017).",
+      "confirmation_ref": "spec-hub teeinblue, feature \"mockups\" v2, rule mockups-library-in-use (sure green), đọc 2026-11-12",
+      "kb_refs": [
+        "image-library/mockup-layer-library#KB-064"
+      ]
+    }
+  ],
+  "confirmed_rules_note": "Một rule CONFIRMED_EXPECTED (KB-064, nguồn spec-hub green, CBS-133); các item còn lại là quan sát hoặc suy luận.",
   "observed_behavior": [
     {
       "statement": "Không có trang Mockup Library/Media độc lập; media library chỉ mở từ section Mockup của product base.",
@@ -1187,8 +1200,8 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-133"
   },
   "coverage_matrix": [
     {

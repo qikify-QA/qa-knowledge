@@ -5,14 +5,14 @@
   "user_goal": "Store owner lưu toàn bộ thay đổi (layer/template) của artwork từ editor xuống server một cách đáng tin cậy, và hệ thống đọc lại đúng dữ liệu đã lưu ở lần mở editor tiếp theo.",
   "actors": [
     {
-      "role": "store owner / staff (sub=273, user_id=266, plan Blue (Test))",
+      "role": "store owner / staff (sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
       "permission_observed": "Full quyền save artwork; JWT chứa cả staff id (sub) và tenant/user id (user_id) trong cùng token",
       "kb_refs": [
         "artwork/artwork-save-persist#KB-058"
       ]
     },
     {
-      "role": "merchant-owner (store owner/staff, instance 520 nprice1)",
+      "role": "merchant-owner (store owner/staff, instance 520 store không thuộc explorer)",
       "permission_observed": "Mở artwork trong Artwork Editor và bấm Save; trên bản copy Artwork 1.0 #5187 PUT trả 500 nên không Save được",
       "kb_refs": [
         "artwork/artwork-save-persist#KB-145"
@@ -82,6 +82,24 @@
         "artwork/artwork-save-persist#KB-974",
         "artwork/artwork-save-persist#KB-053"
       ]
+    },
+    {
+      "name": "[MỚI, CBS-143] Chặn lưu artwork có layer ảnh không có ảnh",
+      "description": "Portal chặn Save / Save & Close và REST trả 422 khi có layer static-photo không ảnh hoặc photo / clipart-category / group-clipart-categories No personalization không ảnh; bỏ qua replica, linked, global option, ẩn, form-only; ảnh vừa chọn chưa upload tính là có ảnh; artwork hỏng sẵn bị khoá Save tới khi sửa (theo change note dev, OBSERVED_CURRENT).",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1017",
+        "artwork/artwork-save-persist#KB-1018",
+        "artwork/artwork-save-persist#KB-1019",
+        "artwork/artwork-save-persist#KB-1020",
+        "artwork/artwork-save-persist#KB-1021"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-107] Rate limit lưu artwork theo staff",
+      "description": "Mỗi staff lưu artwork mới hoặc duplicate tối đa 5 lần/phút, lưu thay đổi artwork có sẵn tối đa 60 lần/phút (setting server); vượt thì bị từ chối tới hết phút (spec-hub, sure green).",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1029"
+      ]
     }
   ],
   "state_transitions": [
@@ -143,7 +161,18 @@
       ]
     }
   ],
-  "confirmed_rules": [],
+  "confirmed_rules": [
+    {
+      "statement": "[MỚI, CBS-107] Mỗi staff lưu artwork mới hoặc duplicate artwork tối đa 5 lần mỗi phút, lưu thay đổi artwork có sẵn tối đa 60 lần mỗi phút (setting server); vượt ngưỡng thì request bị từ chối tới hết phút.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope_note": "spec-hub feature artwork-editor v3, rule artwork-editor-save-rate-limit, đọc 2026-11-12; ngưỡng 60 ở production chưa xác nhận; rule không nói status/body khi bị từ chối",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1029"
+      ]
+    }
+  ],
   "observed_behavior": [
     {
       "statement": "Request body PUT có field cấp artwork: name, width/height, design_format ('rgb'), artwork_category_id (null), template_settings (null), global_option_ids ([]), schema_version (2), templates[] (mỗi phần tử: id 'template-<6 số>', name, addons: [], charge_enabled, positions[], layers[]).",
@@ -167,7 +196,7 @@
       "observed_count": 1
     },
     {
-      "statement": "JWT portal (localStorage.teeinblue_token[0].token) chứa claim sub='273' (staffs.id) và user_id=266 (users.id) trong cùng token; xác nhận chéo qua GraphQL artworks row {user_id:266, staff_id:273}.",
+      "statement": "JWT portal (localStorage.teeinblue_token[0].token) chứa claim sub='273' (staffs.id) và user_id=<explorer> (users.id) trong cùng token; xác nhận chéo qua GraphQL artworks row {user_id:266, staff_id:273}.",
       "kb_refs": [
         "artwork/artwork-save-persist#KB-058"
       ],
@@ -195,7 +224,7 @@
       "observed_count": 1
     },
     {
-      "statement": "Trên staging (instance 520 / nprice1, lượt chạy test 2026-10-21→22, build có TIB-5580 chưa ship), bấm Save trên artwork #5187 (bản copy Artwork 1.0 của #2164, chưa có version nào đã lưu) — kể cả khi mở lại editor và Save không đổi gì — PUT /api/artworks/5187 trả 500 với body {\"message\":\"Server Error\"}, artwork không Save được. Một fixture, một lượt chạy; chưa rõ do dữ liệu bản copy, lỗi sản phẩm hay liên quan TIB-5580; không suy rộng cho mọi artwork Artwork 1.0.",
+      "statement": "Trên staging (instance 520 / store không thuộc explorer, lượt chạy test 2026-10-21→22, build có TIB-5580 chưa ship), bấm Save trên artwork #5187 (bản copy Artwork 1.0 của #2164, chưa có version nào đã lưu) — kể cả khi mở lại editor và Save không đổi gì — PUT /api/artworks/5187 trả 500 với body {\"message\":\"Server Error\"}, artwork không Save được. Một fixture, một lượt chạy; chưa rõ do dữ liệu bản copy, lỗi sản phẩm hay liên quan TIB-5580; không suy rộng cho mọi artwork Artwork 1.0.",
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
@@ -250,6 +279,51 @@
       "kb_refs": [
         "artwork/artwork-save-persist#KB-974",
         "artwork/artwork-save-persist#KB-053"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "[MỚI, CBS-143] Theo change note dev TIB-5446 và một lượt test staging: Save / Save & Close bị chặn khi có layer ảnh không có ảnh, toast nêu template + layer, không gửi PUT.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1017"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "[MỚI, CBS-143] Theo change note dev TIB-5446: ảnh vừa chọn chưa upload vẫn tính là có ảnh, lưu bình thường (trạng thái chưa upload chưa dựng được).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1018"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "[MỚI, CBS-143] Theo change note dev TIB-5446 (chưa quan sát): REST lưu artwork trả 422 với layer ảnh không có ảnh.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1019"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "[MỚI, CBS-143] Theo change note dev TIB-5446: kiểm tra bỏ qua layer replica, linked, global option, ẩn, form-only; cách xác định linked đang có OQ CONFLICT.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1020"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "[MỚI, CBS-143] Theo change note dev TIB-5446 (chưa quan sát): artwork hỏng sẵn không Save được tới khi thêm ảnh hoặc xoá layer; không backfill.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1021"
       ],
       "observed_count": null
     }
@@ -341,7 +415,7 @@
   "permissions": [
     {
       "role": "store owner/staff",
-      "capability": "full save/read artwork của chính tenant (user_id=266) qua REST PUT + GraphQL",
+      "capability": "full save/read artwork của chính tenant (user_id=<explorer>) qua REST PUT + GraphQL",
       "kb_refs": [
         "artwork/artwork-save-persist#KB-058"
       ]
@@ -360,6 +434,12 @@
         "item": "[MỚI, CBS-097] Artwork Editor — Form panel, tab Re-order: thứ tự field sau Save và mở lại editor",
         "kb_refs": [
           "artwork/artwork-save-persist#KB-973"
+        ]
+      },
+      {
+        "item": "[MỚI, CBS-143] Toast 'Template - <tên template>: <tên layer>: - This layer has no image. Add an image or delete the layer.' khi Save bị chặn",
+        "kb_refs": [
+          "artwork/artwork-save-persist#KB-1017"
         ]
       }
     ],
@@ -381,6 +461,12 @@
         "item": "[MỚI, CBS-097, KNOWN_DEFECT] Request lưu artwork với Option title chứa NUL — 500 {\"message\": \"Server Error\"}, dữ liệu không đổi",
         "kb_refs": [
           "artwork/artwork-save-persist#KB-972"
+        ]
+      },
+      {
+        "item": "[MỚI, CBS-143] REST lưu artwork trả 422 khi có layer ảnh không có ảnh (theo change note dev, chưa quan sát)",
+        "kb_refs": [
+          "artwork/artwork-save-persist#KB-1019"
         ]
       }
     ],
@@ -502,6 +588,21 @@
         "artwork/artwork-save-persist#KB-973",
         "artwork/artwork-save-persist#KB-974"
       ]
+    },
+    {
+      "risk": "[MỚI, CBS-143] KB-1017..KB-1021 chỉ dựa change note của Dev (OBSERVED_CURRENT, chưa PO chốt, chưa rõ đã lên production); oracle BASELINE, lệch là cần điều tra.",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1017",
+        "artwork/artwork-save-persist#KB-1019",
+        "artwork/artwork-save-persist#KB-1021"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-107] Dựng fixture tạo nhiều artwork liên tiếp dễ chạm ngưỡng 5 lần/phút mỗi staff; chia nhịp tạo artwork khi dựng data.",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1029",
+        "artwork/artwork-save-persist#KB-1030"
+      ]
     }
   ],
   "unknown_areas": [
@@ -606,11 +707,83 @@
       "oq_type": "CONFLICT",
       "conflict_group": "CONF-CBS-097-01",
       "oq_id": "OQ-artwork-335"
+    },
+    {
+      "question": "[MỚI, CBS-109] Rule QA FACT-179 (2026-10-29): format file order design do field 'Artwork design format' (multi-select) trong dialog 'Artwork details' quyết định, không có nút Export/Download design riêng trên artwork editor (KB-986). Dev xác nhận đây là hành vi đúng không; khi chọn nhiều format thì một order sinh file design cho mọi format đã chọn hay chỉ một; và lựa chọn multi-select được lưu vào field nào (KB-053 mới thấy design_format là một chuỗi 'rgb' trong body PUT)?",
+      "why_it_matters": "KB-986 là PROPOSED (S2), chưa ai kiểm end-to-end bằng order thật nên không làm oracle; test case về file design (AI/EPS/PDF/SVG) cần biết đặt format ở đâu và đọc lại ở đâu.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-986",
+        "artwork/artwork-save-persist#KB-053"
+      ],
+      "oq_id": "OQ-artwork-454"
+    },
+    {
+      "question": "[MỚI, CBS-143] Chặn Save khi layer ảnh không có ảnh (KB-1017) có phải hành vi PO/Dev chốt, đã lên production chưa; và layer photo No personalization không có ảnh mặc định nhưng có retrieval value (KB-937/KB-938) có bị chặn không?",
+      "why_it_matters": "Quyết định KB-1017 có lên expected được không và CHK-027 có phủ đúng phạm vi.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1017"
+      ],
+      "oq_id": "OQ-artwork-494"
+    },
+    {
+      "question": "[MỚI, CBS-143] Trạng thái 'ảnh đã chọn nhưng chưa upload' (KB-1018) xảy ra ở đường thao tác nào trên portal để test được?",
+      "why_it_matters": "Lượt test chưa dựng được trạng thái này; CHK-028 chỉ phủ một phần.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1018"
+      ],
+      "oq_id": "OQ-artwork-495"
+    },
+    {
+      "question": "[MỚI, CBS-143] REST lưu artwork trả 422 (KB-1019): route tạo mới là gì, shape body lỗi 422 ra sao, và đã chạy được trên staging chưa?",
+      "why_it_matters": "KB-1019 chưa quan sát; CHK-029 cần route và observation point cụ thể.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1019"
+      ],
+      "oq_id": "OQ-artwork-496"
+    },
+    {
+      "question": "[MỚI, CBS-143] Kiểm tra bỏ qua 'linked' (KB-1020) dựa vào trường nào — layer linked đã convert sang Static Image bị chặn trong lượt test; và 'replica' là loại layer nào?",
+      "why_it_matters": "Hai phía chưa khớp nên CHK-030 để oracle NONE.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1020"
+      ],
+      "oq_id": "OQ-artwork-497"
+    },
+    {
+      "question": "[MỚI, CBS-143] Artwork hỏng sẵn (KB-1021): có cách nào khác để seller lưu thay đổi không, và có kế hoạch backfill riêng không?",
+      "why_it_matters": "Chặn Save có thể làm seller không lưu được thay đổi khác trên artwork cũ (rủi ro P1).",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1021"
+      ],
+      "oq_id": "OQ-artwork-498"
+    },
+    {
+      "question": "[MỚI, CBS-107] Ngưỡng 60 lần/phút cho lưu artwork có sẵn (setting server) ở production có cùng giá trị không? Response khi vượt rate limit là 429 'Too Many Requests' dạng trang HTML (rule QA FACT-050, KB-1030) có phải thiết kế không, hay phải là JSON?",
+      "why_it_matters": "Check ngưỡng 60 và check dạng response chưa có oracle; KB-1030 chỉ là rule QA (PROPOSED).",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1029",
+        "artwork/artwork-save-persist#KB-1030"
+      ],
+      "oq_id": "OQ-artwork-507"
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-107"
   },
   "coverage_matrix": [
     {
@@ -776,6 +949,91 @@
         "artwork/artwork-save-persist#KB-974"
       ],
       "basis": "CONF-CBS-097-01 UNRESOLVED"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-109] chọn Artwork design format trong dialog Artwork details, Save, rồi order sinh design file",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-986"
+      ],
+      "basis": "KB-986 PROPOSED (rule QA FACT-179), chưa quan sát end-to-end"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-143] Save / Save & Close với layer ảnh không có ảnh",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1017"
+      ],
+      "basis": "change note dev + một lượt test staging, không build"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-143] Save ngay sau khi chọn ảnh chưa upload",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1018"
+      ],
+      "basis": "change note dev; lượt test chỉ phủ một phần"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-143] REST tạo mới / cập nhật artwork với layer ảnh không có url",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1019"
+      ],
+      "basis": "change note dev, chưa quan sát"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-143] Save với layer replica / linked / global option / ẩn / form-only không ảnh",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1020"
+      ],
+      "basis": "change note dev + lượt test một phần, chưa phủ replica"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-143] mở artwork hỏng sẵn (layer ảnh không url) rồi Save",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1021"
+      ],
+      "basis": "change note dev, chưa quan sát"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-107] tạo/duplicate artwork > 5 lần trong một phút; lưu thay đổi > 60 lần trong một phút",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1029",
+        "artwork/artwork-save-persist#KB-1030"
+      ],
+      "basis": "spec-hub sure green cho ngưỡng 5; ngưỡng 60 và dạng response chờ Dev"
     }
   ],
   "profile_conflicts": [

@@ -5,14 +5,14 @@ Mỗi mục dưới đây là 1 entry độc lập với `oq_id` ổn định (k
 | Loại | Số lượng |
 |---|---|
 | CONFLICT | 1 |
-| NEEDS_CONFIRMATION | 35 |
+| NEEDS_CONFIRMATION | 53 |
 | OPEN_ISSUE | 10 |
-| **Tổng** | **46** |
+| **Tổng** | **64** |
 
 ## OQ-translation-001 — CONFLICT
 
 ```json
-{"oq_id": "OQ-translation-001", "type": "CONFLICT", "feature_id": "dynamic-translations", "summary": "Dynamic Translations (nội dung do merchant tự nhập, vd. tên Product base) có propagate/hiển thị lên storefront hay không. UNRESOLVED — cần nguồn thẩm quyền (PO/Dev xác nhận, spec, hoặc mã nguồn backend) để xác định by-design vs defect, cộng với retest trên 1 campaign có Option Title tự do thật sự trước khi kết luận diện rộng cho toàn bộ Dynamic Translations (chỉ sub-scope 'Product base name' đã được test, xem KB-016 trong features/dynamic-translations/kb.json).", "side_a": "Business context ban đầu do user cung cấp lúc bootstrap (giả thuyết đầu vào, KHÔNG phải nguồn xác nhận thẩm quyền, confidence LOW): 'Cả 2 loại translation (Product Page Content và Dynamic Translations) đều hiển thị ra storefront.'", "side_b": "Quan sát trực tiếp (confidence LOW, single-sample): khi buyer GUEST ở locale=vi xem trang sản phẩm campaign 2595 (đã có sẵn Dynamic Translation record id=69 lưu 'Vertical Framed Poster' -> 'Áp phích khung dọc QA-TEST-CTX20260921-02'), chuỗi 'Vertical Framed Poster' vẫn hiển thị nguyên tiếng Anh cả ở DOM (component <variant-selects> gốc theme Dawn) lẫn ở response GET /api/merchant/campaigns/{productId}.json (byte-giống-hệt giữa locale en và vi). Bản dịch tiếng Việt không xuất hiện ở bất kỳ đâu trên trang. Chỉ 1/3 sub-scope đã công bố (Product base name) được test — campaign 2595 không có field Option Title tự do, nên 'Option Title' và 'Variants name' hoàn toàn chưa kiểm chứng, KHÔNG được suy diễn từ kết quả này."}
+{"oq_id": "OQ-translation-001", "type": "CONFLICT", "feature_id": "dynamic-translations", "summary": "Dynamic Translations (nội dung do merchant tự nhập, vd. tên Product base) có propagate/hiển thị lên storefront hay không. UNRESOLVED — cần nguồn thẩm quyền (PO/Dev xác nhận, spec, hoặc mã nguồn backend) để xác định by-design vs defect, cộng với retest trên 1 campaign có Option Title tự do thật sự trước khi kết luận diện rộng cho toàn bộ Dynamic Translations (chỉ sub-scope 'Product base name' đã được test, xem KB-016 trong features/dynamic-translations/kb.json).", "side_a": "Business context ban đầu do user cung cấp lúc bootstrap (giả thuyết đầu vào, KHÔNG phải nguồn xác nhận thẩm quyền, confidence LOW): 'Cả 2 loại translation (Product Page Content và Dynamic Translations) đều hiển thị ra storefront.' Bổ sung CBS-134 (2026-11-11, KB-042 PROPOSED/LOW, bậc S2, UNRESOLVED trong CONFLICT-001): spec-hub rule dynamic-translations-scope (đọc source teeinblue-api, log_id=150) ghi nguyên văn \"Dynamic translations cover option titles in the personalization form, product base names and variant names.\" — tên product base thuộc phạm vi thiết kế của feature. Rule không nói nguyên văn về storefront và không phải quan sát chạy thật; spec-hub là rule QA (S2), chưa phải nguồn thẩm quyền PO/Dev nên không đóng được conflict. Câu hỏi Dev: tên product base có thực sự đi qua luồng propagate của Dynamic Translations, hay có nhánh code riêng không chạy cho trường hợp này?", "side_b": "Quan sát trực tiếp (confidence LOW, single-sample): khi buyer GUEST ở locale=vi xem trang sản phẩm campaign 2595 (đã có sẵn Dynamic Translation record id=69 lưu 'Vertical Framed Poster' -> 'Áp phích khung dọc QA-TEST-CTX20260921-02'), chuỗi 'Vertical Framed Poster' vẫn hiển thị nguyên tiếng Anh cả ở DOM (component <variant-selects> gốc theme Dawn) lẫn ở response GET /api/merchant/campaigns/{productId}.json (byte-giống-hệt giữa locale en và vi). Bản dịch tiếng Việt không xuất hiện ở bất kỳ đâu trên trang. Chỉ 1/3 sub-scope đã công bố (Product base name) được test — campaign 2595 không có field Option Title tự do, nên 'Option Title' và 'Variants name' hoàn toàn chưa kiểm chứng, KHÔNG được suy diễn từ kết quả này."}
 ```
 
 ## OQ-translation-002 — NEEDS_CONFIRMATION
@@ -126,7 +126,7 @@ Mỗi mục dưới đây là 1 entry độc lập với `oq_id` ổn định (k
 ## OQ-translation-020 — OPEN_ISSUE
 
 ```json
-{"oq_id": "OQ-translation-020", "type": "OPEN_ISSUE", "feature_id": null, "summary": "Store thứ 2 (linh-explorer-2.myshopify.com) chưa từng được test cho bất kỳ feature nào của object Translation — toàn bộ run bootstrap chỉ dùng 1 store (linh-explorer.myshopify.com)."}
+{"oq_id": "OQ-translation-020", "type": "OPEN_ISSUE", "feature_id": null, "summary": "Store thứ 2 (store TIB_STORE_URL_2) chưa từng được test cho bất kỳ feature nào của object Translation — toàn bộ run bootstrap chỉ dùng 1 store (store TIB_STORE_URL_1)."}
 ```
 
 ## OQ-translation-021 — OPEN_ISSUE
@@ -347,4 +347,16 @@ Mỗi mục dưới đây là 1 entry độc lập với `oq_id` ổn định (k
 
 ```json
 {"oq_id":"OQ-translation-062","type":"NEEDS_CONFIRMATION","feature_id":"product-page-content-translation","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-013 “Mobile viewport hiển thị override translation đúng như desktop — chưa kiểm chứng” của feature product-page-content-translation. missing_or_unresolved_oracle"}
+```
+
+## OQ-translation-063 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-translation-063","type":"NEEDS_CONFIRMATION","feature_id":"dynamic-translations","summary":"[CBS-134, KB-041, spec-hub rule dynamic-translations-scope] Dynamic Translations phủ option title của form personalization, tên product base và tên variant; các chữ khác trên trang sản phẩm dịch ở Product Page Content riêng. Dev xác nhận phạm vi này và việc tách hai trang có khớp KB-019 (hai mô hình lưu trữ/API khác nhau) không? Người trả lời: Dev."}
+```
+
+## OQ-translation-064 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-translation-064","type":"NEEDS_CONFIRMATION","feature_id":"product-page-content-translation","summary":"[CBS-134, KB-015, spec-hub rule product-page-settings-sync] Spec-hub ghi khi settings, texts hoặc custom code của store đổi, Teeinblue push lên store ở nền và storefront hiện thay đổi 'shortly after saving'; KB-015 ghi propagate IMMEDIATE (một mẫu, browser context sạch). Rule có áp cho Product Page Content translation (PUT config-translations) không, và độ trễ thực tế có đáng kể không? Claim CBS-134 CLAIM-03 chưa nạp vào KB, đang chờ PO quyết giữ cả hai (mở conflict với KB-015) hay giữ KB-015. Người trả lời: Dev (độ trễ), PO (quyết định)."}
 ```

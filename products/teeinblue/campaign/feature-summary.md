@@ -1,9 +1,9 @@
 # Object: Campaign (product: teeinblue) — Feature Profile Summary
-**Published context version:** 8
+**Published context version:** 9
 
 - **Environment mọi fact dưới đây được quan sát:** staging
 - **Gần như toàn bộ profile là `OBSERVED_CURRENT`** — item `CONFIRMED_EXPECTED` là KB-184 (CBS-006, test case Testlane PASS, staging 2026-10-16) và KB-300, KB-302, KB-304, KB-305, KB-306, KB-310, KB-312, KB-314 (CBS-009, test case Testlane PASS trên staging 2026-10-22, trước khi code merge; production chưa xác nhận)
-- **Actor duy nhất đã exercise:** role `owner` (Linh explorer, sub=273), 1 organization
+- **Actor duy nhất đã exercise:** role `owner` (explorer (TIB_STAGING_EMAIL), sub=<explorer>), 1 organization
 - **9 feature có profile:** FEAT-00, FEAT-01, FEAT-02, FEAT-03, FEAT-04, FEAT-06, FEAT-07 (`campaign-shopify-media-sync`, mới từ CBS-009), FEAT-08 (`campaign-artwork-mockup-reflection`), FEAT-09 (`campaign-publication-history`), hai feature mới từ CBS-075. FEAT-05 không tồn tại trong sequence (chưa giải thích — `OQ-campaign-005`)
 - **Surface storefront/buyer-facing KHÔNG thuộc object này** — được theo dõi ở object độc lập `sdk` (`knowledge/products/teeinblue/objects/sdk/`). Không được diễn giải là Campaign đã cover storefront (`OQ-campaign-004`)
 - **Độ chắc chắn của checklist:** 61/109 check (56%) đang ở `NEEDS_CONFIRMATION` — baseline observed, chưa phải business rule đã confirm. Mỗi check như vậy có 1 `oq_ref` trỏ tới `open-questions.md`
@@ -56,6 +56,8 @@
 **Cập nhật CBS-013 (TIB-5203):** re-publish campaign qua Update trong Multi-store launch gọi `POST /api/campaigns/{id}/sync` và không thấy toast (KB-370, OBSERVED_CURRENT/LOW, 1 lượt trên staging trước redeploy) — chưa xác nhận hành vi đúng, CHK-038 là NEEDS_CONFIRMATION (OQ-campaign-069). Chưa rõ metafield version đổi sau Update có liên hệ với tham số v mà SDK dùng để tải payload hay không, nên không suy ra storefront nhận nội dung mới sau Update (OQ-campaign-070). KB-308 (quan sát trước khi có cache) có thể đã cũ.
 
 **Cập nhật CBS-075:** Generate test design trên dev store có khác biệt môi trường `ALTERNATIVE_SETUP` (KB-450, INFERRED/LOW, không làm oracle, `OQ-campaign-071`).
+
+**Theo spec-hub (CBS-139, KB-453, PROPOSED/LOW, rule đọc từ code, chưa Dev/PO xác nhận, không phải oracle):** campaign không publish được khi archived, không publish 2 lần vào cùng store, không Update được ở store chưa từng publish hoặc khi mockup còn đang publish ở store đó (OQ-campaign-095). Vế "mỗi lần launch tạo một Shopify product cho mỗi campaign và store, không lan sang store khác" chưa nạp vì gắn với check P1 CHK-005, cần nguồn S3; KB-010, KB-011 giữ nguyên.
 
 ---
 
@@ -131,7 +133,7 @@
 
 **Capabilities:**
 1. Owner có toàn quyền CRUD/publish trên cả 2 flow (`view-campaigns`/`manage-campaigns`)
-2. ⚠️ READ surface của Multi-store launch trả dữ liệu **toàn Organization** (bao gồm store ngoài phạm vi, vd `linh-explorer-2`)
+2. ⚠️ READ surface của Multi-store launch trả dữ liệu **toàn Organization** (bao gồm store ngoài phạm vi, vd `store TIB_STORE_URL_2`)
 
 **Coverage:** api/portal (owner) ✅ · non-owner/staff hạn chế ❌ · cross-tenant ❌ · invalid/forbidden token ❌
 **Confidence:** MEDIUM
