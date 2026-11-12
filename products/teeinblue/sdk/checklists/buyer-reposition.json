@@ -1,0 +1,423 @@
+{
+  "feature_id": "FEAT-15-buyer-reposition",
+  "feature_key": "buyer-reposition",
+  "object_id": "sdk",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Curve Text layer không có affordance Reposition (nút/drag box) ở cả hai cơ chế",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "layer type = curve-text",
+        "environment": "staging",
+        "surface_or_device": "storefront"
+      },
+      "precondition": "Campaign có layer Text GraphQL type: \"curve-text\" (không dùng curve_radius != null làm proxy), đã customize.",
+      "steps": [
+        "Mở product customization page có layer Curve Text đã bật Reposition ở Personalization Settings",
+        "Kiểm cả hai cơ chế: toggle main-gallery ON (inline) và OFF (popup riêng)"
+      ],
+      "observation_point": "Có xuất hiện nút/drag box Reposition cho layer Curve Text không. Hành vi quan sát/kỳ vọng chờ xác nhận: Không có affordance reposition nào (không nút, không drag box) ở cả hai cơ chế — đây là hành vi hiện tại quan sát được, chưa xác nhận là ý định thiết kế (xem OQ-sdk-218).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-516"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-516"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-218"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Cơ chế Reposition thật (nút, popup, kéo/thả, Save, validate) KHÔNG render/hoạt động trong Portal, kể cả tab Live preview",
+      "applicability": {
+        "role": "store owner",
+        "state": "Personalization Settings / Live preview",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Store owner mở Artwork Editor hoặc Live preview cho layer đã bật Reposition.",
+      "steps": [
+        "Mở tab Live preview cho layer bật Reposition",
+        "Tìm nút/popup/drag box reposition giống cơ chế storefront"
+      ],
+      "observation_point": "Portal chỉ hiện công tắc BẬT/TẮT 'Allow customers to reposition…'; không có cơ chế kéo/thả thật nào xuất hiện NGOẠI TRỪ nút seller 'Re-position' (CHK-006, cơ chế khác hẳn). Hành vi quan sát/kỳ vọng chờ xác nhận: Không tìm thấy nút/popup/drag-box reposition của BUYER trong Portal; chỉ có công tắc BẬT/TẮT. Ranh giới với nút seller 'Re-position' (CHK-006) chưa được PO/Dev xác nhận (OQ-sdk-219).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-517"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-517",
+        "KB-521"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-sdk-219"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Popup Reposition đứng riêng (toggle OFF) chỉ liệt kê target đã được buyer customize",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "toggle 'Enable Reposition on main gallery' = OFF",
+        "environment": "staging",
+        "surface_or_device": "storefront"
+      },
+      "precondition": "Fixture có nhiều field bật Reposition, một số đã customize (đã chọn/gõ), một số chưa.",
+      "steps": [
+        "Customize một phần field bật Reposition (bỏ trống phần còn lại)",
+        "Mở popup Reposition đứng riêng"
+      ],
+      "observation_point": "Số lượng .tee-reposition-targets__item trong popup so với tổng số field bật Reposition. Hành vi quan sát/kỳ vọng chờ xác nhận: Popup chỉ hiện target đã customize; field bật Reposition còn rỗng/mặc định không xuất hiện. Staging quan sát 6 target khác 2 target ở production trên cùng fixture loại, chưa giải thích được (OQ-sdk-220).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-518"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-518"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-220"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Chọn giá trị Category (Clipart/Group of Clipart/Vector) tự động select artwork trên main gallery (control reposition)",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "layer type = Clipart Category/Group of Clipart Category/Vector Category, bật Reposition",
+        "environment": "staging",
+        "surface_or_device": "storefront (main gallery canvas)"
+      },
+      "precondition": "Layer Category bật Reposition, chưa chọn giá trị.",
+      "steps": [
+        "Chọn một giá trị radio của Category field",
+        "Quan sát main gallery"
+      ],
+      "observation_point": "Có resize handle + toolbar zoom-in/zoom-out/rotate/flip/move-layer hiện trực tiếp trên canvas, đè lên mockup không",
+      "expected_result": "Artwork tương ứng tự động được select trên main gallery; đây là control reposition cho nhóm Category (không qua nút/badge riêng). Chỉ dựa trên screenshot QA, không có TC xác nhận chính thức (OQ-sdk-222).",
+      "oracle": {
+        "kb_ids": [
+          "KB-519"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-519"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-222"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Static Image/Static Vector bật Reposition render component .tee-static-reposition trong panel form",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "layer type = Static Image/Static Vector, bật Reposition",
+        "environment": "staging",
+        "surface_or_device": "storefront (DOM panel form)"
+      },
+      "precondition": "Layer Static Image hoặc Static Vector, toggle Reposition = ON.",
+      "steps": [
+        "Mở panel form của layer Static Image/Static Vector đã bật Reposition",
+        "Kiểm DOM panel form (không hover main gallery)"
+      ],
+      "observation_point": "Có component .tee-static-reposition (name+thumb+badge, text 'Reposition', click được) trong panel form không",
+      "expected_result": "Component .tee-static-reposition xuất hiện ngay trong panel form. BUG-12 (static-vector không render field nào) bị skip 2026-10-29 vì issue Done, chưa kết luận lại — có thể mâu thuẫn (OQ-sdk-223).",
+      "oracle": {
+        "kb_ids": [
+          "KB-520"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-520"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-223"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Seller đặt baseline vị trí layer nguồn qua nút 'Re-position' trong Artwork Editor",
+      "applicability": {
+        "role": "store owner",
+        "state": "layer type = Clipart Category/Group of Clipart Categories",
+        "environment": "staging",
+        "surface_or_device": "portal (Artwork Editor, Personalization Settings)"
+      },
+      "precondition": "Store owner mở Artwork Editor cho layer Clipart Category hoặc Group of Clipart Categories.",
+      "steps": [
+        "Mở Personalization Settings của layer",
+        "Click nút 'Re-position'",
+        "Set rotate + vị trí (top-left/x,y) trong panel Transform",
+        "Vào đúng Live preview (không phải Form Mode:Preview) để verify persist"
+      ],
+      "observation_point": "Panel Transform mở ra và giá trị baseline có persist khi vào Live preview thật không",
+      "expected_result": "Panel Transform mở cho seller set baseline; baseline persist khi vào đúng Live preview. TC-19 hiện ⏸️ chưa kết luận vì Form Mode:Preview không persist — cần retest ở Live preview thật (OQ-sdk-224).",
+      "oracle": {
+        "kb_ids": [
+          "KB-521"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-521"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-sdk-224"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "Control Reposition của Category layer kích hoạt theo đổi giá trị radio và biến mất sau Add to cart",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "layer type = Clipart Category, bật Reposition",
+        "environment": "staging",
+        "surface_or_device": "storefront (DOM)"
+      },
+      "precondition": "Layer Clipart Category đã có giá trị được chọn trước đó.",
+      "steps": [
+        "Chọn giá trị radio khác giá trị đang checked",
+        "Đợi ~400ms, quan sát .tee-drr/.tee-layer-reposition",
+        "Mở rồi đóng cart drawer (Add to cart)",
+        "Quan sát control có còn không"
+      ],
+      "observation_point": "Control hiện sau ~400ms khi đổi giá trị; control có còn sau khi đóng cart drawer không. Hành vi quan sát/kỳ vọng chờ xác nhận: Control hiện ~400ms sau khi đổi giá trị (chọn lại giá trị cũ không kích hoạt lại); control biến mất sau khi mở/đóng cart drawer, phải chọn giá trị mới để kéo tiếp. Mới verify tay một campaign, chưa có TC riêng (OQ-sdk-225).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-522"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-522"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-sdk-225"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Vị trí Category/Image layer lưu trên server dạng tỉ lệ theo box layer (.tee-drr), không phải px tuyệt đối",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "layer type = Clipart Category/Image, sau khi kéo reposition",
+        "environment": "staging",
+        "surface_or_device": "storefront,api"
+      },
+      "precondition": "Layer Category/Image bật Reposition, ô kéo .tee-drr có kích thước đã biết (vd vuông, đo được px).",
+      "steps": [
+        "Kéo .tee-drr một khoảng delta px đã biết (x, y)",
+        "Save → Add to cart (POST .../shopify/customization)",
+        "Đọc field layer-<id>-position trong response/DB"
+      ],
+      "observation_point": "Giá trị {x,y,w,h,a} lưu trên server so với delta_px / kích_thước_ô_kéo. Hành vi quan sát/kỳ vọng chờ xác nhận: x = dx_px / chiều_rộng_ô_kéo, y = dy_px / chiều_cao_ô_kéo (tỉ lệ 0-1, không theo artwork/stage area, không phải px tuyệt đối); baseline (delta=0) lưu {x:0,y:0,w:1,h:1,a:0}. Chỉ khớp 4 số lẻ trong một phép đo trên production (build không ghi lại), chưa đo ô không vuông — KHÔNG coi là công thức chính thức tới khi Dev xác nhận (OQ-sdk-226).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-524"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-524"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-sdk-226"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Vị trí Text layer lưu trên server dạng px tuyệt đối, không phải tỉ lệ như Category/Image layer",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "layer type = Text, sau khi kéo reposition",
+        "environment": "staging",
+        "surface_or_device": "storefront,api"
+      },
+      "precondition": "Layer Text bật Reposition.",
+      "steps": [
+        "Kéo text layer một khoảng delta",
+        "Save → đọc field layer-<id>-position"
+      ],
+      "observation_point": "Giá trị lưu trên server là px tuyệt đối hay tỉ lệ 0-1. Hành vi quan sát/kỳ vọng chờ xác nhận: Giá trị lưu dạng px tuyệt đối (vd x=1550), khác hẳn Category/Image layer (CHK-008, tỉ lệ 0-1). Không generalize giữa hai nhóm layer. Chỉ đo tay trên staging, không có TC riêng (OQ-sdk-227).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-525"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-525",
+        "KB-524"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-sdk-227"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "Linked copy có base size khác origin sync position/scale theo tỉ lệ tương ứng, cả trên client canvas (Live preview) và storefront thật",
+      "applicability": {
+        "role": "buyer (guest), store owner (Live preview)",
+        "state": "linked copy base size != origin base size",
+        "environment": "staging",
+        "surface_or_device": "storefront,portal"
+      },
+      "precondition": "Hai layer linked (origin + copy) có base size khác nhau (vd ratio ~0.67).",
+      "steps": [
+        "Resize/kéo origin một hệ số tỉ lệ đã biết (vd x1.39)",
+        "Quan sát copy trên client-side canvas (Live preview)",
+        "Lặp lại trên storefront thật, đo POSITION và SCALE của copy"
+      ],
+      "observation_point": "Copy có scale/dịch chuyển theo đúng hệ số tỉ lệ áp lên kích thước gốc của chính nó, không bị kéo về kích thước tuyệt đối của origin. Hành vi quan sát/kỳ vọng chờ xác nhận: Copy sync theo tỉ lệ tương ứng (không 'y hệt origin' như TIB-5265 khi base size khác nhau); rotate/background/GO/ẩn-hiện vẫn y hệt. Mới đo một fixture (~0.67) và chỉ verify SCALE trong Live preview; POSITION trên storefront thật cần đo lại (OQ-sdk-228, OQ-sdk-229).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-526",
+          "KB-527"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-526",
+        "KB-527"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-228"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "Server-side design-file render áp đúng transform của nguồn cho linked copy (watch: conflict với FACT-143 cũ)",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "sau checkout, linked copy đã repositioned/scaled",
+        "environment": "staging",
+        "surface_or_device": "api (server-side design-file render), storefront (checkout preview)"
+      },
+      "precondition": "Order có linked copy của layer đã reposition/scale khác base; file in (order_item_artworks.url) đã sinh.",
+      "steps": [
+        "Checkout order với layer gốc đã reposition/scale/rotate và linked copy",
+        "Lấy file PNG in thật (order_item_artworks.url)",
+        "Đo bbox/rotate của copy so với origin"
+      ],
+      "observation_point": "Copy trong file render có cùng kích thước, cùng rotate với origin, chỉ khác vị trí in trên áo không. Hành vi quan sát/kỳ vọng chờ xác nhận: Copy nhận đúng transform của nguồn (không rơi về default). BUG-215 Passed 2026-10-06 (TC-38) xác nhận điều này, đảo ngược bản ghi FACT-143 cũ (2026-10-05) nói ngược lại — build không ghi lại, CHƯA kiểm lại trên production sau fix. Đây là REGRESSION watch: nếu quan sát server KHÔNG áp transform (rơi về default), coi là regression cần báo ngay, không tự kết luận phía nào đúng trước khi Dev quyết (OQ-sdk-230).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-528"
+      ],
+      "regression_watch_kb_ids": [
+        "KB-528"
+      ],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-sdk-230"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-15-buyer-reposition",
+      "risk": "position_storage_formula_unverified",
+      "check_ids": [
+        "CHK-008"
+      ]
+    },
+    {
+      "feature_id": "FEAT-15-buyer-reposition",
+      "risk": "render_file_transform_conflict",
+      "check_ids": [
+        "CHK-011"
+      ]
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "PERMISSION",
+      "reason": "Không có claim nào nói về role khác nhau (ngoài buyer/store owner đã map vào applicability của từng check); chưa có dữ liệu permission edge-case cho cơ chế reposition."
+    },
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Không claim nào nêu giới hạn kích thước/số lượng/định dạng cho cơ chế reposition."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-128"
+  }
+}

@@ -240,3 +240,11 @@ _Regenerated từ nguồn thật (kb.json conflicts, checklist items NEEDS_CONFI
 ```json
 {"oq_id":"OQ-font-046","type":"NEEDS_CONFIRMATION","feature_id":"view-and-configure-font-list","summary":"Cần xác nhận expected behavior và nguồn cho check CHK-011 “Các giá trị Show entries khác 50 (20/100/250/500) bind và query đúng limit tương ứng” của feature view-and-configure-font-list. current_behavior_only"}
 ```
+
+```json
+{"oq_id":"OQ-font-047","type":"NEEDS_CONFIRMATION","feature_id":"upload-custom-font","summary":"[CBS-136, KB-022, spec-hub rule fonts-name] Font mới đặt tên theo tên file đã strip ký tự đặc biệt (chỉ chữ/số/khoảng trắng/gạch ngang/gạch dưới), giữ original_name để merchant tự nhận diện trùng. Cần xác nhận: upload (hoặc rename) font trùng tên gốc có bị chặn ở bất kỳ tầng nào (client/server) không, hay hoàn toàn cho qua và chỉ dựa vào merchant tự nhận ra qua original_name hiển thị? Phần 'không chặn' hiện là suy luận gián tiếp từ rule, chưa Dev xác nhận. Người trả lời: Dev."}
+```
+
+```json
+{"oq_id":"OQ-font-048","type":"NEEDS_CONFIRMATION","feature_id":"upload-custom-font","summary":"[CBS-136, KB-023, spec-hub rule fonts-file-types] Ở tầng server, file không đọc được như font bị từ chối 'Invalid font file'; file đọc được nhưng không convert được thì 'Failed to process font'. KB-013 chỉ quan sát nhánh client (.png bị chặn trước khi tới server, 0 request). Cần xác nhận message server thật khi vượt được chặn client (vd gửi trực tiếp API); nếu khớp thì KB-013 chỉ thiếu quan sát nhánh server, không phải conflict. Người trả lời: Dev (hoặc QA tự kiểm qua API)."}
+```

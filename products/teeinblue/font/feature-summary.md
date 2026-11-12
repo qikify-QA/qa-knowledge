@@ -1,5 +1,5 @@
 # Object: Font (product: teeinblue) — Feature Profile Summary
-**Published context version:** 3
+**Published context version:** 4
 
 - **Object:** Font (entity `custom_fonts`, trang `/fonts`, menu Assets > Upload Fonts) — riêng biệt với `font_category` (`/font-categories`, object khác, ngoài phạm vi tài liệu này). Xem KB-019.
 - **Environment quan sát:** staging, store `linh-explorer.myshopify.com`.
@@ -49,6 +49,8 @@
 **Risks/Unknowns:**
 - Hành vi server thật với file sai định dạng hoàn toàn UNKNOWN — client luôn chặn trước khi gửi request trong mọi sample (OQ-font-008)
 - Upload trùng tên file/tên hiển thị ("Hey Magnolia") lần 2 được server chấp nhận (201), tạo row độc lập, **không có** cảnh báo uniqueness nào — chỉ 1 sample, rule_confidence LOW (OQ-font-007)
+- [CBS-136, PROPOSED] spec-hub rule `fonts-name` (KB-022): font mới đặt tên theo tên file đã strip ký tự đặc biệt (chỉ chữ/số/khoảng trắng/gạch ngang/gạch dưới), giữ `original_name` để merchant tự nhận diện trùng — hàm ý không tự chặn trùng tên; chưa Dev xác nhận có chặn ở client/server hay không (OQ-font-047)
+- [CBS-136, PROPOSED] spec-hub rule `fonts-file-types` (KB-023): ở tầng **server**, file không đọc được như font → "Invalid font file", file không convert được → "Failed to process font" — bổ sung nhánh server mà KB-013 (chặn .png ở client) chưa quan sát; message server thật chưa QA kiểm trực tiếp (OQ-font-048)
 - `transform_status` luôn =1 ở 2 lần tạo quan sát, ý nghĩa enum đầy đủ (0/2/...) chưa xác định
 - **OQ-font-001** (CONFLICT, UNRESOLVED): KB cũ nói toàn bộ `/fonts` đi Hasura GraphQL; quan sát hiện tại thấy create=REST, download=REST, delete=REST, chỉ list/rename đi GraphQL
 - **OQ-font-002** (CONFLICT, UNRESOLVED): KB cũ nói nút Upload mở thẳng OS file picker không modal; quan sát hiện tại thấy có modal trước — có thể do khác store/version, chưa phân biệt được

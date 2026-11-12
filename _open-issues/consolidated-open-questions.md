@@ -2,7 +2,7 @@
 
 File này được SINH TỰ ĐỘNG bởi `scripts/generate-manifest.mjs` từ `open-questions.md` của từng object (§5a) — KHÔNG sửa tay. Nội dung từng câu hỏi nằm ở file của object (link ở cột Object); thêm/sửa/resolve ở đó rồi chạy lại script.
 
-Tổng: 4024 open question đang mở trên 72 object (179 conflict · 2724 cần xác nhận · 1121 open issue).
+Tổng: 4044 open question đang mở trên 72 object (181 conflict · 2741 cần xác nhận · 1122 open issue).
 
 ## Duos B2B QA context
 
@@ -102,11 +102,11 @@ Tổng: 4024 open question đang mở trên 72 object (179 conflict · 2724 cầ
 | [artwork](../products/teeinblue/artwork/open-questions.md) | 25 | 346 | 79 | 450 |
 | [asset-category](../products/teeinblue/asset-category/open-questions.md) | 3 | 37 | 13 | 53 |
 | [campaign](../products/teeinblue/campaign/open-questions.md) | 0 | 71 | 23 | 94 |
-| [font](../products/teeinblue/font/open-questions.md) | 2 | 41 | 3 | 46 |
+| [font](../products/teeinblue/font/open-questions.md) | 2 | 43 | 3 | 48 |
 | [global-option](../products/teeinblue/global-option/open-questions.md) | 5 | 53 | 16 | 74 |
 | [image-library](../products/teeinblue/image-library/open-questions.md) | 5 | 13 | 19 | 37 |
 | [open-api](../products/teeinblue/open-api/open-questions.md) | 1 | 46 | 9 | 56 |
 | [order](../products/teeinblue/order/open-questions.md) | 3 | 58 | 23 | 84 |
 | [product-base](../products/teeinblue/product-base/open-questions.md) | 2 | 90 | 19 | 111 |
-| [sdk](../products/teeinblue/sdk/open-questions.md) | 8 | 151 | 58 | 217 |
+| [sdk](../products/teeinblue/sdk/open-questions.md) | 10 | 166 | 59 | 235 |
 | [translation](../products/teeinblue/translation/open-questions.md) | 1 | 51 | 10 | 62 |
