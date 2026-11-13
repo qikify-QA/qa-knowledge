@@ -1,0 +1,402 @@
+[
+  {
+    "kb_id": "KB-014",
+    "topic": "localStorage key 'teeinblue-customizations' KHÔNG tồn tại lúc load trang ban đầu, chỉ được tạo khi có tương tác field cá nhân hoá đầu tiên — giống hệt nhau ở SDK v1 và SDK v2",
+    "statement": "Khi truy cập trang sản phẩm campaign 2595 lần đầu (guest, storefront, chưa tương tác gì) trên cả store1 (SDK v1) và store2 (SDK v2), quan sát thấy Object.keys(localStorage) chỉ chứa các key gốc của Shopify ('signInWithShop:cartSyncTransferAttemptedAt', 'shopify:webmcp_adapter_loaded'); localStorage.getItem('teeinblue-customizations') trả về null (key chưa tồn tại). Ngay khi click field cá nhân hoá đầu tiên (template thumbnail), 2 key mới xuất hiện đồng thời: 'teeinblue-customizations' và 'teeinblue-global-options'. Hành vi 'không tồn tại trước tương tác, tạo khi tương tác đầu tiên' quan sát giống nhau ở cả 2 store.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging (Shopify password-gated)",
+      "role": "guest (buyer)",
+      "surface": "storefront"
+    },
+    "last_updated": {
+      "date": "2026-09-12",
+      "ccr_ref": "bootstrap"
+    },
+    "related_kb_ids": []
+  },
+  {
+    "kb_id": "KB-015",
+    "topic": "Shape của 'teeinblue-customizations' (array chứa {productId, customization, timestamp}) và key đồng hành 'teeinblue-global-options' (object keyed theo global-option id) — BYTE-FOR-BYTE giống nhau giữa SDK v1 (store1) và SDK v2 (store2)",
+    "statement": "Khi tạo/cập nhật localStorage sau tương tác field cá nhân hoá trên cả store1 (SDK v1) và store2 (SDK v2), quan sát thấy 'teeinblue-customizations' là chuỗi JSON encode một MẢNG chứa đúng 1 object dạng { productId, customization: { <field-id>: <value>, ..., platform_linked_id }, timestamp: <epoch ms> }; và 'teeinblue-global-options' là chuỗi JSON encode một OBJECT keyed theo global-option numeric id, mỗi value dạng { value, extra: {}, timestamp }. Cấu trúc (tên field, kiểu, thứ tự lồng) GIỐNG HỆT NHAU giữa 2 store cho cùng campaign 2595, dù product id Shopify khác nhau giữa 2 store. Đây là một điểm CHUNG giữa SDK v1 và SDK v2, khác với nhiều điểm khác đã biết là khác nhau giữa 2 phiên bản (ví dụ theme/class naming ở KB-002/KB-004/KB-007, cơ chế mockup ở KB-010/KB-011, kết quả ATC ở KB-005/KB-008).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging (Shopify password-gated)",
+      "role": "guest (buyer)",
+      "surface": "storefront"
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "related_kb_ids": [
+      "sdk/storefront-buyer-facing#KB-002",
+      "sdk/storefront-buyer-facing#KB-004",
+      "sdk/storefront-buyer-facing#KB-007",
+      "sdk/storefront-buyer-facing#KB-010",
+      "sdk/storefront-buyer-facing#KB-011",
+      "sdk/storefront-buyer-facing#KB-005",
+      "sdk/storefront-buyer-facing#KB-008"
+    ]
+  },
+  {
+    "kb_id": "KB-016",
+    "topic": "Field dạng radio/clipart/template (single-click, không lồng con) ghi vào localStorage ĐỒNG BỘ ngay khi click, không debounce — giống nhau ở cả 2 store",
+    "statement": "Khi click 1 field dạng template (radio) hoặc clipart đơn giản (không có field con lồng) trên trang sản phẩm store1 (SDK v1) và store2 (SDK v2), quan sát thấy 'teeinblue-customizations' và 'teeinblue-global-options' được ghi giá trị mới NGAY TRONG lần đọc tức thời sau click (dưới 300ms), không đổi thêm ở lần đọc settle sau đó (1.2s-1.5s) — xác nhận ghi đồng bộ, không có debounce/delay. Quan sát nhất quán trên field template (cả 2 store) và field clipart đơn giản Choose Woman's Skin Tone (store2).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging (Shopify password-gated)",
+      "role": "guest (buyer)",
+      "surface": "storefront"
+    },
+    "last_updated": {
+      "date": "2026-09-12",
+      "ccr_ref": "bootstrap"
+    },
+    "related_kb_ids": []
+  },
+  {
+    "kb_id": "KB-017",
+    "topic": "Field dạng text (free-text name) CHỈ ghi vào localStorage khi blur, KHÔNG ghi khi gõ hay khi vẫn còn focus — giống nhau ở cả 2 store",
+    "statement": "Khi gõ giá trị vào field text (vd 'Woman Name', maxlength 10) trên trang sản phẩm store1 (SDK v1) và store2 (SDK v2), quan sát thấy: giá trị KHÔNG được ghi vào 'teeinblue-customizations' khi đang gõ giữa chừng, và CŨNG KHÔNG được ghi ngay sau khi gõ xong trong lúc field vẫn còn focus. Giá trị chỉ xuất hiện trong 'teeinblue-customizations' SAU KHI field mất focus (blur), kèm timestamp cấp cao nhất được cập nhật tại đúng thời điểm blur. Hành vi này khác hẳn field radio/clipart (KB-016, ghi ngay khi click) và giống hệt nhau giữa 2 store.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging (Shopify password-gated)",
+      "role": "guest (buyer)",
+      "surface": "storefront"
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "related_kb_ids": [
+      "sdk/storefront-customization-storage#KB-016"
+    ]
+  },
+  {
+    "kb_id": "KB-018",
+    "topic": "Field dạng grouped_clipart (Hairstyle, Cat Breed) cần 2 lần click (radio nhóm -> hiện field con -> chọn tiếp) mới thực sự ghi giá trị field; bỏ qua bước con dẫn tới Add-to-cart thất bại THẬT — quan sát rõ ràng ở store2",
+    "statement": "Khi click radio cấp NHÓM của 1 field grouped_clipart (vd Hairstyle = 'Black', Cat Breed #1/#2) trên trang sản phẩm store2 (SDK v2), quan sát thấy radio nhóm được check=true VÀ đồng thời lộ ra 1 field con bắt buộc mới (grid ~9-12 thumbnail clipart cụ thể, name dạng 'layer-<id>-children'), chưa có thumbnail nào được chọn sẵn. Giá trị field nhóm (global-option-848 v.v.) trong 'teeinblue-customizations'/'teeinblue-global-options' KHÔNG ổn định ở giá trị nhóm thô mà chỉ có giá trị thật (asset path của thumbnail con) sau khi thumbnail con CŨNG được click. Khi điền toàn bộ chuỗi 8 field nhưng CHỈ click radio nhóm cho 3 field grouped_clipart (không click con) rồi bấm ADD TO CART, quan sát thấy Add-to-cart THẤT BẠI THẬT: banner lỗi 'Error: Some fields are required or invalid data', lỗi inline 'This field is required!' dưới cả 3 field, GET /cart.js xác nhận item_count=0, và log network xác nhận zero request tới API-OP-051 (client-side validation chặn trước khi gửi request). Add-to-cart chỉ thành công sau khi thêm bước click con cho cả 3 field, với API-OP-051 xuất hiện đúng 1 lần ngay trước /cart/add.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "HIGH",
+    "scope": {
+      "environment": "staging (Shopify password-gated)",
+      "role": "guest (buyer)",
+      "surface": "storefront"
+    },
+    "last_updated": {
+      "date": "2026-09-12",
+      "ccr_ref": "bootstrap"
+    },
+    "related_kb_ids": [],
+    "status": "UNRESOLVED",
+    "conflict_group": "CFL-003"
+  },
+  {
+    "kb_id": "KB-019",
+    "topic": "localStorage sống sót qua reload (byte-identical) ở CẢ 2 store, nhưng FORM KHÔNG tự khôi phục toàn bộ lựa chọn khi load lại trang (full-page-load, không phải field-remount)",
+    "statement": "Khi reload trang (F5 / page.reload) sau khi đã điền field cá nhân hoá và có dữ liệu trong 'teeinblue-customizations'/'teeinblue-global-options' trên cả store1 (SDK v1, template + Woman Name) và store2 (SDK v2, đủ 8 field), quan sát thấy 2 key localStorage này SỐNG SÓT với giá trị byte-identical (không bị xoá/ghi lại). Tuy nhiên DOM form sau reload reset về trạng thái mặc định: không có thumbnail template nào được đánh dấu chọn, và toàn bộ field phụ thuộc (skin tone, hairstyle, tên, breed, cat name) KHÔNG xuất hiện trong DOM — giống hệt lần truy cập hoàn toàn mới. Đây là hành vi 'lưu nhưng không khôi phục' ở mức FULL-PAGE-LOAD, quan sát giống nhau ở cả 2 store.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging (Shopify password-gated)",
+      "role": "guest (buyer)",
+      "surface": "storefront"
+    },
+    "last_updated": {
+      "date": "2026-09-12",
+      "ccr_ref": "bootstrap"
+    },
+    "related_kb_ids": []
+  },
+  {
+    "kb_id": "KB-020",
+    "topic": "REFINE của KB-019, KHÔNG mâu thuẫn: khi 1 field text được REMOUNT qua việc chọn lại field cha (không phải full page load), field đó tự pre-fill lại giá trị đã lưu — quan sát hẹp hơn 'no restore', chỉ xác nhận ở store2, chỉ ở field type text",
+    "statement": "Sau khi reload trang (KB-019 xác nhận form KHÔNG tự khôi phục khi load), khi chọn lại field cha (template) trên store2 (SDK v2) để field con 'Woman Name' được render/remount lại, quan sát thấy field 'Woman Name' xuất hiện với giá trị TRƯỚC ĐÓ đã pre-fill sẵn (đọc lại từ 'teeinblue-global-options'[849], vốn đã sống sót qua reload theo KB-019) — dù bản thân trang KHÔNG tự làm điều này khi load. Đây là restore ở mức FIELD-REMOUNT (do parent selection kích hoạt), hẹp hơn full-form-restore, và KHÔNG được test cho field dạng radio/clipart — chỉ xác nhận cho field type text (Woman Name), 1 sample, chỉ ở store2.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (Shopify password-gated)",
+      "role": "guest (buyer)",
+      "surface": "storefront"
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "related_kb_ids": [
+      "sdk/storefront-customization-storage#KB-019"
+    ]
+  },
+  {
+    "kb_id": "KB-021",
+    "topic": "localStorage KHÔNG bị xoá sau Add-to-cart thành công, và vẫn giữ nguyên sau cả khi cart đã cleanup — CHỈ xác nhận ở SDK v2 (store2); SDK v1 (store1) CHƯA xác nhận vì run này dừng trước ATC theo chủ đích",
+    "statement": "Khi Add-to-cart thành công trên store2 (SDK v2, campaign 2595, guest) rồi đọc lại toàn bộ 'teeinblue-customizations'/'teeinblue-global-options', quan sát thấy 2 key này GIỮ NGUYÊN byte-identical (cùng timestamp) so với ngay trước ATC — Add-to-cart KHÔNG xoá/reset draft cá nhân hoá phía client. Sau đó dọn cart qua POST /cart/clear.js (xác nhận item_count=0 qua GET /cart.js), đọc lại localStorage lần nữa vẫn thấy 2 key này GIỮ NGUYÊN không đổi — dọn cart cũng không đụng tới draft. Phát hiện này CHỈ được xác nhận trên store2/SDK v2 vì store1/SDK v1 dừng trước bước Add-to-cart theo đúng chủ đích của task (tránh re-trigger CFL-001) — hành vi tương ứng trên SDK v1 vẫn CHƯA xác nhận (unknown), không được suy diễn là giống nhau.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging (Shopify password-gated)",
+      "role": "guest (buyer)",
+      "surface": "storefront"
+    },
+    "last_updated": {
+      "date": "2026-09-12",
+      "ccr_ref": "bootstrap"
+    },
+    "related_kb_ids": []
+  },
+  {
+    "kb_id": "KB-022",
+    "topic": "Server sync (API-OP-051, POST /api/merchant/shopify/customization) CHỈ xảy ra tại thời điểm Add-to-cart, KHÔNG xảy ra khi field-fill trước đó (0 XHR/fetch tới host teeinblue trong lúc điền field) — xác nhận localStorage chỉ là buffer client-side tạm thời",
+    "statement": "Trong suốt quá trình điền field cá nhân hoá (từ lúc chọn template tới khi điền đủ chuỗi field) trên cả store1 (~1.2s quanh 1 click, 1 sample) và store2 (~9s, nhiều checkpoint field-change, step 02-07), quan sát thấy ZERO request XHR/fetch tới bất kỳ host teeinblue-owned nào (chỉ có traffic telemetry/analytics của Shopify). Request teeinblue-owned ĐẦU TIÊN trong toàn phiên chỉ xuất hiện tại thời điểm Add-to-cart trên store2: POST https://staging-api.teeinblue.com/api/merchant/shopify/customization (API-OP-051), ngay trước request /cart/add gốc của Shopify. Khi lần thử ATC thất bại (thiếu bước click con grouped_clipart, xem KB-018), API-OP-051 KHÔNG xuất hiện (client-side validation chặn trước khi gửi). Tổng hợp lại: localStorage ('teeinblue-customizations'/'teeinblue-global-options') hoạt động như một buffer/draft thuần client-side trong lúc điền field; đồng bộ lên server CHỈ xảy ra đúng lúc Add-to-cart (khi validation client-side pass).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "HIGH",
+    "scope": {
+      "environment": "staging (Shopify password-gated)",
+      "role": "guest (buyer)",
+      "surface": "storefront"
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "related_kb_ids": [
+      "sdk/storefront-customization-storage#KB-018"
+    ]
+  },
+  {
+    "kb_id": "KB-066",
+    "topic": "localStorage 'teeinblue-customizations' giữ khoảng 10 entry gần nhất: khi thêm nhiều product, entry cũ bị đẩy ra; line item sau cùng product ghi đè entry trước (quan sát trong 1 lượt chạy)",
+    "statement": "Trên staging (instance 520 / store test store không thuộc explorer), lượt chạy test của agent ngày 2026-10-22 (Testlane task TIB-230, Jira TIB-5606 đang QA Review, chưa ship; order Bogus #1105), khi guest buyer lần lượt personalize và thêm vào giỏ nhiều product khác nhau trên storefront (order 14 line item), quan sát thấy localStorage 'teeinblue-customizations' không còn giữ entry của các product đã thao tác sớm: agent ghi nhận chỉ còn khoảng 10 entry gần nhất (actualResult ghi \"chỉ giữ 10 entry cuối\"; con số chưa được đếm độc lập), entry cũ bị đẩy ra khỏi danh sách. Ngoài ra, khi đặt thêm một line item khác trên cùng product, entry của product đó bị ghi đè bằng giá trị mới. Hệ quả cho việc kiểm: đọc localStorage sau Add-to-cart chỉ tin cậy nếu đọc ngay sau từng lần thêm. Quan sát trong 1 lượt chạy, chưa có nguồn dev/spec; con số giới hạn và cách loại entry (theo thời gian hay theo thứ tự thêm) chưa được xác nhận. Status hiện tại trên Testlane không dùng làm căn cứ (đã đổi sau khi CCR được viết); chỉ dựa vào actualResult và CCR.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "guest buyer",
+      "surface": "storefront (localStorage)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "storefront",
+      "localStorage",
+      "teeinblue-customizations",
+      "entry-limit",
+      "add-to-cart",
+      "test-method"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-customization-storage#KB-015",
+      "sdk/storefront-customization-storage#KB-019"
+    ]
+  },
+  {
+    "kb_id": "KB-179",
+    "topic": "Field required nằm trong Group ẩn vẫn chặn Add to cart trên storefront (BUG-321..324, known defect)",
+    "statement": "Trên staging (instance 520 / store không thuộc explorer), lượt chạy test của agent ngày 2026-10-16 (Testlane task TIB-211, Jira TIB-5584; build hash không rõ; production chưa xác nhận), trên form cá nhân hoá SDK của storefront với artwork có Group ẩn chứa một layer có field required, quan sát thấy field đó vẫn chặn Add to cart: nhập field ngoài Group rồi bấm Add to cart thì hiện 'FT2 * This field is required!' và 'Error: Some fields are required or invalid data', giỏ hàng trống và không có request lưu customization. QA plan của dev và ticket mô tả hành vi ngược lại (form không có field của layer trong Group ẩn, required không chặn) — hành vi mong đợi đó không được nạp làm expected. Bug BUG-321..324 đã tạo. TC-TIB-6064 hiện ghi 'passed' trên Testlane trong khi actualResult ghi Fail, không có lần chạy lại có ngày; TC-TIB-6063 actualResult rỗng.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "guest (buyer)",
+      "surface": "storefront (form cá nhân hoá SDK + Add to cart)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-30",
+      "ccr_ref": "CBS-006"
+    },
+    "tags": [
+      "group-layer",
+      "effective-visibility",
+      "TIB-5584",
+      "required-field",
+      "add-to-cart",
+      "known-defect",
+      "BUG-321",
+      "BUG-322",
+      "BUG-323",
+      "BUG-324"
+    ],
+    "related_kb_ids": [],
+    "status": "KNOWN_DEFECT",
+    "cross_object_refs": [
+      {
+        "object_id": "artwork",
+        "relation": "rule_owned_by",
+        "note": "Quy tắc effective visibility của Group (layer chỉ render khi cờ của nó và mọi Group tổ tiên đều ON) thuộc artwork, feature group-layer-effective-visibility (KB-158)."
+      }
+    ]
+  },
+  {
+    "kb_id": "KB-236",
+    "topic": "Regression trên SDK cũ: layer không điều kiện luôn hiện, layer Show giữ đúng chiều (chưa chạy lại trên SDK có code Hide)",
+    "statement": "Trên staging (instance 520 / store không thuộc explorer), lượt chạy test đầu của agent ngày 2026-10-28 (Testlane TC-TIB-7344, task TIB-231, Jira TIB-5558) — chạy trên SDK app-v2.js bản cũ (Last-Modified 2026-10-14, chưa có code Hide), chưa chạy lại trên SDK bản 2026-10-28 03:01:11 GMT; production chưa xác nhận — quan sát thấy: layer không có điều kiện hiện trên form và preview ở mọi giá trị nguồn (chưa chọn, Cat, Dog); layer action Show với điều kiện 'Pet 1 Type is Cat' hiện khi Cat và ẩn khi Dog trên cả form lẫn preview; payload POST /api/merchant/shopify/customization và localStorage teeinblue-customizations chỉ chứa giá trị của các layer đang hiện. Hành vi này chưa được xác nhận trên SDK có code Hide.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "guest-buyer (storefront store không thuộc explorer)",
+      "surface": "storefront · api (POST customization)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5558",
+      "conditional-setting",
+      "hide-action",
+      "storefront",
+      "regression",
+      "old-sdk",
+      "unconfirmed"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-buyer-facing#KB-004",
+      "sdk/storefront-layer-visibility#KB-231"
+    ],
+    "cross_object_refs": [
+      {
+        "object_id": "artwork",
+        "relation": "rule_owned_by",
+        "note": "Cấu hình action Show/Hide, điều kiện, match type và toggle first load đặt ở object artwork, feature conditional-setting-config (KB-221, KB-222)."
+      }
+    ]
+  },
+  {
+    "kb_id": "KB-360",
+    "topic": "Nhập text + chọn clipart/GO: preview cập nhật text/clipart, dropdown GO additional-option không đổi hình; payload customization khớp",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7392, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): trên storefront campaign #3270 (store không thuộc explorer), nhập \"HELLO 5203\", chọn Color A1 = Blue và clipart #2 thì preview hiện \"HELLO 5203\" và clipart đã chọn; dropdown Global Option là additional-option nên chỉ thể hiện trên form, preview không đổi hình. POST /api/merchant/shopify/customization?shop=…&id=<shopify product id> → 201 với data layer-520311=\"HELLO 5203\", layer-520312=<đường dẫn clipart>, global-option-1125=\"blue\"; localStorage teeinblue-customizations khớp; cart/add → 200.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
+      "surface": "storefront (CP-CACHE #3270, CP-CACHE2 #3271, CP-NOGO #3272 trên store không thuộc explorer)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5203",
+      "storefront",
+      "preview",
+      "global-option",
+      "customization-payload"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-customization-storage#KB-022",
+      "sdk/storefront-campaign-media-api#KB-358"
+    ]
+  },
+  {
+    "kb_id": "KB-362",
+    "topic": "Lựa chọn Global Option được tự điền khi mở campaign khác dùng cùng GO trong cùng trình duyệt",
+    "statement": "Quan sát staging 2026-10-28 (1 lượt, Testlane TC-TIB-7399, task TIB-257, Jira TIB-5203; lượt đầu ~06:00 UTC, trước lần redeploy mà dev yêu cầu recheck (fix bug + commit 8731f3a), chưa chạy lại; chưa có nguồn xác nhận đây là hành vi đúng): chọn GO-A trên storefront campaign #3270 rồi mở campaign #3271 (CP-CACHE2, store không thuộc explorer) trong cùng trình duyệt thì GO-A tự điền đúng giá trị đã chọn (kiểm với \"Blue\", vẫn còn khi mở platform product #602, và \"Green\" tự điền ở #3271); GO-B giữ default \"Small\". Không có request ghi nào; tester ghi trạng thái lấy từ localStorage.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "guest-buyer (storefront SDK đọc response; store không thuộc explorer/store không thuộc explorer, staging)",
+      "surface": "storefront (CP-CACHE #3270, CP-CACHE2 #3271, CP-NOGO #3272 trên store không thuộc explorer)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5203",
+      "storefront",
+      "global-option",
+      "localStorage"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-customization-storage#KB-015"
+    ],
+    "cross_object_refs": [
+      {
+        "object_id": "global-option",
+        "relation": "same_direction",
+        "note": "Cùng chiều với rule 1 Global Option personalize 1 lần áp cho mọi nơi dùng (global-option KB-029); không sửa global-option."
+      }
+    ]
+  },
+  {
+    "kb_id": "KB-506",
+    "topic": "Quan sát: sau reload, template picker không khôi phục; chọn lại template thì ảnh và position đã giữ hiện lại đúng",
+    "statement": "Ở Testlane TC-TIB-6373 (TC-35, PASS 2026-10-22, staging SDK app-v1.js Last-Modified 2026-10-21 05:56 GMT), quan sát thấy: sau reload trang, template picker không được khôi phục (hiện \"Choose an option\") dù localStorage vẫn giữ template, ảnh và position; khi buyer chọn lại template, ảnh và position đã giữ hiện lại đúng, không warning. Vế picker không khôi phục cùng chiều KB-019 (không thay KB-019); vế position là mới. Căn cứ expected không có.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "storefront",
+      "reload",
+      "localStorage",
+      "template-picker",
+      "photo-sync",
+      "TIB-5566"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-customization-storage#KB-019",
+      "sdk/storefront-customization-storage#KB-020",
+      "sdk/template-switch-photo-sync#KB-496"
+    ]
+  },
+  {
+    "kb_id": "KB-507",
+    "topic": "Quan sát (không phải expected): position sửa tay trong localStorage không bị clamp hay bỏ qua",
+    "statement": "Ở Testlane TC-TIB-6368 (TC-30, kết quả ❌ ở 2 lần, 2026-10-21, staging SDK app-v1.js Last-Modified 2026-10-21 05:56 GMT), quan sát thấy (không phải expected, chưa ai xác nhận; chỉ khi buyer tự sửa localStorage của mình): position sửa tay trong localStorage với giá trị âm, rất lớn, chuỗi chữ hoặc null không bị clamp hay bỏ qua; request customization lúc Add to cart trả 201 và gửi nguyên giá trị; giá trị chuỗi chữ làm transform của preview thành NaN và sinh lỗi console; thumbnail cart mất ảnh (giá trị âm, rất lớn) hoặc ảnh ở x=0 (chuỗi chữ, null); không có lỗi 500; key position của campaign khác không có trong payload gửi đi. Order design với các giá trị này chưa kiểm.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer tự sửa localStorage",
+      "surface": "storefront, api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "storefront",
+      "localStorage",
+      "tampering",
+      "position",
+      "customization",
+      "TIB-5566"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-customization-storage#KB-022",
+      "sdk/storefront-customization-storage#KB-015"
+    ],
+    "cross_object_refs": [
+      {
+        "object_id": "artwork",
+        "relation": "related_feature",
+        "note": "artwork KB-144 (text-multi-stroke, OBSERVED_CURRENT): cùng dạng server nhận payload personalization vượt giới hạn."
+      }
+    ]
+  }
+]

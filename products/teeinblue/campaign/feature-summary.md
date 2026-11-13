@@ -1,5 +1,5 @@
 # Object: Campaign (product: teeinblue) — Feature Profile Summary
-**Published context version:** 11
+**Published context version:** 12
 
 - **Environment mọi fact dưới đây được quan sát:** staging
 - **Gần như toàn bộ profile là `OBSERVED_CURRENT`** — item `CONFIRMED_EXPECTED` là KB-184 (CBS-006, test case Testlane PASS, staging 2026-10-16) KB-300, KB-302, KB-304, KB-305, KB-306, KB-310, KB-312, KB-314 (CBS-009, test case Testlane PASS trên staging 2026-10-22, trước khi code merge; production chưa xác nhận) và KB-454 tới KB-462 (CBS-160, comment Dev trên Jira TIB-5629; production chưa verify)

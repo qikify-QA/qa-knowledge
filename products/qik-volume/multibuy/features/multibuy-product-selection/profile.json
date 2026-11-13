@@ -1,0 +1,732 @@
+{
+  "feature_id": "FEAT-02-multibuy-product-selection",
+  "feature_key": "multibuy-product-selection",
+  "name": "Buyer chọn sản phẩm trong widget Multibuy: redirect, popup, recommendation",
+  "user_goal": "Buyer chọn thêm sản phẩm vào combo Multibuy qua widget trên PDP theo chế độ merchant đã cấu hình.",
+  "user_goal_kb_refs": [],
+  "stable_since_version": "1",
+  "actors": [
+    {
+      "role": "merchant",
+      "permission_observed": "Full configuration access trong Portal cho mọi section của Multibuy offer (internal name/title, discount method, trigger, tier, max discount uses, remaining-qty message, how-discount-is-applied, customer selection behavior, appearance & style, discount combination, offer scheduling, compare-at-price scope) — không có boundary permission/role riêng nào được tài liệu hoá cho feature này.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-001",
+        "multibuy/multibuy-discount-setup#KB-003",
+        "multibuy/multibuy-discount-setup#KB-004",
+        "multibuy/multibuy-discount-setup#KB-005",
+        "multibuy/multibuy-discount-setup#KB-006",
+        "multibuy/multibuy-discount-setup#KB-007",
+        "multibuy/multibuy-discount-setup#KB-009",
+        "multibuy/multibuy-discount-setup#KB-010",
+        "multibuy/multibuy-discount-setup#KB-012",
+        "multibuy/multibuy-discount-setup#KB-017",
+        "multibuy/multibuy-discount-setup#KB-028",
+        "multibuy/multibuy-discount-calculation#KB-035",
+        "multibuy/multibuy-discount-calculation#KB-041",
+        "multibuy/multibuy-product-selection#KB-045",
+        "multibuy/multibuy-product-selection#KB-052",
+        "multibuy/multibuy-appearance-and-schedule#KB-054",
+        "multibuy/multibuy-appearance-and-schedule#KB-061",
+        "multibuy/multibuy-appearance-and-schedule#KB-062",
+        "multibuy/multibuy-appearance-and-schedule#KB-065",
+        "multibuy/multibuy-discount-calculation#KB-067",
+        "multibuy/multibuy-product-selection#KB-071",
+        "multibuy/multibuy-discount-setup#KB-078"
+      ],
+      "observed_kb_refs": [
+        "KB-085",
+        "KB-086",
+        "KB-087",
+        "KB-088",
+        "KB-089",
+        "KB-090",
+        "KB-091",
+        "object:KB-015",
+        "object:KB-017"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-18 (merchant, store development): mở form, tạo/lưu/sửa (đổi selection behavior, bỏ multiplier, thêm trigger) và xoá offer Multibuy; quyền staff không kiểm."
+    },
+    {
+      "role": "buyer",
+      "permission_observed": "Xem widget discount trên product/cart/checkout page khi trigger condition đáp ứng; chọn sản phẩm cho bundle qua popup hoặc redirect page; nhận discount tự động ở cart — không có yêu cầu login/account nào được tài liệu hoá.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-003",
+        "multibuy/multibuy-discount-setup#KB-008",
+        "multibuy/multibuy-discount-setup#KB-029",
+        "multibuy/multibuy-appearance-and-schedule#KB-030",
+        "multibuy/multibuy-discount-calculation#KB-032",
+        "multibuy/multibuy-discount-calculation#KB-036",
+        "multibuy/multibuy-product-selection#KB-049",
+        "multibuy/multibuy-product-selection#KB-050",
+        "multibuy/multibuy-product-selection#KB-053",
+        "multibuy/multibuy-discount-calculation#KB-068",
+        "multibuy/multibuy-product-selection#KB-072",
+        "multibuy/multibuy-discount-calculation#KB-073",
+        "multibuy/multibuy-appearance-and-schedule#KB-076"
+      ],
+      "observed_kb_refs": [
+        "KB-087",
+        "KB-092",
+        "KB-093",
+        "KB-094",
+        "KB-095",
+        "object:KB-031"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-18: buyer guest, desktop; widget PDP, popup, recommendation inline, cart pooling 2 product."
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Storefront · in-page selection popup",
+      "precondition": "Merchant đã cấu hình Customer product selection behavior = \"Open selection popup\" (default theo ticket QVD-106, chưa QA re-confirm).",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-003",
+        "multibuy/multibuy-product-selection#KB-045",
+        "multibuy/multibuy-product-selection#KB-046"
+      ],
+      "observed_kb_refs": [
+        "KB-088",
+        "KB-094"
+      ],
+      "refresh_note": "Staging: mặc định form mới là 'Redirect to specific page/URL' (không phải popup); khi đổi sang popup, click slot '+' mở modal căn giữa."
+    },
+    {
+      "path": "Storefront · merchant-defined redirect page",
+      "precondition": "Merchant đã chọn \"Redirect to a specific page/URL\" và điền Destination URL (ticket QVD-106, chưa QA re-confirm).",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-003",
+        "multibuy/multibuy-product-selection#KB-045",
+        "multibuy/multibuy-product-selection#KB-072"
+      ],
+      "observed_kb_refs": [
+        "KB-088",
+        "KB-093"
+      ],
+      "refresh_note": "Staging: lưu được với URL rỗng; khi URL rỗng, click slot '+' không điều hướng, không phản hồi."
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Hướng dẫn customer chọn sản phẩm cho bundle",
+      "description": "2 selection mode: in-page popup (variant picker, cart summary, CTA Buy now) hoặc redirect page (mở tab mới, không mất selection đang có); cả 2 mode hỗ trợ optional product recommendations (≤10 sản phẩm).",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-003",
+        "multibuy/multibuy-product-selection#KB-045",
+        "multibuy/multibuy-product-selection#KB-046",
+        "multibuy/multibuy-product-selection#KB-047",
+        "multibuy/multibuy-product-selection#KB-048",
+        "multibuy/multibuy-product-selection#KB-049",
+        "multibuy/multibuy-product-selection#KB-050",
+        "multibuy/multibuy-product-selection#KB-051",
+        "multibuy/multibuy-product-selection#KB-052",
+        "multibuy/multibuy-product-selection#KB-053",
+        "multibuy/multibuy-product-selection#KB-072"
+      ],
+      "observed_kb_refs": [
+        "KB-088",
+        "KB-092",
+        "KB-093",
+        "KB-094"
+      ],
+      "refresh_note": "Staging: 3 radio (thêm 'Direct to collection page'), mặc định Redirect, lưu được URL rỗng; popup là modal căn giữa (fade), '+' chỉ mở rộng thẻ, 'Pick' không thêm cart, 'Done' mới thêm (1 request add.js?qvl-multibuy) và chuyển /cart, nút 'Done' thay vì 'Buy now'; 'Pick' ở recommendation inline (mode Redirect) thêm thẳng vào cart. Show product recommendations bật, Max mặc định 5. POSSIBLE_DIVERGENCE với KB-003 (2 cách) và với KB-049/KB-050 (Pick trong popup)."
+    },
+    {
+      "name": "Store-specific SDK config cho recommendation display (dev-set)",
+      "description": "2 flag SDK-level (showTriggerProductInRecommendation, numberOfRecommendationProductPerLine) set theo từng store bởi Dev qua object QikifyVolume — không phải Portal setting merchant-facing; QA không nên mong đợi thấy trong UI theo default.",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-071"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "popup mode, selection in-progress",
+      "to": "item được add vào real cart ngay lập tức",
+      "trigger": "buyer bấm \"+\"/Pick trên sản phẩm không-variant",
+      "condition": "",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-049",
+        "multibuy/multibuy-product-selection#KB-050"
+      ],
+      "observed_kb_refs": [
+        "KB-094",
+        "KB-093"
+      ],
+      "refresh_note": "DIVERGENCE chưa phân định: staging mode popup — '+' chỉ mở stepper + 'Pick', 'Pick' KHÔNG thêm cart, 'Done' mới thêm; chỉ 'Pick' ở recommendation inline (mode Redirect) thêm thẳng vào cart. Không chọn phía."
+    },
+    {
+      "from": "popup mở, đã Pick ≥1 item",
+      "to": "item vào cart, điều hướng /cart",
+      "trigger": "buyer bấm 'Done' (mục mới, staging)",
+      "condition": "1 POST /cart/add.js?qvl-multibuy với các item đã Pick, không property; 'Done' khi chưa Pick thì chỉ đóng popup",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-094"
+      ],
+      "basis": "OBSERVED_CURRENT"
+    },
+    {
+      "from": "mode Redirect, URL rỗng",
+      "to": "không đổi (không điều hướng, không popup)",
+      "trigger": "buyer click slot '+' (mục mới, staging)",
+      "condition": "không lỗi console; cart không đổi",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-093",
+        "multibuy/multibuy-product-selection#KB-088"
+      ],
+      "basis": "OBSERVED_CURRENT"
+    },
+    {
+      "from": "selection behavior Redirect",
+      "to": "Open selection popup (textbox URL ẩn)",
+      "trigger": "merchant chọn radio 'Open selection popup' và Save (mục mới, staging)",
+      "condition": "không thêm field",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-088"
+      ],
+      "basis": "OBSERVED_CURRENT"
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Redirect-to-URL mode mở ở tab mới — selection đang in-progress ở trang gốc không bị mất.",
+      "source_strength": "STRONG",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-072"
+      ],
+      "refresh_kb_refs": [
+        "KB-093"
+      ],
+      "refresh_note": "Staging chỉ quan sát URL rỗng (slot '+' không phản hồi) — chưa kiểm mở tab mới với URL thật."
+    },
+    {
+      "statement": "Click \"Pick\" trên sản phẩm no-variant trong popup thêm ngay vào real cart (verify qua /cart thật); progress bar phản ánh cart thật, không phải counter riêng của widget.",
+      "source_strength": "STRONG",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-049",
+        "multibuy/multibuy-product-selection#KB-050"
+      ],
+      "refresh_kb_refs": [
+        "KB-094",
+        "KB-093",
+        "KB-092"
+      ],
+      "refresh_note": "DIVERGENCE chưa phân định: staging popup — 'Pick' chỉ ghi nhận lựa chọn, cart vẫn 0, 'Done' mới thêm; 'Pick' ở recommendation inline (mode Redirect) thêm ngay; progress phản ánh cart thật (khớp). Normalizer không mở conflict_group; cần owner xác nhận trước khi dùng vế 'Pick trong popup' làm oracle."
+    },
+    {
+      "statement": "Dưới redirect-URL input có checkbox \"Show product recommendations\" (max 10 sản phẩm); áp dụng cho CẢ 2 selection mode (popup và redirect), không chỉ popup.",
+      "source_strength": "STRONG",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-052",
+        "multibuy/multibuy-product-selection#KB-053"
+      ],
+      "refresh_kb_refs": [
+        "KB-088"
+      ],
+      "refresh_note": "Staging: [x] Show product recommendations, Max mặc định 5 (tối đa 10)."
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Empty \"+\" combo slot của widget tồn tại trong DOM với id `qvl-multibuy-tier_add-more`.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "LOW",
+      "note": "derivation code_artifact — cùng loại nguồn yếu như KB-043, suy ra từ cách dữ liệu được tổ chức trong code, không phải một quy tắc được phát biểu rõ trong tài liệu.",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-051"
+      ],
+      "observed_kb_refs": [
+        "KB-092"
+      ],
+      "refresh_note": "Staging corroborate (normalizer: slot '+' class qvl-multibuy-tier_add-more)."
+    },
+    {
+      "statement": "Customer product selection behavior: radio \"Open selection popup\" (default) \"Redirect to a specific page/URL\"; popup mode có variant picker trượt lên, overlay semi-transparent, cart summary cố định với CTA \"Buy now\"; no-variant product thêm cart ngay + icon đổi trạng thái.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "note": "Nguồn ticket QVD-106/QVD-121, chưa QA re-confirm.",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-045",
+        "multibuy/multibuy-product-selection#KB-046",
+        "multibuy/multibuy-product-selection#KB-047",
+        "multibuy/multibuy-product-selection#KB-048"
+      ],
+      "observed_kb_refs": [
+        "KB-088",
+        "KB-094"
+      ],
+      "refresh_note": "Staging: mặc định Redirect, có radio thứ 3; popup modal fade (không slide-up), nút 'Done', không instant add."
+    },
+    {
+      "statement": "'Customer product selection behavior' 3 radio: Open selection popup / Redirect to specific page/URL (mặc định) / Direct to collection page; lưu được với URL rỗng; [x] Show product recommendations, Max 5.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "LOW",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-088"
+      ]
+    },
+    {
+      "statement": "Widget PDP: tiêu đề tier 'BUY ANY 2 ITEMS FOR $10.00' + badge 'Saved $X', 'Add N more items to get this deal', progress 3 mốc, slot '+', thẻ recommendation (stepper, select variant, 'Pick'), 'powered by qikify'; phản ánh cart thật; ATC theme vẫn submit (POST /cart/add, không property); số trên badge 'Saved' không bằng discount thực trong cart ($27.00 vs $41.00).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 4,
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-092"
+      ]
+    },
+    {
+      "statement": "Mode Redirect với URL rỗng: click slot '+' không phản hồi; 'Pick' ở recommendation inline thêm thẳng vào cart bằng POST /cart/add.js?qvl-multibuy, ở lại PDP, widget cập nhật.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-093"
+      ]
+    },
+    {
+      "statement": "Mode popup: modal căn giữa, fade, nút '×'; '+' chỉ mở rộng thẻ (stepper/select + 'Pick'); 'Pick' không thêm cart; 'Done' gửi 1 POST /cart/add.js?qvl-multibuy rồi chuyển /cart; mỗi lần 'Pick' console báo 'TypeError: Cannot read properties of null (reading 'url')' và subtotal/slot trong popup không cập nhật (product không có ảnh).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 3,
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-094"
+      ]
+    }
+  ],
+  "observed_validations": [
+    {
+      "input": "Lưu offer với 'Customer product selection behavior' = Redirect và textbox URL rỗng",
+      "message_verbatim": "",
+      "condition": "Không có thông báo validation; lưu thành công; storefront slot '+' không phản hồi khi URL rỗng.",
+      "blocking": false,
+      "observed_count": 2,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-088",
+        "multibuy/multibuy-product-selection#KB-093"
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "role": "buyer",
+      "scope": "storefront",
+      "permission": "Xem widget discount khi trigger đáp ứng; chọn sản phẩm cho bundle (popup/redirect); nhận discount tự động ở cart.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-008",
+        "multibuy/multibuy-product-selection#KB-049",
+        "multibuy/multibuy-product-selection#KB-050"
+      ],
+      "note": "Không có yêu cầu login/account nào được tài liệu hoá.",
+      "observed_kb_refs": [
+        "KB-092",
+        "KB-095"
+      ],
+      "refresh_note": "Staging: buyer guest nhận discount trong cart."
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      "KB-004",
+      "KB-005",
+      "KB-006",
+      "KB-007",
+      "KB-009",
+      "KB-010",
+      "KB-011",
+      "KB-012",
+      "KB-013",
+      "KB-014",
+      "KB-015",
+      "KB-017",
+      "KB-018",
+      "KB-019",
+      "KB-020",
+      "KB-021",
+      "KB-022",
+      "KB-023",
+      "KB-024",
+      "KB-025",
+      "KB-026",
+      "KB-027",
+      "KB-028",
+      "KB-035",
+      "KB-037",
+      "KB-041",
+      "KB-042",
+      "KB-044",
+      "KB-045",
+      "KB-046",
+      "KB-047",
+      "KB-048",
+      "KB-052",
+      "KB-054",
+      "KB-055",
+      "KB-056",
+      "KB-057",
+      "KB-058",
+      "KB-059",
+      "KB-060",
+      "KB-061",
+      "KB-062",
+      "KB-063",
+      "KB-064",
+      "KB-065",
+      "KB-066",
+      "KB-070",
+      "KB-075",
+      "KB-078",
+      "KB-081",
+      "KB-082",
+      "KB-083",
+      "KB-084",
+      {
+        "item": "Form Multibuy staging (/offers/setting/multibuy): Offer title (Fixed price), Remaining quantity message, Discount type + 3 tier mặc định, Maximum discount uses (multiplier), Customer product selection behavior (3 radio + URL + recommendations), Appearance & style, Combination, Campaign scheduling",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-appearance-and-schedule#KB-085",
+          "multibuy/multibuy-discount-setup#KB-086",
+          "multibuy/multibuy-discount-setup#KB-087",
+          "multibuy/multibuy-product-selection#KB-088",
+          "multibuy/multibuy-appearance-and-schedule#KB-089",
+          "multibuy/multibuy-appearance-and-schedule#KB-090",
+          "multibuy/multibuy-appearance-and-schedule#KB-091",
+          "discount-offers/offer-create-and-manage#KB-012",
+          "discount-offers/offer-create-and-manage#KB-013"
+        ]
+      },
+      {
+        "item": "Manage offers / modal Delete / save bar / modal xin review sau lưu — staging (mức object)",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-016",
+          "discount-offers/offer-create-and-manage#KB-017",
+          "discount-offers/offer-create-and-manage#KB-018",
+          "discount-offers/offer-create-and-manage#KB-020"
+        ]
+      }
+    ],
+    "storefront": [
+      "KB-003",
+      "KB-008",
+      "KB-016",
+      "KB-029",
+      "KB-030",
+      "KB-031",
+      "KB-032",
+      "KB-033",
+      "KB-034",
+      "KB-036",
+      "KB-038",
+      "KB-039",
+      "KB-040",
+      "KB-049",
+      "KB-050",
+      "KB-051",
+      "KB-053",
+      "KB-068",
+      "KB-069",
+      "KB-072",
+      "KB-073",
+      "KB-076",
+      "KB-077",
+      "KB-079",
+      "KB-080",
+      {
+        "item": "PDP widget Multibuy (tiêu đề tier, badge 'Saved', progress, slot '+', recommendation, 'powered by qikify') — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-product-selection#KB-092"
+        ]
+      },
+      {
+        "item": "Popup modal chọn sản phẩm ('Pick', 'Done', Subtotal) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-product-selection#KB-094"
+        ]
+      },
+      {
+        "item": "Cart: mã QIKIFY-xxxxxx chia across theo tỷ lệ giá; Shopify tách line có/không discount — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-discount-calculation#KB-095",
+          "multibuy/multibuy-discount-setup#KB-087"
+        ]
+      },
+      {
+        "item": "Collection/search: badge 'MULTIBUY' góc trên-trái, radius 6px — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-appearance-and-schedule#KB-091",
+          "multibuy/multibuy-appearance-and-schedule#KB-090",
+          "discount-offers/offer-storefront-events#KB-031"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "item": "Backend app <QVL_API_BASE>: POST /api/offers, GET /api/offers/{id}, PUT /api/offers/{id}, DELETE /api/offers/{id} — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-appearance-and-schedule#KB-085",
+          "multibuy/multibuy-discount-setup#KB-086",
+          "multibuy/multibuy-discount-setup#KB-087",
+          "multibuy/multibuy-product-selection#KB-088",
+          "discount-offers/offer-create-and-manage#KB-015",
+          "discount-offers/offer-create-and-manage#KB-032"
+        ]
+      },
+      {
+        "item": "Shopify Admin GraphQL qua app proxy: discountAutomaticAppCreate / Update / Delete — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-015"
+        ]
+      },
+      {
+        "item": "Storefront cart: POST /cart/add.js?qvl-multibuy (popup Done / Pick inline), POST /cart/add (ATC theme), đổi số lượng, đọc cart — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-product-selection#KB-093",
+          "multibuy/multibuy-product-selection#KB-094",
+          "multibuy/multibuy-product-selection#KB-092",
+          "multibuy/multibuy-discount-calculation#KB-095",
+          "multibuy/multibuy-discount-setup#KB-087"
+        ]
+      },
+      {
+        "item": "POST <QVL_API_BASE>/api/events (view; add_to_cart — 'Done' popup chỉ gửi cho offer Multibuy) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-product-selection#KB-092",
+          "discount-offers/offer-storefront-events#KB-023"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "Offer lưu: allow_apply_multiple_discount, discount_type fixed_amount, discount_value_percentage, discount_apply_type 'per_combo', percentage_offer_title, product_selection_behavior (open_popup), multibuy_badge_text — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-appearance-and-schedule#KB-085",
+          "multibuy/multibuy-discount-setup#KB-086",
+          "multibuy/multibuy-discount-setup#KB-087",
+          "multibuy/multibuy-product-selection#KB-088",
+          "multibuy/multibuy-appearance-and-schedule#KB-091"
+        ]
+      }
+    ],
+    "code": [
+      "KB-043",
+      "KB-071"
+    ]
+  },
+  "dependencies": [],
+  "risks": [
+    {
+      "risk": "2 KB item (backend field `tier_application_method`, DOM id `qvl-multibuy-tier_add-more`) suy ra từ cách dữ liệu được tổ chức trong code, không phải một quy tắc được phát biểu rõ trong tài liệu — độ tin cậy thấp hơn các confirmed_rule khác trong profile này; cần xác minh lại với source code thật trước khi dùng làm regression oracle mạnh.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-043",
+        "multibuy/multibuy-product-selection#KB-051"
+      ]
+    },
+    {
+      "risk": "7 Business Rules section hoàn toàn từ ticket spec, chưa được QA re-confirm (Internal name/Offer title, Discount method, Customer selection core radio + popup detail, Discount combination, base Offer scheduling, base badge definition/position) — cùng tài liệu này đã phát hiện ít nhất 3 trường hợp khác nơi ticket spec KHÔNG khớp hành vi live (Trigger settings exclude option, Tier title notation single/double brace, Multibuy badge content/radius). Rủi ro cao các section ticket-only còn lại cũng đã drift khỏi hành vi thật.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-004",
+        "multibuy/multibuy-discount-setup#KB-005",
+        "multibuy/multibuy-discount-setup#KB-006",
+        "multibuy/multibuy-discount-setup#KB-007",
+        "multibuy/multibuy-product-selection#KB-045",
+        "multibuy/multibuy-product-selection#KB-046",
+        "multibuy/multibuy-product-selection#KB-047",
+        "multibuy/multibuy-product-selection#KB-048",
+        "multibuy/multibuy-appearance-and-schedule#KB-061",
+        "multibuy/multibuy-appearance-and-schedule#KB-062",
+        "multibuy/multibuy-appearance-and-schedule#KB-063",
+        "multibuy/multibuy-appearance-and-schedule#KB-065",
+        "multibuy/multibuy-appearance-and-schedule#KB-066"
+      ],
+      "observed_kb_refs": [
+        "object:KB-010",
+        "KB-085",
+        "object:KB-011",
+        "KB-088",
+        "KB-094",
+        "object:KB-012"
+      ],
+      "refresh_note": "Staging xác nhận drift ở nhiều section ticket-only: Internal name không '#', Offer title khác, Discount code không khoá, selection mặc định Redirect + radio thứ 3, popup modal fade/Done, Combination mặc định checked."
+    },
+    {
+      "risk": "Không có evidence API/DB/code-level thật nào cho Multibuy ngoài 2 fragment code_artifact (KB-043, KB-051) — mode DOC_BOOTSTRAP không chạy explorer nào; surface_mapping.api/data đang rỗng. Cần 1 run INCREMENTAL_UPDATE/explore riêng nếu cần oracle ở layer này.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-043",
+        "multibuy/multibuy-product-selection#KB-051"
+      ],
+      "observed_kb_refs": [
+        "KB-087",
+        "KB-093",
+        "KB-094",
+        "object:KB-015"
+      ],
+      "refresh_note": "Run REFRESH này đã bổ sung evidence API (REST offers, Shopify discount GraphQL, cart) ở staging; DB/code vẫn không có."
+    },
+    {
+      "risk": "Mục mới: 'Pick' trong popup không thêm cart trên staging, trái confirmed rule KB-049/KB-050 — test case theo rule base có thể FAIL trên staging; cần owner xác nhận.",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-049",
+        "multibuy/multibuy-product-selection#KB-050",
+        "multibuy/multibuy-product-selection#KB-094"
+      ],
+      "knowledge_kind": "OBSERVED_CURRENT"
+    },
+    {
+      "risk": "Mục mới: lưu được Redirect với URL rỗng → slot '+' trên storefront không phản hồi (buyer kẹt, không chọn được sản phẩm qua slot).",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-088",
+        "multibuy/multibuy-product-selection#KB-093"
+      ],
+      "knowledge_kind": "OBSERVED_CURRENT"
+    },
+    {
+      "risk": "Mục mới: số trên badge 'Saved' của widget không bằng discount thực trong cart — có thể gây hiểu nhầm cho buyer; công thức chưa rõ.",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-092"
+      ],
+      "knowledge_kind": "OBSERVED_CURRENT"
+    },
+    {
+      "risk": "Mục mới: lỗi console mỗi lần 'Pick' trong popup và subtotal/slot không cập nhật (có thể do product không ảnh).",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-094"
+      ],
+      "knowledge_kind": "OBSERVED_CURRENT"
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-18",
+    "base_observed_at": "2026-10-01"
+  },
+  "unknown_areas": [
+    {
+      "question": "'Pick' trên sản phẩm trong popup có phải thêm ngay vào cart (KB-049/KB-050) hay chỉ ghi nhận lựa chọn cho tới khi bấm 'Done' (staging)?",
+      "why_it_matters": "Confirmed rule base và quan sát staging khác nhau ở cùng thao tác; test case popup không có oracle cho tới khi owner xác nhận.",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-049",
+        "multibuy/multibuy-product-selection#KB-050",
+        "multibuy/multibuy-product-selection#KB-094",
+        "multibuy/multibuy-product-selection#KB-093"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-021"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-multibuy-005"
+    },
+    {
+      "question": "Chế độ 'Direct to collection page' hoạt động thế nào trên storefront, và mặc định expected của Customer product selection behavior là popup hay Redirect; có nên chặn lưu URL rỗng?",
+      "why_it_matters": "Staging có radio thứ 3 chưa thử, mặc định Redirect khác ticket, URL rỗng làm slot '+' vô hiệu.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-003",
+        "multibuy/multibuy-product-selection#KB-045",
+        "multibuy/multibuy-product-selection#KB-088",
+        "multibuy/multibuy-product-selection#KB-093"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-020"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-multibuy-022"
+    },
+    {
+      "question": "Số trên badge 'Saved' của widget được tính theo công thức nào (lệch với discount thực trong cart)?",
+      "why_it_matters": "Badge hiện $27.00 trong khi cart giảm $41.00; không suy được công thức.",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-092",
+        "multibuy/multibuy-discount-setup#KB-021"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-multibuy-028"
+    },
+    {
+      "question": "Lỗi console 'Cannot read properties of null (reading 'url')' khi 'Pick' trong popup là defect hay do product thử không có ảnh?",
+      "why_it_matters": "Subtotal/slot popup không cập nhật đúng dù 'Done' vẫn thêm đúng item.",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-094"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-021"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-multibuy-023"
+    },
+    {
+      "question": "Popup và widget Multibuy trên mobile và với product có ảnh hiển thị thế nào?",
+      "why_it_matters": "Popup chỉ kiểm desktop; product thử không có ảnh (badge trên ảnh, lỗi console).",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-094",
+        "multibuy/multibuy-appearance-and-schedule#KB-091"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-multibuy-031"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-04-multibuy-discount-setup",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "form mặc định, lưu, đổi selection behavior, bỏ multiplier, xoá",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-085",
+        "multibuy/multibuy-discount-setup#KB-086",
+        "multibuy/multibuy-discount-setup#KB-087",
+        "multibuy/multibuy-product-selection#KB-088",
+        "multibuy/multibuy-appearance-and-schedule#KB-089",
+        "discount-offers/offer-create-and-manage#KB-017"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-discount-setup",
+      "layer": "storefront",
+      "role": "buyer (guest)",
+      "state": "widget PDP, Redirect URL rỗng, popup, pooling 2 product, multiplier bật/tắt",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-087",
+        "multibuy/multibuy-product-selection#KB-092",
+        "multibuy/multibuy-product-selection#KB-093",
+        "multibuy/multibuy-product-selection#KB-094",
+        "multibuy/multibuy-discount-calculation#KB-095"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-discount-setup",
+      "layer": "api",
+      "role": "merchant / buyer (guest)",
+      "state": "REST offers, Shopify discount GraphQL, cart, events",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "discount-offers/offer-create-and-manage#KB-015",
+        "multibuy/multibuy-product-selection#KB-093",
+        "multibuy/multibuy-product-selection#KB-094",
+        "discount-offers/offer-storefront-events#KB-023"
+      ]
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": []
+}

@@ -1,0 +1,1906 @@
+{
+  "feature_id": "FEAT-01-image-effects-run",
+  "feature_key": "image-effects-run",
+  "name": "Run effects trên Photo layer",
+  "user_goal": "Merchant (owner hoặc staff có quyền Manage Artwork) bấm Run effects ở header \"Image effects\" của Photo layer (customization Normal, store không phải Etsy) để áp toàn bộ danh sách effect đã cấu hình lên ảnh hiện tại của layer và thay ảnh layer bằng kết quả, có thể Undo, kết quả được lưu vào image library; hệ thống chặn lượt chạy khi thiếu điều kiện (chưa chọn effect, ảnh chưa Save, thiếu API key, vượt giới hạn tần suất hoặc upload) và báo khi lỗi hoặc timeout. Không gồm cấu hình danh sách effect (layer-config-image), popover Fill in variables (FEAT-27), effect trên storefront (sdk), layer dùng Global Option (global-option).",
+  "user_goal_kb_refs": [
+    "artwork-render/image-effects-run#KB-800",
+    "artwork-render/image-effects-run#KB-801",
+    "artwork-render/image-effects-run#KB-803",
+    "artwork-render/image-effects-run#KB-805",
+    "artwork-render/image-effects-run#KB-815",
+    "artwork-render/image-effects-run#KB-819",
+    "artwork-render/image-effects-run#KB-821",
+    "artwork-render/image-effects-run#KB-823",
+    "artwork-render/image-effects-run#KB-827",
+    "artwork-render/image-effects-run#KB-829"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner / staff có quyền Manage Artwork (Artworks → Manage trong staff role) — người dùng artwork editor",
+      "permission_observed": "Theo dev (KB-815): quyền cần để chạy là Manage Artwork, không có quyền riêng \"create layer images\". Thấy và bấm được Run effects trên Photo layer Normal ở store không phải Etsy (KB-800). Owner và mọi staff của một store dùng chung giới hạn tần suất và upload (KB-813; vế 5 lượt/phút dùng chung chỉ là quan sát ở KB-814).",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800",
+        "artwork-render/image-effects-run#KB-813",
+        "artwork-render/image-effects-run#KB-814",
+        "artwork-render/image-effects-run#KB-815"
+      ]
+    },
+    {
+      "role": "staff không có quyền Manage Artwork",
+      "permission_observed": "Theo dev (KB-815): không mở được artwork editor nên không bao giờ thấy nút Run effects; server cũng từ chối lượt chạy từ staff này. Chưa có quan sát trực tiếp trong shard.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-815"
+      ]
+    },
+    {
+      "role": "merchant-owner / staff dùng artwork editor",
+      "permission_observed": "Mở popover, điền field, bấm Run effects của popover trên staging (KB-819, KB-823). Giá trị nhập lưu riêng từng layer trong phiên, không chia sẻ sang browser, tab hoặc staff khác theo PO (KB-829; vế không chia sẻ chưa kiểm trực tiếp). Quyền vào artwork editor theo FEAT-26 (KB-815), không có KB riêng ở shard này.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819",
+        "artwork-render/image-effects-run#KB-823",
+        "artwork-render/image-effects-run#KB-829"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Portal: artwork editor → chọn Photo layer → header \"Image effects\" → nút Run effects",
+      "precondition": "Đăng nhập staging bằng owner hoặc staff có Manage Artwork (KB-815). Photo layer có customization type Normal, store không phải Etsy (KB-800). Nút chỉ enabled khi ít nhất một dòng trong danh sách effect đã chọn loại effect, và ảnh layer không chỉ tồn tại trong editor: layer PSD/Canva import chuyển sang Photo Upload phải Save artwork trước (KB-801). Mọi dịch vụ bên thứ ba trong chuỗi effect cần API key ở Extras → Extra services (KB-816, chỉ là quan sát từ dev doc; danh sách trong warning theo KB-817). Muốn kiểm Undo trả HD thì layer phải đang bật HD trước lượt chạy (KB-805).",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800",
+        "artwork-render/image-effects-run#KB-801",
+        "artwork-render/image-effects-run#KB-805",
+        "artwork-render/image-effects-run#KB-815",
+        "artwork-render/image-effects-run#KB-816",
+        "artwork-render/image-effects-run#KB-817"
+      ]
+    },
+    {
+      "path": "Portal: Extras → Extra services (nhập API key cho Remove background, Cutout.pro, ImagenHub, OpenAI, Flux, Gemini, Gen AI Effect) — bước setup trước khi chạy",
+      "precondition": "Fixture theo chuỗi effect cần kiểm. Theo KB-816 (OBSERVED_CURRENT/LOW): remover Teeinblue và effect Teeinblue không cần key; \"Gen AI Effect\" ở Default settings cần đã chọn default provider. Face Cutout / Photo Enhancer có cần key không chưa biết.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-816",
+        "artwork-render/image-effects-run#KB-817"
+      ]
+    },
+    {
+      "path": "Portal: artwork editor → layer có Image effects → bấm Run effects → popover \"Fill in variables\"",
+      "precondition": "Prompt của ít nhất một effect chứa biến khớp option có thật trong artwork (KB-819); áp cho layer Normal và layer Global Option theo spec, nhưng phần Global Option thuộc object global-option. Prompt không có biến, hoặc mọi biến đều không khớp, thì không mở popover (KB-820, KB-828, chỉ quan sát). Muốn kiểm từng loại field cần option text, Only numbers, Date picker và option layer (KB-821). Muốn kiểm điền sẵn cần option có/không có default và một lượt nhập trước trên cùng layer (KB-823, KB-829). Các điều kiện chạy chung của nút (Photo layer Normal, store không Etsy, đã chọn effect, đủ API key) theo FEAT-26.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819",
+        "artwork-render/image-effects-run#KB-820",
+        "artwork-render/image-effects-run#KB-821",
+        "artwork-render/image-effects-run#KB-823",
+        "artwork-render/image-effects-run#KB-828",
+        "artwork-render/image-effects-run#KB-829"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Điều kiện hiển thị và bật nút Run effects",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-800): nút nằm ở header \"Image effects\" của Photo layer customization Normal trên store không phải Etsy; không hiện cho layer Linked / No customization và trên store Etsy; \"Always visible\" nghĩa là luôn hiện dù đã cấu hình effect hay chưa. CONFIRMED_EXPECTED/MEDIUM (KB-801): disabled khi không dòng nào có chọn loại effect (tooltip vẫn \"Applies all effects to the current image and replaces it.\"); disabled khi ảnh chỉ tồn tại trong editor (PSD/Canva import chưa Save) với tooltip \"Save the artwork first to run effects on this image.\", Save xong thì enabled. Layer dùng Global Option không thuộc feature này.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800",
+        "artwork-render/image-effects-run#KB-801"
+      ]
+    },
+    {
+      "name": "Chạy một lượt effect và nhận kết quả trên layer",
+      "description": "OBSERVED_CURRENT/LOW (KB-802, dev doc tự sinh): dùng ảnh gốc full-resolution hiện tại (không phải preview, không phải bản HD), áp effect tuần tự theo thứ tự danh sách, nút disabled và progress bar % (dừng ở 95% tới khi xong, giá trị lúc ship), all or nothing. OBSERVED_CURRENT/LOW (KB-803): thành công thì layer hiện ảnh đã xử lý, thay ảnh là một bước undo, kết quả thành ảnh mới trong image library, ảnh cũ trong library giữ nguyên. CONFIRMED_EXPECTED/MEDIUM (KB-804): thành công thì HD tắt cho layer và artwork không tự lưu (reload không Save về ảnh cũ; Save rồi reload giữ ảnh đã xử lý). OBSERVED_CURRENT/LOW (KB-806): chạy lại là chạy lên ảnh hiện tại (đã xử lý); đổi cấu hình effect không tự cập nhật ảnh. OBSERVED_CURRENT/LOW (KB-812): double-click chỉ tạo một lượt.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-802",
+        "artwork-render/image-effects-run#KB-803",
+        "artwork-render/image-effects-run#KB-804",
+        "artwork-render/image-effects-run#KB-806",
+        "artwork-render/image-effects-run#KB-812",
+        "artwork-render/image-effects-run#KB-1119",
+        "artwork-render/image-effects-run#KB-1120"
+      ]
+    },
+    {
+      "name": "Undo một lượt chạy",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-805, dev Q8): Undo trả layer về đúng như trước lượt chạy: ảnh trước đó, HD bật lại nếu trước đó đang bật; ảnh lượt chạy đã thêm vào image library vẫn còn.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-805"
+      ]
+    },
+    {
+      "name": "Kết quả khi rời layer/artwork, layer mất, hoặc timeout",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-807): layer chỉ được thay nếu đúng artwork đó đang mở lúc lượt chạy kết thúc; mở lại artwork sau đó không áp, kết quả chỉ nằm trong image library. OBSERVED_CURRENT/LOW (KB-808): đóng layer editor, chọn layer khác hoặc mở lại artwork khi đang chạy không mất lượt chạy, mở lại layer thấy progress bar. CONFIRMED_EXPECTED/MEDIUM (KB-809): timeout chỉ làm editor ngừng chờ, không huỷ lượt chạy; timeout lúc chờ hàng đợi (5 phút) thì vẫn chạy sau, thành công thì ảnh vào library nhưng layer không bị thay; timeout lúc xử lý (khoảng 6 phút) thì server đã dừng, không có ảnh mới (giá trị lúc ship). OBSERVED_CURRENT/LOW (KB-810): toast \"Timed out waiting for the effects to finish.\", thời gian chờ hàng đợi không tính vào 6 phút. OBSERVED_CURRENT/LOW (KB-811): layer không còn trong template hiện tại lúc xong thì warning \"The layer is no longer in the current template, so its image was not replaced.\"",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-807",
+        "artwork-render/image-effects-run#KB-808",
+        "artwork-render/image-effects-run#KB-809",
+        "artwork-render/image-effects-run#KB-810",
+        "artwork-render/image-effects-run#KB-811"
+      ]
+    },
+    {
+      "name": "Xử lý lỗi effect",
+      "description": "OBSERVED_CURRENT/LOW (KB-811, dev doc tự sinh): một effect bất kỳ lỗi (lỗi provider, key sai) thì layer giữ ảnh cũ và hiện toast \"Could not run effects\" kèm message của provider trong 10 giây.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-811"
+      ]
+    },
+    {
+      "name": "Giới hạn tần suất và giới hạn upload",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-813, dev Q10): lượt thứ 6 trong một phút báo \"Too many requests! – Please retry after N second(s)\" (N là số giây còn lại của phút đó); hết giới hạn upload (default 1000 ảnh/ngày/store) báo \"Too many requests! – Reach the limit 1000 records in 1 day. Wait until {date time} to try again or contact support to increase.\"; cả hai không bắt đầu lượt chạy, ảnh giữ nguyên. Con số là default lúc ship. OBSERVED_CURRENT/LOW (KB-814): tối đa 5 lượt/phút/store dùng chung owner và mọi staff, đổi được trong server config, mỗi lượt tính vào giới hạn upload layer image.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-813",
+        "artwork-render/image-effects-run#KB-814"
+      ]
+    },
+    {
+      "name": "Quyền chạy Run effects",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-815, dev Q4): quyền cần là Manage Artwork; staff không có quyền không mở được artwork editor, không thấy nút, server từ chối lượt chạy.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-815"
+      ]
+    },
+    {
+      "name": "Kiểm API key của dịch vụ bên thứ ba trước khi chạy",
+      "description": "OBSERVED_CURRENT/LOW (KB-816, dev doc tự sinh): thiếu key ở Extras → Extra services cho dịch vụ trong chuỗi thì không chạy, warning \"Missing API key for {services}. Enter your API key in Extra services.\"; dịch vụ được kiểm và ngoại lệ Teeinblue liệt kê ở KB-816; server kiểm lại lúc bắt đầu (key bị xoá giữa chừng thì lỗi cùng message, ảnh giữ nguyên). CONFIRMED_EXPECTED/MEDIUM (KB-817, dev Q9): {services} liệt kê mỗi dịch vụ một lần, cách nhau dấu phẩy, thứ tự cố định Remove background, Cutout.pro, ImagenHub, Gen AI Effect, OpenAI, Flux, Gemini. Known limitation KB-818 (Remove background + Face cutout vẫn đòi key Remove background) không phải expected, xem known_limitations.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-816",
+        "artwork-render/image-effects-run#KB-817",
+        "artwork-render/image-effects-run#KB-818"
+      ]
+    },
+    {
+      "name": "Mở popover Fill in variables và dựng field theo biến",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-819, spec PO 2026-10-26): prompt của bất kỳ effect nào có biến thì bấm Run effects mở popover \"Fill in variables\" với mô tả \"Enter the values to use for this run.\"; mỗi biến duy nhất khớp option có thật có đúng một field, theo thứ tự xuất hiện trong prompt, nhãn là token (ví dụ {{Name}}). OBSERVED_CURRENT/LOW (KB-820): prompt không có biến thì chạy thẳng, không mở popover; đóng popover (nút đóng, click ra ngoài, Esc) thì không chạy.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819",
+        "artwork-render/image-effects-run#KB-820"
+      ]
+    },
+    {
+      "name": "Loại field theo input type của option",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-821, spec PO): option text là ô text, Only numbers là ô number (chữ bị loại), Date picker là ô date, option layer là chọn trong các item của nó; option đổi input type thì field dùng input type mới và kiểm lại giá trị đã lưu. OBSERVED_CURRENT/LOW (KB-822, TC-74): giá trị lưu không hợp lệ với type mới bị bỏ, field trống kèm hint, nút Run effects của popover disabled tới khi nhập giá trị hợp lệ.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-821",
+        "artwork-render/image-effects-run#KB-822"
+      ]
+    },
+    {
+      "name": "Điền sẵn field và điều kiện chạy từ popover",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-823, spec PO): field điền sẵn theo thứ tự (1) giá trị nhập lần trước cho biến này trên layer này, (2) default của option; không có cả hai thì field trống kèm hint. Nút Run effects trong popover disabled tới khi mọi field có giá trị; bấm thì popover đóng, lượt chạy bắt đầu, mỗi lần xuất hiện của biến được thay bằng giá trị đã nhập. Chữ hint field trống đang UNRESOLVED (KB-824 vs KB-825), không có oracle. OBSERVED_CURRENT/LOW (KB-826): giá trị chỉ gồm khoảng trắng (space, tab) bị coi là trống.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-823",
+        "artwork-render/image-effects-run#KB-824",
+        "artwork-render/image-effects-run#KB-825",
+        "artwork-render/image-effects-run#KB-826"
+      ]
+    },
+    {
+      "name": "Biến không khớp option",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-827, PO Q1 B 2026-10-28): biến không khớp option nào (gõ sai, {{School.color}}, biến JSON list, template selector, option đã bị xoá) không có field và không chặn lượt chạy; token giữ nguyên trong prompt gửi provider, giống storefront; prompt có cả biến khớp thì popover chỉ hiện field của biến khớp. OBSERVED_CURRENT/LOW (KB-828, TC-68): mọi biến đều không khớp thì không mở popover, chạy thẳng, prompt giữ nguyên token.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-827",
+        "artwork-render/image-effects-run#KB-828"
+      ]
+    },
+    {
+      "name": "Lưu giá trị đã nhập trong phiên",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-829, PO Q2 A 2026-10-28): giá trị nhập lưu riêng cho từng layer; còn sau mỗi lượt chạy và sau khi mở lại artwork; bị xoá khi reload trang; không chia sẻ sang browser, tab hoặc staff khác. OBSERVED_CURRENT/LOW (KB-830): giá trị nhập (kể cả giá trị lưu hiện lại sau khi mở lại artwork) hiển thị như text thường, payload XSS/HTML không render; ô number và ô date loại bỏ payload.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-829",
+        "artwork-render/image-effects-run#KB-830"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "nút Run effects disabled (không dòng effect nào có chọn loại effect)",
+      "to": "nút enabled",
+      "trigger": "chọn loại effect cho ít nhất một dòng",
+      "condition": "Photo layer Normal, store không phải Etsy. CONFIRMED_EXPECTED/MEDIUM.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800",
+        "artwork-render/image-effects-run#KB-801"
+      ]
+    },
+    {
+      "from": "nút disabled, tooltip \"Save the artwork first to run effects on this image.\" (layer PSD/Canva import chuyển sang Photo Upload, chưa Save)",
+      "to": "nút enabled",
+      "trigger": "Save artwork",
+      "condition": "CONFIRMED_EXPECTED/MEDIUM; tooltip chưa thấy trực tiếp (TC-05 tạm dừng).",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-801"
+      ]
+    },
+    {
+      "from": "nút enabled",
+      "to": "đang chạy: nút disabled, progress bar % giữa header và effect đầu tiên",
+      "trigger": "bấm Run effects (double-click chỉ tạo một lượt)",
+      "condition": "Đủ API key, chưa vượt giới hạn. OBSERVED_CURRENT/LOW (dev doc tự sinh, TC-79).",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-802",
+        "artwork-render/image-effects-run#KB-812"
+      ]
+    },
+    {
+      "from": "đang chạy",
+      "to": "thành công: layer hiện ảnh đã xử lý, HD tắt, artwork chưa lưu, ảnh mới trong image library",
+      "trigger": "lượt chạy kết thúc thành công",
+      "condition": "Đúng artwork đó đang mở trong editor lúc kết thúc (KB-807). HD tắt và không tự lưu là CONFIRMED_EXPECTED (KB-804); thay ảnh và lưu library là OBSERVED_CURRENT/LOW (KB-803).",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-803",
+        "artwork-render/image-effects-run#KB-804",
+        "artwork-render/image-effects-run#KB-807"
+      ]
+    },
+    {
+      "from": "thành công, chưa Save",
+      "to": "layer quay về ảnh cũ (reload không Save) / layer giữ ảnh đã xử lý (Save rồi reload)",
+      "trigger": "reload trang",
+      "condition": "CONFIRMED_EXPECTED/MEDIUM.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-804"
+      ]
+    },
+    {
+      "from": "thành công",
+      "to": "layer như trước lượt chạy: ảnh trước đó, HD bật lại nếu trước đó bật; ảnh trong library vẫn còn",
+      "trigger": "Undo",
+      "condition": "CONFIRMED_EXPECTED/MEDIUM.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-805"
+      ]
+    },
+    {
+      "from": "đang chạy",
+      "to": "layer không bị thay, kết quả chỉ nằm trong image library",
+      "trigger": "lượt chạy kết thúc khi artwork đó không còn mở trong editor",
+      "condition": "CONFIRMED_EXPECTED/MEDIUM. Mở lại artwork sau đó không áp kết quả.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-807"
+      ]
+    },
+    {
+      "from": "đang chạy",
+      "to": "layer giữ ảnh, warning \"The layer is no longer in the current template, so its image was not replaced.\"",
+      "trigger": "lượt chạy kết thúc khi layer đã bị xoá hoặc không còn trong template hiện tại",
+      "condition": "OBSERVED_CURRENT/LOW (TC-20 PASS 2026-10-21, không ghi build).",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-811"
+      ]
+    },
+    {
+      "from": "đang chạy",
+      "to": "layer giữ ảnh cũ, toast \"Could not run effects\" kèm message provider (10 giây)",
+      "trigger": "một effect lỗi (lỗi provider, key sai)",
+      "condition": "OBSERVED_CURRENT/LOW (dev doc tự sinh).",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-811"
+      ]
+    },
+    {
+      "from": "đang chờ hàng đợi / đang xử lý",
+      "to": "editor ngừng chờ; lượt chờ hàng đợi vẫn chạy sau (ảnh vào library, layer không bị thay); lượt đang xử lý bị server dừng, không có ảnh mới",
+      "trigger": "timeout (5 phút chờ hàng đợi; khoảng 6 phút xử lý; giá trị lúc ship)",
+      "condition": "CONFIRMED_EXPECTED/MEDIUM (KB-809); chữ toast và cách tính giờ là OBSERVED_CURRENT/LOW (KB-810). Chưa tái hiện timeout thật (TC-19).",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-809",
+        "artwork-render/image-effects-run#KB-810"
+      ]
+    },
+    {
+      "from": "nút enabled",
+      "to": "không bắt đầu lượt chạy, ảnh giữ nguyên, toast \"Too many requests! …\"",
+      "trigger": "bấm lượt thứ 6 trong một phút, hoặc khi hết giới hạn upload",
+      "condition": "CONFIRMED_EXPECTED/MEDIUM; con số là default lúc ship. Toast 1000/ngày chưa ép được trên staging.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-813",
+        "artwork-render/image-effects-run#KB-814"
+      ]
+    },
+    {
+      "from": "nút enabled",
+      "to": "không chạy, warning \"Missing API key for {services}. Enter your API key in Extra services.\"",
+      "trigger": "bấm Run effects khi chuỗi effect có dịch vụ thiếu key",
+      "condition": "Kiểm key là OBSERVED_CURRENT/LOW (KB-816); thứ tự {services} CONFIRMED_EXPECTED/MEDIUM (KB-817). KB-818 KNOWN_DEFECT không làm oracle.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-816",
+        "artwork-render/image-effects-run#KB-817",
+        "artwork-render/image-effects-run#KB-818"
+      ]
+    },
+    {
+      "from": "nút Run effects enabled, prompt có biến khớp option",
+      "to": "popover \"Fill in variables\" mở, chưa chạy",
+      "trigger": "bấm Run effects",
+      "condition": "CONFIRMED_EXPECTED/MEDIUM.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819"
+      ]
+    },
+    {
+      "from": "nút Run effects enabled, prompt không có biến hoặc mọi biến không khớp",
+      "to": "lượt chạy bắt đầu ngay, không mở popover (token không khớp giữ nguyên)",
+      "trigger": "bấm Run effects",
+      "condition": "OBSERVED_CURRENT/LOW (TC-57/58/65/66, TC-68, build index.OMERs7BG.js 2026-10-28). PO chưa xác nhận; spec có thể đọc là mở popover rỗng khi mọi biến không khớp.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-820",
+        "artwork-render/image-effects-run#KB-828"
+      ]
+    },
+    {
+      "from": "popover mở",
+      "to": "popover đóng, không chạy",
+      "trigger": "nút đóng, click ra ngoài, hoặc Esc",
+      "condition": "OBSERVED_CURRENT/LOW.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-820"
+      ]
+    },
+    {
+      "from": "popover mở, có field trống (hoặc chỉ khoảng trắng)",
+      "to": "nút Run effects của popover enabled",
+      "trigger": "nhập giá trị hợp lệ cho mọi field",
+      "condition": "Rule disabled tới khi mọi field có giá trị là CONFIRMED_EXPECTED (KB-823); khoảng trắng coi là trống là OBSERVED_CURRENT/LOW (KB-826).",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-823",
+        "artwork-render/image-effects-run#KB-826"
+      ]
+    },
+    {
+      "from": "popover mở, mọi field có giá trị",
+      "to": "popover đóng, lượt chạy bắt đầu với biến được thay bằng giá trị đã nhập",
+      "trigger": "bấm Run effects trong popover",
+      "condition": "CONFIRMED_EXPECTED/MEDIUM. Kết quả lượt chạy theo FEAT-26.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-823"
+      ]
+    },
+    {
+      "from": "field có giá trị đã lưu",
+      "to": "field dùng input type mới; giá trị không hợp lệ bị bỏ, field trống kèm hint",
+      "trigger": "option đổi input type",
+      "condition": "Dùng type mới và kiểm lại giá trị là CONFIRMED_EXPECTED (KB-821); bỏ giá trị không hợp lệ là OBSERVED_CURRENT/LOW (KB-822, TC-74).",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-821",
+        "artwork-render/image-effects-run#KB-822"
+      ]
+    },
+    {
+      "from": "giá trị đã nhập trên layer",
+      "to": "giá trị còn (sau lượt chạy, sau khi mở lại artwork) / bị xoá (reload trang)",
+      "trigger": "chạy xong, mở lại artwork, reload trang",
+      "condition": "CONFIRMED_EXPECTED/MEDIUM.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-829"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "rule": "Nút Run effects nằm ở header \"Image effects\" của Photo layer customization type Normal, trên store không phải Etsy; không hiện cho layer Linked hoặc No customization, không hiện trên store Etsy. \"Always visible\" nghĩa là nút luôn hiện dù đã cấu hình effect hay chưa (disabled tới khi có effect), không phải hiện cho mọi loại layer hay mọi store.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner (store owner/staff, artwork editor), portal",
+      "caveats": "Một nguồn. Etsy chưa có lượt kiểm (TC-03 not-run); Linked/No customization mới kiểm 2/4 layer (TC-80 tạm dừng). Không phát biểu về layer dùng Global Option.",
+      "confirmation_ref": "Jira TIB-5470 comment 54563 (PO huyen.chu), Q1, 2026-10-14",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800"
+      ]
+    },
+    {
+      "rule": "Nút Run effects disabled khi không dòng nào trong danh sách effect có chọn loại effect, tooltip lúc đó vẫn là \"Applies all effects to the current image and replaces it.\"; nút disabled khi ảnh của layer chỉ tồn tại trong editor (layer PSD/Canva import chuyển sang Photo Upload, chưa Save) với tooltip \"Save the artwork first to run effects on this image.\", Save xong thì nút enabled.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner (store owner/staff, artwork editor), portal",
+      "caveats": "Một nguồn (PO ok đề xuất QA). Tooltip PSD chưa thấy trực tiếp (TC-05 tạm dừng). Style hover đã bỏ khỏi KB.",
+      "confirmation_ref": "Jira TIB-5470 comment 54563 (PO huyen.chu), ok Q2 và Q7, 2026-10-14",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-801"
+      ]
+    },
+    {
+      "rule": "Khi lượt chạy thành công, HD bị tắt cho layer đó và artwork không tự lưu; reload trang mà không Save thì layer quay về ảnh cũ, Save rồi reload thì layer giữ ảnh đã xử lý.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner (store owner/staff, artwork editor), portal",
+      "caveats": "Một nguồn. Bật lại HD sau lượt chạy chưa có KB (TC-09 tạm dừng).",
+      "confirmation_ref": "Jira TIB-5470 comment 54563 (PO huyen.chu), ok Q3, 2026-10-14",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-804"
+      ]
+    },
+    {
+      "rule": "Undo một lượt chạy trả layer về đúng như trước lượt chạy: ảnh trước đó, và HD bật lại nếu trước đó đang bật; ảnh mà lượt chạy đã thêm vào image library vẫn còn.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner (store owner/staff, artwork editor), portal",
+      "caveats": "Một nguồn.",
+      "confirmation_ref": "Jira TIB-5470 comment 54560 (Dev giangnth), Q8, 2026-10-14",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-805"
+      ]
+    },
+    {
+      "rule": "Layer chỉ được thay ảnh nếu đúng artwork đó đang mở trong editor tại thời điểm lượt chạy kết thúc; mở lại artwork sau đó không áp kết quả, kết quả chỉ nằm trong image library.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner (store owner/staff, artwork editor), portal + api",
+      "caveats": "Một nguồn. Reload trang khi đang chạy chưa có KB.",
+      "confirmation_ref": "Jira TIB-5470 comment 54560 (Dev giangnth), Q11, 2026-10-14",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-807"
+      ]
+    },
+    {
+      "rule": "Khi timeout, editor chỉ ngừng chờ, lượt chạy không bị huỷ. Timeout khi đang chờ hàng đợi (5 phút) thì lượt chạy vẫn chạy sau đó; nếu thành công, ảnh mới vào image library nhưng layer không bị thay. Timeout khi đang xử lý (khoảng 6 phút) thì server đã dừng lượt chạy, không có ảnh mới.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner (store owner/staff, artwork editor), portal + api",
+      "caveats": "5 và 6 phút là giá trị lúc ship, không phải hằng số sản phẩm. QA chưa tái hiện timeout thật (TC-19 tạm dừng).",
+      "confirmation_ref": "Jira TIB-5470 comment 54560 (Dev giangnth), Q11, 2026-10-14",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-809"
+      ]
+    },
+    {
+      "rule": "Lượt thứ 6 trong một phút hiện toast lỗi \"Too many requests! – Please retry after N second(s)\" (N là số giây còn lại của phút đó); khi hết giới hạn upload (default 1000 ảnh/ngày/store) toast là \"Too many requests! – Reach the limit 1000 records in 1 day. Wait until {date time} to try again or contact support to increase.\"; trong cả hai trường hợp không lượt chạy nào bắt đầu và ảnh giữ nguyên.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner + staff (dùng chung quota store), portal + api",
+      "caveats": "Con số là default lúc ship, không phải hằng số sản phẩm. Toast 1000/ngày chưa ép được trên staging.",
+      "confirmation_ref": "Jira TIB-5470 comment 54560 (Dev giangnth), Q10, 2026-10-14",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-813"
+      ]
+    },
+    {
+      "rule": "Không có quyền riêng \"create layer images\"; quyền cần để chạy Run effects là Manage Artwork (Artworks → Manage trong staff role). Staff không có quyền này không mở được artwork editor nên không bao giờ thấy nút Run effects, và server cũng từ chối lượt chạy từ staff không có quyền này.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, staff (có / không có Manage Artwork), portal + api",
+      "caveats": "Một nguồn; chưa có quan sát trực tiếp với staff không có quyền.",
+      "confirmation_ref": "Jira TIB-5470 comment 54560 (Dev giangnth), Q4, 2026-10-14",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-815"
+      ]
+    },
+    {
+      "rule": "Khi thiếu nhiều key, {services} trong warning thiếu API key liệt kê mỗi dịch vụ đúng một lần, cách nhau bằng dấu phẩy, luôn theo thứ tự Remove background, Cutout.pro, ImagenHub, Gen AI Effect, OpenAI, Flux, Gemini; ví dụ \"Missing API key for Cutout.pro, OpenAI. Enter your API key in Extra services.\"",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner (store owner/staff, artwork editor), portal",
+      "caveats": "Rule chỉ về định dạng {services}; danh sách dịch vụ được kiểm và việc kiểm key là OBSERVED_CURRENT/LOW (KB-816).",
+      "confirmation_ref": "Jira TIB-5470 comment 54560 (Dev giangnth), Q9, 2026-10-14",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-817"
+      ]
+    },
+    {
+      "rule": "[CBS-163] Response của lượt chạy effect trên layer ảnh là danh sách tường minh: status, error_message, layer_image (id, url, thumbnail, width, height); user_id của lượt chạy bị bỏ.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner, portal (Artwork editor) + portal API",
+      "caveats": "Quote không nói route, status code hay response lúc đang chạy.",
+      "confirmation_ref": "Jira TIB-5689 comment 56448 Solution, bảng Portal hàng LayerImageController::effectsRun (Dev, 2026-11-04)",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-1119"
+      ]
+    },
+    {
+      "rule": "Khi prompt của bất kỳ effect nào có biến, bấm Run effects mở popover \"Fill in variables\" (áp cho cả layer Normal và layer Global Option) với mô tả \"Enter the values to use for this run.\"; mỗi biến duy nhất khớp với một option có thật có đúng một field, theo thứ tự xuất hiện trong prompt, nhãn là token của biến (ví dụ {{Name}}).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "spec_doc",
+      "scope": "staging, merchant-owner (store owner/staff, artwork editor), portal",
+      "caveats": "Một nguồn. Phần layer Global Option thuộc object global-option, feature này không kiểm. ImagenHub template variable chưa thử (TC-78).",
+      "confirmation_ref": "Jira TIB-5470 description, mục Update: Prompt variables › Trigger, Fields (PO huyen.chu, comment 55607), 2026-10-26",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819"
+      ]
+    },
+    {
+      "rule": "Field trong popover Fill in variables theo input type của option: option text là ô text, Only numbers là ô number (chữ bị loại), Date picker là ô date, option layer là chọn trong các item của nó; khi option đổi input type thì field dùng input type mới và kiểm lại giá trị đã lưu.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "spec_doc",
+      "scope": "staging, merchant-owner (store owner/staff, artwork editor), portal",
+      "caveats": "Bổ trợ TC-59, TC-74 PASS 2026-10-30 build index.BMgdZMSW.js (sau fix BUG-01). Kết cục khi giá trị lưu không hợp lệ chỉ là quan sát (KB-822).",
+      "confirmation_ref": "Jira TIB-5470 description, mục Update: Prompt variables › Fields (PO huyen.chu, comment 55607), 2026-10-26",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-821"
+      ]
+    },
+    {
+      "rule": "Field trong popover Fill in variables điền sẵn theo thứ tự (1) giá trị nhập lần trước cho biến này trên layer này, (2) default của option; không có cả hai thì field trống kèm hint. Nút Run effects trong popover disabled tới khi mọi field có giá trị; bấm thì popover đóng và lượt chạy bắt đầu, mỗi lần xuất hiện của biến trong prompt được thay bằng giá trị đã nhập.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "spec_doc",
+      "scope": "staging, merchant-owner (store owner/staff, artwork editor), portal + api",
+      "caveats": "Rule không gồm chữ hint: chữ hint đang UNRESOLVED (KB-824 vs KB-825, fill-variables-empty-hint-copy). Giá trị chỉ khoảng trắng có tính là \"có giá trị\" không chưa xác nhận (KB-826).",
+      "confirmation_ref": "Jira TIB-5470 description, mục Update: Prompt variables › Fields, Run (PO huyen.chu, comment 55607), 2026-10-26",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-823"
+      ]
+    },
+    {
+      "rule": "Biến trong prompt không khớp option nào (gõ sai, {{School.color}}, biến JSON list, template selector, option đã bị xoá) không có field trong popover Fill in variables và không chặn lượt chạy; token được giữ nguyên trong prompt gửi provider, giống storefront. Khi prompt có cả biến khớp, popover chỉ hiện field của biến khớp.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner (store owner/staff, artwork editor), portal + api",
+      "caveats": "Bổ trợ TC-67, TC-75, TC-76 PASS 2026-10-28 build index.OMERs7BG.js. Vế option bị đổi tên đã bỏ khỏi KB. Biến JSON list ở portal khác với sdk KB-415 (storefront), chưa đối chiếu.",
+      "confirmation_ref": "Jira TIB-5470 comment 55851 (PO huyen.chu), Q1 B, trả lời câu hỏi Dev ở comment 55823, 2026-10-28",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-827"
+      ]
+    },
+    {
+      "rule": "Giá trị nhập trong popover Fill in variables được lưu riêng cho từng layer; còn sau mỗi lượt chạy và sau khi mở lại artwork; bị xoá khi reload trang; không chia sẻ sang browser, tab hoặc staff khác.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner (store owner/staff, artwork editor), portal",
+      "caveats": "Bổ trợ TC-69..72 PASS 2026-10-28 build index.OMERs7BG.js; vế không chia sẻ browser/tab/staff chưa kiểm trực tiếp. Vế không ghi vào default của option đã bỏ khỏi KB.",
+      "confirmation_ref": "Jira TIB-5470 comment 55851 (PO huyen.chu), Q2 A (phiên bản Dev ở comment 55823), 2026-10-28",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-829"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Một lượt Run effects dùng ảnh gốc full-resolution hiện tại của layer (không phải preview, không phải bản HD), áp mọi effect tuần tự theo thứ tự danh sách; trong lúc chạy nút disabled và có progress bar % (ước lượng, dừng ở 95% tới khi xong, giá trị lúc ship) giữa header và effect đầu tiên; kết quả all or nothing.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "scope": "staging, merchant-owner, portal + api; dev doc tự sinh 2026-10-08, bổ trợ TC-06/TC-11/TC-84 PASS (không ghi build)",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-802"
+      ]
+    },
+    {
+      "statement": "Lượt chạy thành công: layer hiện ảnh đã xử lý, việc thay ảnh là một bước undo, kết quả được lưu thành ảnh mới trong image library, ảnh trước đó trong library giữ nguyên.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "scope": "staging, merchant-owner, portal + api; dev doc tự sinh, bổ trợ TC-07/TC-64 PASS (không ghi build)",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-803"
+      ]
+    },
+    {
+      "statement": "Mỗi lượt chạy lấy ảnh hiện tại của layer tại thời điểm chạy: chạy lại là chạy lên ảnh đã xử lý, muốn chạy từ ảnh trước thì Undo trước; đổi, thêm, xoá hoặc sắp xếp effect không tự cập nhật ảnh.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "scope": "staging, merchant-owner, portal; mục spec không rõ người viết/ngày, bổ trợ TC-13 PASS 2026-10-15 (không ghi build)",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-806"
+      ]
+    },
+    {
+      "statement": "Đóng layer editor, chọn layer khác hoặc mở lại artwork khi đang chạy không làm mất lượt chạy: mở lại layer đó thấy progress bar, nút khoá tới khi xong; layer khác không bị ảnh hưởng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "scope": "staging, merchant-owner, portal + api; vế phụ tách từ CLAIM-08, dev doc tự sinh",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-808"
+      ]
+    },
+    {
+      "statement": "Chưa xong khoảng 6 phút sau khi bắt đầu xử lý, hoặc chưa bắt đầu sau 5 phút vì hàng đợi bận, thì editor hiện toast \"Timed out waiting for the effects to finish.\"; thời gian chờ hàng đợi không tính vào 6 phút (giá trị lúc ship).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "scope": "staging, merchant-owner, portal + api; vế phụ tách từ CLAIM-09, dev doc tự sinh, chưa tái hiện",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-810"
+      ]
+    },
+    {
+      "statement": "Một effect bất kỳ lỗi (lỗi provider, key sai) thì layer giữ ảnh cũ và hiện toast lỗi \"Could not run effects\" kèm message của provider trong 10 giây; layer bị xoá hoặc không còn trong template hiện tại lúc lượt chạy xong thì hiện warning \"The layer is no longer in the current template, so its image was not replaced.\"",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "scope": "staging, merchant-owner, portal; dev doc tự sinh, bổ trợ TC-20 PASS 2026-10-21 cho warning layer mất (không ghi build)",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-811"
+      ]
+    },
+    {
+      "statement": "Double-click nút Run effects (kể cả nút Run effects trong popover Fill in variables) chỉ tạo một lượt chạy.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "scope": "staging, merchant-owner, portal; TC-79 PASS 2026-10-28 (không ghi build)",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-812"
+      ]
+    },
+    {
+      "statement": "Một store bắt đầu tối đa 5 lượt chạy mỗi phút, dùng chung cho owner và mọi staff; 5 là default, đổi được trong server config; mỗi lượt chạy cũng tính vào giới hạn upload layer image.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "scope": "staging, merchant-owner + staff, portal + api; vế phụ tách từ CLAIM-12, dev doc tự sinh",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-814"
+      ]
+    },
+    {
+      "statement": "Trước khi chạy, mọi dịch vụ bên thứ ba trong chuỗi effect phải có API key ở Extras → Extra services; thiếu key thì không chạy và hiện warning \"Missing API key for {services}. Enter your API key in Extra services.\". Dịch vụ được kiểm: Remove background (chưa chọn remover, hoặc chọn remove.bg / removal.ai / cutout.pro mà không có key; remover Teeinblue không cần key), Cutout.pro, ImagenHub, OpenAI, Flux, Gemini, và \"Gen AI Effect\" (Default settings mà chưa chọn default provider). Effect Teeinblue không cần key. Server kiểm lại lúc bắt đầu: key bị xoá giữa chừng thì lượt chạy lỗi với cùng message, ảnh giữ nguyên.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "scope": "staging, merchant-owner, portal + api; dev doc tự sinh, TC-25..30 chỉ có status passed không có ngày",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-816"
+      ]
+    },
+    {
+      "statement": "[CBS-163] Run effects tới khi xong: layer nhận ảnh kết quả; response trạng thái lượt chạy có status và layer_image, không user_id (TC-TIB-8597, build không ghi).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-1120"
+      ],
+      "observed_count": 1
+    },
+    {
+      "statement": "Prompt không có biến thì bấm Run effects chạy thẳng, không mở popover; đóng popover Fill in variables (nút đóng, click ra ngoài, Esc) thì không chạy. Spec không ghi nguyên chữ hai hành vi này.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "scope": "staging, merchant-owner, portal; QA-3406 TC-57, TC-58, TC-65, TC-66 PASS 2026-10-28, build index.OMERs7BG.js",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-820"
+      ]
+    },
+    {
+      "statement": "Khi option đổi input type mà đã có giá trị lưu không hợp lệ với type mới, giá trị đó bị bỏ: field trống kèm hint, nút Run effects của popover disabled tới khi nhập giá trị hợp lệ. PO chưa xác nhận; fallback về default hợp lệ chưa thử.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "scope": "staging, merchant-owner, portal; QA-3406 TC-74 PASS 2026-10-30, build index.BMgdZMSW.js",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-822"
+      ]
+    },
+    {
+      "statement": "Giá trị chỉ gồm khoảng trắng (space, tab) trong field của popover bị coi là trống: nút Run effects của popover vẫn disabled. Spec chỉ nói \"until every field has a value\"; PO chưa xác nhận.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "scope": "staging, merchant-owner, portal; QA-3406 TC-63 PASS 2026-10-28 build index.OMERs7BG.js, spot check 2026-10-30 build index.BMgdZMSW.js",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-826"
+      ]
+    },
+    {
+      "statement": "Khi mọi biến trong prompt đều không khớp option nào thì không mở popover, bấm Run effects chạy thẳng và prompt giữ nguyên token. PO chưa xác nhận (spec có thể đọc là mở popover rỗng).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "scope": "staging, merchant-owner, portal + api; QA-3406 TC-68 PASS 2026-10-28, build index.OMERs7BG.js",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-828"
+      ]
+    },
+    {
+      "statement": "Giá trị nhập trong popover (kể cả giá trị đã lưu hiện lại sau khi mở lại artwork) hiển thị như text thường: payload XSS/HTML không render, không chạy script; ô number và ô date loại bỏ payload. Chưa có nguồn xác nhận expected.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "scope": "staging, merchant-owner, portal; QA-3406 TC-86 PASS 2026-10-30 build index.BMgdZMSW.js, TC-87 PASS 2026-10-28 build index.OMERs7BG.js",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-830"
+      ]
+    }
+  ],
+  "known_limitations": [
+    {
+      "statement": "Chuỗi effect có cả Remove background và Face cutout vẫn đòi key Remove background dù server bỏ qua Remove background trong chuỗi đó; workaround là xoá effect Remove background. PO chấp nhận cho release này (ok Q5, 2026-10-14) mà không nói đây là hành vi đúng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "status": "KNOWN_DEFECT",
+      "confidence": "LOW",
+      "scope": "staging, merchant-owner, portal; TC-31 tạm dừng",
+      "not_expected": true,
+      "note": "Không bao giờ làm oracle (C5): không viết check expect đòi key Remove background, cũng không expect không đòi.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-818"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "observed_validations_note": "Mode CCR_INGEST, không có lượt explore nên không có observed_validations runtime. Thông báo có nguồn nằm ở confirmed_rules (KB-801, KB-813, KB-817); thông báo chỉ từ dev doc tự sinh hoặc test case nằm ở observed_behavior (KB-810, KB-811, KB-816).",
+  "permissions": [
+    {
+      "role": "merchant-owner / staff có Manage Artwork",
+      "capability": "mở artwork editor, thấy và bấm Run effects trên Photo layer Normal ở store không phải Etsy; dùng chung giới hạn tần suất/upload của store",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800",
+        "artwork-render/image-effects-run#KB-813",
+        "artwork-render/image-effects-run#KB-814",
+        "artwork-render/image-effects-run#KB-815"
+      ]
+    },
+    {
+      "role": "staff không có Manage Artwork",
+      "capability": "không mở được artwork editor, không thấy nút, server từ chối lượt chạy (theo dev, chưa quan sát)",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-815"
+      ]
+    },
+    {
+      "role": "merchant-owner / staff dùng artwork editor",
+      "capability": "mở popover, điền và chạy; giá trị nhập riêng từng layer, không chia sẻ sang staff khác (KB-829). Quyền vào editor theo FEAT-26, không có KB riêng ở đây.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819",
+        "artwork-render/image-effects-run#KB-829"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      "Artwork editor → Photo layer → header \"Image effects\" → nút Run effects; tooltip \"Applies all effects to the current image and replaces it.\" / \"Save the artwork first to run effects on this image.\" (KB-800, KB-801)",
+      "Progress bar % giữa header và effect đầu tiên (KB-802, KB-808, quan sát)",
+      "Toast/warning: \"Too many requests! …\" (KB-813); \"Missing API key for {services}. Enter your API key in Extra services.\" (KB-816 quan sát, KB-817 thứ tự); \"Timed out waiting for the effects to finish.\" (KB-810, quan sát); \"Could not run effects\" và \"The layer is no longer in the current template, so its image was not replaced.\" (KB-811, quan sát)",
+      "Undo của artwork editor (KB-803, KB-805)",
+      "Extras → Extra services: API key của dịch vụ bên thứ ba (KB-816, KB-817)",
+      "Staff role: Artworks → Manage (KB-815)"
+    ],
+    "storefront": [],
+    "api": [
+      "Server từ chối lượt chạy từ staff không có Manage Artwork (KB-815); endpoint không nêu trong KB",
+      "Server kiểm lại API key lúc bắt đầu lượt chạy (KB-816, quan sát)",
+      "Hàng đợi và timeout phía server: chờ hàng đợi 5 phút, xử lý khoảng 6 phút (KB-809, KB-810)",
+      "Giới hạn tần suất theo store và giới hạn upload layer image (KB-813, KB-814)",
+      "[CBS-163] Response lượt chạy (LayerImageController::effectsRun): status, error_message, layer_image (id, url, thumbnail, width, height), không user_id (KB-1119)"
+    ],
+    "data": [
+      "Image library: kết quả thành ảnh mới, ảnh cũ giữ nguyên, còn sau Undo, còn khi layer không được thay (KB-803, KB-805, KB-807, KB-809)",
+      "Trạng thái HD của layer sau lượt chạy và sau Undo (KB-804, KB-805)"
+    ],
+    "code": [
+      "Server config: số lượt/phút mặc định 5, đổi được (KB-814, quan sát; tên config không nêu)",
+      "Nguồn: Jira TIB-5470 (dev doc \"Change & test cases\" v1 2026-10-08, comment 54560 Dev, 54563 PO) (KB-800..KB-818)"
+    ]
+  },
+  "dependencies": [
+    {
+      "type": "feature",
+      "description": "layer-config-image (FEAT-13, cùng object artwork): danh sách effect của Photo layer (\"Image effects\") cấu hình ở đó là input cho lượt chạy; feature này không mô tả cấu hình effect. Shard ghi không trùng ngữ nghĩa với base KB-113/KB-115.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800",
+        "artwork-render/image-effects-run#KB-801",
+        "artwork-render/image-effects-run#KB-806"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "run-effects-fill-in-variables (FEAT-27, cùng run): khi prompt effect có biến, bấm Run effects mở popover Fill in variables trước khi chạy; double-click nút trong popover cũng chỉ tạo một lượt.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-812"
+      ]
+    },
+    {
+      "type": "cross_object",
+      "description": "Object image-library: kết quả lượt chạy lưu thành ảnh mới; giới hạn upload theo ngày (KB-813) cần đối chiếu image-library KB-012 (quota theo ngày đang là suy đoán, CHK-041, OQ-image-library-023). Chỉ đọc, không sửa.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-803",
+        "artwork-render/image-effects-run#KB-813",
+        "artwork-render/image-effects-run#KB-814"
+      ]
+    },
+    {
+      "type": "cross_object",
+      "description": "Object global-option: hành vi Run effects trên layer dùng Global Option không thuộc feature này; KB-800 không phát biểu gì về loại layer đó.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800"
+      ]
+    },
+    {
+      "type": "config",
+      "description": "Extras → Extra services: API key của dịch vụ bên thứ ba là điều kiện chạy (KB-816 quan sát); server config giới hạn số lượt/phút (KB-814 quan sát).",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-814",
+        "artwork-render/image-effects-run#KB-816",
+        "artwork-render/image-effects-run#KB-817"
+      ]
+    },
+    {
+      "type": "cross_object",
+      "description": "Object sdk: rule tỉ lệ đầu ra Gemini (sdk-genai/genai-personalization-runtime#KB-569, PROPOSED) giải thích kích thước kết quả 2528x1696 ở KB-1103; chỉ tham chiếu, không làm oracle.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-1103",
+        "sdk-genai/genai-personalization-runtime#KB-569"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "run-image-effects (FEAT-26, cùng run): popover là bước trước lượt chạy; nút Run effects, điều kiện hiển thị/enable, kết quả, lỗi, giới hạn và double-click thuộc FEAT-26.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819",
+        "artwork-render/image-effects-run#KB-823"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "layer-config-image (FEAT-13, cùng object): biến được chèn vào prompt effect khi cấu hình (base KB-113, KB-115, không chạm); option mà biến khớp là option của artwork.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819",
+        "artwork-render/image-effects-run#KB-827"
+      ]
+    },
+    {
+      "type": "cross_object",
+      "description": "Object sdk (genai-personalization-runtime, FEAT-09): KB-827 nói token không khớp giữ nguyên giống storefront; sdk KB-415 nói storefront JSON List điền được prompt variable còn portal xếp biến JSON list vào nhóm không khớp. Khác surface, không chọn phía; chỉ đọc.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-827"
+      ]
+    },
+    {
+      "type": "cross_object",
+      "description": "Object global-option: spec nói popover áp cho cả layer Global Option (KB-819); hành vi trên layer đó thuộc global-option, không mô tả ở đây.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "risk": "KB-818 KNOWN_DEFECT: chuỗi Remove background + Face cutout vẫn đòi key Remove background. Không viết check dựa trên hành vi này theo chiều nào; chỉ ghi workaround.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-818"
+      ]
+    },
+    {
+      "risk": "Phần lớn luồng chạy (ảnh nguồn, progress, thay ảnh, lưu library, lỗi, kiểm key) chỉ dựa dev doc tự sinh từ branch diff (teeinblue allow_dev_doc_supersede=false) nên OBSERVED_CURRENT/LOW; check cho các phần này chỉ là baseline, không làm oracle STRONG.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-802",
+        "artwork-render/image-effects-run#KB-803",
+        "artwork-render/image-effects-run#KB-808",
+        "artwork-render/image-effects-run#KB-810",
+        "artwork-render/image-effects-run#KB-811",
+        "artwork-render/image-effects-run#KB-814",
+        "artwork-render/image-effects-run#KB-816"
+      ]
+    },
+    {
+      "risk": "Timeout và giới hạn tần suất/upload dùng giá trị lúc ship (5 phút, khoảng 6 phút, 5 lượt/phút, 1000 ảnh/ngày/store), không phải hằng số sản phẩm; check boundary cần biết giá trị đang đặt trên staging. Owner và staff dùng chung quota store nên test song song có thể ảnh hưởng nhau.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-809",
+        "artwork-render/image-effects-run#KB-810",
+        "artwork-render/image-effects-run#KB-813",
+        "artwork-render/image-effects-run#KB-814"
+      ]
+    },
+    {
+      "risk": "Kết quả không áp nếu artwork không còn mở lúc lượt chạy xong; reload không Save làm mất kết quả. Test case phải giữ editor mở tới khi xong và Save nếu cần kiểm sau reload.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-804",
+        "artwork-render/image-effects-run#KB-807"
+      ]
+    },
+    {
+      "risk": "Nhiều kết quả test (TC-06, TC-07, TC-11, TC-13, TC-20, TC-64, TC-79, TC-84) không ghi build; không biết build nào có bổ trợ.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-802",
+        "artwork-render/image-effects-run#KB-803",
+        "artwork-render/image-effects-run#KB-806",
+        "artwork-render/image-effects-run#KB-811",
+        "artwork-render/image-effects-run#KB-812"
+      ]
+    },
+    {
+      "risk": "[CBS-153] Ref image rất lớn của effect Gemini từng làm worker effect bị OOM (TIB-5615); với Run effects trong editor chỉ có một lượt PASS staging và expected là suy luận QA (KB-1103).",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-1103"
+      ]
+    },
+    {
+      "risk": "[CBS-163] Response lượt chạy đổi sang danh sách key tường minh (KB-1119); chỉ có một lượt quan sát staging với lượt chạy thành công (KB-1120), chưa quan sát response khi lỗi (error_message).",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-1119",
+        "artwork-render/image-effects-run#KB-1120"
+      ]
+    },
+    {
+      "risk": "CONF-CBS090-01 UNRESOLVED: chữ hint field trống là \"No default value. Enter one to run.\" (spec PO, KB-824) hay \"No valid default value. Enter one to run.\" (build 2026-10-30, KB-825). Không viết check assert chữ hint theo phía nào; check field trống chỉ assert có hint và nút disabled (KB-823).",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-824",
+        "artwork-render/image-effects-run#KB-825",
+        "artwork-render/image-effects-run#KB-823"
+      ],
+      "conflict_id": "CONF-CBS090-01"
+    },
+    {
+      "risk": "Hành vi biên (không biến, mọi biến không khớp, khoảng trắng, giá trị lưu không hợp lệ, XSS) chỉ là quan sát test case không có căn cứ expected; check chỉ là baseline, không làm oracle STRONG.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-820",
+        "artwork-render/image-effects-run#KB-822",
+        "artwork-render/image-effects-run#KB-826",
+        "artwork-render/image-effects-run#KB-828",
+        "artwork-render/image-effects-run#KB-830"
+      ]
+    },
+    {
+      "risk": "Kết quả bổ trợ nằm trên hai build khác nhau (index.OMERs7BG.js 2026-10-28 và index.BMgdZMSW.js 2026-10-30); chữ hint đã đổi giữa hai build, các hành vi khác có thể cũng đổi.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-825",
+        "artwork-render/image-effects-run#KB-826",
+        "artwork-render/image-effects-run#KB-830"
+      ]
+    },
+    {
+      "risk": "Giá trị nhập bị xoá khi reload trang (KB-829): test điền sẵn phải không reload giữa các bước.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-829"
+      ]
+    }
+  ],
+  "environment_differences": [],
+  "environment_differences_note": "Shard không có KB item topic environment_difference; mọi item scope staging. Không suy khác biệt production.",
+  "freshness": {
+    "observed_at": "2026-10-28"
+  },
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  },
+  "unknown_areas": [
+    {
+      "question": "Một lượt chạy dùng ảnh gốc full-resolution, áp effect tuần tự, progress dừng 95%, all or nothing có phải hành vi đúng không?",
+      "why_it_matters": "KB-802 chỉ có dev doc tự sinh; check luồng chạy chính chỉ là baseline.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-802"
+      ],
+      "oq_id": "OQ-artwork-render-067"
+    },
+    {
+      "question": "Chạy thành công thay ảnh layer (một bước undo), lưu ảnh mới vào image library, ảnh cũ giữ nguyên có phải hành vi đúng không?",
+      "why_it_matters": "KB-803 chỉ có dev doc tự sinh; chưa có oracle cho kết quả lưu library.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-803"
+      ],
+      "oq_id": "OQ-artwork-render-068"
+    },
+    {
+      "question": "Chạy lại lấy ảnh hiện tại (đã xử lý) và đổi cấu hình effect không tự cập nhật ảnh có phải hành vi đúng không?",
+      "why_it_matters": "KB-806 dựa mục spec không xác định được người viết/ngày.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-806"
+      ],
+      "oq_id": "OQ-artwork-render-069"
+    },
+    {
+      "question": "Đóng layer editor, chọn layer khác hoặc mở lại artwork khi đang chạy: lượt chạy không mất, progress bar hiện lại khi mở lại layer — có đúng không?",
+      "why_it_matters": "KB-808 là vế phụ tách khỏi claim S3, chỉ từ dev doc tự sinh.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-808"
+      ],
+      "oq_id": "OQ-artwork-render-073"
+    },
+    {
+      "question": "Chữ toast \"Timed out waiting for the effects to finish.\" và quy tắc thời gian chờ hàng đợi không tính vào 6 phút có đúng không?",
+      "why_it_matters": "KB-810 là vế phụ, chỉ từ dev doc tự sinh; timeout thật chưa tái hiện (TC-19).",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-810"
+      ],
+      "oq_id": "OQ-artwork-render-074"
+    },
+    {
+      "question": "Toast \"Could not run effects\" kèm message provider trong 10 giây và warning layer không còn trong template có phải expected không?",
+      "why_it_matters": "KB-811 chỉ có dev doc tự sinh (warning layer mất có TC-20 PASS không ghi build).",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-811"
+      ],
+      "oq_id": "OQ-artwork-render-070"
+    },
+    {
+      "question": "Double-click Run effects chỉ tạo một lượt chạy có phải expected không?",
+      "why_it_matters": "KB-812 chỉ có quan sát TC-79; câu nguồn nằm ở mục Possible test cases.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-812"
+      ],
+      "oq_id": "OQ-artwork-render-071"
+    },
+    {
+      "question": "Giới hạn 5 lượt/phút/store dùng chung owner và staff, đổi được trong server config, tính vào giới hạn upload layer image có đúng không?",
+      "why_it_matters": "KB-814 là vế phụ, chỉ từ dev doc tự sinh; ảnh hưởng thiết kế test rate limit.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-814"
+      ],
+      "oq_id": "OQ-artwork-render-075"
+    },
+    {
+      "question": "Danh sách dịch vụ được kiểm API key trước khi chạy và việc server kiểm lại lúc bắt đầu có phải expected không?",
+      "why_it_matters": "KB-816 chỉ có dev doc tự sinh; TC-25..30 không có kết quả có ngày.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-816"
+      ],
+      "oq_id": "OQ-artwork-render-072"
+    },
+    {
+      "question": "Style hover của nút Run effects (nền primary blue, chữ trắng) là gì?",
+      "why_it_matters": "Vế hover đã bỏ khỏi KB vì mục spec không rõ người viết/ngày; không có oracle cho style.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-801"
+      ],
+      "oq_id": "OQ-artwork-render-076"
+    },
+    {
+      "question": "Bật lại HD sau lượt chạy thì HD có dựng từ ảnh đã xử lý không?",
+      "why_it_matters": "Vế này bỏ khỏi KB-804 (chỉ có trong dev doc tự sinh), chưa quan sát (TC-09 tạm dừng).",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-804"
+      ],
+      "oq_id": "OQ-artwork-render-077"
+    },
+    {
+      "question": "Reload trang khi đang chạy thì sao (progress bar mất, layer không bị thay, ảnh vẫn vào library)?",
+      "why_it_matters": "Vế này bỏ khỏi KB-807: nguồn là mục Possible test cases, TC-14..16 không có kết quả có ngày.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-807"
+      ],
+      "oq_id": "OQ-artwork-render-078"
+    },
+    {
+      "question": "Known limitation Remove background + Face cutout đòi key Remove background có ticket sửa không, hay PO giữ lâu dài?",
+      "why_it_matters": "KB-818 KNOWN_DEFECT, PO chỉ chấp nhận cho release (ok Q5); TC-31 tạm dừng.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-818"
+      ],
+      "oq_id": "OQ-artwork-render-079"
+    },
+    {
+      "question": "Điều kiện hiển thị nút trên store Etsy và trên mọi layer Linked / No customization có đúng như KB-800 không?",
+      "why_it_matters": "Etsy chưa có lượt kiểm (TC-03 not-run); Linked/No customization mới kiểm 2/4 layer (TC-80 tạm dừng).",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800"
+      ],
+      "oq_id": "OQ-artwork-render-080"
+    },
+    {
+      "question": "Face Cutout và Photo Enhancer có cần API key trước khi chạy không (PENDING-12)?",
+      "why_it_matters": "KB-816 không liệt kê hai effect này; không biết có kiểm key hay không.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-816"
+      ],
+      "oq_id": "OQ-artwork-render-081"
+    },
+    {
+      "question": "Giới hạn upload 1000 ảnh/ngày/store khi chạy effect (KB-813) khớp thế nào với image-library KB-012 (quota theo ngày đang là suy đoán, CHK-041, OQ-image-library-023)?",
+      "why_it_matters": "Hai object có thể mô tả cùng một quota khác nhau; cần đối chiếu ở run của image-library, không sửa ở đây. Khác sdk KB-051 (rate limit buyer).",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-813",
+        "artwork-render/image-effects-run#KB-814"
+      ],
+      "oq_id": "OQ-artwork-render-082"
+    },
+    {
+      "question": "Run effects trên Photo layer dùng Global Option hoạt động thế nào (hiện nút, điều kiện, kết quả)?",
+      "why_it_matters": "Phần \"không hiện cho Global option\" của dev doc đã bị spec 2026-10-19 đảo lại; KB-800 cố ý không phát biểu về loại layer này và nó thuộc object global-option. Feature này không có oracle cho layer Global Option.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800"
+      ],
+      "oq_id": "OQ-artwork-render-084"
+    },
+    {
+      "question": "Các rule đã xác nhận nhưng chưa quan sát trên staging: tooltip PSD/Canva chưa Save (TC-05), timeout thật (TC-19), toast hết giới hạn 1000 ảnh/ngày, staff không có Manage Artwork — khi kiểm có khớp không?",
+      "why_it_matters": "KB-801, KB-809, KB-813, KB-815 là CONFIRMED_EXPECTED một nguồn nhưng chưa có quan sát bổ trợ; cần fixture riêng (layer PSD/Canva, ép timeout, ép quota, staff role hạn chế).",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-801",
+        "artwork-render/image-effects-run#KB-809",
+        "artwork-render/image-effects-run#KB-813",
+        "artwork-render/image-effects-run#KB-815"
+      ],
+      "oq_id": "OQ-artwork-render-085"
+    },
+    {
+      "question": "Hành vi trên production và cross-tenant chưa có KB (mọi item scope staging).",
+      "why_it_matters": "coverage_matrix các ô production covered false; không viết check production từ evidence hiện tại.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800",
+        "artwork-render/image-effects-run#KB-801",
+        "artwork-render/image-effects-run#KB-802",
+        "artwork-render/image-effects-run#KB-803",
+        "artwork-render/image-effects-run#KB-804",
+        "artwork-render/image-effects-run#KB-805",
+        "artwork-render/image-effects-run#KB-806",
+        "artwork-render/image-effects-run#KB-807",
+        "artwork-render/image-effects-run#KB-808",
+        "artwork-render/image-effects-run#KB-809",
+        "artwork-render/image-effects-run#KB-810",
+        "artwork-render/image-effects-run#KB-811",
+        "artwork-render/image-effects-run#KB-812",
+        "artwork-render/image-effects-run#KB-813",
+        "artwork-render/image-effects-run#KB-814",
+        "artwork-render/image-effects-run#KB-815",
+        "artwork-render/image-effects-run#KB-816",
+        "artwork-render/image-effects-run#KB-817",
+        "artwork-render/image-effects-run#KB-818"
+      ]
+    },
+    {
+      "question": "[MỚI, CBS-140] spec-hub rule photo-upload-effect-rate-limit và photo-upload-network-limit (2026-11-11): shopper upload ảnh có effect bị giới hạn 5 lần/giờ/option (mặc định, đổi theo shop) và 50 lần/giờ/network; upload có effect từ portal tính vào giới hạn network (KB-984). Dev xác nhận ngưỡng và cho biết lượt Run effects trong artwork editor có tính vào giới hạn network 50/giờ không? Spec-hub có hai chữ thông báo khác nhau cho giới hạn per-option/per-field — shopper thấy chữ nào? Giới hạn tính theo shopper theo option hay theo visitor, và cửa sổ trên staging là 1 giờ hay 5 phút như sdk KB-051 (Dev TIB-5460)?",
+      "why_it_matters": "KB-984 là PROPOSED (S2), scope storefront shopper, khác quota Run effects của merchant/staff (KB-813, KB-814); không đổi oracle của CHK-018..020. Nếu Run effects cũng tính vào giới hạn network, test Run effects dồn dập từ cùng mạng văn phòng có thể chặn cả shopper cùng mạng.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-984",
+        "artwork-render/image-effects-run#KB-814",
+        "sdk-genai/genai-personalization-runtime#KB-051"
+      ],
+      "oq_id": "OQ-artwork-render-150"
+    },
+    {
+      "question": "[MỚI, CBS-140] spec-hub rule image-effects-background-remover và image-effects-needs-key (2026-11-11): remover xoá nền theo lựa chọn merchant (có remover built-in không cần key, gói Teeinblue x Removal.ai dùng account của Teeinblue); effect dịch vụ ngoài thiếu key bị bỏ qua âm thầm khi xử lý ảnh shopper (KB-985). Dev xác nhận đây là hành vi đúng khi xử lý ảnh shopper upload, và rule 'bỏ qua âm thầm' có áp cho Run effects trong editor không (nếu có thì trái KB-816: thiếu key không chạy và hiện warning)?",
+      "why_it_matters": "KB-985 là PROPOSED (S2), không làm oracle. Nếu storefront bỏ qua effect âm thầm, merchant thiếu key sẽ nhận ảnh in không có effect mà không có lỗi. Không giải KB-818 (KNOWN_DEFECT) và không trả lời Face cutout có cần key (OQ-artwork-229).",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-985",
+        "artwork-render/image-effects-run#KB-816",
+        "artwork-render/image-effects-run#KB-818"
+      ],
+      "oq_id": "OQ-artwork-render-151"
+    },
+    {
+      "question": "[MỚI, CBS-153] Run effects có [Gemini] image filter dùng ref image rất lớn (12000x12000): ApplyLayerImageEffectsJob có đi qua applyImageFilter() (ref image cap services.gemini.size) không, và expected có phải lượt chạy hoàn tất, layer thay bằng ảnh đã lọc, đứng thẳng, tỉ lệ theo rule tỉ lệ Gemini không?",
+      "why_it_matters": "KB-1103 là PROPOSED (đề xuất QA TIB-5615-A3, TC-TIB-8961 PASS staging 2026-11-10); QA plan Dev không có mục Run effects. CHK-031 không có oracle.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-1103",
+        "sdk-genai/genai-personalization-runtime#KB-569"
+      ],
+      "oq_id": "OQ-artwork-render-167"
+    },
+    {
+      "question": "[CBS-163] Layer nhận ảnh kết quả và response lượt chạy có status, layer_image, không user_id (KB-1120) — Dev xác nhận là expected? error_message có mặt khi thành công không? (OQ-artwork-579)",
+      "why_it_matters": "KB-1120 là OBSERVED_CURRENT/LOW một lượt, build không ghi.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-1120"
+      ],
+      "oq_id": "OQ-artwork-render-169"
+    },
+    {
+      "question": "Chữ hint field trống trong popover Fill in variables là \"No default value. Enter one to run.\" (spec PO 2026-10-26) hay \"No valid default value. Enter one to run.\" (build staging 2026-10-30)?",
+      "why_it_matters": "CONF-CBS090-01 UNRESOLVED; không có oracle cho chữ hint. Nếu build đúng thì cần cập nhật spec.",
+      "type": "CONFLICT",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-824",
+        "artwork-render/image-effects-run#KB-825"
+      ],
+      "oq_id": "OQ-artwork-render-095"
+    },
+    {
+      "question": "Prompt không có biến thì chạy thẳng, và đóng popover (nút đóng, click ra ngoài, Esc) thì không chạy — có phải expected không?",
+      "why_it_matters": "KB-820 chỉ là kết quả test, spec không ghi nguyên chữ.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-820"
+      ],
+      "oq_id": "OQ-artwork-render-091"
+    },
+    {
+      "question": "Option đổi input type khi đã có giá trị lưu không hợp lệ: giá trị bị bỏ (field trống + hint) hay fallback về default hợp lệ (PENDING-20)?",
+      "why_it_matters": "KB-822 chỉ quan sát TC-74; fallback về default chưa thử; PO chưa xác nhận.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-822"
+      ],
+      "oq_id": "OQ-artwork-render-092"
+    },
+    {
+      "question": "Giá trị chỉ gồm khoảng trắng có bị coi là trống không (PENDING-19)?",
+      "why_it_matters": "KB-826 chỉ là quan sát; spec chỉ nói \"until every field has a value\".",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-826"
+      ],
+      "oq_id": "OQ-artwork-render-088"
+    },
+    {
+      "question": "Mọi biến không khớp thì chạy thẳng hay mở popover rỗng (PENDING-16)?",
+      "why_it_matters": "KB-828 chỉ quan sát TC-68; spec có thể đọc theo hai cách.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-828"
+      ],
+      "oq_id": "OQ-artwork-render-089"
+    },
+    {
+      "question": "Giá trị nhập hiển thị như text thường, payload XSS/HTML không render có phải expected không?",
+      "why_it_matters": "KB-830 chỉ là quan sát TC-86/87, không có căn cứ expected.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-830"
+      ],
+      "oq_id": "OQ-artwork-render-090"
+    },
+    {
+      "question": "Option bị đổi tên thì token cũ trong prompt còn khớp không (PENDING-21)?",
+      "why_it_matters": "Vế này bỏ khỏi KB-827 vì chỉ là hệ quả suy ra từ Q1 B; PO không nói riêng.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-827"
+      ],
+      "oq_id": "OQ-artwork-render-093"
+    },
+    {
+      "question": "Giá trị nhập trong popover có ghi vào default của option trong artwork không?",
+      "why_it_matters": "Vế \"không ghi vào default\" bỏ khỏi KB-829 vì không có trong quote xác nhận.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-829"
+      ],
+      "oq_id": "OQ-artwork-render-094"
+    },
+    {
+      "question": "Giá trị nhập có thật sự không chia sẻ sang browser, tab hoặc staff khác không?",
+      "why_it_matters": "PO đã chọn (Q2 A) nhưng QA chưa kiểm trực tiếp trên browser/tab/staff khác.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-829"
+      ],
+      "oq_id": "OQ-artwork-render-096"
+    },
+    {
+      "question": "Biến JSON list trong popover portal có khớp option không, đối chiếu sdk KB-415 (storefront JSON List điền được prompt variable)?",
+      "why_it_matters": "Câu hỏi Dev 55823 xếp biến JSON list vào nhóm không khớp ở portal; khác surface với storefront, không chọn phía.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-827"
+      ],
+      "oq_id": "OQ-artwork-render-097"
+    },
+    {
+      "question": "Biến trong ImagenHub template có mở popover Fill in variables như prompt thường không (TC-78, PENDING-18)?",
+      "why_it_matters": "KB-819 chỉ nói prompt của effect; ImagenHub dùng template thay vì prompt, chưa thử.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819"
+      ],
+      "oq_id": "OQ-artwork-render-098"
+    },
+    {
+      "question": "Popover Fill in variables trên layer dùng Global Option hoạt động thế nào?",
+      "why_it_matters": "Spec nói áp cho cả Global Option (KB-819) nhưng phần đó thuộc object global-option; feature này không có oracle cho layer Global Option.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819"
+      ],
+      "oq_id": "OQ-artwork-render-084"
+    },
+    {
+      "question": "Hành vi trên production và cross-tenant chưa có KB (mọi item scope staging).",
+      "why_it_matters": "coverage_matrix ô production covered false; không viết check production từ evidence hiện tại.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819",
+        "artwork-render/image-effects-run#KB-820",
+        "artwork-render/image-effects-run#KB-821",
+        "artwork-render/image-effects-run#KB-822",
+        "artwork-render/image-effects-run#KB-823",
+        "artwork-render/image-effects-run#KB-824",
+        "artwork-render/image-effects-run#KB-825",
+        "artwork-render/image-effects-run#KB-826",
+        "artwork-render/image-effects-run#KB-827",
+        "artwork-render/image-effects-run#KB-828",
+        "artwork-render/image-effects-run#KB-829",
+        "artwork-render/image-effects-run#KB-830"
+      ]
+    }
+  ],
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "hiển thị nút: Photo layer Normal, store không Etsy",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "hiển thị nút: store Etsy",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800"
+      ],
+      "basis": "Có rule, TC-03 not-run"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "hiển thị nút: layer Linked / No customization",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM; mới kiểm 2/4 layer"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "layer dùng Global Option",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [],
+      "basis": "Ngoài phạm vi (object global-option)"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "disabled: chưa chọn effect / PSD-Canva chưa Save",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-801"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM; tooltip PSD chưa thấy trực tiếp"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "đang chạy: progress, nút khoá, double-click",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-802",
+        "artwork-render/image-effects-run#KB-812"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, baseline"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "thành công: thay ảnh, HD tắt, không tự lưu, reload",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-803",
+        "artwork-render/image-effects-run#KB-804"
+      ],
+      "basis": "KB-804 CONFIRMED_EXPECTED/MEDIUM; KB-803 OBSERVED_CURRENT/LOW"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "bật lại HD sau lượt chạy",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [],
+      "basis": "Vế bỏ khỏi KB-804; TC-09 tạm dừng"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Undo lượt chạy",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-805"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "chạy lại / đổi cấu hình effect",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-806"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "rời layer/artwork khi đang chạy; artwork không mở lúc xong",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-807",
+        "artwork-render/image-effects-run#KB-808"
+      ],
+      "basis": "KB-807 CONFIRMED_EXPECTED/MEDIUM; KB-808 OBSERVED_CURRENT/LOW"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "reload trang khi đang chạy",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [],
+      "basis": "Vế bỏ khỏi KB-807; TC-14..16 không có kết quả có ngày"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "timeout hàng đợi / xử lý",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-809",
+        "artwork-render/image-effects-run#KB-810"
+      ],
+      "basis": "KB-809 CONFIRMED_EXPECTED/MEDIUM chưa tái hiện; KB-810 OBSERVED_CURRENT/LOW"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "effect lỗi; layer không còn trong template",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-811"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "api",
+      "role": "merchant-owner + staff",
+      "state": "lượt thứ 6 trong một phút",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-813",
+        "artwork-render/image-effects-run#KB-814"
+      ],
+      "basis": "KB-813 CONFIRMED_EXPECTED/MEDIUM; quota dùng chung KB-814 OBSERVED_CURRENT/LOW"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "api",
+      "role": "merchant-owner + staff",
+      "state": "hết giới hạn upload 1000 ảnh/ngày",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-813"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM; chưa ép được trên staging"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "api",
+      "role": "staff không có Manage Artwork",
+      "state": "mở editor / chạy",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-815"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM theo dev, chưa quan sát"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "thiếu API key; thứ tự {services}",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-816",
+        "artwork-render/image-effects-run#KB-817"
+      ],
+      "basis": "KB-817 CONFIRMED_EXPECTED/MEDIUM; KB-816 OBSERVED_CURRENT/LOW"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Face Cutout / Photo Enhancer cần key",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-816"
+      ],
+      "basis": "PENDING-12 chưa trả lời"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Remove background + Face cutout (known limitation)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-818"
+      ],
+      "basis": "KNOWN_DEFECT, không làm oracle"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "any",
+      "state": "toàn feature",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [],
+      "basis": "Mọi item scope staging"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Photo layer có [Gemini] image filter với ref image rất lớn",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-1103"
+      ],
+      "basis": "PROPOSED/LOW, không oracle"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] response lượt chạy thành công",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-1119",
+        "artwork-render/image-effects-run#KB-1120"
+      ],
+      "basis": "STRONG cho key set (KB-1119)"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] response lượt chạy lỗi (error_message); production",
+      "environment": "staging+production",
+      "covered": false,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-1119"
+      ],
+      "basis": "chưa quan sát"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "prompt có biến khớp: mở popover, field theo biến",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "prompt không có biến; đóng popover",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-820"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "field theo input type (text, number, date, layer)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-821"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM + TC-59 PASS"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "đổi input type khi có giá trị lưu không hợp lệ",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-821",
+        "artwork-render/image-effects-run#KB-822"
+      ],
+      "basis": "Kiểm lại giá trị CONFIRMED_EXPECTED; kết cục OBSERVED_CURRENT/LOW; fallback default chưa thử"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "điền sẵn: giá trị lần trước / default / trống",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-823"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "chữ hint field trống",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-824",
+        "artwork-render/image-effects-run#KB-825"
+      ],
+      "basis": "UNRESOLVED, không có oracle"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "giá trị chỉ khoảng trắng",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-826"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "bấm Run trong popover: biến được thay trong prompt",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-823"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "biến không khớp (một phần / toàn bộ)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-827",
+        "artwork-render/image-effects-run#KB-828"
+      ],
+      "basis": "KB-827 CONFIRMED_EXPECTED/MEDIUM; KB-828 OBSERVED_CURRENT/LOW"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "option bị đổi tên",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [],
+      "basis": "Vế bỏ khỏi KB-827 (PENDING-21)"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "data",
+      "role": "merchant-owner",
+      "state": "lưu giá trị: sau lượt chạy, mở lại artwork, reload",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-829"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM + TC-69..72 PASS"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "data",
+      "role": "staff khác / browser-tab khác",
+      "state": "không chia sẻ giá trị nhập",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-829"
+      ],
+      "basis": "Có rule, chưa kiểm trực tiếp"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "payload XSS/HTML trong giá trị nhập",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-830"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "ImagenHub template variable",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [],
+      "basis": "TC-78 chưa thử"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "layer dùng Global Option",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819"
+      ],
+      "basis": "Ngoài phạm vi (object global-option)"
+    },
+    {
+      "feature_id": "FEAT-01-image-effects-run",
+      "layer": "portal",
+      "role": "any",
+      "state": "toàn feature",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [],
+      "basis": "Mọi item scope staging"
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "conflict_id": "CONF-CBS090-01",
+      "conflict_group": "fill-variables-empty-hint-copy",
+      "kind": "spec_vs_observed",
+      "status": "UNRESOLVED",
+      "side_a": {
+        "kb_id": "KB-824",
+        "statement": "Spec TIB-5470 (PO, 2026-10-26): hint \"No default value. Enter one to run.\""
+      },
+      "side_b": {
+        "kb_id": "KB-825",
+        "statement": "QA-3406 TC-61 (tạm dừng) 2026-10-30, build index.BMgdZMSW.js: hint \"No valid default value. Enter one to run.\" cho mọi field trống."
+      },
+      "note": "teeinblue supersede tắt; giữ cả hai phía, không làm oracle, không chọn bên.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-824",
+        "artwork-render/image-effects-run#KB-825"
+      ]
+    }
+  ],
+  "profile_relationships": [
+    {
+      "from_feature_id": "FEAT-01-image-effects-run",
+      "to_feature_id": "FEAT-01-image-effects-run",
+      "relation": "companion_feature (nút Run effects và lượt chạy vs popover điền biến trước khi chạy, cùng object artwork, cùng run)",
+      "note": "Lượt chạy, kết quả, lỗi, giới hạn thuộc FEAT-26; field biến, điền sẵn, giá trị lưu thuộc FEAT-27.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-812"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-image-effects-run",
+      "to_feature_id": "FEAT-02-photo-upload-layer-config",
+      "relation": "depends_on (danh sách effect của Photo layer cấu hình ở layer-config-image)",
+      "note": "Không chạm profile layer-config-image.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800",
+        "artwork-render/image-effects-run#KB-801"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-image-effects-run",
+      "to_feature_id": "image-library (object khác)",
+      "relation": "related_object (kết quả lượt chạy lưu vào image library; quota upload)",
+      "note": "Chỉ đọc; đối chiếu quota ở run của image-library.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-803",
+        "artwork-render/image-effects-run#KB-813"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-image-effects-run",
+      "to_feature_id": "global-option (object khác)",
+      "relation": "related_object (layer dùng Global Option ngoài phạm vi)",
+      "note": "Không phát biểu hành vi layer Global Option ở feature này.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-800"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-image-effects-run",
+      "to_feature_id": "FEAT-01-image-effects-run",
+      "relation": "companion_feature (popover điền biến là bước trước lượt chạy của Run effects)",
+      "note": "Lượt chạy và kết quả thuộc FEAT-26.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819",
+        "artwork-render/image-effects-run#KB-823"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-image-effects-run",
+      "to_feature_id": "FEAT-02-photo-upload-layer-config",
+      "relation": "depends_on (biến được chèn vào prompt khi cấu hình effect)",
+      "note": "Base KB-113, KB-115 không chạm.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-image-effects-run",
+      "to_feature_id": "FEAT-02-genai-personalization-runtime (object sdk)",
+      "relation": "related_feature (thay biến trên storefront; token không khớp giữ nguyên giống storefront)",
+      "note": "Chênh biến JSON list portal vs sdk KB-415 ghi ở unknown_areas; không sửa sdk.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-827"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-image-effects-run",
+      "to_feature_id": "global-option (object khác)",
+      "relation": "related_object (popover áp cho layer Global Option theo spec)",
+      "note": "Không mô tả hành vi Global Option ở đây.",
+      "kb_refs": [
+        "artwork-render/image-effects-run#KB-819"
+      ]
+    }
+  ]
+}

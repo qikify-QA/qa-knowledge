@@ -1,5 +1,5 @@
 # Object: Global Option (product: teeinblue) — Feature Profile Summary
-**Published context version:** 9
+**Published context version:** 10
 - **Context version:** 9 (published 2026-11-12, env: staging). Version 1 là bootstrap zero-doc (2026-09-16); version 2 là CBS-004 (2026-10-18); version 3 là CBS-013 (TIB-5203); version 4 là CBS-073 (TIB-5591); version 5 là CBS-100 (TIB-5561, TIB-5566, TIB-5470); version 6 là maintenance-2026-11-08; version 7 là CBS-131 (vòng đời Global Option với layer và linked copy); version 8 là CBS-150 (preview Global Option Clipart Category tải ảnh large kèm version của category, TIB-5685); version 9 là CBS-141 (thumbnail item Additional Option inline: chuột phải lấy ảnh và đổi thumbnail, TIB-5676).
 - **Features (3):** `global-option-instance-management`, `artwork-personalization-global-option-link`, `global-option-additional-option-items`.
 - **Nguồn:** phần lớn là `OBSERVED_CURRENT` từ bootstrap; CBS-004 bổ sung các mục `CONFIRMED_EXPECTED` có test case PASS (staging, 2026-10-08 / 2026-10-11) cho Additional Option.

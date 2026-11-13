@@ -1,0 +1,337 @@
+{
+  "feature_id": "campaign-wizard-recipients",
+  "feature_key": "campaign-wizard-recipients",
+  "checklist_version": "v1",
+  "name": "Soạn campaign qua wizard 4 bước (Details → Sender → Recipients → Contents)",
+  "checks": [
+    {
+      "check_id": "CHK-020",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Bước Recipients: heading `Send to`, chọn đúng một segment, chỉ hiện tên",
+      "applicability": {
+        "role": "unspecified",
+        "state": "workspace có ≥2 segment",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Mở bước Recipients, đọc heading.",
+        "Mở picker, quan sát thông tin mỗi segment.",
+        "Chọn segment A, rồi thử chọn thêm segment B."
+      ],
+      "observation_point": "Heading; nội dung mỗi mục trong picker; số segment được chọn.",
+      "expected_result": "Heading là \"Send to\"; picker chỉ hiện tên segment (không có helptext số contact); chỉ chọn được đúng một segment — chọn B thay cho A, không chọn đồng thời.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-recipients#KB-062",
+          "campaigns/campaign-wizard-recipients#KB-063",
+          "campaigns/campaign-wizard-recipients#KB-064"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-05"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-021",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Bước Recipients khi workspace chưa có segment",
+      "applicability": {
+        "role": "unspecified",
+        "state": "workspace chưa có segment nào",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Mở bước Recipients.",
+        "Bấm `Create segment`."
+      ],
+      "observation_point": "Empty state; màn được mở.",
+      "expected_result": "Hiện empty state \"There are no segments yet. Add a new segment to this folder to better manage your contacts.\" kèm nút \"Create segment\" điều hướng sang tạo segment.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-recipients#KB-066"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-05"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-022",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Picker segment: search, chip và nút Remove",
+      "applicability": {
+        "role": "unspecified",
+        "state": "workspace có ≥2 segment",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Mở picker `Select a segment…`, gõ một phần tên vào `Search segments…`.",
+        "Gõ chuỗi không khớp.",
+        "Chọn một segment, bấm `Remove {name}` trên chip."
+      ],
+      "observation_point": "Kết quả search; thông báo không khớp; chip segment.",
+      "expected_result": "Theo hiện trạng staging 01/10/2026, lệch = cần điều tra: picker là popover có ô `Search segments…`; không khớp hiện `No segments match your search.`; segment đã chọn hiện dạng chip kèm nút `Remove {name}` để bỏ chọn.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-recipients#KB-065"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-05"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-023",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Dòng estimated recipients sau khi chọn segment",
+      "applicability": {
+        "role": "unspecified",
+        "state": "có segment với số Contacts đã biết",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Ghi lại cột Contacts của segment ở trang Segments.",
+        "Ở bước Recipients chọn segment đó, đọc dòng estimated recipients."
+      ],
+      "observation_point": "Giá trị N trong `N estimated recipients`.",
+      "expected_result": "Theo hiện trạng staging 01/10/2026, lệch = cần điều tra: N bằng cột Contacts của segment.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-recipients#KB-067"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [
+        "campaigns/campaign-list-and-folders#KB-035"
+      ],
+      "risk_refs": [
+        "RISK-campaign-wizard-05"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-024",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Người nhận campaign chỉ gồm contact Subscribed của segment",
+      "applicability": {
+        "role": "unspecified",
+        "state": "segment chứa ít nhất 2 contact Subscribed và 1 contact Unsubscribed (địa chỉ do QA kiểm soát hoặc SES mailbox simulator)",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt). Có dữ liệu test được phép gửi mail thật.",
+      "steps": [
+        "Tạo campaign gửi tới segment đó, gửi ngay.",
+        "Mở report, tab Deliverability, đọc `Sent to`; kiểm tra hộp thư / log gửi của từng địa chỉ."
+      ],
+      "observation_point": "Số người nhận thực tế và danh sách địa chỉ nhận được mail.",
+      "expected_result": "Chỉ các contact Subscribed nhận campaign; contact Unsubscribed không được gửi.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-recipients#KB-068"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-05"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-025",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Phân biệt hai segment trùng tên trong picker Recipients",
+      "applicability": {
+        "role": "unspecified",
+        "state": "workspace có 2 segment trùng tên nhưng điều kiện khác nhau",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Mở picker, tìm theo tên trùng.",
+        "Ghi lại thông tin giúp phân biệt hai mục (nếu có)."
+      ],
+      "observation_point": "Hai mục trùng tên trong picker.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-recipients#KB-070"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Picker Recipients phải hiện thêm thông tin gì để phân biệt hai segment trùng tên (ví dụ số contact, ngày tạo, người tạo), hay tên segment phải unique (GAP-19)? Lỗi đã biết BUG-69 ghi rủi ro gửi nhầm tập khách hàng.",
+      "regression_watch_kb_ids": [
+        "campaigns/campaign-wizard-recipients#KB-069"
+      ],
+      "risk_refs": [
+        "RISK-campaign-wizard-05"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-campaigns-011",
+      "observation_guidance": "Chưa có oracle để kết luận pass/fail. Ghi lại cách picker hiển thị hai segment trùng tên, đối chiếu khi PO trả lời câu hỏi kèm theo."
+    },
+    {
+      "check_id": "CHK-026",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Khối Email preferences ở bước Recipients",
+      "applicability": {
+        "role": "unspecified",
+        "state": "workspace chưa có preferences page, sau đó có ≥1 page",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Mở bước Recipients, đọc khối `Email preferences`.",
+        "Mở combobox `Preferences page`, ghi lại các lựa chọn.",
+        "Bấm `Manage pages`."
+      ],
+      "observation_point": "Nội dung khối; lựa chọn của combobox; đích của link.",
+      "expected_result": "Theo hiện trạng staging 01/10/2026, lệch = cần điều tra: khối có combobox `Preferences page` (hint \"The page people reach from this campaign's unsubscribe link.\") và link `Manage pages` tới `/preferences`; khi chưa có page chỉ có lựa chọn `None — people can only unsubscribe from everything`; không có ô tick lựa chọn nào.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-recipients#KB-071",
+          "campaigns/campaign-wizard-recipients#KB-072"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-06"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-027",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Người đã tắt một lựa chọn trên preferences page có nhận campaign liên quan không",
+      "applicability": {
+        "role": "unspecified",
+        "state": "có preferences page với ít nhất 1 lựa chọn; contact Subscribed đã tắt lựa chọn đó; segment không lọc theo field của lựa chọn",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Gắn preferences page vào campaign, chọn segment chứa contact trên.",
+        "Đọc mọi cảnh báo ở bước Recipients.",
+        "Nếu gửi trên dữ liệu test: kiểm tra contact đã tắt lựa chọn có nhận mail không."
+      ],
+      "observation_point": "Cảnh báo ở bước Recipients; việc contact nhận / không nhận mail.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-recipients#KB-073",
+          "campaigns/campaign-wizard-recipients#KB-074",
+          "campaigns/campaign-wizard-recipients#KB-075"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Người đã bỏ tick một lựa chọn trên preferences page có bị loại tự động khỏi campaign liên quan không, hay chỉ bị loại khi segment lọc theo field đó? Hướng dẫn \"tick the choices this campaign is about\" là copy cũ hay wizard còn thiếu ô chọn? Cảnh báo `Your email offers choices but has no page` và `Your segment ignores some of the page's choices` có phải hiện ở bước Recipients không?",
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-06"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-campaigns-012",
+      "observation_guidance": "Chưa có oracle để kết luận pass/fail. Ghi lại cảnh báo và kết quả gửi, đối chiếu khi PO trả lời câu hỏi kèm theo."
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "campaign-wizard",
+      "risk_ref": "RISK-campaign-wizard-05",
+      "risk_description": "Bước 3 Recipients: đúng một segment, chỉ contact Subscribed, phân biệt segment trùng tên",
+      "covered_by_checks": [
+        "CHK-020",
+        "CHK-021",
+        "CHK-022",
+        "CHK-023",
+        "CHK-024",
+        "CHK-025"
+      ],
+      "kb_ids": [
+        "campaigns/campaign-wizard-recipients#KB-062",
+        "campaigns/campaign-wizard-recipients#KB-063",
+        "campaigns/campaign-wizard-recipients#KB-064",
+        "campaigns/campaign-wizard-recipients#KB-065",
+        "campaigns/campaign-wizard-recipients#KB-066",
+        "campaigns/campaign-wizard-recipients#KB-067",
+        "campaigns/campaign-wizard-recipients#KB-068",
+        "campaigns/campaign-wizard-recipients#KB-070"
+      ],
+      "coverage_status": "PARTIAL"
+    },
+    {
+      "feature_id": "campaign-wizard",
+      "risk_ref": "RISK-campaign-wizard-06",
+      "risk_description": "Email preferences gắn với campaign (unsubscribe-consent)",
+      "covered_by_checks": [
+        "CHK-026",
+        "CHK-027"
+      ],
+      "kb_ids": [
+        "campaigns/campaign-wizard-recipients#KB-071",
+        "campaigns/campaign-wizard-recipients#KB-072",
+        "campaigns/campaign-wizard-recipients#KB-073",
+        "campaigns/campaign-wizard-recipients#KB-074",
+        "campaigns/campaign-wizard-recipients#KB-075"
+      ],
+      "coverage_status": "PARTIAL"
+    }
+  ],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
+}

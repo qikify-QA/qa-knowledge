@@ -1,5 +1,5 @@
 # Object: Asset Category (product: teeinblue) — Feature Summary
-**Published context version:** 7
+**Published context version:** 8
 
 Trạng thái hiện tại của object `asset-category`: 6 loại category asset (Clipart, Vector, Color, Additional Option, Map Style, Font Category) + luồng thêm item vào category + luồng bulk-upload zip.
 

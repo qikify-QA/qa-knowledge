@@ -1,0 +1,609 @@
+{
+  "feature_id": "FEAT-03-transform-multi-select",
+  "feature_key": "transform-multi-select",
+  "name": "Transform popover khi chọn nhiều layer: Apply for Group/Individual, box cá nhân và box nhóm, Flip nhóm (Artwork 2.0), popover không có Apply for (Artwork 1.0) và Reverse reposition direction",
+  "user_goal": "Là seller (owner/staff) trong artwork editor, khi chọn nhiều layer và mở Transform, mình chỉnh kích thước/vị trí cho cả nhóm hoặc từng layer: ở Artwork 2.0 chọn Apply for Group hoặc Individual và đọc đúng Width chung/Mixed; ở Artwork 1.0 popover không có Apply for, kích thước tối đa từng layer đặt bằng auto-scale max width. Khi chọn nhiều layer và Flip ở Apply for: Group, cả vùng chọn lật như một khối; layer Photo Upload đang Flip có thể bật Reverse reposition direction để ảnh buyer kéo di chuyển ngược chiều theo trục đã lật. Ở Apply for: Individual, mỗi layer đang chọn có khung riêng (box cá nhân) để soi vị trí từng layer, cạnh khung nhóm vẫn dùng để kéo/resize/xoay.",
+  "user_goal_kb_refs": [
+    "artwork-editor/transform-multi-select#KB-1001",
+    "artwork-editor/transform-multi-select#KB-1002",
+    "artwork-editor/transform-multi-select#KB-1061",
+    "artwork-editor/transform-multi-select#KB-1064",
+    "artwork-editor/transform-multi-select#KB-1070"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner (owner/staff, portal artwork editor)",
+      "permission_observed": "Chọn nhiều layer, mở Transform popover, chọn Apply for (Artwork 2.0), sửa Width; theo mô tả dev TIB-5397 (2026-09-03/10), chưa quan sát trong run.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1001",
+        "artwork-editor/transform-multi-select#KB-1002"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "portal — artwork editor Artwork 2.0 → chọn ≥2 layer trên canvas/layer list → Transform trên canvas toolbar",
+      "precondition": "Artwork schema 2 có ít nhất 2 layer có Transform (vd text/image), width khác nhau. Fixture tự dựng trên store test của explorer ở staging (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1001"
+      ]
+    },
+    {
+      "path": "portal — artwork editor Artwork 1.0 → chọn ≥2 layer → Transform",
+      "precondition": "Artwork schema 1 (Artwork 1.0) có ít nhất 2 layer. Fixture tự dựng trên store test của explorer ở staging (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1002"
+      ]
+    },
+    {
+      "path": "portal — artwork editor Artwork 2.0 → chọn ≥2 layer → Transform → Apply for: Group / Individual → Flip horizontal / Flip vertical",
+      "precondition": "Artwork 2.0 có ít nhất một layer ảnh (photo, ảnh không đối xứng) và một layer text, đặt ở vị trí khác nhau; một biến thể có layer đã xoay sẵn và một biến thể có layer hidden. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1061",
+        "artwork-editor/transform-multi-select#KB-1056"
+      ]
+    },
+    {
+      "path": "portal — artwork editor → chọn layer Photo Upload (hoặc layer linked tới Photo Upload) → Transform → tick Flip → Reverse reposition direction; storefront — sản phẩm dùng artwork đó, buyer upload ảnh và reposition",
+      "precondition": "Artwork 2.0 có layer Photo Upload dùng reposition, một layer linked tới nó, một clipart và một text để đối chứng; campaign/sản phẩm test trên store explorer. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1064"
+      ]
+    },
+    {
+      "path": "portal — artwork editor Artwork 2.0 → chọn ≥2 layer trên layer panel/canvas (gồm một Group layer có layer con) → Transform → Apply for: Individual; lock/hide layer trên layer panel",
+      "precondition": "Artwork 2.0 có ≥3 text layer, một photo, một Group layer chứa 2 layer con, một layer đã xoay. Fixture tự dựng trên store test của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign/artwork nêu trong CCR hay production). Ghi build và ngày chạy.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1070",
+        "artwork-editor/transform-multi-select#KB-1071",
+        "artwork-editor/transform-multi-select#KB-1077"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Apply for Group/Individual ở Artwork 2.0",
+      "description": "Khi chọn nhiều layer, chế độ Individual hiện Width chung hoặc Mixed; group width tính lại từ bounding box selection sau mỗi lần đổi width của layer bất kỳ.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1001"
+      ]
+    },
+    {
+      "name": "Transform popover Artwork 1.0 không có Apply for",
+      "description": "Chọn nhiều layer chỉ còn Width/Height/Top/Left/Rotate/Fit to canvas/Flip như trước TIB-5197; auto-scale max width vẫn đặt theo từng layer.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1002"
+      ]
+    },
+    {
+      "name": "Flip nhóm (Apply for: Group) ở Artwork 2.0",
+      "description": "Tick Flip horizontal/vertical ở Group: cả vùng chọn lật như một khối (vị trí mirror qua tâm khung vùng chọn, góc đảo dấu, ảnh lật); text/curve text chỉ đổi vị trí và góc, nội dung không lật; Individual lật tại chỗ; bỏ tick về vị trí/góc ban đầu (change note dev, OBSERVED_CURRENT/LOW). Góc khi tick cả H+V, flag lưu trữ, layer hidden, đổi Apply for khi đang tick: chỉ rule QA (PROPOSED).",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1061",
+        "artwork-editor/transform-multi-select#KB-1056",
+        "artwork-editor/transform-multi-select#KB-1057",
+        "artwork-editor/transform-multi-select#KB-1059",
+        "artwork-editor/transform-multi-select#KB-1060",
+        "artwork-editor/transform-multi-select#KB-1062",
+        "artwork-editor/transform-multi-select#KB-1063"
+      ]
+    },
+    {
+      "name": "Reverse reposition direction trên layer Photo Upload đang Flip",
+      "description": "Checkbox dưới Flip horizontal / Flip vertical, chỉ hiện khi Flip bật và layer là Photo Upload hoặc linked tới Photo Upload; bật thì ảnh buyer reposition đi ngược chiều theo trục đã lật; mặc định tắt (spec TIB-5440, CONFIRMED_EXPECTED).",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1064"
+      ]
+    },
+    {
+      "name": "Box cá nhân và box nhóm khi chọn nhiều layer (Artwork 2.0)",
+      "description": "Ở Individual, mỗi layer đang chọn có khung riêng khi chọn ≥2 layer; layer ẩn/khoá không có khung; khung chỉ để nhìn, thao tác qua khung nhóm (change note dev TIB-5355, OBSERVED_CURRENT/LOW). Layer khoá/ẩn vẫn trong selection và box nhóm co lại, còn 1 layer hợp lệ thì như chọn 1 layer, màu/kiểu nét, layer con của Group: chỉ rule QA (PROPOSED); box của Group container đang conflict.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1070",
+        "artwork-editor/transform-multi-select#KB-1071",
+        "artwork-editor/transform-multi-select#KB-1072",
+        "artwork-editor/transform-multi-select#KB-1074",
+        "artwork-editor/transform-multi-select#KB-1077",
+        "artwork-editor/transform-multi-select#KB-1078"
+      ]
+    },
+    {
+      "name": "Thao tác khác khi chọn nhiều layer: sửa text, cỡ chữ toolbar, Delete/Undo, Align, phím tắt",
+      "description": "Double-click sửa text thu selection về 1 layer, ô cỡ chữ toolbar chỉ khi mọi layer là text; Align dùng 'Align to:' riêng, không có Ctrl+D, không có phím mũi tên nudge (rule QA, PROPOSED). Delete xoá cả selection, Ctrl+Z trả lại layer với selection rỗng (record Testlane không build, OBSERVED_CURRENT/LOW, không làm oracle).",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1073",
+        "artwork-editor/transform-multi-select#KB-1075",
+        "artwork-editor/transform-multi-select#KB-1076"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "Individual, các layer đang chọn khác width (Width = Mixed)",
+      "to": "group width = bề rộng bounding box mới của selection",
+      "trigger": "đổi width của một layer bất kỳ",
+      "condition": "Artwork 2.0, chọn ≥2 layer",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1001"
+      ]
+    },
+    {
+      "from": "Group, Flip chưa tick",
+      "to": "vùng chọn lật như một khối (mirror qua tâm khung vùng chọn, góc đảo dấu, ảnh lật)",
+      "trigger": "tick Flip horizontal hoặc Flip vertical",
+      "condition": "Artwork 2.0, chọn ≥2 layer, Apply for: Group",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1061"
+      ]
+    },
+    {
+      "from": "Group, Flip đang tick",
+      "to": "layer về đúng vị trí/góc ban đầu",
+      "trigger": "bỏ tick Flip",
+      "condition": "Artwork 2.0, Apply for: Group",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1061"
+      ]
+    },
+    {
+      "from": "Group, chọn ≥2 layer",
+      "to": "mỗi layer không ẩn/khoá có khung riêng cạnh khung nhóm",
+      "trigger": "chọn Apply for: Individual",
+      "condition": "Artwork 2.0, chọn ≥2 layer",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1070"
+      ]
+    },
+    {
+      "from": "Individual, chọn ≥2 layer",
+      "to": "chỉ còn khung nhóm",
+      "trigger": "chọn Apply for: Group",
+      "condition": "Artwork 2.0",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1070"
+      ]
+    },
+    {
+      "from": "chọn 3 layer, Delete",
+      "to": "cả 3 layer bị xoá, selection rỗng; Ctrl+Z trả lại 3 layer, selection rỗng",
+      "trigger": "phím Delete rồi Ctrl+Z",
+      "condition": "Artwork 2.0 (record Testlane không build, chưa xác nhận)",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1075"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "rule": "[MỚI, CBS-124] Checkbox Reverse reposition direction nằm dưới Flip horizontal / Flip vertical trong panel Transform, helper text \"When on, this layer repositions in the opposite direction to the way the buyer moves it.\"; chỉ hiện khi Flip H hoặc V bật và layer là Photo Upload hoặc linked tới Photo Upload; bật thì layer reposition ngược chiều buyer theo trục đã lật; mặc định tắt.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "spec_doc",
+      "scope": "staging, merchant-owner (portal artwork editor) và buyer (storefront reposition)",
+      "shipped": "SHIPPED",
+      "caveats": "Một citation (mô tả TIB-5440). Testlane TC-TIB-3320/3321 có actualResult ghi Fail (BUG-160/161), không build (OQ OPEN_ISSUE).",
+      "confirmation_ref": "Jira TIB-5440 description mục Solution (PO), bản cuối 2026-09-15",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1064"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "summary": "Artwork 2.0: Individual hiện Width chung hoặc Mixed; group width tính lại từ bounding box selection (theo mô tả dev, OBSERVED_CURRENT/LOW).",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1001"
+      ]
+    },
+    {
+      "summary": "Artwork 1.0: Transform popover không có Apply for; multi-select như trước TIB-5197; auto-scale max width theo từng layer (theo change note dev, OBSERVED_CURRENT/MEDIUM).",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1002"
+      ]
+    },
+    {
+      "summary": "[MỚI, CBS-124] Group flip lật cả vùng chọn như một khối: vị trí mirror qua tâm khung vùng chọn, góc xoay đảo dấu, ảnh lật; Individual lật tại chỗ; bỏ tick về vị trí/góc ban đầu (theo change note dev TIB-5435, OBSERVED_CURRENT/LOW).",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1061"
+      ]
+    },
+    {
+      "summary": "[MỚI, CBS-124] Group flip: text/curve text chỉ được mirror vị trí và đảo góc, nội dung không lật gương (theo change note dev TIB-5435, OBSERVED_CURRENT/LOW).",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1056"
+      ]
+    },
+    {
+      "summary": "[MỚI, CBS-129] Individual: khung riêng cho mỗi layer khi chọn ≥2 layer; chọn 1 layer dùng khung layer đơn; layer ẩn/khoá không có khung; khung chỉ để nhìn, thao tác qua khung nhóm (theo change note dev TIB-5355, OBSERVED_CURRENT/LOW).",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1070"
+      ]
+    },
+    {
+      "summary": "[MỚI, CBS-129] Delete khi chọn 3 layer xoá cả 3; Ctrl+Z trả lại 3 layer, selection rỗng (record Testlane TC-TIB-3086 chỉ tick [AI], không build; OBSERVED_CURRENT/LOW, không làm oracle).",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1075"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      "artwork-editor/transform-multi-select#KB-1001",
+      "artwork-editor/transform-multi-select#KB-1002",
+      "artwork-editor/transform-multi-select#KB-1056",
+      "artwork-editor/transform-multi-select#KB-1057",
+      "artwork-editor/transform-multi-select#KB-1058",
+      "artwork-editor/transform-multi-select#KB-1059",
+      "artwork-editor/transform-multi-select#KB-1060",
+      "artwork-editor/transform-multi-select#KB-1061",
+      "artwork-editor/transform-multi-select#KB-1062",
+      "artwork-editor/transform-multi-select#KB-1063",
+      "artwork-editor/transform-multi-select#KB-1064",
+      "artwork-editor/transform-multi-select#KB-1065",
+      "artwork-editor/transform-multi-select#KB-1070",
+      "artwork-editor/transform-multi-select#KB-1071",
+      "artwork-editor/transform-multi-select#KB-1072",
+      "artwork-editor/transform-multi-select#KB-1073",
+      "artwork-editor/transform-multi-select#KB-1074",
+      "artwork-editor/transform-multi-select#KB-1075",
+      "artwork-editor/transform-multi-select#KB-1076",
+      "artwork-editor/transform-multi-select#KB-1077",
+      "artwork-editor/transform-multi-select#KB-1078"
+    ],
+    "storefront": [
+      "artwork-editor/transform-multi-select#KB-1064"
+    ],
+    "api": [
+      "artwork-editor/transform-multi-select#KB-1057",
+      "artwork-editor/transform-multi-select#KB-1062",
+      "artwork-editor/transform-multi-select#KB-1065"
+    ],
+    "data": [],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "feature_key": "editor-layer-workspace",
+      "why": "Mục Transform nằm trên canvas toolbar theo loại layer (KB-042, đang UNRESOLVED ở vế action bar); multi-select chung của editor."
+    },
+    {
+      "feature_key": "artwork-save-persist",
+      "why": "Thay đổi trong Transform chỉ ghi DB khi Save & Close (base KB-049; rule QA KB-1058)."
+    },
+    {
+      "feature_key": "layer-duplicate-link-copy",
+      "why": "Reverse reposition direction áp cho layer linked tới Photo Upload; linked copy có flip riêng (KB-935)."
+    }
+  ],
+  "risks": [
+    {
+      "summary": "Cả hai item chỉ dựa mô tả/change note của dev (dev_doc, teeinblue không nâng lên CONFIRMED_EXPECTED); oracle BASELINE, lệch là cần điều tra, không kết luận bug.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1001",
+        "artwork-editor/transform-multi-select#KB-1002"
+      ]
+    },
+    {
+      "summary": "[CBS-124] Flip nhóm chỉ có change note dev (KB-1056, KB-1061: OBSERVED_CURRENT, oracle BASELINE) và rule QA (KB-1057, KB-1058, KB-1062, KB-1063, KB-1065: PROPOSED, không làm oracle). Lượt chạy QA-3362 chỉ có tick [AI], không build.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1056",
+        "artwork-editor/transform-multi-select#KB-1061",
+        "artwork-editor/transform-multi-select#KB-1057",
+        "artwork-editor/transform-multi-select#KB-1058",
+        "artwork-editor/transform-multi-select#KB-1062",
+        "artwork-editor/transform-multi-select#KB-1063",
+        "artwork-editor/transform-multi-select#KB-1065"
+      ]
+    },
+    {
+      "summary": "[CBS-124] Testlane TC-TIB-3320/3321 (storefront, Reverse ON) có status passed nhưng actualResult ghi Fail: kéo ảnh không bị đảo chiều (BUG-160/161), không build. Expected theo spec TIB-5440 (KB-1064); trạng thái build hiện tại chưa rõ.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1064"
+      ]
+    },
+    {
+      "summary": "[CBS-129] Box cá nhân/box nhóm chỉ có change note dev (KB-1070, OBSERVED_CURRENT, oracle BASELINE) và rule QA FACT-063 (KB-1071..KB-1074, KB-1076..KB-1078: PROPOSED, không làm oracle). Lượt chạy QA-3361 chỉ có tick [AI]/[QA], không build.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1070",
+        "artwork-editor/transform-multi-select#KB-1071",
+        "artwork-editor/transform-multi-select#KB-1072",
+        "artwork-editor/transform-multi-select#KB-1073",
+        "artwork-editor/transform-multi-select#KB-1074",
+        "artwork-editor/transform-multi-select#KB-1076",
+        "artwork-editor/transform-multi-select#KB-1077",
+        "artwork-editor/transform-multi-select#KB-1078"
+      ]
+    },
+    {
+      "summary": "[CBS-129] P1 — Delete khi chọn nhiều layer xoá cả selection (mất layer nếu không Undo). Nguồn chỉ là record Testlane không build và spec-hub yellow; expected TC-33 (Undo khôi phục cả box) khác kết quả ghi (selection rỗng). Chưa có oracle; cần test case Testlane PASS có ngày, build và căn cứ expected.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1075"
+      ]
+    }
+  ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-11-12"
+  },
+  "unknown_areas": [
+    {
+      "question": "Artwork 2.0: Width chung/Mixed ở Individual và việc tính lại group width từ bounding box selection có phải hành vi mong muốn đã chốt không (nguồn chỉ là mô tả của dev trong description TIB-5397)?",
+      "why_it_matters": "Quyết định oracle của CHK-001/CHK-002 có thể nâng từ BASELINE hay không.",
+      "oq_id": "OQ-artwork-editor-065"
+    },
+    {
+      "question": "Artwork 1.0: bỏ Apply for khỏi Transform popover, multi-select như trước TIB-5197 và auto-scale max width theo từng layer có được PO chốt là hành vi mong muốn không?",
+      "why_it_matters": "Quyết định oracle của CHK-003.",
+      "oq_id": "OQ-artwork-editor-066"
+    },
+    {
+      "question": "[MỚI, CBS-124] Flag flip có đúng chỉ lưu bằng flip_horizontal_enabled / flip_vertical_enabled trên layer ảnh, text/curve-text không bao giờ có hai field này (rule QA FACT-064)? Change note dev chỉ nói text/curve text không lật nội dung.",
+      "why_it_matters": "KB-1057 PROPOSED; CHK-011 chưa có oracle.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1056",
+        "artwork-editor/transform-multi-select#KB-1057"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-editor-101"
+    },
+    {
+      "question": "[MỚI, CBS-124] Mọi thay đổi trong popover Transform có đúng chỉ lưu khi Save & Close, không autosave (rule QA FACT-065)?",
+      "why_it_matters": "KB-1058 PROPOSED; CHK-010 chưa có oracle.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1058"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-editor-102"
+    },
+    {
+      "question": "[MỚI, CBS-124] Đổi Apply for khi Flip đang tick: tính lại từ vị trí gốc hay giữ vị trí đã lật (CONF-CBS-124-01)?",
+      "why_it_matters": "KB-1059 UNRESOLVED; CHK-006 không có oracle; expected của TC-TIB-3105 có thể phải sửa.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1059"
+      ],
+      "oq_type": "CONFLICT",
+      "oq_id": "OQ-artwork-editor-103"
+    },
+    {
+      "question": "[MỚI, CBS-124] Layer hidden trong Group flip có bị dịch không (CONF-CBS-124-02)?",
+      "why_it_matters": "KB-1060 UNRESOLVED; CHK-007 không có oracle.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1060"
+      ],
+      "oq_type": "CONFLICT",
+      "oq_id": "OQ-artwork-editor-104"
+    },
+    {
+      "question": "[MỚI, CBS-124] Group flip là hành vi mong muốn đã chốt (nguồn chỉ là change note dev), và tick cả H+V thì góc giữ nguyên (rule QA FACT-069)?",
+      "why_it_matters": "KB-1061 BASELINE cho CHK-004; KB-1062 PROPOSED, CHK-005 chưa có oracle.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1061",
+        "artwork-editor/transform-multi-select#KB-1062"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-editor-105"
+    },
+    {
+      "question": "[MỚI, CBS-124] Vì sao vị trí đo thật sau Group flip lệch ~20px/layer so với công thức newLeft = 2·cx − left − width, và giá trị nào đúng (rule QA FACT-070)?",
+      "why_it_matters": "Quyết định có assert toạ độ tuyệt đối được không; hiện kiểm bằng invariant.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1063"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-editor-106"
+    },
+    {
+      "question": "[MỚI, CBS-124] Reverse reposition direction trên storefront có đảo chiều kéo ảnh trên build hiện tại không? Testlane TC-TIB-3320/3321 actualResult ghi Fail (BUG-160/161), status passed, không build.",
+      "why_it_matters": "CHK-009 có oracle STRONG theo spec; kết quả FAIL lúc này có thể là bug đã biết.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1064"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-artwork-editor-107"
+    },
+    {
+      "question": "[MỚI, CBS-124] Ô Top/Left khi chọn 1 layer ghi giá trị khác field top/left thật (100 → 153.89): mong muốn hay lỗi (rule QA FACT-072)?",
+      "why_it_matters": "Ảnh hưởng cách dựng fixture toạ độ; KB-1065 PROPOSED.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1065"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-editor-108"
+    },
+    {
+      "question": "[MỚI, CBS-129] Lock/hide một layer giữa multi-selection: layer đó có đúng vẫn được tính là đang chọn, box nhóm chỉ bao layer không khoá/ẩn và co lại ngay, stepper +/- chỉ áp cho layer không khoá/ẩn (rule QA FACT-063)? Change note dev chỉ nói layer ẩn/khoá không được vẽ khung.",
+      "why_it_matters": "KB-1071 PROPOSED; CHK-013 chưa có oracle.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1070",
+        "artwork-editor/transform-multi-select#KB-1071"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-editor-109"
+    },
+    {
+      "question": "[MỚI, CBS-129] Selection còn đúng 1 layer không khoá/ẩn ở Individual: canvas xử lý như chọn 1 layer, mất radio Apply for (rule QA; 'dev chốt by design' chưa có nguyên văn)?",
+      "why_it_matters": "KB-1072 PROPOSED; CHK-014 chưa có oracle.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1072"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-editor-110"
+    },
+    {
+      "question": "[MỚI, CBS-129] Double-click sửa text khi multi-select thu selection về 1 layer, và ô cỡ chữ toolbar ẩn hẳn khi selection không phải toàn text (rule QA FACT-063)?",
+      "why_it_matters": "KB-1073 PROPOSED; CHK-015 chưa có oracle.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1073"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-editor-111"
+    },
+    {
+      "question": "[MỚI, CBS-129] Box cá nhân solid 1px và box nhóm dashed 2px cùng màu #00c4cc có phải thiết kế chủ đích (rule QA FACT-063)?",
+      "why_it_matters": "KB-1074 PROPOSED; CHK-016 chưa có oracle.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1074"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-editor-112"
+    },
+    {
+      "question": "[MỚI, CBS-129] Delete khi chọn nhiều layer xoá cả selection, Undo trả lại các layer: expected là gì (có khôi phục selection/box không), và có cách xoá riêng 1 layer trong khi vẫn giữ các layer khác đang chọn không? Hành vi xoá dữ liệu cần test case Testlane PASS có ngày, build và căn cứ expected.",
+      "why_it_matters": "KB-1075 OBSERVED_CURRENT không làm oracle; CHK-017 (P1) chưa có oracle.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1075"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-editor-113"
+    },
+    {
+      "question": "[MỚI, CBS-129] Align dùng 'Align to:' riêng không theo Apply for; editor không có Ctrl+D và phím mũi tên nudge (rule QA FACT-063; spec-hub shortcuts yellow)?",
+      "why_it_matters": "KB-1076 PROPOSED; CHK-018 chưa có oracle.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1076"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-editor-114"
+    },
+    {
+      "question": "[MỚI, CBS-129] Chọn layer con trong Group không nâng lên Group cha, chọn Group container kéo theo mọi con, box nhóm luôn axis-aligned (rule QA; 'dev chốt RQ5' chưa có nguyên văn)?",
+      "why_it_matters": "KB-1077 PROPOSED; CHK-019 chưa có oracle.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1077"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-editor-115"
+    },
+    {
+      "question": "[MỚI, CBS-129] Group container trong selection Individual có box cá nhân không: không bao giờ (TC-6) hay bằng union bbox của các con (RQ13)? (CONF-CBS-129-01)",
+      "why_it_matters": "KB-1078 UNRESOLVED; CHK-020 chưa có oracle.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1078"
+      ],
+      "oq_type": "CONFLICT",
+      "oq_id": "OQ-artwork-editor-116"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-129"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-03-transform-multi-select",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Artwork 2.0 multi-select Individual",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-03-transform-multi-select",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Artwork 1.0 multi-select",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-03-transform-multi-select",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "lưu preference Apply for",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-03-transform-multi-select",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Artwork 2.0 multi-select Group flip",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-03-transform-multi-select",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Artwork 2.0 multi-select Group flip, layer hidden",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-03-transform-multi-select",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "layer Photo Upload đang Flip, Reverse reposition direction",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-03-transform-multi-select",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "reposition ảnh trên layer Photo Upload đang Flip, Reverse ON/OFF",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-03-transform-multi-select",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Artwork 2.0 multi-select Individual, box cá nhân/box nhóm, lock/hide giữa chừng",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-03-transform-multi-select",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Artwork 2.0 multi-select có Group layer và layer con",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-03-transform-multi-select",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Artwork 2.0 multi-select Delete + Undo",
+      "environment": "staging",
+      "covered": true
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "conflict_group": "CONF-CBS-124-01",
+      "summary": "Đổi Apply for Group → Individual khi Flip đang tick: tính lại từ vị trí gốc (rule QA 2026-09-24, KB-1059) hay giữ vị trí đã lật (expected Testlane TC-TIB-3105). Chưa resolve, supersede tắt.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1059"
+      ],
+      "oq_id": "OQ-artwork-editor-103"
+    },
+    {
+      "conflict_group": "CONF-CBS-124-02",
+      "summary": "Layer hidden trong Group flip: giữ nguyên vị trí như locked (rule QA FACT-068, KB-1060) hay vẫn bị dịch (RQ1 cũ). Chưa resolve, supersede tắt.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1060"
+      ],
+      "oq_id": "OQ-artwork-editor-104"
+    },
+    {
+      "conflict_group": "CONF-CBS-129-01",
+      "summary": "Group layer (container) trong selection Individual: không bao giờ có box cá nhân (rule QA FACT-063, TC-6, KB-1078) hay có box bằng union bbox của các con (RQ13, QA thuật lại Dev). Chưa resolve, supersede tắt.",
+      "kb_refs": [
+        "artwork-editor/transform-multi-select#KB-1078"
+      ],
+      "oq_id": "OQ-artwork-editor-116"
+    }
+  ],
+  "profile_relationships": [
+    {
+      "from_feature_key": "transform-multi-select",
+      "to_feature_key": "editor-layer-workspace",
+      "relationship": "part_of_editor_toolbar"
+    }
+  ]
+}

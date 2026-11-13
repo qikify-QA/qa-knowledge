@@ -1,0 +1,406 @@
+{
+  "feature_id": "FEAT-02-multibuy-product-selection",
+  "feature_key": "multibuy-product-selection",
+  "object_id": "multibuy",
+  "checklist_version": "v2",
+  "checks": [
+    {
+      "check_id": "CHK-030",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Click \"Pick\" trên no-variant recommended product thêm ngay vào real cart",
+      "applicability": {
+        "role": "buyer",
+        "state": "popup đang mở, recommendation hiển thị",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Popup đang mở với ≥1 recommended product không có variant.",
+      "steps": [
+        "Bấm \"Pick\" trên 1 recommended product không-variant.",
+        "Mở trang `/cart` thực để verify."
+      ],
+      "observation_point": "Nội dung cart thực sau khi Pick.",
+      "expected_result": "Sản phẩm xuất hiện trong real cart ngay lập tức (không phải staging/preview area) — verify được qua `/cart` thật.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-product-selection#KB-049"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "multibuy/multibuy-product-selection#KB-093",
+        "multibuy/multibuy-product-selection#KB-094"
+      ],
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-031",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "Progress bar/count phản ánh cart thật, đúng sau reload",
+      "applicability": {
+        "role": "buyer",
+        "state": "sau khi Pick 1 sản phẩm",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã Pick ít nhất 1 sản phẩm qua popup.",
+      "steps": [
+        "Ghi lại giá trị progress (\"Add N more items...\") ngay sau Pick.",
+        "Reload product page.",
+        "So sánh giá trị progress trước/sau reload."
+      ],
+      "observation_point": "Giá trị progress/count hiển thị.",
+      "expected_result": "Progress phản ánh đúng nội dung cart thật, giữ nguyên giá trị đúng sau reload (không phải counter riêng của widget, không reset).",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-product-selection#KB-050"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "multibuy/multibuy-product-selection#KB-092"
+      ],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-032",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "Empty \"+\" combo slot tồn tại trong DOM với id qvl-multibuy-tier_add-more",
+      "applicability": {
+        "role": "buyer",
+        "state": "popup/widget đang hiển thị, còn slot trống",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Widget Multibuy đang hiển thị với ít nhất 1 slot combo trống.",
+      "steps": [
+        "Mở DevTools/inspect DOM trên vùng empty \"+\" combo slot.",
+        "Tìm element có id `qvl-multibuy-tier_add-more`."
+      ],
+      "observation_point": "Sự tồn tại và id của DOM element.",
+      "expected_result": "Element tồn tại với đúng id `qvl-multibuy-tier_add-more` — lưu ý: nguồn là 1 dump code/data đơn lẻ, cần verify lại với source code thật trước khi dùng làm oracle mạnh cho automation selector.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-product-selection#KB-051"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Phanh derivation: oracle duy nhất KB-051 có derivation code_artifact. Slot '+' trống được đánh dấu bằng id hay class `qvl-multibuy-tier_add-more`? Staging 2026-10-18 (KB-092) ghi nhận class `qvl-multibuy-tier_add-more` — cần Dev xác nhận selector ổn định trước khi dùng cho automation.",
+      "related_kb_ids": [
+        "multibuy/multibuy-product-selection#KB-092"
+      ],
+      "risk_refs": [
+        "RISK-code-artifact-derivation"
+      ],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-026"
+    },
+    {
+      "check_id": "CHK-033",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "\"Show product recommendations\" — giới hạn tối đa 10 sản phẩm",
+      "applicability": {
+        "role": "merchant",
+        "state": "redirect-URL mode, checkbox recommendations checked",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Selection mode = Redirect, checkbox \"Show product recommendations\" được check.",
+      "steps": [
+        "Check \"Show product recommendations\".",
+        "Nhập giá trị \"Max number of recommended products\" > 10.",
+        "Nhập giá trị = 10.",
+        "Nhập giá trị = 0 hoặc để trống."
+      ],
+      "observation_point": "Validation/giới hạn của field number.",
+      "expected_result": "Field chấp nhận tối đa 10; giá trị >10 bị chặn/clamp. Checkbox + field chỉ xuất hiện dưới redirect-URL input.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-product-selection#KB-052"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "multibuy/multibuy-product-selection#KB-088"
+      ],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-034",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Product recommendations áp dụng cho CẢ 2 selection mode (popup và redirect)",
+      "applicability": {
+        "role": "buyer",
+        "state": "cả 2 selection mode",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Checkbox recommendations được enable, tạo 1 offer mode popup và 1 offer mode redirect.",
+      "steps": [
+        "Mở widget selection ở mode popup — kiểm tra recommendation hiển thị.",
+        "Mở widget selection ở mode redirect — kiểm tra recommendation hiển thị."
+      ],
+      "observation_point": "Sự xuất hiện recommendation ở cả 2 mode.",
+      "expected_result": "Recommendation hiển thị ở CẢ 2 mode, không chỉ popup.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-product-selection#KB-053"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-035",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "Redirect-to-URL mode mở tab mới — selection in-progress ở trang gốc không bị mất",
+      "applicability": {
+        "role": "buyer",
+        "state": "selection mode = redirect, đang có selection in-progress",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Selection mode = Redirect to a specific page/URL.",
+      "steps": [
+        "Bắt đầu chọn sản phẩm trên trang gốc (nếu có state in-progress nào).",
+        "Click vào CTA redirect.",
+        "Quan sát tab mới mở ra, quay lại tab gốc."
+      ],
+      "observation_point": "Số tab mở, trạng thái trang gốc sau redirect.",
+      "expected_result": "Redirect mở ở 1 TAB MỚI; trang gốc (và selection đang in-progress, nếu có) không bị mất/reset.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-product-selection#KB-072"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-057",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "SDK-level flags (showTriggerProductInRecommendation, numberOfRecommendationProductPerLine) KHÔNG xuất hiện trong Portal UI mặc định",
+      "applicability": {
+        "role": "merchant",
+        "state": "store chưa có SDK config custom nào từ Dev",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Store không có custom SDK config `QikifyVolume = {...}` nào được Dev set riêng.",
+      "steps": [
+        "Tìm trong toàn bộ Multibuy Portal settings 2 flag `showTriggerProductInRecommendation` và `numberOfRecommendationProductPerLine`.",
+        "Xác nhận không có merchant-facing control nào cho 2 flag này."
+      ],
+      "observation_point": "Sự vắng mặt của 2 flag trong Portal UI.",
+      "expected_result": "2 flag KHÔNG xuất hiện trong Portal UI mặc định — chúng là SDK-level config do Dev set theo từng store, không phải merchant setting.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-product-selection#KB-071"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-069",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Widget Multibuy trên PDP: cấu trúc, phản ánh cart thật, không chặn nút Add to cart của theme",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "PDP product thuộc offer Multibuy (Fixed total price 2→$10 / 3→$20 / 4→$30)",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "Offer Multibuy đang Running với ≥2 product trong trigger; cart rỗng.",
+      "steps": [
+        "Mở PDP product thuộc offer; ghi các thành phần widget (tiêu đề tier, badge 'Saved', dòng 'Add N more…', progress, slot '+', thẻ recommendation, 'powered by qikify').",
+        "Bấm Add to cart của theme; ghi request add (endpoint, property).",
+        "Thêm tổng 6 món (2 product) vào cart; mở PDP của product còn lại; ghi tiêu đề tier, progress, số slot đã fill."
+      ],
+      "observation_point": "Cấu trúc widget; request add của theme; trạng thái widget theo cart.",
+      "expected_result": "(baseline staging 2026-10-18; lệch = cần điều tra) Widget dưới giá theme: tiêu đề 'BUY ANY 2 ITEMS FOR $10.00' + badge 'Saved $X', dòng 'Add N more items to get this deal', progress bar 3 mốc, các ô slot trống '+', thẻ recommendation product khác trong trigger với stepper số lượng, dropdown variant (chỉ khi product có variant) và nút 'Pick', dòng 'powered by qikify'. Nút Add to cart / Buy it now của theme vẫn hiện và submit bình thường (POST /cart/add, không property). Widget phản ánh cart thật kể cả trên PDP product khác (cart 6 món → tiêu đề tier 4, progress đầy, 6 slot đã fill có nút ×).",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-product-selection#KB-092"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Cấu trúc widget Multibuy trên PDP staging (progress 3 mốc, slot '+', recommendation inline có stepper + 'Pick', nút ATC của theme không bị chặn) có phải thiết kế mong muốn? Tài liệu chỉ mô tả từng phần (remaining message, progress, slot).",
+      "related_kb_ids": [
+        "multibuy/multibuy-appearance-and-schedule#KB-030",
+        "multibuy/multibuy-product-selection#KB-050",
+        "multibuy/multibuy-product-selection#KB-051"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-multibuy-027"
+    },
+    {
+      "check_id": "CHK-070",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "Số trên badge 'Saved' của widget Multibuy so với discount thực trong cart",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "cart có nhiều combo Multibuy (multiplier bật)",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "Offer Multibuy 2→$10 / 3→$20 / 4→$30, multiplier bật; 2 product giá khác nhau trong trigger.",
+      "steps": [
+        "Thêm 6 món (2 product) vào cart.",
+        "Ghi tổng discount trong cart.",
+        "Mở PDP, ghi số trên badge 'Saved' của widget.",
+        "So sánh hai số."
+      ],
+      "observation_point": "Số trên badge 'Saved' và discount thực của cart.",
+      "expected_result": "(baseline staging 2026-10-18, CHỈ ghi số hiển thị — KHÔNG coi là hành vi đúng; lệch = cần điều tra) Số trên badge 'Saved' KHÔNG bằng discount thực trong cart: cart 6 món giảm $41.00, badge hiện $27.00.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-product-selection#KB-092"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Badge 'Saved' của widget Multibuy trên staging hiện số khác discount thực trong cart (cart 6 món giảm $41.00, badge $27.00). Badge 'Saved' tính theo công thức nào (theo tier hiện tại, theo một combo, hay theo cart)? Lệch này có phải lỗi hiển thị gây hiểu nhầm cho buyer?",
+      "related_kb_ids": [
+        "multibuy/multibuy-discount-setup#KB-021",
+        "multibuy/multibuy-discount-setup#KB-087"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Badge 'Saved' không khớp discount thực — buyer hiểu nhầm số tiền tiết kiệm"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-multibuy-028"
+    },
+    {
+      "check_id": "CHK-071",
+      "dimension": "NEGATIVE",
+      "layer": "portal+storefront",
+      "title": "Chế độ 'Redirect to specific page/URL' với URL rỗng: lưu được, slot '+' trên storefront không phản hồi",
+      "applicability": {
+        "role": "merchant, buyer (guest)",
+        "state": "offer Multibuy mới giữ 'Customer product selection behavior' mặc định, URL rỗng",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "Merchant tạo offer Multibuy mới; DevTools console mở ở storefront.",
+      "steps": [
+        "Ở form mới, ghi 3 radio 'Customer product selection behavior' và lựa chọn mặc định; để textbox URL rỗng; Save — ghi có bị chặn không.",
+        "Mở PDP product thuộc offer; click thật vào ô slot '+'; ghi điều hướng/tab/popup/cart/console.",
+        "Bấm 'Pick' trên một thẻ recommendation inline; ghi request add và cart."
+      ],
+      "observation_point": "Kết quả lưu; phản hồi của slot '+'; kết quả 'Pick' inline.",
+      "expected_result": "(baseline staging 2026-10-18; lệch = cần điều tra) Form có 3 radio 'Open selection popup' / 'Redirect to specific page/URL' (mặc định) / 'Direct to collection page'; textbox URL rỗng (placeholder 'https://yourstore.myshopify.com/your-page'); lưu với URL rỗng KHÔNG bị chặn. Trên PDP, click slot '+' không điều hướng, không mở tab/popup, không đổi cart, không lỗi console. 'Pick' trên thẻ recommendation inline thêm product thẳng vào cart thật (POST /cart/add.js?qvl-multibuy, không property), ở lại PDP, widget cập nhật badge 'Saved' và dòng 'Add N more items to get this deal'.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-product-selection#KB-088",
+          "multibuy/multibuy-product-selection#KB-093"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Customer product selection behavior trên staging có 3 lựa chọn (thêm 'Direct to collection page'), mặc định 'Redirect to specific page/URL' và lưu được với URL rỗng (khi đó slot '+' trên storefront không phản hồi); tài liệu nói 2 cách (popup/redirect) và ticket nói mặc định popup. Expected mặc định là gì và có nên chặn lưu URL rỗng?",
+      "related_kb_ids": [
+        "multibuy/multibuy-discount-setup#KB-003",
+        "multibuy/multibuy-product-selection#KB-045",
+        "multibuy/multibuy-product-selection#KB-049",
+        "multibuy/multibuy-product-selection#KB-072"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Buyer kẹt: slot '+' không phản hồi khi URL redirect rỗng"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-multibuy-004"
+    },
+    {
+      "check_id": "CHK-072",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Chế độ 'Open selection popup': '+' chỉ mở rộng thẻ, 'Pick' giữ lựa chọn, 'Done' mới thêm vào cart và chuyển /cart",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "offer Multibuy ở chế độ 'Open selection popup'",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "Offer Multibuy chế độ 'Open selection popup', trigger gồm 1 product có variant và 1 product không variant; cart rỗng; DevTools Network + console mở.",
+      "steps": [
+        "Trên PDP, click thật slot '+'; ghi dạng popup (vị trí, overlay, hiệu ứng) và nội dung.",
+        "Click icon '+' trên thẻ product không variant, rồi trên thẻ có variant; ghi control xuất hiện.",
+        "Bấm 'Pick' trên một thẻ; kiểm cart (/cart.js) và subtotal/slot trong popup; ghi console.",
+        "Bấm 'Done'; ghi request add, trang đích và nội dung cart.",
+        "Mở lại popup, bấm 'Done' khi chưa Pick; ghi kết quả."
+      ],
+      "observation_point": "Dạng popup; control theo loại product; cart sau Pick và sau Done; console.",
+      "expected_result": "(baseline staging 2026-10-18; lệch = cần điều tra) Popup MODAL căn giữa (overlay toàn màn hình, nền tối, nút '×'), hiệu ứng fade (không slide-up), có tiêu đề tier, 'Saved $X', 'Add N more items to get this deal', thẻ product trong trigger (mỗi thẻ icon '+'), 2 slot, 'Subtotal' và 'Done'. Icon '+' KHÔNG thêm ngay vào cart: product không variant mở stepper + 'Pick'; product có variant mở stepper + select variant + 'Pick'; một thẻ mở rộng một lúc. 'Pick' chỉ ghi nhận lựa chọn (cart vẫn 0). 'Done' gửi 1 POST /cart/add.js?qvl-multibuy với các item đã Pick (không property) rồi chuyển /cart; 'Done' khi chưa Pick đóng popup, không thêm gì. Ghi chú: mỗi lần 'Pick' console báo 'TypeError: Cannot read properties of null (reading 'url')' và subtotal/slot trong popup không cập nhật đúng (product thử không có ảnh) — chưa phân định defect hay dữ liệu.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-product-selection#KB-094"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Popup Multibuy trên staging: '+' chỉ mở rộng thẻ (không instant add như ticket QVD-121), 'Pick' không thêm cart, 'Done' mới thêm và chuyển /cart; mỗi lần 'Pick' console báo lỗi và subtotal/slot không cập nhật. Đây là hành vi mong muốn? Lỗi console là defect hay do product thử không có ảnh?",
+      "related_kb_ids": [
+        "multibuy/multibuy-product-selection#KB-046",
+        "multibuy/multibuy-product-selection#KB-047",
+        "multibuy/multibuy-product-selection#KB-048",
+        "multibuy/multibuy-product-selection#KB-049",
+        "multibuy/multibuy-product-selection#KB-050"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-multibuy-005"
+    }
+  ],
+  "coverage_by_feature_and_risk": [],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
+}

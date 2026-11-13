@@ -1,0 +1,480 @@
+{
+  "feature_id": "automation-wait-and-split-steps",
+  "feature_key": "automation-wait-and-split-steps",
+  "name": "Step Wait và Conditional split",
+  "user_goal": "Người dùng cấu hình độ trễ Wait và nhánh Conditional split trong automation.",
+  "stable_since_version": "v1",
+  "actors": [
+    {
+      "role": "system (runtime engine)",
+      "permission_observed": "Chạy step theo cấu hình: chờ, đánh giá điều kiện một lần, gửi email (qua shared sending host khi From email ngoài domain verify), ghi field.",
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-107",
+        "automations/automation-wait-and-split-steps#KB-108",
+        "automations/automation-steps#KB-086"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Click node step trên canvas → panel cấu hình của step",
+      "precondition": "Step đã được chèn; split và Update contact field cần chọn trigger trước.",
+      "kb_refs": [
+        "automations/automation-builder#KB-028",
+        "automations/automation-wait-and-split-steps#KB-117",
+        "automations/automation-update-contact-field-step#KB-128"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Cấu hình Wait / delay",
+      "description": "Duration (số nguyên từ 1) + Unit {minutes, hours, days}, days tối đa 365; Duration 0 chặn Save nhưng badge vẫn Configured (lỗi); rỗng / chữ không có lỗi inline (lỗi); nhãn node không có số ít (lỗi). Step sau Wait chạy trễ 20–60 giây so với mốc (quan sát).",
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-102",
+        "automations/automation-wait-and-split-steps#KB-103",
+        "automations/automation-wait-and-split-steps#KB-104",
+        "automations/automation-wait-and-split-steps#KB-105",
+        "automations/automation-wait-and-split-steps#KB-106",
+        "automations/automation-wait-and-split-steps#KB-107"
+      ]
+    },
+    {
+      "name": "Cấu hình Conditional split",
+      "description": "Luôn có 2 nhánh True / False (Jira AC); điều kiện kiểm một lần khi contact tới step; nhiều dòng điều kiện với Match all / any; operator text và ngày như quan sát, cùng ngữ nghĩa với segment builder (Dev 02/10); menu biến gồm Created at; cần chọn trigger trước.",
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-108",
+        "automations/automation-wait-and-split-steps#KB-109",
+        "automations/automation-wait-and-split-steps#KB-110",
+        "automations/automation-wait-and-split-steps#KB-111",
+        "automations/automation-wait-and-split-steps#KB-112",
+        "automations/automation-wait-and-split-steps#KB-113",
+        "automations/automation-wait-and-split-steps#KB-114",
+        "automations/automation-wait-and-split-steps#KB-115",
+        "automations/automation-wait-and-split-steps#KB-116",
+        "automations/automation-wait-and-split-steps#KB-117",
+        "automations/automation-wait-and-split-steps#KB-118",
+        "automations/automation-wait-and-split-steps#KB-119",
+        "automations/automation-wait-and-split-steps#KB-120",
+        "automations/automation-wait-and-split-steps#KB-121",
+        "automations/automation-wait-and-split-steps#KB-122"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "step Not configured",
+      "to": "step Configured",
+      "trigger": "Điền đủ trường bắt buộc của step",
+      "condition": "Send email: template + Subject + From email; Update contact field: field + New value (QA lead chốt); Wait 0 vẫn hiện Configured là lỗi",
+      "kb_refs": [
+        "automations/automation-steps#KB-088",
+        "automations/automation-update-contact-field-step#KB-129",
+        "automations/automation-steps#KB-095",
+        "automations/automation-wait-and-split-steps#KB-104"
+      ]
+    },
+    {
+      "from": "contact tới split",
+      "to": "nhánh True hoặc False",
+      "trigger": "Đánh giá điều kiện một lần khi tới step",
+      "condition": "Không theo dõi thay đổi sau đó",
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-108",
+        "automations/automation-wait-and-split-steps#KB-118"
+      ]
+    },
+    {
+      "from": "contact tới Wait",
+      "to": "step kế tiếp",
+      "trigger": "Hết thời lượng chờ",
+      "condition": "Trễ khoảng 20–60 giây so với mốc (quan sát)",
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-107",
+        "automations/automation-wait-and-split-steps#KB-102"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Theo quyết định Dev 02/10/2026 (task Testlane MTRO-011 BR-22), operator của Conditional split có cùng ngữ nghĩa với operator của segment builder.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-113"
+      ]
+    },
+    {
+      "statement": "Theo Jira MTRO-33 AC §6 phần nhánh (tóm tắt trong QA business rule Mailtro, cập nhật 07/10/2026), Conditional split luôn có 2 nhánh True và False.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-118"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026; Wait được enable từ Jira MTRO-85), panel Wait / delay có `Duration` (spinbutton) và `Unit` {`minutes`, `hours`, `days`}; helper yêu cầu số nguyên từ 1 tới mức tối đa theo đơn vị (\"Enter a whole number from 1 to {max} {unit}.\"), với days tối đa 365 (1 năm); mức tối đa cho minutes / hours không được nêu.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-102"
+      ]
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), nhập Duration `0` ở step Wait thì hiện helper và hint header \"A wait must be a whole number from 1 up to a year\", và `Save` bị disabled.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-103"
+      ]
+    },
+    {
+      "statement": "Lỗi quan sát trên staging (tái hiện 23/09, 27/09 và 01/10/2026, còn mở): step Wait với Duration `0` vẫn có badge `Configured` và node hiện \"0 days\" — chỉ helper và hint header chặn Save.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "KNOWN_DEFECT",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-104"
+      ]
+    },
+    {
+      "statement": "Lỗi quan sát trên staging (test-run 27/09/2026, TC-MTRO-1086, 1090, 1091, còn mở): Duration của Wait để rỗng hoặc nhập chữ (vd `abc`) không có thông báo lỗi inline.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "KNOWN_DEFECT",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-105"
+      ]
+    },
+    {
+      "statement": "Lỗi quan sát trên staging (tái hiện 14/09 → 01/10/2026, còn mở): nhãn node Wait không có dạng số ít — hiện \"1 days\", \"1 minutes\" vì chuỗi i18n `{duration} {unit}` luôn dùng đơn vị số nhiều.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "KNOWN_DEFECT",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-106"
+      ]
+    },
+    {
+      "statement": "Trên staging (test-run 27/09/2026), step sau Wait chạy trễ khoảng 20–60 giây so với mốc thời gian chờ, còn flow không có Wait chạy ngay (dưới khoảng 19 giây).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-107"
+      ]
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), panel Conditional split mô tả \"Checked once, when the contact reaches this step. It doesn't watch for changes. Contacts matching this condition go down the True branch, everyone else goes down False.\" — điều kiện chỉ được kiểm một lần khi contact tới step.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-108"
+      ]
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), mỗi dòng điều kiện của split gồm `Choose a variable` (không prefill), `Operator` (disabled với \"Choose a variable first\" tới khi chọn biến; Value cũng disabled), `Value` so được với giá trị cố định hoặc biến (\"Compare against a literal or a variable\") và nút `Remove this condition`.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-109"
+      ]
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026; QA lead chốt split multi-condition 18/09), Conditional split có nút `Add condition` để thêm nhiều dòng; từ 2 dòng trở lên xuất hiện combobox `Match` {`all of these`, `any of these`} — bản multi-condition thay cho câu \"đúng 1 điều kiện\" của Jira MTRO-33 AC §6.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-110"
+      ]
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), operator của split cho biến text (vd Email address) gồm `Equal to` · `Not equal to` · `Includes` · `Does not include` · `Starts with` · `Ends with` · `Is empty` · `Is not empty`.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-111"
+      ]
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), operator của split cho biến ngày (`Created at`) gồm `After` (mặc định) · `Before` · `Between` · `Is empty` · `Is not empty`; giá trị chọn qua nút `Pick a date`, còn `Between` dùng 2 nút `Pick a date` nối bằng \"and\".",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-112"
+      ]
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), menu biến `Choose a variable` của split có nhóm `Contact` gồm Email address · First name · Last name · Country code · SMS · Address · Created at và key thô của custom field.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-116"
+      ]
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), khi flow chưa có trigger thì panel split hiện \"Choose a trigger first — which fields a split can compare depends on what starts the flow.\"",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-117"
+      ]
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026; khớp rule QA lead 18/09), connector mỗi nhánh split có badge màu riêng gần đầu nhánh — True màu emerald, False màu rose — và nút \"+\" nằm phía dưới badge.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-119"
+      ]
+    },
+    {
+      "statement": "Lỗi đã biết BUG-54 (ô ngày của split nhận text tự do) có vẻ đã được sửa vì staging 01/10/2026 đã có date picker, nhưng Inventory staging Mailtro \"Automations\" ghi chưa chạy lại case để xác nhận — trạng thái cần retest.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "status": "KNOWN_DEFECT",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-121"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      {
+        "item": "Panel Wait / delay: Duration, Unit, helper",
+        "kb_refs": [
+          "automations/automation-wait-and-split-steps#KB-102",
+          "automations/automation-wait-and-split-steps#KB-103"
+        ]
+      },
+      {
+        "item": "Panel Conditional split: dòng điều kiện (biến, Operator, Value), Add condition, Match, nhánh True / False",
+        "kb_refs": [
+          "automations/automation-wait-and-split-steps#KB-109",
+          "automations/automation-wait-and-split-steps#KB-110",
+          "automations/automation-wait-and-split-steps#KB-111",
+          "automations/automation-wait-and-split-steps#KB-112",
+          "automations/automation-wait-and-split-steps#KB-116",
+          "automations/automation-wait-and-split-steps#KB-119"
+        ]
+      },
+      {
+        "item": "Panel Send email: Choose an email, Subject line *, Preview text, From name, From email * (helper + Manage domains), Reply-to, Email preferences page, Add variable",
+        "kb_refs": [
+          "automations/automation-steps#KB-087",
+          "automations/automation-steps#KB-090",
+          "automations/automation-steps#KB-093",
+          "automations/automation-steps#KB-094",
+          "automations/automation-steps#KB-096"
+        ]
+      },
+      {
+        "item": "Panel Update contact field: Contact field, New value (text hoặc ô số điện thoại cho SMS)",
+        "kb_refs": [
+          "automations/automation-update-contact-field-step#KB-124",
+          "automations/automation-update-contact-field-step#KB-125",
+          "automations/automation-update-contact-field-step#KB-126"
+        ]
+      },
+      {
+        "item": "Nhãn node: Wait \"{duration} {unit}\", Send email tên template + subject, Update contact field \"{field} = {value}\"",
+        "kb_refs": [
+          "automations/automation-steps#KB-095",
+          "automations/automation-wait-and-split-steps#KB-106",
+          "automations/automation-update-contact-field-step#KB-135"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "item": "`PUT` lưu flow trả 422 khi From email / Reply-to sai định dạng (chỉ toast)",
+        "kb_refs": [
+          "automations/automation-steps#KB-099"
+        ]
+      },
+      {
+        "item": "`GET automations/variables?trigger=` lấy danh sách biến theo trigger (từ bundle)",
+        "kb_refs": [
+          "automations/automation-steps#KB-098"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "Biến dạng `{{contact.<field>}}` trong dữ liệu đã lưu (ví dụ mẫu); cú pháp chính thức đang mâu thuẫn",
+        "kb_refs": [
+          "automations/automation-steps#KB-141",
+          "automations/automation-steps#KB-144",
+          "automations/automation-steps#KB-145"
+        ]
+      },
+      {
+        "item": "preference_page của step Send email (lựa chọn mặc định None)",
+        "kb_refs": [
+          "automations/automation-steps#KB-094"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "target": "segments / segment-builder",
+      "relation": "shared_semantics",
+      "note": "Operator của split cùng ngữ nghĩa với segment builder.",
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-113"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "statement": "Lỗi đang mở ở các step (helper From email lệch BR-27, From email / Reply-to sai định dạng chỉ toast, Wait 0 vẫn Configured, Wait rỗng / chữ không lỗi inline, nhãn \"1 days\", New value khoảng trắng mất sau reload, SMS mặc định Afghanistan, custom field đang dùng vẫn xoá được, BUG-54 cần retest) là regression watch.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "KNOWN_DEFECT",
+      "kb_refs": [
+        "automations/automation-steps#KB-087",
+        "automations/automation-steps#KB-099",
+        "automations/automation-wait-and-split-steps#KB-104",
+        "automations/automation-wait-and-split-steps#KB-105",
+        "automations/automation-wait-and-split-steps#KB-106",
+        "automations/automation-update-contact-field-step#KB-134",
+        "automations/automation-update-contact-field-step#KB-127",
+        "automations/automation-update-contact-field-step#KB-136",
+        "automations/automation-wait-and-split-steps#KB-121",
+        "automations/automation-update-contact-field-step#KB-131"
+      ]
+    },
+    {
+      "statement": "Theo bundle (khảo sát 01/10/2026, chưa thấy trên UI), split còn có operator cho số (vd `is greater than`), `is any of` / `is not any of` và `does not start with` / `does not end with`.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "conflict_group": null,
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-114"
+      ]
+    },
+    {
+      "statement": "Theo bundle (khảo sát 01/10/2026, chưa thấy trên UI), split có lỗi \"“{value}” isn't a date — pick a day\" và hint header \"A split compares a date with something that isn't a date — pick a day\" cho giá trị ngày không hợp lệ.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "conflict_group": null,
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-115"
+      ]
+    },
+    {
+      "statement": "Theo QA business rule Mailtro và bundle (01/10/2026), hint \"A split needs at least one step under True or False\" (split rỗng bị chặn) không có trong Jira AC và chưa được chốt là rule chính thức; tài liệu trỏ tới một câu hỏi mở không có trong bộ nguồn.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "conflict_group": null,
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-120"
+      ]
+    },
+    {
+      "statement": "Theo bundle (khảo sát 01/10/2026, chưa đối chiếu UI), khi không tải được custom field thì split báo \"Couldn't load the custom fields, so a condition can't be configured right now.\", khi không tải được contact field thì báo \"Couldn't load the contact fields, so they can't be picked right now.\"",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "conflict_group": null,
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-122"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-07",
+    "basis": "Jira AC tóm tắt trong QA business rule Mailtro (07/10/2026), QA lead chốt 18/09/2026, quyết định PO/BA và Dev 02/10/2026, test-run 23/09–27/09, khảo sát staging 01/10 và 06/10/2026"
+  },
+  "unknown_areas": [
+    {
+      "question": "Split rỗng (không có step dưới cả True và False) có bị chặn chính thức không?",
+      "why_it_matters": "Hint chỉ có trong bundle, không có trong Jira AC.",
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-120"
+      ],
+      "oq_id": "OQ-automations-022"
+    },
+    {
+      "question": "Duration tối đa của Wait khi Unit là minutes hoặc hours là bao nhiêu?",
+      "why_it_matters": "Chỉ có days = 365; thiếu biên cho case Wait theo phút / giờ.",
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-102"
+      ],
+      "oq_id": "OQ-automations-042"
+    },
+    {
+      "question": "Split có hiện operator cho biến số / custom field kiểu khác (is greater than, is any of, does not start with…) và lỗi ngày không hợp lệ trên UI không?",
+      "why_it_matters": "Chỉ thấy trong bundle; không biết tập operator đầy đủ.",
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-114",
+        "automations/automation-wait-and-split-steps#KB-115",
+        "automations/automation-wait-and-split-steps#KB-122"
+      ],
+      "oq_id": "OQ-automations-043"
+    },
+    {
+      "question": "Ô ngày của split còn nhận text tự do không (BUG-54 có vẻ đã sửa nhưng chưa chạy lại)?",
+      "why_it_matters": "Cần retest trước khi đóng regression watch.",
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-121"
+      ],
+      "oq_id": "OQ-automations-017"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "coverage_matrix": [],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from": "automation-steps",
+      "to": "automation-triggers-and-entry",
+      "relation": "DEPENDS_ON",
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-117",
+        "automations/automation-update-contact-field-step#KB-128",
+        "automations/automation-steps#KB-098"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,353 @@
+{
+  "feature_id": "FEAT-03-photo-genai-image-filter-runtime",
+  "feature_key": "photo-genai-image-filter-runtime",
+  "object_id": "sdk-genai",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-153, BASELINE] Ref image rất lớn: upload ảnh ngang, effect [Gemini] image filter hoàn tất, preview hiện, không kẹt Processing",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "Photo layer [Gemini] image filter có ref image rất lớn (vd 12000x12000)",
+        "environment": "staging; ghi build và ngày chạy; production verify chưa chạy",
+        "surface_or_device": "storefront hoặc Live Preview, desktop browser, DevTools Network"
+      },
+      "precondition": "Storefront staging (TIB_STORE_URL, vượt password-gate bằng TIB_STORE_PASSWORD); fixture tự dựng: Photo layer (Direct upload) có effect [Gemini] image filter bật Use Reference Image, account có Gemini key ở Gen AI Effects. Ảnh test là file do QA tự chuẩn bị, không dùng campaign/artwork nêu trong CCR. Tính lượt rate limit AI-effect (sdk-genai/genai-personalization-runtime#KB-051). Layer có ref image rất lớn. Khác biệt môi trường KB-566 (NOT_TESTABLE): staging chạy image-effect-queue trên redis-long-running, retry_after 1800, job crash có thể làm upload kẹt tới khoảng 30 phút; quá 6 phút chưa có kết quả thì ghi failed kèm upload id vào báo cáo chạy, không chờ 30 phút.",
+      "steps": [
+        "Mở trang product; upload một ảnh ngang lớn (vd 6000x4000) vào Photo layer.",
+        "Theo dõi request genai-uploads và các lần poll status trong Network; ghi thời gian từ 202 tới status 2.",
+        "Ghi preview có hiện kết quả không; nếu quá 6 phút chưa có kết quả thì dừng, ghi failed kèm upload id."
+      ],
+      "observation_point": "Network (genai-uploads, poll status); preview của layer; trạng thái Processing.",
+      "expected_result": "Hành vi hiện tại (baseline): genai-uploads 202, poll status tới 2 (khoảng 65 giây ở lượt quan sát), preview hiện kết quả, upload không kẹt Processing. Lệch là cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "sdk-genai/photo-genai-image-filter-runtime#KB-562"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk-genai/photo-genai-image-filter-runtime#KB-562",
+        "sdk-genai/photo-genai-image-filter-runtime#KB-561",
+        "sdk-genai/photo-genai-image-filter-runtime#KB-566",
+        "sdk/storefront-buyer-facing#KB-447"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Ref image lớn làm worker OOM, upload kẹt Processing"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-genai-055"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "code",
+      "title": "[CBS-153] Ref image lớn hơn services.gemini.size được thu nhỏ theo cạnh dài, giữ tỉ lệ; ref nhỏ hơn không bị phóng to",
+      "applicability": {
+        "role": "Dev (QA đọc kết quả)",
+        "state": "Photo layer [Gemini] image filter, Use Reference Image bật",
+        "environment": "staging hoặc môi trường unit test; không quan sát được từ trình duyệt",
+        "surface_or_device": "server GenAI (GeminiImageService::applyImageFilter), unit test"
+      },
+      "precondition": "Không đo được từ trình duyệt. Nhờ Dev chạy unit test U1, U2 của TIB-5615 hoặc ghi log kích thước ref image gửi Gemini trên staging.",
+      "steps": [
+        "Nhờ Dev chạy unit test U1, U2 (hoặc log kích thước ảnh gửi Gemini) với ref image lớn hơn và nhỏ hơn services.gemini.size.",
+        "Ghi kích thước ref image trước và sau khi xử lý, cùng tỉ lệ."
+      ],
+      "observation_point": "Kết quả unit test hoặc log kích thước ref image gửi Gemini.",
+      "expected_result": "Ref image lớn hơn services.gemini.size (1400 px) có cạnh dài bằng 1400 px, tỉ lệ giữ nguyên; ref image nhỏ hơn giữ nguyên kích thước.",
+      "oracle": {
+        "kb_ids": [
+          "sdk-genai/photo-genai-image-filter-runtime#KB-561"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk-genai/photo-genai-image-filter-runtime#KB-561",
+        "sdk-genai/photo-genai-image-filter-runtime#KB-564"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "[CBS-153, BASELINE] Ref image nhỏ (200x200, dưới 1400 px): effect [Gemini] image filter hoàn tất",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "Photo layer [Gemini] image filter có ref image 200x200",
+        "environment": "staging; ghi build và ngày chạy; production verify chưa chạy",
+        "surface_or_device": "storefront hoặc Live Preview, desktop browser, DevTools Network"
+      },
+      "precondition": "Storefront staging (TIB_STORE_URL, vượt password-gate bằng TIB_STORE_PASSWORD); fixture tự dựng: Photo layer (Direct upload) có effect [Gemini] image filter bật Use Reference Image, account có Gemini key ở Gen AI Effects. Ảnh test là file do QA tự chuẩn bị, không dùng campaign/artwork nêu trong CCR. Tính lượt rate limit AI-effect (sdk-genai/genai-personalization-runtime#KB-051). Layer có ref image 200x200. Khác biệt môi trường KB-566 (NOT_TESTABLE): staging chạy image-effect-queue trên redis-long-running, retry_after 1800, job crash có thể làm upload kẹt tới khoảng 30 phút; quá 6 phút chưa có kết quả thì ghi failed kèm upload id vào báo cáo chạy, không chờ 30 phút.",
+      "steps": [
+        "Upload một ảnh ngang vào Photo layer có ref image nhỏ.",
+        "Theo dõi poll status tới khi hoàn tất; ghi thời gian.",
+        "So kết quả với kết quả trước thay đổi nếu có ảnh đối chiếu."
+      ],
+      "observation_point": "Network (poll status); preview của layer.",
+      "expected_result": "Hành vi hiện tại (baseline): effect hoàn tất (status 2). Lệch là cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "sdk-genai/photo-genai-image-filter-runtime#KB-564"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk-genai/photo-genai-image-filter-runtime#KB-564",
+        "sdk-genai/photo-genai-image-filter-runtime#KB-561",
+        "sdk-genai/photo-genai-image-filter-runtime#KB-566"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-genai-062"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-153, BASELINE] Ref image lớn: ảnh buyer dọc và ngang cho kết quả đúng hướng, không méo",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "Photo layer [Gemini] image filter có ref image lớn",
+        "environment": "staging; ghi build và ngày chạy; production verify chưa chạy",
+        "surface_or_device": "storefront hoặc Live Preview, desktop browser, DevTools Network"
+      },
+      "precondition": "Storefront staging (TIB_STORE_URL, vượt password-gate bằng TIB_STORE_PASSWORD); fixture tự dựng: Photo layer (Direct upload) có effect [Gemini] image filter bật Use Reference Image, account có Gemini key ở Gen AI Effects. Ảnh test là file do QA tự chuẩn bị, không dùng campaign/artwork nêu trong CCR. Tính lượt rate limit AI-effect (sdk-genai/genai-personalization-runtime#KB-051). Layer có ref image lớn. Ảnh test: một ảnh dọc (vd 4000x5300) và một ảnh ngang (vd 6000x4000) không mang EXIF xoay. Khác biệt môi trường KB-566 (NOT_TESTABLE): staging chạy image-effect-queue trên redis-long-running, retry_after 1800, job crash có thể làm upload kẹt tới khoảng 30 phút; quá 6 phút chưa có kết quả thì ghi failed kèm upload id vào báo cáo chạy, không chờ 30 phút.",
+      "steps": [
+        "Upload ảnh dọc; chờ kết quả; ghi hướng và độ méo của chủ thể.",
+        "Lặp với ảnh ngang.",
+        "Ghi kích thước kết quả (chỉ để tham khảo, tỉ lệ không thuộc check này)."
+      ],
+      "observation_point": "Ảnh kết quả trên preview và file kết quả.",
+      "expected_result": "Hành vi hiện tại (baseline): kết quả đúng hướng với ảnh gốc, không xoay ngang hoặc ngược, không méo. Lệch là cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "sdk-genai/photo-genai-image-filter-runtime#KB-563"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk-genai/photo-genai-image-filter-runtime#KB-563",
+        "sdk-genai/photo-genai-image-filter-runtime#KB-565",
+        "sdk-genai/photo-genai-image-filter-runtime#KB-566"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-genai-062"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "[CBS-153, BASELINE] Ref image lớn: ảnh dọc mang EXIF Orientation 6 cho kết quả đúng hướng",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "Photo layer [Gemini] image filter có ref image lớn",
+        "environment": "staging; ghi build và ngày chạy; production verify chưa chạy",
+        "surface_or_device": "storefront hoặc Live Preview, desktop browser, DevTools Network"
+      },
+      "precondition": "Storefront staging (TIB_STORE_URL, vượt password-gate bằng TIB_STORE_PASSWORD); fixture tự dựng: Photo layer (Direct upload) có effect [Gemini] image filter bật Use Reference Image, account có Gemini key ở Gen AI Effects. Ảnh test là file do QA tự chuẩn bị, không dùng campaign/artwork nêu trong CCR. Tính lượt rate limit AI-effect (sdk-genai/genai-personalization-runtime#KB-051). Layer có ref image lớn. Ảnh test: ảnh dọc lưu pixel ngang kèm EXIF Orientation 6 (hiển thị dọc). Khác biệt môi trường KB-566 (NOT_TESTABLE): staging chạy image-effect-queue trên redis-long-running, retry_after 1800, job crash có thể làm upload kẹt tới khoảng 30 phút; quá 6 phút chưa có kết quả thì ghi failed kèm upload id vào báo cáo chạy, không chờ 30 phút.",
+      "steps": [
+        "Upload ảnh EXIF Orientation 6; chờ kết quả.",
+        "Ghi hướng chủ thể trong kết quả so với cách ảnh hiển thị trong trình xem ảnh."
+      ],
+      "observation_point": "Ảnh kết quả trên preview và file kết quả.",
+      "expected_result": "Hành vi hiện tại (baseline): kết quả đúng hướng như ảnh hiển thị, không xoay ngang hoặc ngược, không méo. Lệch là cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "sdk-genai/photo-genai-image-filter-runtime#KB-563"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk-genai/photo-genai-image-filter-runtime#KB-563",
+        "sdk-genai/photo-genai-image-filter-runtime#KB-566"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-genai-062"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-153, NEEDS_CONFIRMATION] Photo layer Direct: ghi tỉ lệ kết quả so với khung layer và ảnh buyer",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "Photo layer Direct upload, [Gemini] image filter, layer không vuông và layer vuông",
+        "environment": "staging; ghi build và ngày chạy; production verify chưa chạy",
+        "surface_or_device": "storefront hoặc Live Preview, desktop browser, DevTools Network"
+      },
+      "precondition": "Storefront staging (TIB_STORE_URL, vượt password-gate bằng TIB_STORE_PASSWORD); fixture tự dựng: Photo layer (Direct upload) có effect [Gemini] image filter bật Use Reference Image, account có Gemini key ở Gen AI Effects. Ảnh test là file do QA tự chuẩn bị, không dùng campaign/artwork nêu trong CCR. Tính lượt rate limit AI-effect (sdk-genai/genai-personalization-runtime#KB-051). Khác biệt môi trường KB-566 (NOT_TESTABLE): staging chạy image-effect-queue trên redis-long-running, retry_after 1800, job crash có thể làm upload kẹt tới khoảng 30 phút; quá 6 phút chưa có kết quả thì ghi failed kèm upload id vào báo cáo chạy, không chờ 30 phút.",
+      "steps": [
+        "Upload ảnh dọc vào layer vuông; ghi size trong request effect và kích thước kết quả.",
+        "Lặp trên layer không vuông (vd 3:4) với ảnh ngang.",
+        "Ghi tỉ lệ kết quả theo khung layer hay theo ảnh buyer; không phán pass hay fail."
+      ],
+      "observation_point": "Request effect (size); kích thước ảnh kết quả.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk-genai/photo-genai-image-filter-runtime#KB-565",
+        "sdk-genai/photo-genai-image-filter-runtime#KB-563",
+        "sdk-genai/genai-personalization-runtime#KB-569"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Tỉ lệ kết quả chưa có expected xác nhận"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-genai-056"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[CBS-153, NEEDS_CONFIRMATION] Image Placement / Image Cropper có effect GenAI: ghi size gửi đi khi bật và không bật is_layer_output_size",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "Photo layer kiểu Image Placement hoặc Image Cropper có effect GenAI",
+        "environment": "staging; ghi build và ngày chạy; production verify chưa chạy",
+        "surface_or_device": "storefront hoặc Live Preview, desktop browser, DevTools Network"
+      },
+      "precondition": "Storefront staging (TIB_STORE_URL, vượt password-gate bằng TIB_STORE_PASSWORD); fixture tự dựng: Photo layer kiểu Image Placement và Image Cropper có effect [Gemini] image filter bật Use Reference Image, account có Gemini key ở Gen AI Effects. Ảnh test là file do QA tự chuẩn bị, không dùng campaign/artwork nêu trong CCR. Tính lượt rate limit AI-effect (sdk-genai/genai-personalization-runtime#KB-051). Mỗi kiểu một layer bật và một layer không bật is_layer_output_size. Khác biệt môi trường KB-566 (NOT_TESTABLE): staging chạy image-effect-queue trên redis-long-running, retry_after 1800, job crash có thể làm upload kẹt tới khoảng 30 phút; quá 6 phút chưa có kết quả thì ghi failed kèm upload id vào báo cáo chạy, không chờ 30 phút.",
+      "steps": [
+        "Upload ảnh vào từng layer (crop nếu là Image Cropper).",
+        "Ghi request effect có size hay không và giá trị.",
+        "Ghi kích thước và tỉ lệ kết quả; không phán pass hay fail."
+      ],
+      "observation_point": "Request effect (size); kích thước ảnh kết quả.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk-genai/photo-genai-image-filter-runtime#KB-565"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-sdk-genai-056"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "INTEGRATION",
+      "layer": "code",
+      "title": "[CBS-153] Production: job image-effect bị mất do worker crash được đánh failed sau khoảng 7 phút",
+      "applicability": {
+        "role": "Dev / vận hành",
+        "state": "job ApplyImageFilterEffectJob trên image-effect-queue bị mất do worker crash",
+        "environment": "production only; staging NOT_TESTABLE (verdict NOT_APPLICABLE, không tính FAIL)",
+        "surface_or_device": "config queue và supervisor production; unit test U7, U8, U10"
+      },
+      "precondition": "NOT_TESTABLE trên staging (KB-566): staging giữ redis-long-running retry_after 1800. Không tự gây crash worker trên production; kiểm qua config hoặc unit test cùng Dev.",
+      "steps": [
+        "Cùng Dev đọc config production: connection của image-effect-queue, retry_after của redis-image-effect và redis-long-running, timeout của supervisor image-effect.",
+        "Hoặc nhờ Dev chạy unit test U7, U8, U10 và ghi kết quả."
+      ],
+      "observation_point": "Config queue/horizon production; kết quả unit test.",
+      "expected_result": "Production: redis-image-effect retry_after 420 (job crash bị đánh failed sau khoảng 7 phút), redis-long-running giữ 1800, supervisor image-effect timeout 360.",
+      "oracle": {
+        "kb_ids": [
+          "sdk-genai/photo-genai-image-filter-runtime#KB-566"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk-genai/photo-genai-image-filter-runtime#KB-566",
+        "sdk-genai/photo-genai-image-filter-runtime#KB-562"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Upload kẹt Processing khi worker crash"
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-03-photo-genai-image-filter-runtime",
+      "risk": "Ref image lớn làm worker OOM, upload kẹt Processing",
+      "covered_by": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-008"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-photo-genai-image-filter-runtime",
+      "risk": "Kết quả sai hướng hoặc méo",
+      "covered_by": [
+        "CHK-004",
+        "CHK-005"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-photo-genai-image-filter-runtime",
+      "risk": "Tỉ lệ kết quả chưa có expected",
+      "covered_by": [
+        "CHK-006",
+        "CHK-007"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-photo-genai-image-filter-runtime",
+      "core_covered": true,
+      "p1_covered": "không có rủi ro P1 (không mất tiền, dữ liệu, quyền)"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "PERMISSION",
+      "reason": "Buyer upload public trên storefront; nguồn không nêu khác biệt quyền."
+    },
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Nguồn không nêu hành vi khi ảnh sai định dạng hoặc Gemini lỗi; job crash là khác biệt môi trường (CHK-008)."
+    },
+    {
+      "dimension": "STATE_DATA",
+      "reason": "Không có nguồn về persistence/reload của kết quả effect cho feature này."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Feature mới, chưa có base; không có item KNOWN_DEFECT."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-153"
+  }
+}

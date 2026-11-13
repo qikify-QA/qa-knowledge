@@ -1,0 +1,2 @@
+# CHANGELOG — quantity-break
+- 2026-11-13 (restructure-2026-11-13) — Đổi cấu trúc theo contract §5 "Độ hạt object/feature": discount-offers/quantity-break → quantity-break/quantity-break-gifts-and-subscription; discount-offers/quantity-break → quantity-break/quantity-break-display-and-schedule; discount-offers/quantity-break → quantity-break/quantity-break-storefront-and-cart; discount-offers/quantity-break → quantity-break/quantity-break-trigger-and-tiers. Giữ nguyên kb_id, statement, nguồn và test steps; OQ chuyển object được mint id mới kèm `supersedes`.

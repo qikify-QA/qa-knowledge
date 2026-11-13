@@ -270,7 +270,7 @@ Tổng: 20 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-shopping-list-011",
   "type": "OPEN_ISSUE",
-  "feature_id": "merchant-managed-lists",
+  "feature_id": "save-and-add-to-cart",
   "summary": "Màn list detail trong \"Manage shopping lists\" ở Portal và nút \"Copy link\" chưa được quan sát vì store khảo sát 08/10/2026 có 0 shopping list. Cần dữ liệu list (do buyer tạo và do merchant tạo hộ) để kiểm hành vi list detail (Jira DUOS-254) và link chia sẻ dẫn tới checkout (Jira DUOS-396).",
   "kb_ids": [
     "KB-030",
@@ -283,7 +283,7 @@ Tổng: 20 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
     "List do buyer tự tạo có nút \"Copy link\" không, hay chỉ list do merchant tạo hộ?"
   ],
   "check_ids": [
-    "merchant-managed-lists:CHK-005"
+    "save-and-add-to-cart:CHK-005"
   ]
 }
 ```
@@ -381,10 +381,10 @@ Tổng: 20 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-shopping-list-017",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "merchant-managed-lists",
+  "feature_id": "save-and-add-to-cart",
   "summary": "Checkout page mở từ link chia sẻ của list do merchant tạo hộ có chứa đúng item và số lượng của list không? Người mở có cần đăng nhập tài khoản thuộc company của list không, và buyer company khác hoặc khách chưa login mở link thì thấy gì?",
   "check_ids": [
-    "merchant-managed-lists:CHK-004"
+    "save-and-add-to-cart:CHK-004"
   ],
   "related_questions": [
     "Checkout page mở từ link chia sẻ chứa đúng các item và số lượng của list không, và khách có cần đăng nhập tài khoản company không?"
@@ -398,10 +398,10 @@ Tổng: 20 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-shopping-list-018",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "merchant-managed-lists",
+  "feature_id": "save-and-add-to-cart",
   "summary": "Màn list detail trong \"Manage shopping lists\" ở Portal (Jira DUOS-254) cho merchant làm gì với list do buyer tạo (xem, sửa, xoá, duyệt), và cột \"Number of shopping list\" đếm những list nào?",
   "check_ids": [
-    "merchant-managed-lists:CHK-006"
+    "save-and-add-to-cart:CHK-006"
   ]
 }
 ```
@@ -412,10 +412,10 @@ Tổng: 20 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-shopping-list-019",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "merchant-managed-lists",
+  "feature_id": "save-and-add-to-cart",
   "summary": "List do merchant tạo hộ có status gì khi tạo, có xuất hiện trong Customer Account của buyer không, và có phải đi qua luồng duyệt (gửi duyệt / approve) như list do buyer tạo không?",
   "check_ids": [
-    "merchant-managed-lists:CHK-007"
+    "save-and-add-to-cart:CHK-007"
   ],
   "related_questions": [
     "List do merchant tạo hộ có phải đi qua luồng duyệt (status, approve) như list do buyer tạo không?"
@@ -430,10 +430,10 @@ Tổng: 20 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
   "oq_id": "OQ-shopping-list-020",
   "type": "OPEN_ISSUE",
   "feature_id": null,
-  "summary": "Bộ tài liệu nguồn (QA business rule, QA KB Duos, inventory staging) không có đặc tả API / data model cho các feature: save-and-add-to-cart, merchant-managed-lists. Cần Dev cung cấp endpoint, payload và dữ liệu lưu trữ liên quan nếu QA cần kiểm ở tầng API/DB.",
+  "summary": "Bộ tài liệu nguồn (QA business rule, QA KB Duos, inventory staging) không có đặc tả API / data model cho các feature: save-and-add-to-cart, save-and-add-to-cart. Cần Dev cung cấp endpoint, payload và dữ liệu lưu trữ liên quan nếu QA cần kiểm ở tầng API/DB.",
   "related_feature_ids": [
     "save-and-add-to-cart",
-    "merchant-managed-lists"
+    "save-and-add-to-cart"
   ]
 }
 ```

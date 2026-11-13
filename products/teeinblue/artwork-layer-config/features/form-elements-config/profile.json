@@ -1,0 +1,784 @@
+{
+  "feature_id": "FEAT-07-form-elements-config",
+  "feature_key": "form-elements-config",
+  "name": "Form elements và thứ tự field",
+  "user_goal": "Store owner cấu hình field/behavior CHỈ thuộc riêng từng layer type trong nhóm sidebar FORM ELEMENTS khi thêm layer trong artwork editor. Nhóm gồm 6 layer type 'ảo' (không render layer thật trên canvas, chỉ xuất hiện trên personalization form): Toggle Switch, Additional Option, Addon Charge, JSON List, Font, Color. Tách biệt khỏi cơ chế dùng chung (xem FEAT-01-editor-layer-workspace) để 1 lần fix/thêm field cho 1 layer type chỉ cần đọc và sửa đúng phần nhỏ trong file này, không phải đọc lại toàn bộ layer-common-config cũ hay các nhóm sidebar khác.",
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "actors": [
+    {
+      "role": "store owner / staff (sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "permission_observed": "Truy cập đầy đủ field/accordion riêng của các layer type nhóm FORM ELEMENTS",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-009",
+        "artwork-layer-config/form-elements-config#KB-003"
+      ]
+    },
+    {
+      "role": "merchant-owner (store owner/staff)",
+      "permission_observed": "Chọn dòng, kéo thả, Save trong tab Re-order trên staging; role khác chưa quan sát",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-975",
+        "artwork-layer-config/form-elements-config#KB-976",
+        "artwork-layer-config/form-elements-config#KB-977",
+        "artwork-layer-config/form-elements-config#KB-978",
+        "artwork-layer-config/form-elements-config#KB-979",
+        "artwork-layer-config/form-elements-config#KB-980",
+        "artwork-layer-config/form-elements-config#KB-981",
+        "artwork-layer-config/form-elements-config#KB-982"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "artwork editor — thêm/chọn 1 layer type thuộc nhóm FORM ELEMENTS, mở config panel",
+      "precondition": "artwork editor có ≥1 layer thuộc nhóm FORM ELEMENTS",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-003",
+        "artwork-layer-config/form-elements-config#KB-009",
+        "artwork-layer-config/form-elements-config#KB-036"
+      ]
+    },
+    {
+      "path": "Artwork Editor (portal) — Form panel, tab Re-order",
+      "precondition": "Đăng nhập portal role merchant-owner; artwork có danh sách field đủ dài cho case cần (lượt test dùng 12 dòng liền vắt qua dòng thứ 10, 11 dòng rời, cụm 11 dòng sát mép danh sách).",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-975",
+        "artwork-layer-config/form-elements-config#KB-976",
+        "artwork-layer-config/form-elements-config#KB-979"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Nhóm FORM ELEMENTS (6 type) — accordion EXTRA rút gọn, chỉ có Group name; không render layer thật trên canvas",
+      "description": "6 layer type nhóm FORM ELEMENTS (Toggle Switch/toggle, Additional Option/additional-option, Addon Charge/addon-charge, JSON List/json-list, Font/font, Color/color) đều có accordion EXTRA nhưng nội dung CHỈ có field 'Group name:' — KHÔNG có field 'Display this layer on:' (Mockup Preview & Order design /... / None) như 28 type còn lại có EXTRA. Cả 6 type này cũng KHÔNG hiện layer thật trên canvas (chỉ xuất hiện trên personalization form) — khớp với việc không cần chọn nơi hiển thị 'Mockup Preview/Order Design'. Hành vi THẬT SỰ giống nhau ở cả 6 type này (không phải coincidence từng type) nên giữ 1 item chung, KHÔNG merge vào boundary-set KB-008.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-009"
+      ]
+    },
+    {
+      "name": "Toggle Switch (toggle) — layer row có icon riêng la-toggle-on (6 icon thay vì 5)",
+      "description": "Layer row của layer type Toggle Switch (data-type=toggle) hiển thị 6 icon button thay vì 5: la-eye · la-unlock · la-toggle-on · la-pen · la-copy · la-trash-alt — icon la-toggle-on chen giữa la-unlock và la-pen, chưa quan sát ở type nào khác trong 35 type đã kiểm.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-003"
+      ]
+    },
+    {
+      "name": "Toggle Switch (toggle) — field toggle label/pre-enable riêng",
+      "description": "toggle có PERSONALIZATION SETTINGS với ghi chú mục đích 'A toggle layer that can be used as a condition for showing/hiding other layers' và field riêng: 'Show option title', 'Toggle label:', 'Pre-enable toggle'. KHÔNG có option 'No personalization' trong personalization type (chỉ Create a new option/Use an existing global option/Quick-fill). Theo bundle-registry: show_form_label, toggle_label, default_value (boolean, default true) chỉ thuộc toggle.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-036"
+      ]
+    },
+    {
+      "name": "Additional Option (additional-option) — layer 'ảo', field category riêng",
+      "description": "additional-option có ghi chú mục đích 'This additional option will appear on personalization form, but no layer will show up on artwork' — xác nhận layer KHÔNG render trên canvas. Field riêng: 'Select additional options category*' (picker + Search/+ New category), 'Default value:', 'Show option to select default value'.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-037"
+      ]
+    },
+    {
+      "name": "Addon Charge (addon-charge) — field option values/display riêng",
+      "description": "addon-charge có field riêng: 'Option values*: Attach/Attach/Add new' (repeater), 'Default value:', 'Show option to select default value', 'Display options as: Inline Radio Button/Radio/Dropdown list/Thumbnail Images', 'Enable multiple selection' — kèm ghi chú 'Not applicable when Display options as is set to Dropdown list'. Theo bundle-registry: charge_enabled, display_type, enable_multiple_selection, options CHỈ thuộc addon-charge.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-038"
+      ]
+    },
+    {
+      "name": "JSON List (json-list) — layer 'ảo', field JSON URL/template riêng",
+      "description": "json-list có ghi chú mục đích 'This layer loads a list of options from a JSON file you provide. No layer shows up on the artwork'. Field riêng: 'JSON File URL:' + 'Load preview', 'Placeholder text:', 'Option display template:' (Available Value/Preview.../New York City), 'Cart display template:' (cùng 3 lựa chọn), 'Default value (name):' (dropdown '-- Select a default value --'). Theo bundle-registry: source_url (default 'https://cdn.teeinblue.com/examples/cities.json'), option_template, cart_template CHỈ thuộc json-list.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-039"
+      ]
+    },
+    {
+      "name": "Font (font) — layer 'ảo', dùng làm nguồn Populate Font cho layer khác",
+      "description": "font có ghi chú mục đích 'This font option appears on the personalization form and can be reused by text-based layers through retrieval'. Field riêng: 'Select one font category*' (picker), 'Populate to other layers: Select layers' (chiều NGƯỢC — chọn layer text đích sẽ nhận populate font từ layer Font này; xem KB-080/populate-values gốc cho hành vi 2 chiều). Theo bundle-registry field JSON dùng chung key `clipart` (không có key riêng cho font category) — trùng key với vector-category/clipart-category/color.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-040"
+      ]
+    },
+    {
+      "name": "Color (color) — layer 'ảo', field color options riêng",
+      "description": "color có ghi chú mục đích tương tự Font: 'This color option appears on the personalization form and can be reused by text-based layers through retrieval'. Field riêng: 'Color options: Solid Color category/Color Sequence categories/Color picker', 'Select default value:', 'Populate to other layers: Select layers'. Đáng chú ý: color KHÔNG xuất hiện được làm nguồn Conditional Setting dù có đầy đủ Option Title (xem evidence capture Conditional Setting — carried tới KB-064 v2/KB-031 v1), khác Font là CÓ xuất hiện được.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-041"
+      ]
+    },
+    {
+      "name": "Chọn dòng trong danh sách Re-order",
+      "description": "OBSERVED_CURRENT/LOW: click thường vào dòng chưa chọn thêm dòng đó vào selection (dựng được selection liền hoặc rời); click lại dòng đang chọn bỏ chọn riêng dòng đó; click ra ngoài danh sách (đã thử ở tiêu đề tab) bỏ chọn tất cả (ảnh chụp máy, chưa xác nhận). Shift-click chưa có hành vi nào được nạp.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-977",
+        "artwork-layer-config/form-elements-config#KB-978"
+      ]
+    },
+    {
+      "name": "Kéo thả một dòng",
+      "description": "OBSERVED_CURRENT/LOW (automation, chưa kiểm tay): dòng thả xuống dưới một dòng khác giữa danh sách nằm ngay dưới dòng đích. Thả sau dòng cuối cùng chưa rõ, không thuộc capability đã quan sát.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-980"
+      ]
+    },
+    {
+      "name": "Kéo thả nhiều dòng",
+      "description": "OBSERVED_CURRENT/LOW (1 lượt mỗi case): selection liền (≥10) di chuyển thành một khối ngay dưới dòng đích, giữ thứ tự, không rớt/kéo theo dòng; selection rời gom thành khối liền theo thứ tự gốc của danh sách, không theo thứ tự click. Giới hạn đã biết (KNOWN_DEFECT): cụm cao thả sát mép trên/dưới rơi về đầu/cuối danh sách.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-975",
+        "artwork-layer-config/form-elements-config#KB-976",
+        "artwork-layer-config/form-elements-config#KB-979"
+      ]
+    },
+    {
+      "name": "Hiển thị và lưu label field đặc biệt qua reorder và Save",
+      "description": "OBSERVED_CURRENT/LOW: label chứa HTML/script hiển thị dạng chữ thường, không tạo node thật, thứ tự lưu sau reorder và Save chứa đúng label (chỉ portal); label dài (5000 ký tự trong lượt test) và label có ký tự điều khiển được lưu nguyên, reorder/Save chạy, sau tải lại render đủ số dòng. Giới hạn độ dài chưa biết.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-981",
+        "artwork-layer-config/form-elements-config#KB-982"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "dòng chưa chọn",
+      "to": "dòng thêm vào selection (selection cũ giữ nguyên)",
+      "trigger": "click thường (không phím bổ trợ)",
+      "condition": "1 lượt AI",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-977"
+      ]
+    },
+    {
+      "from": "dòng đang chọn",
+      "to": "dòng đó bỏ chọn, dòng khác giữ",
+      "trigger": "click thường lại dòng đó",
+      "condition": "ảnh chụp máy, chưa xác nhận",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-978"
+      ]
+    },
+    {
+      "from": "có selection",
+      "to": "selection rỗng",
+      "trigger": "click ra ngoài danh sách (đã thử ở tiêu đề tab Re-order)",
+      "condition": "ảnh chụp máy, chưa xác nhận; vùng khác chưa thử",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-978"
+      ]
+    },
+    {
+      "from": "một dòng đơn",
+      "to": "dòng nằm ngay dưới dòng đích",
+      "trigger": "kéo thả xuống dưới một dòng khác giữa danh sách",
+      "condition": "automation, chưa kiểm tay",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-980"
+      ]
+    },
+    {
+      "from": "selection liền ≥10 dòng",
+      "to": "khối nằm ngay dưới dòng đích, giữ thứ tự tương đối, tổng số dòng không đổi",
+      "trigger": "kéo thả",
+      "condition": "1 lượt PASS sau fix",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-975"
+      ]
+    },
+    {
+      "from": "selection rời (click khác thứ tự danh sách)",
+      "to": "khối liền tại điểm thả theo thứ tự gốc của danh sách; dòng không chọn giữ thứ tự tương đối",
+      "trigger": "kéo thả",
+      "condition": "1 lượt PASS",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-976"
+      ]
+    },
+    {
+      "from": "[KNOWN_DEFECT] cụm cao (11 dòng)",
+      "to": "cụm rơi về đầu hoặc cuối danh sách thay vì đúng chỗ con trỏ; cụm nguyên vẹn, đúng thứ tự",
+      "trigger": "thả sát đỉnh (sau khi cuộn lên đầu) hoặc tại điểm cuối ở đáy danh sách",
+      "condition": "ảnh chụp máy, chưa xác nhận; giới hạn đã biết, không phải expected",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-979"
+      ]
+    }
+  ],
+  "confirmed_rules": [],
+  "observed_behavior": [
+    {
+      "statement": "Kéo thả 12 dòng liền (click thường, vắt qua dòng thứ 10): đúng các dòng đã chọn thành một khối ngay dưới dòng đích, giữ thứ tự, không rớt dòng, không kéo theo dòng không chọn, tổng số dòng không đổi (QA-3352 TC-03, AI 2026-09-28, không build, 1 lượt).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-975"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "Kéo thả 11 dòng rời chọn theo thứ tự khác danh sách: gom thành khối liền tại điểm thả theo thứ tự gốc của danh sách, không theo thứ tự click (QA-3352 TC-04, AI 2026-09-28, 1 lượt).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-976"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "Click thường vào dòng chưa chọn thêm dòng đó vào selection (QA-3352 TC-03/TC-04 bước 1, AI 2026-09-28). Khác chọn layer trên canvas (KB-043).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-977"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "Click lại dòng đang chọn bỏ chọn riêng dòng đó; click vào tiêu đề tab Re-order bỏ chọn tất cả (ảnh chụp máy QA-3352 TC-22, 2026-09-18, chưa xác nhận).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-978"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "[KNOWN_DEFECT] Cụm 11 dòng thả sát đỉnh hoặc tại điểm cuối ở đáy danh sách rơi về đầu/cuối danh sách, cụm nguyên vẹn (ảnh chụp QA-3352 TC-10, TC-11, 2026-09-18). Giới hạn của thư viện kéo thả theo dev summary (ngữ cảnh); không phải expected, không làm oracle.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-979"
+      ],
+      "observed_count": null,
+      "status": "KNOWN_DEFECT"
+    },
+    {
+      "statement": "Kéo một dòng đơn thả xuống dưới một dòng khác giữa danh sách: dòng nằm ngay dưới dòng đích (QA-3352 TC-07 automation, 2026-09-18 và 2026-09-28, chưa kiểm tay).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-980"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "Label chứa HTML/script hiển thị dạng chữ thường trong tab Re-order, không tạo node script/img thật; thứ tự lưu sau reorder và Save chứa đúng các label (QA-3352 TC-18, AI 2026-09-17..21). Chỉ portal; storefront chưa chạy.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-981"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "Label dài (5000 ký tự trong lượt test) và label có ký tự điều khiển: tạo field không 500, độ dài lưu nguyên, reorder/Save chạy, sau tải lại render đủ số dòng (QA-3352 TC-20, AI 2026-09-17). 5000 không phải giới hạn.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-982"
+      ],
+      "observed_count": null
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "role": "store owner/staff",
+      "capability": "full access field riêng của các layer type nhóm FORM ELEMENTS",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-003",
+        "artwork-layer-config/form-elements-config#KB-009",
+        "artwork-layer-config/form-elements-config#KB-036",
+        "artwork-layer-config/form-elements-config#KB-037",
+        "artwork-layer-config/form-elements-config#KB-038",
+        "artwork-layer-config/form-elements-config#KB-039",
+        "artwork-layer-config/form-elements-config#KB-040",
+        "artwork-layer-config/form-elements-config#KB-041"
+      ]
+    },
+    {
+      "role": "merchant-owner",
+      "capability": "chọn, kéo thả field ở tab Re-order và Save (chỉ role này được quan sát)",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-975",
+        "artwork-layer-config/form-elements-config#KB-976",
+        "artwork-layer-config/form-elements-config#KB-977",
+        "artwork-layer-config/form-elements-config#KB-978",
+        "artwork-layer-config/form-elements-config#KB-979",
+        "artwork-layer-config/form-elements-config#KB-980",
+        "artwork-layer-config/form-elements-config#KB-981",
+        "artwork-layer-config/form-elements-config#KB-982"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      "artwork editor — config panel của các layer type nhóm FORM ELEMENTS"
+    ],
+    "storefront": [],
+    "api": [],
+    "code": [
+      "bundle-registry: show_form_label/toggle_label/default_value (toggle, chỉ ở toggle), charge_enabled/display_type/enable_multiple_selection/options (addon-charge, chỉ ở addon-charge), source_url/option_template/cart_template (json-list, chỉ ở json-list) — INFERRED."
+    ],
+    "data": []
+  },
+  "dependencies": [
+    {
+      "type": "feature",
+      "description": "Baseline accordion PERSONALIZATION SETTINGS/CONDITIONAL SETTING của cả 6 type do FEAT-01-editor-layer-workspace xác định (KB-004/KB-005); EXTRA rút gọn là đặc thù riêng của nhóm này (KB-009).",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-004",
+        "artwork-editor/_object-level#KB-005",
+        "artwork-layer-config/form-elements-config#KB-009"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "Font/Color dùng cơ chế Populate Values 2 chiều ('Populate to other layers') để cấp giá trị cho layer text khác — chi tiết cơ chế chung thuộc FEAT-05-populate-channels-config (KB-080), chỉ ghi nhận đây là nguồn ở feature này.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-040",
+        "artwork-layer-config/form-elements-config#KB-041"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "4/6 type nhóm này (Font, Additional Option, Addon Charge, JSON List) nằm trong 8 layer type bị chặn Save ở trạng thái default — message verbatim thuộc FEAT-07-artwork-save-persist (KB-051), không lặp lại ở đây.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-037",
+        "artwork-layer-config/form-elements-config#KB-038",
+        "artwork-layer-config/form-elements-config#KB-039",
+        "artwork-layer-config/form-elements-config#KB-040"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "Thứ tự field sau reorder chỉ persist qua Save của FEAT-07-artwork-save-persist (KB-973); field JSON chứa thứ tự đang conflict CONF-CBS-097-01 (KB-053 vs KB-974).",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-981"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-973",
+        "KB-974",
+        "KB-053"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "risk": "Color KHÔNG xuất hiện được làm nguồn Conditional Setting dù có đầy đủ Option Title, khác Font là CÓ xuất hiện được — dễ viết sai test case nếu coi 2 type 'nguồn atomic option' này tương đương nhau.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-041"
+      ]
+    },
+    {
+      "risk": "Toàn bộ per-type item trong feature này có observed_count=1 (1 DOM dump duy nhất từ ) — confidence LOW, KHÔNG suy required/optional/enum chính thức.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-003",
+        "artwork-layer-config/form-elements-config#KB-009",
+        "artwork-layer-config/form-elements-config#KB-036",
+        "artwork-layer-config/form-elements-config#KB-037",
+        "artwork-layer-config/form-elements-config#KB-038",
+        "artwork-layer-config/form-elements-config#KB-039",
+        "artwork-layer-config/form-elements-config#KB-040",
+        "artwork-layer-config/form-elements-config#KB-041"
+      ]
+    },
+    {
+      "risk": "Lỗi gốc multi-drag xuất hiện ngẫu nhiên theo index; mỗi case multi-drag chỉ có 1 lượt PASS nên chưa loại trừ được lỗi (dev gợi ý lặp 3–5 lần).",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-975",
+        "artwork-layer-config/form-elements-config#KB-976"
+      ]
+    },
+    {
+      "risk": "[KNOWN_DEFECT] Cụm nhiều dòng thả sát mép rơi về đầu/cuối danh sách; không bao giờ làm oracle, PO chưa chốt chấp nhận.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-979"
+      ]
+    },
+    {
+      "risk": "Mọi quan sát là kết quả AI/automation hoặc ảnh chụp máy chưa người xác nhận, phần lớn không ghi build: OBSERVED_CURRENT/LOW, không có oracle STRONG.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-975",
+        "artwork-layer-config/form-elements-config#KB-976",
+        "artwork-layer-config/form-elements-config#KB-977",
+        "artwork-layer-config/form-elements-config#KB-978",
+        "artwork-layer-config/form-elements-config#KB-979",
+        "artwork-layer-config/form-elements-config#KB-980",
+        "artwork-layer-config/form-elements-config#KB-981",
+        "artwork-layer-config/form-elements-config#KB-982"
+      ]
+    },
+    {
+      "risk": "Label chứa HTML/script mới kiểm ở portal; phía storefront (form và console) chưa chạy — rủi ro chèn script trên storefront chưa được loại trừ.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-981"
+      ]
+    },
+    {
+      "risk": "Giới hạn độ dài label chưa biết; 5000 ký tự chỉ là dữ liệu một lượt.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-982"
+      ]
+    },
+    {
+      "risk": "Shift-click và thả sau dòng cuối cùng chưa có hành vi được nạp: không viết check assert hai hành vi này.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-980"
+      ]
+    }
+  ],
+  "unknown_areas": [
+    {
+      "question": "Vì sao Color không thể làm nguồn Conditional Setting dù có Option Title (khác Font) — thiết kế cố ý hay giới hạn kỹ thuật?",
+      "why_it_matters": "Ảnh hưởng trực tiếp việc viết test case Conditional Setting liên quan tới Color/Font ở FEAT-08."
+    },
+    {
+      "question": "Hành vi runtime storefront (SDK) của các field/layer type trong nhóm này — 0 evidence, ngoài phạm vi 3 run bootstrap (thuộc storefront-explorer).",
+      "why_it_matters": "coverage_gaps #1 của KB gốc; không thể viết test case storefront cho các field này tới khi có evidence riêng."
+    },
+    {
+      "question": "Hành vi với role khác owner / cross-tenant cho các field/layer type trong nhóm này — chưa test, chỉ 1 role/1 tenant trong cả 3 run.",
+      "why_it_matters": "coverage_gaps #3 của KB gốc."
+    },
+    {
+      "question": "Kéo thả nhiều dòng liền nhau (≥10) ở tab Re-order đưa cả khối về ngay dưới dòng đích, giữ thứ tự (1 lượt, căn cứ expected chỉ là dev summary ticket fix). Đây có phải hành vi mong muốn?",
+      "why_it_matters": "CHK-004 chưa có oracle.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-975"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-128"
+    },
+    {
+      "question": "Mỗi case multi-drag chỉ có một lượt PASS trong khi lỗi gốc ngẫu nhiên theo index. Kết quả có ổn định qua 3–5 lượt có ghi build không?",
+      "why_it_matters": "Một lượt chưa đủ loại trừ lỗi gốc; ảnh hưởng độ tin của CHK-004, CHK-005.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-975",
+        "artwork-layer-config/form-elements-config#KB-976"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-129"
+    },
+    {
+      "question": "Các dòng không liền nhau sau khi kéo được gom theo thứ tự gốc của danh sách, không theo thứ tự click. Đây có phải hành vi mong muốn? Repro gốc của QA (2026-08-25) ghi kỳ vọng \"9-10-19...\" — là thứ tự click hay tên dòng?",
+      "why_it_matters": "Nếu kỳ vọng là thứ tự click thì trái quan sát; CHK-005 chưa có oracle.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-976"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-130"
+    },
+    {
+      "question": "Click thường vào dòng chưa chọn thêm dòng đó vào selection (không cần phím bổ trợ) có phải hành vi mong muốn? Hiện chỉ có ghi nhận Slack không rõ người xác nhận.",
+      "why_it_matters": "CHK-001 chưa có oracle; cơ chế chọn quyết định cách dựng mọi case multi-drag.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-977"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-131"
+    },
+    {
+      "question": "Click lại dòng đang chọn bỏ chọn riêng dòng đó, click ra ngoài danh sách bỏ chọn tất cả (ảnh chụp máy, chưa ai tick). Có đúng không, và click ở vùng khác ngoài tiêu đề tab có bỏ chọn không?",
+      "why_it_matters": "CHK-002 chưa có oracle; vùng click ngoài mới thử một chỗ.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-978"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-132"
+    },
+    {
+      "question": "Cụm nhiều dòng thả sát mép trên/dưới danh sách Re-order rơi về đầu/cuối danh sách thay vì đúng chỗ con trỏ. PO có chấp nhận giới hạn này không, có kế hoạch sửa không?",
+      "why_it_matters": "CHK-006 chỉ là regression watch, không có expected.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-979"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-artwork-layer-config-133"
+    },
+    {
+      "question": "Kéo một dòng ở tab Re-order thì dòng nằm ngay dưới dòng đích (automation, chưa kiểm tay). Đây có phải hành vi mong muốn?",
+      "why_it_matters": "CHK-003 chưa có oracle.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-980"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-134"
+    },
+    {
+      "question": "Kéo một dòng thả xuống cuối danh sách luôn dừng ngay trước dòng cuối ở lượt automation 2026-09-28 (lượt 2026-09-18 thì qua). Đây là giới hạn thật của widget (không có vùng thả sau dòng cuối) hay do cách giả lập chuột?",
+      "why_it_matters": "Không có check nào assert thả sau dòng cuối cho tới khi có người kiểm tay.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-980"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-135"
+    },
+    {
+      "question": "Label chứa HTML/script hiển thị dạng chữ thường trong tab Re-order (chỉ portal). Phía storefront (form và console) có an toàn tương tự không, và bước reload có giữ đúng không?",
+      "why_it_matters": "CHK-007, CHK-008 chưa có oracle; storefront chưa chạy vì thiếu campaign đã publish.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-981"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-136"
+    },
+    {
+      "question": "Giới hạn độ dài label theo field là bao nhiêu, vượt giới hạn thì cắt hay báo lỗi?",
+      "why_it_matters": "CHK-009 không có biên để kiểm; 5000 ký tự chỉ là dữ liệu một lượt.",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-982"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-137"
+    },
+    {
+      "question": "Shift-click trong tab Re-order làm gì? Hai quan sát ngược nhau: chọn dòng đó và mọi dòng phía trên tới đầu danh sách, hay chỉ chọn dải liền giữa hai lần click.",
+      "why_it_matters": "Không nạp KB (nguồn S0); không check nào assert shift-click.",
+      "kb_refs": [],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-138"
+    },
+    {
+      "question": "Phạm vi fix multi-drag (chỉ portal, tab Re-order; API và SDK không đổi; thư viện kéo thả gốc chưa sửa) chưa ai xác nhận. Các danh sách kéo thả nhiều dòng khác dùng cùng thư viện có bị lỗi sắp index tương tự không?",
+      "why_it_matters": "Không nạp KB (nguồn S0); có thể có regression ở danh sách khác ngoài scope feature này.",
+      "kb_refs": [],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-139"
+    }
+  ],
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "portal",
+      "role": "owner",
+      "state": "layer type nhóm FORM ELEMENTS",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "code",
+      "role": "owner",
+      "state": "bundle-registry cross-check (một phần)",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "api",
+      "role": "owner",
+      "state": "field-level request/response mapping",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "storefront",
+      "role": "owner",
+      "state": "layer type nhóm FORM ELEMENTS",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "chọn dòng bằng click thường (liền/rời)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-977"
+      ],
+      "basis": "1 lượt AI"
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "bỏ chọn: click lại dòng, click ngoài danh sách (tiêu đề tab)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-978"
+      ],
+      "basis": "ảnh chụp máy, chưa xác nhận"
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "shift-click",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [],
+      "basis": "S0, không nạp"
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "kéo thả một dòng giữa danh sách",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-980"
+      ],
+      "basis": "automation, chưa kiểm tay"
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "thả sau dòng cuối cùng",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-980"
+      ],
+      "basis": "chưa rõ"
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "multi-drag selection liền ≥10 dòng",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-975"
+      ],
+      "basis": "1 lượt PASS"
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "multi-drag selection rời",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-976"
+      ],
+      "basis": "1 lượt PASS"
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "multi-drag lặp 3–5 lượt có build",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-975",
+        "artwork-layer-config/form-elements-config#KB-976"
+      ],
+      "basis": "chưa chạy"
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "cụm cao thả sát mép danh sách",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-979"
+      ],
+      "basis": "KNOWN_DEFECT, ảnh chụp máy"
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "label HTML/script, label dài, ký tự điều khiển qua reorder + Save",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-981",
+        "artwork-layer-config/form-elements-config#KB-982"
+      ],
+      "basis": "1 lượt AI"
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "form personalization sau reorder; label HTML/script trên storefront",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-981"
+      ],
+      "basis": "chưa chạy (thiếu campaign đã publish)"
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "thứ tự field trong payload Save (thuộc FEAT-07)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [],
+      "basis": "xem FEAT-07 CONF-CBS-097-01"
+    },
+    {
+      "feature_id": "FEAT-07-form-elements-config",
+      "layer": "portal",
+      "role": "role khác merchant-owner / cross-tenant",
+      "state": "toàn bộ",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [],
+      "basis": "chưa quan sát"
+    }
+  ],
+  "profile_relationships": [
+    {
+      "from_feature_id": "FEAT-07-form-elements-config",
+      "to_feature_id": "FEAT-01-editor-layer-workspace",
+      "relation": "depends_on (baseline mechanism)",
+      "note": "Icon buttons/tồn tại accordion/Custom class/Group name baseline do FEAT-04 xác định; feature này chỉ mô tả nội dung field riêng."
+    },
+    {
+      "from_feature_id": "FEAT-07-form-elements-config",
+      "to_feature_id": "FEAT-07-artwork-save-persist",
+      "relation": "persisted_by",
+      "note": "Thứ tự field sau reorder persist qua Save của FEAT-07 (KB-973); nghĩa templates[].positions đang conflict (CONF-CBS-097-01).",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-981"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-973",
+        "KB-974"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-07-form-elements-config",
+      "to_feature_id": "FEAT-01-editor-layer-workspace",
+      "relation": "distinct_from",
+      "note": "Chọn dòng ở tab Re-order khác chọn layer trên canvas (KB-043).",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-977"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-043"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-07-form-elements-config",
+      "to_feature_id": "FEAT-02-layer-bulk-edit",
+      "relation": "distinct_from",
+      "note": "Multi-select ở tab Re-order khác modal Bulk edit (KB-880, KB-881).",
+      "kb_refs": [
+        "artwork-layer-config/form-elements-config#KB-975"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-880",
+        "KB-881"
+      ]
+    }
+  ]
+}

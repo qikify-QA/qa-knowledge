@@ -1,0 +1,2 @@
+# CHANGELOG — multibuy
+- 2026-11-13 (restructure-2026-11-13) — Đổi cấu trúc theo contract §5 "Độ hạt object/feature": discount-offers/multibuy-mix-match-combo → multibuy/multibuy-discount-calculation; discount-offers/multibuy-mix-match-combo → multibuy/multibuy-product-selection; discount-offers/multibuy-mix-match-combo → multibuy/multibuy-appearance-and-schedule; discount-offers/multibuy-mix-match-combo → multibuy/multibuy-discount-setup. Giữ nguyên kb_id, statement, nguồn và test steps; OQ chuyển object được mint id mới kèm `supersedes`.

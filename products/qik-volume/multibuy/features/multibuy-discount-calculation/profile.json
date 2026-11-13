@@ -1,0 +1,644 @@
+{
+  "feature_id": "FEAT-01-multibuy-discount-calculation",
+  "feature_key": "multibuy-discount-calculation",
+  "name": "Cách Multibuy tính discount: áp theo combo, tier cao nhất, pooling, compare-at-price",
+  "user_goal": "Buyer nhận đúng mức giảm Multibuy theo chế độ áp discount, pooling giữa product và giá so sánh.",
+  "user_goal_kb_refs": [
+    "multibuy/multibuy-discount-calculation#KB-032"
+  ],
+  "stable_since_version": "1",
+  "actors": [
+    {
+      "role": "merchant",
+      "permission_observed": "Full configuration access trong Portal cho mọi section của Multibuy offer (internal name/title, discount method, trigger, tier, max discount uses, remaining-qty message, how-discount-is-applied, customer selection behavior, appearance & style, discount combination, offer scheduling, compare-at-price scope) — không có boundary permission/role riêng nào được tài liệu hoá cho feature này.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-001",
+        "multibuy/multibuy-discount-setup#KB-003",
+        "multibuy/multibuy-discount-setup#KB-004",
+        "multibuy/multibuy-discount-setup#KB-005",
+        "multibuy/multibuy-discount-setup#KB-006",
+        "multibuy/multibuy-discount-setup#KB-007",
+        "multibuy/multibuy-discount-setup#KB-009",
+        "multibuy/multibuy-discount-setup#KB-010",
+        "multibuy/multibuy-discount-setup#KB-012",
+        "multibuy/multibuy-discount-setup#KB-017",
+        "multibuy/multibuy-discount-setup#KB-028",
+        "multibuy/multibuy-discount-calculation#KB-035",
+        "multibuy/multibuy-discount-calculation#KB-041",
+        "multibuy/multibuy-product-selection#KB-045",
+        "multibuy/multibuy-product-selection#KB-052",
+        "multibuy/multibuy-appearance-and-schedule#KB-054",
+        "multibuy/multibuy-appearance-and-schedule#KB-061",
+        "multibuy/multibuy-appearance-and-schedule#KB-062",
+        "multibuy/multibuy-appearance-and-schedule#KB-065",
+        "multibuy/multibuy-discount-calculation#KB-067",
+        "multibuy/multibuy-product-selection#KB-071",
+        "multibuy/multibuy-discount-setup#KB-078"
+      ],
+      "observed_kb_refs": [
+        "KB-085",
+        "KB-086",
+        "KB-087",
+        "KB-088",
+        "KB-089",
+        "KB-090",
+        "KB-091",
+        "object:KB-015",
+        "object:KB-017"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-18 (merchant, store development): mở form, tạo/lưu/sửa (đổi selection behavior, bỏ multiplier, thêm trigger) và xoá offer Multibuy; quyền staff không kiểm."
+    },
+    {
+      "role": "buyer",
+      "permission_observed": "Xem widget discount trên product/cart/checkout page khi trigger condition đáp ứng; chọn sản phẩm cho bundle qua popup hoặc redirect page; nhận discount tự động ở cart — không có yêu cầu login/account nào được tài liệu hoá.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-003",
+        "multibuy/multibuy-discount-setup#KB-008",
+        "multibuy/multibuy-discount-setup#KB-029",
+        "multibuy/multibuy-appearance-and-schedule#KB-030",
+        "multibuy/multibuy-discount-calculation#KB-032",
+        "multibuy/multibuy-discount-calculation#KB-036",
+        "multibuy/multibuy-product-selection#KB-049",
+        "multibuy/multibuy-product-selection#KB-050",
+        "multibuy/multibuy-product-selection#KB-053",
+        "multibuy/multibuy-discount-calculation#KB-068",
+        "multibuy/multibuy-product-selection#KB-072",
+        "multibuy/multibuy-discount-calculation#KB-073",
+        "multibuy/multibuy-appearance-and-schedule#KB-076"
+      ],
+      "observed_kb_refs": [
+        "KB-087",
+        "KB-092",
+        "KB-093",
+        "KB-094",
+        "KB-095",
+        "object:KB-031"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-18: buyer guest, desktop; widget PDP, popup, recommendation inline, cart pooling 2 product."
+    }
+  ],
+  "entry_points": [],
+  "capabilities": [
+    {
+      "name": "Configure multi-tier bundle rewards",
+      "description": "Merchant thêm/xoá/sửa tier (quantity + reward + title + badge), với guardrail (luôn ≥1 tier) và UI state (expand/collapse, real-time validation, default pre-populated tier).",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-017",
+        "multibuy/multibuy-discount-setup#KB-018",
+        "multibuy/multibuy-discount-setup#KB-019",
+        "multibuy/multibuy-discount-setup#KB-020",
+        "multibuy/multibuy-discount-setup#KB-021",
+        "multibuy/multibuy-discount-setup#KB-022",
+        "multibuy/multibuy-discount-setup#KB-023",
+        "multibuy/multibuy-discount-setup#KB-024",
+        "multibuy/multibuy-discount-setup#KB-025",
+        "multibuy/multibuy-discount-setup#KB-026",
+        "multibuy/multibuy-discount-setup#KB-027",
+        "multibuy/multibuy-discount-calculation#KB-075"
+      ],
+      "observed_kb_refs": [
+        "KB-086"
+      ],
+      "refresh_note": "CONFLICT CONF-discount-offers-R1018-04: base KB-022 (1 tier qty 1, $10) vs staging KB-086 (3 tier 2→$10 / 3→$20 / 4→$30, Fixed total price mặc định) — UNRESOLVED. Title '{quantity} for {tier_price}' và badge 'Saved {saved_price}' khớp base.",
+      "status": "UNRESOLVED",
+      "conflict_groups": [
+        "CONF-discount-offers-R1018-04"
+      ]
+    },
+    {
+      "name": "Chọn cách tính discount khi pooled quantity vượt nhiều tier (QVD-178)",
+      "description": "Setting \"How discount is applied\" (chỉ hiện khi discount type = Percentage) quyết định discount được tính theo set cố định (\"Apply per combo product\", default) hay theo tier cao nhất áp cho toàn bộ quantity (\"Apply highest tier to entire quantity\"); setting này tách biệt với \"Discount combination\" (capability khác).",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-035",
+        "multibuy/multibuy-discount-calculation#KB-036",
+        "multibuy/multibuy-discount-calculation#KB-037",
+        "multibuy/multibuy-discount-calculation#KB-038",
+        "multibuy/multibuy-discount-calculation#KB-039",
+        "multibuy/multibuy-discount-calculation#KB-040",
+        "multibuy/multibuy-discount-calculation#KB-041",
+        "multibuy/multibuy-discount-calculation#KB-042",
+        "multibuy/multibuy-discount-calculation#KB-043",
+        "multibuy/multibuy-discount-calculation#KB-044",
+        "multibuy/multibuy-discount-calculation#KB-074",
+        "multibuy/multibuy-discount-calculation#KB-079"
+      ],
+      "observed_kb_refs": [
+        "KB-086"
+      ],
+      "refresh_note": "Staging: form mặc định Fixed total price nên control ẩn (khớp KB-041); offer lưu có giá trị ẩn discount_apply_type 'per_combo'. Chế độ Percentage chưa thử."
+    },
+    {
+      "name": "Pool quantity across different eligible products (core mix & match mechanic)",
+      "description": "Đúng điểm khác biệt chính với Quantity Break: Multibuy pool quantity của MỌI sản phẩm/variant eligible trong cart vào cùng 1 tier threshold, kể cả remainder-handling (ưu tiên fill set bằng unit giá cao nhất trước) và exact-match case (phân bổ fixed total price theo tỷ lệ giá gốc, không chia đều).",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-001",
+        "multibuy/multibuy-discount-setup#KB-002",
+        "multibuy/multibuy-discount-calculation#KB-032",
+        "multibuy/multibuy-discount-calculation#KB-033",
+        "multibuy/multibuy-discount-calculation#KB-034",
+        "multibuy/multibuy-discount-calculation#KB-080"
+      ],
+      "observed_kb_refs": [
+        "KB-095"
+      ],
+      "refresh_note": "Staging corroborate với trigger Specific products 2 product ($15/$12): 1+1 → $10, 1+2 → $20, 2+2 → $30; mã chia theo tỷ lệ giá (allocation 'across'); 5 món → 1 đơn vị rẻ hơn ở giá gốc. Tie-break khi cùng giá chưa kiểm."
+    },
+    {
+      "name": "Nudge buyer hoàn thành bundle",
+      "description": "Field \"Remaining quantity message\" (merchant-editable, default \"Add {remaining_quantity} more items to get this deal\") chỉ cover progress TRƯỚC khi đạt tier đầu; không có nudge message cho 1 leftover unit SAU khi 1 set đã hoàn thành (Percentage mode).",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-030",
+        "multibuy/multibuy-appearance-and-schedule#KB-031",
+        "multibuy/multibuy-discount-calculation#KB-073"
+      ],
+      "observed_kb_refs": [
+        "KB-085",
+        "KB-092"
+      ],
+      "refresh_note": "Staging: default nguyên văn khớp; widget hiện 'Add N more items to get this deal' + progress bar 3 mốc, phản ánh cart thật kể cả ở PDP product khác."
+    },
+    {
+      "name": "Kiểm soát stacking với native Shopify discount khác",
+      "description": "Checkbox combine với Order/Product/Shipping discount (default off, ticket-only); tách biệt với \"Apply highest tier to entire quantity\" — 2 setting này không conflict theo construction (per-group/whole-quantity math vs stack-hay-không với discount khác).",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-061",
+        "multibuy/multibuy-discount-calculation#KB-074"
+      ],
+      "observed_kb_refs": [
+        "object:KB-012"
+      ],
+      "refresh_note": "Staging: form Multibuy mới có cả 3 checkbox CHECKED mặc định + dropdown 'One per product (best value wins)' — khác ticket KB-061 (INFERRED); normalizer ghi là quan sát cho OQ-discount-offers-024, không mở conflict_group."
+    },
+    {
+      "name": "Tính discount trên Compare-at-Price (giá gốc) thay vì giá đang bán",
+      "description": "Khi compare_at_price > 0, % discount tính trên compare_at_price, không phải price; fallback về price nếu không có compare_at_price. Xác nhận là global feature (không merchant-specific) dù ticket gốc mô tả như custom build riêng. Có 1 known, accepted limitation về hiển thị khi customer đổi quantity trực tiếp trong cart (xem observed_behavior).",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-067",
+        "multibuy/multibuy-discount-calculation#KB-068",
+        "multibuy/multibuy-discount-calculation#KB-069",
+        "multibuy/multibuy-discount-calculation#KB-070",
+        "multibuy/multibuy-discount-calculation#KB-077"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "Percentage + \"Apply highest tier to entire quantity\" đã chọn",
+      "to": "Fixed total price, setting ẩn & reset về \"Apply per combo product\"",
+      "trigger": "merchant đổi Discount type và Save",
+      "condition": "",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-041",
+        "multibuy/multibuy-discount-calculation#KB-042"
+      ]
+    },
+    {
+      "from": "buyer chưa đạt tier đầu",
+      "to": "buyer qualify cho discount tier N",
+      "trigger": "pooled eligible quantity trong cart vượt threshold của tier N",
+      "condition": "trigger scope matched + quantity pooling rule",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-008",
+        "multibuy/multibuy-discount-calculation#KB-032",
+        "multibuy/multibuy-discount-calculation#KB-033"
+      ],
+      "observed_kb_refs": [
+        "KB-095",
+        "KB-092"
+      ],
+      "refresh_note": "Staging corroborate với 2 product trong trigger Specific products."
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Dưới trigger \"All products\", Multibuy pool quantity across MỌI sản phẩm/variant eligible trong cart (ngược Quantity Break — không pool cross-product).",
+      "source_strength": "STRONG",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-032"
+      ],
+      "refresh_kb_refs": [
+        "KB-095"
+      ],
+      "refresh_note": "Staging quan sát pooling với trigger Specific products (không phải All products)."
+    },
+    {
+      "statement": "Với tier \"Fixed total price\" có remainder, set được fill bằng unit giá cao nhất trước, để remainder là unit giá rẻ nhất ở full price. Với exact-match (không remainder), fixed total price phân bổ theo TỶ LỆ giá gốc của từng unit, không chia đều, không highest-priced-first.",
+      "source_strength": "STRONG",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-033",
+        "multibuy/multibuy-discount-calculation#KB-080"
+      ],
+      "refresh_kb_refs": [
+        "KB-095"
+      ]
+    },
+    {
+      "statement": "\"How discount is applied\" chỉ hiện khi discount type = Percentage, có đúng 2 giá trị: \"Apply per combo product\" (default, nhóm set cố định, remainder full price) và \"Apply highest tier to entire quantity\" (tìm tier cao nhất đủ điều kiện, áp cho toàn bộ quantity, không grouping/remainder). Ẩn hoàn toàn khi discount type = Fixed total price; chuyển về Fixed thì reset giá trị về default khi Save.",
+      "source_strength": "STRONG",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-035",
+        "multibuy/multibuy-discount-calculation#KB-036",
+        "multibuy/multibuy-discount-calculation#KB-037",
+        "multibuy/multibuy-discount-calculation#KB-038",
+        "multibuy/multibuy-discount-calculation#KB-039",
+        "multibuy/multibuy-discount-calculation#KB-040",
+        "multibuy/multibuy-discount-calculation#KB-041",
+        "multibuy/multibuy-discount-calculation#KB-042"
+      ],
+      "refresh_kb_refs": [
+        "KB-086"
+      ],
+      "refresh_note": "Staging corroborate vế ẩn khi Fixed; Percentage không thử."
+    },
+    {
+      "statement": "Dưới lowest tier threshold → không có discount, ở cả 2 mode của \"How discount is applied\".",
+      "source_strength": "STRONG",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-040"
+      ]
+    },
+    {
+      "statement": "Với Multibuy, lựa chọn per-group vs entire-quantity là 1 toggle merchant-facing rõ ràng — khác Quantity Break, nơi cùng khái niệm tính toán là hành vi cố định không document, không phải toggle.",
+      "source_strength": "STRONG",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-044"
+      ]
+    },
+    {
+      "statement": "Compare-at-Price discount logic: khi compare_at_price > 0, % discount tính trên compare_at_price (giá gốc), không phải price; fallback về price nếu không có compare_at_price. Xác nhận là global feature, không merchant-specific.",
+      "source_strength": "STRONG",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-067",
+        "multibuy/multibuy-discount-calculation#KB-068",
+        "multibuy/multibuy-discount-calculation#KB-077"
+      ]
+    },
+    {
+      "statement": "\"Apply highest tier to entire quantity\" (per-group/whole-quantity math của riêng offer) và \"Discount combination\" (stack với discount khác hay không) là 2 setting không conflict theo construction.",
+      "source_strength": "STRONG",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-074"
+      ]
+    },
+    {
+      "statement": "Switching discount type (Fixed↔Percentage) nhiều lần KHÔNG làm mất/corrupt tier values; chỉ \"Apply highest tier\" tự reset.",
+      "source_strength": "STRONG",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-075"
+      ]
+    },
+    {
+      "statement": "Trong Percentage mode + Apply per combo product, leftover item không có nudge message nào — chỉ itemized price breakdown.",
+      "source_strength": "STRONG",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-073"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Backend lưu \"How discount is applied\" dưới field `tier_application_method` (`per_group` | `highest_tier_all`), xử lý trong `multibuy-discount` Function ở bước tier-matching.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "LOW",
+      "note": "derivation code_artifact — suy ra từ cách dữ liệu được tổ chức trong code, không phải một quy tắc được phát biểu rõ trong tài liệu. Không dùng làm oracle mạnh.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-043"
+      ],
+      "observed_kb_refs": [
+        "KB-086"
+      ],
+      "refresh_note": "Staging: offer lưu có field discount_apply_type 'per_combo' (tên field khác tier_application_method) — chỉ ghi nhận, không kết luận."
+    },
+    {
+      "statement": "Known, accepted limitation: nếu customer đổi quantity trực tiếp trong cart (không re-add từ product page), displayed discount/compare price có thể trông inconsistent — coi là Shopify cart-display constraint, không phải app bug, đã được accept chứ không fix.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "note": "status KNOWN_DEFECT trong KB gốc nhưng được tài liệu mô tả như limitation đã-được-chấp-nhận, không phải bug đang mở.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-069"
+      ]
+    },
+    {
+      "statement": "Compare-at-Price logic hỗ trợ 1 \"silent\" mode optional (discount tự áp dụng, widget UI ẩn qua custom CSS) — feasible nhưng cần nói rõ giới hạn 25-automatic-discount của Shopify khi dùng.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-070"
+      ],
+      "observed_kb_refs": [
+        "KB-089"
+      ],
+      "refresh_note": "Staging: Custom CSS vẫn khoá; silent mode không kiểm được."
+    },
+    {
+      "statement": "Pooling giữa 2 product trong trigger Specific products: 1+1 → $10.00, 1+2 → $20.00, 2+2 → $30.00, mã chia theo tỷ lệ giá; 5 món → $42.00 (4 món $30.00 + 1 đơn vị rẻ hơn giá gốc), Shopify tách line.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 5,
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-095"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "role": "merchant",
+      "scope": "portal",
+      "permission": "Create/edit/delete Multibuy offers và toàn bộ configuration section (trigger, tier, scheduling, appearance, discount combination, compare-at-price).",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-001",
+        "multibuy/multibuy-discount-setup#KB-003",
+        "multibuy/multibuy-discount-setup#KB-017",
+        "multibuy/multibuy-discount-setup#KB-028",
+        "multibuy/multibuy-appearance-and-schedule#KB-054",
+        "multibuy/multibuy-appearance-and-schedule#KB-061",
+        "multibuy/multibuy-appearance-and-schedule#KB-062",
+        "multibuy/multibuy-discount-calculation#KB-067"
+      ],
+      "note": "Không có Portal role/sub-permission riêng nào được tài liệu hoá cho feature này — xem unknown_areas.",
+      "observed_kb_refs": [
+        "object:KB-015",
+        "object:KB-017"
+      ],
+      "refresh_note": "Staging: owner session tạo/sửa/xoá được; staff hạn quyền không kiểm."
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      "KB-004",
+      "KB-005",
+      "KB-006",
+      "KB-007",
+      "KB-009",
+      "KB-010",
+      "KB-011",
+      "KB-012",
+      "KB-013",
+      "KB-014",
+      "KB-015",
+      "KB-017",
+      "KB-018",
+      "KB-019",
+      "KB-020",
+      "KB-021",
+      "KB-022",
+      "KB-023",
+      "KB-024",
+      "KB-025",
+      "KB-026",
+      "KB-027",
+      "KB-028",
+      "KB-035",
+      "KB-037",
+      "KB-041",
+      "KB-042",
+      "KB-044",
+      "KB-045",
+      "KB-046",
+      "KB-047",
+      "KB-048",
+      "KB-052",
+      "KB-054",
+      "KB-055",
+      "KB-056",
+      "KB-057",
+      "KB-058",
+      "KB-059",
+      "KB-060",
+      "KB-061",
+      "KB-062",
+      "KB-063",
+      "KB-064",
+      "KB-065",
+      "KB-066",
+      "KB-070",
+      "KB-075",
+      "KB-078",
+      "KB-081",
+      "KB-082",
+      "KB-083",
+      "KB-084",
+      {
+        "item": "Form Multibuy staging (/offers/setting/multibuy): Offer title (Fixed price), Remaining quantity message, Discount type + 3 tier mặc định, Maximum discount uses (multiplier), Customer product selection behavior (3 radio + URL + recommendations), Appearance & style, Combination, Campaign scheduling",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-appearance-and-schedule#KB-085",
+          "multibuy/multibuy-discount-setup#KB-086",
+          "multibuy/multibuy-discount-setup#KB-087",
+          "multibuy/multibuy-product-selection#KB-088",
+          "multibuy/multibuy-appearance-and-schedule#KB-089",
+          "multibuy/multibuy-appearance-and-schedule#KB-090",
+          "multibuy/multibuy-appearance-and-schedule#KB-091",
+          "discount-offers/offer-create-and-manage#KB-012",
+          "discount-offers/offer-create-and-manage#KB-013"
+        ]
+      },
+      {
+        "item": "Manage offers / modal Delete / save bar / modal xin review sau lưu — staging (mức object)",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-016",
+          "discount-offers/offer-create-and-manage#KB-017",
+          "discount-offers/offer-create-and-manage#KB-018",
+          "discount-offers/offer-create-and-manage#KB-020"
+        ]
+      }
+    ],
+    "storefront": [
+      "KB-003",
+      "KB-008",
+      "KB-016",
+      "KB-029",
+      "KB-030",
+      "KB-031",
+      "KB-032",
+      "KB-033",
+      "KB-034",
+      "KB-036",
+      "KB-038",
+      "KB-039",
+      "KB-040",
+      "KB-049",
+      "KB-050",
+      "KB-051",
+      "KB-053",
+      "KB-068",
+      "KB-069",
+      "KB-072",
+      "KB-073",
+      "KB-076",
+      "KB-077",
+      "KB-079",
+      "KB-080",
+      {
+        "item": "PDP widget Multibuy (tiêu đề tier, badge 'Saved', progress, slot '+', recommendation, 'powered by qikify') — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-product-selection#KB-092"
+        ]
+      },
+      {
+        "item": "Popup modal chọn sản phẩm ('Pick', 'Done', Subtotal) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-product-selection#KB-094"
+        ]
+      },
+      {
+        "item": "Cart: mã QIKIFY-xxxxxx chia across theo tỷ lệ giá; Shopify tách line có/không discount — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-discount-calculation#KB-095",
+          "multibuy/multibuy-discount-setup#KB-087"
+        ]
+      },
+      {
+        "item": "Collection/search: badge 'MULTIBUY' góc trên-trái, radius 6px — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-appearance-and-schedule#KB-091",
+          "multibuy/multibuy-appearance-and-schedule#KB-090",
+          "discount-offers/offer-storefront-events#KB-031"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "item": "Backend app <QVL_API_BASE>: POST /api/offers, GET /api/offers/{id}, PUT /api/offers/{id}, DELETE /api/offers/{id} — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-appearance-and-schedule#KB-085",
+          "multibuy/multibuy-discount-setup#KB-086",
+          "multibuy/multibuy-discount-setup#KB-087",
+          "multibuy/multibuy-product-selection#KB-088",
+          "discount-offers/offer-create-and-manage#KB-015",
+          "discount-offers/offer-create-and-manage#KB-032"
+        ]
+      },
+      {
+        "item": "Shopify Admin GraphQL qua app proxy: discountAutomaticAppCreate / Update / Delete — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-015"
+        ]
+      },
+      {
+        "item": "Storefront cart: POST /cart/add.js?qvl-multibuy (popup Done / Pick inline), POST /cart/add (ATC theme), đổi số lượng, đọc cart — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-product-selection#KB-093",
+          "multibuy/multibuy-product-selection#KB-094",
+          "multibuy/multibuy-product-selection#KB-092",
+          "multibuy/multibuy-discount-calculation#KB-095",
+          "multibuy/multibuy-discount-setup#KB-087"
+        ]
+      },
+      {
+        "item": "POST <QVL_API_BASE>/api/events (view; add_to_cart — 'Done' popup chỉ gửi cho offer Multibuy) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-product-selection#KB-092",
+          "discount-offers/offer-storefront-events#KB-023"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "Offer lưu: allow_apply_multiple_discount, discount_type fixed_amount, discount_value_percentage, discount_apply_type 'per_combo', percentage_offer_title, product_selection_behavior (open_popup), multibuy_badge_text — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-appearance-and-schedule#KB-085",
+          "multibuy/multibuy-discount-setup#KB-086",
+          "multibuy/multibuy-discount-setup#KB-087",
+          "multibuy/multibuy-product-selection#KB-088",
+          "multibuy/multibuy-appearance-and-schedule#KB-091"
+        ]
+      }
+    ],
+    "code": [
+      "KB-043",
+      "KB-071"
+    ]
+  },
+  "dependencies": [],
+  "risks": [
+    {
+      "risk": "2 KB item (backend field `tier_application_method`, DOM id `qvl-multibuy-tier_add-more`) suy ra từ cách dữ liệu được tổ chức trong code, không phải một quy tắc được phát biểu rõ trong tài liệu — độ tin cậy thấp hơn các confirmed_rule khác trong profile này; cần xác minh lại với source code thật trước khi dùng làm regression oracle mạnh.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-043",
+        "multibuy/multibuy-product-selection#KB-051"
+      ]
+    },
+    {
+      "risk": "Không có evidence API/DB/code-level thật nào cho Multibuy ngoài 2 fragment code_artifact (KB-043, KB-051) — mode DOC_BOOTSTRAP không chạy explorer nào; surface_mapping.api/data đang rỗng. Cần 1 run INCREMENTAL_UPDATE/explore riêng nếu cần oracle ở layer này.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-043",
+        "multibuy/multibuy-product-selection#KB-051"
+      ],
+      "observed_kb_refs": [
+        "KB-087",
+        "KB-093",
+        "KB-094",
+        "object:KB-015"
+      ],
+      "refresh_note": "Run REFRESH này đã bổ sung evidence API (REST offers, Shopify discount GraphQL, cart) ở staging; DB/code vẫn không có."
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-18",
+    "base_observed_at": "2026-10-01"
+  },
+  "unknown_areas": [
+    {
+      "question": "Chế độ Percentage và 'How discount is applied' (Apply per combo / highest tier) tính giá thế nào trên storefront staging?",
+      "why_it_matters": "Run giữ mặc định Fixed total price nên control ẩn; 2 mode tính giá chưa có quan sát.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-035",
+        "multibuy/multibuy-discount-calculation#KB-037",
+        "multibuy/multibuy-discount-calculation#KB-038",
+        "multibuy/multibuy-discount-setup#KB-086"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-multibuy-029"
+    },
+    {
+      "question": "Tie-break remainder khi nhiều đơn vị cùng giá rẻ nhất, và cách chia combo khi multiplier bật (4+2 hay 3+3)?",
+      "why_it_matters": "Staging chỉ quan sát 2 product giá khác nhau; tổng tiền không phân biệt được cách chia.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-calculation#KB-033",
+        "multibuy/multibuy-discount-calculation#KB-095",
+        "multibuy/multibuy-discount-setup#KB-087"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-034"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-multibuy-018"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-04-multibuy-discount-setup",
+      "layer": "storefront",
+      "role": "buyer (guest)",
+      "state": "widget PDP, Redirect URL rỗng, popup, pooling 2 product, multiplier bật/tắt",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-087",
+        "multibuy/multibuy-product-selection#KB-092",
+        "multibuy/multibuy-product-selection#KB-093",
+        "multibuy/multibuy-product-selection#KB-094",
+        "multibuy/multibuy-discount-calculation#KB-095"
+      ]
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": []
+}

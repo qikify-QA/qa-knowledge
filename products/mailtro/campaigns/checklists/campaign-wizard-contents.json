@@ -1,0 +1,457 @@
+{
+  "feature_id": "campaign-wizard-contents",
+  "feature_key": "campaign-wizard-contents",
+  "checklist_version": "v1",
+  "name": "Soạn campaign qua wizard 4 bước (Details → Sender → Recipients → Contents)",
+  "checks": [
+    {
+      "check_id": "CHK-028",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Bước Contents khi campaign chưa có design",
+      "applicability": {
+        "role": "unspecified",
+        "state": "campaign Draft chưa chọn email",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Mở bước Contents, đọc empty state."
+      ],
+      "observation_point": "Tiêu đề và mô tả empty state.",
+      "expected_result": "Theo hiện trạng staging 01/10/2026, lệch = cần điều tra: hiện \"Add email content to this campaign\" / \"Use an email you already have, or start a new one.\"",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-contents#KB-076"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-07"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-029",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Nhãn hai nút ở bước Contents theo quyết định đổi sang Templates",
+      "applicability": {
+        "role": "unspecified",
+        "state": "campaign Draft chưa chọn email; build đã deploy thay đổi của Jira MTRO-99",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt). Chỉ chạy trên build đã deploy thay đổi nhãn (staging khảo sát 01/10/2026 vẫn hiện `Choose email library` / `Create email library`).",
+      "steps": [
+        "Mở bước Contents, đọc nhãn hai nút."
+      ],
+      "observation_point": "Nhãn hai nút.",
+      "expected_result": "Hai nút có nhãn `Choose a template` và `Create new template`.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-contents#KB-078"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-07"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-030",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Chọn email có sẵn cho campaign",
+      "applicability": {
+        "role": "unspecified",
+        "state": "workspace có ≥1 email trong thư viện",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Ở bước Contents bấm nút chọn email có sẵn.",
+        "Đọc dialog, chọn một thẻ email."
+      ],
+      "observation_point": "Nội dung dialog; email được gắn vào campaign.",
+      "expected_result": "Theo hiện trạng staging 01/10/2026, lệch = cần điều tra: dialog có mô tả \"Pick an existing email design to use for this campaign.\", lưới thẻ (tên email, người tạo), nút Cancel / Close, không có search, không phân trang, không hiện ngày tạo; chọn một thẻ là gắn ngay vào campaign.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-contents#KB-079"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-07"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-031",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "Picker email nạp 50 email sửa gần nhất",
+      "applicability": {
+        "role": "unspecified",
+        "state": "workspace có hơn 50 email",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Mở DevTools tab Network, mở builder campaign.",
+        "Xem request lấy danh sách email; mở dialog chọn email và đếm số thẻ."
+      ],
+      "observation_point": "Query của request danh sách email; số thẻ trong dialog.",
+      "expected_result": "Theo hiện trạng staging 01/10/2026, lệch = cần điều tra: builder gọi một lần `GET mail-templates?per_page=50&sort=updated_at&direction=desc`; dialog có tối đa 50 email sửa gần nhất.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-contents#KB-080"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-07"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-032",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "Chọn email thứ 51 (cũ nhất) khi thư viện có hơn 50 email",
+      "applicability": {
+        "role": "unspecified",
+        "state": "workspace có đúng 51 email; email A là email sửa lâu nhất",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Mở dialog chọn email ở bước Contents, tìm email A.",
+        "Mở `Duplicate design`, tìm email A."
+      ],
+      "observation_point": "Email A có chọn được ở hai nơi hay không.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-contents#KB-081"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Picker email ở bước Contents (và Duplicate design) chỉ nạp 50 email sửa gần nhất, không search hay phân trang. Workspace có hơn 50 email thì email cũ hơn có phải chọn được không? Giới hạn 50 có chủ ý không, có định thêm tìm kiếm / phân trang không?",
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-07"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-campaigns-010",
+      "observation_guidance": "Chưa có oracle để kết luận pass/fail. Ghi lại email A có xuất hiện / chọn được không, đối chiếu khi PO/Dev trả lời câu hỏi kèm theo."
+    },
+    {
+      "check_id": "CHK-033",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Picker email khi thư viện trống",
+      "applicability": {
+        "role": "unspecified",
+        "state": "workspace chưa có email nào trong thư viện",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Ở bước Contents bấm nút chọn email có sẵn."
+      ],
+      "observation_point": "Nội dung dialog.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-contents#KB-082"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Khi thư viện email của workspace trống, picker email ở bước Contents phải hiện gì? Bundle có chuỗi `No emails in this workspace yet.` nhưng chưa thấy trên UI.",
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-07"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-campaigns-038",
+      "observation_guidance": "Chưa có oracle để kết luận pass/fail. Ghi lại thông báo thực tế, đối chiếu khi PO trả lời câu hỏi kèm theo."
+    },
+    {
+      "check_id": "CHK-034",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Tạo email mới từ bước Contents: from scratch hoặc Duplicate design",
+      "applicability": {
+        "role": "unspecified",
+        "state": "workspace có ≥1 email",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Bấm nút tạo email mới, chọn `Create from scratch`, xác nhận builder mở; quay lại.",
+        "Bấm lại, chọn `Duplicate design`, chọn email X."
+      ],
+      "observation_point": "Lựa chọn trong dialog; builder được mở; tên bản sao.",
+      "expected_result": "Có hai cách: `Create from scratch` tạo email mới rồi mở builder; `Duplicate design` cho chọn một design có sẵn, tạo bản sao tên `{name} (copy)` rồi mở builder.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-contents#KB-084"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-07"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-035",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Bước Contents khi đã chọn email hiện preview kèm Subject / Preheader / From",
+      "applicability": {
+        "role": "unspecified",
+        "state": "campaign Draft đã gắn email, đã nhập Subject line, Preview text và sender",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Mở bước Contents, đọc khối preview."
+      ],
+      "observation_point": "Preview template và các trường Subject / Preheader / From.",
+      "expected_result": "Khi đã chọn email, bước Contents hiện preview template kèm Subject, Preheader và From của campaign.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-contents#KB-085"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-07"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-036",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Chi tiết UI bước Contents khi đã có design trên staging",
+      "applicability": {
+        "role": "unspecified",
+        "state": "campaign Draft đã gắn email; một Draft khác đã gắn email nhưng chưa có Preview text và sender",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Mở bước Contents của Draft thứ nhất, liệt kê các thành phần.",
+        "Mở bước Contents của Draft thứ hai, đọc giá trị Preheader và From."
+      ],
+      "observation_point": "Thành phần UI và placeholder khi trống.",
+      "expected_result": "Theo hiện trạng staging 01/10/2026, lệch = cần điều tra: bước Contents hiện tên design, nút `Edit design`, menu `Design actions` (có `Reset design`), `Subject`, `Preheader` (trống thì `(No preview text yet)`), iframe nội dung, `From` (trống thì `(No sender yet)`) và nút `Back`.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-contents#KB-201"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-07"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-037",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Đổi email của campaign chỉ qua Reset design",
+      "applicability": {
+        "role": "unspecified",
+        "state": "campaign Draft đã gắn email",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Mở menu `Design actions` cạnh nút sửa design, chọn `Reset design`.",
+        "Chọn một email khác."
+      ],
+      "observation_point": "Nội dung bước Contents sau Reset; email mới được gắn.",
+      "expected_result": "Menu `Design actions` có `Reset design` đưa bước Contents về empty state để chọn design khác; không có cách đổi email nào khác ngoài `Reset design`.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-contents#KB-086"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-07"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-038",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Preview ở bước Contents hiện merge tag thô",
+      "applicability": {
+        "role": "unspecified",
+        "state": "campaign Draft có email chứa merge tag",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Mở bước Contents, đọc iframe preview."
+      ],
+      "observation_point": "Merge tag trong iframe.",
+      "expected_result": "Theo hiện trạng staging 01/10/2026, lệch = cần điều tra: iframe hiện nguyên chuỗi merge tag, không thay bằng giá trị.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-contents#KB-087"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-08"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-039",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Cú pháp merge tag được chấp nhận trong nội dung campaign",
+      "applicability": {
+        "role": "unspecified",
+        "state": "campaign Draft",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Soạn email cho campaign có merge tag hai ngoặc (vd `{{contact.first_name}}`), Save.",
+        "Soạn email khác có merge tag một ngoặc (vd `{contact.first_name}`), Save.",
+        "Gửi test (hoặc gửi trên dữ liệu test) và xem tag có được thay giá trị không."
+      ],
+      "observation_point": "Kết quả Save của mỗi cú pháp; giá trị render trong mail.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/campaign-wizard-contents#KB-088"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Cú pháp merge tag đúng cho nội dung campaign là hai ngoặc {{…}} (quyết định PO 02/10/2026, staging 01/10/2026) hay một ngoặc như Jira MTRO-92 §10 (nội dung dùng {{…}} bị từ chối khi lưu)? Cần PO/Dev chốt một cú pháp duy nhất.",
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-wizard-08"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-email-content-026",
+      "observation_guidance": "Chưa có oracle để kết luận pass/fail. Ghi lại cú pháp nào được lưu và được render, đối chiếu khi PO/Dev trả lời câu hỏi kèm theo."
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "campaign-wizard",
+      "risk_ref": "RISK-campaign-wizard-07",
+      "risk_description": "Bước 4 Contents: chọn / tạo / đổi email, giới hạn picker 50 email, đổi nhãn sang Templates",
+      "covered_by_checks": [
+        "CHK-028",
+        "CHK-029",
+        "CHK-030",
+        "CHK-031",
+        "CHK-032",
+        "CHK-033",
+        "CHK-034",
+        "CHK-035",
+        "CHK-036",
+        "CHK-037"
+      ],
+      "kb_ids": [
+        "campaigns/campaign-wizard-contents#KB-076",
+        "campaigns/campaign-wizard-contents#KB-078",
+        "campaigns/campaign-wizard-contents#KB-079",
+        "campaigns/campaign-wizard-contents#KB-080",
+        "campaigns/campaign-wizard-contents#KB-081",
+        "campaigns/campaign-wizard-contents#KB-082",
+        "campaigns/campaign-wizard-contents#KB-084",
+        "campaigns/campaign-wizard-contents#KB-085",
+        "campaigns/campaign-wizard-contents#KB-086",
+        "campaigns/campaign-wizard-contents#KB-201"
+      ],
+      "coverage_status": "PARTIAL"
+    },
+    {
+      "feature_id": "campaign-wizard",
+      "risk_ref": "RISK-campaign-wizard-08",
+      "risk_description": "Merge tag trong nội dung campaign (merge-tag-syntax) và design dùng chung giữa các Draft",
+      "covered_by_checks": [
+        "CHK-038",
+        "CHK-039"
+      ],
+      "kb_ids": [
+        "campaigns/campaign-wizard-contents#KB-087",
+        "campaigns/campaign-wizard-contents#KB-088"
+      ],
+      "coverage_status": "PARTIAL"
+    }
+  ],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
+}

@@ -1,0 +1,465 @@
+{
+  "feature_id": "FEAT-22-storefront-campaign-media-api",
+  "feature_key": "storefront-campaign-media-api",
+  "object_id": "sdk",
+  "checklist_version": "17",
+  "checks": [
+    {
+      "check_id": "CHK-014",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Pre-flight check theme app-block-enabled chạy TRƯỚC publish khi launch multi-store (case enabled=true)",
+      "applicability": {
+        "role": "owner",
+        "state": "campaign 2595 sẵn sàng launch tới instance mới, theme app-block đã enable",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Instance đích có theme app-block đã enable",
+      "steps": [
+        "Bắt đầu thao tác Launch campaign tới instance mới",
+        "Quan sát network request GET /api/instances/{instanceId}/themes/app-block-enabled",
+        "Quan sát thời điểm request này so với POST /api/campaigns/{id}/publish"
+      ],
+      "observation_point": "Thứ tự request và response body của app-block-enabled",
+      "expected_result": "GET .../themes/app-block-enabled trả {enabled:true} và request này chạy TRƯỚC call publish trong cùng thao tác Launch. 1 sample, chỉ case enabled=true — case enabled=false/lỗi CHƯA test, xem CHK-015.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-campaign-media-api#KB-012"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-016",
+      "dimension": "PERMISSION",
+      "layer": "api",
+      "title": "Endpoint bootstrap config cá nhân hoá công khai, không yêu cầu authorization header",
+      "applicability": {
+        "role": "guest (unauthenticated)",
+        "state": "campaign đã publish, biết platform_product_id",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Biết platform_product_id của campaign đã publish (cả 2 store)",
+      "steps": [
+        "Gọi GET https://staging-api.teeinblue.com/api/merchant/campaigns/{platformProductId}.json KHÔNG kèm authorization header nào",
+        "Quan sát status code và body trả về"
+      ],
+      "observation_point": "Status code, presence của authorization header trong request, nội dung body",
+      "expected_result": "Trả 200 không cần authorization header, chỉ cần platform_product_id + shop — quan sát nhất quán ở cả 2 sample (store1, store2). Đây là OBSERVATION về hành vi hiện tại, KHÔNG khẳng định là defect — có thể là thiết kế cố ý cho endpoint bootstrap public. Nếu team xác nhận đây là thiết kế sai, cần escalate riêng, không tự gắn nhãn bug ở đây.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-campaign-media-api#KB-013"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [
+        "Public data exposure tiềm ẩn nếu platform_product_id đoán được/lộ ra — chưa xác nhận defect"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-035",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Preview mo popup mockup dang img + overlay 'tee-printarea', ZERO phan tu [data-layer-id] -- co che MOI o template 1, CHUA doi chieu duoc voi lightbox tinh (CHK-011) hay SVG song (CHK-012)",
+      "applicability": {
+        "role": "guest",
+        "state": "trang san pham campaign 2595, template 1 (mac dinh), ca 2 store",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "Da o trang san pham sau password-gate, khong thieu field bat buoc (template mac dinh)",
+      "steps": [
+        "Bam nut 'Preview' o template mac dinh (khong thieu field bat buoc)",
+        "Quan sat cau truc DOM trong popup (class 'vm--modal'/'tee-dialog-inner'/'tee-gallery-content'/'tee-mockup-image', co [data-layer-id] hay khong)",
+        "Lap lai tren ca 2 store, so sanh cau truc"
+      ],
+      "observation_point": "Cau truc DOM popup Preview tren ca 2 store",
+      "expected_result": "Popup mo voi cau truc 'vm--modal' > 'tee-dialog-inner' > 'tee-gallery-content' > 'tee-mockup-image' (mockup dang <img> + div overlay 'tee-printarea', slider prev/next). ZERO phan tu [data-layer-id] trong popup o ca 2 store; cau truc DOM byte-identical giua 2 store. Quan sat nay KHONG khop verbatim voi CHK-011 (lightbox PhotoSwipe tinh, mo ta SDK v1 cu) lan CHK-012 (SVG song voi id artwork-layer--layer-<n>, mo ta SDK v2 cu) -- ghi nhan la 1 co che/quan sat rieng biet, KHONG duoc dung de sua noi dung CHK-011/CHK-012, va KHONG gan nhan v1/v2 cho quan sat nay cho toi khi doi chieu ro (lien quan CFL-004, xem CHK-038).",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-campaign-media-api#KB-042"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-037",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "Re-verify campaign 2595/product identity va theme khong doi giua 2 lan chay (2026-09-12 vs 2026-09-21) -- loai tru gia thuyet 'campaign khac' la nguyen nhan cua CFL-004",
+      "applicability": {
+        "role": "guest",
+        "state": "campaign 2595 published, ca 2 store",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "Co TIB_STORE_PASSWORD hop le cho store tuong ung",
+      "steps": [
+        "Truy cap lai URL/handle 'qa-explore-campaign-pb-01' da dung cho baseline 2026-09-12",
+        "Ghi lai tieu de san pham va product id (platform_linked_id) cho ca 2 store",
+        "Ghi lai theme id/ten theme cho ca 2 store",
+        "So sanh voi baseline 2026-09-12"
+      ],
+      "observation_point": "Tieu de, product id, theme id tren ca 2 store, so voi baseline",
+      "expected_result": "Tieu de 'QA Explore Campaign PB 01' va product id khop CHINH XAC baseline 2026-09-12 (store1: 8138398629987, store2: 15280333291824) -- xac nhan day LA cung 1 campaign/object, khong phai campaign khac duoc tao lai. Theme khong doi: store1 = Dawn 16.0.0 (id 143116042339), store2 = 'test-data'/Generated Data Theme 1.0.0 (id 188105261360). Ket qua check nay KHONG resolve CFL-004 -- no chi loai tru 1 gia thuyet kha di ('campaign/doi tuong da bi thay doi'), KHONG giai thich tai sao SDK bundle marker cua store1 thay doi (xem CHK-033/CHK-038).",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-campaign-media-api#KB-044"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-069",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-009] Setting lọc media theo variant đang chọn BẬT: gallery chỉ hiện mockup và video đã gán cho variant đang chọn; media không gán hoặc gán variant khác bị ẩn; video đã gán phát được",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign by Product Base đã publish, có 3 variant (A, B, C), 3 mockup, 2 video; assignment: mockup thứ nhất + video thứ nhất → A, mockup thứ hai → B, mockup thứ ba và video thứ hai không gán; setting lọc media theo variant đang chọn bật",
+        "environment": "staging — lượt PASS duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge 2026-10-27, build hash và bundle SDK không ghi, shipped UNKNOWN; build sau merge / production / bundle khác qua CHK-079",
+        "surface_or_device": "storefront product page — gallery SDK, desktop browser"
+      },
+      "precondition": "Dựng campaign tương đương trên store staging được phép. Bật setting lọc media theo variant đang chọn (Store Settings → Product Page Settings, mục Gallery & Mockup) và Save. Sau khi đổi assignment, bấm Update/Sync campaign trước khi mở storefront (thủ tục của lượt gốc — xem CHK-077). Vượt password-gate bằng TIB_STORE_PASSWORD; ghi script src SDK.",
+      "steps": [
+        "Mở product page, chọn variant A; duyệt hết gallery bằng nút next; ghi danh sách slide.",
+        "Bấm play trên slide video; ghi video có phát không.",
+        "Chọn variant B; duyệt hết gallery; ghi danh sách slide và có nút prev/next không."
+      ],
+      "observation_point": "Danh sách slide trong gallery cho từng variant; video phát được hay không.",
+      "expected_result": "Variant A: gallery chỉ có mockup thứ nhất và video thứ nhất; bấm play thì video phát. Variant B: gallery chỉ có mockup thứ hai. Không variant nào hiện mockup thứ ba hay video thứ hai (không gán) hoặc media gán cho variant khác. Lệch = bug theo lượt PASS staging 2026-10-22; build sau merge/production thì ghi build và báo qua CHK-079.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-campaign-media-api#KB-320"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-campaign-media-api#KB-321"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Buyer thấy media không thuộc variant đang chọn hoặc thiếu media đã gán",
+        "Chuỗi nhãn của setting đang conflict ở product-page-settings-config CHK-003 — check này không phụ thuộc chuỗi nhãn"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-070",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "[CBS-009] Setting lọc media theo variant BẬT: đổi variant liên tục (A → B → C → A) thì gallery lọc lại đúng tập của từng variant, không sót item của variant trước",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "như CHK-069 nhưng video thứ hai gán cho variant C",
+        "environment": "staging — lượt PASS duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge, shipped UNKNOWN; build sau merge / production qua CHK-079",
+        "surface_or_device": "storefront product page — gallery SDK, desktop browser"
+      },
+      "precondition": "Như CHK-069 (Update/Sync sau khi đổi assignment).",
+      "steps": [
+        "Chọn lần lượt variant A, B, C rồi A, không reload trang; sau mỗi lần duyệt hết gallery và ghi danh sách slide."
+      ],
+      "observation_point": "Danh sách slide sau mỗi lần đổi variant.",
+      "expected_result": "A → {mockup thứ nhất, video thứ nhất}; B → {mockup thứ hai}; C → {video thứ hai}; chọn lại A → giống lần đầu. Mockup thứ ba (không gán) không xuất hiện lần nào; không còn item của variant trước sau khi đổi. Lệch = bug theo lượt PASS staging 2026-10-22.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-campaign-media-api#KB-320"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Gallery giữ media của variant trước khi đổi variant"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-071",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "[CBS-009] Setting lọc media theo variant BẬT, variant chỉ được gán video (0 mockup): gallery đúng bằng tập video đã gán, không kéo thêm mockup",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign như CHK-069; variant C được gán cả hai video, không mockup nào; các mockup gán cho A/B hoặc không gán",
+        "environment": "staging — lượt PASS duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge, shipped UNKNOWN; build sau merge / production qua CHK-079",
+        "surface_or_device": "storefront product page — gallery SDK, desktop browser"
+      },
+      "precondition": "Như CHK-069.",
+      "steps": [
+        "Chọn variant C; duyệt hết gallery; ghi danh sách slide."
+      ],
+      "observation_point": "Danh sách slide của variant chỉ gán video.",
+      "expected_result": "Gallery có đúng hai video đã gán cho C, không có mockup nào (không áp fallback 'hiện tất cả mockup' khi variant không có mockup gán). Lệch = bug theo lượt PASS staging 2026-10-22.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-campaign-media-api#KB-322"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-campaign-media-api#KB-324"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nhánh variant không gán gì (CHK-073) có fallback hiện toàn bộ — dễ nhầm hai nhánh khi viết automation"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-072",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-009] Setting lọc media theo variant BẬT, variant chỉ được gán một video: gallery chỉ có video đó; Preview không render ảnh preview cá nhân hoá và không lấy mockup không gán làm nguồn preview",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign như CHK-069 có field cá nhân hoá (vd text); variant C chỉ gán video thứ nhất; mockup (có printarea) gán cho variant khác",
+        "environment": "staging — lượt PASS duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge, shipped UNKNOWN; build sau merge / production qua CHK-079",
+        "surface_or_device": "storefront product page — gallery SDK + popup Preview, desktop browser"
+      },
+      "precondition": "Như CHK-069.",
+      "steps": [
+        "Chọn variant C; duyệt hết gallery; ghi danh sách slide.",
+        "Nhập giá trị vào một field cá nhân hoá (vd 'HELLO').",
+        "Bấm Preview; ghi nội dung popup và có phần tử ảnh preview cá nhân hoá (printarea) nào được render không."
+      ],
+      "observation_point": "Slide trong gallery; nội dung popup Preview; phần tử ảnh preview cá nhân hoá.",
+      "expected_result": "Gallery chỉ có video thứ nhất, không có mockup nào của campaign; khu vực Preview không render ảnh preview cá nhân hoá nào và không dùng mockup không gán của campaign làm nguồn preview. Check không phát biểu về form cá nhân hoá hay design của đơn hàng (xem CHK-078). Lệch = bug theo lượt PASS staging 2026-10-22.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-campaign-media-api#KB-323"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-campaign-media-api#KB-322"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Variant chỉ-video không có preview cá nhân hoá — buyer không thấy design trước khi mua (hệ quả order ở CHK-078)"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-073",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "[CBS-009] Setting lọc media theo variant BẬT, variant không được gán mockup lẫn video: gallery hiện toàn bộ mockup và video của campaign",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign như CHK-069; variant C không có assignment nào",
+        "environment": "staging — lượt PASS duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge, shipped UNKNOWN; build sau merge / production qua CHK-079",
+        "surface_or_device": "storefront product page — gallery SDK, desktop browser"
+      },
+      "precondition": "Như CHK-069.",
+      "steps": [
+        "Chọn variant C; duyệt hết gallery; ghi danh sách slide."
+      ],
+      "observation_point": "Danh sách slide của variant không có assignment.",
+      "expected_result": "Gallery hiện toàn bộ media của campaign: cả 3 mockup và cả 2 video. Lệch = bug theo lượt PASS staging 2026-10-22.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-campaign-media-api#KB-324"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-campaign-media-api#KB-322"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-074",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-009] Setting lọc media theo variant TẮT: mọi variant thấy toàn bộ mockup và video, giống nhau; assignment không có tác dụng lọc",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign như CHK-069 với assignment giữ nguyên; setting lọc media theo variant đang chọn tắt",
+        "environment": "staging — lượt PASS duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge, shipped UNKNOWN; build sau merge / production qua CHK-079",
+        "surface_or_device": "storefront product page — gallery SDK, desktop browser"
+      },
+      "precondition": "Tắt setting lọc media theo variant đang chọn và Save; Update/Sync campaign nếu cần; phần còn lại như CHK-069.",
+      "steps": [
+        "Chọn lần lượt variant A, B, C; mỗi lần duyệt hết gallery và ghi danh sách slide."
+      ],
+      "observation_point": "Danh sách slide của từng variant khi setting tắt.",
+      "expected_result": "Với cả A, B, C, gallery đều hiện toàn bộ mockup và video của campaign, giống hệt nhau giữa các variant; video hiện như một mockup bình thường; assignment video ↔ variant không lọc gì. Lệch = bug theo lượt PASS staging 2026-10-22.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-campaign-media-api#KB-325"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Merchant không bật setting nhưng gallery vẫn lọc (hoặc ngược lại)"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-075",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-009] Setting lọc media theo variant BẬT, video không bật 'Always load first': gallery xếp item đã gán theo thứ tự list media của campaign; video ở giữa list giữ đúng vị trí",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign như CHK-069; list media xếp mockup thứ nhất → video thứ nhất → mockup thứ hai → ...; variant A được gán ba item đó; 'Always load first' của video tắt",
+        "environment": "staging — lượt PASS duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge, shipped UNKNOWN; build sau merge / production qua CHK-079",
+        "surface_or_device": "storefront product page — gallery SDK + portal list media, desktop browser"
+      },
+      "precondition": "Kéo video thứ nhất vào giữa list media trong campaign editor; Update/Sync; phần còn lại như CHK-069.",
+      "steps": [
+        "Ghi thứ tự list media trong campaign editor.",
+        "Mở storefront, chọn variant A; ghi thứ tự slide (và slide active đầu tiên)."
+      ],
+      "observation_point": "Thứ tự slide của variant A so với thứ tự list media.",
+      "expected_result": "Gallery của A theo đúng thứ tự mockup thứ nhất → video thứ nhất → mockup thứ hai; video không bị đẩy xuống cuối hay kéo lên đầu; list media trong campaign editor có cùng thứ tự. Lệch = bug theo lượt PASS staging 2026-10-22.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-campaign-media-api#KB-326"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-campaign-media-api#KB-327"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nhánh 'Always load first' bật là known defect BUG-359 (CHK-076), không thuộc check này"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-080",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-013] Response origin của campaigns/<shopify product id>.json gọi với tham số v chưa từng dùng (CF-Cache-Status: MISS) có các key resource_type, config, has_subscription, is_development, is_plus, sku_enabled, shop_name — cho campaign và platform product",
+      "applicability": {
+        "role": "guest (unauthenticated) — gọi API trực tiếp như SDK storefront",
+        "state": "campaign và platform product đã publish trên store staging; request gọi trực tiếp với giá trị v chưa từng dùng và response có CF-Cache-Status: MISS. KHÔNG áp cho URL ?v=1 mà SDK gọi khi render (xem CHK-084, CHK-086, CHK-087)",
+        "environment": "staging — chỉ build tại lượt PASS TC-TIB-7507 (2026-10-28 ~10:30 UTC, sau commit 8731f3a deploy staging, trước khi 2 PR TIB-5203 merge 2026-10-29; build hash không rõ, shipped UNKNOWN); build sau merge / production qua CHK-098",
+        "surface_or_device": "api — GET https://staging-api.teeinblue.com/api/merchant/campaigns/<shopify product id>.json?shop=<shop>.myshopify.com&v=<giá trị chưa từng dùng> (curl/HTTP client, không qua trang storefront)"
+      },
+      "precondition": "Có ít nhất 1 campaign và 1 platform product đã publish trên store staging được phép (fixture gốc: campaign #3279 trên store không thuộc explorer và store không thuộc explorer, campaign #3270 và platform product #602 trên store không thuộc explorer); biết shopify product id của từng cái. Chọn giá trị v chưa từng dùng (vd timestamp hiện tại). Ghi build/ngày chạy.",
+      "steps": [
+        "Gọi GET https://staging-api.teeinblue.com/api/merchant/campaigns/<shopify product id>.json?shop=<shop>.myshopify.com&v=<giá trị chưa từng dùng>; ghi status, header CF-Cache-Status và body.",
+        "Nếu CF-Cache-Status khác MISS: đổi sang một giá trị v khác chưa từng dùng và gọi lại; chỉ đánh giá response có CF-Cache-Status: MISS.",
+        "Kiểm tra body có từng key: resource_type, config, has_subscription, is_development, is_plus, sku_enabled, shop_name.",
+        "Lặp lại cho ít nhất 1 campaign và 1 platform product."
+      ],
+      "observation_point": "Header CF-Cache-Status và danh sách key trong body của response, cho từng campaign/platform product.",
+      "expected_result": "Mỗi response có CF-Cache-Status: MISS (gọi với v chưa từng dùng) có đủ 7 key resource_type, config, has_subscription, is_development, is_plus, sku_enabled, shop_name, cho cả campaign lẫn platform product. Check chỉ kiểm sự có mặt của 7 key — không kiểm giá trị của chúng (giá trị resource_type: CHK-082) và không kiểm các key còn lại. Không áp cho URL ?v=1 mà SDK gọi khi render. Lệch = bug trên staging tại build của lượt PASS 2026-10-28 ~10:30 UTC; build sau merge/production thì ghi build và báo qua CHK-098.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-campaign-media-api#KB-350"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-campaign-media-api#KB-013",
+        "sdk/storefront-campaign-media-api#KB-351",
+        "sdk/storefront-campaign-media-api#KB-353"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "SDK dựng form từ response này; thiếu key có thể làm form storefront không tải",
+        "Oracle hẹp: 1 lượt TC-TIB-7507 trước khi 2 PR merge, build hash không rõ, production chưa xác nhận — xem CHK-098",
+        "Response URL ?v=1 mà SDK gọi có thể vẫn là bản cũ đã cache ở lượt quan sát (CHK-084, CHK-086, CHK-087) — không dùng check này để đánh giá URL đó"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-081",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-013] Response origin của campaigns/<shopify product id>.json gọi với tham số v chưa từng dùng (CF-Cache-Status: MISS) không còn các field đã bỏ ở commit 8731f3a — cho campaign và platform product",
+      "applicability": {
+        "role": "guest (unauthenticated) — gọi API trực tiếp như SDK storefront",
+        "state": "campaign và platform product đã publish trên store staging; request gọi trực tiếp với giá trị v chưa từng dùng và response có CF-Cache-Status: MISS. KHÔNG áp cho URL ?v=1 mà SDK gọi khi render (xem CHK-084, CHK-086, CHK-087)",
+        "environment": "staging — chỉ build tại lượt PASS TC-TIB-7507 (2026-10-28 ~10:30 UTC, sau commit 8731f3a deploy staging, trước khi 2 PR TIB-5203 merge 2026-10-29; build hash không rõ, shipped UNKNOWN); build sau merge / production qua CHK-098",
+        "surface_or_device": "api — GET https://staging-api.teeinblue.com/api/merchant/campaigns/<shopify product id>.json?shop=<shop>.myshopify.com&v=<giá trị chưa từng dùng> (curl/HTTP client, không qua trang storefront)"
+      },
+      "precondition": "Như CHK-080 (campaign và platform product đã publish; giá trị v chưa từng dùng; chỉ đánh giá response CF-Cache-Status: MISS).",
+      "steps": [
+        "Gọi GET .../api/merchant/campaigns/<shopify product id>.json?shop=<shop>.myshopify.com&v=<giá trị chưa từng dùng>; ghi status, CF-Cache-Status và body (đổi v nếu không phải MISS).",
+        "Với mọi phần tử artworks[]: ghi có/không key description, is_locked, status.",
+        "Với mọi phần tử campaign_products[]: ghi có/không created_at, updated_at. Với product: ghi có/không internal_tags, status. Với mọi phần tử variants[]: ghi có/không created_at, updated_at, deleted_at.",
+        "Lặp lại cho ít nhất 1 campaign và 1 platform product."
+      ],
+      "observation_point": "Có/không từng field đã bỏ trong body response CF-Cache-Status: MISS, cho từng campaign/platform product.",
+      "expected_result": "Mỗi response có CF-Cache-Status: MISS (gọi với v chưa từng dùng) không có field nào trong: artworks[].description, artworks[].is_locked, artworks[].status; campaign_products[].created_at, campaign_products[].updated_at; product.internal_tags, product.status; variants[].created_at, variants[].updated_at, variants[].deleted_at — cho cả campaign lẫn platform product. Check chỉ kiểm các field này vắng mặt — không kiểm artworks[] chỉ còn những key nào (CHK-083) và không kiểm shape global_options/global_option_ids (CHK-084). Không áp cho URL ?v=1 mà SDK gọi khi render. Lệch = bug trên staging tại build của lượt PASS 2026-10-28 ~10:30 UTC; build sau merge/production thì ghi build và báo qua CHK-098.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-campaign-media-api#KB-352"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-campaign-media-api#KB-353",
+        "sdk/storefront-campaign-media-api#KB-354",
+        "sdk/storefront-campaign-media-api#KB-013"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Consumer khác (theme custom, renderer, public API) còn đọc field đã bỏ chưa ai kiểm — xem CHK-099",
+        "Oracle hẹp: 1 lượt TC-TIB-7507 trước khi 2 PR merge, build hash không rõ, production chưa xác nhận — xem CHK-098",
+        "URL ?v=1 mà SDK gọi có thể vẫn trả bản cũ còn các field này ở lượt quan sát — không dùng check này để đánh giá URL đó"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    }
+  ],
+  "coverage_by_feature_and_risk": [],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  }
+}

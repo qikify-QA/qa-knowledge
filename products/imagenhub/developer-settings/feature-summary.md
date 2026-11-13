@@ -1,5 +1,5 @@
 # Developer settings (nhóm 'Dev' trên sidebar) — API Keys, Provider Keys (BYOK), Webhooks, Alerts, AI Assistant (MCP)
-**Published context version:** 2
+**Published context version:** 3
 
 **Product:** ImagenHub · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-08
 

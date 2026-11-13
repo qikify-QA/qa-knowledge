@@ -1,0 +1,318 @@
+{
+  "feature_id": "FEAT-03-quantity-break-storefront-and-cart",
+  "feature_key": "quantity-break-storefront-and-cart",
+  "object_id": "quantity-break",
+  "checklist_version": "v2",
+  "checks": [
+    {
+      "check_id": "CHK-024",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Thay đổi quantity trực tiếp trong cart re-evaluate discount ngay, real-time",
+      "applicability": {
+        "role": "buyer",
+        "state": "threshold_met_tier_applied",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Cart đã có item đạt 1 tier, offer active.",
+      "steps": [
+        "Tăng/giảm quantity trực tiếp trong cart (không quay lại PDP)."
+      ],
+      "observation_point": "Giá/rate hiển thị trong cart ngay sau khi đổi quantity.",
+      "expected_result": "Discount Function tính lại ngay theo tier mới đạt được — không cần refresh trang sản phẩm, không bị 'lock' rate tại thời điểm Add-to-cart.",
+      "oracle": {
+        "kb_ids": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-029"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "quantity-break/quantity-break-storefront-and-cart#KB-089"
+      ],
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-025",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Automatic discount áp dụng ngay trong cart, không cần tới checkout",
+      "applicability": {
+        "role": "buyer",
+        "state": "threshold_met_tier_applied",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Discount method = automatic; cart đạt ngưỡng 1 tier.",
+      "steps": [
+        "Quan sát giá hiển thị ngay trong cart (chưa vào checkout)."
+      ],
+      "observation_point": "Giá hiển thị trong cart.",
+      "expected_result": "Discount đã áp dụng và hiển thị ngay trong cart; không cần vào checkout mới thấy giảm giá.",
+      "oracle": {
+        "kb_ids": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-028"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-028",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Widget không có nút ATC riêng — tích hợp nút ATC gốc theme, trigger theo variant",
+      "applicability": {
+        "role": "buyer",
+        "state": "threshold_met_tier_applied",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "PDP của sản phẩm trong trigger scope, theme có nút ATC gốc.",
+      "steps": [
+        "Quan sát widget có nút Add to Cart riêng hay không.",
+        "Chọn variant khác, quan sát trigger logic đổi theo variant."
+      ],
+      "observation_point": "Số nút ATC hiển thị trên trang; hành vi trigger khi đổi variant.",
+      "expected_result": "Widget KHÔNG có nút ATC riêng của nó — dùng chung nút ATC gốc của theme; trigger logic áp dụng theo variant đang chọn, không theo toàn sản phẩm.",
+      "oracle": {
+        "kb_ids": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-022"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "quantity-break/quantity-break-storefront-and-cart#KB-088"
+      ],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-045",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "Widget graceful-degrade trên sản phẩm 1 variant hoặc theme không có variant selector",
+      "applicability": {
+        "role": "buyer",
+        "state": "threshold_met_tier_applied",
+        "environment": "documented",
+        "theme_or_device": "theme không có variant selector gốc sản phẩm 1 variant"
+      },
+      "precondition": "Sản phẩm trong trigger scope chỉ có 1 variant, HOẶC theme không có variant selector gốc.",
+      "steps": [
+        "Mở PDP của sản phẩm này.",
+        "Quan sát widget có lỗi/màn trắng hay bỏ qua variant dropdown gọn gàng."
+      ],
+      "observation_point": "Trạng thái render của widget (có lỗi hay không, có variant dropdown hay không).",
+      "expected_result": "Widget bỏ qua variant dropdown một cách gọn gàng (graceful-degrade), KHÔNG lỗi, KHÔNG màn trắng, các phần còn lại (tier/giá) vẫn hoạt động.",
+      "oracle": {
+        "kb_ids": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-068"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-061",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[Cần xác nhận — KHÔNG dùng 1 phía làm oracle] DCONF-001: automatic discount có áp dụng khi app block/theme embed bị tắt hay không",
+      "applicability": {
+        "role": "buyer",
+        "state": "app_block_theme_embed_disabled",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "App block/theme embed của Quantity Break đang bị TẮT (disabled) trên theme, cart vẫn khớp 1 tier hợp lệ.",
+      "steps": [
+        "Tắt app block/theme embed của app trên theme.",
+        "Đưa cart đạt ngưỡng 1 tier hợp lệ.",
+        "Quan sát discount có được áp dụng hay không."
+      ],
+      "observation_point": "Discount có xuất hiện trong cart hay không khi app block/theme embed đang tắt.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-060",
+          "quantity-break/quantity-break-storefront-and-cart#KB-061"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "DCONF-001: Automatic discount của Quantity Break có áp dụng khi app block/theme embed bị tắt hay không? Banner UI (KB-060) nói 'có vẫn hoạt động', nhưng fix QVD-167 sau 1 incident thật (77 đơn live, KB-062) cho thấy discount Function SKIP khi app block/theme-embed tắt (KB-061). Cần PO/Dev xác nhận: banner đang là copy cũ chưa update sau fix, hay 'app block' và 'theme embed' là 2 khái niệm Shopify khác nhau mà fix chỉ cover 1 trong 2, hay đây là 1 gap thật cần fix thêm.",
+      "related_kb_ids": [
+        "quantity-break/quantity-break-display-and-schedule#KB-083"
+      ],
+      "regression_watch_kb_ids": [
+        "quantity-break/quantity-break-storefront-and-cart#KB-062"
+      ],
+      "risk_refs": [
+        "DCONF-001"
+      ],
+      "priority": "P1",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-quantity-break-006",
+      "observation_guidance": "KHÔNG xác định — 2 nguồn mâu thuẫn trực tiếp, UNRESOLVED (DCONF-001): (a) banner trên UI tạo offer nói 'Automatic discounts work even if the app block is disabled' (KB-060); (b) discount Function đã được regression-verify sau fix QVD-167 là SKIP áp dụng discount nếu app block/theme-embed không enable (KB-061), xuất phát từ 1 incident thật (77 đơn live bị discount sai khi merchant tin app đang tắt — KB-062). KHÔNG dùng 1 trong 2 phía làm oracle PASS/FAIL cho tới khi PO/Dev xác nhận phía nào đúng (banner là copy cũ/stale, hay 'app block' và 'theme embed' là 2 khái niệm khác nhau mà fix không cover hết, hay đây là 1 gap thật)."
+    },
+    {
+      "check_id": "CHK-062",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[Cần xác nhận] Discount tính đúng cùng surcharge của 9 app personalization/customization (QVD-90)",
+      "applicability": {
+        "role": "buyer",
+        "state": "checkout_with_overlapping_offer_types",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Sản phẩm có cả offer Quantity Break active VÀ ≥1 trong 9 app personalization/customization (Tepo, Globo, OPTIS, Easify, Avis, Variant Option, Infinite, Hulk, LPO) đang thêm surcharge.",
+      "steps": [
+        "Đưa cart đạt ngưỡng 1 tier Quantity Break, đồng thời có surcharge từ 1 trong 9 app trên.",
+        "Kiểm tra cart/checkout: discount và surcharge có cùng hiển thị rõ, không double-count, không miss khoản nào."
+      ],
+      "observation_point": "Giá cuối cùng ở cart/checkout, breakdown giữa discount và surcharge.",
+      "expected_result": "KHÔNG xác định/CHƯA TEST — đây là requirement đã viết (QVD-90) nhưng edge case đang ở trạng thái 'On hold', CHƯA được QA test/phân tích thực tế. KHÔNG dùng yêu cầu này làm oracle PASS/FAIL cho tới khi có xác nhận thực tế bằng 1 lần test live.",
+      "oracle": {
+        "kb_ids": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-059"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": "Quantity-break discount có tính đúng cùng lúc với surcharge từ 9 app personalization/customization liệt kê trong QVD-90 (Tepo, Globo, OPTIS, Easify, Avis, Variant Option, Infinite, Hulk, LPO) không — không double-count, không miss, cả 2 khoản hiện rõ ở cart/checkout? Requirement đã viết nhưng đang 'On hold', chưa có xác nhận QA test thực tế nào.",
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "UNKNOWN"
+    },
+    {
+      "check_id": "CHK-065",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[Cần xác nhận] Portal preview pricing khớp storefront live rendering — chỉ 1 sample, chưa đủ để tổng quát hoá",
+      "applicability": {
+        "role": "buyer",
+        "state": "threshold_met_tier_applied",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Offer đã cấu hình với Portal tier preview hiển thị giá cho mỗi tier.",
+      "steps": [
+        "Ghi nhận giá hiển thị ở Portal tier preview cho mỗi tier.",
+        "Mở storefront PDP của sản phẩm tương ứng, so sánh giá hiển thị ở mỗi tier với Portal preview."
+      ],
+      "observation_point": "Giá ở Portal preview so với giá render thực tế trên storefront, cho từng tier.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-027"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Portal tier-settings preview pricing có LUÔN khớp chính xác với giá render thực tế trên storefront cho mọi offer/sản phẩm, hay ví dụ khớp đã quan sát (offer 'Offer 15') chỉ là 1 trường hợp đơn lẻ? Cần thêm ≥1 sample độc lập khác (sản phẩm/offer khác) để nâng cấp thành rule tổng quát CONFIRMED_EXPECTED.",
+      "related_kb_ids": [
+        "quantity-break/quantity-break-display-and-schedule#KB-086"
+      ],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-quantity-break-007",
+      "observation_guidance": "CHƯA ĐỦ ĐỂ TỔNG QUÁT HOÁ — 1 ví dụ live duy nhất (offer 'Offer 15', product 'Copper Light' $60) cho thấy khớp hoàn toàn (1 pack $54.00, 2 packs $108.00, 3 packs $144.00), nhưng đây chỉ là 1 ví dụ quan sát được (1 sample), chưa được xác nhận là 1 rule tổng quát đúng cho mọi offer/sản phẩm."
+    },
+    {
+      "check_id": "CHK-074",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[Cần xác nhận] Toggle hiện/ẩn selector riêng của widget đồng bộ động với theme",
+      "applicability": {
+        "role": "buyer",
+        "state": "threshold_met_tier_applied",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Merchant đã bật toggle cho widget hiện variant selector riêng của nó.",
+      "steps": [
+        "Chọn 1 giá trị variant ở dropdown GỐC của theme (ví dụ Size=S).",
+        "Quan sát variant selector/giá trong widget Quantity Break có phản ánh đúng lựa chọn đó không."
+      ],
+      "observation_point": "Giá trị variant/giá hiển thị trong widget sau khi đổi variant ở theme dropdown.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-023"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Khi merchant bật toggle cho widget hiện variant selector riêng, selector đó có thực sự đồng bộ động 2 chiều với variant selector gốc của theme, hay là 2 selector độc lập có thể lệch nhau? Tài liệu tự gắn cờ chưa chắc cho phần đồng bộ này.",
+      "related_kb_ids": [
+        "quantity-break/quantity-break-storefront-and-cart#KB-087"
+      ],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-quantity-break-015",
+      "observation_guidance": "KHÔNG xác định — tài liệu tự gắn cờ hedge cho phần 'đồng bộ động với theme selector gốc'; cần xác nhận trực tiếp trước khi coi đây là ground truth."
+    },
+    {
+      "check_id": "CHK-080",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "Add to cart với widget Quantity Break: số lượng = tier đang chọn, property ẩn; không chọn tier thì theme thêm 1 đơn vị",
+      "applicability": {
+        "role": "buyer (guest)",
+        "state": "PDP product thuộc offer Quantity Break",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "Offer Quantity Break 3 tier đang Running; cart rỗng; DevTools Network mở.",
+      "steps": [
+        "Chọn tier '2 packs', bấm Add to cart của theme; ghi request add và nội dung cart (số lượng, property của line).",
+        "Xoá cart. Bỏ chọn mọi tier (click lại tier đang chọn), bấm Add to cart; ghi request và cart.",
+        "Trong cart, tăng số lượng line không property từ 1 lên 2; ghi discount."
+      ],
+      "observation_point": "Request add (endpoint, quantity, property); số lượng và discount trong cart.",
+      "expected_result": "(baseline staging 2026-10-18; lệch = cần điều tra) Có tier được chọn: widget chặn submit của theme, gửi POST /cart/add.js?qvl-discount với quantity = số lượng của tier (1/2/3) và property ẩn _qvl-volume-id = id offer, rồi theme chuyển sang /cart. Không tier nào được chọn: form gốc của theme gửi POST /cart/add với 1 đơn vị, không property. Line không property vẫn nhận discount khi số lượng đạt tier (1→2 trong cart → giảm 10%).",
+      "oracle": {
+        "kb_ids": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-088"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Đường add-to-cart của widget Quantity Break trên staging (add.js?qvl-discount với số lượng = tier và property _qvl-volume-id; không chọn tier thì theme thêm 1 đơn vị không property) có phải hành vi mong muốn? Property này còn ảnh hưởng mã thắng khi product thuộc nhiều offer (object:KB-026) — cần xác nhận vai trò của property.",
+      "related_kb_ids": [
+        "quantity-break/quantity-break-storefront-and-cart#KB-022",
+        "quantity-break/quantity-break-storefront-and-cart#KB-029",
+        "discount-offers/offer-overlap-and-stacking#KB-026"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-quantity-break-024"
+    }
+  ],
+  "coverage_by_feature_and_risk": [],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
+}

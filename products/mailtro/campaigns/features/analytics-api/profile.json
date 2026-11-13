@@ -1,0 +1,349 @@
+{
+  "feature_id": "analytics-api",
+  "feature_key": "analytics-api",
+  "name": "Analytics API cho campaign report và analytics toàn cục",
+  "user_goal": "Hệ thống ngoài/MCP đọc số liệu campaign và global qua analytics API với scope và định dạng đúng.",
+  "stable_since_version": "v1",
+  "actors": [
+    {
+      "role": "api-caller (hệ thống bên ngoài dùng API key)",
+      "permission_observed": "Scope `campaigns` cần quyền `campaigns:read`, scope `automations` cần `automations:read`, scope `all` cần cả hai; key thiếu quyền bị trả 403.",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-186",
+        "campaigns/analytics-api#KB-182"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "API `GET /api/teams/{slug}/campaigns/{id}/report` và `GET /api/teams/{slug}/analytics?scope=…`",
+      "precondition": "API key có scope đọc tương ứng.",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-180",
+        "campaigns/analytics-api#KB-182",
+        "campaigns/analytics-api#KB-186"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Analytics API cho campaign",
+      "description": "Endpoint report của một campaign (campaign chưa gửi trả 404), object `report` trong danh sách campaign, endpoint `broadcast`; thời gian phải UTC+0, chỉ trả số đếm kèm `as_of`, phân quyền theo scope API key.",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-180",
+        "campaigns/analytics-api#KB-181",
+        "campaigns/analytics-api#KB-183",
+        "campaigns/analytics-api#KB-184",
+        "campaigns/analytics-api#KB-186"
+      ]
+    },
+    {
+      "name": "Analytics global và MCP",
+      "description": "Endpoint analytics với `scope` all/campaigns/automations, không tính transactional, chỉ số đếm, unsubscribe theo ngày event, totals có thể nhỏ hơn tổng sources; route UI `/analytics` hiện trang trắng; MCP report chưa có mô tả.",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-130",
+        "campaigns/campaign-report-metrics#KB-131",
+        "campaigns/analytics-api#KB-182",
+        "campaigns/analytics-api#KB-185",
+        "campaigns/analytics-api#KB-187",
+        "campaigns/analytics-api#KB-188",
+        "campaigns/analytics-api#KB-189"
+      ]
+    }
+  ],
+  "state_transitions": [],
+  "confirmed_rules": [
+    {
+      "statement": "Theo Jira MTRO-94 ([BE] Analytic, QA Review; tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1, đọc 07/10/2026), có endpoint `GET /api/teams/{slug}/campaigns/{id}/report` trả report của một campaign; gọi report của campaign chưa gửi trả 404.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-180"
+      ]
+    },
+    {
+      "statement": "Theo Jira MTRO-94 (tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1, đọc 07/10/2026), response danh sách campaigns có object `report: {sent, delivered, unique_opens}`, và endpoint `/campaigns/{id}/broadcast` trả segment, template và snapshot rules của lần gửi.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-181"
+      ]
+    },
+    {
+      "statement": "Theo Jira MTRO-94 (tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1, đọc 07/10/2026), có endpoint `GET /api/teams/{slug}/analytics` với tham số `scope` nhận một trong ba giá trị `all`, `campaigns`, `automations`; trang analytics global không tính email transactional.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-182"
+      ]
+    },
+    {
+      "statement": "Theo Jira MTRO-94 (tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1, đọc 07/10/2026), thời gian gửi lên API analytics phải luôn là UTC+0 dạng `2026-10-01T07:00:00` (có hoặc không có hậu tố `Z`); thời gian kèm offset, chỉ có ngày hoặc ở dạng tương đối bị trả 422.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-183"
+      ]
+    },
+    {
+      "statement": "Theo Jira MTRO-94 (tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1, đọc 07/10/2026), API analytics chỉ trả số đếm (không trả rate); vì số liệu tăng dần theo thời gian nên response luôn có trường `as_of` và không cache.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-184"
+      ]
+    },
+    {
+      "statement": "Theo Jira MTRO-94 (tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1, đọc 07/10/2026), gọi analytics với scope `campaigns` cần quyền `campaigns:read`, scope `automations` cần `automations:read`, scope `all` cần cả hai; key thiếu quyền tương ứng bị trả 403.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-186"
+      ],
+      "tags": [
+        "permission"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Trên staging (ghi trong QA KB Mailtro \"Campaign report & Analytics API\" v1, ngày khảo sát không ghi riêng), route `/analytics` hiện trang trắng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-188"
+      ],
+      "status": "CURRENT_STATE"
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "statement": "Analytics API phân quyền theo scope API key: `campaigns:read`, `automations:read`, cả hai cho scope `all`; thiếu quyền trả 403.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-186"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      {
+        "item": "Trang `/campaigns/:id/report`: header, 5 tab của campaign Sent; bố cục 4 tab cũ của campaign chưa gửi",
+        "kb_refs": [
+          "campaigns/campaign-report#KB-119",
+          "campaigns/campaign-report#KB-141",
+          "campaigns/campaign-report#KB-142",
+          "campaigns/campaign-report#KB-170",
+          "campaigns/campaign-report#KB-171"
+        ]
+      },
+      {
+        "item": "Thẻ metric + tooltip, bảng Bounce reasons, Opens over time, Clicks by link",
+        "kb_refs": [
+          "campaigns/campaign-report#KB-143",
+          "campaigns/campaign-report#KB-144",
+          "campaigns/campaign-report#KB-155",
+          "campaigns/campaign-report#KB-159",
+          "campaigns/campaign-report#KB-161",
+          "campaigns/campaign-report#KB-162"
+        ]
+      },
+      {
+        "item": "Khối Campaign audience, Campaign content, dialog preview nội dung đã gửi",
+        "kb_refs": [
+          "campaigns/campaign-report#KB-146",
+          "campaigns/campaign-report#KB-150",
+          "campaigns/campaign-report#KB-151"
+        ]
+      },
+      {
+        "item": "Route `/analytics` (trang trắng)",
+        "kb_refs": [
+          "campaigns/analytics-api#KB-188",
+          "_product-level#KB-P-061",
+          "_product-level#KB-P-049"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "item": "`GET /api/teams/{slug}/campaigns/{id}/report` (campaign chưa gửi → 404)",
+        "kb_refs": [
+          "campaigns/analytics-api#KB-180"
+        ]
+      },
+      {
+        "item": "Danh sách campaigns có object `report: {sent, delivered, unique_opens}`; `/campaigns/{id}/broadcast` trả segment, template, snapshot rules và 6 raw count",
+        "kb_refs": [
+          "campaigns/analytics-api#KB-181",
+          "campaigns/campaign-report-metrics#KB-135",
+          "campaigns/campaign-report#KB-168"
+        ]
+      },
+      {
+        "item": "`GET /api/teams/{slug}/analytics?scope=all|campaigns|automations`, thời gian UTC+0, response có `as_of`",
+        "kb_refs": [
+          "campaigns/analytics-api#KB-182",
+          "campaigns/analytics-api#KB-183",
+          "campaigns/analytics-api#KB-184",
+          "campaigns/analytics-api#KB-185"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "Sáu raw count `delivered`, `bounced`, `complained`, `unsubscribed`, `opens`, `clicks` tính bằng COUNT trên `ses_events` và hai sổ ledger lúc đọc",
+        "kb_refs": [
+          "campaigns/campaign-report-metrics#KB-135",
+          "campaigns/campaign-report-metrics#KB-136",
+          "_product-level#KB-P-073"
+        ]
+      },
+      {
+        "item": "Cờ bot `is_bot_event` từ 07/08/2026; `segment_rules_snapshot` lúc gửi",
+        "kb_refs": [
+          "campaigns/campaign-report-metrics#KB-139",
+          "campaigns/campaign-report#KB-146"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "target": "automations / automation-reports",
+      "relation": "shared_metric_definitions",
+      "note": "Định nghĩa số liệu sống ở campaign-report và được Automation Reports dùng chung.",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-120",
+        "campaigns/campaign-report-metrics#KB-121",
+        "campaigns/campaign-report-metrics#KB-122",
+        "campaigns/analytics-api#KB-182"
+      ]
+    },
+    {
+      "target": "workspace-settings / api-keys-and-public-api",
+      "relation": "permission_source",
+      "note": "Scope API key `campaigns:read` / `automations:read`.",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-186"
+      ]
+    },
+    {
+      "target": "workspace-settings / claude-connector",
+      "relation": "consumer",
+      "note": "API analytics phục vụ cả Claude MCP; tool chưa được mô tả.",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-187",
+        "_product-level#KB-P-029"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "statement": "Theo Jira MTRO-94 (tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1, đọc 07/10/2026), trên trang analytics global `totals` có thể nhỏ hơn tổng các `sources` vì một người nhận cả campaign lẫn automation chỉ được tính 1.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-185"
+      ],
+      "risk_type": "undecided_or_bundle_only"
+    },
+    {
+      "statement": "Theo Jira MTRO-60 \"MCP for report\" (Story In Progress, mô tả trống; ghi trong QA KB Mailtro \"Campaign report & Analytics API\" v1), API analytics phục vụ cả giao diện report lẫn Claude MCP; chưa có mô tả tool hay dữ liệu trả về.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-187"
+      ],
+      "risk_type": "undecided_or_bundle_only"
+    },
+    {
+      "statement": "Theo QA KB Mailtro \"Campaign report & Analytics API\" v1, chưa chốt có trang giao diện `/analytics` hay không (GAP-05); hiện analytics global mới được kiểm ở mức API.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-189"
+      ],
+      "risk_type": "undecided_or_bundle_only"
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-07",
+    "basis": "Epic Jira MTRO-16, Jira MTRO-31/64/82/94 tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1 (đọc 07/10/2026); quyết định PO / Dev BE 17/09–24/09/2026, PO/BA 02/10/2026; khảo sát staging 08/09 và 01/10/2026."
+  },
+  "unknown_areas": [
+    {
+      "question": "Có trang giao diện `/analytics` (analytics global) không, hay analytics global chỉ có ở mức API?",
+      "why_it_matters": "Route `/analytics` hiện trang trắng.",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-130",
+        "campaigns/analytics-api#KB-188",
+        "campaigns/analytics-api#KB-189"
+      ],
+      "oq_id": "OQ-campaigns-032"
+    },
+    {
+      "question": "Hợp đồng đầy đủ của Analytics API và MCP report là gì: method / route của list campaigns và `/campaigns/{id}/broadcast`, shape response report, tên tham số khoảng thời gian và mặc định, tên hai sổ ledger dùng để COUNT, tool MCP (Jira MTRO-60 trống)?",
+      "why_it_matters": "Không viết được test API chính xác cho các endpoint chỉ được liệt kê tên.",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-180",
+        "campaigns/analytics-api#KB-181",
+        "campaigns/analytics-api#KB-183",
+        "campaigns/analytics-api#KB-187",
+        "campaigns/campaign-report-metrics#KB-136"
+      ],
+      "oq_id": "OQ-campaigns-036"
+    },
+    {
+      "question": "Role nào (Owner, Admin, role thứ 3 đang tranh chấp tên Member hay Marketer/Editor, custom role) được tạo, Save, Send, Schedule, xoá campaign và xem report; quyền có được chặn ở API không?",
+      "why_it_matters": "Toàn bộ tài liệu Campaigns không ghi role, staging chỉ khảo sát bằng Owner, Admin chưa từng được quan sát; không viết được expected result cho kiểm thử phân quyền.",
+      "kb_refs": [
+        "campaigns/campaign-send-and-schedule#KB-102",
+        "campaigns/campaign-send-and-schedule#KB-104",
+        "campaigns/campaign-send-and-schedule#KB-107",
+        "campaigns/campaign-list-and-folders#KB-023",
+        "campaigns/analytics-api#KB-186",
+        "_product-level#KB-P-051"
+      ],
+      "oq_id": "OQ-campaigns-018"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "coverage_matrix": [
+    {
+      "layer": "api",
+      "role": "api-caller",
+      "state": "report campaign, list, analytics global, scope quyền, định dạng thời gian",
+      "covered": true,
+      "note": "Jira MTRO-94 (QA Review)",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-180",
+        "campaigns/analytics-api#KB-182",
+        "campaigns/analytics-api#KB-183",
+        "campaigns/analytics-api#KB-186"
+      ],
+      "feature_id": "campaign-report",
+      "environment": "documented"
+    },
+    {
+      "layer": "mcp",
+      "role": "unspecified",
+      "state": "MCP đọc report",
+      "covered": false,
+      "note": "Jira MTRO-60 trống",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-187"
+      ],
+      "feature_id": "campaign-report",
+      "environment": "documented"
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": []
+}

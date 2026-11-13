@@ -1,0 +1,846 @@
+{
+  "feature_id": "FEAT-03-gen-ai-layer-config",
+  "feature_key": "gen-ai-layer-config",
+  "object_id": "artwork-layer-config",
+  "checklist_version": "18",
+  "checks": [
+    {
+      "check_id": "CHK-005",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Photo Upload › Multiple Uploads (multiple-uploads) — KHÔNG có accordion POPULATE VALUES, có field 'GenAI service*'/'Maximum photos*' riêng",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "layer type Photo Upload › Multiple Uploads (data-type multiple-uploads)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có 1 layer Photo Upload › Multiple Uploads.",
+      "steps": [
+        "Thêm layer.",
+        "Kiểm tra danh sách accordion (có POPULATE VALUES không).",
+        "Mở PERSONALIZATION SETTINGS, kiểm tra field GenAI service*/Maximum photos*/Output Type."
+      ],
+      "observation_point": "Accordion POPULATE VALUES có mặt không; field GenAI service*/Maximum photos* có mặt không; field 'Mark this option as required' có mặt không.",
+      "expected_result": "KHÔNG có accordion POPULATE VALUES (1/13 type theo KB-010 legacy). Có field 'Output Type'/'Maximum photos*'/'GenAI service*: Select a service/Gemini/OpenAI/Flux/ImagenHub'/'Image effects after generating'/'Fit mode'. KHÔNG có 'Mark this option as required' (khác photo, KB-017).",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-018",
+          "artwork-editor/_object-level#KB-010"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [
+        "[MỚI, ] Bổ sung, KHÔNG mâu thuẫn: CHK-035..041 mô tả chi tiết GenAI provider-conditional field (Gemini/ImagenHub), Save & Close validation khi prompt trống, API field naming (output_type/max_photos/multi_image_provider/multi_image_prompt), và vai trò làm populate-source cho layer đích khác. 'Maximum photos*' default=3 (CHK-006 cũ) khớp với evidence mới."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "Photo Upload › Multiple Uploads (multiple-uploads) — field 'Maximum photos*' có default=3, min=2, max=3",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "layer type Photo Upload › Multiple Uploads (data-type multiple-uploads)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có 1 layer Photo Upload › Multiple Uploads.",
+      "steps": [
+        "Thêm layer.",
+        "Mở PERSONALIZATION SETTINGS.",
+        "Quan sát giá trị default + thử nhập giá trị ngoài [2,3]."
+      ],
+      "observation_point": "Giá trị default hiển thị; UI có chặn giá trị ngoài [2,3] không.",
+      "expected_result": "Default quan sát được = 3, giới hạn min 2 / max 3 theo dump gốc — observed_count=1, KHÔNG suy đây là giới hạn cứng chính thức nếu chưa thử trực tiếp nhập giá trị ngoài khoảng.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-018"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Text to Image (AI) (text-to-image) — KHÔNG có DESIGN SETTINGS/POPULATE VALUES, thiếu option 'No personalization', nhãn GenAI service khác Multiple Uploads",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "layer type Text to Image (AI) (data-type text-to-image)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có 1 layer Text to Image (AI).",
+      "steps": [
+        "Thêm layer.",
+        "Kiểm tra danh sách accordion.",
+        "Mở PERSONALIZATION SETTINGS, kiểm tra personalization type options + field GenAI service*."
+      ],
+      "observation_point": "Accordion DESIGN SETTINGS/POPULATE VALUES có mặt không; option 'No personalization' có trong personalization type không; nhãn option của GenAI service*.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-019",
+          "artwork-editor/_object-level#KB-010"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [
+        "[MỚI,, QUAN TRỌNG] MÂU THUẪN TRỰC TIẾP với evidence mới: CONF-CBS003-01 (UNRESOLVED, CCR CBS-003) — quan sát 2026-09-25 (artwork 4416, layer 'hair') thấy CẢ BA lựa chọn personalization ('No personalization', 'Create a new option', 'Use an existing global option'), mâu thuẫn trực tiếp với expected_result 'CHỈ 2 lựa chọn, KHÔNG có No personalization' ở check này. KHÔNG tự sửa expected_result của CHK-007 (theo §2 rule 8/§12.4 rule 1 của contract, reviewer đưa finding về producer chứ không tự sửa). Xem CHK-050 (NEEDS_CONFIRMATION) cho tình trạng conflict đầy đủ; giao knowledge-diff-analyzer/orchestrator xử lý resolution chính thức. CHK-035..041/042..049 (run ) cũng mô tả chi tiết hơn GenAI provider-conditional field (Flux/ImagenHub), '+ Variable' mechanism, Save & Close validation, API field naming, Beta badge absence cho layer type này — các phần đó KHÔNG mâu thuẫn, chỉ bổ sung."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [
+        "CONF-CBS003-01"
+      ],
+      "observation_guidance": "KHÔNG có DESIGN SETTINGS, KHÔNG có POPULATE VALUES (KB-010). Personalization type CHỈ có 'Create a new option'/'Use an existing global option' — KHÔNG có 'No personalization'. GenAI service* có nhãn '[Gemini] Text to image'/'[OpenAI] Text to image'/'[Flux] Text to image'/'[ImagenHub] Text to image'.",
+      "oq_id": "OQ-artwork-layer-config-156"
+    },
+    {
+      "check_id": "CHK-035",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[NEW v4,, CCR CBS-003] Photo Upload › Multiple Uploads — GenAI service provider-conditional field: Gemini (prompt+Variable+Example Prompts) vs ImagenHub (Template picker+toggle)",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer Multiple Uploads, field 'GenAI service*'",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có 1 layer Photo Upload › Multiple Uploads. CẦN fixture (artwork 4416).",
+      "steps": [
+        "Chọn GenAI service = Gemini. Quan sát field render.",
+        "Đổi GenAI service = ImagenHub. Quan sát field render thay đổi."
+      ],
+      "observation_point": "Field render khi GenAI service = Gemini so với ImagenHub.",
+      "expected_result": "Gemini: hiện field prompt textarea ('Prompt the result you want...') + nút '+ Variable' + link 'Example Prompts'. ImagenHub: field prompt biến mất, thay bằng 'ImagenHub Template:' picker ('No template selected'/'Select template') kèm toggle 'Use Template Default Size' (mặc định OFF) — mỗi trạng thái chỉ quan sát 1 lần, KHÔNG tổng quát hoá cho OpenAI/Flux (chưa thử, xem unknowns).",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-113"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-037",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[NEW v4,, CCR CBS-003] Multiple Uploads — Save & Close bị chặn khi prompt (Gemini) để trống, toast lỗi verbatim",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer Multiple Uploads, GenAI service = Gemini, field prompt (multi_image_prompt) để trống",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Layer Multiple Uploads đã chọn GenAI service = Gemini, chưa nhập prompt.",
+      "steps": [
+        "Chọn GenAI service = Gemini.",
+        "Để trống field prompt.",
+        "Click Save & Close."
+      ],
+      "observation_point": "Toast lỗi hiển thị (nội dung verbatim).",
+      "expected_result": "Toast đỏ verbatim 'top: - Prompt the result you want is required' — 1 sample duy nhất, rule_confidence LOW, CHỈ xác nhận với provider Gemini. Xem CHK-038 cho câu hỏi mở về generalize sang provider khác.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-116"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-039",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "[NEW v4,, CCR CBS-003] Multiple Uploads — API field naming: output_type/max_photos/multi_image_provider/multi_image_prompt",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "response POST /api/artworks sau khi save layer Multiple Uploads đã cấu hình GenAI service + prompt",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Layer Multiple Uploads đã cấu hình GenAI service=Gemini + prompt, Save.",
+      "steps": [
+        "Save artwork.",
+        "Đọc response POST /api/artworks (status 201), xác định key JSON tương ứng."
+      ],
+      "observation_point": "Key JSON: output_type, max_photos, multi_image_provider, multi_image_prompt.",
+      "expected_result": "Xác nhận LẦN ĐẦU ở tầng API: output_type='single', max_photos=3, multi_image_provider='gemini', multi_image_prompt=<text> — không có OpenAPI spec đối chiếu (404), 1 sample duy nhất.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-122"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-042",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[NEW v4,, CCR CBS-003] Text to Image (AI) — GenAI provider-conditional field: Flux (prompt bình thường) vs ImagenHub (Template picker, KHÔNG có toggle default-size)",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer Text to Image (AI), field 'GenAI service*'",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có 1 layer Text to Image (AI). CẦN fixture (artwork 4416, layer 'hair').",
+      "steps": [
+        "Chọn GenAI service = '[Flux] Text to image'. Quan sát field render.",
+        "Đổi GenAI service = '[ImagenHub] Text to image'. Quan sát field render thay đổi, đặc biệt xem có toggle 'Use Template Default Size' không."
+      ],
+      "observation_point": "Field render khi GenAI service = Flux so với ImagenHub; sự có/không của toggle default-size.",
+      "expected_result": "Flux: field prompt textarea bình thường (placeholder 'Generate an image of...') kèm ghi chú \"The generated image uses this layer's ratio.\" — KHÔNG có cảnh báo unsupported-provider ở UI cấu hình (xem CHK-043). ImagenHub: field prompt biến mất, thay bằng 'ImagenHub Template:' picker kèm ghi chú \"The ImagenHub template decides the output ratio, so it may not match this layer's ratio.\" — KHÔNG có toggle 'Use Template Default Size' ở layer type này, KHÁC Multiple Uploads (CHK-035). 1 sample mỗi trạng thái.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-114"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-044",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[NEW v4,, CCR CBS-003] Text to Image — nút '+ Variable' hiện message inline khi artwork CHƯA có layer Text/Additional Option khác",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer Text to Image (AI), GenAI service = Gemini, prompt textarea, artwork CHƯA có layer Text hoặc Additional Option nào khác",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork chỉ có layer Text to Image (AI), không có layer Text/Additional Option nào khác.",
+      "steps": [
+        "Chọn GenAI service = Gemini.",
+        "Click nút '+ Variable' trong prompt textarea.",
+        "Quan sát nội dung hiển thị."
+      ],
+      "observation_point": "Nội dung message/picker hiển thị khi click '+ Variable'.",
+      "expected_result": "Hiện message inline: 'Add a Text or Additional Option layer to use variables in your prompt.' — cho thấy cơ chế variable lấy Option Title từ layer Text/Additional Option KHÁC, không phải token tự tham chiếu layer hiện tại. 1 sample duy nhất. Xem CHK-045 cho trạng thái picker khi CÓ layer khác (chưa quan sát).",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-115"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-046",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[NEW v4,, CCR CBS-003] Text to Image — Save & Close bị chặn khi prompt (Gemini) để trống, toast lỗi verbatim",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer Text to Image (AI), GenAI service = Gemini, field prompt (text_to_image_prompt) để trống",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Layer Text to Image (AI) đã chọn GenAI service = Gemini, chưa nhập prompt.",
+      "steps": [
+        "Chọn GenAI service = Gemini.",
+        "Để trống field prompt.",
+        "Click Save & Close."
+      ],
+      "observation_point": "Toast lỗi hiển thị (nội dung verbatim).",
+      "expected_result": "Toast đỏ verbatim 'hair: - Prompt the image you want is required' — 1 sample duy nhất, rule_confidence LOW, CHỈ xác nhận với provider Gemini. Xem CHK-038 cho câu hỏi mở về generalize sang provider khác.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-117"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-047",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "[NEW v4,, CCR CBS-003] Text to Image — API field naming (text_to_image_provider/form_label/text_to_image_prompt), KHÔNG có photo_editor/photo_replace",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "response POST /api/artworks sau khi save layer Text to Image (AI) đã cấu hình GenAI service + prompt",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Layer Text to Image (AI) đã cấu hình GenAI service=Gemini + prompt + Option Title, Save.",
+      "steps": [
+        "Save artwork.",
+        "Đọc response POST /api/artworks (status 201), xác định key JSON.",
+        "Xác nhận field photo_editor/photo_replace KHÔNG xuất hiện (khác Multiple Uploads/Photo)."
+      ],
+      "observation_point": "Key JSON: text_to_image_provider, form_label, text_to_image_prompt; có/không photo_editor, photo_replace.",
+      "expected_result": "text_to_image_provider='gemini', form_label=<Option Title>, text_to_image_prompt=<text> — text-to-image là type DUY NHẤT trong 3 layer type polymorphic lấy mẫu (multiple-uploads/text-to-image/photo) KHÔNG có field photo_editor/photo_replace, xác nhận schema request phân nhánh theo `type`. 1 sample duy nhất, không có spec đối chiếu.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-123"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-050",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "[NEW v4, CONFLICTED, CONF-CBS003-01, NEEDS_CONFIRMATION] Verify hiện trạng số lượng/tên lựa chọn Personalization của Text to Image (AI) — KHÔNG chọn 1 phía làm oracle",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer Text to Image (AI), field radio Personalization type",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có 1 layer Text to Image (AI). CẦN ghi lại đầy đủ build/version/deploy-date của môi trường tại thời điểm test (hiện chưa có nguồn nào cung cấp — CCR CBS-003 Phần 3 để trống 'không rõ').",
+      "steps": [
+        "Mở config layer Text to Image (AI).",
+        "Liệt kê ĐẦY ĐỦ và CHÍNH XÁC tên từng lựa chọn radio Personalization hiển thị, cùng lựa chọn nào đang mặc định/checked.",
+        "Ghi lại build/version/deploy-date môi trường nếu xác định được (qua footer, response header, hoặc hỏi dev) — KHÔNG để trống im lặng, ghi 'không xác định được' nếu không có nguồn."
+      ],
+      "observation_point": "Danh sách đầy đủ tên lựa chọn Personalization quan sát được tại thời điểm test, và lựa chọn mặc định.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-019",
+          "artwork-layer-config/gen-ai-layer-config#KB-121"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [
+        "CONF-CBS003-01"
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [
+        "CONF-CBS003-01"
+      ],
+      "oq_ref": "OQ-artwork-069",
+      "observation_guidance": "KHÔNG có oracle chính thức để assert đúng/sai. CHỈ ghi lại đúng số lượng và tên các lựa chọn quan sát được. Hiện có 2 nguồn MÂU THUẪN: canon KB-019 (2 lựa chọn: 'Create a new option'/'Use an existing global option', KHÔNG có 'No personalization') vs quan sát 2026-09-25 (KB-121, 3 lựa chọn: 'No personalization'/'Create a new option'[mặc định]/'Use an existing global option'). Nếu kết quả khớp 1 trong 2 phía đã ghi nhận: ghi nhận là bằng chứng CỦNG CỐ phía đó (KHÔNG phải 'pass' theo phía nào một cách chính thức, chỉ là thêm 1 sample). Nếu kết quả KHÁC CẢ HAI phía đã ghi nhận: đây là finding MỚI, báo cáo ngay cho orchestrator/context-quality-reviewer, KHÔNG tự diễn giải.",
+      "oq_id": "OQ-artwork-layer-config-174"
+    },
+    {
+      "check_id": "CHK-059",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-079] Warning 'Some ImagenHub variables have no matching layer': layer Global Option match qua title của chính Global Option",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-424 chưa chốt; ghi lại role đã dùng)",
+        "state": "artwork có layer dùng ImagenHub template có 1 biến; layer Global Option có title Global Option trùng tên biến, layer name khác tên biến",
+        "environment": "staging; ghi build và ngày chạy (KB-424 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor, desktop"
+      },
+      "precondition": "Có ImagenHub template có biến. Fixture throwaway như applicability; biến đó không có layer nào khác match.",
+      "steps": [
+        "Mở artwork trong editor; ghi warning 'Some ImagenHub variables have no matching layer' có hiện không và hiện ở đâu",
+        "Đối chứng: đổi title của Global Option để không còn trùng tên biến; ghi lại warning"
+      ],
+      "observation_point": "Warning 'Some ImagenHub variables have no matching layer'",
+      "expected_result": "Khi title của Global Option trùng tên biến, layer được tính match: warning không hiện cho biến đó. Check không assert per-field warning và nút '+ variable' (xem CHK-060).",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-424"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-424",
+        "artwork-layer-config/gen-ai-layer-config#KB-115"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle chỉ từ comment dev, chưa có test case PASS."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-067",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-095] Nano Banana 2.1: Gemini effect trên Photo layer và Photo global option chỉ có Resolution 1K/2K/4K, không có 0.5K",
+      "applicability": {
+        "role": "merchant-owner (store owner/staff)",
+        "state": "account dùng Gemini model Nano Banana 2.1; Photo layer và Photo global option có Gen AI effect provider Gemini",
+        "environment": "staging; ghi build, ngày chạy và model của account",
+        "surface_or_device": "portal artwork editor và global option editor, desktop"
+      },
+      "precondition": "Account explorer đặt model Gemini = Nano Banana 2.1 (ghi lại cách đổi; KB không mô tả nơi đổi).",
+      "steps": [
+        "Thêm Gen AI effect Gemini cho Photo layer; mở dropdown Resolution; ghi danh sách option",
+        "Lặp lại cho Photo global option"
+      ],
+      "observation_point": "Danh sách option của field Resolution ở hai nơi",
+      "expected_result": "Ở cả hai nơi, Resolution chỉ gồm 1K, 2K, 4K; không có 0.5K (512).",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-939"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-939",
+        "artwork-layer-config/gen-ai-layer-config#KB-942"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không suy rộng cho Clipart (KB-942)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-068",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-095] Nano Banana 2.1: Text to Image và Multiple Uploads dùng Gemini có Resolution 1K/2K/4K, không có 0.5K; để trống dùng default size của Google",
+      "applicability": {
+        "role": "merchant-owner; buyer cho bước generate",
+        "state": "account dùng Nano Banana 2.1; layer Text to Image và layer Multiple Uploads chọn GenAI service Gemini",
+        "environment": "staging; ghi build, ngày chạy và model của account",
+        "surface_or_device": "portal artwork editor; storefront generate"
+      },
+      "precondition": "Như CHK-067.",
+      "steps": [
+        "Trên layer Text to Image, mở dropdown Resolution; ghi danh sách option",
+        "Lặp lại trên layer Multiple Uploads",
+        "Để Resolution trống trên một layer; Save; generate trên storefront; ghi kích thước ảnh ra",
+        "Chọn 2K trên cùng layer; Save; generate; ghi kích thước ảnh ra"
+      ],
+      "observation_point": "Danh sách option; kích thước ảnh generate khi để trống so với khi chọn 2K",
+      "expected_result": "Hai layer có Resolution 1K, 2K, 4K, không có 0.5K. Để trống (unset) thì generate dùng default size của Google, không phải giá trị 1K/2K/4K nào của dropdown.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-940"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-940",
+        "artwork-layer-config/gen-ai-layer-config#KB-018",
+        "artwork-layer-config/gen-ai-layer-config#KB-019",
+        "artwork-layer-config/gen-ai-layer-config#KB-943"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nhãn 'Default' trên dropdown là placeholder của unset (quan sát TC-12), không assert nhãn.",
+        "Default size của Google không có giá trị số trong KB; bước 3-4 chỉ ghi để đối chiếu."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-069",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-095] gemini_resolution 512 đã lưu, account chuyển sang Nano Banana 2.1: dropdown trống, generate 2K, 512 giữ tới khi chọn giá trị khác rồi Save",
+      "applicability": {
+        "role": "merchant-owner; buyer cho bước generate",
+        "state": "Photo layer có Gen AI effect Gemini với gemini_resolution = 512 đã lưu",
+        "environment": "staging; ghi build, ngày chạy và model của account trước/sau",
+        "surface_or_device": "portal artwork editor; storefront generate; layer JSON qua network/API"
+      },
+      "precondition": "Lưu 512 khi account ở model có 0.5K (nano_banana_31) hoặc save qua MCP; sau đó đổi model account sang Nano Banana 2.1 (ghi cách đổi).",
+      "steps": [
+        "Mở layer; ghi giá trị hiển thị ở dropdown Resolution",
+        "Không đổi gì, Save; đọc gemini_resolution trong layer JSON",
+        "Generate trên storefront; ghi kích thước ảnh ra; so với ảnh generate khi chọn 2K trên cùng layer",
+        "Chọn 4K; Save; đọc lại gemini_resolution"
+      ],
+      "observation_point": "Dropdown; gemini_resolution trong layer JSON trước và sau khi đổi giá trị; kích thước ảnh generate",
+      "expected_result": "Dropdown hiển thị trống (không hiện 2K, không có placeholder). Generate dùng 2K. gemini_resolution vẫn là 512 sau Save không đổi giá trị; chỉ đổi khi merchant chọn giá trị khác rồi Save.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-941"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-941",
+        "artwork-layer-config/gen-ai-layer-config#KB-939"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Đổi model account ảnh hưởng mọi layer Gen AI của account explorer; trả model về như cũ sau khi chạy."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-070",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-095] GPT trên model không có resolution: field output size ẩn, giá trị đã lưu bị bỏ qua, size cố định như trước",
+      "applicability": {
+        "role": "merchant-owner; buyer cho bước generate",
+        "state": "layer Gen AI provider GPT có gpt_resolution đã lưu khi account ở model có resolution (vd gpt-image-2); sau đó account chuyển sang model GPT không có resolution",
+        "environment": "staging; ghi build, ngày chạy và model trước/sau",
+        "surface_or_device": "portal artwork editor; storefront generate"
+      },
+      "precondition": "Lưu gpt_resolution 4K khi account ở model có resolution; đổi model account (ghi cách đổi).",
+      "steps": [
+        "Mở layer; ghi field output size có hiện không",
+        "Generate trên storefront; ghi kích thước ảnh ra",
+        "So với kích thước ảnh generate của cùng layer trước khi có field output size (size cố định cũ), nếu có bản ghi"
+      ],
+      "observation_point": "Field output size; kích thước ảnh generate",
+      "expected_result": "Field output size ẩn; giá trị gpt_resolution đã lưu bị bỏ qua khi generate, size cố định như trước khi có field.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-944"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-944",
+        "artwork-layer-config/gen-ai-layer-config#KB-943"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Model GPT nào không có resolution lấy theo quan sát KB-943 (gpt-image-1.5), danh sách có thể đã đổi."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-071",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-095] Gemini nano_banana_pro và nano_banana_31 dùng chung field: giá trị đã lưu giữ và được dùng; 0.5K lưu dưới 31 thì generate 2K trên pro",
+      "applicability": {
+        "role": "merchant-owner; buyer cho bước generate",
+        "state": "layer Gen AI provider Gemini; account chuyển giữa nano_banana_31 và nano_banana_pro",
+        "environment": "staging; ghi build, ngày chạy và model trước/sau",
+        "surface_or_device": "portal artwork editor; storefront generate; layer JSON"
+      },
+      "precondition": "Account ở nano_banana_31. Hai layer throwaway: A lưu 4K, B lưu 0.5K.",
+      "steps": [
+        "Đổi model account sang nano_banana_pro (ghi cách đổi)",
+        "Đọc gemini_resolution của A và B trong layer JSON",
+        "Generate A; ghi kích thước ảnh ra",
+        "Generate B; ghi kích thước ảnh ra; so với ảnh generate khi chọn 2K trên B"
+      ],
+      "observation_point": "gemini_resolution đã lưu; kích thước ảnh generate",
+      "expected_result": "A giữ 4K và generate dùng 4K. B giữ giá trị 0.5K đã lưu nhưng generate ở 2K trên pro.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-944"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-944",
+        "artwork-layer-config/gen-ai-layer-config#KB-941"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Dropdown hiển thị gì cho B trên pro chưa xác nhận; chỉ ghi lại, không assert."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-072",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-095] Đổi provider: giá trị ẩn của provider khác giữ lại và bị bỏ qua, đổi lại thì hiện lại; Flux size ẩn (kể cả > 4 MP) không chặn save",
+      "applicability": {
+        "role": "merchant-owner; buyer cho bước generate",
+        "state": "layer Multiple Uploads hoặc Text to Image; account có model hiện field output size cho cả GPT/Gemini và Flux 2",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor; storefront generate (network request của SDK)"
+      },
+      "precondition": "Layer throwaway, network capture bật trên storefront.",
+      "steps": [
+        "Chọn provider Flux; nhập width 2000, height 2001 (> 4 MP)",
+        "Đổi provider sang Gemini; chọn Resolution 2K; Save; ghi kết quả save",
+        "Generate trên storefront; ghi field output size trong request generate",
+        "Đổi provider về Flux; ghi giá trị width/height hiện trong ô"
+      ],
+      "observation_point": "Kết quả Save; field gửi trong request generate; giá trị Flux hiện lại",
+      "expected_result": "Save thành công dù Flux size ẩn vượt 4 MP. Request generate chỉ mang field của provider hiện tại (Gemini); giá trị Flux ẩn bị bỏ qua. Đổi về Flux thì 2000 và 2001 hiện lại.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-949"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-949",
+        "artwork-layer-config/gen-ai-layer-config#KB-944",
+        "artwork-layer-config/gen-ai-layer-config#KB-946"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Layer lưu Flux > 4 MP ẩn; nếu sau đó đổi về Flux và Save thì áp KB-946 (CHK-078)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-077",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-095] Flux width/height dưới 256 hoặc chỉ điền 1 field: portal chặn khi Save bằng lỗi field, không gửi request",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "layer Multiple Uploads hoặc Text to Image, provider Flux 2",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor, network capture bật"
+      },
+      "precondition": "Layer throwaway.",
+      "steps": [
+        "Nhập width 255, height 1000; Save; ghi lỗi và request",
+        "Nhập width 1000, height 255; Save; ghi lại",
+        "Nhập width 1000, để trống height; Save; ghi lại",
+        "Để trống width, nhập height 1000; Save; ghi lại",
+        "Nhập width 256, height 256; Save; ghi kết quả"
+      ],
+      "observation_point": "Lỗi field trên portal; có request save artwork gửi đi không",
+      "expected_result": "Bốn trường hợp đầu: portal hiện lỗi field khi Save và không gửi request. 256×256 không bị chặn bởi rule min 256.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-945"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-945",
+        "artwork-layer-config/gen-ai-layer-config#KB-955"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chữ lỗi field không thuộc oracle; chữ 'is required' cho ô rỗng chỉ là quan sát KB-955."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-078",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "[CBS-095] Flux width × height: không max riêng từng field, ≤ 4,000,000 lưu được, vượt thì server từ chối save trên mọi đường (portal/REST, MCP)",
+      "applicability": {
+        "role": "merchant-owner (portal); client REST và MCP",
+        "state": "layer Multiple Uploads và layer Text to Image, provider Flux 2",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor; REST save artwork; MCP save artwork"
+      },
+      "precondition": "Layer throwaway; client MCP có quyền trên store explorer.",
+      "steps": [
+        "Portal: 2000×2000; Save; ghi kết quả",
+        "Portal: 15625×256; Save; ghi kết quả",
+        "Portal: 2000×2001; Save; ghi kết quả và response của server",
+        "REST: gửi save artwork với 2000×2001; ghi status và body",
+        "MCP: save với 2000×2000 rồi 2000×2001; ghi kết quả",
+        "Lặp lại bước 1-3 trên layer type còn lại"
+      ],
+      "observation_point": "Kết quả save; response server",
+      "expected_result": "2000×2000 và 15625×256 (đúng 4,000,000) lưu được; không field nào bị chặn vì vượt max riêng. 2000×2001 (> 4,000,000) bị server từ chối khi save artwork trên portal, REST và MCP.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-945",
+          "artwork-layer-config/gen-ai-layer-config#KB-946"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-945",
+        "artwork-layer-config/gen-ai-layer-config#KB-946",
+        "artwork-layer-config/gen-ai-layer-config#KB-947",
+        "artwork-layer-config/gen-ai-layer-config#KB-948"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không assert chữ thông báo lỗi (KB-948 KNOWN_DEFECT, xem CHK-084) hay UX editor sau lỗi (KB-947, xem CHK-082)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-079",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-095] Qua API/MCP chỉ điền 1 field Flux: được nhận nhưng bị bỏ qua, size lấy theo tỉ lệ layer",
+      "applicability": {
+        "role": "client REST/MCP; buyer cho bước generate",
+        "state": "layer Multiple Uploads hoặc Text to Image, provider Flux 2",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "REST hoặc MCP save artwork; storefront generate"
+      },
+      "precondition": "Layer throwaway với tỉ lệ box biết trước (vd 900×600).",
+      "steps": [
+        "Save qua MCP chỉ với Flux width = 1500; ghi kết quả",
+        "Đọc layer JSON; ghi field đã lưu",
+        "Generate trên storefront; ghi kích thước ảnh ra và tỉ lệ",
+        "Lặp lại qua REST"
+      ],
+      "observation_point": "Kết quả save; kích thước/tỉ lệ ảnh generate",
+      "expected_result": "Save được nhận, không lỗi. Khi generate, field đơn bị bỏ qua: size lấy theo tỉ lệ layer, không theo width 1500.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-945"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-945",
+        "artwork-layer-config/gen-ai-layer-config#KB-953"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Vế API/MCP chưa có lượt QA nào; ghi build ở lần chạy đầu."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-080",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-095] Save qua MCP: server check allowed values gpt_resolution (1024/2048/3840), gemini_resolution (512/1K/2K/4K, cả Text to Image) và Flux min 256",
+      "applicability": {
+        "role": "client MCP",
+        "state": "layer Text to Image và Multiple Uploads, provider GPT, Gemini, Flux 2",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP save artwork"
+      },
+      "precondition": "Client MCP có quyền trên store explorer; layer throwaway.",
+      "steps": [
+        "Save gpt_resolution lần lượt 1024, 2048, 3840; ghi kết quả",
+        "Save gpt_resolution 1500; ghi kết quả",
+        "Save gemini_resolution lần lượt 512, 1K, 2K, 4K trên Text to Image; ghi kết quả",
+        "Save gemini_resolution ngoài danh sách (vd 3K); ghi kết quả",
+        "Save Flux 255×1000; ghi kết quả"
+      ],
+      "observation_point": "Kết quả save và lỗi trả về",
+      "expected_result": "Giá trị trong danh sách được nhận. gpt_resolution 1500, gemini_resolution ngoài danh sách và Flux dưới 256 bị server từ chối khi save qua MCP, giống các field layer khác.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-953"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-953",
+        "artwork-layer-config/gen-ai-layer-config#KB-954",
+        "artwork-layer-config/gen-ai-layer-config#KB-946"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Đường portal/REST không check lại allowed values (KB-954, CHK-081); không suy MCP sang REST."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-085",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-095] Artwork 2.0: Photo layer có Gen AI effect, layer Clipart Category không có mục Gen AI effect",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "artwork 2.0 có layer Photo và layer Clipart Category (1 Clipart category và Group of clipart categories)",
+        "environment": "staging; ghi build và ngày chạy (KB-942 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal artwork editor"
+      },
+      "precondition": "Artwork 2.0 throwaway.",
+      "steps": [
+        "Mở danh sách effect của layer Photo; ghi có mục Gen AI effect không",
+        "Mở cấu hình/danh sách effect của từng layer Clipart Category; ghi có mục Gen AI effect không"
+      ],
+      "observation_point": "Có/không có mục Gen AI effect theo layer",
+      "expected_result": "Layer Photo có Gen AI effect. Layer Clipart Category không có mục Gen AI effect; đây là đúng, không phải thiếu.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/gen-ai-layer-config#KB-942"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-942",
+        "artwork-layer-config/photo-upload-layer-config#KB-017",
+        "artwork-layer-config/clipart-layer-config#KB-087",
+        "artwork-layer-config/gen-ai-layer-config#KB-939"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không suy rộng cho Multiple Uploads/Text to Image (KB-018 có 'Image effects after generating').",
+        "Clipart Artwork 1.0 chưa thử."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    }
+  ],
+  "coverage_by_feature_and_risk": [],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-150"
+  }
+}

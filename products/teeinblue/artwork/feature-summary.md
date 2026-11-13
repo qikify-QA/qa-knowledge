@@ -1,5 +1,5 @@
 # Artwork
-**Published context version:** 48
+**Published context version:** 49
 
 **Product:** teeinblue · **Object:** `artwork` · **Cập nhật cấu trúc:** 2026-11-13
 
@@ -7,47 +7,18 @@
 
 | Feature | User goal | KB | Check | OQ | Known defect |
 |---|---|---|---|---|---|
-| `artwork-cross-store-clone` — Copy artwork sang store/account khác: remap/copy asset mà layer tham chiếu (clipart category, default value, ảnh gốc url, ảnh clipart dùng làm static photo) | Là merchant nhận một artwork copy từ store/account khác (duplicate campaign sang store khác, import từ TIB Library, admin import), mình mở artwork ở bên mình… | 5 | 5 | 5 | 0 |
-| `artwork-list-management` — Quản lý danh sách artwork (list actions) | Store owner/staff xem và thao tác nhanh trên các artwork đã tạo (preview, sửa chi tiết, nhân bản, gửi dịch, archive, xoá) từ trang danh sách /artworks. | 6 | 17 | 14 | 0 |
 | `artwork-live-preview-asset-load` — Live preview của artwork tải ảnh clipart lớn kèm version của clipart category (?v=) | Là merchant, khi mở Live preview của artwork (trong Artwork editor hoặc từ Campaign editor), mình thấy layer clipart / group clipart / background clipart hiể… | 6 | 7 | 5 | 1 |
 | `artwork-save-persist` — Lưu và đọc lại artwork (Save & Close, API/auth dependency) | Store owner lưu toàn bộ thay đổi (layer/template) của artwork từ editor xuống server một cách đáng tin cậy, và hệ thống đọc lại đúng dữ liệu đã lưu ở lần mở … | 30 | 37 | 30 | 2 |
 | `artwork-template-management` — Quản lý template bên trong 1 artwork | Store owner tạo/nhân bản/sửa/ẩn/convert các phiên bản template (biến thể layout) trong cùng 1 artwork, qua thanh Template ở panel trái editor; với global tem… | 5 | 17 | 11 | 0 |
-| `clipart-category-storefront-behavior` — Buyer chọn & xem clipart-category / group-clipart-categories trên storefront (personalization form → Preview → cart) | Buyer chọn 1 clipart (single-type) hoặc 1 nhóm clipart (group-type) trên personalization form của storefront, kỳ vọng: (1) lựa chọn được lưu lại qua reload/a… | 17 | 22 | 21 | 0 |
-| `condition-cycle-validation` — Ngăn vòng lặp phụ thuộc điều kiện (Circular Condition Validation) | Hệ thống ngăn không cho lưu 1 artwork mà đồ thị điều kiện hiển thị (Conditional Setting) giữa các layer tạo thành vòng lặp phụ thuộc, để tránh trạng thái khô… | 6 | 13 | 10 | 0 |
-| `conditional-setting-config` — Cấu hình điều kiện hiển thị layer (Conditional Setting) | Store owner cấu hình điều kiện show/hide 1 layer dựa trên giá trị của layer khác trong cùng artwork, qua accordion CONDITIONAL SETTING. | 10 | 21 | 15 | 0 |
-| `editor-layer-workspace` — Không gian làm việc chung của Editor (thêm layer, chọn layer, toolbar/action bar) | Store owner thêm layer mới vào artwork và thao tác chọn/toolbar dùng chung trong canvas editor, độc lập với việc cấu hình chi tiết bên trong từng layer type. | 24 | 33 | 27 | 0 |
-| `form-field-reorder` — Sắp xếp lại thứ tự field trong tab Re-order của Form panel | Merchant-owner đổi thứ tự các field của form trong tab Re-order (Form panel, Artwork Editor) bằng cách chọn rồi kéo thả một hoặc nhiều dòng, để danh sách fie… | 8 | 9 | 12 | 1 |
-| `group-layer-effective-visibility` — Effective visibility của Group layer (ẩn Group ẩn cả nhánh, giữ cờ riêng của layer con) | Store owner ẩn/hiện một Group trong Artwork Editor 2.0 để tạm ẩn cả nhánh layer bên dưới (kể cả Group lồng, Group có mask) mà không làm mất cờ ẩn/hiện riêng … | 11 | 15 | 7 | 0 |
-| `group-layer-order-design-render` — Render order design cho artwork có Group layer (Artwork 2.0) | Là merchant (store owner/staff), nhận order design (print file) hoàn tất và đúng cho order tạo từ Artwork 2.0 có Group layer — kể cả group chứa nhiều layer (… | 11 | 16 | 9 | 0 |
-| `layer-bulk-edit` — Bulk edit nhiều layer trong artwork editor (modal Bulk edit) | Store owner / staff có quyền sửa artwork chọn một hoặc nhiều layer trong artwork editor và sửa một lần các setting chung cho mọi layer editable đã chọn (Opti… | 28 | 27 | 19 | 0 |
-| `layer-common-config` — Cấu hình layer — cơ chế/boundary dùng chung trên mọi layer type (mechanism-only) | Store owner cấu hình 1 layer artwork qua bộ UI/mechanism DÙNG CHUNG cho mọi/hầu hết layer type (icon buttons trên layer row, accordion nào TỒN TẠI hay không … | 3 | 14 | 8 | 0 |
-| `layer-condition-value-binding` — Cấu trúc dữ liệu điều kiện đã lưu (dependency/dependencies binding) | Hệ thống lưu trữ đúng cấu trúc dữ liệu khi 1 layer có điều kiện hiển thị phụ thuộc layer khác, để phục vụ đọc lại/render chính xác điều kiện đó. | 5 | 12 | 11 | 0 |
-| `layer-config-form-elements` — Cấu hình layer — nhóm sidebar FORM ELEMENTS (field/behavior riêng từng layer type) | Store owner cấu hình field/behavior CHỈ thuộc riêng từng layer type trong nhóm sidebar FORM ELEMENTS khi thêm layer trong artwork editor. Nhóm gồm 6 layer ty… | 8 | 9 | 2 | 0 |
-| `layer-config-image` — Cấu hình layer — nhóm sidebar IMAGE (field/behavior riêng từng layer type) | Store owner cấu hình field/behavior CHỈ thuộc riêng từng layer type trong nhóm sidebar IMAGE khi thêm layer trong artwork editor. Nhóm gồm 8 layer type: Stat… | 61 | 90 | 74 | 3 |
-| `layer-config-maps-astronomy` — Cấu hình layer — nhóm sidebar MAPS & ASTRONOMY (field/behavior riêng từng layer type) | Store owner cấu hình field/behavior CHỈ thuộc riêng từng layer type trong nhóm sidebar MAPS & ASTRONOMY khi thêm layer trong artwork editor. Nhóm gồm 4 layer… | 12 | 14 | 9 | 0 |
-| `layer-config-others` — Cấu hình layer — nhóm sidebar OTHERS (field/behavior riêng từng layer type) | Store owner cấu hình field/behavior CHỈ thuộc riêng từng layer type trong nhóm sidebar OTHERS khi thêm layer trong artwork editor. Nhóm gồm 4 layer type: Son… | 6 | 7 | 4 | 0 |
-| `layer-config-puzzles` — Cấu hình layer — nhóm sidebar PUZZLES (field/behavior riêng từng layer type) | Store owner cấu hình field/behavior CHỈ thuộc riêng từng layer type trong nhóm sidebar PUZZLES khi thêm layer trong artwork editor. Nhóm gồm 4 layer type: Sc… | 10 | 11 | 10 | 0 |
-| `layer-config-text` — Cấu hình layer — nhóm sidebar TEXT (field/behavior riêng từng layer type) | Store owner cấu hình field/behavior CHỈ thuộc riêng từng layer type trong nhóm sidebar TEXT khi thêm layer trong artwork editor. Nhóm gồm 6 layer type: Singl… | 10 | 13 | 12 | 0 |
-| `layer-config-vector` — Cấu hình layer — nhóm sidebar VECTOR (field/behavior riêng từng layer type) | Store owner cấu hình field/behavior CHỈ thuộc riêng từng layer type trong nhóm sidebar VECTOR khi thêm layer trong artwork editor. Nhóm gồm 3 layer type: Sta… | 11 | 16 | 14 | 0 |
-| `layer-duplicate-link-copy` — Nhân bản layer với liên kết cấu hình (Duplicate & Link options) | Store owner nhân bản 1 layer, tuỳ chọn giữ đồng bộ cấu hình (design/personalization) với layer gốc thông qua nút 'Duplicate & Link options' trên layer action… | 24 | 33 | 30 | 0 |
-| `layer-image-hd-copy` — Bản HD (master_large) của layer ảnh: tạo bất đồng bộ, decode, kích thước, hướng | Là merchant-owner trong artwork editor, khi bật HD cho một layer ảnh tôi nhận được bản HD (master_large) của chính ảnh đó, tạo bất đồng bộ, đúng hướng và đún… | 2 | 4 | 2 | 0 |
-| `layer-photo-border` — Photo Border (viền ảnh) trên layer: cấu hình và kết quả vẽ viền | Store owner / staff có quyền sửa artwork bật và cấu hình viền ảnh (Border) cho layer trong Artwork editor — kiểu Contour cut hoặc Custom shape, màu, Border s… | 9 | 17 | 9 | 0 |
-| `layer-print-effects` — Print Effects trên layer (shape-cut) | Store owner áp dụng hiệu ứng in ấn (cắt hình theo layout preset hoặc tuỳ chỉnh) lên layer đã chọn, phục vụ file production guide cho nhà in. | 3 | 12 | 15 | 0 |
-| `no-personalization-photo-render` — Render đầu ra của photo layer No personalization (mockup, ảnh product trên store, order design) | Merchant nhận mockup, ảnh product đẩy lên store và order design của photo layer 'No personalization' theo cùng fit rule như render artwork, và biết ảnh đã re… | 3 | 4 | 3 | 1 |
-| `populate-values` — Tự động điền/đồng bộ giá trị layer (Populate Values); dùng chung lần gọi effect và chain {{output}} trên storefront | Store owner cấu hình 1 layer để tự động lấy/đồng bộ giá trị (nội dung/font/màu/nền/hình) từ 1 layer khác trong cùng artwork, giảm nhập liệu thủ công và giữ n… | 46 | 63 | 54 | 4 |
 | `psd-import` — Import artwork từ file PSD (giữ trạng thái ẩn của folder) | Store owner tạo artwork từ file PSD qua Artworks > Import > PSD Single template và nhận được artwork giữ đúng cấu trúc/trạng thái ẩn của file: folder ẩn tron… | 3 | 8 | 3 | 0 |
-| `run-effects-fill-in-variables` — Popover "Fill in variables" khi bấm Run effects — nhập giá trị biến của prompt effect cho một lượt chạy | Merchant dùng artwork editor bấm Run effects trên layer có prompt effect chứa biến, điền giá trị cho từng biến khớp option trong popover "Fill in variables" … | 12 | 21 | 12 | 0 |
-| `run-image-effects` — Run effects trên Photo layer — chạy chuỗi image effect lên ảnh hiện tại của layer trong artwork editor | Merchant (owner hoặc staff có quyền Manage Artwork) bấm Run effects ở header "Image effects" của Photo layer (customization Normal, store không phải Etsy) để… | 24 | 32 | 25 | 1 |
-| `svg-to-image-rendering` — Render SVG sang ảnh — thumbnail và design file theo Design format | Merchant (store owner/staff) nhận thumbnail và design file (gửi nhà in) đúng hình từ nội dung SVG của artwork: clip-path được áp, ảnh raster nhúng trong SVG … | 7 | 8 | 9 | 0 |
-| `text-color-sequence-render` — Render text Color Sequence (rainbow) trên ảnh in — Locate Artwork và Order Design PNG khớp preview SDK | Khi buyer đặt order với layer text dùng Color Sequence (rainbow, màu lặp theo từng chữ), ảnh Locate Artwork trên portal và Order Design PNG dùng để in phải t… | 16 | 19 | 21 | 1 |
-| `text-multi-stroke` — Stroke nhiều lớp cho Paragraph (stack stroke_layers) và phạm vi áp dụng theo loại text layer | Store owner tạo viền nhiều lớp cho layer Paragraph trên artwork Artwork 2.0 (tối đa 3 vòng, mỗi vòng có màu và độ dày riêng, xếp từ mép chữ ra ngoài), sắp xế… | 21 | 29 | 28 | 0 |
-| `transform-multi-select` — Transform popover khi chọn nhiều layer: Apply for Group/Individual, box cá nhân và box nhóm, Flip nhóm (Artwork 2.0), popover không có Apply for (Artwork 1.0) và Reverse reposition direction | Là seller (owner/staff) trong artwork editor, khi chọn nhiều layer và mở Transform, mình chỉnh kích thước/vị trí cho cả nhóm hoặc từng layer: ở Artwork 2.0 c… | 21 | 20 | 24 | 0 |
+| `artwork-list-and-clone` — Danh sách artwork và clone sang store khác | Store owner/staff xem và thao tác nhanh trên các artwork đã tạo (preview, sửa chi tiết, nhân bản, gửi dịch, archive, xoá) từ trang danh sách /artworks. | 11 | 22 | 19 | 0 |
 
-KB object-level: 7 (`kb.json`).
-
-**Cập nhật CBS-163 (TIB-5689):** response của artwork store, update, clone, archive, unarchive và version restore là `PortalArtworkResource` (attribute `Artwork::$visible`, KB-1115, KB-1116), response effect run trên layer chỉ có `status`, `error_message`, `layer_image` (id, url, thumbnail, width, height), không `user_id` (KB-1119) — `CONFIRMED_EXPECTED`/MEDIUM theo Dev; quan sát test case KB-1117, KB-1118, KB-1120.
-
+KB object-level: 0 (`kb.json`).
 
 ## Open questions
 
-CONFLICT 39 · NEEDS_CONFIRMATION 444 · OPEN_ISSUE 82 — chi tiết trong `open-questions.md`.
+CONFLICT 5 · NEEDS_CONFIRMATION 53 · OPEN_ISSUE 14 — chi tiết trong `open-questions.md`.
+
+## Tên cũ (alias)
+
+`artwork-cross-store-clone` · `artwork-list-management`

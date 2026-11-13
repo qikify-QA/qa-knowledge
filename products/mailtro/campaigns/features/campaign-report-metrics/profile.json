@@ -1,0 +1,475 @@
+{
+  "feature_id": "campaign-report-metrics",
+  "feature_key": "campaign-report-metrics",
+  "name": "Định nghĩa metric của campaign report và analytics",
+  "user_goal": "Người dùng hiểu đúng cách tính sent/open/click/complaint/unsubscribe và rate trong report và analytics.",
+  "stable_since_version": "v1",
+  "actors": [],
+  "entry_points": [],
+  "capabilities": [
+    {
+      "name": "Định nghĩa số liệu delivery / open / click / unsubscribe",
+      "description": "Định nghĩa thống nhất cho Sent, Delivery rate, Bounce rate, Open rate, Click rate, Click-to-open, Spam complaint rate, Unsubscribe rate; đếm theo unique contact (trừ total opens/clicks), lọc bot, loại link unsubscribe khỏi click, rate tính theo ngày gửi, cộng số đếm trước khi chia. Dùng chung cho Automation Reports.",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-120",
+        "campaigns/campaign-report-metrics#KB-121",
+        "campaigns/campaign-report-metrics#KB-122",
+        "campaigns/campaign-report-metrics#KB-123",
+        "campaigns/campaign-report-metrics#KB-124",
+        "campaigns/campaign-report-metrics#KB-125",
+        "campaigns/campaign-report-metrics#KB-126",
+        "campaigns/campaign-report-metrics#KB-127",
+        "campaigns/campaign-report-metrics#KB-128",
+        "campaigns/campaign-report-metrics#KB-129",
+        "campaigns/campaign-report-metrics#KB-132",
+        "campaigns/campaign-report-metrics#KB-139",
+        "campaigns/campaign-report-metrics#KB-140",
+        "campaigns/campaign-report-metrics#KB-190"
+      ]
+    },
+    {
+      "name": "Nguồn và cách tính số liệu",
+      "description": "Sáu số raw count tính bằng COUNT tại thời điểm đọc, không counter, không cache; FE tự tính rate và chặn chia 0. Breakdown %, suppressed-profiles, performance theo segment, inbox placement, heatmap và opt-out theo topic ngoài phạm vi hiện tại.",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-133",
+        "campaigns/campaign-report-metrics#KB-134",
+        "campaigns/campaign-report-metrics#KB-135",
+        "campaigns/campaign-report-metrics#KB-136",
+        "campaigns/campaign-report-metrics#KB-137",
+        "campaigns/campaign-report-metrics#KB-138"
+      ]
+    },
+    {
+      "name": "Analytics global và MCP",
+      "description": "Endpoint analytics với `scope` all/campaigns/automations, không tính transactional, chỉ số đếm, unsubscribe theo ngày event, totals có thể nhỏ hơn tổng sources; route UI `/analytics` hiện trang trắng; MCP report chưa có mô tả.",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-130",
+        "campaigns/campaign-report-metrics#KB-131",
+        "campaigns/analytics-api#KB-182",
+        "campaigns/analytics-api#KB-185",
+        "campaigns/analytics-api#KB-187",
+        "campaigns/analytics-api#KB-188",
+        "campaigns/analytics-api#KB-189"
+      ]
+    }
+  ],
+  "state_transitions": [],
+  "confirmed_rules": [
+    {
+      "statement": "Theo Epic Jira MTRO-16 (định nghĩa metric, tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1, đọc 07/10/2026), Sent là số mail SES đã nhận; Delivery rate = delivered ÷ sent; Bounce rate = bounce ÷ sent, tách riêng hard bounce và soft bounce.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-120"
+      ]
+    },
+    {
+      "statement": "Theo Epic Jira MTRO-16 (định nghĩa metric, tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1, đọc 07/10/2026), Open rate = số người mở (bỏ bot) ÷ delivered; Click rate = số người click (bỏ bot) ÷ delivered; Click-to-open = số người click ÷ số người mở.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-121"
+      ]
+    },
+    {
+      "statement": "Theo Epic Jira MTRO-16 (định nghĩa metric, tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1, đọc 07/10/2026), Spam complaint rate = complaint ÷ delivered và Unsubscribe rate = unsubscribe ÷ delivered.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-122"
+      ],
+      "tags": [
+        "unsubscribe-consent"
+      ]
+    },
+    {
+      "statement": "Theo Epic Jira MTRO-16 (định nghĩa metric, tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1, đọc 07/10/2026), click vào link unsubscribe không được tính vào Click rate; caveat i18n trên report (\"Bot clicks and unsubscribe links are excluded.\") khớp. Phần link preference xem item riêng (đang chờ xác nhận).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-123"
+      ],
+      "tags": [
+        "unsubscribe-consent"
+      ]
+    },
+    {
+      "statement": "Theo quyết định PO 18/09/2026 (comment Jira MTRO-16, MTRO-94), mọi số liệu report đếm theo người (unique contact), trừ `total_opens` và `total_clicks`; Click rate tính theo người; report có cả total clicks và unique clicks.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-125"
+      ]
+    },
+    {
+      "statement": "Theo quyết định PO 17/09/2026 (comment Jira MTRO-16), trong analytics mỗi link trong email tương ứng một tag.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-126"
+      ]
+    },
+    {
+      "statement": "Theo quyết định Dev BE 24/09/2026 (comment Jira MTRO-16), bảng Clicks by link gộp theo tag; link không có tag thì gộp theo link gốc trong template, và link có merge tag (vd `?ref={{contact_id}}`) không bị tách thành nhiều dòng.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-127"
+      ],
+      "tags": [
+        "merge-tag-syntax"
+      ]
+    },
+    {
+      "statement": "Theo quyết định PO 17/09/2026 (comment Jira MTRO-16), số Unsubscribe của campaign chỉ tính unsubscribe global gắn với campaign có link; bỏ một topic (opt-out một topic) không được tính là unsubscribe.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-128"
+      ],
+      "tags": [
+        "unsubscribe-consent"
+      ]
+    },
+    {
+      "statement": "Theo quyết định PO 21/09/2026 (comment Jira MTRO-16), rate được tính theo ngày gửi.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-129"
+      ]
+    },
+    {
+      "statement": "Theo quyết định PO 21/09/2026 (comment Jira MTRO-16), trang analytics global chỉ hiện số đếm, không hiện rate.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-130"
+      ]
+    },
+    {
+      "statement": "Theo Epic Jira MTRO-16 (tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1, đọc 07/10/2026), trang analytics global đếm unsubscribe theo ngày xảy ra event, và contact resubscribe không làm trừ số unsubscribe đã đếm.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-131"
+      ],
+      "tags": [
+        "unsubscribe-consent"
+      ]
+    },
+    {
+      "statement": "Theo Epic Jira MTRO-16 (tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1, đọc 07/10/2026), khi gộp số liệu nhiều cấp thì cộng số đếm trước rồi mới chia để ra rate, và rate luôn được hiển thị kèm số đếm.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-132"
+      ]
+    },
+    {
+      "statement": "Theo quyết định Dev BE 18/09/2026, PO đồng ý (comment Jira MTRO-16), report không làm performance theo segment (campaign chỉ có một segment), inbox placement (cần bên thứ ba), click heatmap và số opt-out theo topic; Decision log Mailtro ghi ba mục đầu là hoãn.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-133"
+      ]
+    },
+    {
+      "statement": "Theo Jira MTRO-64 (B6) và MTRO-82 (tóm tắt trong QA business rule Mailtro, cập nhật 07/09/2026), `CampaignBroadcastResource` trả 6 số raw count: `delivered`, `bounced`, `complained`, `unsubscribed`, `opens`, `clicks`.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-135"
+      ]
+    },
+    {
+      "statement": "Theo Jira MTRO-64 (B6) và MTRO-82 (tóm tắt trong QA business rule Mailtro, cập nhật 07/09/2026), sáu số delivery được tính bằng COUNT trên `ses_events` và hai sổ ledger tại thời điểm đọc, không có cột counter, không cache.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-136"
+      ],
+      "tags": [
+        "suppression"
+      ]
+    },
+    {
+      "statement": "Theo Jira MTRO-64 (B6) và MTRO-82 (tóm tắt trong QA business rule Mailtro, cập nhật 07/09/2026), frontend tự tính tỉ lệ từ các số raw count; Jira MTRO-94 cũng ghi FE tính rate từ số đếm API trả về và chặn phép chia cho 0.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-137"
+      ]
+    },
+    {
+      "statement": "Theo Epic Jira MTRO-16 (tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1, đọc 07/10/2026), SES gắn cờ `isBotEvent` (Likely / Unlikely) cho event từ ngày 07/08/2026, và việc lọc bot dựa trên trường `is_bot_event`.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-139"
+      ]
+    }
+  ],
+  "observed_behavior": [],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      {
+        "item": "Trang `/campaigns/:id/report`: header, 5 tab của campaign Sent; bố cục 4 tab cũ của campaign chưa gửi",
+        "kb_refs": [
+          "campaigns/campaign-report#KB-119",
+          "campaigns/campaign-report#KB-141",
+          "campaigns/campaign-report#KB-142",
+          "campaigns/campaign-report#KB-170",
+          "campaigns/campaign-report#KB-171"
+        ]
+      },
+      {
+        "item": "Thẻ metric + tooltip, bảng Bounce reasons, Opens over time, Clicks by link",
+        "kb_refs": [
+          "campaigns/campaign-report#KB-143",
+          "campaigns/campaign-report#KB-144",
+          "campaigns/campaign-report#KB-155",
+          "campaigns/campaign-report#KB-159",
+          "campaigns/campaign-report#KB-161",
+          "campaigns/campaign-report#KB-162"
+        ]
+      },
+      {
+        "item": "Khối Campaign audience, Campaign content, dialog preview nội dung đã gửi",
+        "kb_refs": [
+          "campaigns/campaign-report#KB-146",
+          "campaigns/campaign-report#KB-150",
+          "campaigns/campaign-report#KB-151"
+        ]
+      },
+      {
+        "item": "Route `/analytics` (trang trắng)",
+        "kb_refs": [
+          "campaigns/analytics-api#KB-188",
+          "_product-level#KB-P-061",
+          "_product-level#KB-P-049"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "item": "`GET /api/teams/{slug}/campaigns/{id}/report` (campaign chưa gửi → 404)",
+        "kb_refs": [
+          "campaigns/analytics-api#KB-180"
+        ]
+      },
+      {
+        "item": "Danh sách campaigns có object `report: {sent, delivered, unique_opens}`; `/campaigns/{id}/broadcast` trả segment, template, snapshot rules và 6 raw count",
+        "kb_refs": [
+          "campaigns/analytics-api#KB-181",
+          "campaigns/campaign-report-metrics#KB-135",
+          "campaigns/campaign-report#KB-168"
+        ]
+      },
+      {
+        "item": "`GET /api/teams/{slug}/analytics?scope=all|campaigns|automations`, thời gian UTC+0, response có `as_of`",
+        "kb_refs": [
+          "campaigns/analytics-api#KB-182",
+          "campaigns/analytics-api#KB-183",
+          "campaigns/analytics-api#KB-184",
+          "campaigns/analytics-api#KB-185"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "Sáu raw count `delivered`, `bounced`, `complained`, `unsubscribed`, `opens`, `clicks` tính bằng COUNT trên `ses_events` và hai sổ ledger lúc đọc",
+        "kb_refs": [
+          "campaigns/campaign-report-metrics#KB-135",
+          "campaigns/campaign-report-metrics#KB-136",
+          "_product-level#KB-P-073"
+        ]
+      },
+      {
+        "item": "Cờ bot `is_bot_event` từ 07/08/2026; `segment_rules_snapshot` lúc gửi",
+        "kb_refs": [
+          "campaigns/campaign-report-metrics#KB-139",
+          "campaigns/campaign-report#KB-146"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "target": "automations / automation-reports",
+      "relation": "shared_metric_definitions",
+      "note": "Định nghĩa số liệu sống ở campaign-report và được Automation Reports dùng chung.",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-120",
+        "campaigns/campaign-report-metrics#KB-121",
+        "campaigns/campaign-report-metrics#KB-122",
+        "campaigns/analytics-api#KB-182"
+      ]
+    },
+    {
+      "target": "deliverability / ses-event-pipeline",
+      "relation": "ses_events_source",
+      "note": "Số liệu đọc từ `ses_events`; campaign gửi trước pipeline hiện `—`.",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-136",
+        "campaigns/campaign-report#KB-164",
+        "_product-level#KB-P-073"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "statement": "Theo QA KB Mailtro \"Campaign report & Analytics API\" v1, Epic Jira MTRO-16 ghi Click rate không tính link unsubscribe và link preference, nhưng caveat trên staging chỉ nêu link unsubscribe; việc link `{{preferences_url}}` có bị loại khỏi Click rate hay không còn chờ xác nhận (GAP-23).",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-124"
+      ],
+      "tags": [
+        "unsubscribe-consent"
+      ],
+      "risk_type": "undecided_or_bundle_only"
+    },
+    {
+      "statement": "Theo QA KB Mailtro \"Campaign report & Analytics API\" v1 (tóm tắt Epic Jira MTRO-16), ở vòng phát triển hiện tại report chỉ hiện bảng Clicks by link, không có cách nhóm click khác; đây là phạm vi tạm thời.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-134"
+      ],
+      "risk_type": "undecided_or_bundle_only"
+    },
+    {
+      "statement": "Theo QA business rule Mailtro (Jira MTRO-64 B6, MTRO-82, cập nhật 07/09/2026), breakdown % và màn suppressed-profiles thuộc wave analytics sau, chưa nằm trong phạm vi hiện tại.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-138"
+      ],
+      "risk_type": "undecided_or_bundle_only"
+    },
+    {
+      "statement": "Theo QA KB Mailtro \"Campaign report & Analytics API\" v1, chưa chốt việc lọc bot có áp cho Total opens / Total clicks hay không, và xử lý thế nào với event trước ngày 07/08/2026 (trước khi SES gắn cờ bot) — GAP-03.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-140"
+      ],
+      "risk_type": "undecided_or_bundle_only"
+    },
+    {
+      "statement": "Theo QA KB Mailtro \"Campaign report & Analytics API\" v1, chưa chốt contact bị suppressed trong campaign có được đếm vào Bounce / Spam complaint và vào mẫu số Sent hay không (GAP-21); quyết định PO 02/10/2026 về việc này chỉ áp cho automation.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-190"
+      ],
+      "tags": [
+        "suppression"
+      ],
+      "risk_type": "undecided_or_bundle_only"
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-07",
+    "basis": "Epic Jira MTRO-16, Jira MTRO-31/64/82/94 tóm tắt trong QA KB Mailtro \"Campaign report & Analytics API\" v1 (đọc 07/10/2026); quyết định PO / Dev BE 17/09–24/09/2026, PO/BA 02/10/2026; khảo sát staging 08/09 và 01/10/2026."
+  },
+  "unknown_areas": [
+    {
+      "question": "Click vào link `{{preferences_url}}` có bị loại khỏi Click rate không (Epic Jira MTRO-16 nói có, caveat trên report chỉ nêu link unsubscribe)?",
+      "why_it_matters": "Ảnh hưởng công thức Click rate dùng chung cho campaign và automation.",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-123",
+        "campaigns/campaign-report-metrics#KB-124"
+      ],
+      "oq_id": "OQ-campaigns-021"
+    },
+    {
+      "question": "Lọc bot có áp cho Total opens / Total clicks hay chỉ cho số unique? Event trước 07/08/2026 (chưa có cờ bot) được xử lý thế nào?",
+      "why_it_matters": "Không có oracle cho số total và cho campaign cũ.",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-139",
+        "campaigns/campaign-report-metrics#KB-140"
+      ],
+      "oq_id": "OQ-campaigns-022"
+    },
+    {
+      "question": "Có trang giao diện `/analytics` (analytics global) không, hay analytics global chỉ có ở mức API?",
+      "why_it_matters": "Route `/analytics` hiện trang trắng.",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-130",
+        "campaigns/analytics-api#KB-188",
+        "campaigns/analytics-api#KB-189"
+      ],
+      "oq_id": "OQ-campaigns-032"
+    },
+    {
+      "question": "Contact bị suppressed trong một campaign có được đếm vào Bounce / Spam complaint và vào mẫu số Sent của report campaign không?",
+      "why_it_matters": "Quyết định PO 02/10/2026 về việc này chỉ áp cho automation.",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-190"
+      ],
+      "oq_id": "OQ-campaigns-033"
+    },
+    {
+      "question": "Danh sách đủ 10 nhãn lý do bounce là gì, UI hiện rate thế nào khi mẫu số bằng 0, UI có tách hard / soft bounce không, và ở report từng campaign resubscribe có làm giảm số Unsubscribe không?",
+      "why_it_matters": "Thiếu đặc tả UI report; không suy diễn từ ví dụ.",
+      "kb_refs": [
+        "campaigns/campaign-report#KB-158",
+        "campaigns/campaign-report#KB-155",
+        "campaigns/campaign-report-metrics#KB-137",
+        "campaigns/campaign-report-metrics#KB-128",
+        "campaigns/campaign-report-metrics#KB-120"
+      ],
+      "oq_id": "OQ-campaigns-035"
+    },
+    {
+      "question": "Hợp đồng đầy đủ của Analytics API và MCP report là gì: method / route của list campaigns và `/campaigns/{id}/broadcast`, shape response report, tên tham số khoảng thời gian và mặc định, tên hai sổ ledger dùng để COUNT, tool MCP (Jira MTRO-60 trống)?",
+      "why_it_matters": "Không viết được test API chính xác cho các endpoint chỉ được liệt kê tên.",
+      "kb_refs": [
+        "campaigns/analytics-api#KB-180",
+        "campaigns/analytics-api#KB-181",
+        "campaigns/analytics-api#KB-183",
+        "campaigns/analytics-api#KB-187",
+        "campaigns/campaign-report-metrics#KB-136"
+      ],
+      "oq_id": "OQ-campaigns-036"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "coverage_matrix": [
+    {
+      "layer": "backend",
+      "role": "unspecified",
+      "state": "định nghĩa và cách tính số liệu",
+      "covered": true,
+      "note": "Epic Jira MTRO-16, MTRO-64/82, quyết định PO/Dev BE",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-120",
+        "campaigns/campaign-report-metrics#KB-125",
+        "campaigns/campaign-report-metrics#KB-136"
+      ],
+      "feature_id": "campaign-report",
+      "environment": "documented"
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from": "campaign-report",
+      "to": "automations/automation-reports",
+      "relation": "SHARES_METRIC_DEFINITIONS",
+      "kb_refs": [
+        "campaigns/campaign-report-metrics#KB-120",
+        "campaigns/campaign-report-metrics#KB-121"
+      ]
+    }
+  ]
+}

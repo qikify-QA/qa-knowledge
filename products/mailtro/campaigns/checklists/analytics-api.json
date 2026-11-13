@@ -1,0 +1,361 @@
+{
+  "feature_id": "analytics-api",
+  "feature_key": "analytics-api",
+  "checklist_version": "v1",
+  "name": "Campaign report và Analytics API",
+  "checks": [
+    {
+      "check_id": "CHK-027",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "Endpoint report của một campaign; campaign chưa gửi trả 404",
+      "applicability": {
+        "role": "unspecified",
+        "state": "campaign Sent và campaign Draft",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Gọi `GET /api/teams/{slug}/campaigns/{id}/report` cho campaign Sent.",
+        "Gọi cho campaign Draft."
+      ],
+      "observation_point": "Status code và body.",
+      "expected_result": "Campaign Sent trả report của campaign; campaign chưa gửi trả 404.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/analytics-api#KB-180"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-report-06",
+        "RISK-campaign-report-05"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-029",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "Analytics global: tham số `scope`, chỉ trả số đếm kèm `as_of`, không tính transactional",
+      "applicability": {
+        "role": "unspecified",
+        "state": "workspace có campaign và automation đã gửi, có mail transactional",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt). Có API key của workspace test với quyền phù hợp (giá trị key không được ghi vào evidence).",
+      "steps": [
+        "Gọi `GET /api/teams/{slug}/analytics` với `scope` = `all`, `campaigns`, `automations`.",
+        "Đọc response: trường rate, trường `as_of`, số đếm."
+      ],
+      "observation_point": "Response theo từng scope.",
+      "expected_result": "`scope` nhận `all`, `campaigns`, `automations`; response chỉ có số đếm (không có rate), luôn có `as_of`; email transactional không được tính.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/analytics-api#KB-182",
+          "campaigns/analytics-api#KB-184",
+          "campaigns/campaign-report-metrics#KB-130"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-report-06"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-030",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "Analytics global: totals so với tổng sources",
+      "applicability": {
+        "role": "unspecified",
+        "state": "một contact nhận cả campaign và automation trong khoảng thời gian",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt). Có API key của workspace test với quyền phù hợp (giá trị key không được ghi vào evidence).",
+      "steps": [
+        "Gọi analytics `scope=all`, so `totals` với tổng các `sources`."
+      ],
+      "observation_point": "`totals` và `sources`.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/analytics-api#KB-185"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Trên analytics global, `totals` có phải luôn dedupe người nhận (một người nhận cả campaign lẫn automation chỉ tính 1, nên totals có thể nhỏ hơn tổng sources) cho mọi chỉ số không, hay chỉ cho một số chỉ số?",
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-report-06"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-campaigns-042",
+      "observation_guidance": "Chưa có oracle để kết luận pass/fail. Ghi lại cách tính totals thực tế, đối chiếu khi PO/Dev trả lời câu hỏi kèm theo."
+    },
+    {
+      "check_id": "CHK-031",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "Analytics API: thời gian phải là UTC+0",
+      "applicability": {
+        "role": "unspecified",
+        "state": "API analytics",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt). Có API key của workspace test với quyền phù hợp (giá trị key không được ghi vào evidence).",
+      "steps": [
+        "Gọi với thời gian `2026-10-01T07:00:00` và `2026-10-01T07:00:00Z`.",
+        "Gọi với `2026-10-01T07:00:00+07:00`, với chỉ ngày `2026-10-01` và với dạng tương đối (vd `-7d`)."
+      ],
+      "observation_point": "Status code.",
+      "expected_result": "Hai dạng UTC+0 (có hoặc không có `Z`) được chấp nhận; dạng có offset, chỉ có ngày hoặc tương đối bị trả 422.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/analytics-api#KB-183"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-report-06"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-033",
+      "dimension": "PERMISSION",
+      "layer": "api",
+      "title": "Analytics API theo quyền của API key",
+      "applicability": {
+        "role": "api-caller",
+        "state": "3 API key: chỉ `campaigns:read`, chỉ `automations:read`, có cả hai",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Có 3 API key test với quyền như mô tả (giá trị key không được ghi vào evidence).",
+      "steps": [
+        "Với từng key, gọi analytics `scope` = `campaigns`, `automations`, `all`."
+      ],
+      "observation_point": "Status code từng tổ hợp.",
+      "expected_result": "`scope=campaigns` cần `campaigns:read`, `scope=automations` cần `automations:read`, `scope=all` cần cả hai; key thiếu quyền tương ứng nhận 403.",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/analytics-api#KB-186"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-report-07"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-035",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Analytics phục vụ Claude MCP (report)",
+      "applicability": {
+        "role": "unspecified",
+        "state": "Claude connector đã kết nối workspace test",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Liệt kê tool MCP liên quan tới report / analytics.",
+        "Gọi tool cho một campaign Sent, so số liệu với report trên UI."
+      ],
+      "observation_point": "Tool có sẵn; dữ liệu trả về.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/analytics-api#KB-187"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Jira MTRO-60 \"MCP for report\" chưa có mô tả: MCP có tool report nào, dữ liệu trả về gồm gì và có dùng chung định nghĩa số liệu với report UI / Analytics API không?",
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-report-06"
+      ],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-campaigns-036",
+      "observation_guidance": "Chưa có oracle để kết luận pass/fail. Ghi lại tool và dữ liệu, đối chiếu khi PO/Dev trả lời câu hỏi kèm theo."
+    },
+    {
+      "check_id": "CHK-036",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Trang giao diện `/analytics`",
+      "applicability": {
+        "role": "unspecified",
+        "state": "app workspace",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đã đăng nhập app workspace bằng tài khoản Owner của một workspace test (Owner là role duy nhất đã được khảo sát; ma trận quyền Campaigns chưa chốt).",
+      "steps": [
+        "Mở `/analytics`."
+      ],
+      "observation_point": "Nội dung trang.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "campaigns/analytics-api#KB-188",
+          "campaigns/analytics-api#KB-189"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Có trang giao diện /analytics (analytics global) không (GAP-05)? Hiện route /analytics trên staging là trang trắng và analytics global mới kiểm được ở mức API.",
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-campaign-report-06"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-campaigns-032",
+      "observation_guidance": "Chưa có oracle để kết luận pass/fail. Ghi lại nội dung trang, đối chiếu khi PO trả lời câu hỏi kèm theo."
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "campaign-report",
+      "risk_ref": "RISK-campaign-report-01",
+      "risk_description": "Số liệu report sai định nghĩa (mẫu số, đếm theo người, lọc bot, loại link unsubscribe)",
+      "covered_by_checks": [
+        "CHK-004",
+        "CHK-005",
+        "CHK-006",
+        "CHK-008",
+        "CHK-009",
+        "CHK-010",
+        "CHK-013",
+        "CHK-014",
+        "CHK-015",
+        "CHK-016",
+        "CHK-037"
+      ],
+      "kb_ids": [
+        "campaigns/campaign-report-metrics#KB-120",
+        "campaigns/campaign-report-metrics#KB-121",
+        "campaigns/campaign-report-metrics#KB-122",
+        "campaigns/campaign-report-metrics#KB-123",
+        "campaigns/campaign-report-metrics#KB-124",
+        "campaigns/campaign-report-metrics#KB-125",
+        "campaigns/campaign-report-metrics#KB-126",
+        "campaigns/campaign-report-metrics#KB-127",
+        "campaigns/campaign-report-metrics#KB-129",
+        "campaigns/campaign-report-metrics#KB-132",
+        "campaigns/campaign-report-metrics#KB-135",
+        "campaigns/campaign-report-metrics#KB-136",
+        "campaigns/campaign-report-metrics#KB-137",
+        "campaigns/campaign-report-metrics#KB-139",
+        "campaigns/campaign-report-metrics#KB-140",
+        "campaigns/analytics-api#KB-184",
+        "campaigns/campaign-report-metrics#KB-190"
+      ],
+      "coverage_status": "PARTIAL"
+    },
+    {
+      "feature_id": "campaign-report",
+      "risk_ref": "RISK-campaign-report-05",
+      "risk_description": "Report khi chưa có số liệu, campaign chưa gửi xong, id lạ",
+      "covered_by_checks": [
+        "CHK-022",
+        "CHK-023",
+        "CHK-024",
+        "CHK-025",
+        "CHK-026",
+        "CHK-027"
+      ],
+      "kb_ids": [
+        "campaigns/campaign-report#KB-156",
+        "campaigns/campaign-report#KB-164",
+        "campaigns/campaign-report#KB-169",
+        "campaigns/campaign-report#KB-170",
+        "campaigns/campaign-report#KB-171",
+        "campaigns/campaign-report#KB-176",
+        "campaigns/campaign-report#KB-178",
+        "campaigns/campaign-report#KB-179",
+        "campaigns/analytics-api#KB-180"
+      ],
+      "coverage_status": "PARTIAL"
+    },
+    {
+      "feature_id": "campaign-report",
+      "risk_ref": "RISK-campaign-report-06",
+      "risk_description": "Hợp đồng Analytics API (endpoint, scope, định dạng thời gian, chỉ số đếm)",
+      "covered_by_checks": [
+        "CHK-027",
+        "CHK-028",
+        "CHK-029",
+        "CHK-030",
+        "CHK-031",
+        "CHK-032",
+        "CHK-035",
+        "CHK-036"
+      ],
+      "kb_ids": [
+        "campaigns/campaign-report-metrics#KB-130",
+        "campaigns/campaign-report-metrics#KB-131",
+        "campaigns/campaign-report-metrics#KB-135",
+        "campaigns/analytics-api#KB-180",
+        "campaigns/analytics-api#KB-181",
+        "campaigns/analytics-api#KB-182",
+        "campaigns/analytics-api#KB-183",
+        "campaigns/analytics-api#KB-184",
+        "campaigns/analytics-api#KB-185",
+        "campaigns/analytics-api#KB-187",
+        "campaigns/analytics-api#KB-188",
+        "campaigns/analytics-api#KB-189"
+      ],
+      "coverage_status": "PARTIAL"
+    },
+    {
+      "feature_id": "campaign-report",
+      "risk_ref": "RISK-campaign-report-07",
+      "risk_description": "Phân quyền xem report / gọi Analytics API",
+      "covered_by_checks": [
+        "CHK-033",
+        "CHK-034"
+      ],
+      "kb_ids": [
+        "campaigns/analytics-api#KB-186",
+        "_product-level#KB-P-051",
+        "_product-level#KB-P-052"
+      ],
+      "coverage_status": "PARTIAL"
+    }
+  ],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
+}

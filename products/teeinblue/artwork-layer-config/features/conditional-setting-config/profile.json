@@ -1,0 +1,946 @@
+{
+  "feature_id": "FEAT-08-conditional-setting-config",
+  "feature_key": "conditional-setting-config",
+  "name": "Cấu hình điều kiện hiển thị layer (Conditional Setting)",
+  "user_goal": "Store owner cấu hình điều kiện show/hide 1 layer dựa trên giá trị của layer khác trong cùng artwork, qua accordion CONDITIONAL SETTING.",
+  "user_goal_kb_refs": [
+    "artwork-layer-config/conditional-setting-config#KB-063",
+    "artwork-layer-config/conditional-setting-config#KB-064",
+    "artwork-layer-config/conditional-setting-config#KB-221",
+    "artwork-layer-config/conditional-setting-config#KB-067",
+    "artwork-layer-config/conditional-setting-config#KB-068",
+    "artwork-layer-config/conditional-setting-config#KB-070"
+  ],
+  "actors": [
+    {
+      "role": "store owner / staff (sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "permission_observed": "Full access tới accordion CONDITIONAL SETTING",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-063"
+      ]
+    },
+    {
+      "role": "merchant-owner (store owner/staff, instance 520 store không thuộc explorer)",
+      "permission_observed": "Chọn action Show/Hide trong Conditional Setting (Artwork 2.0), đổi action, Save (PUT /api/artworks/{id} 200), Convert to Artwork 2.0, copy/paste layer giữa artwork.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-221",
+        "artwork-layer-config/conditional-setting-config#KB-222",
+        "artwork-layer-config/conditional-setting-config#KB-224"
+      ]
+    },
+    {
+      "role": "store owner / staff (sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "permission_observed": "Gián tiếp — dữ liệu được sinh ra từ hành động authoring ở FEAT-08, feature này mô tả kết quả lưu trữ",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-067"
+      ]
+    },
+    {
+      "role": "merchant-owner (store owner/staff, instance 520 store không thuộc explorer)",
+      "permission_observed": "Gián tiếp — Save artwork 2.0 có layer đặt Conditional Setting (PUT /api/artworks/{id} 200), đọc lại qua GraphQL artworks.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-227"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "artwork editor — accordion CONDITIONAL SETTING trong config panel layer",
+      "precondition": "layer đích thuộc 33/35 type có accordion này (xem KB-005)",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-005",
+        "artwork-layer-config/conditional-setting-config#KB-063"
+      ]
+    },
+    {
+      "path": "Artwork Editor 2.0 — accordion CONDITIONAL SETTING, chữ đầu heading là dropdown action (Show / Hide)",
+      "precondition": "artwork Artwork 2.0 (schema_version 2); layer đã có sẵn hoặc vừa thêm",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-221",
+        "artwork-layer-config/conditional-setting-config#KB-224"
+      ]
+    },
+    {
+      "path": "Artwork Editor 1.0 — accordion CONDITIONAL SETTING (heading chuỗi liền, không có dropdown action) và nút 'Convert to Artwork 2.0'",
+      "precondition": "artwork schema_version 1",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-224"
+      ]
+    },
+    {
+      "path": "artwork editor — layers action bar → 'Bulk apply Conditional setting' (nhiều layer được chọn)",
+      "precondition": "chọn ≥2 layer; nguồn duy nhất là dev doc, chưa có test case kiểm",
+      "basis": "OBSERVED_CURRENT/LOW",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-225"
+      ]
+    },
+    {
+      "path": "artwork editor — layer 'Copy to clipboard' rồi Ctrl+V ở artwork khác",
+      "precondition": "layer nguồn ở Artwork 2.0 có action Hide; artwork đích là Artwork 1.0",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-224"
+      ]
+    },
+    {
+      "path": "layer đã có condition, đã Save — đọc lại qua PUT response hoặc GraphQL readback",
+      "precondition": "layer có ≥1 condition đã cấu hình và save thành công",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-067"
+      ]
+    },
+    {
+      "path": "Save artwork 2.0 có layer đặt action Show/Hide → body PUT /api/artworks/{id}; đọc bản ghi tạo trước tính năng Hide qua GraphQL artworks",
+      "precondition": "Artwork 2.0, layer có ≥1 điều kiện",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-artwork-dependency-action-01",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-227"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Chọn match_type",
+      "description": "#field__match_type chỉ có 2 radio: match_type-all ('all', mặc định) và match_type-any ('any'). Label 'No conditions' là trạng thái hiển thị khi chưa có condition nào, KHÔNG phải radio thứ 3.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-063"
+      ]
+    },
+    {
+      "name": "Chọn nguồn condition (8/35 type)",
+      "description": "Dropdown 'Option:' chỉ liệt kê layer thuộc 8 data-type: toggle, additional-option, addon-charge, json-list, font, vector-category, clipart-category, group-clipart-categories — bất kể layer đích là type nào. 27 type còn lại không bao giờ xuất hiện làm nguồn.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-064"
+      ]
+    },
+    {
+      "name": "Dropdown nguồn tự loại trừ",
+      "description": "Loại chính layer đang cấu hình (chặn self-loop qua UI, xem thêm FEAT-09) và loại các nguồn đã dùng ở condition trước đó trên cùng layer đích (mỗi nguồn chỉ dùng 1 lần/layer đích).",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-065"
+      ]
+    },
+    {
+      "name": "Control giá trị theo loại nguồn",
+      "description": "Nguồn 'toggle' dùng <select> nhị phân true|On / false|Off; 7 nguồn còn lại dùng control 'is any of:' (multi-value picker). Với clipart-category/vector-category, item đầu grid được auto-check ngay khi chọn nguồn; 6 type còn lại khởi tạo rỗng.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-066",
+        "artwork-layer-config/conditional-setting-config#KB-065"
+      ]
+    },
+    {
+      "name": "Chọn action Show / Hide cho layer (Artwork 2.0)",
+      "description": "Chữ đầu heading Conditional Setting là dropdown action có đúng 2 giá trị Show / Hide; mặc định Show (heading 'Show this layer and its option when:'), kể cả layer vừa thêm. Chọn Hide → heading 'Hide this layer and its option when:'. Mỗi layer chỉ mang đúng một action tại một thời điểm, không có cách thêm khối Show song song.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-221",
+        "artwork-layer-config/conditional-setting-config#KB-222"
+      ]
+    },
+    {
+      "name": "Chuyển Show ↔ Hide không mất cấu hình điều kiện",
+      "description": "Đổi action giữ nguyên toàn bộ điều kiện, match type (AND/OR) và trạng thái toggle first load; chỉ heading và nhãn toggle đổi ('Hide this layer on first load' khi Hide, 'Show this layer on first load' khi Show). Sau Save và reload giữ đúng. Tooltip match type/toggle khi Hide chỉ có nguồn dev doc (KB-223, LOW) — không phải expected.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-222",
+        "artwork-layer-config/conditional-setting-config#KB-223"
+      ]
+    },
+    {
+      "name": "Ranh giới phiên bản artwork cho action",
+      "description": "Artwork 1.0 không có lựa chọn Show/Hide (heading chuỗi liền, nhãn toggle cố định 'Show this layer on first load'). Convert 1.0 → 2.0 cho layer có điều kiện hiện dropdown ở Show, giữ điều kiện và match type. Paste layer action Hide từ artwork 2.0 vào artwork 1.0 bị chặn, danh sách layer của artwork 1.0 không đổi.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-224"
+      ]
+    },
+    {
+      "name": "Bulk apply Conditional setting kèm action (chưa kiểm)",
+      "description": "Theo dev doc (OBSERVED_CURRENT/LOW, chưa có test case): 'Bulk apply Conditional setting' có cùng dropdown Show/Hide và áp action đã chọn cho mọi layer được chọn. Không dùng làm expected.",
+      "basis": "OBSERVED_CURRENT/LOW",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-225"
+      ]
+    },
+    {
+      "name": "Key 'dependency' — presence-based",
+      "description": "Key 'dependency' CHỈ tồn tại (absent, KHÔNG phải null) khi layer có condition; shape {match_type: 'all'|'any', show_by_default: boolean, dependencies: [{element, value},...]}. Trong artwork 4087 cuối run R3, 5/35 layer có key này.",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-artwork-dependency-action-01",
+      "conflict_note": "Liệt kê shape 3 key ở đây (KB-067) đang tranh chấp với KB-227 (dữ liệu lưu sau tính năng Hide có thêm key action). Không dùng như sự thật đã chốt cho shape đầy đủ tới khi PO quyết.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-067"
+      ]
+    },
+    {
+      "name": "dependencies[].value — nhiều shape theo type nguồn",
+      "description": "Serialize theo ≥5 shape khác nhau tuỳ đúng data-type nguồn: (1) boolean scalar không bọc mảng cho toggle; (2) array<DB id số> cho additional-option/group-clipart-categories; (3) array<internal layer id string> cho addon-charge; (4) array<display name string> cho json-list; (5) array<file path string> (đuôi khác nhau) cho font/vector-category/clipart-category.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-068"
+      ]
+    },
+    {
+      "name": "dependencies[].element",
+      "description": "Luôn có dạng 'layer-<6 chữ số>' trong mọi sample quan sát được (10 sample) — không có key toán tử riêng, match semantics suy ngầm từ layer type nguồn.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-070"
+      ]
+    },
+    {
+      "name": "Lưu action Show/Hide của layer và đọc bản ghi cũ (đang tranh chấp)",
+      "description": "Theo test case staging 2026-10-28: PUT gửi dependency có key action ('hide' hoặc 'show') cùng match_type, show_by_default, dependencies; đổi action không làm mất match_type, show_by_default, dependencies; bản ghi tạo trước tính năng không có key action, không bị migrate, được editor hiển thị là Show. Item UNRESOLVED (xung đột KB-067) — không dùng như sự thật đã chốt.",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-artwork-dependency-action-01",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-227"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "layer đích chưa có condition ('No conditions')",
+      "to": "layer đích có ≥1 condition, match_type mặc định = all",
+      "trigger": "+Add conditions -> chọn nguồn -> chọn giá trị",
+      "condition": "layer đích thuộc 33/35 type có accordion CONDITIONAL SETTING",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-063",
+        "artwork-layer-config/conditional-setting-config#KB-064"
+      ]
+    },
+    {
+      "from": "layer vừa thêm vào Artwork 2.0",
+      "to": "action Show, heading 'Show this layer and its option when:', match type 'All conditions match (AND)', chưa có điều kiện",
+      "trigger": "thêm layer mới rồi mở Conditional Setting",
+      "condition": "Artwork 2.0",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-221"
+      ]
+    },
+    {
+      "from": "action Show",
+      "to": "action Hide; heading 'Hide this layer and its option when:'; nhãn toggle 'Hide this layer on first load'; điều kiện, match type, trạng thái toggle giữ nguyên",
+      "trigger": "chọn Hide ở dropdown action",
+      "condition": "Artwork 2.0",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-221",
+        "artwork-layer-config/conditional-setting-config#KB-222"
+      ]
+    },
+    {
+      "from": "action Hide",
+      "to": "action Show; nhãn toggle trở lại 'Show this layer on first load'; điều kiện, match type, toggle giữ nguyên",
+      "trigger": "chọn Show ở dropdown action",
+      "condition": "Artwork 2.0",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-222"
+      ]
+    },
+    {
+      "from": "cấu hình action chưa lưu",
+      "to": "đã lưu (PUT /api/artworks/{id} 200); reload editor giữ đúng action, điều kiện, match type",
+      "trigger": "Save",
+      "condition": "Artwork 2.0",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-222"
+      ]
+    },
+    {
+      "from": "Artwork 1.0 (schema_version 1), layer có điều kiện, không có dropdown action",
+      "to": "Artwork 2.0 (schema_version 2), dropdown action hiện ở giá trị Show, điều kiện và match type giữ nguyên",
+      "trigger": "'Convert to Artwork 2.0' → xác nhận Convert → Save & Close",
+      "condition": "",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-224"
+      ]
+    },
+    {
+      "from": "dependency với action 'show' (hoặc bản ghi cũ không có key action)",
+      "to": "dependency với action 'hide'; match_type, show_by_default, dependencies giữ nguyên",
+      "trigger": "đổi action ở Conditional Setting rồi Save (PUT /api/artworks/{id})",
+      "condition": "Artwork 2.0",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-artwork-dependency-action-01",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-227"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Artwork Editor 2.0: dropdown action của Conditional Setting có đúng 2 giá trị Show / Hide; mặc định Show (kể cả layer vừa thêm); chọn Hide đổi heading thành 'Hide this layer and its option when:'.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "test_case",
+      "scope_note": "staging, test chạy 2026-10-28 trước khi PR merge; production chưa xác nhận",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-221"
+      ]
+    },
+    {
+      "statement": "Một layer chỉ mang một action tại một thời điểm; đổi Show ↔ Hide giữ nguyên điều kiện, match type và trạng thái toggle first load, chỉ heading và nhãn toggle đổi; Save + reload giữ đúng.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "test_case",
+      "scope_note": "staging, test chạy 2026-10-28 trước khi PR merge; production chưa xác nhận. Phần body PUT (shape dependency) chịu CONF-artwork-dependency-action-01 — xem risks.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-222"
+      ]
+    },
+    {
+      "statement": "Artwork 1.0 không có lựa chọn Show/Hide; Convert 1.0 → 2.0 ra action Show và giữ điều kiện; paste layer action Hide từ artwork 2.0 vào artwork 1.0 bị chặn với thông báo nguyên văn 'Cannot import layers from different artwork versions.', danh sách layer không đổi.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "test_case",
+      "message_verbatim": "Cannot import layers from different artwork versions.",
+      "scope_note": "staging, test chạy 2026-10-28 trước khi PR merge; production chưa xác nhận",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-224"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Kết quả 8/35 type làm nguồn giống hệt nhau ở 2 run độc lập, trên 2 artwork khác nhau (R2 artwork 4087 v3 mới tạo, R3 cùng artwork 4087 sau đó) — corroborate mạnh.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-064"
+      ],
+      "observed_count": 2
+    },
+    {
+      "statement": "Theo dev doc (chưa kiểm trên build cuối): chọn Hide đổi tooltip match type thành 'hide when all / any options are selected' và toggle có tooltip riêng; về Show khôi phục nhãn cũ. Không dùng làm expected.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-223"
+      ]
+    },
+    {
+      "statement": "Theo dev doc (chưa kiểm): Bulk apply Conditional setting có dropdown Show/Hide và áp action cho mọi layer được chọn. Không dùng làm expected.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-225"
+      ]
+    },
+    {
+      "statement": "QA ghi tay (không ngày, trái expectedResult của chính case): với Group layer không đặt được Conditional Setting cho cả Group trên UI, phải đặt cho từng layer con; BUG-436 (Group mang dependency dựng bằng data luôn hiện) vẫn gắn trên case. Quan sát, không phải quy tắc.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-226"
+      ]
+    },
+    {
+      "statement": "Multi-value (mảng >1 phần tử) chỉ xác nhận THẬT ở nguồn clipart-category (layer paragraph pre-existing, 2 giá trị webp path); 6/8 type nguồn dạng array còn lại (additional-option, addon-charge, json-list, font, vector-category, group-clipart-categories) chỉ test với đúng 1 giá trị mỗi condition trong cả run.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-069"
+      ],
+      "observed_count": 1
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "role": "store owner/staff",
+      "capability": "full access tới toàn bộ control CONDITIONAL SETTING",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-063",
+        "artwork-layer-config/conditional-setting-config#KB-064",
+        "artwork-layer-config/conditional-setting-config#KB-065",
+        "artwork-layer-config/conditional-setting-config#KB-066"
+      ]
+    },
+    {
+      "role": "merchant-owner",
+      "capability": "chọn/đổi action Show/Hide, Save, Convert to Artwork 2.0, copy/paste layer",
+      "observed": true,
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-221",
+        "artwork-layer-config/conditional-setting-config#KB-222",
+        "artwork-layer-config/conditional-setting-config#KB-224"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      "artwork editor — accordion CONDITIONAL SETTING",
+      {
+        "item": "Artwork Editor 2.0 → Conditional Setting: dropdown action Show/Hide ở chữ đầu heading; nhãn toggle 'Show/Hide this layer on first load'",
+        "kb_refs": [
+          "artwork-layer-config/conditional-setting-config#KB-221",
+          "artwork-layer-config/conditional-setting-config#KB-222"
+        ]
+      },
+      {
+        "item": "Artwork Editor 1.0 → Conditional Setting (không có dropdown action); nút 'Convert to Artwork 2.0'; paste layer (Ctrl+V) bị chặn khác version",
+        "kb_refs": [
+          "artwork-layer-config/conditional-setting-config#KB-224"
+        ]
+      },
+      {
+        "item": "layers action bar → Bulk apply Conditional setting (chưa kiểm)",
+        "basis": "OBSERVED_CURRENT/LOW",
+        "kb_refs": [
+          "artwork-layer-config/conditional-setting-config#KB-225"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "item": "PUT /api/artworks/{id} — Save cấu hình action (200)",
+        "kb_refs": [
+          "artwork-layer-config/conditional-setting-config#KB-222"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "layer.dependency — shape có/không key action đang tranh chấp (CONF-artwork-dependency-action-01), chi tiết ở FEAT-10",
+        "status": "UNRESOLVED",
+        "kb_refs": [
+          "artwork-layer-config/conditional-setting-config#KB-227",
+          "artwork-layer-config/conditional-setting-config#KB-067"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "type": "feature",
+      "description": "Precondition: layer đích phải thuộc 33/35 type có accordion này (KB-005, FEAT-01-editor-layer-workspace).",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-005"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "Kết quả cấu hình ở đây được lưu vào key 'dependency' khi save, xem shape chi tiết ở FEAT-08-conditional-setting-config.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-064"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "Nếu cấu hình tạo thành vòng phụ thuộc, Save bị chặn — xem FEAT-09-condition-cycle-validation.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-065"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "Action đã chọn được lưu trong dependency của layer (FEAT-10); shape dữ liệu của action đang tranh chấp, chưa chốt.",
+      "status": "UNRESOLVED",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-227",
+        "artwork-layer-config/conditional-setting-config#KB-067"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "Vòng điều kiện giữa các layer action Hide bị chặn khi Save giống action Show (FEAT-09).",
+      "kb_refs": [
+        "artwork-layer-config/condition-cycle-validation#KB-228"
+      ]
+    },
+    {
+      "type": "cross_object_feature",
+      "description": "Hiệu lực của action Hide trên storefront (ẩn layer và option khi điều kiện khớp, first load, nguồn toggle/additional option) do SDK hiển thị — object sdk, FEAT-07-storefront-buyer-facing.",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-232",
+        "sdk/storefront-layer-visibility#KB-233",
+        "sdk/storefront-layer-visibility#KB-234",
+        "sdk/storefront-layer-visibility#KB-235"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "Duplicate artwork giữ action của layer (FEAT-37-artwork-list-and-clone); copy/paste layer, import, global template replica giữ Hide chỉ có nguồn dev doc (FEAT-04-layer-duplicate-link-copy).",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229",
+        "artwork-editor/layer-duplicate-link-copy#KB-230"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "Dữ liệu dependency sinh ra từ authoring UI ở FEAT-08-conditional-setting-config.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-067"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "Chỉ persist qua PUT của FEAT-07-artwork-save-persist.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-067"
+      ]
+    },
+    {
+      "type": "cross_object_feature",
+      "description": "SDK storefront (object sdk, FEAT-07-storefront-buyer-facing) đọc dependency để ẩn/hiện layer theo action; show_by_default được hiển thị là 'Hide this layer on first load' khi action là Hide.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-222",
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-232"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "risk": "CONF-001: network_ref của action gốc 'chọn nguồn Toggle, giá trị On' (hỗ trợ KB-066) trong evidence gốc trỏ nhầm vào 1 file mô tả action khác (không chứa PUT nào) — không tự sửa, giữ nguyên nghi vấn khi dùng KB-066 làm oracle cho action cụ thể này.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-066"
+      ],
+      "conflict_id": "CONF-001"
+    },
+    {
+      "risk": "Mọi item action Show/Hide CONFIRMED_EXPECTED dựa trên đúng một lượt test staging 2026-10-28, chạy trước khi các PR của TIB-5558 merge; build hash không rõ, shipped UNKNOWN, production chưa xác nhận.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-221",
+        "artwork-layer-config/conditional-setting-config#KB-222",
+        "artwork-layer-config/conditional-setting-config#KB-224"
+      ]
+    },
+    {
+      "risk": "Phần API của KB-222 (PUT gửi đúng một khối dependency cho layer) chạm vào shape dependency đang tranh chấp giữa KB-067 (base) và KB-227 (CONF-artwork-dependency-action-01, UNRESOLVED). Oracle tầng UI của KB-222 dùng được; không dùng body PUT làm oracle cho shape dependency tới khi PO chốt.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-222",
+        "artwork-layer-config/conditional-setting-config#KB-227",
+        "artwork-layer-config/conditional-setting-config#KB-067"
+      ],
+      "conflict_id": "CONF-artwork-dependency-action-01"
+    },
+    {
+      "risk": "Tooltip match type/toggle khi Hide và Bulk apply kèm action chỉ có nguồn dev doc viết trước khi code còn đổi tới merge — check dựa trên chúng chỉ đạt BASELINE/NEEDS_CONFIRMATION.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-223",
+        "artwork-layer-config/conditional-setting-config#KB-225"
+      ]
+    },
+    {
+      "risk": "Conditional Setting ở cấp Group chưa chốt: ghi nhận tay của QA trái expectedResult của case, BUG-436 còn gắn — không viết expected cho Group.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-226"
+      ]
+    },
+    {
+      "risk": "CONF-002: trạng thái data layer addon-charge/json-list khác nhau giữa 2 run trên CÙNG artwork 4087 (R2: chưa có option/URL; R3: đã có) — nhiều khả năng do state đổi giữa 2 run (ai đó cấu hình thêm giữa 2 lần chạy) chứ không phải mâu thuẫn hành vi sản phẩm, nhưng KHÔNG tự kết luận theo contract §8.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-068"
+      ],
+      "conflict_id": "CONF-002"
+    },
+    {
+      "risk": "KB-068/036 chỉ observed_count=1 (đúng 1 lần save 8-condition) — tất cả 5 shape value KHÔNG được coi là enum/required chính thức.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-068",
+        "artwork-layer-config/conditional-setting-config#KB-069"
+      ]
+    },
+    {
+      "risk": "CONF-artwork-dependency-action-01 (UNRESOLVED): KB-067 (base, quan sát 2026-09-10) liệt kê dependency đúng 3 key {match_type, show_by_default, dependencies}; KB-227 (test case staging 2026-10-28, trước khi PR merge) cho thấy bản lưu mới có thêm key action và bản ghi cũ không có action được hiểu là Show. Supersede tắt cho product này — không bên nào là oracle cho shape dependency tới khi PO chốt; check shape phải mang NEEDS_CONFIRMATION.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-067",
+        "artwork-layer-config/conditional-setting-config#KB-227"
+      ],
+      "conflict_id": "CONF-artwork-dependency-action-01"
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-30",
+    "source_observed_on": "2026-10-28"
+  },
+  "unknown_areas": [
+    {
+      "question": "Giới hạn số condition tối đa trên 1 layer là bao nhiêu — mới thử tới 8 (hết đúng số nguồn khả dụng), không phải giới hạn hệ thống thật.",
+      "why_it_matters": "coverage_gaps liên quan — cần test riêng với nhiều nguồn hơn để tìm ngưỡng thật."
+    },
+    {
+      "question": "Có hỗ trợ lồng nhóm AND trong OR (nested logic) không — hiện KHÔNG có UI cho việc này trong toàn bộ evidence.",
+      "why_it_matters": "Ảnh hưởng độ phức tạp business logic có thể test; nếu không hỗ trợ, checklist không nên test case nested."
+    },
+    {
+      "question": "Ngoài is-any-of và on/off, có toán tử nào khác (is-none-of, contains, so sánh số/ngày) không — chỉ quan sát đúng 2 dạng control, observed_count=1 cho KB-066.",
+      "why_it_matters": "LOW confidence, không nên coi đây là toàn bộ tập toán tử hệ thống hỗ trợ."
+    },
+    {
+      "question": "2 layer type không có accordion này (Dynamic Clipart by Text) — có đường API nào khác để set condition không (bypass UI)?",
+      "why_it_matters": "Liên quan trực tiếp tới rủi ro BLK-API-002 ở FEAT-09 (server có tự chặn/validate độc lập với UI hay không)."
+    },
+    {
+      "question": "Hành vi runtime storefront của layer có condition (show/hide theo giá trị người mua chọn) — 0 evidence storefront.",
+      "why_it_matters": "coverage_gaps #1 — đây là tính năng người dùng cuối trực tiếp cảm nhận nhưng chưa test phía storefront."
+    },
+    {
+      "question": "Hành vi với role khác owner / cross-tenant — chưa test.",
+      "why_it_matters": "coverage_gaps #3."
+    },
+    {
+      "question": "Trên build đã merge, chọn Hide có đổi tooltip match type thành 'hide when all / any options are selected' và toggle 'Hide this layer on first load' có tooltip riêng không; chuyển lại Show có khôi phục nhãn cũ không?",
+      "why_it_matters": "Nguồn duy nhất là dev doc viết trước khi code còn đổi; check tooltip không có oracle cho tới khi PO xác nhận.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-223"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-069"
+    },
+    {
+      "question": "Bulk apply Conditional setting trên build đã merge có dropdown Show/Hide và áp đúng action cho mọi layer được chọn (kể cả khi các layer đang mang action khác nhau) không?",
+      "why_it_matters": "Chỉ có nguồn dev doc, 0 test case; bulk apply sai action làm đảo chiều ẩn/hiện của nhiều layer cùng lúc.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-225"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-070"
+    },
+    {
+      "question": "Conditional Setting (Show/Hide) có được hỗ trợ ở cấp Group không? Nếu có, UI đặt ở đâu và BUG-436 là lỗi cần sửa; nếu không, điều kiện chỉ đặt cho từng layer con.",
+      "why_it_matters": "Ghi nhận tay của QA trái expectedResult của case và BUG-436 còn gắn — không viết được expected cho Group có điều kiện.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-226"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-071"
+    },
+    {
+      "question": "toggle=false (Off) chưa từng được lưu qua Save — chưa biết serialize thành boolean false hay string 'false'. Mọi sample có toggle làm nguồn condition đều chọn On (true).",
+      "why_it_matters": "Không nên giả định symmetry với true khi chưa xác nhận; ảnh hưởng test data cho negative case."
+    },
+    {
+      "question": "Shape multi-value cho 6/8 type nguồn dạng array còn lại khi chọn ≥2 giá trị — chưa test.",
+      "why_it_matters": "Mỗi type có thể serialize multi-value khác nhau (như clipart-category đã xác nhận đúng mẫu array chuẩn); cần thêm sample."
+    },
+    {
+      "question": "element có luôn là layer id trong MỌI trường hợp (kể cả nếu sản phẩm mở rộng nguồn ngoài 8 type hiện tại) hay đây chỉ đúng với 8 type đã test — KB-070 đánh dấu INFERRED, không phải CONFIRMED.",
+      "why_it_matters": "Không nên hard-code assumption này vào test oracle mà chưa xác nhận rộng hơn."
+    },
+    {
+      "question": "required/optional/enum cho từng shape value — observed_count=1 cho hầu hết.",
+      "why_it_matters": "coverage_gaps #6 của KB gốc."
+    },
+    {
+      "question": "DB thật (Postgres) chưa được kiểm tra trực tiếp — mọi evidence 'DB' ở đây là qua GraphQL/Hasura hoặc response PUT.",
+      "why_it_matters": "coverage_gaps #2."
+    },
+    {
+      "question": "Hành vi runtime storefront khi render layer có dependency (show/hide theo value thật của người mua) — 0 evidence.",
+      "why_it_matters": "coverage_gaps #1 — đây là nơi dữ liệu này thực sự được sử dụng, nhưng hoàn toàn chưa test."
+    },
+    {
+      "question": "Shape dependency của layer có điều kiện: thay KB-067 bằng KB-227 (có key action 'hide'/'show', bản ghi cũ không có action = Show), giữ cả hai như hai thời điểm dữ liệu (KB-067 thu phạm vi thành 'bản ghi trước tính năng Hide'), hay giữ base?",
+      "why_it_matters": "Hai item mô tả shape khác nhau cho cùng key dependency; check về data/API của dependency không có oracle cho tới khi PO chốt.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-067",
+        "artwork-layer-config/conditional-setting-config#KB-227"
+      ],
+      "oq_type": "CONFLICT",
+      "conflict_group": "CONF-artwork-dependency-action-01",
+      "oq_id": "OQ-artwork-layer-config-068"
+    },
+    {
+      "question": "Khi action = 'hide', key show_by_default (giữ nguyên tên) mang nghĩa 'Hide this layer on first load' — đây là thiết kế chủ đích của data model hay chỉ là cách hiển thị của editor/SDK? Có giá trị action nào khác ngoài 'hide'/'show' được API chấp nhận không?",
+      "why_it_matters": "Oracle cho test data/API của first load khi Hide phụ thuộc cách hiểu show_by_default; KB hiện chỉ có nhãn editor (KB-222) và hành vi SDK (KB-232), không có mô tả data model.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-227",
+        "artwork-layer-config/conditional-setting-config#KB-222",
+        "sdk/storefront-layer-visibility#KB-232"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-artwork-layer-config-072"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "portal",
+      "role": "owner",
+      "state": "layer đích có accordion, ≤8 condition",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "portal",
+      "role": "owner",
+      "state": ">8 condition / nested AND-OR",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "storefront",
+      "role": "owner",
+      "state": "toàn bộ",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "Artwork 2.0: action Show/Hide, mặc định Show cho layer mới, đổi action giữ cấu hình, Save + reload",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-221",
+        "artwork-layer-config/conditional-setting-config#KB-222"
+      ]
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Artwork 1.0 / convert 1.0→2.0 / paste layer Hide sang 1.0",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-224"
+      ]
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "tooltip match type và toggle khi Hide",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-223"
+      ],
+      "basis": "chỉ dev doc, OBSERVED_CURRENT/LOW"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Bulk apply Conditional setting kèm action",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-225"
+      ],
+      "basis": "chỉ dev doc, OBSERVED_CURRENT/LOW"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Conditional Setting ở cấp Group",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-226"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, expected chưa chốt"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "storefront",
+      "role": "guest-buyer",
+      "state": "layer action Hide ẩn/hiện theo điều kiện (AND/OR, first load)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-232"
+      ],
+      "note": "covered ở sdk/storefront-buyer-facing"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "action Show/Hide trên build đã merge",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-221",
+        "artwork-layer-config/conditional-setting-config#KB-222",
+        "artwork-layer-config/conditional-setting-config#KB-224"
+      ]
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "api",
+      "role": "owner",
+      "state": "single-value, 8/8 type nguồn",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "api",
+      "role": "owner",
+      "state": "multi-value, 6/8 type nguồn còn lại",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "api",
+      "role": "owner",
+      "state": "toggle=false",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "data",
+      "role": "owner",
+      "state": "readback qua GraphQL",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "storefront",
+      "role": "owner",
+      "state": "toàn bộ",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "dependency kèm action 'hide'/'show'; đổi action giữ các key khác",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-227"
+      ],
+      "basis": "CONFIRMED_EXPECTED nhưng UNRESOLVED (CONF-artwork-dependency-action-01)"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "data",
+      "role": "merchant-owner",
+      "state": "bản ghi cũ không có key action (đọc là Show, không migrate)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-227"
+      ],
+      "basis": "CONFIRMED_EXPECTED nhưng UNRESOLVED (CONF-artwork-dependency-action-01)"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "dependency kèm action trên build đã merge",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-227"
+      ]
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "conflict_id": "CONF-artwork-dependency-action-01",
+      "conflict_group": "CONF-artwork-dependency-action-01",
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "status": "UNRESOLVED",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-067",
+        "artwork-layer-config/conditional-setting-config#KB-227"
+      ],
+      "side_a": "KB-067 (base, quan sát 2026-09-10): layer có condition có dependency = {match_type, show_by_default, dependencies}.",
+      "side_b": "KB-227 (test case PASS 2026-10-28, staging trước khi PR merge): dependency có thêm key action 'hide'/'show'; bản ghi cũ không có key action được hiểu là Show, không bị migrate.",
+      "profile_handling": "Không bên nào vào confirmed_rules; capability/entry_point/state_transition/surface liên quan gắn status UNRESOLVED.",
+      "resolution_owner": "PO"
+    }
+  ],
+  "profile_relationships": [
+    {
+      "from_feature_id": "FEAT-08-conditional-setting-config",
+      "to_feature_id": "FEAT-01-editor-layer-workspace",
+      "relation": "gated_by",
+      "note": "Precondition ranh giới 33/35 type từ KB-005."
+    },
+    {
+      "from_feature_id": "FEAT-08-conditional-setting-config",
+      "to_feature_id": "FEAT-09-condition-cycle-validation",
+      "relation": "triggers",
+      "note": "Cấu hình vòng lặp ở đây kích hoạt hành vi chặn Save mô tả ở FEAT-09."
+    },
+    {
+      "from_feature_id": "FEAT-08-conditional-setting-config",
+      "to_feature_id": "FEAT-08-conditional-setting-config",
+      "relation": "produces_data_for",
+      "note": "Kết quả UI ở đây serialize thành key 'dependency' mô tả chi tiết ở FEAT-10."
+    },
+    {
+      "from_feature_id": "FEAT-08-conditional-setting-config",
+      "to_feature_id": "FEAT-07-storefront-buyer-facing",
+      "to_object": "sdk",
+      "relation": "rendered_by",
+      "note": "Action Show/Hide cấu hình ở đây được SDK áp trên form và preview storefront.",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-232",
+        "sdk/storefront-layer-visibility#KB-233",
+        "sdk/storefront-layer-visibility#KB-234",
+        "sdk/storefront-layer-visibility#KB-235"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-08-conditional-setting-config",
+      "to_feature_id": "FEAT-05-group-layer-effective-visibility",
+      "relation": "related",
+      "note": "Conditional Setting ở cấp Group chưa chốt; hiển thị hiệu dụng của Group (cờ visible) thuộc FEAT-22.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-226"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-08-conditional-setting-config",
+      "to_feature_id": "FEAT-04-layer-duplicate-link-copy",
+      "relation": "related",
+      "note": "Paste layer Hide sang artwork 1.0 bị chặn; copy/paste giữa artwork 2.0 giữ Hide chỉ theo dev doc.",
+      "kb_refs": [
+        "artwork-layer-config/conditional-setting-config#KB-224",
+        "artwork-editor/layer-duplicate-link-copy#KB-230"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-08-conditional-setting-config",
+      "to_feature_id": "FEAT-37-artwork-list-and-clone",
+      "relation": "related",
+      "note": "Duplicate artwork giữ action Show/Hide của layer.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-08-conditional-setting-config",
+      "to_feature_id": "FEAT-08-conditional-setting-config",
+      "relation": "data_shape_of",
+      "note": "Là kết quả lưu trữ của authoring UI ở FEAT-08."
+    },
+    {
+      "from_feature_id": "FEAT-08-conditional-setting-config",
+      "to_feature_id": "FEAT-07-artwork-save-persist",
+      "relation": "persisted_via",
+      "note": "Chỉ ghi DB qua PUT của FEAT-07."
+    },
+    {
+      "from_feature_id": "FEAT-08-conditional-setting-config",
+      "to_feature_id": "FEAT-07-storefront-buyer-facing",
+      "to_object": "sdk",
+      "relation": "consumed_by",
+      "note": "SDK đọc dependency (gồm action khi có) để ẩn/hiện layer trên storefront.",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-232"
+      ]
+    }
+  ]
+}

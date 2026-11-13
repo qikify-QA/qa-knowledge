@@ -1,0 +1,1559 @@
+{
+  "feature_id": "FEAT-22-storefront-campaign-media-api",
+  "feature_key": "storefront-campaign-media-api",
+  "name": "Gallery media theo variant và API campaign storefront",
+  "user_goal": "Buyer thấy gallery đúng variant; SDK đọc đúng response campaign/platform product và cache.",
+  "user_goal_kb_refs": [],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "guest (unauthenticated) — API consumer",
+      "permission_observed": "Có thể GET endpoint bootstrap config cá nhân hoá (campaigns/{platformProductId}.json) mà KHÔNG cần authorization header nào, chỉ cần biết platform_product_id — public theo thiết kế hoặc chưa gate lại, chưa khẳng định là defect.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-013"
+      ]
+    },
+    {
+      "role": "owner (portal) — người launch multi-store",
+      "permission_observed": "Có thể launch campaign 2595 tới store thứ 2 trong cùng Organization; hệ thống chạy pre-flight check theme app-block-enabled trước khi cho phép publish (chỉ quan sát case enabled=true/thành công).",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-002",
+        "sdk/storefront-campaign-media-api#KB-012"
+      ]
+    },
+    {
+      "role": "[MỚI, CBS-009] guest-buyer trên storefront store không thuộc explorer (instance 520, theme SDK) — xem gallery theo variant",
+      "permission_observed": "Xem gallery SDK, đổi variant, bấm play video trên product page trong lượt test 2026-10-22; không có khác biệt quyền nào được quan sát; không thử buyer đã đăng nhập.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-320",
+        "sdk/storefront-campaign-media-api#KB-325"
+      ]
+    },
+    {
+      "role": "[MỚI, CBS-013] guest-buyer trên storefront store không thuộc explorer (instance 520) — campaign có / không có Global Option và platform product",
+      "permission_observed": "Mở product page, nhập text, chọn clipart/Global Option, reload, Add to cart mà không đăng nhập trong lượt test 2026-10-28; không có khác biệt quyền nào được quan sát; không thử buyer đã đăng nhập.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-customization-storage#KB-360",
+        "sdk/storefront-buyer-facing#KB-361",
+        "sdk/storefront-customization-storage#KB-362",
+        "sdk/storefront-campaign-media-api#KB-363"
+      ]
+    },
+    {
+      "role": "[MỚI, CBS-013] guest (unauthenticated) — gọi thẳng campaigns/{shopify product id}.json?shop=…&v=… (store không thuộc explorer, store không thuộc explorer)",
+      "permission_observed": "Gọi được endpoint public không cần auth, với tham số v tuỳ ý (kể cả v chưa từng dùng) trong lượt test 2026-10-28; quét response theo từ khoá token/secret (KB-367, quan sát).",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-350",
+        "sdk/storefront-campaign-media-api#KB-352",
+        "sdk/storefront-campaign-media-api#KB-367"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "GET /api/merchant/campaigns/{platformProductId}.json — bootstrap widget cá nhân hoá, public, không cần auth",
+      "precondition": "biết platform_product_id",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-013"
+      ]
+    },
+    {
+      "path": "URL san pham THAT giong het baseline 2026-09-12 (handle 'qa-explore-campaign-pb-01', platform_linked_id store1: 8138398629987, store2: 15280333291824) -- re-verify lai 2026-09-21, KHONG can doan route moi",
+      "precondition": "campaign 2595 van dang publish tren ca 2 store, chua bi go/unpublish giua 2 lan run",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-044"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-009] Product page campaign có video/mockup gán variant trên store test store không thuộc explorer (instance 520), staging — gallery SDK",
+      "precondition": "Setting lọc media theo variant đang chọn (Store Settings → Product Page, mục Gallery & Mockup) bật hoặc tắt theo case; campaign đã Update/Sync sau khi đổi assignment (KB-321, quan sát); lượt test 2026-10-22 trước khi 4 PR TIB-5428 merge",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-320",
+        "sdk/storefront-campaign-media-api#KB-321",
+        "sdk/storefront-campaign-media-api#KB-325"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-013] Product page store không thuộc explorer: campaign #3270 (có Global Option, artwork AW-GO), #3271 (dùng cùng GO), #3272 (không GO); platform product #602 (/products/the-complete-snowboard) — storefront staging",
+      "precondition": "Lượt test 2026-10-28 trước khi 2 PR TIB-5203 merge 2026-10-29; trang thật của platform product #602 đang bị lỗi đã biết BUG-310 (xem risks)",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-campaign-media-api#KB-363",
+        "sdk/storefront-buyer-facing#KB-365"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-013] GET /api/merchant/campaigns/{shopify product id}.json?shop=…&v=… — URL SDK gọi khi render dùng v=1; link preload trên trang dùng v=<version>; gọi tay với v chưa từng dùng thì CF-Cache-Status: MISS",
+      "precondition": "Biết Shopify product id + shop domain; staging store không thuộc explorer/store không thuộc explorer, 2026-10-28",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-350",
+        "sdk/storefront-campaign-media-api#KB-354",
+        "sdk/storefront-campaign-media-api#KB-356"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Multi-store publish pre-flight check (portal, owner)",
+      "description": "Trước khi gọi POST /api/campaigns/{id}/publish cho instance đích, portal gọi GET /api/instances/{instanceId}/themes/app-block-enabled và nhận {enabled:true} trước khi cho phép publish — 1 sample, chỉ case thành công; case enabled=false/lỗi chưa test.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-012"
+      ]
+    },
+    {
+      "name": "[MOI, 2026-09-21] Preview/mockup mechanism (template 1, campaign 2595) re-observed -- img + overlay 'tee-printarea', zero [data-layer-id] SVG, KHONG khop verbatim KB-010 (v1 cu) hay KB-011 (v2 cu)",
+      "description": "Click nut 'Preview' (template mac dinh, khong thieu field bat buoc) tren CA 2 store mo popup voi mockup dang <img> + div overlay 'tee-printarea' (slider prev/next). ZERO phan tu [data-layer-id] tim thay trong popup o ca 2 store. Cau truc DOM (so svg/img, class name, nesting) BYTE-IDENTICAL giua 2 store. Co che nay KHONG khop verbatim voi capability 'Artwork preview -- lightbox mockup TINH (SDK v1, store1)' (KB-010: mo ta la lightbox PhotoSwipe-style tinh) lan capability 'Artwork preview -- SVG song, cap nhat theo layer-id (SDK v2, store2)' (KB-011: mo ta la SVG song voi id artwork-layer--layer-<n>). Ghi nhan rieng nhu 1 quan sat MOI, danh dau CHUA doi chieu duoc voi 2 capability cu, KHONG gan nhan v1/v2 cho quan sat nay, KHONG sua doi noi dung KB-010/KB-011.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-042"
+      ]
+    },
+    {
+      "name": "[MOI, 2026-09-21] Xac nhan lai identity campaign/object 2026-09-21 -- cung campaign/product id nhu baseline 2026-09-12, theme khong doi",
+      "description": "Storefront re-check dung lai URL/handle 'qa-explore-campaign-pb-01' tu baseline 2026-09-12 ma KHONG can doan route moi: tieu de san pham 'QA Explore Campaign PB 01' va product id khop CHINH XAC baseline (store1: 8138398629987, store2: 15280333291824); endpoint bootstrap cong khai GET /api/merchant/campaigns/{product_id}.json fire tren ca 2 store -- xac nhan day LA cung 1 campaign/object voi baseline v1/v2 2026-09-12, khong phai campaign khac (loai bo kha nang 'campaign da bi thay/tao lai' nhu 1 nguyen nhan cua CFL-004). Theme cung khong doi: store1 = Dawn 16.0.0 (theme id 143116042339), store2 = 'test-data'/Generated Data Theme 1.0.0 (theme id 188105261360) -- chi rieng SDK bundle/version marker cua store1 thay doi (KB-040), theme thi khong.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-044"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-009] Gallery SDK lọc media (mockup + video) theo variant đang chọn khi setting lọc theo variant bật",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-320, KB-322, KB-323, KB-324; Testlane TC-TIB-6424..6429, TC-TIB-6447 PASS, staging instance 520 store không thuộc explorer, lượt duy nhất 2026-10-22, trước khi 4 PR TIB-5428 merge 2026-10-27, shipped UNKNOWN). Setting lọc media theo variant đang chọn (Store Settings → Product Page, mục Gallery & Mockup; chuỗi label đang conflict ở product-page-settings-config) bật: gallery chỉ hiện mockup và video đã gán cho variant đang chọn, media không gán hoặc gán variant khác bị ẩn; video đã gán bấm play phát được; đổi variant liên tục thì gallery lọc lại đúng tập của từng variant. Variant chỉ gán video: gallery đúng bằng tập video đã gán, không fallback hiện mockup; với variant chỉ gán một video, khu vực preview không render ảnh preview cá nhân hoá và không lấy mockup không gán làm nguồn preview (KB-323 không nói gì về form cá nhân hoá hay design đơn hàng). Variant không được gán gì: gallery hiện toàn bộ mockup và video của campaign. Chỉ quan sát (OBSERVED_CURRENT/LOW): storefront chỉ phản ánh assignment mới sau Update/Sync campaign (KB-321).",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-320",
+        "sdk/storefront-campaign-media-api#KB-322",
+        "sdk/storefront-campaign-media-api#KB-323",
+        "sdk/storefront-campaign-media-api#KB-324",
+        "sdk/storefront-campaign-media-api#KB-321"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-009] Gallery SDK khi setting lọc theo variant tắt",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-325, Testlane TC-TIB-6430 PASS, cùng lượt 2026-10-22). Setting tắt: mọi variant đều thấy toàn bộ mockup và video của campaign, giống nhau giữa các variant; video hiện như một mockup bình thường và assignment video ↔ variant không có tác dụng lọc.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-325"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-009] Thứ tự item trong gallery SDK và video 'Always load first' — kèm lỗi đã biết BUG-359",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-326, Testlane TC-TIB-6431 PASS, cùng lượt 2026-10-22): setting lọc theo variant bật và video không bật 'Always load first' thì gallery xếp item đã gán theo đúng thứ tự list media của campaign; video nằm giữa list giữ đúng vị trí, không bị đẩy xuống cuối hay kéo lên đầu. Với video bật 'Always load first': lỗi đã biết KNOWN_DEFECT BUG-359 (KB-327, TC-TIB-6432 FAIL, 1 lượt) — khi list media là media thứ nhất, video, media thứ hai và video được gán cho variant đang chọn, gallery lấy video làm item focus khi load nhưng video vẫn ở vị trí thứ 2, không đứng đầu. Đây là defect đã biết, KHÔNG phải hành vi mong đợi; hành vi đúng chưa có nguồn xác nhận. Không dùng làm oracle.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-326",
+        "sdk/storefront-campaign-media-api#KB-327"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-013] Payload bootstrap campaigns/{id}.json rút gọn (TIB-5203) — key SDK cần vẫn có, field đã bỏ không còn (chỉ xác nhận cho response gọi với tham số v mới)",
+      "description": "CONFIRMED_EXPECTED/MEDIUM cho đúng phạm vi hẹp (KB-350, KB-352; Testlane TC-TIB-7507 PASS, staging, chạy 2026-10-28 ~10:30 UTC sau commit 8731f3a deploy staging, trước khi 2 PR merge 2026-10-29; production chưa xác nhận): response GET /api/merchant/campaigns/{shopify product id}.json?shop=… khi gọi với tham số v chưa từng dùng (CF-Cache-Status: MISS) có đủ key resource_type, config, has_subscription, is_development, is_plus, sku_enabled, shop_name, và không còn artworks[].description/is_locked/status, campaign_products[].created_at/updated_at, product.internal_tags/status, variants[].created_at/updated_at/deleted_at — ở 4 response được kiểm (campaign #3279 trên store không thuộc explorer và store không thuộc explorer, campaign #3270 và platform product #602 trên store không thuộc explorer). KHÔNG áp cho URL ?v=1 mà SDK gọi khi render, và không khẳng định giá trị resource_type. Chỉ quan sát (OBSERVED_CURRENT/LOW): resource_type='campaign' cho campaign, 'platform_product' cho platform product (KB-351, lượt trước redeploy); danh sách key artworks[] còn lại của platform product #602 (KB-353, 1 sample).",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-350",
+        "sdk/storefront-campaign-media-api#KB-352",
+        "sdk/storefront-campaign-media-api#KB-351",
+        "sdk/storefront-campaign-media-api#KB-353"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-013] Phiên bản payload storefront nhận được sau khi merchant sửa artwork / Update campaign / Publish platform product (cache theo tham số v) — quan sát, chưa xác nhận",
+      "description": "OBSERVED_CURRENT/LOW (KB-354, KB-356, KB-357; S1, 1 lượt retest staging 2026-10-28 ~09:24–09:31 UTC, trước khi 2 PR TIB-5203 merge; chưa có nguồn xác nhận đây là hành vi đúng). URL SDK gọi khi render (campaigns/{id}.json?shop=…&v=1) trả bản cũ: còn artworks[].global_options bên cạnh global_option_ids (BUG-437, KB-354); sau Save artwork + Update/Sync campaign #3270 vẫn trả text trước khi sửa (BUG-446, KB-356); sau sửa + Publish platform product #602 vẫn trả bản trước khi sửa, cũ khoảng 4.5 giờ (BUG-439, KB-357). Link preload trên trang (v=<version mới>) và các giá trị v mới khác trả bản đã sửa. Nguyên nhân (cache theo URL v=1) là suy luận, dev chưa xác nhận; không xác định thiết kế hay lỗi; Jira TIB-5203 Done không cho biết trạng thái các BUG. Quan sát KB-356 đang căng thẳng chưa phân xử với KB-321 (merchant JSON cập nhật assignment sau Update/Sync) — xem profile_conflicts. Không dùng làm oracle.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-354",
+        "sdk/storefront-campaign-media-api#KB-356",
+        "sdk/storefront-campaign-media-api#KB-357",
+        "sdk/storefront-campaign-media-api#KB-321"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-013] SDK tải dữ liệu platform product qua campaigns/{shopify product id}.json và render form platform product — quan sát, chưa xác nhận",
+      "description": "OBSERVED_CURRENT/LOW (KB-355, KB-365; 1 lượt staging 2026-10-28 ~06:00 UTC, trước redeploy, chưa chạy lại). Trên trang product của platform product #602 (store không thuộc explorer), SDK gọi GET /api/merchant/campaigns/9452881084657.json?shop=… → 200, resource_type='platform_product'; không thấy request tới /api/merchant/platform-products/{uuid}.json (KB-355; đường chính thức chưa xác nhận). Form personalization chỉ được thấy render đủ (Name, Dog 4 clipart, Color A1 Red/Blue/Green, 0 lỗi console) khi HTML trang đã được thay chuỗi <script> của category bằng text thường (KB-365) — không phải quan sát trên trang thật; trang thật đang bị lỗi đã biết, xem risks. Không dùng làm oracle.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-355",
+        "sdk/storefront-buyer-facing#KB-365"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-013] Personalize campaign có Global Option trên storefront — form, preview, payload customization, tự điền Global Option giữa các campaign — quan sát, chưa xác nhận",
+      "description": "OBSERVED_CURRENT/LOW (KB-358..KB-362; 1 lượt staging 2026-10-28 ~06:00 UTC, trước lần redeploy dev yêu cầu recheck, chưa chạy lại). Campaign #3270 (store không thuộc explorer): form hiện Name (text), Dog (clipart 4 item), Color A1 (dropdown Red/Blue/Green, default Red) và mockup (KB-358); reload 4 lần chữ ký form giống hệt lần đầu (KB-359); nhập text + chọn clipart thì preview cập nhật, dropdown Global Option là additional-option nên preview không đổi hình, POST /api/merchant/shopify/customization 201 có layer-<id> và global-option-1125, localStorage teeinblue-customizations khớp, cart/add 200 (KB-360); 2 layer dùng chung GO #1125 thì đổi lựa chọn hiện giá trị mới và payload chỉ có một giá trị global-option-1125 (KB-361); chọn GO-A ở #3270 rồi mở #3271 trong cùng trình duyệt thì GO-A tự điền, GO-B giữ default, không có request ghi (KB-362, tester ghi trạng thái lấy từ localStorage). Không dùng làm oracle.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-buyer-facing#KB-359",
+        "sdk/storefront-customization-storage#KB-360",
+        "sdk/storefront-buyer-facing#KB-361",
+        "sdk/storefront-customization-storage#KB-362"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-013] Personalize campaign không dùng Global Option — quan sát, chưa xác nhận",
+      "description": "OBSERVED_CURRENT/LOW (KB-363; 1 lượt staging 2026-10-28 ~06:00 UTC, trước redeploy, chưa chạy lại). Campaign #3272 (CP-NOGO, store không thuộc explorer): form chỉ có 1 input Text, không có dropdown Global Option; response campaigns/{id}.json có resource_type='campaign', global_options=[] và artworks[0].global_option_ids=[]; nhập 'NOGO' thì preview hiện, reload trang vẫn giữ 'NOGO'; payload customization chứa layer-520331='NOGO'. Quan sát 'reload vẫn giữ giá trị' đang căng thẳng chưa phân xử với KB-019 (sau reload DOM form reset dù localStorage còn) — có thể khác scope (input cấp đầu vs field phụ thuộc template) hoặc khác bản SDK; xem profile_conflicts. Không dùng làm oracle.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-363",
+        "sdk/storefront-customization-storage#KB-019"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "[MỚI, CBS-009] gallery đang hiện tập media của variant A (setting lọc theo variant bật)",
+      "to": "gallery hiện đúng tập media đã gán cho variant B; không còn item của variant A; media không gán không xuất hiện (variant chỉ gán video: chỉ các video đó; variant không gán gì: toàn bộ media)",
+      "trigger": "buyer đổi variant",
+      "condition": "CONFIRMED_EXPECTED/MEDIUM, staging store không thuộc explorer 2026-10-22, trước khi 4 PR TIB-5428 merge",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-320",
+        "sdk/storefront-campaign-media-api#KB-322",
+        "sdk/storefront-campaign-media-api#KB-324"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-009] assignment media ↔ variant vừa đổi trong campaign editor, chưa Update/Sync",
+      "to": "merchant JSON và gallery storefront phản ánh assignment mới",
+      "trigger": "Update/Sync campaign (POST /api/campaigns/<id>/sync)",
+      "condition": "OBSERVED_CURRENT/LOW, ghi chú actualResult 1 lượt 2026-10-22; trước đó storefront vẫn dùng assignment cũ",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-321"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-009] trang sản phẩm load, video bật 'Always load first' được gán variant đang chọn (setting lọc bật)",
+      "to": "video là item focus nhưng ở vị trí thứ 2 trong gallery (lỗi đã biết BUG-359)",
+      "trigger": "load trang",
+      "condition": "KNOWN_DEFECT, 1 lượt 2026-10-22 (TC-TIB-6432 FAIL); không phải expected",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-327"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-013] campaign #3270 đã được storefront tải; merchant sửa default text artwork (PUT /api/artworks/<id> 200) rồi Update campaign (POST /api/campaigns/<id>/sync 200)",
+      "to": "reload sau khoảng 10 giây: URL SDK campaigns/{id}.json?…&v=1 vẫn trả bản trước khi sửa; link preload v=<version mới> và các v mới khác trả bản đã sửa",
+      "trigger": "Save artwork + Update/Sync campaign, rồi buyer reload storefront",
+      "condition": "OBSERVED_CURRENT/LOW, 1 lượt 2026-10-28 (BUG-446), trước khi 2 PR TIB-5203 merge; nguyên nhân cache là suy luận; căng thẳng chưa phân xử với transition KB-321 ở trên",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-356"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-013] platform product #602 đã được storefront tải; merchant sửa default text artwork rồi Update platform product (POST /api/platform-products/<id>/publish 200)",
+      "to": "URL SDK ?v=1 vẫn trả bản trước khi sửa (cũ khoảng 4.5 giờ, artworks[] còn global_options); link preload v mới trả bản đã sửa",
+      "trigger": "sửa artwork + Publish platform product, rồi reload storefront",
+      "condition": "OBSERVED_CURRENT/LOW, 1 lượt 2026-10-28 (BUG-439); chỉ đo bằng response URL SDK vì trang thật không render form (lỗi đã biết, xem risks)",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-357"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-013] campaign #3272 (1 input text, không GO), buyer đã nhập 'NOGO'",
+      "to": "sau reload input vẫn giữ 'NOGO'",
+      "trigger": "reload trang",
+      "condition": "OBSERVED_CURRENT/LOW, 1 lượt 2026-10-28 trước redeploy; căng thẳng chưa phân xử với transition KB-019 ở trên (DOM form reset sau reload) — không chọn phía",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-363"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "rule": "[MỚI, CBS-009] Setting lọc media theo variant đang chọn bật: gallery SDK chỉ hiện các media (mockup và video) đã gán cho variant đang chọn; media không gán hoặc gán cho variant khác bị ẩn (kể cả khi next hết list); video đã gán bấm play phát được; đổi variant liên tục thì gallery lọc lại đúng tập của từng variant, không sót item của variant trước.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging instance 520 store không thuộc explorer, guest-buyer, theme SDK (bundle không ghi trong KB); Jira TIB-5428, lượt duy nhất 2026-10-22 trước khi 4 PR merge 2026-10-27, build hash không rõ; shipped UNKNOWN; production chưa xác nhận",
+      "caveats": "Setting được xác định bằng vị trí/chức năng (Store Settings → Product Page, mục Gallery & Mockup), không bằng chuỗi label — label đang conflict ở product-page-settings-config. Storefront chỉ phản ánh assignment mới sau Update/Sync (KB-321, quan sát).",
+      "confirmation_ref": "Testlane TC-TIB-6424, TC-TIB-6425, TC-TIB-6426, TC-TIB-6447 PASS (task TIB-221, Jira TIB-5428), chạy 2026-10-22",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-320"
+      ]
+    },
+    {
+      "rule": "[MỚI, CBS-009] Setting lọc theo variant bật và variant đang chọn chỉ được gán video (0 mockup): gallery SDK hiện đúng các video đã gán cho variant đó, không kéo thêm mockup nào (không áp fallback hiện tất cả mockup).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging instance 520 store không thuộc explorer, guest-buyer; lượt duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge; shipped UNKNOWN",
+      "caveats": "Một lượt chạy.",
+      "confirmation_ref": "Testlane TC-TIB-6427 PASS (task TIB-221, Jira TIB-5428), chạy 2026-10-22",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-322"
+      ]
+    },
+    {
+      "rule": "[MỚI, CBS-009] Setting lọc theo variant bật và variant đang chọn chỉ được gán một video: gallery SDK chỉ có đúng item video đó, không chứa mockup nào; khu vực preview không render ảnh preview cá nhân hoá nào và không lấy mockup không gán của campaign làm nguồn preview.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging instance 520 store không thuộc explorer, guest-buyer; lượt duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge; shipped UNKNOWN",
+      "caveats": "Không nói gì về form cá nhân hoá hay design của đơn hàng với variant chỉ-video.",
+      "confirmation_ref": "Testlane TC-TIB-6428 PASS (task TIB-221, Jira TIB-5428), chạy 2026-10-22",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-323"
+      ]
+    },
+    {
+      "rule": "[MỚI, CBS-009] Setting lọc theo variant bật và variant đang chọn không được gán mockup lẫn video nào: gallery SDK hiện toàn bộ media của campaign (mọi mockup và mọi video).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging instance 520 store không thuộc explorer, guest-buyer; lượt duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge; shipped UNKNOWN",
+      "caveats": "Một lượt chạy.",
+      "confirmation_ref": "Testlane TC-TIB-6429 PASS (task TIB-221, Jira TIB-5428), chạy 2026-10-22",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-324"
+      ]
+    },
+    {
+      "rule": "[MỚI, CBS-009] Setting lọc theo variant tắt: với mọi variant gallery SDK hiện toàn bộ mockup và video của campaign, giống nhau giữa các variant; video hiện như một mockup bình thường và assignment video ↔ variant không có tác dụng lọc.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging instance 520 store không thuộc explorer, guest-buyer; lượt duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge; shipped UNKNOWN",
+      "caveats": "Một lượt chạy.",
+      "confirmation_ref": "Testlane TC-TIB-6430 PASS (task TIB-221, Jira TIB-5428), chạy 2026-10-22",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-325"
+      ]
+    },
+    {
+      "rule": "[MỚI, CBS-009] Setting lọc theo variant bật và video không bật 'Always load first': gallery SDK xếp các item đã gán theo đúng thứ tự list media của campaign; video nằm giữa list giữ đúng vị trí, không bị đẩy xuống cuối hay kéo lên đầu.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging instance 520 store không thuộc explorer, guest-buyer; lượt duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge; shipped UNKNOWN",
+      "caveats": "Không phủ video bật 'Always load first' (KB-327 là KNOWN_DEFECT BUG-359, chưa có expected).",
+      "confirmation_ref": "Testlane TC-TIB-6431 PASS (task TIB-221, Jira TIB-5428), chạy 2026-10-22",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-326"
+      ]
+    },
+    {
+      "rule": "[MỚI, CBS-013] Response GET /api/merchant/campaigns/{shopify product id}.json?shop=… khi gọi với tham số v chưa từng dùng (CF-Cache-Status: MISS) có đủ các key resource_type, config, has_subscription, is_development, is_plus, sku_enabled, shop_name.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, store không thuộc explorer/store không thuộc explorer; Jira TIB-5203; lượt chạy 2026-10-28 ~10:30 UTC sau commit 8731f3a deploy staging, trước khi 2 PR merge 2026-10-29, build hash không rõ; shipped UNKNOWN; production chưa xác nhận",
+      "caveats": "Chỉ sự có mặt của key trên response gọi với v mới; 4 response (campaign #3279 trên store không thuộc explorer và store không thuộc explorer, campaign #3270 và platform product #602 trên store không thuộc explorer). Không khẳng định giá trị resource_type (KB-351 chỉ là quan sát) và không áp cho URL ?v=1 mà SDK gọi khi render (xem KB-354, KB-356, KB-357).",
+      "confirmation_ref": "Testlane TC-TIB-7507 PASS (task TIB-257, Jira TIB-5203), chạy 2026-10-28",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-350"
+      ]
+    },
+    {
+      "rule": "[MỚI, CBS-013] Response GET /api/merchant/campaigns/{shopify product id}.json?shop=… khi gọi với tham số v chưa từng dùng (CF-Cache-Status: MISS) không còn các field artworks[].description, artworks[].is_locked, artworks[].status; campaign_products[].created_at, campaign_products[].updated_at; product.internal_tags, product.status; variants[].created_at, variants[].updated_at, variants[].deleted_at.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, store không thuộc explorer/store không thuộc explorer; Jira TIB-5203; lượt chạy 2026-10-28 ~10:30 UTC sau commit 8731f3a deploy staging, trước khi 2 PR merge 2026-10-29, build hash không rõ; shipped UNKNOWN; production chưa xác nhận",
+      "caveats": "4 response (campaign #3279 trên store không thuộc explorer và store không thuộc explorer, campaign #3270 và platform product #602 trên store không thuộc explorer). Không áp cho URL ?v=1 mà SDK gọi khi render. Không khẳng định artworks[] 'chỉ còn' global_option_ids (KB-354 chỉ là quan sát) hay danh sách key còn lại (KB-353 chỉ là quan sát). Consumer khác còn đọc field đã bỏ hay không chưa ai kiểm.",
+      "confirmation_ref": "Testlane TC-TIB-7507 PASS (task TIB-257, Jira TIB-5203), chạy 2026-10-28",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-352"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "(SDK v1) và (SDK v2) đều dùng chung endpoint bootstrap config public GET /api/merchant/campaigns/{platformProductId}.json, không cần auth, dù cơ chế render UI khác nhau hoàn toàn.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-013"
+      ]
+    },
+    {
+      "statement": "[MOI, 2026-09-21] Co che preview img+'tee-printarea' (ca 2 store, template 1) khong khop verbatim voi mo ta lightbox tinh (v1 cu, KB-010) hay SVG song theo layer-id (v2 cu, KB-011) -- ghi nhan rieng, chua doi chieu duoc.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-042"
+      ]
+    },
+    {
+      "statement": "[MOI, 2026-09-21] Campaign 2595/product id xac nhan lai KHOP CHINH XAC baseline 2026-09-12 tren ca 2 store; theme rieng cua tung store khong doi -- chi rieng SDK bundle/version marker cua store1 thay doi.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-044"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-009] Ghi chú ở actualResult của một lượt test 2026-10-22 (chưa có nguồn xác nhận đây là hành vi đúng): merchant JSON của campaign trên storefront (GET /api/merchant/campaigns/<id>.json) và do đó gallery SDK chỉ cập nhật assignment mockup/video ↔ variant mới sau khi Update/Sync campaign (POST /api/campaigns/<id>/sync); trước đó storefront vẫn dùng assignment cũ.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging instance 520 store không thuộc explorer, guest-buyer, 1 lượt 2026-10-22, shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-321"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-009] LỖI ĐÃ BIẾT (KNOWN_DEFECT BUG-359), không phải hành vi mong đợi: khi video bật 'Always load first' và được gán cho variant đang chọn, với list media gồm media thứ nhất, video, media thứ hai, gallery SDK lấy video làm item focus khi trang load nhưng video vẫn ở vị trí thứ 2 theo thứ tự list media, không đứng đầu (1 lượt 2026-10-22, TC-TIB-6432 FAIL). actualResult hiện trên Testlane chỉ còn ảnh; trạng thái fix/retest chưa rõ. Không dùng làm oracle.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "status": "KNOWN_DEFECT",
+      "scope": "staging instance 520 store không thuộc explorer, guest-buyer, 1 lượt 2026-10-22, shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-327"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-013] Quan sát staging 2026-10-28 (Testlane TC-TIB-7394, TC-TIB-7395, lượt ~06:00 UTC trước redeploy; chưa có nguồn xác nhận đây là hành vi đúng): response campaigns/{shopify product id}.json trả resource_type='campaign' với campaign #3270 và resource_type='platform_product' với platform product #602; lượt TC-TIB-7507 ~10:30 UTC chỉ ghi lại 'platform_product' cho #602, giá trị resource_type không thuộc oracle của case đó.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging store không thuộc explorer, api, 2026-10-28; shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-351"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-013] Quan sát 1 sample (TC-TIB-7507 actualResult, ngoài oracle, staging 2026-10-28 ~10:30 UTC): với platform product #602 (store không thuộc explorer), response gọi với v chưa từng dùng trả artworks[] (1 phần tử) chỉ còn các key current_version_id, data, design_format, global_option_ids, height, id, name, platform_variant_ids, position, schema_version, template_settings, thumbnail, width.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging store không thuộc explorer, api, v chưa từng dùng, 1 sample; shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-353"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-013] Quan sát staging 2026-10-28 (1 lượt retest ~09:25–09:29 UTC, TC-TIB-7396, BUG-437; chưa có nguồn xác nhận đây là hành vi đúng): với campaign #3270 (store không thuộc explorer), URL SDK gọi khi render campaigns/{id}.json?shop=…&v=1 trả 200 (last-modified 2026-10-28 05:29:56 GMT, cache-control private, max-age=14400) với artworks[] có cả global_options lẫn global_option_ids; cùng endpoint với giá trị v mới trả artworks[] chỉ có global_option_ids. Ở cả hai URL, top-level global_options có GO #1125 và GO #1126, mỗi cái đúng 1 lần. Shape nào là đúng chưa được xác nhận; Jira TIB-5203 Passed/Done không cho biết BUG-437 được chấp nhận, hoãn hay đã sửa.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging store không thuộc explorer, api (v=1 so với v mới), 1 lượt; shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-354"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-013] Quan sát staging 2026-10-28 (1 lượt ~06:00 UTC trước redeploy, TC-TIB-7391, TC-TIB-7395, network capture của agent; chưa có nguồn xác nhận): trên trang product của platform product #602 (store không thuộc explorer), SDK gọi GET /api/merchant/campaigns/9452881084657.json?shop=… (theo Shopify product id) → 200, resource_type='platform_product'; không thấy request tới /api/merchant/platform-products/{uuid}.json. Kịch bản kiểm thử của dev cho phép cả hai đường; đường chính thức chưa được xác nhận.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging store không thuộc explorer, storefront + api, 1 lượt; shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-355"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-013] Quan sát staging 2026-10-28 (1 lượt retest ~09:24–09:29 UTC, TC-TIB-7402, BUG-446; chưa có nguồn xác nhận đây là hành vi đúng): với campaign #3270 (store không thuộc explorer), sau khi sửa default text artwork thành 'FIX5203A' (PUT /api/artworks/5952 → 200) và Update campaign (POST /api/campaigns/3270/sync → 200), reload storefront sau ~10 giây thì SDK vẫn gọi campaigns/{id}.json?shop=…&v=1 và nhận bản trước khi sửa (text 'NAME', last-modified 05:29:56 GMT); link preload với v=<version mới> và các v mới khác trả bản đã sửa. Nguyên nhân (cache theo URL v=1) là suy luận, dev chưa xác nhận; thời gian trả bản cũ chỉ đo 1 lượt. Không xác định thiết kế hay lỗi; không có nguồn xác nhận storefront phải hiện thay đổi ngay. Căng thẳng chưa phân xử với KB-321 (observed_behavior ở trên) — profile không chọn phía.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging store không thuộc explorer, storefront + api, thay đổi do owner làm trên portal, 1 lượt; shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-356"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-013] Quan sát staging 2026-10-28 (1 lượt retest ~09:29–09:31 UTC, TC-TIB-7403, BUG-439; chưa có nguồn xác nhận đây là hành vi đúng): với platform product #602 (store không thuộc explorer), sau khi sửa default text artwork thành 'FIX5203B' và Update platform product (POST /api/platform-products/602/publish → 200), reload storefront thì SDK vẫn gọi campaigns/9452881084657.json?shop=…&v=1 và nhận bản trước khi sửa (text 'NAME', last-modified 04:59:40 GMT, cũ khoảng 4.5 giờ, artworks[] còn key global_options); link preload v mới trả bản đã sửa ('FIX5203B', artworks[] chỉ có global_option_ids). Chỉ đo bằng response URL SDK vì trang thật không render form. Nguyên nhân là suy luận; không xác định thiết kế hay lỗi.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging store không thuộc explorer, storefront + api, 1 lượt; shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-357"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-013] Quan sát staging 2026-10-28 (1 lượt ~06:00 UTC trước redeploy, TC-TIB-7390; chưa có nguồn xác nhận): storefront campaign #3270 (store không thuộc explorer, artwork AW-GO) hiển thị form Name (text, mockup default 'NAME'), Dog (clipart 4 item), Color A1 (dropdown Red/Blue/Green, default Red) và mockup; SDK gọi campaigns/{id}.json?shop=…&v=1 → 200. Console có 2 lỗi tester ghi là có sẵn (404 /products/<id>.js và SyntaxError liên quan BUG-310), form vẫn render.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging store không thuộc explorer, storefront, 1 lượt; shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-358"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-013] Quan sát staging 2026-10-28 (1 lượt ~06:00 UTC trước redeploy, TC-TIB-7400; chưa có nguồn xác nhận): campaign #3272 (CP-NOGO, store không thuộc explorer) có form chỉ 1 input Text (layer-520331), không có dropdown Global Option; response campaigns/{id}.json 200 với resource_type='campaign', global_options=[] và artworks[0].global_option_ids=[]; nhập 'NOGO' thì preview hiện, reload trang vẫn giữ 'NOGO'; POST /api/merchant/shopify/customization chứa layer-520331='NOGO'. Phần 'reload vẫn giữ giá trị' căng thẳng chưa phân xử với KB-019 — profile không chọn phía.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging store không thuộc explorer, storefront + api, 1 lượt; shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-363"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-013] Quan sát staging 2026-10-28 (1 lượt ~06:00 UTC trước redeploy, TC-TIB-7409; chưa có nguồn xác nhận): quét response public campaigns/{shopify product id}.json của campaign #3270 và platform product #602 theo từ khoá thì không có access_token, token, secret, password; có 1 key api_key là config.maps_api_key, giá trị là Mapbox token tiền tố 'pk.' (tester ghi là loại token công khai dùng ở trình duyệt). Việc maps_api_key được phép xuất hiện trong response public chưa được dev/PO xác nhận.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging store không thuộc explorer, guest (unauthenticated), api public, 1 lượt; shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-367"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "statement": "Endpoint bootstrap config cá nhân hoá (campaigns/{platformProductId}.json) không yêu cầu authorization header — bất kỳ ai biết platform_product_id đều đọc được toàn bộ config template/field/artwork.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-013"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      {
+        "path": "Launch dialog multi-store (chọn thêm store2) + link 'Campaign link' hiển thị URL storefront thật cho từng store",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-002"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Block General error messages của product page content: request_rate_limited, request_rate_limited_retry_after",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-449"
+        ]
+      }
+    ],
+    "storefront": [
+      {
+        "path": "store TIB_STORE_URL_1 -> /password -> product page (store1, SDK v1)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-001",
+          "sdk/storefront-buyer-facing#KB-004",
+          "sdk/storefront-buyer-facing#KB-005",
+          "sdk/storefront-buyer-facing#KB-010",
+          "sdk/storefront-customization-storage#KB-014",
+          "sdk/storefront-customization-storage#KB-016",
+          "sdk/storefront-customization-storage#KB-017",
+          "sdk/storefront-customization-storage#KB-019",
+          "sdk/storefront-customization-storage#KB-022"
+        ]
+      },
+      {
+        "path": "store TIB_STORE_URL_2 -> /password -> product page (store2, SDK v2)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-001",
+          "sdk/storefront-buyer-facing#KB-007",
+          "sdk/storefront-buyer-facing#KB-008",
+          "sdk/storefront-buyer-facing#KB-009",
+          "sdk/storefront-buyer-facing#KB-011",
+          "sdk/storefront-customization-storage#KB-014",
+          "sdk/storefront-customization-storage#KB-015",
+          "sdk/storefront-customization-storage#KB-016",
+          "sdk/storefront-customization-storage#KB-017",
+          "sdk/storefront-customization-storage#KB-018",
+          "sdk/storefront-customization-storage#KB-019",
+          "sdk/storefront-customization-storage#KB-020",
+          "sdk/storefront-customization-storage#KB-021",
+          "sdk/storefront-customization-storage#KB-022"
+        ]
+      },
+      {
+        "path": "/cart, cart-drawer (store2 only — store1 chưa từng có item trong cart)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-009",
+          "sdk/storefront-buyer-facing#KB-005",
+          "sdk/storefront-customization-storage#KB-021"
+        ]
+      },
+      {
+        "path": "localStorage 'teeinblue-customizations' / 'teeinblue-global-options' (client-side draft, cả 2 store)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-014",
+          "sdk/storefront-customization-storage#KB-015",
+          "sdk/storefront-customization-storage#KB-016",
+          "sdk/storefront-customization-storage#KB-017",
+          "sdk/storefront-customization-storage#KB-019",
+          "sdk/storefront-customization-storage#KB-020",
+          "sdk/storefront-customization-storage#KB-021"
+        ]
+      },
+      {
+        "path": "Storefront re-verification pass 2026-09-21 (2026-09-21) tren CHINH campaign 2595 da dung lam baseline 2026-09-12 -- ca 2 store, bao gom SDK bundle marker check, template option 2 dependency shape, preview mechanism, ATC-block khi field de trong, campaign identity re-verify",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-040",
+          "sdk/storefront-buyer-facing#KB-041",
+          "sdk/storefront-campaign-media-api#KB-042",
+          "sdk/storefront-buyer-facing#KB-043",
+          "sdk/storefront-campaign-media-api#KB-044"
+        ]
+      },
+      {
+        "path": "[MỚI] Product page campaign 2740 /vi-vn/ (API path), /zh-zh/ (inline path), /en-vn/ — widget personalization theo locale, staging SDK app-v1.js build TIB-5352",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-053",
+          "sdk/storefront-translations#KB-054",
+          "sdk/storefront-translations#KB-055",
+          "sdk/storefront-translations#KB-058",
+          "sdk/storefront-translations#KB-059",
+          "sdk/storefront-translations#KB-060"
+        ]
+      },
+      {
+        "path": "[MỚI] Cart → modal 'Edit design' (vi) — lần gọi dictionary kế tiếp trong cùng page session; nhãn thiếu trong dictionary hiển thị chữ gốc",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-057",
+          "sdk/storefront-translations#KB-058"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-008] localStorage 'teeinblue-customizations' sau khi personalize và Add-to-cart nhiều product (store test store không thuộc explorer, order 14 line item)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-066"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-006] Product page campaign #3043 (artwork #5046, Group ẩn), store test instance 520 store không thuộc explorer — buyer preview SDK theo effective visibility của Group",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-181"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-006] Form cá nhân hoá SDK + Add to cart với artwork có Group ẩn (field required trong Group, condition buyer-side của layer con, 'Show this layer on first load') — KNOWN_DEFECT",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-179",
+          "sdk/storefront-layer-visibility#KB-180"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] Product page các campaign fixture TIB-5558 (store test instance 520 store không thuộc explorer) — form cá nhân hoá + live preview SDK app-v2.js với layer action Hide: 1 điều kiện, OR, AND, first load, nguồn Toggle / Additional Option, so sánh với layer Show",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-231",
+          "sdk/storefront-layer-visibility#KB-232",
+          "sdk/storefront-layer-visibility#KB-233",
+          "sdk/storefront-layer-visibility#KB-234",
+          "sdk/storefront-layer-visibility#KB-235",
+          "sdk/storefront-customization-storage#KB-236"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] Cache trình duyệt của SDK app-v2.js (lần load đầu nhận bản cũ, xoá cache để nhận bản mới) — OBSERVED_CURRENT/LOW",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-237"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-009] Product page store test store không thuộc explorer (instance 520) — gallery SDK lọc mockup + video theo variant (setting bật / tắt), đổi variant, play video, thứ tự gallery, video 'Always load first' (BUG-359), khu vực preview khi variant chỉ gán video",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-320",
+          "sdk/storefront-campaign-media-api#KB-322",
+          "sdk/storefront-campaign-media-api#KB-323",
+          "sdk/storefront-campaign-media-api#KB-324",
+          "sdk/storefront-campaign-media-api#KB-325",
+          "sdk/storefront-campaign-media-api#KB-326",
+          "sdk/storefront-campaign-media-api#KB-327"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Product page store không thuộc explorer campaign #3270 (có Global Option), #3271 (dùng cùng GO), #3272 (không GO) — form, preview, reload, tự điền Global Option giữa campaign (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-358",
+          "sdk/storefront-buyer-facing#KB-359",
+          "sdk/storefront-customization-storage#KB-360",
+          "sdk/storefront-buyer-facing#KB-361",
+          "sdk/storefront-customization-storage#KB-362",
+          "sdk/storefront-campaign-media-api#KB-363"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Product page platform product #602 (/products/the-complete-snowboard, store không thuộc explorer) — trang thật không render form (lỗi đã biết BUG-310); form chỉ render khi HTML đã patch (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-364",
+          "sdk/storefront-buyer-facing#KB-365",
+          "sdk/storefront-campaign-media-api#KB-355"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Reload storefront sau thay đổi phía merchant (Save artwork + Update campaign; sửa + Publish platform product) — URL SDK ?v=1 vẫn trả bản cũ (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-356",
+          "sdk/storefront-campaign-media-api#KB-357"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-015] Product page store không thuộc explorer sản phẩm có artwork group ~250 layer ảnh → bấm Preview (popup preview) — quan sát, đếm DOM toàn trang",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-394"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Popup cross-sell: variant picker, giá, CTA \"Sold out\"",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-408",
+          "sdk/storefront-buyer-facing#KB-420",
+          "sdk/storefront-buyer-facing#KB-421",
+          "sdk/storefront-buyer-facing#KB-452",
+          "sdk/storefront-buyer-facing#KB-453"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Thông báo 429 ở upload và add-to-cart",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-418",
+          "sdk/storefront-buyer-facing#KB-419",
+          "sdk/storefront-buyer-facing#KB-450",
+          "sdk/storefront-buyer-facing#KB-451"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Product page sau reload: template picker \"Choose an option\", chọn lại template hiện lại ảnh và position (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-506"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Preview và thumbnail cart khi position bị sửa tay (NaN, lỗi console, mất ảnh / x=0) (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-507"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Field upload ảnh: tên file payload, SVG có script, HTML đổi đuôi .jpg; text layer sync hiển thị payload literal (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-508"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Preview vector layer: SVG inline với id prefix svg-<chuỗi>-<id gốc> khi áp màu, <image href=…svg> khi chưa áp màu, tham chiếu url()/href/xlink:href/marker-*/<style>",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-509",
+          "sdk/storefront-buyer-facing#KB-510",
+          "sdk/storefront-buyer-facing#KB-511",
+          "sdk/storefront-buyer-facing#KB-512"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "path": "POST /password (cả 2 store, form authenticity_token/password redacted)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-001"
+        ]
+      },
+      {
+        "path": "GET /api/instances/{instanceId}/themes/app-block-enabled (portal pre-flight, owner)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-012"
+        ]
+      },
+      {
+        "path": "GET /api/merchant/campaigns/{platformProductId}.json (public, no auth, cả 2 store)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-013"
+        ]
+      },
+      {
+        "path": "POST /cart/add, POST /cart/change.js, POST /cart/clear.js (SDK v2, store2 — thành công ở lần thử thứ hai); KHÔNG có request nào tương ứng ở SDK v1/store1",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-008",
+          "sdk/storefront-buyer-facing#KB-005",
+          "sdk/storefront-customization-storage#KB-021"
+        ]
+      },
+      {
+        "path": "POST https://staging-api.teeinblue.com/api/merchant/shopify/customization (API-OP-051) — chỉ fire tại thời điểm ATC (SDK v2, store2), 0 lần khi field-fill, absent khi ATC thất bại do thiếu click con grouped_clipart",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-018",
+          "sdk/storefront-customization-storage#KB-022"
+        ]
+      },
+      {
+        "path": "GET /cart.json (implicit, khong phai APIOP rieng) -- xac nhan item_count=0 ngay sau khi ADD TO CART bi chan client-side do field bat buoc de trong (KB-043), ca 2 store",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-043"
+        ]
+      },
+      {
+        "path": "[MỚI] GET /api/merchant/translations/<locale>.json?shop=<domain>&v=<translation_version> — do SDK gọi (API path); timeout 5s, fallback chữ gốc, retry lazy tối đa 2 fetch/page session; staging build TIB-5352",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-053",
+          "sdk/storefront-translations#KB-054",
+          "sdk/storefront-translations#KB-056",
+          "sdk/storefront-translations#KB-057"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] POST /api/merchant/shopify/customization lúc Add to cart — payload chỉ chứa layer đang hiện (layer action Hide đang ẩn không có key), kèm giá trị nguồn (option / Toggle / Additional Option)",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-231",
+          "sdk/storefront-layer-visibility#KB-234",
+          "sdk/storefront-customization-storage#KB-236"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-009] GET /api/merchant/campaigns/<id>.json — merchant JSON chỉ mang assignment media ↔ variant mới sau POST /api/campaigns/<id>/sync (quan sát 1 lượt, ngoài oracle)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-321"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] GET /api/merchant/campaigns/{shopify product id}.json?shop=…&v=<v chưa từng dùng> — có đủ key SDK cần, không còn field đã bỏ (CONFIRMED_EXPECTED/MEDIUM, TC-TIB-7507, chỉ cho v mới)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-350",
+          "sdk/storefront-campaign-media-api#KB-352"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] GET /api/merchant/campaigns/{shopify product id}.json?shop=…&v=1 (URL SDK gọi khi render) so với link preload v=<version> — v=1 trả bản cũ sau sửa phía merchant, còn artworks[].global_options (quan sát; BUG-437/446/439)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-354",
+          "sdk/storefront-campaign-media-api#KB-356",
+          "sdk/storefront-campaign-media-api#KB-357"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Giá trị resource_type ('campaign' / 'platform_product'), danh sách key artworks[] của platform product, campaigns/{shopify product id}.json là đường SDK dùng cho platform product (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-351",
+          "sdk/storefront-campaign-media-api#KB-353",
+          "sdk/storefront-campaign-media-api#KB-355"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] POST /api/merchant/shopify/customization → 201 với key layer-<id> và global-option-<id> (một giá trị cho GO dùng chung nhiều layer) (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-360",
+          "sdk/storefront-buyer-facing#KB-361",
+          "sdk/storefront-campaign-media-api#KB-363"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] GET /products/<shopify product id>.js → 404 mỗi lần load campaign (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-366"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Response public campaigns/{id}.json: không thấy access_token/token/secret/password; có config.maps_api_key (Mapbox 'pk.') (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-367"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Route single upload: edge, edge GenAI (genai-uploads), presigned (upload-url), photo-upload",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-447"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Poll upload: HTTP 200 với error_message = rate_limit_exceeded",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-448"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Request customization lúc Add to cart → 201, gửi nguyên giá trị position sửa tay, không có key position của campaign khác (quan sát TC-30)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-507"
+        ]
+      }
+    ],
+    "data": [
+      "platform_linked_id độc lập theo store (store1: 8138398629987, store2: 15280333291824) — quan sát qua GraphQL campaign_instances, KHÔNG có DB-level verification.",
+      "localStorage key 'teeinblue-customizations' (array 1 object {productId, customization, timestamp}) và 'teeinblue-global-options' (object keyed theo global-option id) — client-side only, không phải DB, cùng shape trên cả 2 store.",
+      "[MỚI, KB-059] window.teeinblueShopTranslations (dictionary inline trong HTML, in 1 lần trên /zh-zh/) — client-side, staging build TIB-5352.",
+      "[MỚI, CBS-008, KB-066] localStorage 'teeinblue-customizations' khi đã thao tác nhiều product: chỉ còn khoảng 10 entry gần nhất (chưa đếm độc lập), entry cùng product bị ghi đè — client-side, OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-011, KB-236] localStorage 'teeinblue-customizations' chỉ chứa giá trị của layer đang hiện — quan sát trên SDK bản cũ (2026-10-14), OBSERVED_CURRENT/LOW; phần cart/order của layer bị Hide thuộc object order.",
+      "[MỚI, CBS-013, KB-362] Lựa chọn Global Option tự điền khi mở campaign khác dùng cùng GO trong cùng trình duyệt — tester ghi trạng thái lấy từ localStorage; OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-013, KB-360] localStorage 'teeinblue-customizations' khớp payload customization có key global-option-<id> — OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-098, KB-506] localStorage vẫn giữ template, ảnh và position sau reload (picker không khôi phục) — OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-098, KB-507] Giá trị position trong localStorage do buyer sửa tay không bị clamp hay bỏ qua — OBSERVED_CURRENT/LOW."
+    ],
+    "code": [
+      {
+        "path": "staging-sdk.teeinblue.com/shopify/app-v1.js (SDK v1, store1) — chưa review, là 1 hướng điều tra đề xuất cho CFL-001",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-006"
+        ]
+      },
+      {
+        "path": "#teeinblue-wrapper (Vue3 app, SDK v2, store2) — chỉ quan sát qua DOM/SVG layer id, chưa review source",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-011"
+        ]
+      },
+      {
+        "path": "[MỚI] staging SDK app-v1.js build TIB-5352 — hàm fetch merchant/translations/<locale>.json: headersTimeout 5000 ms, bắt lỗi về null (INFERRED), cache promise theo 'shop|locale', cho gọi lại khi số lỗi < 2 (đọc bundle, người gửi CCR)",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-056",
+          "sdk/storefront-translations#KB-057"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-003] staging-sdk.teeinblue.com/shopify/app-v1.js (bundle theme-embed tải 2026-10-07) — theo grep do người gửi CCR tự thực hiện: không có generateDesignLinks/design_urls/onCustomizationCreated/notifyParentIFrame/window.parent.postMessage; EVENT_CUSTOMIZATION_CREATED định nghĩa nhưng không dispatch. Chỉ app-v1.js; app-v2.js chưa kiểm (OQ-sdk-063).",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-065"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] staging-sdk.teeinblue.com/shopify/app-v2.js — bản Last-Modified 2026-10-28 03:01:11 GMT (Cache-Control max-age=14400) có đánh giá action Hide; bản 2026-10-14 chưa có. Chỉ quan sát header/hành vi, chưa review source.",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-231",
+          "sdk/storefront-layer-visibility#KB-237"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Component của Cross-sell chứa thay đổi variant picker; CampaignForm không bị ảnh hưởng",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-408",
+          "sdk/storefront-buyer-facing#KB-454"
+        ]
+      }
+    ]
+  },
+  "dependencies": [
+    {
+      "description": "Phụ thuộc capability multi-store launch, bao gồm pre-flight check theme app-block-enabled trước khi publish.",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-002",
+        "sdk/storefront-campaign-media-api#KB-012"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-009] Gallery SDK theo variant phụ thuộc (a) assignment mockup/video ↔ variant tạo ở campaign editor (campaign create-campaign-by-product-base), (b) setting lọc media theo variant ở Store Settings → Product Page (sdk product-page-settings-config — chuỗi label của setting đang conflict, không dùng label để định danh), và (c) việc Update/Sync campaign để merchant JSON mang assignment mới (KB-321, quan sát).",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-320",
+        "sdk/storefront-campaign-media-api#KB-321",
+        "sdk/storefront-campaign-media-api#KB-325"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-013] Nội dung storefront tải phụ thuộc phiên bản response campaigns/{id}.json mà SDK gọi: URL v=1 khi render so với link preload v=<version>. Thay đổi phía merchant (Save artwork + Update campaign ở campaign, Publish platform product, Save setting ở product-page-settings-config) không làm URL v=1 trả bản mới ở lượt quan sát (KB-356, KB-357, quan sát).",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-356",
+        "sdk/storefront-campaign-media-api#KB-357",
+        "sdk/storefront-campaign-media-api#KB-354"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-013] Form và payload của field Global Option trên storefront phụ thuộc liên kết layer ↔ Global Option do object global-option sở hữu (feature artwork-personalization-global-option-link); quan sát dedupe một giá trị cho GO dùng chung và tự điền giữa campaign cùng chiều với rule share-value ở đó (KB-361, KB-362, quan sát).",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-customization-storage#KB-360",
+        "sdk/storefront-buyer-facing#KB-361",
+        "sdk/storefront-customization-storage#KB-362"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "description": "Endpoint bootstrap config cá nhân hoá (GET /api/merchant/campaigns/{platformProductId}.json) không yêu cầu authorization — public data exposure tiềm ẩn. Chưa khẳng định là defect.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-013"
+      ]
+    },
+    {
+      "description": "[MOI, 2026-09-21] KB-041 (dependency shape template option 2: 3 label radio phang chia se 1 name) va KB-042 (preview img+'tee-printarea', zero data-layer-id) deu KHONG khop verbatim voi mo ta v1 cu hay v2 cu da co trong profile nay -- chua doi chieu duoc, co the la (a) hinh thai UI thu 3 chua tung ghi nhan, (b) cach doc DOM khac cua cung 1 co che cu, hoac (c) thay doi thuc su ve UI/SDK ma CFL-004 goi y. KHONG duoc gan ep vao nhan v1/v2 san co khi viet checklist/oracle cho toi khi duoc doi chieu ro.",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-041",
+        "sdk/storefront-campaign-media-api#KB-042"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-009] Mọi rule gallery theo variant (KB-320, KB-322..KB-326) đến từ 1 lượt test staging 2026-10-22, trước khi 4 PR của TIB-5428 merge 2026-10-27; build hash không rõ, bundle SDK của store test không ghi trong KB, production chưa kiểm (shipped UNKNOWN). Không dùng làm expected cho production / build sau merge khi chưa chạy lại.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-320",
+        "sdk/storefront-campaign-media-api#KB-322",
+        "sdk/storefront-campaign-media-api#KB-323",
+        "sdk/storefront-campaign-media-api#KB-324",
+        "sdk/storefront-campaign-media-api#KB-325",
+        "sdk/storefront-campaign-media-api#KB-326"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-009] Lỗi đã biết BUG-359 (KB-327): video bật 'Always load first' là item focus nhưng không đứng đầu gallery. Check thứ tự gallery với video 'Always load first' chưa có expected xác nhận; không lấy hành vi hiện tại làm oracle.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-327"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-009] Chuỗi label của setting lọc media theo variant đang conflict chưa phân xử (CONF-sdk-assigned-media-setting-label, ở product-page-settings-config). Check gallery phải định danh setting bằng vị trí/chức năng (hoặc config key quan sát được), không bằng chuỗi label, cho tới khi PO quyết.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-320",
+        "sdk/storefront-campaign-media-api#KB-325"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-009] Storefront chỉ phản ánh assignment mới sau Update/Sync campaign (KB-321, quan sát 1 lượt, chưa xác nhận chủ đích): check gallery bỏ qua bước Update/Sync có thể thấy assignment cũ và báo sai.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-321"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-013] Oracle payload v2 (KB-350, KB-352) rất hẹp: chỉ response gọi với tham số v chưa từng dùng, staging, lượt 2026-10-28 ~10:30 UTC trước khi 2 PR TIB-5203 merge, production chưa xác nhận. Không dùng để kiểm response URL ?v=1 mà SDK gọi khi render (có thể vẫn là bản cũ — KB-354, KB-356, KB-357), không suy ra giá trị resource_type hay danh sách key 'chỉ còn'. Consumer khác (theme custom, renderer, public API) còn đọc field đã bỏ hay không chưa ai kiểm.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-350",
+        "sdk/storefront-campaign-media-api#KB-352",
+        "sdk/storefront-campaign-media-api#KB-354"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-013] Sau khi merchant sửa artwork / Update campaign / Publish platform product, URL SDK ?v=1 vẫn trả bản cũ ở lượt quan sát (BUG-437, BUG-446, BUG-439; OBSERVED_CURRENT/LOW): buyer có thể thấy nội dung cũ trong một khoảng thời gian chưa xác nhận. Check storefront sau thay đổi phía merchant phải ghi rõ URL/tham số v đã kiểm và thời điểm; không viết expected 'hiện ngay' hay 'được phép trễ' khi chưa có PO/Dev xác nhận. Jira TIB-5203 Done không cho biết trạng thái các BUG.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-354",
+        "sdk/storefront-campaign-media-api#KB-356",
+        "sdk/storefront-campaign-media-api#KB-357"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-013] Căng thẳng quan sát chưa phân xử: KB-321 (merchant JSON cập nhật assignment sau Update/Sync, 2026-10-22) vs KB-356 (sau Update/Sync, URL ?v=1 vẫn trả bản cũ, 2026-10-28, build có thay đổi cache của TIB-5203). Không dùng phía nào làm oracle cho 'storefront sau Update/Sync' tới khi diff analyzer / PO quyết.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-321",
+        "sdk/storefront-campaign-media-api#KB-356"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-013] Căng thẳng quan sát chưa phân xử: KB-019 (sau reload DOM form reset dù localStorage còn, 2026-09, store1/store2) vs KB-363 (campaign #3272 input text cấp đầu, reload vẫn giữ 'NOGO', 2026-10-28 store không thuộc explorer). Có thể khác scope hoặc khác bản SDK. Không viết check 'reload giữ / không giữ giá trị' theo phía nào tới khi được phân xử.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-019",
+        "sdk/storefront-campaign-media-api#KB-363"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-013] Response public campaigns/{id}.json chứa config.maps_api_key (Mapbox 'pk.') (KB-367, quan sát); việc được phép public chưa được dev/PO xác nhận — nếu chính sách là không có key nào trong response public thì đây là lỗi. Bổ sung cho rủi ro endpoint public không auth (KB-013).",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-367",
+        "sdk/storefront-campaign-media-api#KB-013"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-013] Các quan sát form/preview/payload/GO/platform product/404 (KB-351, KB-355, KB-358..KB-366) đến từ lượt ~06:00 UTC 2026-10-28, trước lần redeploy (fix bug + commit 8731f3a) mà dev yêu cầu recheck, chưa chạy lại — khác build với lượt TC-TIB-7507 (~10:30 UTC). Không gộp hai lượt khi viết check; không dùng làm expected cho build sau khi 2 PR merge.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-351",
+        "sdk/storefront-campaign-media-api#KB-355",
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-customization-storage#KB-360",
+        "sdk/storefront-campaign-media-api#KB-363",
+        "sdk/storefront-buyer-facing#KB-366"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-015] KB-394 (popup Preview sản phẩm có artwork group ~250 layer) chỉ có 1 lượt chạy test của agent trên staging 2026-10-29, build hash không rõ, shipped UNKNOWN; số đếm DOM là toàn trang, không tách được phần tử của popup Preview với mockup chính, không có lượt trước fix để so. Không dùng quan sát này làm bằng chứng cho phía nào của CFL-004 (KB-010 / KB-011) hay để đối chiếu mô tả KB-042; không viết check số phần tử DOM hay thời gian mở popup ('vài giây') theo quan sát này.",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-394",
+        "sdk/storefront-buyer-facing#KB-011",
+        "sdk/storefront-campaign-media-api#KB-042"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-29",
+    "source_observed_on": "2026-10-29"
+  },
+  "unknown_areas": [
+    {
+      "question": "[MỚI, CBS-009] Đổi assignment mockup/video ↔ variant có chủ ý cần Update/Sync campaign thì storefront (merchant JSON, gallery) mới phản ánh không?",
+      "why_it_matters": "Chỉ là ghi chú ở actualResult 1 lượt (KB-321); quyết định check gallery có phải gồm bước Update/Sync hay coi việc chưa phản ánh là lỗi.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-321"
+      ],
+      "oq_id": "OQ-sdk-081"
+    },
+    {
+      "question": "[MỚI, CBS-009] Lỗi đã biết BUG-359 (video bật 'Always load first' là item focus nhưng vẫn ở vị trí thứ 2) đã fix/retest chưa, trên bản nào?",
+      "why_it_matters": "Tới khi có xác nhận, KB-327 chỉ là defect đã biết, không làm oracle; actualResult trên Testlane hiện chỉ còn ảnh.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-327"
+      ],
+      "oq_id": "OQ-sdk-082"
+    },
+    {
+      "question": "[MỚI, CBS-009] Hành vi đúng của video bật 'Always load first' khi gallery lọc theo variant là gì — video phải đứng đầu gallery và là item focus? (một trao đổi nội bộ có nêu như vậy nhưng chưa phải nguồn xác nhận; cần PO xác nhận và chạy lại TC-TIB-6432 sau khi fix BUG-359)",
+      "why_it_matters": "Không có expected cho thứ tự gallery khi video bật 'Always load first'; check nhánh này hiện không có oracle.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-327"
+      ],
+      "oq_id": "OQ-sdk-083"
+    },
+    {
+      "question": "[MỚI, CBS-009] Khi variant chỉ được gán video, form cá nhân hoá và design của đơn hàng hoạt động thế nào?",
+      "why_it_matters": "KB-323 chỉ xác nhận gallery và khu vực preview (không render ảnh preview cá nhân hoá); form và order design với variant chỉ-video chưa được xác định — check personalize/order cho variant này không có oracle.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-323"
+      ],
+      "oq_id": "OQ-sdk-084"
+    },
+    {
+      "question": "[MỚI, CBS-009] Các rule gallery theo variant (KB-320, KB-322..KB-326) có giữ nguyên trên bản staging sau khi 4 PR TIB-5428 merge (2026-10-27), trên production, và trên từng bundle SDK (app-v1.js / app-v2.js) không?",
+      "why_it_matters": "Lượt PASS duy nhất chạy 2026-10-22 trước merge, build hash không rõ, bundle không ghi, shipped UNKNOWN; cần chạy lại sau merge/production trước khi làm oracle production.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-320",
+        "sdk/storefront-campaign-media-api#KB-322",
+        "sdk/storefront-campaign-media-api#KB-323",
+        "sdk/storefront-campaign-media-api#KB-324",
+        "sdk/storefront-campaign-media-api#KB-325",
+        "sdk/storefront-campaign-media-api#KB-326"
+      ],
+      "oq_id": "OQ-sdk-085"
+    },
+    {
+      "question": "[MỚI, CBS-013] Response campaigns/{id}.json (có đủ key SDK cần, không còn field đã bỏ) có giữ nguyên trên build sau khi 2 PR TIB-5203 merge (2026-10-29) và trên production không? Dev có đẩy commit nào sau lượt TC-TIB-7507 ~10:30 UTC 2026-10-28 không?",
+      "why_it_matters": "KB-350, KB-352 dựa trên 1 lượt TC-TIB-7507 trước merge, build hash không rõ; confirmed_rules[14], [15] chỉ áp cho staging, v mới, tới khi chạy lại.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-350",
+        "sdk/storefront-campaign-media-api#KB-352"
+      ],
+      "oq_id": "OQ-sdk-086"
+    },
+    {
+      "question": "[MỚI, CBS-013] Có consumer nào khác (theme custom, renderer, public API) còn đọc các field đã bỏ khỏi campaigns/{id}.json (artworks[].description/is_locked/status, campaign_products[]/variants[] timestamps, product.internal_tags/status) không?",
+      "why_it_matters": "Chưa ai kiểm; nếu có consumer còn đọc, việc bỏ field có thể gây lỗi ngoài phạm vi SDK mà check hiện tại không phủ.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-352"
+      ],
+      "oq_id": "OQ-sdk-087"
+    },
+    {
+      "question": "[MỚI, CBS-013] Tập giá trị chính thức của resource_type trong campaigns/{id}.json là gì (quan sát 'campaign' / 'platform_product')?",
+      "why_it_matters": "Giá trị chỉ quan sát ở lượt trước redeploy, ngoài oracle TC-TIB-7507; check theo giá trị resource_type không có nền xác nhận.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-351"
+      ],
+      "oq_id": "OQ-sdk-088"
+    },
+    {
+      "question": "[MỚI, CBS-013] Danh sách key chính thức của artworks[] trong payload platform product sau commit 8731f3a là gì?",
+      "why_it_matters": "KB-353 chỉ là 1 sample ở actualResult, ngoài oracle; không viết check 'artworks[] chỉ còn các key …' khi chưa có xác nhận.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-353"
+      ],
+      "oq_id": "OQ-sdk-089"
+    },
+    {
+      "question": "[MỚI, CBS-013] Shape đúng của artworks[] là gì — còn hay không còn artworks[].global_options bên cạnh global_option_ids — và BUG-437 (URL ?v=1 vẫn trả shape cũ) được sửa, hoãn hay chấp nhận?",
+      "why_it_matters": "URL SDK gọi khi render và URL v mới trả hai shape khác nhau ở lượt quan sát; check shape artworks[] không có oracle, và consumer global-option có thể nhận shape khác nhau theo URL.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-354"
+      ],
+      "oq_id": "OQ-sdk-090"
+    },
+    {
+      "question": "[MỚI, CBS-013] Endpoint chính thức SDK dùng để tải platform product là campaigns/{shopify product id}.json hay platform-products/{uuid}.json; đường còn lại có còn được dùng ở trường hợp nào không?",
+      "why_it_matters": "Quan sát (KB-355) lệch mô tả kịch bản kiểm thử của dev; check network cho platform product cần biết endpoint đúng.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-355"
+      ],
+      "oq_id": "OQ-sdk-091"
+    },
+    {
+      "question": "[MỚI, CBS-013] Sau Save artwork + Update/Sync campaign, storefront phải hiện thay đổi ngay hay được phép trễ do cache (bao lâu)? BUG-446 được xử lý thế nào? Và quan sát này (KB-356, URL ?v=1 vẫn trả bản cũ) quan hệ thế nào với KB-321 (merchant JSON cập nhật assignment sau Update/Sync) — khác build, khác URL, hay một trong hai đã lỗi thời?",
+      "why_it_matters": "Hai quan sát đang căng thẳng chưa phân xử (diff analyzer quyết); không có oracle cho 'storefront sau Update/Sync' — ảnh hưởng cả check gallery theo variant (bước Update/Sync) lẫn check nội dung sau sửa artwork.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-356",
+        "sdk/storefront-campaign-media-api#KB-321"
+      ],
+      "oq_id": "OQ-sdk-092"
+    },
+    {
+      "question": "[MỚI, CBS-013] Sau sửa artwork + Publish platform product, storefront phải hiện thay đổi ngay hay được phép trễ do cache? BUG-439 (URL ?v=1 trả bản cũ khoảng 4.5 giờ) được xử lý thế nào?",
+      "why_it_matters": "KB-357 chỉ 1 lượt quan sát trước merge; check nội dung platform product sau Publish không có oracle.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-357"
+      ],
+      "oq_id": "OQ-sdk-093"
+    },
+    {
+      "question": "[MỚI, CBS-013] Trên build sau khi 2 PR TIB-5203 merge, campaign có Global Option có còn: form tải đủ field GO, chữ ký form giống hệt sau reload, preview/payload customization có global-option-<id>, một giá trị cho GO dùng chung nhiều layer, và tự điền GO khi mở campaign khác cùng trình duyệt — và PO/Dev có xác nhận đây là hành vi đúng không?",
+      "why_it_matters": "KB-358..KB-362 chỉ là 1 lượt quan sát trên build trước lần redeploy dev yêu cầu recheck, chưa chạy lại; check personalize với Global Option không có oracle tới khi chạy lại và được xác nhận.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-buyer-facing#KB-359",
+        "sdk/storefront-customization-storage#KB-360",
+        "sdk/storefront-buyer-facing#KB-361",
+        "sdk/storefront-customization-storage#KB-362"
+      ],
+      "oq_id": "OQ-sdk-094"
+    },
+    {
+      "question": "[MỚI, CBS-013] Giá trị buyer đã nhập có được giữ sau reload trang không, và trong điều kiện nào? KB-363 (input text cấp đầu, campaign không GO, store không thuộc explorer, 2026-10-28) thấy giữ 'NOGO', trong khi KB-019 (store1/store2, 2026-09) thấy DOM form reset — khác loại field, khác bản SDK, hay một trong hai đã lỗi thời?",
+      "why_it_matters": "Hai quan sát đang căng thẳng chưa phân xử (diff analyzer quyết); check 'reload giữ / không giữ giá trị' không có oracle tới khi phân xử và có xác nhận.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-363",
+        "sdk/storefront-customization-storage#KB-019"
+      ],
+      "oq_id": "OQ-sdk-095"
+    },
+    {
+      "question": "[MỚI, CBS-013] config.maps_api_key (Mapbox token tiền tố 'pk.') có được phép xuất hiện trong response public campaigns/{id}.json không?",
+      "why_it_matters": "Tester ghi nếu chính sách là không có key nào trong response public thì case là Fail; check bảo mật response public không có oracle tới khi dev/PO xác nhận.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-367"
+      ],
+      "oq_id": "OQ-sdk-099"
+    },
+    {
+      "question": "[MỚI, CBS-015] Với sản phẩm có artwork group ~250 layer, những phần tử DOM nào (svg, svg image, g) thuộc popup Preview và những phần tử nào thuộc mockup chính; popup Preview render artwork bằng cơ chế nào, và so với trước fix có khác không?",
+      "why_it_matters": "TC-TIB-7632 chỉ đếm DOM toàn trang, không tách popup với mockup chính, không có lượt trước fix; check preview storefront cho artwork group nhiều layer không có oracle, và không được dùng quan sát này cho CFL-004 / KB-042.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-394",
+        "sdk/storefront-buyer-facing#KB-011",
+        "sdk/storefront-campaign-media-api#KB-042"
+      ],
+      "oq_id": "OQ-sdk-101"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  },
+  "environment_differences": [],
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "portal",
+      "role": "owner",
+      "state": "multi-store launch (publish tới store2)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-002",
+        "sdk/storefront-campaign-media-api#KB-012"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "api",
+      "role": "guest",
+      "state": "any, store1",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-013",
+        "sdk/storefront-buyer-facing#KB-005",
+        "sdk/storefront-customization-storage#KB-022"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "api",
+      "role": "guest",
+      "state": "any, store2, bao gồm API-OP-051 presence/absence tại ATC",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-013",
+        "sdk/storefront-buyer-facing#KB-008",
+        "sdk/storefront-customization-storage#KB-018",
+        "sdk/storefront-customization-storage#KB-022"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest",
+      "state": "[MOI] preview/mockup mechanism (template 1) re-check 2026-09-21 -- covered nhung CHUA doi chieu duoc voi KB-010/KB-011",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-042"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest",
+      "state": "[MOI] doi chieu hinh thai KB-041/KB-042 voi nhan v1/v2 cu (co phai bien the thu 3 khong)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-041",
+        "sdk/storefront-campaign-media-api#KB-042"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest-buyer (store không thuộc explorer)",
+      "state": "[MỚI, CBS-009] gallery lọc theo variant (setting bật): đổi variant, play video, variant chỉ video, variant chỉ một video + khu vực preview, variant không gán gì",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-320",
+        "sdk/storefront-campaign-media-api#KB-322",
+        "sdk/storefront-campaign-media-api#KB-323",
+        "sdk/storefront-campaign-media-api#KB-324"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM; 1 lượt 2026-10-22, trước khi 4 PR merge"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest-buyer (store không thuộc explorer)",
+      "state": "[MỚI, CBS-009] gallery khi setting lọc theo variant tắt",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-325"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM; 1 lượt 2026-10-22"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest-buyer (store không thuộc explorer)",
+      "state": "[MỚI, CBS-009] thứ tự gallery theo list media, video giữa list (Always load first tắt)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-326"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM; 1 lượt 2026-10-22"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest-buyer (store không thuộc explorer)",
+      "state": "[MỚI, CBS-009] video bật 'Always load first' khi lọc theo variant",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-327"
+      ],
+      "basis": "KNOWN_DEFECT BUG-359; chưa có expected"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "api",
+      "role": "guest-buyer",
+      "state": "[MỚI, CBS-009] merchant JSON phản ánh assignment mới chỉ sau Update/Sync",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-321"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, ghi chú 1 lượt"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest-buyer",
+      "state": "[MỚI, CBS-009] form cá nhân hoá / order design khi variant chỉ gán video",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-323"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest-buyer",
+      "state": "[MỚI, CBS-009] gallery theo variant trên bản sau merge 4 PR TIB-5428 / release, từng bundle SDK",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-320",
+        "sdk/storefront-campaign-media-api#KB-322",
+        "sdk/storefront-campaign-media-api#KB-323",
+        "sdk/storefront-campaign-media-api#KB-324",
+        "sdk/storefront-campaign-media-api#KB-325",
+        "sdk/storefront-campaign-media-api#KB-326"
+      ],
+      "basis": "shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "api",
+      "role": "guest (unauthenticated)",
+      "state": "[MỚI, CBS-013] campaigns/{id}.json gọi với v chưa từng dùng: key SDK cần có mặt, field đã bỏ không còn (4 response, store không thuộc explorer/store không thuộc explorer)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-350",
+        "sdk/storefront-campaign-media-api#KB-352"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM; TC-TIB-7507 1 lượt 2026-10-28 ~10:30 UTC, trước khi 2 PR merge"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "api",
+      "role": "guest (unauthenticated)",
+      "state": "[MỚI, CBS-013] giá trị resource_type, danh sách key artworks[] platform product, endpoint SDK dùng cho platform product",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-351",
+        "sdk/storefront-campaign-media-api#KB-353",
+        "sdk/storefront-campaign-media-api#KB-355"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt; chưa có oracle"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront+api",
+      "role": "guest-buyer (store không thuộc explorer)",
+      "state": "[MỚI, CBS-013] URL SDK ?v=1 so với v mới: shape artworks[].global_options; nội dung sau Save artwork + Update/Sync campaign; sau sửa + Publish platform product",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-354",
+        "sdk/storefront-campaign-media-api#KB-356",
+        "sdk/storefront-campaign-media-api#KB-357"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt retest 2026-10-28 (BUG-437/446/439); chưa có oracle; KB-356 căng thẳng với KB-321"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront+api",
+      "role": "guest-buyer (store không thuộc explorer)",
+      "state": "[MỚI, CBS-013] campaign có Global Option: form, reload, preview, payload global-option-<id>, GO dùng chung nhiều layer, tự điền GO giữa campaign",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-buyer-facing#KB-359",
+        "sdk/storefront-customization-storage#KB-360",
+        "sdk/storefront-buyer-facing#KB-361",
+        "sdk/storefront-customization-storage#KB-362"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt ~06:00 UTC 2026-10-28 trước redeploy; chưa có oracle"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront+api",
+      "role": "guest-buyer (store không thuộc explorer)",
+      "state": "[MỚI, CBS-013] campaign không Global Option: form, response global_options rỗng, giá trị sau reload, payload",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-363"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt trước redeploy; căng thẳng với KB-019 chưa phân xử"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "api",
+      "role": "guest (unauthenticated)",
+      "state": "[MỚI, CBS-013] quét response public theo từ khoá token/secret; config.maps_api_key",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-367"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt; chưa có chính sách xác nhận"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront+api",
+      "role": "guest-buyer",
+      "state": "[MỚI, CBS-013] payload v2 + cache trên build sau merge 2 PR TIB-5203 / release",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-350",
+        "sdk/storefront-campaign-media-api#KB-352",
+        "sdk/storefront-campaign-media-api#KB-356"
+      ],
+      "basis": "shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "api",
+      "role": "consumer khác (theme custom, renderer, public API)",
+      "state": "[MỚI, CBS-013] ảnh hưởng của việc bỏ field khỏi campaigns/{id}.json",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-352"
+      ]
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "type": "SUSPECTED_OBSERVATION_TENSION",
+      "status": "FOR_DIFF_ANALYZER",
+      "detail": "KB-019 (base, OBSERVED_CURRENT: sau reload DOM form reset về mặc định dù localStorage còn; 2026-09, store1/store2) vs KB-363 (mới, OBSERVED_CURRENT/LOW: campaign #3272 1 input text cấp đầu, không GO, reload vẫn giữ 'NOGO'; 2026-10-28 store không thuộc explorer). Có thể khác scope (field phụ thuộc template vs input cấp đầu) hoặc khác bản SDK. Profile không phân xử: state_transitions[9] và capability base giữ nguyên văn; KB-363 ghi riêng; câu hỏi ở unknown_areas[48].",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-019",
+        "sdk/storefront-campaign-media-api#KB-363"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "type": "SUSPECTED_OBSERVATION_TENSION",
+      "status": "FOR_DIFF_ANALYZER",
+      "detail": "KB-321 (base, OBSERVED_CURRENT: merchant JSON storefront cập nhật assignment mới sau Update/Sync campaign; 2026-10-22 store không thuộc explorer) vs KB-356 (mới, OBSERVED_CURRENT/LOW: sau Save artwork + Update/Sync, URL SDK ?v=1 vẫn trả bản trước khi sửa, chỉ URL v mới trả bản mới; 2026-10-28 store không thuộc explorer, BUG-446, build có thay đổi cache của TIB-5203). Profile không phân xử: observed_behavior / state_transitions của KB-321 giữ nguyên văn; KB-356 ghi riêng; câu hỏi ở unknown_areas[45].",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-321",
+        "sdk/storefront-campaign-media-api#KB-356"
+      ]
+    }
+  ],
+  "profile_relationships": [
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-01-create-campaign-by-product-base",
+      "relationship": "downstream_effect_of_multi_store_launch",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-002",
+        "sdk/storefront-campaign-media-api#KB-012"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-01-create-campaign-by-product-base",
+      "related_feature_key": "create-campaign-by-product-base",
+      "relationship": "renders_variant_media_assigned_by (cross-object: campaign)",
+      "note": "[MỚI, CBS-009] Gallery SDK lọc theo assignment mockup/video ↔ variant tạo ở campaign editor; storefront chỉ phản ánh sau Update/Sync (KB-321, quan sát).",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-320",
+        "sdk/storefront-campaign-media-api#KB-321",
+        "sdk/storefront-campaign-media-api#KB-322",
+        "sdk/storefront-campaign-media-api#KB-324"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-08-product-page-settings-config",
+      "related_feature_key": "product-page-settings-config",
+      "relationship": "configured_by (setting lọc media theo variant)",
+      "note": "[MỚI, CBS-009] Setting lọc media theo variant ở Store Settings → Product Page bật/tắt quyết định gallery lọc hay không (KB-320, KB-325 confirmed). Chuỗi label của setting đang conflict ở product-page-settings-config (CONF-sdk-assigned-media-setting-label) — profile này không dùng label.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-320",
+        "sdk/storefront-campaign-media-api#KB-325"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-07-campaign-shopify-media-sync",
+      "related_feature_key": "campaign-shopify-media-sync",
+      "relationship": "shares_mapping_with (cross-object: campaign)",
+      "note": "[MỚI, CBS-009] Gallery SDK dùng mapping variant ↔ video phía Teeinblue; sync lên Shopify xử lý video riêng (product media). FEAT-07 ở đây là feature campaign, trùng số với feature này.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-320",
+        "sdk/storefront-campaign-media-api#KB-321"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-01-create-campaign-by-product-base",
+      "related_feature_key": "create-campaign-by-product-base",
+      "relationship": "payload_version_after_update_of (cross-object: campaign)",
+      "note": "[MỚI, CBS-013] Sau Save artwork + Update/Sync campaign (cũng là nút Update trong dialog Multi-store launch ở campaign), URL SDK ?v=1 vẫn trả bản cũ ở lượt quan sát (KB-356, BUG-446). Quan hệ với metafield version đổi sau Update (quan sát ở campaign) chưa xác nhận.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-356"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-08-product-page-settings-config",
+      "related_feature_key": "product-page-settings-config",
+      "relationship": "shares_payload_cache_with (quan sát)",
+      "note": "[MỚI, CBS-013] Key config trong campaigns/{id}.json (có mặt theo KB-350) mang setting của product-page-settings-config; sau Save setting, URL ?v=1 vẫn trả giá trị cũ ở lượt quan sát phía feature đó (BUG-440) — cùng mẫu với KB-356/KB-357 ở đây.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-350",
+        "sdk/storefront-campaign-media-api#KB-356"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-02-artwork-personalization-global-option-link",
+      "related_feature_key": "artwork-personalization-global-option-link",
+      "relationship": "renders_global_option_linked_by (cross-object: global-option)",
+      "note": "[MỚI, CBS-013] Storefront render field Global Option, gửi một giá trị global-option-<id> cho GO dùng chung nhiều layer và tự điền GO giữa campaign (KB-358, KB-360..KB-362, quan sát) — cùng chiều với dedupe theo GO id và rule share-value ở global-option; shape artworks[].global_options khác nhau theo URL (KB-354, quan sát).",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-354",
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-customization-storage#KB-360",
+        "sdk/storefront-buyer-facing#KB-361",
+        "sdk/storefront-customization-storage#KB-362"
+      ]
+    }
+  ]
+}

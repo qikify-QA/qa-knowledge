@@ -1,0 +1,167 @@
+[
+  {
+    "kb_id": "KB-021",
+    "topic": "POST /api/completions/review trả 500 kèm stack trace mỗi lần mở form offer",
+    "statement": "Khi mở form tạo/sửa offer (cả 3 loại) ở merchant/staging, quan sát thấy request POST <QVL_API_BASE>/api/completions/review luôn trả 500 (9/9 lần) với body JSON exception kiểu debug: message 'Undefined array key \"choices\"', exception ErrorException, đường dẫn file nội bộ server thuộc thư viện client OpenAI, line và trace; form vẫn hiển thị và lưu được bình thường. Đây là bề mặt lỗi server/lộ thông tin trên staging, không phải hành vi nghiệp vụ (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "server-error",
+      "security-surface",
+      "no-oracle"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-10-18",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-022",
+    "topic": "Iframe app tải document từ host staging-bkv-embedded.qikify.com (ngoài expected_api_base)",
+    "statement": "Khi mở các trang app (Dashboard, Analytics, Create offer, Manage offers, form offer) ở merchant/staging, quan sát thấy document của iframe embedded app tải từ https://staging-bkv-embedded.qikify.com (23 lần, 200), asset tĩnh từ staging-bkv-portal.qikify.com, còn backend REST /api/* đi tới host bằng expected_api_base. Host embedded không nằm trong expected_api_base và config chưa khai host bổ sung nào (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "host_not_in_expected_api_base",
+      "no-oracle"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-10-18",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-023",
+    "topic": "Event analytics từ storefront: view theo widget, add_to_cart cho mọi offer trên trang khi ATC theme, chỉ offer Multibuy khi Done popup",
+    "statement": "Khi buyer guest xem PDP và thêm vào cart ở storefront/staging, quan sát thấy widget gửi POST <QVL_API_BASE>/api/events (form-encoded: shop, offer_id, type, shopify_discount_id, variants[]): mỗi widget đang hiển thị gửi 1 event type=view khi tải trang (offer đang Scheduled không gửi); một lần bấm Add to cart của theme/composer gửi add_to_cart cho MỌI offer trên trang (trang 3 offer → 3 event, trang 2 offer → 2 event), thứ tự so với cart/add.js không cố định; bấm 'Done' trong popup Multibuy chỉ gửi add_to_cart cho offer Multibuy (1 lần quan sát trên trang 3 offer) (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (guest)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "analytics-event",
+      "api-observed",
+      "relates-object:analytics"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-10-18",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-024",
+    "topic": "POST /api/events nhận từ guest không thấy header auth; CORS allow-origin '*'",
+    "statement": "Khi buyer guest tương tác widget ở storefront/staging, quan sát thấy POST <QVL_API_BASE>/api/events (ghi analytics: shop, offer_id, type, shopify_discount_id, variants[]) được gửi không kèm header authorization/token trong phần header capture được (34 lần), và response của API host có access-control-allow-origin '*'. Khả năng gửi event giả không được kiểm (ngoài policy) (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (guest)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "security-surface",
+      "no-oracle"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-10-18",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-029",
+    "topic": "PDP nhúng cấu hình offer (gồm internal name, discount id, lịch) trong HTML, kể cả offer Scheduled",
+    "statement": "Khi buyer guest mở PDP ở storefront/staging, quan sát thấy internal name của offer KHÔNG hiển thị trên giao diện (PDP, collection, search, cart), nhưng HTML trang nhúng JSON cấu hình có khối trigger_<id offer> {id, name (internal name), products} của các offer, và với offer Scheduled còn có discount_title, discount_id, starts_at, ends_at — xem được qua view-source (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (guest)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "data-exposure",
+      "internal-name"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-10-18",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-030",
+    "topic": "Chuỗi text thô kiểu '{ [..]: \"\", }' dưới nút Add to cart không tái hiện trên store/theme staging",
+    "statement": "Khi buyer guest mở PDP của product thuộc offer Quantity Break và Wholesale ở storefront/staging (theme 'Generated Data Theme', product dùng option text, không có swatch màu/ảnh), quan sát thấy KHÔNG có chuỗi text thô dạng '{ [..]: \"\", }' dưới nút Add to cart; quét mọi node lá trên PDP không có text khớp '{ ['. Store/theme/dữ liệu khác store cũ của tài liệu nên không kết luận bug đã được sửa (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (guest)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "known-defect-check",
+      "possible-divergence"
+    ],
+    "related_kb_ids": [
+      "discount-offers/offer-overlap-and-stacking#KB-008"
+    ],
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    }
+  },
+  {
+    "kb_id": "KB-031",
+    "topic": "Badge trên card collection/search theo loại offer: góc trên-trái, bo 6px",
+    "statement": "Khi buyer guest mở /collections/all và trang search ở storefront/staging, quan sát thấy badge app ở góc trên-trái card product (absolute, top 10px, left 10px, border-radius 6px) với text theo cấu hình mặc định của offer: Quantity Break 'UP TO 20% OFF' (badge 'UP TO {discount} OFF' với tier cao nhất 20%), Multibuy 'MULTIBUY', Wholesale 'BULK SAVING'. Product không có ảnh nên badge trên ảnh PDP không đánh giá được (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (guest)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "badge",
+      "cross-type"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-10-18",
+      "ccr_ref": "bootstrap"
+    }
+  }
+]

@@ -1,32 +1,24 @@
 # Automations — list, builder (trigger/step), test dry-run, run history và Reports
-**Published context version:** 2
+**Published context version:** 3
 
-**Product:** Mailtro · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-08
+**Product:** mailtro · **Object:** `automations` · **Cập nhật cấu trúc:** 2026-11-13
 
 ## Features
 
-- **automation-list** — Danh sách automation, trạng thái, duplicate và xoá: 26 KB item; checklist 18 check (STRONG 2 / BASELINE 10 / NONE 6)
-- **automation-builder** — Dựng và lưu flow automation trên canvas (thêm/kéo node, Save, Activate, sửa flow Active): 38 KB item; checklist 19 check (STRONG 5 / BASELINE 7 / NONE 7)
-- **automation-triggers-and-entry** — Trigger khởi động flow và luật contact vào flow (re-entry, chống lặp, nguồn không kích hoạt): 23 KB item; checklist 11 check (STRONG 3 / BASELINE 6 / NONE 2)
-- **automation-steps** — Cấu hình và hành vi các step: Wait, Conditional split, Send email, Update contact field: 61 KB item; checklist 25 check (STRONG 5 / BASELINE 13 / NONE 7)
-- **automation-test-run** — Test this flow (dry-run) trước khi bật: 7 KB item; checklist 6 check (STRONG 1 / BASELINE 4 / NONE 1)
-- **automation-run-history** — Run history và run detail của flow: 37 KB item; checklist 18 check (STRONG 4 / BASELINE 8 / NONE 6)
-- **automation-reports** — Automation Reports — số liệu của flow: 27 KB item; checklist 14 check (STRONG 6 / BASELINE 3 / NONE 5)
+| Feature | User goal | KB | Check | OQ | Known defect |
+|---|---|---|---|---|---|
+| `automation-builder` — Builder automation: dựng, lưu, kích hoạt và sửa flow trên canvas | Người dùng dựng flow trigger → step → action trên canvas, chỉ lưu và kích hoạt được khi flow đã đủ cấu hình, và biết điều gì xảy ra khi sửa một flow đang chạy. | 38 | 19 | 7 | 8 |
+| `automation-list` — Danh sách automation: xem trạng thái, tìm, bật / tạm dừng, nhân bản và xoá flow | Người dùng workspace nắm được mọi flow automation cùng trạng thái draft / active / paused, tìm và lọc được flow cần xử lý, và từ danh sách bật, tạm dừng, nhâ… | 26 | 18 | 4 | 3 |
+| `automation-reports` — Automation Reports: số liệu hiệu quả của flow trên canvas và theo step | Người dùng xem hiệu quả của flow (contact vào / hoàn thành, số qua từng step, gửi, mở, click, bounce, unsubscribe) theo khoảng thời gian, với định nghĩa số l… | 27 | 14 | 6 | 2 |
+| `automation-run-history` — Run history và Run detail: theo dõi từng lượt contact chạy qua flow và thử lại run lỗi | Người dùng xem từng lượt contact đi qua flow cùng trạng thái / outcome, hiểu vì sao một run dừng, và thử lại run lỗi khi được phép. | 37 | 18 | 8 | 2 |
+| `automation-test-run` — Test this flow: chạy thử (dry-run) flow đã lưu với một contact | Người dùng chạy thử flow đã lưu với một contact thật để xem contact sẽ đi qua những step nào mà không gửi, ghi hay mở gì thật. | 7 | 6 | 3 | 0 |
+| `automation-triggers-and-entry` — Trigger và luật contact vào flow (khởi chạy theo sự kiện, re-entry, chống vòng lặp, nguồn không kích hoạt) | Flow bắt đầu đúng lúc một contact được tạo hoặc có field thay đổi, mỗi contact vào flow đúng số lần cho phép, và các flow không tự kích hoạt nhau thành vòng … | 23 | 11 | 8 | 1 |
+| `automation-wait-and-split-steps` — Step Wait và Conditional split | Người dùng cấu hình độ trễ Wait và nhánh Conditional split trong automation. | 21 | 10 | 4 | 4 |
+| `automation-update-contact-field-step` — Step Update contact field | Người dùng cấu hình action ghi custom field của contact trong automation. | 14 | 5 | 2 | 4 |
+| `automation-steps` — Step Send email và biến/merge tag trong step | Người dùng cấu hình step Send email (sender, template, subject) và chèn biến. | 26 | 10 | 5 | 2 |
 
-## Knowledge
+KB object-level: 0 (`kb.json`).
 
-- KB item: 219 (object-level 0) — CONFIRMED_EXPECTED 36 (spec_doc 36, test_case 0), OBSERVED_CURRENT 131, INFERRED 52.
-- Checklist: STRONG 26 · BASELINE 51 · NONE/NEEDS_CONFIRMATION 34.
-- Open questions: CONFLICT 3 · NEEDS_CONFIRMATION 24 · OPEN_ISSUE 21 — chi tiết trong `open-questions.md` của object này.
+## Open questions
 
-## Nguồn & cách đọc độ tin cậy
-
-- Nguồn là bộ tài liệu QA tự biên soạn trên Testlane (project MTRO, snapshot v1 ngày 2026-10-08): QA business rule Mailtro (rule có nguồn Jira AC / quyết định PO-Dev / QA lead, có ngày), Decision log, bộ QA KB Mailtro theo feature, known issues và inventory khảo sát staging (29/09 và 01/10/2026, role Owner). Không có quan sát runtime nào của lần publish này.
-- `CONFIRMED_EXPECTED` + `spec_doc`: Jira AC hoặc quyết định PO/BA/Dev có ngày, do QA tóm tắt (ghi rõ trong `confirmation_source.ref`). `test_case`: test case Testlane đã PASS (không ghi build). Quyết định do QA lead tự chốt theo bản dựng staging KHÔNG được coi là expected — ghi `OBSERVED_CURRENT` kèm open question.
-- `OBSERVED_CURRENT`: hiện trạng trên staging tại ngày khảo sát — không phải expected requirement; lệch = cần điều tra. `status: KNOWN_DEFECT` là lỗi đã biết, chỉ dùng làm regression watch.
-- `scope.environment` luôn là `documented`; phạm vi Jira AC / quyết định PO-Dev / staging / bundle / production được nêu ngay trong statement. Item `status: UNRESOLVED` thuộc một `conflict_group` chưa phân xử — không dùng làm oracle.
-
-## Giới hạn đã biết
-
-- Tài liệu câu hỏi mở của QA, bản đầy đủ business rule / inventory, references và bug log không có trong bộ nguồn — những câu hỏi được tham chiếu tới đó chỉ có ở dạng câu hỏi tại chỗ, ghi là open question; không suy diễn nội dung.
-- Role thực hiện thao tác chưa được tài liệu nêu rõ cho hầu hết object; xem open question về role.
+CONFLICT 3 · NEEDS_CONFIRMATION 24 · OPEN_ISSUE 21 — chi tiết trong `open-questions.md`.

@@ -1,0 +1,2 @@
+# CHANGELOG — notification
+- 2026-11-13 (restructure-2026-11-13) — Đổi cấu trúc theo contract §5 "Độ hạt object/feature": automation-growth/system-emails-and-notifications → notification/system-emails-and-notifications; automation-growth/dashboard-notification-banners → notification/dashboard-notification-banners. Giữ nguyên kb_id, statement, nguồn và test steps; OQ chuyển object được mint id mới kèm `supersedes`.

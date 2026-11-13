@@ -1,0 +1,911 @@
+{
+  "feature_id": "FEAT-37-artwork-list-and-clone",
+  "feature_key": "artwork-list-and-clone",
+  "object_id": "artwork",
+  "checklist_version": "9",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Artwork list row hiển thị đúng 4 nút thao tác nhanh cố định",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "trang /artworks, đã có ≥1 artwork",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã đăng nhập role owner/staff, có ít nhất 1 artwork trong store.",
+      "steps": [
+        "Mở trang /artworks.",
+        "Quan sát 1 artwork row bất kỳ trong danh sách."
+      ],
+      "observation_point": "Số lượng và loại icon button trên.artwork-item row.",
+      "expected_result": "Mỗi artwork row có đúng 4 nút: preview (la-search-plus), edit details (la-pencil), duplicate (la-copy), menu (la-ellipsis-h).",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-047"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Overflow menu (la-ellipsis-h) chứa đúng 3 mục cố định",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "trang /artworks",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã đăng nhập role owner/staff, có ít nhất 1 artwork trong store.",
+      "steps": [
+        "Mở trang /artworks.",
+        "Click icon la-ellipsis-h trên 1 artwork row."
+      ],
+      "observation_point": "Danh sách mục trong menu overflow.",
+      "expected_result": "Menu chứa đúng 3 mục theo thứ tự: 'Import to Translation' / 'Mark as archive' / 'Delete artwork'.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-047"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Click 'Delete artwork' hiện dialog confirm đúng nội dung",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "trang /artworks, menu overflow đang mở",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã mở menu overflow của 1 artwork row.",
+      "steps": [
+        "Click 'Delete artwork' trong menu overflow.",
+        "Quan sát dialog xuất hiện."
+      ],
+      "observation_point": "Nội dung dialog + số lượng nút hành động.",
+      "expected_result": "Dialog hiện nguyên văn 'Are you sure to remove <name>?' với đúng 2 nút Remove/Cancel.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-047"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [
+        "mất dữ liệu nếu xoá nhầm"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Click 'Cancel' trên dialog xoá artwork không thực hiện xoá",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "dialog confirm xoá artwork đang mở",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã mở dialog confirm xoá (CHK-003).",
+      "steps": [
+        "Click nút 'Cancel' trên dialog.",
+        "Quan sát danh sách artwork."
+      ],
+      "observation_point": "Artwork còn tồn tại trong list hay không sau khi Cancel.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-013",
+      "oq_id": "OQ-artwork-348"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Kết quả sau khi click 'Mark as archive' và Unarchive",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "artwork fixture active trên /artworks",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /artworks + portal API (Network)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Artwork fixture tự dựng trên store explorer, không dùng artwork, store hay id trong CCR/test case. Đọc response qua tab Network của portal (TIB_PORTAL_BASE). Dọn fixture sau khi chạy.",
+      "steps": [
+        "Trên /artworks, mở menu overflow của artwork fixture, click 'Mark as archive'.",
+        "Ghi status code và status trong response; kiểm tab Archived.",
+        "Unarchive artwork; ghi status code và status trong response; kiểm tab Active."
+      ],
+      "observation_point": "Status code, status trong response; tab chứa artwork sau mỗi bước",
+      "expected_result": "Baseline theo quan sát: archive 200 với status 1, artwork hiện ở tab Archived; unarchive 200 với status 0.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-1118"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-014",
+      "oq_id": "OQ-artwork-349",
+      "open_question_draft": "Xác nhận archive 200 status 1 (tab Archived), unarchive 200 status 0 là expected (OQ-artwork-577).",
+      "related_kb_ids": [
+        "artwork/artwork-list-and-clone#KB-047",
+        "artwork/artwork-list-and-clone#KB-1116",
+        "artwork/artwork-list-and-clone#KB-1118"
+      ]
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Kết quả sau khi click 'Import to Translation'",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "menu overflow đang mở",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã mở menu overflow của 1 artwork row.",
+      "steps": [
+        "Click 'Import to Translation'.",
+        "Quan sát điều hướng/modal xuất hiện."
+      ],
+      "observation_point": "Trang/modal đích sau khi click.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-015",
+      "oq_id": "OQ-artwork-350"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Delete artwork — soft-delete hay hard-delete, có khôi phục được không",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "sau khi confirm Remove trên dialog xoá",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã có artwork test riêng (KHÔNG dùng artwork sản phẩm thật) để tránh mất dữ liệu thật, do policy mutation SAFE_REVERSIBLE_ONLY.",
+      "steps": [
+        "Tạo/tìm 1 artwork test dùng riêng cho việc xoá.",
+        "Click Delete artwork -> confirm Remove.",
+        "Kiểm tra artwork còn truy vấn được qua GraphQL (kèm cờ deleted/archived) hay biến mất hoàn toàn."
+      ],
+      "observation_point": "Trạng thái record trong GraphQL/DB sau khi xoá; có API/UI nào khôi phục không.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [
+        "rủi ro mất dữ liệu không thể khôi phục nếu là hard-delete"
+      ],
+      "priority": "P1",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-016",
+      "oq_id": "OQ-artwork-351"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "PERMISSION",
+      "layer": "portal",
+      "title": "Truy cập /artworks và các action list với role/tenant khác",
+      "applicability": {
+        "role": "staff quyền hạn chế / cross-tenant (TIB_USER_B)",
+        "state": "trang /artworks",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Cần credential TIB_USER_B_* (tenant khác) hoặc 1 staff role hạn chế hơn owner.",
+      "steps": [
+        "Đăng nhập bằng role/tenant khác.",
+        "Mở /artworks.",
+        "Thử từng action (preview/edit/duplicate/menu 3 mục) trên artwork KHÔNG thuộc tenant hiện tại (nếu truy cập được)."
+      ],
+      "observation_point": "Có thấy/thao tác được artwork của tenant khác không; role hạn chế có bị ẩn bớt action nào không.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [
+        "cross-tenant data leak nếu không bị chặn đúng"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-017",
+      "oq_id": "OQ-artwork-352"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Duplicate artwork giữ action của layer có điều kiện: bản copy của artwork Hide giữ Hide, bản copy của artwork Show giữ Show (quan sát trên editor)",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "2 artwork Artwork 2.0 throwaway: một artwork có layer đích action Hide, một artwork có layer đích action Show, cùng điều kiện '<nguồn> is any of: <V1>'",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal /artworks (nút duplicate la-copy) + Artwork Editor 2.0"
+      },
+      "precondition": "Hai artwork như applicability, đã Save.",
+      "steps": [
+        "Trên /artworks bấm duplicate (la-copy) ở row artwork Hide; mở bản copy trong editor; mở Conditional Setting của layer đích; ghi dropdown action, heading, điều kiện.",
+        "Làm tương tự với artwork Show; ghi lại."
+      ],
+      "observation_point": "Action, heading và điều kiện của layer đích trong bản copy.",
+      "expected_result": "Bản copy của artwork Hide: action Hide, heading 'Hide this layer and its option when:'. Bản copy của artwork Show: action Show, heading 'Show this layer and its option when:'.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-229"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/artwork-list-and-clone#KB-047",
+        "artwork-layer-config/conditional-setting-config#KB-221"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mất action khi duplicate đảo chiều ẩn/hiện trên campaign dùng bản copy",
+        "Lượt PASS 2026-10-28 chạy trước khi các PR của TIB-5558 merge; build ship chưa xác nhận",
+        "Kiểm qua API xem CHK-011 (CONF-artwork-dependency-action-01)"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "Campaign dùng bản copy của artwork Hide ẩn/hiện layer đúng chiều Hide trên storefront",
+      "applicability": {
+        "role": "merchant owner/staff (dựng campaign); guest buyer (storefront)",
+        "state": "bản copy của artwork Hide từ CHK-009 gắn vào campaign đã publish",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN); storefront vượt password-gate bằng TIB_STORE_PASSWORD",
+        "surface_or_device": "storefront form + live preview, desktop browser"
+      },
+      "precondition": "Đã chạy CHK-009; tạo campaign dùng bản copy của artwork Hide và sync.",
+      "steps": [
+        "Mở trang sản phẩm của campaign; chọn nguồn = V1 (khớp điều kiện); ghi field và layer đích trên form và preview.",
+        "Đổi nguồn sang giá trị khác V1; ghi lại."
+      ],
+      "observation_point": "Field và layer đích trên form/preview ở mỗi giá trị nguồn.",
+      "expected_result": "Nguồn = V1 (khớp): field và layer đích ẩn. Giá trị khác (không khớp): field và layer đích hiện.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-229"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/artwork-list-and-clone#KB-047"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hành vi Hide trên storefront nói chung thuộc sdk FEAT-07-storefront-buyer-facing; check này chỉ kiểm bản copy",
+        "Tiêu chí storefront của KB-229 chạy ở lượt retest sau SDK 2026-10-28 03:01:11 GMT; build ship chưa xác nhận"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Dependency của layer trong bản copy (đọc qua GraphQL): giá trị action có được chép từ artwork gốc",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "artwork gốc và bản copy từ CHK-009",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "GraphQL artworks"
+      },
+      "precondition": "Đã chạy CHK-009.",
+      "steps": [
+        "Đọc dependency của layer đích ở artwork gốc Hide và bản copy; ghi nguyên văn.",
+        "Lặp với artwork gốc Show và bản copy.",
+        "So từng key giữa gốc và bản copy."
+      ],
+      "observation_point": "Object dependency của layer đích ở gốc và bản copy.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Kiểm action của bản copy qua API cần biết shape dependency (có key action hay không) — chờ PO chốt conflict CONF-artwork-dependency-action-01; sau đó bản copy phải mang giá trị action nào?",
+      "related_kb_ids": [
+        "artwork/artwork-list-and-clone#KB-229",
+        "artwork-layer-config/conditional-setting-config#KB-227",
+        "artwork-layer-config/conditional-setting-config#KB-067"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle tầng API phụ thuộc shape dependency đang tranh chấp (KB-067 vs KB-227, UNRESOLVED)"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [
+        "CONF-artwork-dependency-action-01"
+      ],
+      "oq_id": "OQ-artwork-layer-config-068"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Duplicate artwork có điều kiện: element trong dependencies của bản copy trỏ tới layer của chính bản copy hay của artwork gốc",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "artwork gốc và bản copy từ CHK-009",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "GraphQL artworks + portal Artwork Editor 2.0"
+      },
+      "precondition": "Đã chạy CHK-009.",
+      "steps": [
+        "Đọc id của layer nguồn trong artwork gốc và trong bản copy.",
+        "Đọc dependencies[].element của layer đích ở bản copy; ghi id được trỏ tới.",
+        "Trên bản copy đổi tên layer nguồn; ghi Conditional Setting của layer đích có hiển thị tên mới không."
+      ],
+      "observation_point": "dependencies[].element của bản copy so với layer id của gốc và của bản copy.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Khi duplicate artwork có điều kiện, element trong dependencies của bản copy có được map sang layer id của chính bản copy (không trỏ về layer của artwork gốc) không?",
+      "related_kb_ids": [
+        "artwork/artwork-list-and-clone#KB-229",
+        "artwork-layer-config/conditional-setting-config#KB-070"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nếu element trỏ về layer của artwork gốc, điều kiện của bản copy không bao giờ khớp hoặc khớp sai"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-160"
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-107] Xoá artwork đang gắn campaign trên Artworks list bị chặn, portal yêu cầu gỡ khỏi mọi campaign trước",
+      "applicability": {
+        "role": "merchant-owner (staff có quyền manage artworks)",
+        "state": "artwork throwaway đang gắn vào một campaign throwaway qua product base",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /artworks → menu la-ellipsis-h → Delete artwork"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); chỉ dùng artwork/campaign throwaway dựng trên store explorer, không dùng artwork hay campaign thật.",
+      "steps": [
+        "Dựng artwork throwaway và gắn nó vào một campaign throwaway qua product base.",
+        "Trên /artworks mở menu của artwork đó, chọn Delete artwork, xác nhận Remove.",
+        "Ghi nguyên văn thông báo hiện ra và các nút đi kèm; reload /artworks, ghi artwork còn trong list hay không."
+      ],
+      "observation_point": "Thông báo khi xoá artwork đang gắn campaign; artwork còn tồn tại sau thao tác.",
+      "expected_result": "Artwork không bị xoá; portal yêu cầu gỡ artwork khỏi mọi campaign trước và có nút 'View campaigns list'.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-1028"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/artwork-list-and-clone#KB-047",
+        "artwork/artwork-list-and-clone#KB-1031"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "mất dữ liệu nếu artwork đang dùng bị xoá"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-107] Xoá artwork có bản duplicate làm từ nó bị chặn và lỗi liệt kê tên các bản duplicate",
+      "applicability": {
+        "role": "merchant-owner (staff có quyền manage artworks)",
+        "state": "artwork throwaway có hai bản duplicate làm từ nó, không gắn campaign",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /artworks → Duplicate (la-copy) và Delete artwork"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); chỉ dùng artwork/campaign throwaway dựng trên store explorer, không dùng artwork hay campaign thật.",
+      "steps": [
+        "Dựng artwork throwaway A (không gắn campaign), duplicate A hai lần.",
+        "Xoá A trên /artworks, xác nhận Remove.",
+        "Ghi nguyên văn lỗi; reload /artworks, ghi A còn trong list hay không."
+      ],
+      "observation_point": "Lỗi khi xoá artwork có duplicate; tên các bản duplicate trong lỗi; A còn tồn tại.",
+      "expected_result": "Xoá A thất bại và lỗi liệt kê tên hai bản duplicate.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-1028"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/artwork-list-and-clone#KB-229"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "mất dữ liệu nếu artwork gốc của bản duplicate bị xoá"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-015",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-107] DELETE /api/artworks/{id} cho artwork đang gắn campaign: status code và body của response",
+      "applicability": {
+        "role": "merchant-owner (staff có quyền manage artworks)",
+        "state": "artwork throwaway đang gắn campaign throwaway qua product base",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "api DELETE /api/artworks/{id}"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); chỉ dùng artwork/campaign throwaway dựng trên store explorer, không dùng artwork hay campaign thật. Capture được response của request xoá.",
+      "steps": [
+        "Gọi DELETE /api/artworks/{id} cho artwork đang gắn campaign (hoặc capture request khi xoá trên portal).",
+        "Ghi status code, Content-Type và body (HTML hay JSON, có nêu lý do không), kèm build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Status code, Content-Type, body của response xoá bị chặn.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/artwork-list-and-clone#KB-1028"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "QA đo 2026-09-07 nhận 403 trang HTML Laravel trần, spec-hub nói lỗi nêu lý do"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-506"
+    },
+    {
+      "check_id": "CHK-016",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-107] Xoá artwork không được dùng ở đâu thì artwork vào trash, không bị xoá hẳn",
+      "applicability": {
+        "role": "merchant-owner (staff có quyền manage artworks)",
+        "state": "artwork throwaway không gắn campaign/platform product, chưa dùng cho order, không có bản duplicate",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /artworks → Delete artwork; Trash"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); chỉ dùng artwork/campaign throwaway dựng trên store explorer, không dùng artwork hay campaign thật.",
+      "steps": [
+        "Dựng artwork throwaway thoả applicability.",
+        "Xoá artwork trên /artworks, xác nhận Remove.",
+        "Mở trash của portal, lọc loại Artwork, tìm artwork vừa xoá; ghi kết quả kèm build và ngày chạy."
+      ],
+      "observation_point": "Artwork biến khỏi Artworks list và có trong trash.",
+      "expected_result": "Artwork được chuyển vào trash, không bị xoá hẳn.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-1031"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/artwork-list-and-clone#KB-1028",
+        "artwork/artwork-list-and-clone#KB-047"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "mất dữ liệu không khôi phục được nếu artwork bị xoá hẳn"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-017",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-163] Response của duplicate, archive và unarchive artwork chỉ gồm attribute Artwork::$visible",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "phiên portal của account explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /artworks + portal API (Network)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Artwork fixture tự dựng trên store explorer, không dùng artwork, store hay id trong CCR/test case. Đọc response qua tab Network của portal (TIB_PORTAL_BASE). Dọn fixture sau khi chạy.",
+      "steps": [
+        "Duplicate artwork fixture (nút duplicate trên row); ghi body response.",
+        "Mark as archive bản copy; ghi body response.",
+        "Unarchive bản copy; ghi body response.",
+        "So key top-level của ba response với danh sách attribute."
+      ],
+      "observation_point": "Key top-level của response duplicate, archive, unarchive (ghi thêm status code)",
+      "expected_result": "Mọi key top-level của ba response thuộc danh sách id, name, description, width, height, template_settings, data, is_locked, current_version_id, status, design_format, thumbnail, artwork_version_used, schema_version; không có key nào ngoài danh sách.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-1116"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/artwork-list-and-clone#KB-1116",
+        "artwork/artwork-list-and-clone#KB-1118"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Status 201/200 và tab Archived là quan sát (KB-1118, CHK-005)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-018",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-157] Import TIB Library sang account khác: layer Clipart Category có ảnh gốc là ảnh preview clipart trỏ về category của account đích, hiển thị và Save được",
+      "applicability": {
+        "role": "merchant-owner (account đích)",
+        "state": "artwork 2.0 public có layer Clipart Category tự giữ category, ảnh gốc là ảnh preview của một clipart trong chính category đó",
+        "environment": "staging; ghi ngày chạy",
+        "surface_or_device": "portal artwork editor + artwork JSON"
+      },
+      "precondition": "Account nguồn và account đích là hai account test khác nhau. Không duplicate campaign sang account khác được từ portal trên staging (KB-1086, ALTERNATIVE_SETUP): copy artwork bằng import TIB Library bằng account đích (POST /api/artworks/by-public) hoặc nhờ người có quyền admin chạy admin import từ account nguồn sang account đích; cách thao tác ở _flows/artwork-editor.md mục Import artwork sang account khác. Fixture tự dựng trên hai account test ở staging (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "steps": [
+        "Ở account nguồn: ghi lại JSON layer Clipart Category của artwork public (url, clipart, default_value).",
+        "Login account đích, import artwork đó từ TIB Library.",
+        "Đọc JSON layer tương ứng của artwork mới (url, clipart, default_value) và kiểm HTTP file url.",
+        "Mở artwork mới trong editor, chọn layer; (ghi thêm, không thuộc expected) Save rồi ghi response."
+      ],
+      "observation_point": "JSON layer bên đích; canvas editor; panel category của layer; thông báo lỗi. Kết quả Save chỉ ghi lại (quan sát ở test case, Dev không nêu).",
+      "expected_result": "url của layer trỏ tới clipart tương ứng trong category mới của account đích, cùng category với clipart và đi cùng default_value (không còn id category nguồn); layer hiển thị ảnh, không trong suốt; chọn layer thấy category của account đích; không báo lỗi clipart category.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-1082"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/artwork-list-and-clone#KB-1082",
+        "artwork/artwork-list-and-clone#KB-1086"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Layer trong suốt vì url giữ id category nguồn (lỗi gốc TIB-5619)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "previous_check_id": {
+        "feature_key": "artwork-cross-store-clone",
+        "check_id": "CHK-001"
+      }
+    },
+    {
+      "check_id": "CHK-019",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "[CBS-157] Admin import artwork nhiều layer Clipart Category ở nhiều category: mỗi layer trỏ đúng category đích của nó",
+      "applicability": {
+        "role": "merchant-owner (account đích)",
+        "state": "artwork 2.0 có nhiều layer Clipart Category, mỗi layer một category khác nhau, ảnh gốc là ảnh preview clipart trong category của layer",
+        "environment": "staging; ghi ngày chạy",
+        "surface_or_device": "artwork JSON + portal editor"
+      },
+      "precondition": "Account nguồn và account đích là hai account test khác nhau. Không duplicate campaign sang account khác được từ portal trên staging (KB-1086, ALTERNATIVE_SETUP): copy artwork bằng import TIB Library bằng account đích (POST /api/artworks/by-public) hoặc nhờ người có quyền admin chạy admin import từ account nguồn sang account đích; cách thao tác ở _flows/artwork-editor.md mục Import artwork sang account khác. Fixture tự dựng trên hai account test ở staging (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "steps": [
+        "Ghi JSON các layer của artwork nguồn (url, clipart, default_value).",
+        "Nhờ người có quyền admin import artwork sang account đích.",
+        "Ở account đích, đọc JSON các layer tương ứng và kiểm HTTP từng file url.",
+        "Mở artwork trong editor, so từng layer với nguồn."
+      ],
+      "observation_point": "JSON từng layer bên đích; canvas editor.",
+      "expected_result": "Mỗi layer có url trỏ tới clipart tương ứng trong category đích của chính layer đó, cùng clipart và default_value; không layer nào còn id category nguồn; mọi layer hiển thị ảnh như nguồn, không lỗi clipart category.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-1082"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/artwork-list-and-clone#KB-1082",
+        "artwork/artwork-list-and-clone#KB-1086"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "previous_check_id": {
+        "feature_key": "artwork-cross-store-clone",
+        "check_id": "CHK-002"
+      }
+    },
+    {
+      "check_id": "CHK-020",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-157] Copy sang account khác: layer Static photo dùng ảnh clipart (không thuộc category của layer) hiển thị đúng; đường dẫn giữ id category nguồn",
+      "applicability": {
+        "role": "merchant-owner (account đích)",
+        "state": "artwork có layer Static photo chọn ảnh từ clipart",
+        "environment": "staging; ghi ngày chạy",
+        "surface_or_device": "portal artwork editor + artwork JSON"
+      },
+      "precondition": "Account nguồn và account đích là hai account test khác nhau. Không duplicate campaign sang account khác được từ portal trên staging (KB-1086, ALTERNATIVE_SETUP): copy artwork bằng import TIB Library bằng account đích (POST /api/artworks/by-public) hoặc nhờ người có quyền admin chạy admin import từ account nguồn sang account đích; cách thao tác ở _flows/artwork-editor.md mục Import artwork sang account khác. Fixture tự dựng trên hai account test ở staging (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "steps": [
+        "Ghi url ảnh của layer Static photo ở nguồn.",
+        "Copy artwork sang account đích (admin import hoặc TIB Library).",
+        "Mở artwork bên đích, xem layer Static photo; đọc url ảnh của layer và kiểm HTTP file."
+      ],
+      "observation_point": "Canvas editor; url ảnh của layer bên đích; HTTP của file.",
+      "expected_result": "Layer Static photo hiển thị đúng ảnh như nguồn, không trong suốt (file đã được copy sang bên đích). Ghi lại đường dẫn ảnh: theo giới hạn đã biết Dev nêu, đường dẫn đổi phần user nhưng vẫn mang id category nguồn — không coi là lỗi, và nếu đường dẫn đã mang id category đích thì ghi nhận thay đổi, không coi là regression.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-1083"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/artwork-list-and-clone#KB-1083"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "previous_check_id": {
+        "feature_key": "artwork-cross-store-clone",
+        "check_id": "CHK-003"
+      }
+    },
+    {
+      "check_id": "CHK-021",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "[CBS-157] Đối chứng: layer có ảnh gốc từ Image library vẫn hiển thị đúng sau khi copy artwork sang account khác",
+      "applicability": {
+        "role": "merchant-owner (account đích)",
+        "state": "artwork có layer ảnh gốc lấy từ Image library",
+        "environment": "staging; ghi ngày chạy",
+        "surface_or_device": "portal artwork editor"
+      },
+      "precondition": "Account nguồn và account đích là hai account test khác nhau. Không duplicate campaign sang account khác được từ portal trên staging (KB-1086, ALTERNATIVE_SETUP): copy artwork bằng import TIB Library bằng account đích (POST /api/artworks/by-public) hoặc nhờ người có quyền admin chạy admin import từ account nguồn sang account đích; cách thao tác ở _flows/artwork-editor.md mục Import artwork sang account khác. Fixture tự dựng trên hai account test ở staging (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "steps": [
+        "Copy artwork sang account đích (TIB Library hoặc admin import).",
+        "Mở artwork bên đích, xem layer ảnh từ Image library; kiểm HTTP file ảnh."
+      ],
+      "observation_point": "Canvas editor; HTTP file ảnh của layer.",
+      "expected_result": "Layer ảnh từ Image library hiển thị đúng như trước bản sửa TIB-5619 (như ở nguồn).",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-1084"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/artwork-list-and-clone#KB-1084"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "previous_check_id": {
+        "feature_key": "artwork-cross-store-clone",
+        "check_id": "CHK-004"
+      }
+    },
+    {
+      "check_id": "CHK-022",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-157] Sau admin import sang account khác: design preview từng template của artwork bên đích — ghi kết quả, so với nguồn",
+      "applicability": {
+        "role": "merchant-owner (account đích)",
+        "state": "artwork có ≥2 template, có layer clipart và Static photo từ clipart, vừa được admin import",
+        "environment": "staging; ghi ngày chạy",
+        "surface_or_device": "MCP render-design-preview"
+      },
+      "precondition": "Account nguồn và account đích là hai account test khác nhau. Không duplicate campaign sang account khác được từ portal trên staging (KB-1086, ALTERNATIVE_SETUP): copy artwork bằng import TIB Library bằng account đích (POST /api/artworks/by-public) hoặc nhờ người có quyền admin chạy admin import từ account nguồn sang account đích; cách thao tác ở _flows/artwork-editor.md mục Import artwork sang account khác. Fixture tự dựng trên hai account test ở staging (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "steps": [
+        "Render design preview từng template của artwork nguồn.",
+        "Render design preview từng template tương ứng của artwork bên đích.",
+        "So từng cặp: ảnh clipart và static photo có hiện đủ không, có vùng trống không; ghi error_message nếu có, ngày chạy, build."
+      ],
+      "observation_point": "Ảnh design preview và trạng thái render của từng template.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-1085"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/artwork-list-and-clone#KB-1085"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-549",
+      "previous_check_id": {
+        "feature_key": "artwork-cross-store-clone",
+        "check_id": "CHK-005"
+      }
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "item": "Capability: row 4 nút, menu 3 mục, dialog xoá (base)",
+      "check_ids": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-003"
+      ],
+      "oracle": "BASELINE (KB-047)"
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "item": "Capability: duplicate artwork giữ action Show/Hide",
+      "check_ids": [
+        "CHK-009",
+        "CHK-010",
+        "CHK-011"
+      ],
+      "oracle": "STRONG (KB-229) cho editor/storefront; NONE cho API (CONF-artwork-dependency-action-01)"
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "item": "Risk P1: xoá mất dữ liệu, cross-tenant",
+      "check_ids": [
+        "CHK-003",
+        "CHK-007",
+        "CHK-008"
+      ],
+      "oracle": "BASELINE / NONE"
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "item": "Gap: Cancel xoá, archive, Import to Translation, map element bản copy",
+      "check_ids": [
+        "CHK-004",
+        "CHK-005",
+        "CHK-006",
+        "CHK-012"
+      ],
+      "oracle": "NONE"
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "item": "[CBS-107] Xoá artwork bị chặn khi đang dùng; xoá vào trash",
+      "check_ids": [
+        "CHK-013",
+        "CHK-014",
+        "CHK-015",
+        "CHK-016"
+      ],
+      "oracle": "STRONG (KB-1028 po_dev_confirm spec-hub) cho CHK-013/014; STRONG (KB-1031) cho CHK-016; NONE cho CHK-015 (response API, OQ CONFLICT)"
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "item": "[CBS-163] Archive / unarchive artwork và response contract",
+      "check_ids": [
+        "CHK-005",
+        "CHK-017"
+      ],
+      "oracle": "STRONG (KB-1116) cho CHK-017; BASELINE + NEEDS_CONFIRMATION (KB-1118) cho CHK-005 (trước đây NONE)."
+    },
+    {
+      "feature_key": "artwork-cross-store-clone",
+      "risk": "layer trong suốt do url giữ id category nguồn",
+      "check_ids": [
+        "CHK-018",
+        "CHK-019",
+        "CHK-020"
+      ]
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Không có KB item về giới hạn số lượng/độ dài cho list hay duplicate."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "KB-229 không đổi hành vi base KB-047 (bộ nút/menu); shard không có item KNOWN_DEFECT."
+    },
+    {
+      "dimension": "NEGATIVE",
+      "reason": "CCR không có claim về input sai hay lỗi khi copy."
+    },
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Không có giới hạn số lượng/kích thước trong claim."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "Quyền admin import chỉ là ghi nhận setup của QA (KB-1086), không có claim hành vi phân quyền."
+    },
+    {
+      "dimension": "STATE_DATA",
+      "reason": "Save sau copy đã nằm trong CHK-001; không có claim về reload/dữ liệu cũ (Dev nói artwork clone trước bản sửa không tự sửa, nằm ngoài claim)."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  }
+}

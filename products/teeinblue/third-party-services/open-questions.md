@@ -30,7 +30,7 @@ Các mục dưới đây còn mở. Không dùng phần còn mở làm expected 
 ## OQ-third-party-services-004 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id":"OQ-third-party-services-004","type":"NEEDS_CONFIRMATION","feature_id":"remove-background-provider","summary":"artwork/run-image-effects KB-816 và KB-985 liệt kê remove.bg là remover chọn được, trong khi trang staging hiện không render Remove.BG (đã qua mốc shutdown của staging). Hai item đó có cần giới hạn theo thời gian (trước/sau shutdown) không? Chưa dựng conflict, artwork chưa đổi (KB-1513, KB-1506)."}
+{"oq_id":"OQ-third-party-services-004","type":"NEEDS_CONFIRMATION","feature_id":"remove-background-provider","summary":"artwork-render/image-effects-run KB-816 và KB-985 liệt kê remove.bg là remover chọn được, trong khi trang staging hiện không render Remove.BG (đã qua mốc shutdown của staging). Hai item đó có cần giới hạn theo thời gian (trước/sau shutdown) không? Chưa dựng conflict, artwork chưa đổi (KB-1513, KB-1506)."}
 ```
 
 ## OQ-third-party-services-005 — NEEDS_CONFIRMATION

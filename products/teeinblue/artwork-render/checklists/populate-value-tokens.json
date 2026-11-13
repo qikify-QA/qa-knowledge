@@ -1,0 +1,232 @@
+{
+  "feature_id": "FEAT-03-populate-value-tokens",
+  "feature_key": "populate-value-tokens",
+  "object_id": "artwork-render",
+  "checklist_version": "16",
+  "checks": [
+    {
+      "check_id": "CHK-006",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Modal 'Browse values' liệt kê đúng 13 nhóm nguồn cố định",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "accordion POPULATE VALUES của layer có nút 'Browse values'",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Layer thuộc type có nút 'Browse values'.",
+      "steps": [
+        "Click 'Browse values'.",
+        "Mở dropdown nhóm nguồn trong modal 'Available values'.",
+        "Đếm số nhóm."
+      ],
+      "observation_point": "Danh sách nhóm nguồn.",
+      "expected_result": "Đúng 13 nhóm: Street Maps, Star Maps, Text & Curve Text, QR code, Song search, Moon Phase-Date, Moon Phase-Location, JSON List, Route Maps, Clock, Clipart Category, Group of Clipart Categories, Calendar.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-value-tokens#KB-078"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "11 template biến đổi giá trị khả dụng khi nguồn là layer dạng text",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "modal Browse values, nguồn đã chọn là layer text",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã chọn 1 nguồn text trong modal Browse values.",
+      "steps": [
+        "Chọn nguồn 'Text & Curve Text'.",
+        "Đếm số template biến đổi hiển thị."
+      ],
+      "observation_point": "Danh sách template.",
+      "expected_result": "Đúng 11 template: {{value}}, {{value.Xchar}}, {{value.capitalonly}}, {{value.initialofword}}, {{value.initialofword.exclsymbol}}, {{value.initialofword.capitalize}}, {{value.initialofword.capitalize.exclsymbol}}, {{value.firstword}}, {{value.lastword}}, {{value.context.<from>To<to>}}, {{value.formula(<expression>)}}.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-value-tokens#KB-078"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-060",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-118] Họ token initialofword với từ bắt đầu bằng chữ Latin có dấu / tiếng Việt (É, Đ)",
+      "applicability": {
+        "role": "merchant-owner (cấu hình) · buyer value nhập qua Live Preview",
+        "state": "artwork throwaway có layer text nguồn và layer đích populate bằng {{value.initialofword.1}}, {{value.initialofword.2}} và {{value.initialofword}}",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": ""
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway, không dùng artwork/campaign thật.",
+      "steps": [
+        "Tạo layer text nguồn và các layer đích text bật Populate Content với Value {{value.initialofword.1}}, {{value.initialofword.2}}, {{value.initialofword}}.",
+        "Nhập nguồn \"Élodie Đức\" trong Live Preview.",
+        "Ghi nội dung từng layer đích kèm build và ngày chạy."
+      ],
+      "observation_point": "Chữ đầu lấy ra có giữ nguyên ký tự có dấu (É, Đ) hay bị vỡ.",
+      "expected_result": "Chữ đầu có dấu được lấy đúng, không glyph vỡ: .1 hiện 'É', .2 hiện 'Đ', bare token hiện 'ÉĐ' (baseline theo change note dev, chưa PO/Dev xác nhận là hành vi đúng; lệch là cần điều tra).",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-value-tokens#KB-1027"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork-render/populate-value-tokens#KB-078",
+        "artwork-render/populate-value-tokens#KB-1025",
+        "artwork-render/populate-value-tokens#KB-1026"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1027 chỉ là một câu của dev, chưa có test case."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-render-166"
+    },
+    {
+      "check_id": "CHK-061",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-106] {{time}} không format dùng format của Star Map; {{time.yyyy/MM/dd}} dùng format trong token",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "Star Map có Display in date format (vd dd.MM.yyyy HH:mm); hai text layer populate {{time}} và {{time.yyyy/MM/dd}}",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": "storefront preview, cart, design order desktop"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway có layer Star Map, không dùng artwork/campaign thật. Store bật UI date picker của Teeinblue.",
+      "steps": [
+        "Thêm hai text layer đích: một populate {{time}}, một populate {{time.yyyy/MM/dd}} từ layer Star Map",
+        "Chọn một ngày giờ ở ô giờ Star Map",
+        "Ghi nội dung hai text layer ở preview",
+        "Add to cart và tạo đơn test, ghi hai text layer ở design order"
+      ],
+      "observation_point": "Nội dung hai text layer ở preview và design order",
+      "expected_result": "{{time}} hiện theo format đã chọn ở 'Display in date format' của Star Map; {{time.yyyy/MM/dd}} hiện theo format trong token (yyyy/MM/dd), không theo format Star Map.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-value-tokens#KB-1108"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-render/populate-value-tokens#KB-1108",
+        "artwork-render/populate-value-tokens#KB-1109",
+        "artwork-layer-config/special-layer-config#KB-1104"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle là một nguồn spec_doc (TIB-5609, MEDIUM). Không khẳng định chuỗi cụ thể; chuỗi quan sát là KB-1109 (CHK-062)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-062",
+      "dimension": "REGRESSION",
+      "layer": "storefront",
+      "title": "[CBS-106] Star Map chưa set format và text layer đích Date picker khi populate từ Star Map (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "Star Map không set Display in date format; text layer populate {{time}}; text layer đích Input type Date picker populate từ Star Map",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": "storefront preview, localStorage, design order desktop"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway có layer Star Map, không dùng artwork/campaign thật.",
+      "steps": [
+        "Với Star Map chưa set format, chọn một ngày giờ, ghi ô giờ và text layer populate {{time}}",
+        "Với text layer đích Input type Date picker populate từ Star Map đã set format, ghi giá trị hiển thị và giá trị lưu trong localStorage teeinblue-customizations",
+        "Ghi build và ngày chạy"
+      ],
+      "observation_point": "Ô giờ, text layer populate, text layer đích Date picker, localStorage",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-value-tokens#KB-1109"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork-render/populate-value-tokens#KB-1109",
+        "artwork-render/populate-value-tokens#KB-1108",
+        "artwork-render/populate-value-tokens#KB-990"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1109 là OBSERVED_CURRENT/LOW, mặc định yyyy-MM-dd HH:mm chưa có nguồn trích. Ghi lại quan sát, không phán pass hay fail."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-render-168"
+    },
+    {
+      "check_id": "CHK-063",
+      "dimension": "REGRESSION",
+      "layer": "storefront",
+      "title": "[CBS-106] Moon Phase {{date}} và Route {{route_start_date}} không đổi sau thay đổi Star Map (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "artwork có layer Moon Phase và layer Route Maps populate sang text layer",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": "storefront preview desktop"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway có layer Star Map, không dùng artwork/campaign thật. Có layer Moon Phase populate {{date}} và layer Route Maps populate {{route_start_date}}.",
+      "steps": [
+        "Chọn ngày cho Moon Phase và ngày giờ bắt đầu cho Route Maps",
+        "Ghi nội dung text layer populate {{date}} và {{route_start_date}}",
+        "So với kết quả cùng thao tác trên build trước thay đổi nếu có"
+      ],
+      "observation_point": "Nội dung text layer populate {{date}}, {{route_start_date}}",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-value-tokens#KB-1109"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork-render/populate-value-tokens#KB-1109",
+        "artwork-render/populate-value-tokens#KB-1108"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1109 là OBSERVED_CURRENT/LOW, không ghi build. Ghi lại quan sát, không phán pass hay fail."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-render-168"
+    }
+  ],
+  "coverage_by_feature_and_risk": [],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-106"
+  }
+}

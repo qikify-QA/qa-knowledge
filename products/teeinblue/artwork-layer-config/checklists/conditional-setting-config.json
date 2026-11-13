@@ -1,0 +1,1341 @@
+{
+  "feature_id": "FEAT-08-conditional-setting-config",
+  "feature_key": "conditional-setting-config",
+  "object_id": "artwork-layer-config",
+  "checklist_version": "9",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "match_type chỉ có đúng 2 radio (all/any), 'No conditions' là state chứ không phải lựa chọn",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "layer thuộc 33/35 type có accordion CONDITIONAL SETTING",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Layer đích có accordion CONDITIONAL SETTING (xem KB-004).",
+      "steps": [
+        "Mở accordion CONDITIONAL SETTING.",
+        "Quan sát #field__match_type khi chưa có condition, rồi khi đã có ≥1 condition."
+      ],
+      "observation_point": "Số lượng radio + label hiển thị khi chưa/đã có condition.",
+      "expected_result": "Chỉ 2 radio: match_type-all ('all', mặc định) và match_type-any ('any'). 'No conditions' chỉ là label trạng thái khi chưa có condition, KHÔNG phải radio thứ 3.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-063"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Dropdown 'Option:' chỉ liệt kê đúng 8/35 data-type làm nguồn",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "layer đích bất kỳ trong 33/35 type có accordion",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có đủ 35 layer type để đối chiếu.",
+      "steps": [
+        "Mở dropdown 'Option:' trên layer đích.",
+        "Liệt kê toàn bộ data-type xuất hiện."
+      ],
+      "observation_point": "Danh sách data-type trong dropdown.",
+      "expected_result": "Chỉ đúng 8 data-type: toggle, additional-option, addon-charge, json-list, font, vector-category, clipart-category, group-clipart-categories — bất kể layer đích là type nào. 27 type còn lại không bao giờ xuất hiện.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-064"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Dropdown nguồn tự loại trừ chính layer đang cấu hình",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "layer đích thuộc 8 data-type (có thể vừa là nguồn vừa là đích)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Layer đích cũng thuộc 1 trong 8 type có thể làm nguồn.",
+      "steps": [
+        "Mở dropdown 'Option:' trên chính layer đó.",
+        "Tìm chính layer trong danh sách."
+      ],
+      "observation_point": "Layer đích có xuất hiện trong dropdown nguồn của chính nó không.",
+      "expected_result": "Layer đích luôn bị loại khỏi danh sách nguồn của chính nó.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-065"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Nguồn đã dùng ở condition trước bị loại khỏi dropdown condition sau (cùng layer đích)",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "layer đích đã có ≥1 condition",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Layer đích đã có 1 condition dùng nguồn A.",
+      "steps": [
+        "Thêm condition thứ 2 trên cùng layer đích.",
+        "Mở dropdown 'Option:'.",
+        "Tìm nguồn A trong danh sách."
+      ],
+      "observation_point": "Nguồn A có còn xuất hiện trong dropdown condition #2 không.",
+      "expected_result": "Nguồn A bị loại khỏi dropdown của condition #2 — mỗi nguồn chỉ dùng được 1 lần/layer đích.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-065"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "clipart-category/vector-category auto-check item đầu grid; 6 type còn lại khởi tạo rỗng",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "vừa chọn nguồn condition",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Đang thêm condition mới.",
+      "steps": [
+        "Chọn nguồn clipart-category (hoặc vector-category).",
+        "Quan sát grid giá trị ngay sau khi chọn.",
+        "Lặp lại với 1 trong 6 nguồn còn lại."
+      ],
+      "observation_point": "Trạng thái checked của item đầu grid ngay sau khi chọn nguồn.",
+      "expected_result": "clipart-category/vector-category: item đầu grid được auto-check ngay. 6 nguồn còn lại (toggle, additional-option, addon-charge, json-list, font, group-clipart-categories): giá trị khởi tạo rỗng.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-065"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Control giá trị theo loại nguồn: toggle dùng select On/Off, 7 nguồn còn lại dùng 'is any of:'",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "đang chọn giá trị cho condition vừa thêm",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã chọn 1 nguồn cho condition.",
+      "steps": [
+        "Chọn nguồn 'toggle'.",
+        "Quan sát control giá trị.",
+        "Lặp lại với 1 trong 7 nguồn còn lại."
+      ],
+      "observation_point": "Loại control hiển thị (select nhị phân vs multi-value picker).",
+      "expected_result": "Nguồn toggle: <select> nhị phân true|On / false|Off, không hiện toán tử. 7 nguồn còn lại: control 'is any of:' (multi-value picker).",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-066"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [
+        "CONF-001"
+      ],
+      "oq_ref": "OQ-artwork-040"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "2 layer type không có accordion CONDITIONAL SETTING (Dynamic Clipart by Text) không có cách cấu hình condition qua UI",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "layer type Dynamic Clipart by Text (Manual Placement hoặc Auto Placement)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã thêm layer thuộc 1 trong 2 type này.",
+      "steps": [
+        "Mở config panel layer.",
+        "Tìm accordion CONDITIONAL SETTING."
+      ],
+      "observation_point": "Accordion này có xuất hiện trong danh sách accordion của layer không.",
+      "expected_result": "KHÔNG có accordion CONDITIONAL SETTING — chỉ có PERSONALIZATION SETTINGS (+ DESIGN SETTINGS/EXTRA tuỳ type).",
+      "oracle": {
+        "kb_ids": [
+          "artwork-editor/_object-level#KB-005"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "Giới hạn số condition tối đa trên 1 layer",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "layer đích, đang thêm condition liên tiếp",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Cần store có đủ >8 layer thuộc 8 data-type nguồn để test vượt ngưỡng đã thử.",
+      "steps": [
+        "Thêm condition liên tiếp vượt quá 8 (nếu store có đủ nguồn).",
+        "Quan sát UI có chặn ở ngưỡng nào không."
+      ],
+      "observation_point": "Số condition tối đa UI cho phép thêm.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-041",
+      "oq_id": "OQ-artwork-layer-config-144"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "Hỗ trợ lồng nhóm AND trong OR (nested logic)",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "accordion CONDITIONAL SETTING",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "n/a.",
+      "steps": [
+        "Tìm control nào trong UI cho phép nhóm điều kiện lồng nhau (AND trong OR hoặc ngược lại)."
+      ],
+      "observation_point": "Có UI element nào cho phép nested logic không.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-042",
+      "oq_id": "OQ-artwork-layer-config-145"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "Toán tử condition ngoài 'is any of' và on/off (is-none-of, contains, so sánh số/ngày)",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "đang cấu hình control giá trị condition",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "n/a.",
+      "steps": [
+        "Kiểm tra control giá trị của cả 8 nguồn xem có toggle/dropdown chọn toán tử nào khác 'is any of'/on-off không."
+      ],
+      "observation_point": "Có toán tử nào khác được liệt kê không.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-043",
+      "oq_id": "OQ-artwork-layer-config-146"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "2 layer type không có accordion CONDITIONAL SETTING — có đường API bypass để set condition không",
+      "applicability": {
+        "role": "store owner / staff (qua direct API)",
+        "state": "layer Dynamic Clipart by Text (Manual/Auto)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "CẦN orchestrator duyệt direct-API mutation test.",
+      "steps": [
+        "Dựng payload PUT gán dependency cho layer Dynamic Clipart by Text (type vốn không có UI cho việc này).",
+        "Gửi PUT.",
+        "Quan sát response + hành vi sau đó."
+      ],
+      "observation_point": "Server có chấp nhận field dependency trên layer type này không.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [
+        "liên quan trực tiếp BLK-API-002 ở FEAT-09-condition-cycle-validation"
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-044",
+      "oq_id": "OQ-artwork-layer-config-147"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Artwork 2.0: chữ đầu heading Conditional Setting là dropdown action đúng 2 giá trị Show/Hide, mặc định Show (cả layer vừa thêm); chọn Hide đổi heading",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "artwork Artwork 2.0 (schema_version 2) có layer nguồn (vd Additional Option) và layer đích chưa đổi action; thêm 1 layer Single-line Text mới trong lúc chạy",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor 2.0, accordion CONDITIONAL SETTING, desktop browser"
+      },
+      "precondition": "Artwork 2.0 throwaway như applicability, đã Save một lần để có trạng thái gốc.",
+      "steps": [
+        "Mở Conditional Setting của layer đích; ghi giá trị chữ đầu heading và toàn bộ heading.",
+        "Bấm vào chữ đầu heading; ghi số option và nhãn từng option trong listbox.",
+        "Chọn Hide; ghi heading.",
+        "Cancel (không Save). Thêm một layer Single-line Text mới; mở Conditional Setting của layer đó; ghi giá trị dropdown action, heading, match type đang chọn và số điều kiện."
+      ],
+      "observation_point": "Listbox action; heading; trạng thái mặc định Conditional Setting của layer mới.",
+      "expected_result": "Bước 1: dropdown ở Show, heading 'Show this layer and its option when:'. Bước 2: listbox có đúng 2 option Show / Hide, không có giá trị thứ ba. Bước 3: heading đổi ngay thành 'Hide this layer and its option when:'. Bước 4: layer mới có action Show, heading 'Show this layer and its option when:', match type 'All conditions match (AND)', chưa có điều kiện nào.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-221"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-editor/_object-level#KB-005",
+        "artwork-layer-config/conditional-setting-config#KB-063"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lượt PASS 2026-10-28 chạy trên staging trước khi các PR của TIB-5558 merge (2026-10-29); build ship và production chưa xác nhận"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Một layer chỉ mang một action: sau khi chọn Hide không có khối điều kiện Show thứ hai và không có cách thêm action song song",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "layer đích Artwork 2.0 action Show, 1 điều kiện ('<nguồn> is any of: <giá trị>'), match AND",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor 2.0, accordion CONDITIONAL SETTING"
+      },
+      "precondition": "Fixture throwaway như applicability, đã Save.",
+      "steps": [
+        "Mở Conditional Setting của layer đích; chọn Hide ở dropdown action.",
+        "Đếm số dropdown action trong panel; ghi có xuất hiện khối điều kiện thứ hai (mang action Show) không.",
+        "Liệt kê mọi nút/control khả dụng trong panel; ghi có control nào cho phép thêm một action khác song song không."
+      ],
+      "observation_point": "Số dropdown action, số khối điều kiện và các control trong panel sau khi chọn Hide.",
+      "expected_result": "Chỉ còn một dropdown action (giá trị Hide); không xuất hiện khối điều kiện Show thứ hai; không có control nào để thêm action Show song song.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-222"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/conditional-setting-config#KB-221"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lượt PASS 2026-10-28 chạy trước khi các PR của TIB-5558 merge; build ship chưa xác nhận",
+        "Oracle chỉ phủ phần editor của KB-222; body PUT xem CHK-015 (conflict CONF-artwork-dependency-action-01)"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Đổi Show ↔ Hide giữ nguyên điều kiện, match type và toggle first load; chỉ heading và nhãn toggle đổi; Save + reload giữ đúng (quan sát trên editor)",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "layer đích Artwork 2.0 action Show, 2 điều kiện từ 2 nguồn khác nhau, match 'Any conditions match (OR)', toggle 'Show this layer on first load' BẬT",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor 2.0, accordion CONDITIONAL SETTING"
+      },
+      "precondition": "Fixture throwaway như applicability, đã Save.",
+      "steps": [
+        "Ghi trạng thái trước khi đổi: action, heading, các điều kiện, radio match type đang chọn, trạng thái và nhãn toggle.",
+        "Chọn Hide; ghi lại đủ các mục ở bước 1.",
+        "Chọn lại Show; ghi lại đủ các mục ở bước 1.",
+        "Chọn Hide; Save; reload editor; mở lại Conditional Setting của layer đích; ghi lại đủ các mục ở bước 1."
+      ],
+      "observation_point": "Điều kiện, match type, toggle, heading, nhãn toggle sau mỗi lần đổi action và sau reload.",
+      "expected_result": "Bước 2: vẫn đúng 2 điều kiện, OR vẫn được chọn, toggle vẫn BẬT; heading 'Hide this layer and its option when:', nhãn toggle 'Hide this layer on first load'. Bước 3: 2 điều kiện, OR, toggle BẬT giữ nguyên; heading 'Show this layer and its option when:', nhãn toggle 'Show this layer on first load'. Bước 4: sau reload action Hide, 2 điều kiện, OR, toggle BẬT, nhãn toggle 'Hide this layer on first load'.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-222"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/conditional-setting-config#KB-221",
+        "artwork-layer-config/conditional-setting-config#KB-223"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mất điều kiện/match type/toggle khi đổi action làm đảo ẩn/hiện layer trên storefront và đơn hàng",
+        "Lượt PASS 2026-10-28 chạy trước khi các PR của TIB-5558 merge; build ship chưa xác nhận",
+        "Không dùng body PUT làm oracle (CONF-artwork-dependency-action-01) — xem CHK-015"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-015",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Body PUT /api/artworks/{id} khi Save sau khi đổi action: số khối dependency, giá trị action, match_type/show_by_default/dependencies có giữ không",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "layer đích như CHK-014 (2 điều kiện, OR, toggle BẬT)",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor 2.0 + network PUT /api/artworks/{id}"
+      },
+      "precondition": "Fixture như CHK-014; mở network monitor để bắt PUT /api/artworks/{id}.",
+      "steps": [
+        "Đổi action Show → Hide; Save; ghi mã trả về và nguyên văn object dependency của layer đích trong body PUT.",
+        "Đổi action Hide → Show; Save; ghi lại như bước 1.",
+        "So các key và giá trị của dependency giữa 2 lần Save."
+      ],
+      "observation_point": "Tập key và giá trị của layer.dependency trong body PUT; số khối dependency của layer; mã trả về.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Shape dependency của layer có điều kiện sau tính năng Hide là gì: có key action ('hide'/'show') bên cạnh match_type, show_by_default, dependencies (theo test case staging 2026-10-28) hay đúng 3 key như KB-067 mô tả? Cần PO chốt conflict CONF-artwork-dependency-action-01 trước khi dùng body PUT làm oracle.",
+      "related_kb_ids": [
+        "artwork-layer-config/conditional-setting-config#KB-222",
+        "artwork-layer-config/conditional-setting-config#KB-227",
+        "artwork-layer-config/conditional-setting-config#KB-067"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Phần API của KB-222 chạm shape dependency đang tranh chấp (KB-067 vs KB-227, UNRESOLVED)"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [
+        "CONF-artwork-dependency-action-01"
+      ],
+      "oq_id": "OQ-artwork-layer-config-068"
+    },
+    {
+      "check_id": "CHK-016",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Tooltip match type và tooltip toggle first load khi chọn Hide; về Show khôi phục",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "layer đích Artwork 2.0 có ≥1 điều kiện",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor 2.0, accordion CONDITIONAL SETTING, desktop browser (hover)"
+      },
+      "precondition": "Fixture throwaway như applicability.",
+      "steps": [
+        "Ở action Show: hover tooltip của radio 'All conditions match (AND)' và 'Any conditions match (OR)', và tooltip của toggle first load; ghi nguyên văn.",
+        "Chọn Hide; hover lại 3 tooltip đó; ghi nguyên văn.",
+        "Chọn lại Show; hover lại; ghi nguyên văn."
+      ],
+      "observation_point": "Nguyên văn tooltip match type và tooltip toggle ở Show, Hide, rồi Show.",
+      "expected_result": "Baseline (nguồn duy nhất là dev doc 2026-10-13, chưa kiểm trên build cuối — không phải expected): khi Hide, tooltip match type nói 'hide when all / any options are selected' và toggle 'Hide this layer on first load' có tooltip riêng; chuyển lại Show khôi phục nhãn cũ. Lệch là cần điều tra, không tự kết luận bug.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-223"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Trên build đã merge, chọn Hide có đổi tooltip match type thành 'hide when all / any options are selected' và toggle 'Hide this layer on first load' có tooltip riêng không; chuyển lại Show có khôi phục nhãn cũ không?",
+      "related_kb_ids": [
+        "artwork-layer-config/conditional-setting-config#KB-063",
+        "artwork-layer-config/conditional-setting-config#KB-222"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nguồn dev doc viết trước khi code còn đổi tới merge; chưa có test case"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-layer-config-069"
+    },
+    {
+      "check_id": "CHK-017",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Bulk apply Conditional setting: có dropdown Show/Hide và áp action cho mọi layer được chọn",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "artwork Artwork 2.0 có ≥2 layer đích, một layer đang Show và một layer đang Hide, cùng 1 layer nguồn",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor 2.0, layers action bar → Bulk apply Conditional setting"
+      },
+      "precondition": "Fixture throwaway như applicability, đã Save.",
+      "steps": [
+        "Chọn cả 2 layer đích; mở Bulk apply Conditional setting từ layers action bar; ghi có dropdown action không và các giá trị của nó.",
+        "Chọn Hide và một điều kiện; áp dụng.",
+        "Mở Conditional Setting từng layer đích; ghi action, điều kiện, heading.",
+        "Save; reload; ghi lại action và điều kiện từng layer."
+      ],
+      "observation_point": "Dropdown action trong Bulk apply; action và điều kiện của từng layer sau áp dụng và sau reload.",
+      "expected_result": "Baseline (nguồn duy nhất là dev doc 2026-10-13, chưa có test case — không phải expected): Bulk apply có cùng dropdown Show/Hide và áp action đã chọn cho mọi layer được chọn, như cách nó áp điều kiện. Lệch là cần điều tra, không tự kết luận bug.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-225"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Bulk apply Conditional setting trên build đã merge có dropdown Show/Hide và áp đúng action cho mọi layer được chọn (kể cả khi các layer đang mang action khác nhau) không?",
+      "related_kb_ids": [
+        "artwork-layer-config/conditional-setting-config#KB-221"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Bulk apply sai action đảo chiều ẩn/hiện của nhiều layer cùng lúc",
+        "Nguồn dev doc viết trước khi code còn đổi tới merge; chưa có test case"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-layer-config-070"
+    },
+    {
+      "check_id": "CHK-018",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "Artwork 1.0 không có lựa chọn Show/Hide: heading chuỗi liền, không có combobox action, nhãn toggle cố định",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "artwork Artwork 1.0 (schema_version 1) có layer đặt điều kiện",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor 1.0, accordion CONDITIONAL SETTING"
+      },
+      "precondition": "Có artwork Artwork 1.0 throwaway như applicability (không convert).",
+      "steps": [
+        "Mở Conditional Setting của layer có điều kiện; ghi heading.",
+        "Bấm vào chữ 'Show' của heading; ghi có danh sách nào mở ra không.",
+        "Đếm combobox trong panel và ghi mỗi combobox thuộc khối nào.",
+        "Ghi nhãn toggle first load."
+      ],
+      "observation_point": "Heading, combobox trong panel, nhãn toggle trên editor 1.0.",
+      "expected_result": "Heading là một chuỗi liền 'Show this layer and its option when:'; bấm chữ Show không mở danh sách nào; không có combobox action (mọi combobox thuộc khối điều kiện); nhãn toggle cố định 'Show this layer on first load'.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-224"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/conditional-setting-config#KB-221"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lượt PASS 2026-10-28 chạy trước khi các PR của TIB-5558 merge; build ship chưa xác nhận"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-019",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Convert Artwork 1.0 → 2.0: layer có điều kiện ra action Show, giữ điều kiện và match type (portal)",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "artwork Artwork 1.0 có layer đích với điều kiện '<nguồn> is any of: <V1>', match AND",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor (Convert to Artwork 2.0), desktop browser"
+      },
+      "precondition": "Fixture throwaway như applicability; ghi lại điều kiện và match type trước khi convert.",
+      "steps": [
+        "Bấm 'Convert to Artwork 2.0' → xác nhận Convert → Save & Close.",
+        "Đọc schema_version của artwork (GraphQL artworks); ghi giá trị.",
+        "Mở lại editor; mở Conditional Setting của layer đích; ghi dropdown action, heading, điều kiện, match type."
+      ],
+      "observation_point": "schema_version; dropdown action, heading, điều kiện và match type trong Conditional Setting sau convert.",
+      "expected_result": "schema_version đổi 1 → 2. Sau convert dropdown action xuất hiện ở giá trị Show, heading 'Show this layer and its option when:', điều kiện và match type giữ nguyên như trước convert.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-224"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/conditional-setting-config#KB-221"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Convert sai action làm đảo hiển thị của artwork cũ trên storefront",
+        "Hành vi storefront sau convert chưa xác minh trên SDK có code Hide — không thuộc oracle của check này",
+        "Lượt PASS 2026-10-28 chạy trước khi các PR của TIB-5558 merge; build ship chưa xác nhận"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-020",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Paste layer action Hide từ Artwork 2.0 vào Artwork 1.0 bị chặn, danh sách layer của artwork 1.0 không đổi",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "artwork 2.0 có layer action Hide đã có điều kiện; artwork 1.0 riêng",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor (Copy to clipboard, Ctrl+V), desktop browser"
+      },
+      "precondition": "Hai artwork throwaway như applicability; ghi danh sách layer của artwork 1.0 trước khi paste.",
+      "steps": [
+        "Trên artwork 2.0, chọn layer action Hide, bấm 'Copy to clipboard'.",
+        "Mở artwork 1.0, nhấn Ctrl+V; ghi nguyên văn thông báo.",
+        "Ghi danh sách layer của artwork 1.0 sau thao tác."
+      ],
+      "observation_point": "Thông báo khi paste; danh sách layer của artwork 1.0.",
+      "expected_result": "Hiện thông báo 'Cannot import layers from different artwork versions.'; danh sách layer của artwork 1.0 giữ nguyên như trước, không có layer Hide nào được thêm.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-224"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-editor/layer-duplicate-link-copy#KB-230"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lượt PASS 2026-10-28 chạy trước khi các PR của TIB-5558 merge; build ship chưa xác nhận"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-021",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Group layer: có đặt được Conditional Setting (Show/Hide) ở cấp Group trên UI không",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL)",
+        "state": "artwork Artwork 2.0 có Group chứa ≥2 layer con và ≥1 layer nguồn ngoài Group",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "portal Artwork Editor 2.0, panel layer settings của Group"
+      },
+      "precondition": "Fixture throwaway như applicability.",
+      "steps": [
+        "Chọn Group trên layer panel; mở panel settings; ghi danh sách accordion và có accordion CONDITIONAL SETTING không.",
+        "Nếu có: chọn Hide, thêm điều kiện, Save; ghi điều kiện có lưu ở Group không.",
+        "Chọn một layer con; ghi Conditional Setting của con có thể đặt riêng không."
+      ],
+      "observation_point": "Accordion của Group; khả năng đặt điều kiện ở Group và ở layer con.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Conditional Setting (Show/Hide) có được hỗ trợ ở cấp Group không? Nếu có, UI đặt ở đâu và BUG-436 (Group mang dependency dựng bằng data luôn hiện) là lỗi cần sửa; nếu không, xác nhận điều kiện chỉ đặt cho từng layer con.",
+      "related_kb_ids": [
+        "artwork-layer-config/conditional-setting-config#KB-226",
+        "artwork-editor/_object-level#KB-005"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "BUG-436 còn gắn trên TC-TIB-7334",
+        "Hiệu lực runtime của dependency trên Group thuộc group-layer-effective-visibility (CHK-015 của feature đó); check này chỉ kiểm điểm vào trên UI",
+        "KB-226 là claim S1 (QA ghi tay, trái expectedResult của case) — không làm oracle"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-layer-config-071"
+    },
+    {
+      "check_id": "CHK-022",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Key 'dependency' presence-based và tập key bên trong dependency (shape đang tranh chấp: có/không key action)",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "artwork có cả layer có condition và layer không có condition, đã save",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có ≥1 layer có condition và ≥1 layer không có condition.",
+      "steps": [
+        "Save artwork.",
+        "Kiểm tra key 'dependency' trong từng layer object của response PUT.",
+        "Với mỗi layer có condition, ghi đủ tập key bên trong dependency và giá trị của chúng."
+      ],
+      "observation_point": "Key 'dependency' có mặt hay hoàn toàn vắng mặt (không phải null) theo từng layer; tập key bên trong dependency của layer có condition. Ghi lại nguyên trạng để đối chiếu hai phía của CONF-artwork-dependency-action-01: KB-067 (quan sát 2026-09-10) liệt kê đúng 3 key match_type, show_by_default, dependencies; KB-227 (test case staging 2026-10-28) ghi thêm key action 'hide'/'show'. Không kết luận đúng/sai tới khi PO chốt.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Shape dependency của layer có điều kiện là gì sau tính năng Hide: thay KB-067 bằng KB-227 (có key action 'hide'/'show', bản ghi cũ không có action = Show), giữ cả hai như hai thời điểm dữ liệu (KB-067 thu phạm vi thành 'bản ghi trước tính năng Hide'), hay giữ base?",
+      "related_kb_ids": [
+        "artwork-layer-config/conditional-setting-config#KB-067",
+        "artwork-layer-config/conditional-setting-config#KB-227"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle base (KB-067) bị tranh chấp bởi KB-227 — trước đây check này READY/BASELINE với expected không có key action; nay không có oracle tới khi PO chốt"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [
+        "CONF-artwork-dependency-action-01"
+      ],
+      "oq_id": "OQ-artwork-layer-config-068",
+      "previous_check_id": {
+        "feature_key": "layer-condition-value-binding",
+        "check_id": "CHK-001"
+      }
+    },
+    {
+      "check_id": "CHK-023",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "dependencies[].value serialize dạng boolean scalar cho nguồn toggle",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "condition dùng nguồn toggle, giá trị On (true)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã cấu hình condition với nguồn toggle = On, đã save.",
+      "steps": [
+        "Kiểm tra dependencies[].value tương ứng trong response PUT."
+      ],
+      "observation_point": "Kiểu dữ liệu của value (scalar vs array).",
+      "expected_result": "value = boolean scalar true (KHÔNG bọc trong mảng) — khác hẳn shape array của 7 nguồn còn lại. LƯU Ý: observed_count=1 (đúng 1 lần save 8-condition), KHÔNG coi là enum/required chính thức.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-068"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "previous_check_id": {
+        "feature_key": "layer-condition-value-binding",
+        "check_id": "CHK-002"
+      }
+    },
+    {
+      "check_id": "CHK-024",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "dependencies[].value serialize dạng array<DB id number> cho additional-option/group-clipart-categories",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "condition dùng nguồn additional-option hoặc group-clipart-categories",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã cấu hình condition với 1 trong 2 nguồn này, đã save.",
+      "steps": [
+        "Kiểm tra dependencies[].value tương ứng trong response PUT."
+      ],
+      "observation_point": "Kiểu phần tử trong mảng value.",
+      "expected_result": "value = array chứa DB id dạng số (vd cliparts.id [41709] hoặc clipart_categories.id [5993]). observed_count=1, KHÔNG coi là chính thức.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-068"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "previous_check_id": {
+        "feature_key": "layer-condition-value-binding",
+        "check_id": "CHK-003"
+      }
+    },
+    {
+      "check_id": "CHK-025",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "dependencies[].value serialize dạng array<internal layer-scoped id string> cho addon-charge",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "condition dùng nguồn addon-charge",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã cấu hình condition với nguồn addon-charge, đã save.",
+      "steps": [
+        "Kiểm tra dependencies[].value tương ứng trong response PUT."
+      ],
+      "observation_point": "Kiểu phần tử trong mảng value.",
+      "expected_result": "value = array chứa id nội bộ layer dạng string (vd ['id-957711'], id nằm trong layer.options[].id) — KHÔNG phải DB id. observed_count=1, KHÔNG coi là chính thức.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-068"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "previous_check_id": {
+        "feature_key": "layer-condition-value-binding",
+        "check_id": "CHK-004"
+      }
+    },
+    {
+      "check_id": "CHK-026",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "dependencies[].value serialize dạng array<display name string> cho json-list",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "condition dùng nguồn json-list",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã cấu hình condition với nguồn json-list, đã save.",
+      "steps": [
+        "Kiểm tra dependencies[].value tương ứng trong response PUT."
+      ],
+      "observation_point": "Kiểu phần tử trong mảng value.",
+      "expected_result": "value = array chứa tên hiển thị dạng string (vd ['New York City'], khớp option_template='{{name}}'). observed_count=1, KHÔNG coi là chính thức.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-068"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "previous_check_id": {
+        "feature_key": "layer-condition-value-binding",
+        "check_id": "CHK-005"
+      }
+    },
+    {
+      "check_id": "CHK-027",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "dependencies[].value serialize dạng array<file path string> cho font/vector-category/clipart-category",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "condition dùng 1 trong 3 nguồn font/vector-category/clipart-category",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã cấu hình condition với 1 trong 3 nguồn này, đã save.",
+      "steps": [
+        "Kiểm tra dependencies[].value tương ứng trong response PUT."
+      ],
+      "observation_point": "Kiểu phần tử trong mảng value + đuôi file.",
+      "expected_result": "value = array chứa đường dẫn file (font:.woff2, vector-category:.svg, clipart-category:.webp bản _large) — 3 type dùng chung dạng path nhưng khác đuôi. observed_count=1, KHÔNG coi là chính thức.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/conditional-setting-config#KB-068"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "previous_check_id": {
+        "feature_key": "layer-condition-value-binding",
+        "check_id": "CHK-006"
+      }
+    },
+    {
+      "check_id": "CHK-028",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "dependencies[].element luôn có dạng 'layer-<6 chữ số>'",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "bất kỳ condition nào đã save",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Có ≥1 condition đã save.",
+      "steps": [
+        "Kiểm tra field 'element' trong từng dependencies[] entry."
+      ],
+      "observation_point": "Format của giá trị element.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-049",
+      "oq_id": "OQ-artwork-layer-config-148",
+      "previous_check_id": {
+        "feature_key": "layer-condition-value-binding",
+        "check_id": "CHK-007"
+      }
+    },
+    {
+      "check_id": "CHK-029",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "toggle=false (Off) serialize thành gì — chưa từng được lưu qua Save",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "condition dùng nguồn toggle, giá trị Off",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Cấu hình condition với nguồn toggle, chọn Off (chưa từng thử trong 3 run nguồn).",
+      "steps": [
+        "Cấu hình condition nguồn toggle = Off.",
+        "Save & Close.",
+        "Kiểm tra dependencies[].value trong response."
+      ],
+      "observation_point": "value serialize thành boolean false hay string 'false' hay dạng khác.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-050",
+      "oq_id": "OQ-artwork-layer-config-149",
+      "previous_check_id": {
+        "feature_key": "layer-condition-value-binding",
+        "check_id": "CHK-008"
+      }
+    },
+    {
+      "check_id": "CHK-030",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "Multi-value (≥2 phần tử) cho 6/8 type nguồn dạng array còn lại (ngoài clipart-category)",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "condition dùng 1 trong 6 nguồn: additional-option, addon-charge, json-list, font, vector-category, group-clipart-categories",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Cấu hình condition chọn ≥2 giá trị cho 1 trong 6 nguồn này (chưa từng thử trong 3 run nguồn).",
+      "steps": [
+        "Cấu hình condition, tick ≥2 giá trị cho nguồn cần test.",
+        "Save & Close.",
+        "Kiểm tra dependencies[].value."
+      ],
+      "observation_point": "Mảng value có đúng ≥2 phần tử theo cùng shape đã biết (KB-035) không.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-051",
+      "oq_id": "OQ-artwork-layer-config-150",
+      "previous_check_id": {
+        "feature_key": "layer-condition-value-binding",
+        "check_id": "CHK-009"
+      }
+    },
+    {
+      "check_id": "CHK-031",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Trạng thái data addon-charge/json-list trên artwork 4087 khác nhau giữa 2 run (CONF-002)",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "layer addon-charge / json-list trên artwork đã có sẵn dữ liệu từ trước",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Cần xác nhận trạng thái HIỆN TẠI của artwork test (đã có option/URL hay chưa) trước khi dùng làm test data cho case liên quan.",
+      "steps": [
+        "Đọc lại layer addon-charge (options) và json-list (source_url) của artwork test qua GraphQL.",
+        "Đối chiếu với kỳ vọng của test case đang chạy."
+      ],
+      "observation_point": "addon-charge có option values chưa; json-list có source_url chưa.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [
+        "CONF-002"
+      ],
+      "oq_ref": "OQ-artwork-052",
+      "oq_id": "OQ-artwork-layer-config-151",
+      "previous_check_id": {
+        "feature_key": "layer-condition-value-binding",
+        "check_id": "CHK-010"
+      }
+    },
+    {
+      "check_id": "CHK-032",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "Bản ghi dependency tạo trước tính năng Hide (không có key action): không bị migrate, editor hiển thị Show, storefront chạy đúng chiều Show",
+      "applicability": {
+        "role": "merchant owner/staff — account explore (TIB_STAGING_EMAIL); guest buyer cho bước storefront",
+        "state": "artwork Artwork 2.0 có layer điều kiện được lưu trước khi build có TIB-5558 lên staging (dependency đọc qua GraphQL không có key action), gắn campaign đã publish",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN); storefront vượt password-gate bằng TIB_STORE_PASSWORD",
+        "surface_or_device": "GraphQL artworks + portal Artwork Editor 2.0 + storefront form/preview"
+      },
+      "precondition": "Tìm artwork cũ của account explore thoả applicability (không tạo được bằng UI sau khi tính năng lên); ghi điều kiện của layer đích: '<nguồn> is any of: <V1>'.",
+      "steps": [
+        "Đọc dependency của layer đích qua GraphQL artworks; ghi đủ tập key.",
+        "Mở editor (không Save); mở Conditional Setting của layer đích; ghi dropdown action, heading, điều kiện, match type, nhãn toggle.",
+        "Đọc lại dependency qua GraphQL; ghi tập key (kiểm việc mở editor có ghi đè không).",
+        "Trên storefront chọn nguồn = V1; ghi field và layer đích trên form và preview; đổi sang giá trị khác; ghi lại."
+      ],
+      "observation_point": "Tập key dependency trước/sau khi mở editor; Conditional Setting trên editor; form và preview storefront.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Bản ghi dependency cũ không có key action có được giữ nguyên (không migrate) và luôn hiểu là Show ở editor lẫn storefront không? Nguồn duy nhất (KB-227, test case staging 2026-10-28) đang thuộc conflict CONF-artwork-dependency-action-01 — PO chốt conflict này cũng chốt oracle cho check.",
+      "related_kb_ids": [
+        "artwork-layer-config/conditional-setting-config#KB-227",
+        "artwork-layer-config/conditional-setting-config#KB-067",
+        "artwork-layer-config/conditional-setting-config#KB-224"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nếu bản ghi cũ bị hiểu sai thành Hide, toàn bộ artwork điều kiện có sẵn đảo chiều ẩn/hiện trên storefront và đơn in",
+        "Phần editor/storefront không bị tranh chấp nhưng item nguồn duy nhất là KB-227 (UNRESOLVED) nên không dùng làm oracle"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [
+        "CONF-artwork-dependency-action-01"
+      ],
+      "oq_id": "OQ-artwork-layer-config-068",
+      "previous_check_id": {
+        "feature_key": "layer-condition-value-binding",
+        "check_id": "CHK-011"
+      }
+    },
+    {
+      "check_id": "CHK-033",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "Nghĩa của show_by_default khi action = hide, và API có chấp nhận giá trị action ngoài 'hide'/'show' không",
+      "applicability": {
+        "role": "merchant owner/staff (qua direct API)",
+        "state": "layer có điều kiện; gửi PUT trực tiếp với action ngoài 'hide'/'show' hoặc thiếu action",
+        "environment": "staging, build có TIB-5558 (shipped UNKNOWN)",
+        "surface_or_device": "PUT /api/artworks/{id} + portal Artwork Editor 2.0"
+      },
+      "precondition": "CẦN orchestrator/operator duyệt direct-API mutation test trên artwork throwaway.",
+      "steps": [
+        "Trên editor đặt layer đích action Hide, bật 'Hide this layer on first load', Save; ghi giá trị show_by_default trong body PUT.",
+        "Gửi PUT trực tiếp với dependency.action là một giá trị khác 'hide'/'show' (vd chuỗi rỗng hoặc 'toggle'); ghi mã trả về và dữ liệu đọc lại.",
+        "Mở editor; ghi dropdown action hiển thị cho layer đó."
+      ],
+      "observation_point": "show_by_default khi Hide + toggle bật; phản hồi API với action lạ; editor hiển thị gì.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Khi action = 'hide', key show_by_default (giữ nguyên tên) mang nghĩa 'Hide this layer on first load' — đây là thiết kế chủ đích của data model hay chỉ là cách hiển thị của editor/SDK? Có giá trị action nào khác ngoài 'hide'/'show' được API chấp nhận không?",
+      "related_kb_ids": [
+        "artwork-layer-config/conditional-setting-config#KB-227",
+        "artwork-layer-config/conditional-setting-config#KB-222"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Dữ liệu ghi qua API/MCP với action lạ có thể làm editor/SDK hiểu sai chiều ẩn/hiện",
+        "Phụ thuộc shape đang tranh chấp CONF-artwork-dependency-action-01"
+      ],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [
+        "CONF-artwork-dependency-action-01"
+      ],
+      "oq_id": "OQ-artwork-layer-config-072",
+      "previous_check_id": {
+        "feature_key": "layer-condition-value-binding",
+        "check_id": "CHK-012"
+      }
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "item": "Capability: match_type, nguồn, loại trừ nguồn, control giá trị (base)",
+      "check_ids": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-003",
+        "CHK-004",
+        "CHK-005",
+        "CHK-006",
+        "CHK-007"
+      ],
+      "oracle": "BASELINE (KB-063..KB-066, KB-005)"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "item": "Capability: chọn action Show/Hide (Artwork 2.0), mặc định Show",
+      "check_ids": [
+        "CHK-012",
+        "CHK-013"
+      ],
+      "oracle": "STRONG (KB-221, KB-222)"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "item": "Capability: đổi Show ↔ Hide không mất cấu hình, Save + reload",
+      "check_ids": [
+        "CHK-014",
+        "CHK-015"
+      ],
+      "oracle": "STRONG (KB-222, editor); NONE cho body PUT (CONF-artwork-dependency-action-01)"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "item": "Capability: ranh giới Artwork 1.0 / convert / paste khác version (portal)",
+      "check_ids": [
+        "CHK-018",
+        "CHK-019",
+        "CHK-020"
+      ],
+      "oracle": "STRONG (KB-224, chỉ phần portal)"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "item": "Chưa kiểm: tooltip khi Hide, Bulk apply kèm action, Conditional Setting ở cấp Group",
+      "check_ids": [
+        "CHK-016",
+        "CHK-017",
+        "CHK-021"
+      ],
+      "oracle": "BASELINE (KB-223, KB-225); NONE cho CHK-021 (KB-226 là S1, chỉ related); cả 3 NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "item": "Risk P1: mất cấu hình điều kiện khi đổi action",
+      "check_ids": [
+        "CHK-014"
+      ],
+      "oracle": "STRONG"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "item": "Risk: shape dependency đang tranh chấp",
+      "check_ids": [
+        "CHK-015"
+      ],
+      "oracle": "NONE"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "item": "Risk: lượt PASS chạy trước khi PR merge, shipped UNKNOWN",
+      "check_ids": [
+        "CHK-012",
+        "CHK-013",
+        "CHK-014",
+        "CHK-018",
+        "CHK-019",
+        "CHK-020"
+      ],
+      "oracle": "STRONG; cần chạy lại trên build ship"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "item": "Gap base: >8 condition, nested logic, toán tử khác, API bypass",
+      "check_ids": [
+        "CHK-008",
+        "CHK-009",
+        "CHK-010",
+        "CHK-011"
+      ],
+      "oracle": "NONE"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "item": "Capability: key dependency presence + shape",
+      "check_ids": [
+        "CHK-022"
+      ],
+      "oracle": "NONE (CONF-artwork-dependency-action-01)"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "item": "Capability: shape dependencies[].value theo loại nguồn",
+      "check_ids": [
+        "CHK-023",
+        "CHK-024",
+        "CHK-025",
+        "CHK-026",
+        "CHK-027"
+      ],
+      "oracle": "BASELINE (KB-068)"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "item": "Risk P1: bản ghi cũ không có action bị hiểu sai chiều",
+      "check_ids": [
+        "CHK-032"
+      ],
+      "oracle": "NONE (nguồn duy nhất thuộc conflict)"
+    },
+    {
+      "feature_id": "FEAT-08-conditional-setting-config",
+      "item": "Gap: element, toggle Off, multi-value, CONF-002, nghĩa show_by_default khi hide / action lạ",
+      "check_ids": [
+        "CHK-028",
+        "CHK-029",
+        "CHK-030",
+        "CHK-031",
+        "CHK-033"
+      ],
+      "oracle": "NONE"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "PERMISSION",
+      "reason": "Không có KB item nào về role khác owner/staff hay cross-tenant cho Conditional Setting hoặc action Show/Hide (profile unknown_areas[5], coverage_matrix chỉ role owner/merchant-owner); quyền ghi artwork chung thuộc checklist artwork-save-persist."
+    },
+    {
+      "dimension": "CORE",
+      "reason": "Feature mô tả dữ liệu serialize (không có happy path UI riêng); thao tác cấu hình điều kiện thuộc FEAT-08 conditional-setting-config."
+    },
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Không có KB item về payload dependency sai bị từ chối; API mutation với action lạ đã gom vào CHK-012 (BOUNDARY)."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "Không có KB item về role khác owner/staff hay cross-tenant cho dữ liệu dependency."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
+}

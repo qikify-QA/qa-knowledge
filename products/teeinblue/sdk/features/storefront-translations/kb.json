@@ -1,0 +1,231 @@
+[
+  {
+    "kb_id": "KB-053",
+    "topic": "SDK: API translations/<locale>.json không phản hồi trong 5 giây → widget render bằng chữ gốc, trang không crash",
+    "statement": "Theo Testlane TC-TIB-4697 PASS (2026-10-06, chạy lại 2026-10-07 trên staging SDK app-v1.js build TIB-5352, chưa release production), khi buyer GUEST mở trang sản phẩm ở locale vi (≥1000 key, dictionary giao qua API) và response của translations/vi.json bị trễ quá 5 giây, ở mốc 3 giây widget chưa có nhãn, từ mốc 6 giây trở đi widget hiện chữ gốc ('QA5352 Your name', 'QA5352 Enter name', 'QA5352 Your photo'), trang và widget vẫn hoạt động, không crash.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "GUEST buyer",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-11",
+      "ccr_ref": "CBS-001"
+    },
+    "tags": [
+      "storefront",
+      "sdk",
+      "translations-api",
+      "timeout",
+      "fallback-source-text",
+      "not-shipped-production"
+    ],
+    "related_kb_ids": [],
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "Testlane TC-TIB-4697 PASS, staging SDK app-v1.js build 2026-10-07",
+      "authored_on": "2026-10-07",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-054",
+    "topic": "SDK: API translations/<locale>.json trả 500/503 hoặc bị abort → widget render chữ gốc, 1 request mỗi lần load",
+    "statement": "Khi buyer GUEST mở trang sản phẩm locale vi trên staging (build TIB-5352, chưa release production) với response translations/vi.json bị giả lập 500, 503 hoặc network abort, quan sát thấy mỗi lần chỉ có 1 request translations (~0,9 giây sau khi load) và widget render bằng chữ gốc ở cả 3 trường hợp. Quan sát lấy từ một test case có kết quả FAILED (TC-TIB-4696, fail ở kỳ vọng về retry chứ không phải ở fallback), nên chưa đủ làm nguồn xác nhận.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "GUEST buyer",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "storefront",
+      "sdk",
+      "translations-api",
+      "error-fallback",
+      "fallback-source-text",
+      "not-shipped-production"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-translations#KB-053",
+      "sdk/storefront-translations#KB-057"
+    ]
+  },
+  {
+    "kb_id": "KB-055",
+    "topic": "SDK: khi translations API timeout, console phát sinh 1 pageerror 'signal is aborted without reason'",
+    "statement": "Khi response translations/vi.json bị trễ quá 5 giây trên storefront staging (build TIB-5352, chưa release production), quan sát thấy phát sinh 1 pageerror 'signal is aborted without reason' (từ AbortController 5 giây) trong khi trang và widget vẫn hoạt động. Đây chỉ là ghi nhận quan sát; CCR nói rõ KHÔNG được coi pageerror này là hành vi mong muốn.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "GUEST buyer",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "storefront",
+      "sdk",
+      "timeout",
+      "console-error",
+      "not-shipped-production"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-translations#KB-053"
+    ]
+  },
+  {
+    "kb_id": "KB-056",
+    "topic": "SDK bundle: fetch translations dùng headersTimeout 5000 ms và nuốt lỗi về null (đọc từ bundle, chưa xác nhận)",
+    "statement": "Theo đoạn bundle SDK app-v1.js trên staging (build TIB-5352, chưa release production) do người gửi CCR đọc, hàm gọi merchant/translations/<locale>.json?shop=<domain> truyền tuỳ chọn headersTimeout 5000 ms và bắt mọi lỗi thành null; từ đó suy ra mốc 5 giây ở KB-053 là timeout chờ header của response. Đây là suy luận từ mã đã build, chưa có nguồn thẩm quyền xác nhận.",
+    "knowledge_kind": "INFERRED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "GUEST buyer",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "sdk",
+      "bundle",
+      "timeout",
+      "not-shipped-production"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-translations#KB-053"
+    ]
+  },
+  {
+    "kb_id": "KB-057",
+    "topic": "SDK: retry fetch translations là lazy — cache promise theo shop|locale, tối đa 2 lần fetch, không retry trong một lần load trang",
+    "statement": "Khi buyer GUEST dùng storefront staging (build SDK app-v1.js 2026-10-07 của TIB-5352, chưa release production) với response translations/vi.json bị mock 500, quan sát thấy một lần load trang sản phẩm chỉ có 1 request translations (không retry ngay); ở cart, bấm 'Edit design' lần 1 → tổng 1 request, lần 2 → tổng 2, lần 3 → vẫn 2. Đoạn bundle tương ứng cache promise theo khoá 'shop|locale', đếm số lần lỗi và chỉ xoá cache để cho phép gọi lại khi số lần lỗi < 2. Tức là lần fetch thứ hai chỉ xảy ra ở lần gọi kế tiếp trong cùng page session. Dev mô tả 'SDK chỉ thử lại đúng 1 lần' nhưng không nêu điều kiện retry; chưa có xác nhận đây là thiết kế mong muốn.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "GUEST buyer",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "storefront",
+      "sdk",
+      "translations-api",
+      "retry",
+      "cart-edit-design",
+      "not-shipped-production"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-translations#KB-054",
+      "sdk/storefront-translations#KB-053"
+    ]
+  },
+  {
+    "kb_id": "KB-058",
+    "topic": "SDK: nhãn 'Select a color' của color picker trên photo layer không có trong dictionary → hiện chữ gốc, không rỗng",
+    "statement": "Theo Testlane TC-TIB-4710 PASS (2026-10-06, staging SDK app-v1.js build TIB-5352, chưa release production), khi dictionary vi (1249 key), zh-TW (50 key) và en (18 key) đều không chứa chuỗi 'Select a color', nhãn color picker của photo layer trên storefront hiển thị chữ gốc 'Select a color', không rỗng, ở /vi-vn/ (API path), /zh-zh/ (inline path), /en-vn/ và trong modal 'Edit design' ở cart (vi).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "GUEST buyer",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-11",
+      "ccr_ref": "CBS-001"
+    },
+    "tags": [
+      "storefront",
+      "sdk",
+      "photo-layer",
+      "color-picker",
+      "missing-translation-fallback",
+      "not-shipped-production"
+    ],
+    "related_kb_ids": [],
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "Testlane TC-TIB-4710 PASS, staging SDK app-v1.js build 2026-10-06",
+      "authored_on": "2026-10-06",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-059",
+    "topic": "HTML storefront /zh-zh/ (inline path) chỉ in window.teeinblueShopTranslations 1 lần",
+    "statement": "Khi buyer GUEST mở trang sản phẩm /zh-zh/ (zh-TW 50 key, dictionary nhúng inline) trên storefront staging (build TIB-5352, chưa release production), quan sát thấy trong raw HTML 'window.teeinblueShopTranslations =' xuất hiện đúng 1 lần và key 'QA5352 Your name' xuất hiện 1 lần; cùng HTML đó có 2 lần 'window.teeinblueShop =', có khối app embed 'product-personalizer' của theme app extension và 4 cụm comment 'teeinblue scripts'. Một lần quan sát; cấu hình theme chưa được kiểm trong theme editor.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "GUEST buyer",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "storefront",
+      "sdk",
+      "inline-dictionary",
+      "theme-app-extension",
+      "not-shipped-production"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-translations#KB-060"
+    ]
+  },
+  {
+    "kb_id": "KB-060",
+    "topic": "Suy luận: khi trang render cả theme app extension và theme script của teeinblue, dictionary inline không bị in lặp",
+    "statement": "Từ các dấu hiệu HTML ở KB-059 (2 lần 'window.teeinblueShop =', app embed 'product-personalizer', 4 cụm comment 'teeinblue scripts'), người gửi CCR suy ra trang /zh-zh/ trên staging (build TIB-5352, chưa release production) đang render cả hai khối teeinblue (theme app extension + theme script) mà dictionary inline vẫn chỉ in 1 lần. Điều kiện 'có 2 khối teeinblue' chưa được xác nhận bằng theme editor.",
+    "knowledge_kind": "INFERRED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "GUEST buyer",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "storefront",
+      "sdk",
+      "inline-dictionary",
+      "theme-app-extension",
+      "not-shipped-production"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-translations#KB-059"
+    ]
+  }
+]

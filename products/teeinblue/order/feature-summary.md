@@ -1,5 +1,5 @@
 # Object: Order (product: teeinblue) — Feature Profile Summary
-**Published context version:** 14
+**Published context version:** 15
 
 - **Env:** staging. Bootstrap 2026-09-13; cập nhật CBS-006 (TIB-5584) và CBS-011 (TIB-5558, action Hide) 2026-10-30; CBS-074 (Edit Customization sau order, tracking từ provider) 2026-11-06; CBS-096 (import đơn Shopify với customization_id sai định dạng, order design ảnh AI, order design vector) 2026-11-07; CBS-112 (feature mới `fulfillment-provider-request`: request gửi nhà in qua API Myze/PosterFlow) 2026-11-10; CBS-114 (Re-generate design và Edit customization ở portal trên order đã đặt, vào `edit-customization-after-order`) 2026-11-10; CBS-138 (4 rule spec-hub S2: artwork version của order, trạng thái Ready sau khi lưu design, tìm personalization qua cart, gom request theo provider) 2026-11-11; CBS-148 (TIB-5724: preset CustomCat trong payload, CustomCat từ chối preset, vào `fulfillment-provider-request`) 2026-11-12.
 - **Nguồn:** phần lớn knowledge là `OBSERVED_CURRENT` từ bootstrap; item `CONFIRMED_EXPECTED` gồm KB-182, KB-238, KB-239, KB-392 từ test case Testlane PASS; KB-772, KB-774 từ test case ghi trên Jira QA-3348/QA-3365 PASS (kết quả AI); đều trên staging; KB-182 chờ PO xác nhận vì đổi đầu ra fulfillment (OQ-order-020)

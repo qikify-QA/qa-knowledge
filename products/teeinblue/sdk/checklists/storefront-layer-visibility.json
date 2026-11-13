@@ -1,0 +1,324 @@
+{
+  "feature_id": "FEAT-21-storefront-layer-visibility",
+  "feature_key": "storefront-layer-visibility",
+  "object_id": "sdk",
+  "checklist_version": "17",
+  "checks": [
+    {
+      "check_id": "CHK-054",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-006] Buyer preview SDK theo effective visibility: artwork có Group ẩn (con giữ cờ ON) thì preview chỉ hiển thị layer ngoài Group, khớp canvas Artwork Editor",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign đã publish dùng artwork có một Group ẩn, các layer con giữ cờ visible ON, và ít nhất một layer ngoài Group",
+        "environment": "staging, build có TIB-5584 (shipped UNKNOWN; lượt PASS gốc 2026-10-16 trước khi 3 PR cuối merge) — không dùng làm oracle production",
+        "surface_or_device": "storefront product page — buyer preview SDK, desktop browser; ghi script src SDK (bundle của store test gốc không được ghi)"
+      },
+      "precondition": "Dựng artwork fixture tương đương fixture gốc (vd Group 'Name' chứa LINE1/LINE2/ICON ẩn, layer OUTSIDE ngoài Group; qua API — xem Q11); chụp canvas Artwork Editor làm đối chiếu; vượt password-gate bằng TIB_STORE_PASSWORD.",
+      "steps": [
+        "Mở product page; ghi script src SDK.",
+        "Chụp buyer preview (trước khi điền field và sau khi điền các field ngoài Group); liệt kê layer nhìn thấy và vị trí.",
+        "So sánh với canvas Artwork Editor."
+      ],
+      "observation_point": "Layer có mặt trên buyer preview so với canvas Artwork Editor.",
+      "expected_result": "Buyer preview chỉ hiển thị layer ngoài Group (vd OUTSIDE ở cùng vị trí như canvas), không có layer con của Group ẩn (vd không có LINE1/LINE2/ICON); khớp canvas Artwork Editor. Lệch = bug trên staging build có TIB-5584.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-layer-visibility#KB-181"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-buyer-facing#KB-011",
+        "sdk/storefront-campaign-media-api#KB-042"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lượt PASS duy nhất (TC-TIB-6068, 2026-10-16) chạy trước khi 3 PR còn OPEN của TIB-5584 merge; bundle của store test không ghi — xem CHK-056",
+        "Fixture Group ẩn + con giữ cờ ON dựng qua MCP/API, chưa được PO/dev xác nhận hợp lệ (Q11)",
+        "Không ghép nhãn bundle với nhãn 'SDK v1/v2 (store1/2)' của các check base (CFL-004)"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-057",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-011] Layer action Hide với 1 điều kiện: giá trị nguồn khớp thì field và layer trên preview đều ẩn; không khớp thì cả hai hiện và chữ nhập vào hiển thị đúng trên preview",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign đã publish dùng artwork 2.0 có layer text action Hide, 1 điều kiện trên option nguồn (fixture gốc: CP-HIDE-1 #3252 / artwork #5868, layer 'QUOTE DOG', điều kiện 'Pet 1 Type is any of: Cat')",
+        "environment": "staging; SDK app-v2.js bản Last-Modified ≥ 2026-10-28 03:01:11 GMT (lượt PASS gốc 2026-10-28, trước khi 6 PR của TIB-5558 merge 2026-10-29; shipped UNKNOWN) — không dùng làm oracle production / build sau merge / app-v1.js (xem CHK-068)",
+        "surface_or_device": "storefront product page — form cá nhân hoá + live preview SDK app-v2.js, desktop browser"
+      },
+      "precondition": "Dựng artwork/campaign tương đương fixture gốc trên store staging được phép; vượt password-gate bằng TIB_STORE_PASSWORD.",
+      "steps": [
+        "Mở product page; trong network ghi header Last-Modified của staging-sdk.teeinblue.com/shopify/app-v2.js. Nếu Last-Modified cũ hơn 2026-10-28 03:01:11 GMT: tải lại app-v2.js bỏ qua cache (DevTools 'Disable cache' hoặc fetch cache:'reload') rồi reload trang và ghi lại Last-Modified; không đánh giá kết quả trên bản cũ hơn.",
+        "Chọn giá trị nguồn khớp điều kiện (vd Pet 1 Type = Cat); ghi có/không phần tử #tee-field--layer-<id> trên form và node #artwork-layer--layer-<id> trên preview của layer Hide.",
+        "Chọn giá trị nguồn không khớp (vd Dog); ghi lại hai phần tử trên.",
+        "Nhập chữ (vd 'GOOD DOG') vào field của layer Hide; ghi chữ hiển thị trên preview."
+      ],
+      "observation_point": "Có/không field của layer Hide trên form và node layer trên preview theo từng giá trị nguồn; chữ hiển thị trên preview.",
+      "expected_result": "Nguồn khớp điều kiện: field của layer Hide và node layer trên preview đều không còn (form chỉ còn option nguồn). Nguồn không khớp: field và layer đều hiện; chữ nhập vào hiển thị đúng chuỗi đó trên preview. Lệch = bug trên staging SDK app-v2.js ≥ bản 2026-10-28 03:01:11 GMT.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-layer-visibility#KB-231"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-layer-visibility#KB-237",
+        "sdk/storefront-buyer-facing#KB-011"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Layer Hide hiển thị ngược chiều làm buyer nhập/không nhập sai dữ liệu in",
+        "Lượt PASS duy nhất (TC-TIB-7323/7324, 2026-10-28) trước khi 6 PR merge; build hash không rõ — xem CHK-068",
+        "Lần load đầu có thể nhận SDK cũ đã cache (BUG-429 đảo chiều trên bản cũ) — bước 1 bắt buộc; xem CHK-067"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-058",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-011] Layer action Hide với 2 điều kiện: match OR ẩn khi một điều kiện khớp; match AND chỉ ẩn khi mọi điều kiện khớp",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign đã publish dùng artwork 2.0 có layer text action Hide, 2 điều kiện 'Pet 1 Type is any of: Cat' và 'Pet 2 Type is any of: Cat'; một campaign match OR (fixture gốc CP-HIDE-OR) và một campaign match AND (fixture gốc CP-HIDE-AND)",
+        "environment": "staging; SDK app-v2.js bản Last-Modified ≥ 2026-10-28 03:01:11 GMT (lượt PASS gốc 2026-10-28, trước khi 6 PR merge; shipped UNKNOWN)",
+        "surface_or_device": "storefront product page — form cá nhân hoá + live preview SDK app-v2.js, desktop browser"
+      },
+      "precondition": "Như CHK-057 (xác nhận Last-Modified của app-v2.js trước khi đánh giá).",
+      "steps": [
+        "Trên campaign OR: lần lượt chọn tổ hợp (Pet 1, Pet 2) = (Cat, Dog), (Dog, Cat), (Dog, Dog); với mỗi tổ hợp ghi có/không field và node preview của layer Hide.",
+        "Trên campaign AND: lần lượt chọn (Cat, Cat), (Cat, Dog), (Dog, Cat); ghi tương tự.",
+        "Ở tổ hợp layer hiện, nhập chữ vào field và ghi chữ trên preview."
+      ],
+      "observation_point": "Có/không field và layer của layer Hide theo từng tổ hợp nguồn, cho OR và AND.",
+      "expected_result": "OR: (Cat, Dog) và (Dog, Cat) → field và layer ẩn; (Dog, Dog) → hiện và chữ nhập vào hiển thị đúng trên preview. AND: (Cat, Cat) → field và layer ẩn; (Cat, Dog) và (Dog, Cat) → vẫn hiện, nhập được chữ. Lệch = bug trên staging SDK app-v2.js ≥ bản 2026-10-28 03:01:11 GMT.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-layer-visibility#KB-231"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Đảo nghĩa OR/AND làm layer ẩn/hiện sai trên nhiều tổ hợp",
+        "Chỉ kiểm 2 điều kiện cùng loại nguồn (option Pet Type); ≥ 3 điều kiện hoặc trộn loại nguồn chưa kiểm"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-059",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "[CBS-011] Đổi giá trị nguồn qua lại (khớp → không khớp → khớp) cập nhật ẩn/hiện của layer Hide ngay trên cùng trang, không reload",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "fixture như CHK-057 (1 điều kiện)",
+        "environment": "staging; SDK app-v2.js bản Last-Modified ≥ 2026-10-28 03:01:11 GMT (lượt PASS gốc 2026-10-28; shipped UNKNOWN)",
+        "surface_or_device": "storefront product page — form + live preview SDK app-v2.js, desktop browser; DevTools Console"
+      },
+      "precondition": "Như CHK-057; mở Console và ghi các lỗi có sẵn của theme trước khi thao tác để phân biệt lỗi mới.",
+      "steps": [
+        "Chọn nguồn khớp (Cat); ghi trạng thái field/layer và URL.",
+        "Chọn nguồn không khớp (Dog); ghi trạng thái field/layer và URL.",
+        "Chọn lại nguồn khớp (Cat); ghi trạng thái field/layer, URL và lỗi JS mới trong Console (nếu có)."
+      ],
+      "observation_point": "Trạng thái field/layer sau mỗi lần đổi nguồn; URL; có reload trang hay không; lỗi JS mới.",
+      "expected_result": "Cat → field và layer ẩn; Dog → hiện; Cat → ẩn lại; mỗi lần cập nhật ngay trên cùng trang, không reload, URL không đổi. Lệch = bug trên staging SDK app-v2.js ≥ bản 2026-10-28 03:01:11 GMT.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-layer-visibility#KB-231"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-customization-storage#KB-022"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Trạng thái ẩn/hiện bị kẹt sau khi đổi nguồn làm form/preview lệch dữ liệu sẽ gửi"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-060",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-011] Cùng điều kiện, layer action Hide và layer action Show cho kết quả ngược nhau ở cả hai giá trị nguồn",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "hai campaign đã publish dùng artwork giống nhau trừ action: một layer action Hide (fixture gốc CP-HIDE-1) và một layer action Show (fixture gốc CP-SHOW-1), cùng điều kiện 'Pet 1 Type is any of: Cat'",
+        "environment": "staging; SDK app-v2.js bản Last-Modified ≥ 2026-10-28 03:01:11 GMT (lượt PASS gốc 2026-10-28; shipped UNKNOWN)",
+        "surface_or_device": "storefront product page — form + live preview SDK app-v2.js, desktop browser"
+      },
+      "precondition": "Như CHK-057, trên cả hai campaign.",
+      "steps": [
+        "Trên campaign Hide: chọn Cat rồi Dog; ghi field/preview của layer.",
+        "Trên campaign Show: chọn Cat rồi Dog; ghi field/preview của layer.",
+        "Lập bảng so sánh (form/preview) cho 2 campaign × 2 giá trị nguồn."
+      ],
+      "observation_point": "Bảng ẩn/hiện của field và preview cho Hide vs Show theo từng giá trị nguồn.",
+      "expected_result": "Hide: Cat → ẩn/ẩn, Dog → hiện/hiện. Show: Cat → hiện/hiện, Dog → ẩn/ẩn. Hai action luôn cho kết quả ngược nhau ở cùng giá trị nguồn. Lệch = bug trên staging SDK app-v2.js ≥ bản 2026-10-28 03:01:11 GMT.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-layer-visibility#KB-231"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-customization-storage#KB-236"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Thay đổi Hide làm đảo hành vi Show có sẵn của merchant",
+        "Hành vi Show/không điều kiện trên SDK có code Hide chưa có nguồn riêng ngoài lượt so sánh này — xem CHK-066"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-061",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-011] Payload POST /api/merchant/shopify/customization lúc Add to cart chỉ chứa layer đang hiện: layer action Hide đang ẩn không có key; layer đang hiện mang đúng giá trị đã nhập kèm giá trị nguồn (option / Toggle / Additional Option)",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "fixture CHK-057 (nguồn option), CHK-058 OR/AND, và CHK-064 (nguồn Toggle 'Add name', nguồn Additional Option 'Gift wrap'); trạng thái layer Hide đang ẩn và đang hiện",
+        "environment": "staging; SDK app-v2.js bản Last-Modified ≥ 2026-10-28 03:01:11 GMT (lượt PASS gốc 2026-10-28; shipped UNKNOWN)",
+        "surface_or_device": "storefront product page + network (POST /api/merchant/shopify/customization), desktop browser"
+      },
+      "precondition": "Như CHK-057; mở network monitor; xoá cart trước khi chạy.",
+      "steps": [
+        "Layer Hide đang ẩn (nguồn khớp, vd Cat): bấm Add to cart; ghi status và body của POST /api/merchant/shopify/customization.",
+        "Layer Hide đang hiện (nguồn không khớp, vd Dog), nhập chữ (vd 'GOOD DOG'): Add to cart; ghi body.",
+        "Trên fixture OR (Dog, Dog) và AND (1/2 khớp) với chữ nhập: Add to cart; ghi body.",
+        "Trên fixture nguồn Toggle (toggle tắt, nhập chữ) và Additional Option (giá trị không khớp, nhập chữ): Add to cart; ghi body."
+      ],
+      "observation_point": "Danh sách key và giá trị trong body payload customization ở từng trạng thái.",
+      "expected_result": "Layer đang ẩn: payload (201) chỉ có template, artwork và giá trị nguồn, không có key của layer Hide. Layer đang hiện: payload có key của layer với đúng chữ đã nhập, kèm giá trị nguồn (id option; false với Toggle tắt; id option của Additional Option). Lệch = bug trên staging SDK app-v2.js ≥ bản 2026-10-28 03:01:11 GMT.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-layer-visibility#KB-231",
+          "sdk/storefront-layer-visibility#KB-234"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-customization-storage#KB-022",
+        "sdk/storefront-customization-storage#KB-015"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Payload mang dữ liệu của layer đang ẩn hoặc mất dữ liệu layer đang hiện làm in sai sản phẩm (mất tiền)",
+        "Giá trị nhập trước khi layer bị Hide và hệ quả xuống cart/order/print file thuộc checklist place-personalized-order-storefront (CHK-019-ORDER01), không lặp ở đây"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-062",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "[CBS-011] First load, layer action Hide bật 'Hide this layer on first load', buyer chưa trả lời nguồn: layer không vẽ trên preview nhưng field vẫn hiện; OR còn ẩn tới khi mọi nguồn trả lời không khớp, AND hiện ngay khi một nguồn trả lời không khớp",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign đã publish dùng artwork 2.0 có layer text action Hide bật 'Hide this layer on first load': (a) 1 điều kiện (fixture gốc CP-HIDE-FL / artwork #5890), (b) 2 điều kiện match OR (CP-HIDE-FL-OR), (c) 2 điều kiện match AND (CP-HIDE-FL-AND); phiên trình duyệt mới, chưa chọn gì",
+        "environment": "staging; SDK app-v2.js bản Last-Modified ≥ 2026-10-28 03:01:11 GMT (lượt PASS gốc 2026-10-28; shipped UNKNOWN)",
+        "surface_or_device": "storefront product page — form + live preview SDK app-v2.js, desktop browser"
+      },
+      "precondition": "Như CHK-057; dùng phiên trình duyệt mới (không localStorage 'teeinblue-customizations' cũ của product).",
+      "steps": [
+        "Fixture (a): mở product page, chưa chọn gì; ghi node layer trên preview và field của layer trên form.",
+        "Fixture (b) OR: first load ghi như trên; chọn Pet 1 = Dog (Pet 2 chưa chọn), ghi; chọn Pet 2 = Dog, ghi.",
+        "Fixture (c) AND: first load ghi như trên; chọn Pet 1 = Dog (Pet 2 chưa chọn), ghi.",
+        "Ở mọi bước ghi field của layer có trên form không."
+      ],
+      "observation_point": "Node layer trên preview và field của layer trên form ở first load và sau từng lần trả lời nguồn.",
+      "expected_result": "(a) First load: layer không được vẽ trên preview, field của layer vẫn hiện trên form. (b) OR: first load layer ẩn; Pet 1 = Dog, Pet 2 chưa trả lời → vẫn ẩn; Pet 2 = Dog → layer hiện. (c) AND: first load layer ẩn; Pet 1 = Dog, Pet 2 chưa trả lời → layer hiện ngay. Field của layer hiện xuyên suốt trên form ở cả 3 fixture. Lệch = bug trên staging SDK app-v2.js ≥ bản 2026-10-28 03:01:11 GMT.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-layer-visibility#KB-232"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-layer-visibility#KB-233",
+        "sdk/storefront-layer-visibility#KB-231"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chỉ phủ nhánh toggle BẬT; nhánh toggle TẮT chỉ có tài liệu dev — xem CHK-063",
+        "Khác cơ chế với first load dưới Group ẩn (CHK-055); không suy kết quả sang nhau"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-064",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-011] Layer Toggle và Additional Option làm nguồn điều kiện cho layer action Hide, đúng chiều; form và preview khớp nhau",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign đã publish dùng artwork 2.0 có layer text action Hide với điều kiện trên (a) layer Toggle (fixture gốc CP-HIDE-TOGGLE, toggle 'Add name' bật = khớp), (b) Additional Option (fixture gốc CP-HIDE-ADDOPT, 'Gift wrap' = Yes là khớp)",
+        "environment": "staging; SDK app-v2.js bản Last-Modified ≥ 2026-10-28 03:01:11 GMT (lượt PASS gốc 2026-10-28; shipped UNKNOWN)",
+        "surface_or_device": "storefront product page — form + live preview SDK app-v2.js, desktop browser"
+      },
+      "precondition": "Như CHK-057.",
+      "steps": [
+        "Fixture (a): bật toggle; ghi field và node preview của layer Hide. Tắt toggle; ghi lại.",
+        "Fixture (b): chọn Gift wrap = Yes; ghi. Chọn No; ghi.",
+        "Ở trạng thái layer hiện, nhập chữ và ghi chữ trên preview."
+      ],
+      "observation_point": "Có/không field và layer của layer Hide theo giá trị Toggle / Additional Option; sự khớp giữa form và preview.",
+      "expected_result": "Toggle bật → field và layer ẩn; tắt → hiện lại. Gift wrap = Yes → field và layer ẩn; No → hiện. Form và preview luôn khớp nhau. Lệch = bug trên staging SDK app-v2.js ≥ bản 2026-10-28 03:01:11 GMT.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-layer-visibility#KB-234"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-layer-visibility#KB-231"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chỉ kiểm Toggle và Additional Option; các loại nguồn khác (vd clipart, image) thuộc danh sách nguồn ở artwork, chưa kiểm với Hide"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    }
+  ],
+  "coverage_by_feature_and_risk": [],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  }
+}

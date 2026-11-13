@@ -1,0 +1,797 @@
+[
+  {
+    "kb_id": "KB-045",
+    "topic": "Duplicate & Link options tạo bản LINKED cho 20/35 type, PLAIN_COPY cho 15/35 type",
+    "statement": "Nút 'Duplicate & Link options' trên layer action bar luôn hiện diện và tên giống nhau cho mọi layer type, nhưng kết quả khác nhau theo type: 20/35 type tạo ra bản sao LINKED (config panel rút gọn còn đúng 2 accordion LINKED LAYER + EXTRA, nội dung 'This layer is linked to another layer. Design and personalization are synced from it. Source layer: <name>'); 15/35 type chỉ tạo bản PLAIN_COPY độc lập (giữ nguyên bộ accordion đầy đủ). Không có icon chain trên layer row để phân biệt — dấu hiệu duy nhất là accordion LINKED LAYER. Nhóm PLAIN_COPY: Paragraph›Custom Shape, Other›Spiral Text, Photo Upload›Multiple Uploads, Text to Image (AI), Dynamic Clipart by Text›Manual Placement, Dynamic Clipart by Text›Auto Placement, Star Maps, Song Search, QR Code, Toggle Switch, Additional Option, Addon Charge, JSON List, Font, Color. Mỗi type được đo 2 lần liên tiếp, chỉ nhận kết quả khi khớp cả 2 lần.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com)",
+      "role": "store owner / staff account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, staff sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-10",
+      "ccr_ref": "bootstrap"
+    },
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-003"
+  },
+  {
+    "kb_id": "KB-230",
+    "topic": "Import artwork, copy/paste layer, global template replica giữ lựa chọn Hide (theo dev doc, chưa kiểm)",
+    "statement": "Theo dev doc Jira TIB-5558 comment #54404 (2026-10-13), \"Change & test cases — Add Hide layer option in Conditional Setting\" mục \"Copying artworks keeps Show / Hide\" (v1, tự sinh từ branch diff sdk/api/portal), lựa chọn Hide được giữ qua mọi cách copy artwork hoặc layer: tài liệu liệt kê Duplicate artwork, import artwork, copy/paste layer và global template replica. Riêng Duplicate artwork đã có test case PASS (xem KB-229); import artwork, copy/paste layer giữa các artwork 2.0 và global template replica chưa được chạy, và việc import từ file export định dạng v1 có nằm trong phạm vi này hay không chưa được trả lời — không suy rộng. Đây là mô tả của tài liệu dev viết ngày 2026-10-13, trước khi code còn thay đổi tới lúc 6 PR merge ngày 2026-10-29; chưa có test case nào kiểm hành vi này trên build cuối; production chưa xác nhận.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner/staff, instance 520 store không thuộc explorer)",
+      "surface": "portal (import artwork, copy/paste layer, global template replica)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5558",
+      "conditional-setting",
+      "hide-action",
+      "import-artwork",
+      "copy-paste",
+      "global-template",
+      "dev-doc-unverified"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-045"
+    ],
+    "cross_object_refs": [
+      {
+        "object_id": "artwork",
+        "relation": "related_feature",
+        "note": "Duplicate artwork giữ action Hide đã có test case PASS ở feature artwork-list-management (KB-229)."
+      }
+    ]
+  },
+  {
+    "kb_id": "KB-935",
+    "topic": "Linked copy của photo layer No personalization: box/flip/rotate riêng, ảnh/retrieval/border/shadow từ layer gốc, không mask/color/cropper",
+    "statement": "Theo Jira TIB-5521 comment 55637 (Dev, Q6, 2026-10-26), linked copy (\"Duplicate & Link\") của photo layer \"No personalization\" dùng box, flip, rotate của chính nó; ảnh, retrieval value, photo border và shadow lấy từ layer gốc; mask, color và cropper không áp dụng (API luôn để mask_enable = false; SDK xoá photo_editor, enable_cropper, masked_*, effects). Chỉ áp cho linked copy của photo layer No personalization; kết luận LINKED/PLAIN_COPY theo type ở KB-045 giữ nguyên.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (cấu hình) + buyer (preview, order design)",
+      "surface": "api · storefront · portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5521",
+      "QA-3402",
+      "no-personalization",
+      "duplicate-link"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-045",
+      "artwork-editor/editor-layer-workspace#KB-429"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5521 comment 55637 (Dev), 2026-10-26",
+      "authored_on": "2026-10-26",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-1032",
+    "topic": "Rule QA FACT-013/FACT-037: Duplicate & Link trên layer đã linked tạo bản trỏ về origin gốc, không tạo chain",
+    "statement": "Theo rule QA FACT-013 và FACT-037 (QA ghi nhận 2026-08-26; Word Cloud TIB-5242, Warp Text TIB-5265): bấm Duplicate & Link trên một layer đã là linked copy thì bản mới link về layer origin gốc (ví dụ 'warp text' → 'warp text copy' → 'warp text copy copy' đều link về 'warp text'), không tạo chain và thao tác không bị chặn; QA coi đây là rule chung của cơ chế link. Kết quả chạy AI trên Testlane không ghi build, kiểm trước lần dev sửa TIB-5265 ngày 2026-09-08. Chưa được Dev/PO xác nhận.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-113"
+    },
+    "tags": [
+      "duplicate-link",
+      "linked-chain",
+      "FACT-013",
+      "FACT-037",
+      "TIB-5242",
+      "TIB-5265"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-045"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-013, FACT-037",
+      "owner_role": "QA",
+      "recorded_on": "2026-08-26",
+      "locator": "Proposal CBS-113 CLAIM-01"
+    }
+  },
+  {
+    "kb_id": "KB-1033",
+    "topic": "Rule QA FACT-015: Duplicate & Link trên multi-select lẫn type không support link thì type đó được duplicate thường",
+    "statement": "Theo rule QA FACT-015 (QA ghi nhận 2026-08-26, TIB-5242): Duplicate & Link trên multi-select có lẫn layer type không support link thì layer type đó vẫn được nhân bản thành bản copy độc lập (không link), không bị bỏ qua; các type support link thành linked copy. Chưa được Dev/PO xác nhận; kiểm trước lần dev sửa TIB-5265 ngày 2026-09-08.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-113"
+    },
+    "tags": [
+      "duplicate-link",
+      "multi-select",
+      "FACT-015",
+      "TIB-5242"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-045"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-015",
+      "owner_role": "QA",
+      "recorded_on": "2026-08-26",
+      "locator": "Proposal CBS-113 CLAIM-02"
+    }
+  },
+  {
+    "kb_id": "KB-1034",
+    "topic": "Rule QA FACT-036: Duplicate & Link áp dụng ngay, không có bước confirm",
+    "statement": "Theo rule QA FACT-036 (QA ghi nhận 2026-08-26, TIB-5265): Duplicate & Link áp dụng ngay khi bấm, không có hộp thoại hay bước xác nhận, cho Warp Text và các layer type khác. Chưa được Dev/PO xác nhận; kiểm trước lần dev sửa TIB-5265 ngày 2026-09-08.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-113"
+    },
+    "tags": [
+      "duplicate-link",
+      "no-confirm",
+      "FACT-036",
+      "TIB-5265"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-045"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-036",
+      "owner_role": "QA",
+      "recorded_on": "2026-08-26",
+      "locator": "Proposal CBS-113 CLAIM-03"
+    }
+  },
+  {
+    "kb_id": "KB-1035",
+    "topic": "Warp Text layer ở Artwork 2.0 hỗ trợ Duplicate & Link, cùng hành vi các layer type đã hỗ trợ",
+    "statement": "Theo Jira TIB-5265 (Improvement, mô tả do Dev viết 2026-07-31, Done): ở Artwork 2.0, Warp Text layer hỗ trợ Duplicate & Link với cùng hành vi như các layer type đã hỗ trợ (trước TIB-5265 thì Warp Text không hỗ trợ). Ticket chỉ áp cho Artwork 2.0. Khớp KB-045 (Warp Text không thuộc nhóm PLAIN_COPY). Production chưa xác nhận.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-113"
+    },
+    "tags": [
+      "duplicate-link",
+      "warp-text",
+      "artwork-2.0",
+      "TIB-5265"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-045",
+      "artwork-editor/layer-duplicate-link-copy#KB-1036"
+    ],
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "Jira TIB-5265 description (Improvement \"Duplicate & Link for Warp text layers\", Dev), mục Expectation và Scope, 2026-07-31",
+      "authored_on": "2026-07-31",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-1036",
+    "topic": "Warp Text layer legacy (Artwork 1.0) không có Duplicate & Link (theo checklist dev từ branch diff)",
+    "statement": "Theo comment Dev trên Jira TIB-5265 (#48238, 2026-08-18, checklist sinh từ branch diff): Duplicate & Link vẫn không được cung cấp trên Warp Text layer legacy (Artwork 1.0), hành vi không đổi. Đây là tài liệu dev mô tả code, chưa phải expected; Testlane TC-TIB-1212 (Artwork 1.0) bị skip nên chưa có test.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 1.0)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-113"
+    },
+    "tags": [
+      "duplicate-link",
+      "warp-text",
+      "artwork-1.0",
+      "TIB-5265",
+      "dev-doc"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-1035"
+    ]
+  },
+  {
+    "kb_id": "KB-1037",
+    "topic": "Layer toolbar có menu '...' More actions chứa 'Convert to another layer' (theo TIB-5211) — mâu thuẫn KB-043",
+    "statement": "Theo Jira TIB-5211 (Story, mô tả 2026-07-20, Done 2026-08-13), mục Solution: action 'Convert to another layer' nằm trong menu '...' More actions của layer toolbar và được mở rộng để chuyển đổi giữa mọi text layer type (Single-line, Curve, Paragraph, Warp, Spiral Text). Mâu thuẫn chưa giải quyết với KB-043 (layer action bar không có menu overflow '...', quan sát 2026-09-10); cùng chiều KB-908. Không làm oracle cho tới khi resolve (CONF-CBS-092-01).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-113"
+    },
+    "tags": [
+      "more-actions-menu",
+      "convert-layer",
+      "TIB-5211"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/editor-layer-workspace#KB-043",
+      "artwork-editor/editor-layer-workspace#KB-908",
+      "artwork-layer-config/clipart-layer-config#KB-085",
+      "artwork-editor/layer-duplicate-link-copy#KB-1038"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-CBS-092-01",
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "Jira TIB-5211 description (Story \"Convert layer types between all text types\"), mục Solution, 2026-07-20",
+      "authored_on": "2026-07-20",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-1038",
+    "topic": "Rule QA FACT-038: link một layer sẵn có vào origin ở Artwork 2.0 qua menu '...' → 'Link with another layer'",
+    "statement": "Theo rule QA FACT-038 (QA ghi nhận 2026-09-04, QA-3345): ở Artwork 2.0, entry point để link một layer sẵn có vào layer origin là menu '...' rồi 'Link with another layer'; menu '...' ghi nhận trên Warp Text layer có Bulk edit, Replace image layer, Link with another layer, Convert to another layer. Chưa được Dev/PO xác nhận. Phụ thuộc mâu thuẫn CONF-CBS-092-01 về việc layer action bar có menu '...' hay không (KB-043), nên không làm oracle cho tới khi resolve.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-113"
+    },
+    "tags": [
+      "link-with-another-layer",
+      "more-actions-menu",
+      "FACT-038",
+      "QA-3345"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/editor-layer-workspace#KB-043",
+      "artwork-editor/editor-layer-workspace#KB-908",
+      "artwork-editor/layer-duplicate-link-copy#KB-1037"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-CBS-092-01",
+    "qa_rule_ref": {
+      "code": "FACT-038",
+      "owner_role": "QA",
+      "recorded_on": "2026-09-04",
+      "locator": "Proposal CBS-113 CLAIM-05"
+    }
+  },
+  {
+    "kb_id": "KB-1039",
+    "topic": "Rule QA FACT-038: radio 'Share with another layer' trong Personalization Options đã bỏ ở Artwork 2.0 — mâu thuẫn rule spec-hub bulk edit (yellow)",
+    "statement": "Theo rule QA FACT-038 (QA ghi nhận 2026-09-04, QA-3345): ở Artwork 2.0 radio 'Share with another layer' trong Personalization Options đã bị bỏ (disabled và display:none ở mọi layer type, kể cả Single-line Text); thấy nó ẩn không phải regression. Mâu thuẫn chưa giải quyết với rule spec-hub artwork-editor-bulk-edit (sure yellow, suy ra), vẫn liệt kê option 'Share with another layer' trong bulk edit khi chọn nhiều layer. Chưa được Dev/PO xác nhận, không làm oracle (CONF-CBS-113-01).",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-113"
+    },
+    "tags": [
+      "share-with-another-layer",
+      "personalization-options",
+      "artwork-2.0",
+      "FACT-038",
+      "QA-3345"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-1038"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-CBS-113-01",
+    "qa_rule_ref": {
+      "code": "FACT-038",
+      "owner_role": "QA",
+      "recorded_on": "2026-09-04",
+      "locator": "Proposal CBS-113 CLAIM-05"
+    }
+  },
+  {
+    "kb_id": "KB-1040",
+    "topic": "Convert text layer có link: convert source giữ link và convert cả nhóm; convert linked layer thì gỡ link, thành layer độc lập (No personalization)",
+    "statement": "Theo Jira TIB-5211 (Story, mô tả 2026-07-20, Done 2026-08-13), mục Portal › Conversion behavior › Duplicate and Linked layers: khi convert một text layer sang text layer type khác (Single-line, Curve, Paragraph, Warp, Spiral Text), nếu layer đó là source của nhóm link thì giữ quan hệ link và mọi linked layer được convert sang cùng type đích; nếu layer đó là một linked layer thì nó được gỡ link và convert thành layer độc lập (No personalization). Ticket không nói origin và linked copy còn lại thay đổi gì khi một linked layer bị convert. Production chưa xác nhận; nghĩa chính xác của 'No personalization' sau convert chưa rõ.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-113"
+    },
+    "tags": [
+      "convert-layer",
+      "linked-layer",
+      "text-layer",
+      "TIB-5211"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-045",
+      "artwork-editor/layer-duplicate-link-copy#KB-1041"
+    ],
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "Jira TIB-5211 description (Story \"Convert layer types between all text types\"), mục Portal › Conversion behavior › Duplicate and Linked layers, 2026-07-20",
+      "authored_on": "2026-07-20",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-1041",
+    "topic": "Rule QA FACT-031: convert Single-line Text origin sang Warp Text giữ link (lỗi gỡ link đã sửa) — mâu thuẫn record Testlane TC-TIB-1580",
+    "statement": "Theo rule QA FACT-031 (QA ghi nhận recheck 2026-09-08, QA-3345 TC-44): convert Single-line Text origin có linked copy sang Warp Text thì cả nhóm link convert cùng, linked copy giữ link và đổi sang Warp Text; lỗi gỡ link ghi nhận 2026-09-04 được ghi là đã sửa. Mâu thuẫn chưa giải quyết với record Testlane TC-TIB-1580 (TC-44): status passed nhưng actualResult ghi 'source conversion drops the link', không ngày chạy, không build. Expected theo TIB-5211 ở KB-1040; item này chỉ nói trạng thái build hiện tại, không làm oracle (CONF-CBS-113-02).",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0) · api (linked, type sau Save & Close)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-113"
+    },
+    "tags": [
+      "convert-layer",
+      "warp-text",
+      "single-line-text",
+      "linked-layer",
+      "FACT-031",
+      "QA-3345"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-1040"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-CBS-113-02",
+    "qa_rule_ref": {
+      "code": "FACT-031",
+      "owner_role": "QA",
+      "recorded_on": "2026-09-08",
+      "locator": "Proposal CBS-113 CLAIM-07"
+    }
+  },
+  {
+    "kb_id": "KB-1042",
+    "topic": "Rule QA FACT-045: Duplicate & Link trên Color layer chạy như Duplicate thường, không có link sống",
+    "statement": "Theo rule QA FACT-045 (QA ghi nhận 2026-09-06, QA-3350/TIB-5241): Duplicate & Link trên Color layer chạy y hệt Duplicate thường: copy default_value một lần lúc bấm, bản copy không có field linked và customization_type vẫn 'normal'; sửa default trên origin sau đó không lan sang bản copy, QA coi đây là đúng hành vi. Chỉ cho Color layer, không suy cho type khác. Khớp KB-045 (Color thuộc nhóm PLAIN_COPY). Chưa được Dev/PO xác nhận; production chưa kiểm.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0) · api (field linked, customization_type)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-113"
+    },
+    "tags": [
+      "duplicate-link",
+      "color-layer",
+      "plain-copy",
+      "FACT-045",
+      "TIB-5241"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-045"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-045",
+      "owner_role": "QA",
+      "recorded_on": "2026-09-06",
+      "locator": "Proposal CBS-113 CLAIM-08"
+    }
+  },
+  {
+    "kb_id": "KB-1043",
+    "topic": "Rule QA FACT-014/FACT-043: ẩn origin thì linked copy vẫn hiện ở editor preview nhưng bị loại khỏi final render",
+    "statement": "Theo rule QA FACT-014 và FACT-043 (QA ghi nhận 2026-08-26 cho Word Cloud TIB-5242, xác nhận lại 2026-09-04 cho Warp Text TIB-5265): khi ẩn layer origin (biểu tượng con mắt), linked copy vẫn hiện trong editor preview nhưng bị loại khỏi final render (storefront và bản in), giống các layer khác; QA coi đây là rule chung của cơ chế link, không riêng theo layer type. Mọi test ẩn origin phải kiểm cả preview lẫn final render. Record Testlane TC-TIB-1242 chỉ là tick AI không build; TC-TIB-1112 (QA-3343 TC-56) còn nợ phần generated design, record đang passed với kết quả trống. Chưa được Dev/PO xác nhận.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0, preview) · storefront (SDK preview) · api (final render / bản in)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-116"
+    },
+    "tags": [
+      "duplicate-link",
+      "hide-origin",
+      "final-render",
+      "FACT-014",
+      "FACT-043",
+      "TIB-5242",
+      "TIB-5265"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-045"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-014, FACT-043",
+      "owner_role": "QA",
+      "recorded_on": "2026-09-04",
+      "locator": "Proposal CBS-116 CLAIM-01"
+    }
+  },
+  {
+    "kb_id": "KB-1044",
+    "topic": "Rule QA FACT-035: background của linked layer hành xử y hệt origin",
+    "statement": "Theo rule QA FACT-035 (QA ghi nhận 2026-08-26, TIB-5265): background của linked layer hành xử y hệt layer origin; nếu thấy background của linked và non-linked lệch nhau thì đó là sai lệch cần báo, không dựng expected kiểu 'linked dùng cover còn non-linked dùng contain'. Checklist Dev sinh từ branch diff trên TIB-5265 (2026-08-18, chưa kiểm) ghi cover crop canh theo box của linked layer và fallback contain khi không tải hoặc đo được ảnh; đó là mô tả code, không làm expected. Record Testlane TC-TIB-1259, TC-TIB-1262 chỉ là tick AI không build, kiểm trước lần dev sửa TIB-5265 ngày 2026-09-08. Chưa được Dev/PO xác nhận.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal · storefront (SDK preview) · api (final render)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-116"
+    },
+    "tags": [
+      "duplicate-link",
+      "background",
+      "FACT-035",
+      "TIB-5265"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-045"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-035",
+      "owner_role": "QA",
+      "recorded_on": "2026-08-26",
+      "locator": "Proposal CBS-116 CLAIM-02"
+    }
+  },
+  {
+    "kb_id": "KB-1045",
+    "topic": "Rule QA FACT-030: Warp Text linked copy kế thừa background image của origin — mâu thuẫn record Testlane TC-TIB-1229",
+    "statement": "Theo rule QA FACT-030 (QA ghi nhận 2026-09-08, QA-3345 TC-25, staging): linked copy của Warp Text không lưu background_image riêng mà kế thừa theo tham chiếu từ origin, và canvas của copy đổi màu/hình theo origin ngay khi origin đổi background rồi Save. Mâu thuẫn chưa giải quyết với record Testlane TC-TIB-1229 (TC-25): status passed nhưng kết quả ghi 'replacing the saved background does not refresh the rendered image', không ngày chạy, không build. Item không làm oracle (CONF-CBS-116-01).",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0 canvas) · api (field background_image của linked copy)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-116"
+    },
+    "tags": [
+      "duplicate-link",
+      "warp-text",
+      "background",
+      "sync",
+      "FACT-030",
+      "QA-3345"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-1046",
+      "artwork-editor/layer-duplicate-link-copy#KB-1035"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-CBS-116-01",
+    "qa_rule_ref": {
+      "code": "FACT-030",
+      "owner_role": "QA",
+      "recorded_on": "2026-09-08",
+      "locator": "Proposal CBS-116 CLAIM-03"
+    }
+  },
+  {
+    "kb_id": "KB-1046",
+    "topic": "Checklist dev TIB-5265: đặt/đổi/xoá background image trên origin phản ánh sang linked copy",
+    "statement": "Theo comment Dev trên Jira TIB-5265 (#48238, 2026-08-18, checklist sinh từ branch diff, chưa kiểm): đặt, đổi hoặc xoá background image trên Warp Text origin thì linked copy phản ánh theo. Đây là tài liệu dev mô tả code, chưa phải expected. Record Testlane TC-TIB-1229 ghi kết quả ngược lại (CONF-CBS-116-01).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0 canvas)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-116"
+    },
+    "tags": [
+      "duplicate-link",
+      "warp-text",
+      "background",
+      "sync",
+      "TIB-5265",
+      "dev-doc"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-1045",
+      "artwork-editor/layer-duplicate-link-copy#KB-1035"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-CBS-116-01"
+  },
+  {
+    "kb_id": "KB-1047",
+    "topic": "Rule QA FACT-040: linked Warp Text copy chỉ sửa được Extra và menu '...'",
+    "statement": "Theo rule QA FACT-040 (QA ghi nhận 2026-09-04, QA-3345 TC-28): trên linked copy của Warp Text, phần sửa được chỉ gồm accordion Extra và các action trong menu '...' (align, geometry, duplicate, delete); toàn bộ design, typography, warp preset, control point và background là read-only trên copy. Record Testlane TC-TIB-1232 chỉ là tick AI không build. Chưa được Dev/PO xác nhận.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-116"
+    },
+    "tags": [
+      "duplicate-link",
+      "warp-text",
+      "read-only",
+      "FACT-040",
+      "QA-3345"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-045",
+      "artwork-editor/layer-duplicate-link-copy#KB-1035"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-040",
+      "owner_role": "QA",
+      "recorded_on": "2026-09-04",
+      "locator": "Proposal CBS-116 CLAIM-04"
+    }
+  },
+  {
+    "kb_id": "KB-1048",
+    "topic": "Rule QA FACT-011: Word Cloud có Align; Align sửa được trên linked copy và chỉ dịch copy",
+    "statement": "Theo rule QA FACT-011 (QA đính chính 2026-08-26, TIB-5242): Word Cloud có control Align, và Align nằm trong nhóm sửa được của linked copy (cùng Min/Max font size và Transform); Align trên linked copy chỉ dịch chính copy, origin giữ nguyên. Align hợp lệ trên origin, linked copy và multi-selection, không phải lỗi khi Align xuất hiện. Record Testlane TC-TIB-1093 chỉ là tick AI không build. Chưa được Dev/PO xác nhận.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-116"
+    },
+    "tags": [
+      "duplicate-link",
+      "word-cloud",
+      "align",
+      "FACT-011",
+      "TIB-5242"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/editor-layer-workspace#KB-042"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-011",
+      "owner_role": "QA",
+      "recorded_on": "2026-08-26",
+      "locator": "Proposal CBS-116 CLAIM-05"
+    }
+  },
+  {
+    "kb_id": "KB-1049",
+    "topic": "Rule QA FACT-044: Align hợp lệ trên linked Warp Text copy, chỉ dịch box của copy",
+    "statement": "Theo rule QA FACT-044 (QA ghi nhận 2026-09-04, QA-3345 TC-34): Align hợp lệ trên linked copy của Warp Text, giống Word Cloud; Align chỉ dịch box của chính copy, không đổi origin. Record Testlane TC-TIB-1238 chỉ là tick AI không build và ghi giả định giống Word Cloud. Chưa được Dev/PO xác nhận.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-116"
+    },
+    "tags": [
+      "duplicate-link",
+      "warp-text",
+      "align",
+      "FACT-044",
+      "QA-3345"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/editor-layer-workspace#KB-042",
+      "artwork-editor/layer-duplicate-link-copy#KB-1048"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-044",
+      "owner_role": "QA",
+      "recorded_on": "2026-09-04",
+      "locator": "Proposal CBS-116 CLAIM-06"
+    }
+  },
+  {
+    "kb_id": "KB-1050",
+    "topic": "Rule QA FACT-033: xoá origin thì linked Warp Text copy render rỗng — mâu thuẫn KB-1051",
+    "statement": "Theo rule QA FACT-033 (QA ghi nhận 2026-08-26, TIB-5265): xoá layer origin của linked Warp Text thì linked copy render rỗng (không ẩn layer, không tự gỡ link, không placeholder). Mâu thuẫn chưa giải quyết với kết quả QA recheck 2026-09-07 (KB-1051). Item không làm oracle (CONF-CBS-116-02).",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0) · storefront (render)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-116"
+    },
+    "tags": [
+      "duplicate-link",
+      "warp-text",
+      "delete-origin",
+      "FACT-033",
+      "TIB-5265"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-1051"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-CBS-116-02",
+    "qa_rule_ref": {
+      "code": "FACT-033",
+      "owner_role": "QA",
+      "recorded_on": "2026-08-26",
+      "locator": "Proposal CBS-116 CLAIM-07"
+    }
+  },
+  {
+    "kb_id": "KB-1051",
+    "topic": "Rule QA TC-35 recheck: xoá origin thì linked Warp Text copy vẫn hiện nội dung origin như Single-line Text — mâu thuẫn KB-1050",
+    "statement": "Theo kết quả QA recheck 2026-09-07 (QA-3345 TC-35, cặp clone): xoá layer origin thì linked copy của Warp Text vẫn hiện nội dung của origin đã xoá, giống hệt hành vi của Single-line Text, và QA ghi đó là đúng hành vi. Mâu thuẫn chưa giải quyết với rule QA FACT-033 (KB-1050). Checklist Dev sinh từ branch diff (TIB-5265 2026-08-18, TIB-5242 2026-08-24) chỉ nói không crash, không nói copy hiển thị gì. Item không làm oracle (CONF-CBS-116-02).",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff có quyền sửa artwork)",
+      "surface": "portal (Artwork Editor 2.0) · storefront (render)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-116"
+    },
+    "tags": [
+      "duplicate-link",
+      "warp-text",
+      "delete-origin",
+      "QA-3345"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-1050"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-CBS-116-02",
+    "qa_rule_ref": {
+      "code": "TC-35 recheck (QA-3345)",
+      "owner_role": "QA",
+      "recorded_on": "2026-09-07",
+      "locator": "Proposal CBS-116 CLAIM-07"
+    }
+  },
+  {
+    "kb_id": "KB-1098",
+    "topic": "Linked copy của curve text và warp text render stroke theo cặp stroke_color / stroke_width của layer gốc; spiral và shape text không có linked transformer",
+    "statement": "Theo Dev trên Jira TIB-5699 comment 56557 (Solution, bảng test U5 + Q5, 2026-11-05), với linked copy (Duplicate & Link) của curve text và warp text, `stroke_width` / `stroke_color` của mỗi copy khi render (với warp copy cả các key đó trong `vectorize.layers[0]`) là cặp của layer gốc; mỗi render dùng stroke editor của layer gốc, khớp preview (Q5). Spiral text và shape text không có linked transformer nên không thuộc rule này (khớp KB-045: Spiral Text, Custom Shape là bản copy thường). Test case TC-TIB-8987 PASS staging 2026-11-10 (không ghi build) quan sát: đổi stroke của layer gốc thì copy trong file design PNG và preview đổi theo; chưa chạy production. Item không nói về dữ liệu lưu của copy.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner + buyer",
+      "surface": "portal (Artwork Editor 2.0) · storefront preview · api (render order design PNG)",
+      "brand": null
+    },
+    "tags": [
+      "linked-layer",
+      "curve-text",
+      "warp-text",
+      "stroke",
+      "png-render",
+      "TIB-5699"
+    ],
+    "related_kb_ids": [
+      "artwork-editor/layer-duplicate-link-copy#KB-045",
+      "artwork-editor/layer-duplicate-link-copy#KB-1035",
+      "artwork-layer-config/text-layer-config#KB-1094"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5699 comment 56557 (Dev, Solution, bảng test U5 + Q5), 2026-11-05",
+      "authored_on": "2026-11-05",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-149"
+    }
+  }
+]

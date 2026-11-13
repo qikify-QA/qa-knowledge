@@ -1,0 +1,780 @@
+{
+  "feature_id": "FEAT-02-quantity-break-display-and-schedule",
+  "feature_key": "quantity-break-display-and-schedule",
+  "name": "Quantity Break: hiển thị, giao diện, lịch và combination",
+  "user_goal": "Merchant tuỳ biến hiển thị widget, đặt lịch chạy và quyết định gộp với discount khác.",
+  "user_goal_kb_refs": [],
+  "stable_since_version": "1",
+  "actors": [
+    {
+      "role": "merchant",
+      "permission_observed": "Tạo/sửa offer Quantity Break trong Portal: chọn template reward, cấu hình trigger scope, tier (quantity/discount/label/image), gift settings, subscription settings, display/appearance/combination/scheduling settings. Không có bằng chứng về phân cấp quyền (staff sub-role) trong tài liệu — xem unknown_areas.",
+      "kb_refs": [
+        "quantity-break/quantity-break-trigger-and-tiers#KB-001",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-003",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-004",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-012",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-013",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-014",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-030",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-041",
+        "quantity-break/quantity-break-display-and-schedule#KB-051",
+        "quantity-break/quantity-break-display-and-schedule#KB-053",
+        "quantity-break/quantity-break-display-and-schedule#KB-054",
+        "quantity-break/quantity-break-display-and-schedule#KB-055",
+        "quantity-break/quantity-break-display-and-schedule#KB-056"
+      ],
+      "observed_kb_refs": [
+        "KB-075",
+        "KB-076",
+        "KB-077",
+        "KB-078",
+        "KB-079",
+        "KB-080",
+        "KB-081",
+        "KB-082",
+        "KB-083",
+        "KB-084",
+        "object:KB-009",
+        "object:KB-015",
+        "object:KB-016",
+        "object:KB-017"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-18 (merchant, store development): mở form 3 template, tạo/lưu/sửa/xoá offer Quantity Break; quyền staff/cross-tenant không kiểm (không có account phụ)."
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Storefront > /collections/all và trang search — badge trên card product",
+      "precondition": "Offer Running; badge mặc định 'UP TO {discount} OFF'. (Mục mới, staging.)",
+      "kb_refs": [
+        "discount-offers/offer-storefront-events#KB-031",
+        "quantity-break/quantity-break-display-and-schedule#KB-081"
+      ],
+      "basis": "OBSERVED_CURRENT"
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Cấu hình tier giảm giá (reward: price break)",
+      "description": "Field Discount type (dropdown Percentage/Fixed Amount, default Percentage), Discount value per item (validated), Quantity per tier (validated), Label type (4 option: Classic/Oval/Tag/Callout), Label text, Image per-tier, checkbox 'Selected by default' (loại trừ nhau giữa tier). Offer mới pre-populate 3 tier mẫu. Mỗi tier expand/collapse độc lập (chỉ 1 mở tại 1 thời điểm), thêm tier mới qua '+ Add new tier'. Validation hiển thị inline real-time + success toast sau Save.",
+      "kb_refs": [
+        "quantity-break/quantity-break-trigger-and-tiers#KB-012",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-013",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-014",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-015",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-016",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-017",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-018",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-019",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-020",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-021",
+        "quantity-break/quantity-break-display-and-schedule#KB-025"
+      ],
+      "observed_kb_refs": [
+        "KB-076",
+        "KB-086"
+      ],
+      "refresh_note": "Staging 2026-10-18: 3 tier mặc định 1/0%, 2/10% ('Most popular', Selected by default), 3/20%; Label type mọi tier 'Classic', dropdown chỉ Classic/Oval/Tag/Callout. CONFLICT CONF-discount-offers-R1018-03: base KB-017 (tier 2 label 'Flat') vs staging KB-076 ('Classic') — UNRESOLVED, không dùng label type mặc định của tier 2 làm oracle. Preview form dùng giá mẫu cố định ($100/$180/$240), không theo giá product trigger. Validation discount/quantity và toast sau Save không quan sát trong run.",
+      "status": "UNRESOLVED",
+      "conflict_groups": [
+        "CONF-discount-offers-R1018-03"
+      ]
+    },
+    {
+      "name": "Settings dùng chung cho cả 3 template (Display Appearance Combination Scheduling Advanced)",
+      "description": "Display settings (2 sub-group xác nhận: Variant display — 2 checkbox default unchecked; Pricing display — 2 checkbox mới default unchecked) là cơ chế RIÊNG của Quantity Break, KHÔNG có ở Multibuy/Wholesale. Appearance & style: 5 group (Layout/Color/Typography/Badge/Custom CSS) với default cụ thể, field-set khác Multibuy. Discount combination (Order/Product/Shipping) default OFF. Offer scheduling: start date bắt buộc (default = lúc tạo, không cho phép quá khứ), end date tuỳ chọn (≥ start date), checkbox 'Enable countdown timer' default unchecked. Thứ tự evaluate: scheduling (gate) trước combination. Custom CSS field bị gate behind 'contact support' (không self-serve), giống Multibuy. Rule bắt buộc: discount phải tính đúng cùng surcharge của app personalization/customization (9 app liệt kê cụ thể), không double-count, không miss, cả 2 khoản hiện rõ cart/checkout (edge case 'On hold', chưa QA test thực tế — xem unknown_areas).",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-051",
+        "quantity-break/quantity-break-display-and-schedule#KB-053",
+        "quantity-break/quantity-break-display-and-schedule#KB-054",
+        "quantity-break/quantity-break-display-and-schedule#KB-055",
+        "quantity-break/quantity-break-display-and-schedule#KB-056",
+        "quantity-break/quantity-break-display-and-schedule#KB-057",
+        "quantity-break/quantity-break-display-and-schedule#KB-058",
+        "quantity-break/quantity-break-storefront-and-cart#KB-059",
+        "quantity-break/quantity-break-display-and-schedule#KB-069",
+        "quantity-break/quantity-break-display-and-schedule#KB-070",
+        "quantity-break/quantity-break-display-and-schedule#KB-071"
+      ],
+      "observed_kb_refs": [
+        "KB-079",
+        "KB-080",
+        "KB-081",
+        "KB-082",
+        "KB-083",
+        "KB-084",
+        "object:KB-011",
+        "object:KB-012",
+        "object:KB-013"
+      ],
+      "refresh_note": "Staging 2026-10-18: Display settings luôn mở, đúng 2 nhóm, 4 checkbox tắt, không nhóm Content; accordion thật ở Appearance & style. CONFLICT CONF-discount-offers-R1018-02 (màu mặc định: base KB-054 #2196F3/#262626/#FC81C7/#FFFFFF vs staging KB-081 #606B57/#1C1D21/#D75E60/#FFFFFF), CONF-discount-offers-R1018-01 (Combination: base KB-055 default OFF vs staging KB-082 cả 3 CHECKED + dropdown 'One per product (best value wins)') và CONF-discount-offers-R1018-08 (end time mặc định: base KB-057 11:59 PM khi start = end vs staging KB-084 hôm nay + ≈ hiện tại + 1h trên offer đã lưu) — UNRESOLVED, không chọn phía. Countdown chỉ hiện sau khi bật end date. Banner 'Automatic discounts work even if the app block is disabled…' hiện khi chọn Automatic discount (DCONF-001). Discount method 'Discount code' chọn được, không khoá (form chưa lưu).",
+      "status": "UNRESOLVED",
+      "conflict_groups": [
+        "CONF-discount-offers-R1018-01",
+        "CONF-discount-offers-R1018-02",
+        "CONF-discount-offers-R1018-08"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "offer trong khung giờ scheduled",
+      "to": "offer ngoài khung giờ scheduled",
+      "trigger": "thời gian hiện tại vượt end date chưa tới start date",
+      "condition": "scheduling là gate evaluate TRƯỚC discount combination — offer ngoài khung giờ không bao giờ tới được logic combination",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-069",
+        "quantity-break/quantity-break-display-and-schedule#KB-056",
+        "quantity-break/quantity-break-display-and-schedule#KB-057"
+      ],
+      "observed_kb_refs": [
+        "KB-085",
+        "object:KB-013"
+      ],
+      "refresh_note": "Staging: chỉ quan sát offer trong lịch (countdown đếm ngược); lúc hết giờ NOT_COVERED."
+    },
+    {
+      "from": "offer đã lưu, 'Enable end date' tắt",
+      "to": "end date bật (+ countdown), status vẫn Running",
+      "trigger": "merchant tick 'Enable end date' trên offer đã lưu rồi Save (mục mới)",
+      "condition": "End date điền sẵn = hôm nay, End time ≈ hiện tại + 1 giờ (khác form mới: start + 1 ngày) — CONFLICT CONF-discount-offers-R1018-08 với KB-057 (11:59 PM), UNRESOLVED",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-084",
+        "quantity-break/quantity-break-display-and-schedule#KB-057"
+      ],
+      "basis": "OBSERVED_CURRENT",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-discount-offers-R1018-08"
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "rule": "Offer scheduling: start date+time bắt buộc, default = thời điểm tạo offer, không được là quá khứ, dùng timezone store. End date+time tuỳ chọn (ẩn sau checkbox 'Enable end date', default off = chạy vô thời hạn); nếu bật, end date phải ≥ start date; nếu bằng ngày, end time default 11:59 PM.",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-056",
+        "quantity-break/quantity-break-display-and-schedule#KB-057"
+      ],
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-discount-offers-R1018-08",
+      "refresh_kb_refs": [
+        "object:KB-013",
+        "KB-084"
+      ],
+      "refresh_note": "Staging corroborate start mặc định, ngày quá khứ disabled trong picker, timezone store. CONFLICT CONF-discount-offers-R1018-08 vế end time (KB-057): trên offer đã lưu, bật end date điền sẵn hôm nay + giờ ≈ hiện tại + 1h (KB-084); chưa thử đặt thủ công end = start. Không dùng vế end time mặc định làm oracle cho tới khi owner quyết."
+    },
+    {
+      "rule": "Thứ tự evaluate: Offer scheduling (gate) được evaluate TRƯỚC Discount combination — offer ngoài khung giờ đã lên lịch không bao giờ tới được logic combination.",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-069"
+      ]
+    },
+    {
+      "rule": "Discount combination (combine với Order discount Product discount Shipping discount) default OFF (unchecked) cho tất cả 3 loại.",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-055"
+      ],
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-discount-offers-R1018-01",
+      "refresh_kb_refs": [
+        "KB-082",
+        "object:KB-012"
+      ],
+      "refresh_note": "CONFLICT mở: staging thấy cả 3 checkbox CHECKED mặc định trên cả 3 form và offer lưu combinesWith true/true/true. Không dùng rule này làm oracle cho tới khi owner quyết."
+    },
+    {
+      "rule": "Yêu cầu non-functional: spacing/font của trang Setting Offer phải nhất quán, layout phải responsive đầy đủ qua các viewport width (đã fix QVD-72) — đáng kiểm bằng visual regression ở màn hình hẹp.",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-025"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "note": "[Ghi nhận lịch sử/changelog, cần confirm còn đúng ở bản hiện tại không] Trước đây tier panel có layout 'card-in-card' (nested card); đã fix thành layout phẳng hơn qua QVD-72 — không nên dùng như regression baseline chưa re-verify.",
+      "status": "HISTORICAL_CHANGELOG",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-026"
+      ]
+    },
+    {
+      "note": "[Hedge] Heading 'Display settings' có đúng 2 sub-group hiển thị (Variant display, Pricing display), KHÔNG thấy group 'Content' nào trong cả 3 offer live kiểm tra — chưa xác nhận được group 'Content' có được ship, áp dụng cho loại offer này, hay bị gate bởi điều kiện chưa tìm ra.",
+      "status": "UNCONFIRMED_HEDGED",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-049"
+      ],
+      "observed_kb_refs": [
+        "KB-079"
+      ],
+      "refresh_note": "Staging: form mới cũng chỉ 2 nhóm, không có Content."
+    },
+    {
+      "note": "[Hedge] Hành vi accordion (collapsed-by-default, 1 lúc) theo spec chưa được xác nhận live — 2 group Display settings render dạng always-visible section, không thấy mũi tên expand/collapse trong accessibility snapshot; chưa test click-to-expand thật.",
+      "status": "UNCONFIRMED_HEDGED",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-050"
+      ],
+      "observed_kb_refs": [
+        "KB-079"
+      ],
+      "refresh_note": "Staging: Display settings luôn mở, không control thu gọn; accordion thu gọn mặc định có ở Appearance & style (click mở/đóng)."
+    },
+    {
+      "note": "[Hedge] 2 field điều kiện của Variant display ('Allow customer to choose variant for single-item offer', 'Variant swatch settings') không thấy trong cả 3 ví dụ live — khớp điều kiện ticket (checkbox cha đang tắt ở cả 3), nhưng chưa ai bật thử checkbox đó để xác nhận trực tiếp.",
+      "status": "UNCONFIRMED_HEDGED",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-052"
+      ],
+      "observed_kb_refs": [
+        "KB-079",
+        "KB-080"
+      ],
+      "refresh_note": "Staging: 'Variant display' là nhãn nhóm, không phải checkbox cha; bật 'Allow customers to choose different variants for each item' không làm xuất hiện field con nào."
+    },
+    {
+      "note": "[Hedge, chưa phân tích sâu] Checkbox 'Enable countdown timer' tồn tại, default unchecked trong cả 3 ví dụ live, cùng field tồn tại ở Multibuy; quan hệ với QVD-147 chưa được phân tích sâu.",
+      "status": "UNCONFIRMED_HEDGED",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-058"
+      ],
+      "observed_kb_refs": [
+        "object:KB-013",
+        "KB-084",
+        "KB-085"
+      ],
+      "refresh_note": "Staging: checkbox chỉ hiện sau khi bật end date; lưu được; PDP hiện countdown ở đầu widget."
+    },
+    {
+      "note": "[Hedge — xem unknown_areas GAP-QB-04] Checkbox 'Allow customers to choose different variants for each item' khiến Preview hiện inline per-item <select> dropdown (mock data chung); chưa rõ có nối với config swatch của feature Variant Swatches hay không.",
+      "status": "UNCONFIRMED_HEDGED",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-072"
+      ],
+      "observed_kb_refs": [
+        "KB-080"
+      ],
+      "refresh_note": "Staging: preview hiện dòng '#1 [Sunset ⌄] [S ⌄]' + banner 'Preview limited to 5 items per tier…'; không có link sang Variant swatches."
+    },
+    {
+      "behavior": "Display settings luôn mở, đúng 2 nhóm Variant display / Pricing display (4 checkbox tắt), không nhóm Content; Appearance & style là accordion thu gọn mặc định.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-079"
+      ]
+    },
+    {
+      "behavior": "Bật 'Allow customers to choose different variants for each item' (form chưa lưu): không field con, không 'Variant swatch settings'; chỉ preview đổi.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-080"
+      ]
+    },
+    {
+      "behavior": "Appearance & style mặc định: Layout dọc (chọn) / ngang, Card border radius 8px; Color Primary #606B57, Secondary #1C1D21, Label background #D75E60, Label text #FFFFFF; Typography Heading Bold 18, Body Regular 14, Badge Regular 12, Label Bold 12; Badge 'UP TO {discount} OFF' Top left 6px; Custom CSS khoá ('Please contact our support team to enable.').",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-discount-offers-R1018-02",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-081"
+      ]
+    },
+    {
+      "behavior": "Combination mặc định: [x] Product discount (dropdown 'One per product (best value wins)' / 'Multiple per product'), [x] Order discount, [x] Shipping discount; offer lưu với combinesWith order/product/shipping = true.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "MEDIUM",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-discount-offers-R1018-01",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-082",
+        "discount-offers/offer-create-and-manage#KB-012"
+      ]
+    },
+    {
+      "behavior": "Banner cam dưới 'Discount method' khi chọn Automatic discount, nguyên văn 'Automatic discounts work even if the app block is disabled. For testing, we recommend using Discount code to prevent customers from receiving unintended discounts.'; ẩn khi chọn Discount code; cùng phiên embed Active và discount Quantity Break áp trong cart.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 5,
+      "confidence": "MEDIUM",
+      "status": "UNRESOLVED",
+      "conflict_group": "DCONF-001",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-083"
+      ]
+    },
+    {
+      "behavior": "Tick 'Enable end date' trên offer đã lưu: End date = hôm nay, End time ≈ hiện tại + 1h; chọn end +7 ngày + countdown rồi Save → ends_at lưu, enable_countdown_timer true, status vẫn Running, discount Shopify cập nhật endsAt; preview hiện khối đếm ngược.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-discount-offers-R1018-08",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-084"
+      ]
+    },
+    {
+      "behavior": "Countdown trên PDP ở đầu widget (trên tiêu đề 'Buy more, save more'), 'HURRY UP!' / 'Sale end in' / 'N Days : N Hrs : N Mins : N Secs', đếm ngược live khớp ends_at (2 PDP).",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "LOW",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-085"
+      ]
+    },
+    {
+      "behavior": "Preview form dùng giá mẫu cố định (1 pack $100.00; 2 packs $180.00; 3 packs $240.00); PDP theo giá thật ($20.00 / $36.00 / $48.00) và khớp cart.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 3,
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-086"
+      ]
+    }
+  ],
+  "observed_validations": [
+    {
+      "input": "Chọn Start date trước hôm nay trong date picker của Campaign scheduling",
+      "message_verbatim": "",
+      "condition": "Các ngày trước hôm nay disabled trong picker (ô 'Today' hiển thị disabled+pressed), không có thông báo lỗi; chưa thử gõ tay ngày quá khứ vào textbox.",
+      "blocking": true,
+      "observed_count": 3,
+      "rule_confidence": "MEDIUM",
+      "kb_refs": [
+        "discount-offers/offer-create-and-manage#KB-013",
+        "quantity-break/quantity-break-display-and-schedule#KB-056"
+      ]
+    },
+    {
+      "input": "Chọn Discount method = 'Automatic discount'",
+      "message_verbatim": "Automatic discounts work even if the app block is disabled. For testing, we recommend using Discount code to prevent customers from receiving unintended discounts.",
+      "condition": "Banner cảnh báo (warning) hiện dưới radio, ẩn khi chọn 'Discount code'; không chặn lưu. Nội dung là một phía của DCONF-001 — chỉ ghi nguyên văn, không làm oracle hành vi.",
+      "blocking": false,
+      "observed_count": 5,
+      "rule_confidence": "MEDIUM",
+      "status": "UNRESOLVED",
+      "conflict_group": "DCONF-001",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-083"
+      ]
+    },
+    {
+      "input": "Mở Appearance & style → Custom CSS",
+      "message_verbatim": "This feature allows you to apply custom CSS to style the offer widget. Please contact our support team to enable.",
+      "condition": "Field khoá, không self-serve.",
+      "blocking": true,
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-081",
+        "quantity-break/quantity-break-display-and-schedule#KB-070"
+      ]
+    }
+  ],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      "Create offer > 3 template card (Quantity breaks for same product Buy X, get Y free Volume discount for subscription)",
+      "Tier settings page: Trigger Settings (5 radio + Exclude link + Custom trigger modal)",
+      "Tier settings page: Discount type Discount value Quantity Label type Label text Image Selected by default (per tier), + Add new tier",
+      "Buy X get Y free: Add free gift Gift Selection Modal Selected gifts list Promotion message Show gift's price Remove",
+      "Volume discount for subscription: toggle Subscriptions info banner + Appstle card Purchase option title-subtitle-position 4 label field Selected subscription plan by default",
+      "Shared: Display settings (Variant display, Pricing display) Appearance & style (Layout, Color, Typography, Badge, Custom CSS) Discount combination Offer scheduling (start/end date, countdown timer) Advanced Settings (Custom CSS gated)",
+      {
+        "item": "Route form: /offers/setting/volume (?gift=true, ?subscription=true) → /offers/setting/volume/<id offer> sau khi lưu; save bar Shopify ngoài iframe — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-009",
+          "discount-offers/offer-create-and-manage#KB-010",
+          "discount-offers/offer-create-and-manage#KB-018"
+        ]
+      },
+      {
+        "item": "Form: Offer title, Discount method (Automatic + banner / Discount code + Generate), Discount title, Discount tags, Combination + dropdown best value wins — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-trigger-and-tiers#KB-075",
+          "quantity-break/quantity-break-display-and-schedule#KB-083",
+          "discount-offers/offer-create-and-manage#KB-011",
+          "discount-offers/offer-create-and-manage#KB-012"
+        ]
+      },
+      {
+        "item": "Manage offers: Search, filter Status (All/Running/Expired/Scheduled), filter Type, sort, cột Internal name/Extension type/Status/Trigger/Combination/Actions, modal 'Delete offer' — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-016",
+          "discount-offers/offer-create-and-manage#KB-017"
+        ]
+      },
+      {
+        "item": "Preview form (giá mẫu cố định; countdown khi bật end date) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-display-and-schedule#KB-086",
+          "quantity-break/quantity-break-display-and-schedule#KB-084"
+        ]
+      }
+    ],
+    "storefront": [
+      "PDP widget: tier cards tích hợp ATC gốc theme, slot indicator, variant selector (tự ẩn khi không có variant hoặc khi subscription widget app khác active)",
+      "PDP widget subscription: Subscribe & Save One-time purchase toggle + tier picker",
+      "Cart: automatic discount áp ngay, tính lại real-time theo quantity, gift banner + badge đếm gift",
+      {
+        "item": "PDP widget 'Buy more, save more' dưới giá theme (tier card radio, tổng giá gói, 'powered by qikify'), countdown đầu widget; không slot ở layout mặc định — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-087",
+          "quantity-break/quantity-break-display-and-schedule#KB-085"
+        ]
+      },
+      {
+        "item": "Cart: line property ẩn _qvl-volume-id (khi add qua widget), mã QIKIFY-xxxxxx allocation 'each' — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-088",
+          "quantity-break/quantity-break-storefront-and-cart#KB-089"
+        ]
+      },
+      {
+        "item": "Collection/search: badge 'UP TO 20% OFF' góc trên-trái card (top 10px, left 10px, radius 6px); product nhiều offer chỉ 1 badge — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-storefront-events#KB-031",
+          "discount-offers/offer-overlap-and-stacking#KB-025"
+        ]
+      },
+      {
+        "item": "HTML PDP nhúng JSON cấu hình offer (trigger_<id> gồm internal name; offer Scheduled thêm discount id + lịch) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-storefront-events#KB-029"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "item": "Backend app <QVL_API_BASE>: GET /api/offers (list), POST /api/offers (201), GET /api/offers/{id}, PUT /api/offers/{id} (200), DELETE /api/offers/{id} (204) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-015",
+          "discount-offers/offer-create-and-manage#KB-016",
+          "discount-offers/offer-create-and-manage#KB-017",
+          "discount-offers/offer-create-and-manage#KB-032",
+          "quantity-break/quantity-break-display-and-schedule#KB-084"
+        ]
+      },
+      {
+        "item": "Shopify Admin GraphQL qua app proxy: discountAutomaticAppCreate / discountAutomaticAppUpdate / discountAutomaticDelete (combinesWith, endsAt) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-015",
+          "quantity-break/quantity-break-display-and-schedule#KB-082",
+          "quantity-break/quantity-break-display-and-schedule#KB-084"
+        ]
+      },
+      {
+        "item": "Product search của picker qua app proxy: products(first:20, query) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-019"
+        ]
+      },
+      {
+        "item": "POST <QVL_API_BASE>/api/events (event view/add_to_cart từ widget; không thấy header auth, CORS '*') — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-087",
+          "discount-offers/offer-storefront-events#KB-023",
+          "discount-offers/offer-storefront-events#KB-024"
+        ]
+      },
+      {
+        "item": "Storefront cart: POST /cart/add.js?qvl-discount (có tier), POST /cart/add (form theme), đổi số lượng và đọc cart — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-088",
+          "quantity-break/quantity-break-storefront-and-cart#KB-089"
+        ]
+      },
+      {
+        "item": "POST <QVL_API_BASE>/api/completions/review trả 500 kèm stack trace mỗi lần mở form (bề mặt lỗi server, không oracle) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-storefront-events#KB-021"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "Offer lưu: enable_countdown_timer, ends_at, status (ACTIVE/SCHEDULED); shopify_connection_id kiểu chuỗi trong response POST/PUT, số nguyên trong GET — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-display-and-schedule#KB-084",
+          "discount-offers/offer-create-and-manage#KB-032",
+          "discount-offers/offer-create-and-manage#KB-016"
+        ]
+      },
+      {
+        "item": "Line item property _qvl-volume-id = id offer Quantity Break — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-088",
+          "discount-offers/offer-overlap-and-stacking#KB-026"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "type": "cross_object_status",
+      "object_key": "onboarding-dashboard",
+      "description": "Mục mới (staging): trạng thái 'Theme extension Active' trên Dashboard là tiền đề của quan sát discount áp trong cart (nhánh embed tắt NOT_COVERED).",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-083",
+        "onboarding-dashboard/onboarding-dashboard#KB-028"
+      ],
+      "basis": "OBSERVED_CURRENT"
+    }
+  ],
+  "risks": [
+    {
+      "risk": "Nhiều field UI (Position default, Display settings 'Content' group, accordion behavior, 2 field điều kiện Variant display, countdown timer/QVD-147) chỉ quan sát qua 1-3 ví dụ live hoặc accessibility-tree, chưa click-test trực tiếp — độ tin cậy LOW, không nên tổng quát hoá.",
+      "severity": "LOW",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-045",
+        "quantity-break/quantity-break-display-and-schedule#KB-049",
+        "quantity-break/quantity-break-display-and-schedule#KB-050",
+        "quantity-break/quantity-break-display-and-schedule#KB-052",
+        "quantity-break/quantity-break-display-and-schedule#KB-058"
+      ],
+      "observed_kb_refs": [
+        "KB-077",
+        "KB-079",
+        "KB-080",
+        "KB-084"
+      ]
+    },
+    {
+      "risk": "Liên kết giữa checkbox 'Allow customers to choose different variants for each item' (Display settings của Quantity Break) và feature Variant Swatches riêng chưa rõ — có thể dẫn tới test case bị trùng hoặc miss tương tác giữa 2 feature.",
+      "severity": "MEDIUM",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-072"
+      ],
+      "observed_kb_refs": [
+        "KB-080"
+      ]
+    },
+    {
+      "risk": "Mục mới: 3 conflict mặc định form (Combination, màu, Label type tier 2) giữa tài liệu và staging — test case về giá trị mặc định không có oracle cho tới khi owner quyết; Combination mặc định còn ảnh hưởng stacking với discount khác.",
+      "severity": "HIGH",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-055",
+        "quantity-break/quantity-break-display-and-schedule#KB-082",
+        "quantity-break/quantity-break-display-and-schedule#KB-054",
+        "quantity-break/quantity-break-display-and-schedule#KB-081",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-017",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-076"
+      ],
+      "knowledge_kind": "OBSERVED_CURRENT"
+    },
+    {
+      "risk": "Mục mới: preview portal dùng giá mẫu cố định — tester có thể báo nhầm lệch preview vs PDP là bug.",
+      "severity": "LOW",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-086",
+        "quantity-break/quantity-break-storefront-and-cart#KB-027"
+      ],
+      "knowledge_kind": "OBSERVED_CURRENT"
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-18",
+    "base_observed_at": null
+  },
+  "unknown_areas": [
+    {
+      "question": "Trên staging, khi tắt app embed (theme extension Inactive), discount Quantity Break có còn áp trong cart không (gating QVD-167)?",
+      "why_it_matters": "Nhánh này là chỗ duy nhất phân định DCONF-001 bằng quan sát; run này không được đổi theme nên NOT_COVERED — cần operator chủ động tắt embed rồi bàn giao.",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-083",
+        "quantity-break/quantity-break-storefront-and-cart#KB-060",
+        "quantity-break/quantity-break-storefront-and-cart#KB-061",
+        "quantity-break/quantity-break-storefront-and-cart#KB-062"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-001",
+        "OQ-discount-offers-009"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-discount-offers-090"
+    },
+    {
+      "question": "Offer Scheduled khi tới giờ start có tự chuyển Running và widget/discount xuất hiện trên storefront không; khi tới end date, countdown về 0 và offer chuyển Expired thì widget/discount ra sao?",
+      "why_it_matters": "Run chỉ quan sát offer Running và Scheduled trước giờ start (offer bị xoá trước start); chuyển trạng thái theo thời gian NOT_COVERED.",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-085",
+        "quantity-break/quantity-break-display-and-schedule#KB-069",
+        "discount-offers/offer-create-and-manage#KB-013",
+        "discount-offers/offer-create-and-manage#KB-016"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-quantity-break-028"
+    },
+    {
+      "question": "Dropdown Combination 'One per product (best value wins)' / 'Multiple per product' có ý nghĩa nghiệp vụ gì và ảnh hưởng thế nào tới overlap giữa các offer của app?",
+      "why_it_matters": "Control mới không có trong tài liệu; mọi offer của run giữ mặc định nên chưa quan sát được qua cart.",
+      "kb_refs": [
+        "discount-offers/offer-create-and-manage#KB-012",
+        "quantity-break/quantity-break-display-and-schedule#KB-082"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-008",
+        "OQ-discount-offers-045"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-discount-offers-060"
+    },
+    {
+      "question": "Quy tắc end time mặc định khi bật 'Enable end date' là gì — form mới (start + 1 ngày), offer đã lưu (hôm nay, ≈ hiện tại + 1h), tài liệu (11:59 PM khi start = end)?",
+      "why_it_matters": "Ba nguồn cho ba giá trị; test case default end time chưa có oracle.",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-057",
+        "quantity-break/quantity-break-display-and-schedule#KB-084",
+        "discount-offers/offer-create-and-manage#KB-013"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-025"
+      ],
+      "new_in_run": true,
+      "conflict_group": "CONF-discount-offers-R1018-08",
+      "covered_by_conflict": true,
+      "oq_id": "OQ-quantity-break-020"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-04-quantity-break-trigger-and-tiers",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "form mặc định 3 template (chưa lưu)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "quantity-break/quantity-break-trigger-and-tiers#KB-075",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-076",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-077",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-078",
+        "quantity-break/quantity-break-display-and-schedule#KB-079",
+        "quantity-break/quantity-break-display-and-schedule#KB-081",
+        "quantity-break/quantity-break-display-and-schedule#KB-082"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-quantity-break-trigger-and-tiers",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "end date + countdown trên offer đã lưu",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-084"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-quantity-break-trigger-and-tiers",
+      "layer": "storefront",
+      "role": "buyer (guest)",
+      "state": "PDP widget, chọn tier, Add to cart",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-086",
+        "quantity-break/quantity-break-storefront-and-cart#KB-087",
+        "quantity-break/quantity-break-storefront-and-cart#KB-088"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-quantity-break-trigger-and-tiers",
+      "layer": "storefront",
+      "role": "buyer (guest)",
+      "state": "countdown trong lịch",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-085"
+      ]
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "feature_id": "FEAT-04-quantity-break-trigger-and-tiers",
+      "conflict_group": "CONF-discount-offers-R1018-01",
+      "topic": "Mặc định 3 checkbox Combination của form Quantity Break",
+      "side_a": "Base KB-055 (CONFIRMED_EXPECTED, spec_doc): checkbox combine Order/Product/Shipping discount — tất cả default unchecked.",
+      "side_b": "Staging KB-082 (OBSERVED_CURRENT): cả 3 CHECKED mặc định kèm dropdown 'One per product (best value wins)'; offer lưu combinesWith true/true/true.",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-055",
+        "quantity-break/quantity-break-display-and-schedule#KB-082"
+      ],
+      "resolution": "UNRESOLVED",
+      "requires_human_decision": true
+    },
+    {
+      "feature_id": "FEAT-04-quantity-break-trigger-and-tiers",
+      "conflict_group": "CONF-discount-offers-R1018-02",
+      "topic": "Màu mặc định Appearance & style của form Quantity Break",
+      "side_a": "Base KB-054 (CONFIRMED_EXPECTED, spec_doc): #2196F3 / #262626 / #FC81C7 / #FFFFFF.",
+      "side_b": "Staging KB-081 (OBSERVED_CURRENT): #606B57 / #1C1D21 / #D75E60 / #FFFFFF (radius/typography/badge khớp base).",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-054",
+        "quantity-break/quantity-break-display-and-schedule#KB-081"
+      ],
+      "resolution": "UNRESOLVED",
+      "requires_human_decision": true
+    },
+    {
+      "feature_id": "FEAT-04-quantity-break-trigger-and-tiers",
+      "conflict_group": "CONF-discount-offers-R1018-08",
+      "topic": "End time mặc định khi end date = start date",
+      "side_a": "Base KB-057 (CONFIRMED_EXPECTED, spec_doc): nếu start date = end date, end time default 11:59 PM.",
+      "side_b": "Staging KB-084 (OBSERVED_CURRENT): tick 'Enable end date' trên offer đã lưu (start hôm nay) → End date = hôm nay, End time ≈ giờ hiện tại + 1 giờ (form mới: start + 1 ngày).",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-057",
+        "quantity-break/quantity-break-display-and-schedule#KB-084"
+      ],
+      "resolution": "UNRESOLVED",
+      "requires_human_decision": true
+    }
+  ],
+  "profile_relationships": [
+    {
+      "from_feature_key": "quantity-break",
+      "to_feature_key": "onboarding-dashboard",
+      "relation": "RELATED — trạng thái Theme extension trên Dashboard liên quan gating discount (DCONF-001); Setup guide bước 'Create your offer' theo số offer hiện có (quan sát staging)",
+      "kb_refs": [
+        "quantity-break/quantity-break-display-and-schedule#KB-083",
+        "onboarding-dashboard/onboarding-dashboard#KB-028",
+        "onboarding-dashboard/onboarding-dashboard#KB-029"
+      ]
+    }
+  ]
+}

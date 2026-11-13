@@ -1,5 +1,5 @@
 # Reveal / unbox: khách mở box (trang cảm ơn, order status, app proxy), truy cập bằng đăng nhập hoặc magic link, merchant unbox, auto-unbox
-**Published context version:** 4
+**Published context version:** 5
 
 **Product:** mysbox · **Object:** `reveal` · **Mode:** REFRESH (trên nền DOC_BOOTSTRAP v1) · **Environment:** documented + staging · **Published:** 2026-10-17
 

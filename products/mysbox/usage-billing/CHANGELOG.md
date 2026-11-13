@@ -1,0 +1,2 @@
+# CHANGELOG — usage-billing
+- 2026-11-13 (restructure-2026-11-13) — Đổi cấu trúc theo contract §5 "Độ hạt object/feature": plans-billing/usage-fee-pricing → usage-billing/usage-fee-pricing; plans-billing/daily-usage-charge-and-charge-status → usage-billing/daily-usage-charge-and-charge-status; plans-billing/capacity-limit-enforcement → usage-billing/capacity-limit-enforcement. Giữ nguyên kb_id, statement, nguồn và test steps; OQ chuyển object được mint id mới kèm `supersedes`.

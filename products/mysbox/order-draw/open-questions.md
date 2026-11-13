@@ -1480,3 +1480,270 @@ Tổng: 79 mục (CONFLICT 6 · OPEN_ISSUE 33 · NEEDS_CONFIRMATION 40). Version
   ]
 }
 ```
+
+## OQ-order-draw-082 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-082",
+  "type": "OPEN_ISSUE",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "Hạn chế đã biết theo tài liệu (theo dõi như regression watch; cần xác nhận trạng thái sửa và mức ảnh hưởng): nút Retry Sync không tự kiểm cửa sổ resell, nên có thể bấm khi cửa sổ resell còn mở.",
+  "kb_ids": [
+    "admin-order-inspection-and-retry#KB-037"
+  ],
+  "check_ids": [
+    "admin-order-inspection-and-retry:CHK-016"
+  ],
+  "supersedes": "OQ-admin-panel-028"
+}
+```
+
+## OQ-order-draw-083 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-083",
+  "type": "OPEN_ISSUE",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "Hạn chế đã biết theo tài liệu (theo dõi như regression watch; cần xác nhận trạng thái sửa và mức ảnh hưởng): thao tác Retry trên admin panel có thể báo thành công nhưng không đổi gì; khi đó cần chuyển engineer xem job lỗi trong Horizon.",
+  "kb_ids": [
+    "admin-order-inspection-and-retry#KB-070"
+  ],
+  "check_ids": [
+    "admin-order-inspection-and-retry:CHK-017"
+  ],
+  "supersedes": "OQ-admin-panel-029"
+}
+```
+
+## OQ-order-draw-084 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-084",
+  "type": "OPEN_ISSUE",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "Role admin nào giữ quyền 'retry sync' và 'retry physical'; menu Actions hiển thị gì với người không có quyền? — Cần cho kiểm thử phân quyền; tài liệu chỉ nêu tên quyền và 'support'.",
+  "kb_ids": [
+    "admin-order-inspection-and-retry#KB-006",
+    "admin-order-inspection-and-retry#KB-026",
+    "admin-order-inspection-and-retry#KB-040"
+  ],
+  "supersedes": "OQ-admin-panel-030"
+}
+```
+
+## OQ-order-draw-085 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-085",
+  "type": "OPEN_ISSUE",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "'Chỉ cho box vật lý' được áp thế nào: Retry Physical bị ẩn, vô hiệu hay báo lỗi với đơn chỉ có box digital; đơn trộn box vật lý và digital xử lý ra sao? — Không có điều kiện hiển thị/thông báo để viết expected result.",
+  "kb_ids": [
+    "admin-order-inspection-and-retry#KB-041"
+  ],
+  "supersedes": "OQ-admin-panel-031"
+}
+```
+
+## OQ-order-draw-086 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-086",
+  "type": "OPEN_ISSUE",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "Queue chậm (21–100 biến thể) và chế độ bulk (> 100) mất bao lâu; bulk lỗi giữa chừng thì status dòng box là gì? — Không có ngưỡng thời gian/trạng thái để kiểm kết quả retry cho đơn lớn.",
+  "kb_ids": [
+    "admin-order-inspection-and-retry#KB-034",
+    "admin-order-inspection-and-retry#KB-035"
+  ],
+  "supersedes": "OQ-admin-panel-032"
+}
+```
+
+## OQ-order-draw-087 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-087",
+  "type": "OPEN_ISSUE",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "Job tự thêm quà chạy theo 'giờ máy chủ' — múi giờ nào và cấu hình ở đâu? — Mốc chạy định kỳ phụ thuộc múi giờ khi test thời điểm quà lên đơn.",
+  "kb_ids": [
+    "admin-order-inspection-and-retry#KB-029"
+  ],
+  "supersedes": "OQ-admin-panel-033"
+}
+```
+
+## OQ-order-draw-088 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-088",
+  "type": "OPEN_ISSUE",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "Tìm theo id / id đơn Shopify / id shop là khớp chính xác hay một phần; có tìm theo order name (dạng \"#1042\") không? — Ví dụ tìm theo order name trong khi quy định chỉ liệt kê id.",
+  "kb_ids": [
+    "admin-order-inspection-and-retry#KB-011",
+    "admin-order-inspection-and-retry#KB-012"
+  ],
+  "supersedes": "OQ-admin-panel-034"
+}
+```
+
+## OQ-order-draw-089 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-089",
+  "type": "OPEN_ISSUE",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "Partner Development Status có những giá trị nào và 'shop thật' được xác định thế nào? — Cần để test filter mặc định ẩn đơn của shop development.",
+  "kb_ids": [
+    "admin-order-inspection-and-retry#KB-020"
+  ],
+  "supersedes": "OQ-admin-panel-035"
+}
+```
+
+## OQ-order-draw-090 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-090",
+  "type": "OPEN_ISSUE",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "Huy hiệu hậu xử lý có những trạng thái nào ngoài Pending/Failed/Succeeded? — Không có danh sách trạng thái đầy đủ.",
+  "kb_ids": [
+    "admin-order-inspection-and-retry#KB-043",
+    "admin-order-inspection-and-retry#KB-048",
+    "admin-order-inspection-and-retry#KB-049"
+  ],
+  "supersedes": "OQ-admin-panel-036"
+}
+```
+
+## OQ-order-draw-091 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-order-draw-091",
+  "type": "OPEN_ISSUE",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "Nút chạy lại webhook ở trang Shop là cho 'order paid' hay webhook khác; khi Retry Handle Order không tạo gì, UI phản hồi gì? — Ảnh hưởng nơi tester tìm action và expected message.",
+  "kb_ids": [
+    "admin-order-inspection-and-retry#KB-063",
+    "admin-order-inspection-and-retry#KB-068"
+  ],
+  "supersedes": "OQ-admin-panel-037"
+}
+```
+
+## OQ-order-draw-092 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-092",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "Cột resell processing at của đơn có giá trị chính xác trong những trường hợp nào (đang hoàn/bán lại, bị kẹt), và cờ kẹt được gỡ thế nào? Tài liệu chỉ nói \"thường trống\".",
+  "kb_ids": [
+    "admin-order-inspection-and-retry#KB-017"
+  ],
+  "check_ids": [
+    "admin-order-inspection-and-retry:CHK-020"
+  ],
+  "supersedes": "OQ-admin-panel-076"
+}
+```
+
+## OQ-order-draw-093 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-093",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "Hệ quả khi support bấm Retry Sync đưa quà vào đơn trong lúc cửa sổ resell còn mở là gì (khách còn bán lại được không, dòng quà có bị gỡ khi bán lại), và có phải quy tắc chỉ được bấm sau khi cửa sổ đóng? Tài liệu tự khai chưa xác nhận.",
+  "kb_ids": [
+    "admin-order-inspection-and-retry#KB-038",
+    "admin-order-inspection-and-retry#KB-039"
+  ],
+  "supersedes": "OQ-admin-panel-077"
+}
+```
+
+## OQ-order-draw-094 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-094",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "Cột auto-unbox time hiển thị gì khi auto-unbox không được cấu hình, và giờ đó tính theo múi giờ nào?",
+  "kb_ids": [
+    "admin-order-inspection-and-retry#KB-059"
+  ],
+  "check_ids": [
+    "admin-order-inspection-and-retry:CHK-021"
+  ],
+  "supersedes": "OQ-admin-panel-078"
+}
+```
+
+## OQ-order-draw-095 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-095",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "Các check P1 (tiền / billing / bốc thăm / refund / store credit / permission / xoá dữ liệu) của feature này có oracle STRONG nhưng chỉ dựa trên tài liệu dev (dev_doc). Theo luật oracle, chúng giữ NEEDS_CONFIRMATION cho tới khi có test_case PASS (hoặc PO/Dev xác nhận trực tiếp) cho đúng hành vi. Danh sách check ở check_ids.",
+  "check_ids": [
+    "admin-order-inspection-and-retry:CHK-007",
+    "admin-order-inspection-and-retry:CHK-008",
+    "admin-order-inspection-and-retry:CHK-010",
+    "admin-order-inspection-and-retry:CHK-013",
+    "admin-order-inspection-and-retry:CHK-014"
+  ],
+  "supersedes": "OQ-admin-panel-079"
+}
+```
+
+## OQ-order-draw-096 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-096",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "Với đơn chỉ có box digital, Retry Physical Box Post-Processing bị ẩn, vô hiệu hay báo lỗi? Với đơn trộn box vật lý và digital, thao tác này áp dụng cho những dòng nào?",
+  "check_ids": [
+    "admin-order-inspection-and-retry:CHK-012"
+  ],
+  "supersedes": "OQ-admin-panel-080"
+}
+```
+
+## OQ-order-draw-097 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-order-draw-097",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "admin-order-inspection-and-retry",
+  "summary": "Sau khi Retry Sync đưa quà lên đơn Shopify thành công, status của dòng box có luôn chuyển sang COMPLETED không?",
+  "kb_ids": [
+    "admin-order-inspection-and-retry#KB-074"
+  ],
+  "check_ids": [
+    "admin-order-inspection-and-retry:CHK-019"
+  ],
+  "supersedes": "OQ-admin-panel-081"
+}
+```

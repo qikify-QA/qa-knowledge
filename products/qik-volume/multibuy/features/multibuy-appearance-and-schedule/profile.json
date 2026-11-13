@@ -1,0 +1,708 @@
+{
+  "feature_id": "FEAT-03-multibuy-appearance-and-schedule",
+  "feature_key": "multibuy-appearance-and-schedule",
+  "name": "Giao diện, badge, thông điệp, lịch và combination của Multibuy",
+  "user_goal": "Merchant tuỳ biến giao diện widget/badge Multibuy, đặt lịch chạy và quyết định gộp với discount khác.",
+  "user_goal_kb_refs": [],
+  "stable_since_version": "1",
+  "actors": [
+    {
+      "role": "merchant",
+      "permission_observed": "Full configuration access trong Portal cho mọi section của Multibuy offer (internal name/title, discount method, trigger, tier, max discount uses, remaining-qty message, how-discount-is-applied, customer selection behavior, appearance & style, discount combination, offer scheduling, compare-at-price scope) — không có boundary permission/role riêng nào được tài liệu hoá cho feature này.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-001",
+        "multibuy/multibuy-discount-setup#KB-003",
+        "multibuy/multibuy-discount-setup#KB-004",
+        "multibuy/multibuy-discount-setup#KB-005",
+        "multibuy/multibuy-discount-setup#KB-006",
+        "multibuy/multibuy-discount-setup#KB-007",
+        "multibuy/multibuy-discount-setup#KB-009",
+        "multibuy/multibuy-discount-setup#KB-010",
+        "multibuy/multibuy-discount-setup#KB-012",
+        "multibuy/multibuy-discount-setup#KB-017",
+        "multibuy/multibuy-discount-setup#KB-028",
+        "multibuy/multibuy-discount-calculation#KB-035",
+        "multibuy/multibuy-discount-calculation#KB-041",
+        "multibuy/multibuy-product-selection#KB-045",
+        "multibuy/multibuy-product-selection#KB-052",
+        "multibuy/multibuy-appearance-and-schedule#KB-054",
+        "multibuy/multibuy-appearance-and-schedule#KB-061",
+        "multibuy/multibuy-appearance-and-schedule#KB-062",
+        "multibuy/multibuy-appearance-and-schedule#KB-065",
+        "multibuy/multibuy-discount-calculation#KB-067",
+        "multibuy/multibuy-product-selection#KB-071",
+        "multibuy/multibuy-discount-setup#KB-078"
+      ],
+      "observed_kb_refs": [
+        "KB-085",
+        "KB-086",
+        "KB-087",
+        "KB-088",
+        "KB-089",
+        "KB-090",
+        "KB-091",
+        "object:KB-015",
+        "object:KB-017"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-18 (merchant, store development): mở form, tạo/lưu/sửa (đổi selection behavior, bỏ multiplier, thêm trigger) và xoá offer Multibuy; quyền staff không kiểm."
+    },
+    {
+      "role": "buyer",
+      "permission_observed": "Xem widget discount trên product/cart/checkout page khi trigger condition đáp ứng; chọn sản phẩm cho bundle qua popup hoặc redirect page; nhận discount tự động ở cart — không có yêu cầu login/account nào được tài liệu hoá.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-003",
+        "multibuy/multibuy-discount-setup#KB-008",
+        "multibuy/multibuy-discount-setup#KB-029",
+        "multibuy/multibuy-appearance-and-schedule#KB-030",
+        "multibuy/multibuy-discount-calculation#KB-032",
+        "multibuy/multibuy-discount-calculation#KB-036",
+        "multibuy/multibuy-product-selection#KB-049",
+        "multibuy/multibuy-product-selection#KB-050",
+        "multibuy/multibuy-product-selection#KB-053",
+        "multibuy/multibuy-discount-calculation#KB-068",
+        "multibuy/multibuy-product-selection#KB-072",
+        "multibuy/multibuy-discount-calculation#KB-073",
+        "multibuy/multibuy-appearance-and-schedule#KB-076"
+      ],
+      "observed_kb_refs": [
+        "KB-087",
+        "KB-092",
+        "KB-093",
+        "KB-094",
+        "KB-095",
+        "object:KB-031"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-18: buyer guest, desktop; widget PDP, popup, recommendation inline, cart pooling 2 product."
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Storefront · /collections/all và trang search — badge 'MULTIBUY' trên card",
+      "precondition": "Offer Running (mục mới, staging); product không có ảnh nên badge trên ảnh PDP không đánh giá được.",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-091",
+        "discount-offers/offer-storefront-events#KB-031"
+      ],
+      "basis": "OBSERVED_CURRENT"
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Nudge buyer hoàn thành bundle",
+      "description": "Field \"Remaining quantity message\" (merchant-editable, default \"Add {remaining_quantity} more items to get this deal\") chỉ cover progress TRƯỚC khi đạt tier đầu; không có nudge message cho 1 leftover unit SAU khi 1 set đã hoàn thành (Percentage mode).",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-030",
+        "multibuy/multibuy-appearance-and-schedule#KB-031",
+        "multibuy/multibuy-discount-calculation#KB-073"
+      ],
+      "observed_kb_refs": [
+        "KB-085",
+        "KB-092"
+      ],
+      "refresh_note": "Staging: default nguyên văn khớp; widget hiện 'Add N more items to get this deal' + progress bar 3 mốc, phản ánh cart thật kể cả ở PDP product khác."
+    },
+    {
+      "name": "Kiểm soát stacking với native Shopify discount khác",
+      "description": "Checkbox combine với Order/Product/Shipping discount (default off, ticket-only); tách biệt với \"Apply highest tier to entire quantity\" — 2 setting này không conflict theo construction (per-group/whole-quantity math vs stack-hay-không với discount khác).",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-061",
+        "multibuy/multibuy-discount-calculation#KB-074"
+      ],
+      "observed_kb_refs": [
+        "object:KB-012"
+      ],
+      "refresh_note": "Staging: form Multibuy mới có cả 3 checkbox CHECKED mặc định + dropdown 'One per product (best value wins)' — khác ticket KB-061 (INFERRED); normalizer ghi là quan sát cho OQ-discount-offers-024, không mở conflict_group."
+    },
+    {
+      "name": "Lên lịch thời gian offer active",
+      "description": "Start date/time required (không là ngày quá khứ), end date optional qua toggle; thêm checkbox \"Enable countdown timer\" (phát hiện live, không có trong ticket); badge discount tự hide khi offer ngoài scheduled window.",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-062",
+        "multibuy/multibuy-appearance-and-schedule#KB-063",
+        "multibuy/multibuy-appearance-and-schedule#KB-064",
+        "multibuy/multibuy-appearance-and-schedule#KB-076"
+      ],
+      "observed_kb_refs": [
+        "object:KB-013"
+      ],
+      "refresh_note": "Staging: start = lúc mở form theo timezone store, ngày quá khứ disabled; countdown chỉ hiện sau khi bật end date ('HURRY UP!' / 'Sale end in'); countdown trên widget Multibuy và badge ẩn ngoài lịch không quan sát."
+    },
+    {
+      "name": "Branding widget và discount badge",
+      "description": "Accordion Appearance & style gồm đúng 6 section (Layout/Color/Typography/Image/Badge/Custom CSS); Custom CSS là shared setting dùng chung với Wholesale Pricing và Quantity Break, gate behind contact-support-to-enable. Badge content/position có 2 intra-doc conflict chưa resolve (xem conflicts[]).",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-054",
+        "multibuy/multibuy-appearance-and-schedule#KB-055",
+        "multibuy/multibuy-appearance-and-schedule#KB-056",
+        "multibuy/multibuy-appearance-and-schedule#KB-057",
+        "multibuy/multibuy-appearance-and-schedule#KB-058",
+        "multibuy/multibuy-appearance-and-schedule#KB-059",
+        "multibuy/multibuy-appearance-and-schedule#KB-060",
+        "multibuy/multibuy-appearance-and-schedule#KB-065",
+        "multibuy/multibuy-appearance-and-schedule#KB-066",
+        "multibuy/multibuy-appearance-and-schedule#KB-081",
+        "multibuy/multibuy-appearance-and-schedule#KB-082",
+        "multibuy/multibuy-appearance-and-schedule#KB-083",
+        "multibuy/multibuy-appearance-and-schedule#KB-084",
+        "discount-offers/offer-create-and-manage#KB-001",
+        "discount-offers/offer-create-and-manage#KB-002"
+      ],
+      "observed_kb_refs": [
+        "KB-089",
+        "KB-090",
+        "KB-091",
+        "object:KB-031"
+      ],
+      "refresh_note": "Staging: Layout radius 12px, Color #606B57/#1C1D21/#FFFFFF, Typography Bold 20/Regular 14/Regular 12, Image 60px/12px, Badge 'MULTIBUY' Top left 6px, Custom CSS khoá; storefront badge 'MULTIBUY' radius 6px ở góc trên-trái card. Quan sát nghiêng về phía KB-081 (6px) và KB-083 ('MULTIBUY') của CONF-DOC04-001/002 nhưng conflict giữ UNRESOLVED.",
+      "status": "UNRESOLVED",
+      "conflict_groups": [
+        "CONF-DOC04-001",
+        "CONF-DOC04-002"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "chưa tới scheduled start",
+      "to": "offer active",
+      "trigger": "thời điểm hiện tại chạm start date/time",
+      "condition": "start date không là ngày quá khứ; end date chưa tới (nếu có bật)",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-062",
+        "multibuy/multibuy-appearance-and-schedule#KB-063"
+      ],
+      "observed_kb_refs": [
+        "object:KB-013",
+        "object:KB-016"
+      ],
+      "refresh_note": "Staging: offer lưu với start = lúc mở form → Running ngay; chuyển Scheduled → Running theo thời gian chưa quan sát."
+    },
+    {
+      "from": "offer active",
+      "to": "offer ended",
+      "trigger": "thời điểm hiện tại chạm end date/time",
+      "condition": "toggle \"Enable end date\" đang bật",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-063"
+      ]
+    },
+    {
+      "from": "badge hiển thị",
+      "to": "badge ẩn",
+      "trigger": "offer ra ngoài scheduled active window",
+      "condition": "",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-076"
+      ],
+      "refresh_note": "Staging: không kiểm được riêng cho Multibuy."
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Field \"Remaining quantity message\" (default \"Add {remaining_quantity} more items to get this deal\") chỉ cover progress trước tier đầu, không cover leftover-unit case.",
+      "source_strength": "STRONG",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-030",
+        "multibuy/multibuy-appearance-and-schedule#KB-031"
+      ],
+      "refresh_kb_refs": [
+        "KB-085"
+      ]
+    },
+    {
+      "statement": "Appearance & style là accordion đúng 6 section: Layout, Color, Typography, Image, Badge, Custom CSS. Custom CSS (textarea) bị gate behind \"contact support to enable\".",
+      "source_strength": "STRONG",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-054",
+        "multibuy/multibuy-appearance-and-schedule#KB-060"
+      ],
+      "refresh_kb_refs": [
+        "KB-089"
+      ]
+    },
+    {
+      "statement": "Multibuy discount badge tự hide khi offer ngoài scheduled window, chỉ show khi offer active.",
+      "source_strength": "STRONG",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-076"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Discount combination: checkbox combine Order/Product/Shipping discount, default off.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "note": "Nguồn ticket QVD-108, chưa QA re-confirm.",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-061"
+      ],
+      "observed_kb_refs": [
+        "object:KB-012"
+      ],
+      "refresh_note": "Staging: cả 3 CHECKED mặc định."
+    },
+    {
+      "statement": "Start date/time required, default = creation time, không là ngày quá khứ, dùng store timezone. End date/time optional sau toggle \"Enable end date\", default off = chạy vô thời hạn.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "note": "Nguồn ticket QVD-109, chưa QA re-confirm (phần \"Enable countdown timer\" thì ĐÃ confirmed live, xem confirmed_rules KB-064 — giữ tách biệt).",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-062",
+        "multibuy/multibuy-appearance-and-schedule#KB-063"
+      ],
+      "observed_kb_refs": [
+        "object:KB-013"
+      ],
+      "refresh_note": "Staging khớp shape."
+    },
+    {
+      "statement": "Multibuy discount badge: optional, hiển thị trên product image ở collection pages/recommendation sections/optionally cart; Position dropdown có đúng 4 option (Top-left default, Top-right, Bottom-left, Bottom-right).",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "note": "Nguồn ticket QVD-132, chưa QA re-confirm — và chính phần default content/border-radius của badge đang CONFLICTED (xem conflicts[]).",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-065",
+        "multibuy/multibuy-appearance-and-schedule#KB-066"
+      ],
+      "observed_kb_refs": [
+        "KB-091",
+        "object:KB-031"
+      ],
+      "refresh_note": "Staging: badge trên card collection/search góc trên-trái; trên ảnh PDP không đánh giá được."
+    },
+    {
+      "statement": "Form Multibuy mới: 'Offer title (Fixed price)' = BUY ANY {quantity_tier} ITEMS FOR {discount}; 'Remaining quantity message' = 'Add {remaining_quantity} more items to get this deal'; offer lưu có percentage_offer_title ẩn 'BUY ANY {quantity_tier} ITEMS GET {discount} OFF'.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "LOW",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-085"
+      ]
+    },
+    {
+      "statement": "Appearance & style mặc định: radius 12px; Primary #606B57, Secondary #1C1D21, Accent #FFFFFF; Heading Bold 20, Body Regular 14, Badge Regular 12; Image 60px / 12px; Badge 'MULTIBUY' Top left 6px; Custom CSS khoá.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-089"
+      ]
+    },
+    {
+      "statement": "Badge border radius mặc định 6px trên form mới; badge storefront render radius 6px.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 2,
+      "confidence": "LOW",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-DOC04-001",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-090"
+      ]
+    },
+    {
+      "statement": "Badge text mặc định 'MULTIBUY'; offer lưu multibuy_badge_text 'MULTIBUY'; storefront hiện 'MULTIBUY' trên /collections/all và search.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 3,
+      "confidence": "LOW",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-DOC04-002",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-091"
+      ]
+    }
+  ],
+  "observed_validations": [
+    {
+      "input": "Mở Appearance & style → Custom CSS",
+      "message_verbatim": "contact our support team to enable",
+      "condition": "Field khoá, không self-serve (chỉ ghi phần chữ explorer trích).",
+      "blocking": true,
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-089",
+        "multibuy/multibuy-appearance-and-schedule#KB-060"
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "role": "merchant",
+      "scope": "portal",
+      "permission": "Create/edit/delete Multibuy offers và toàn bộ configuration section (trigger, tier, scheduling, appearance, discount combination, compare-at-price).",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-001",
+        "multibuy/multibuy-discount-setup#KB-003",
+        "multibuy/multibuy-discount-setup#KB-017",
+        "multibuy/multibuy-discount-setup#KB-028",
+        "multibuy/multibuy-appearance-and-schedule#KB-054",
+        "multibuy/multibuy-appearance-and-schedule#KB-061",
+        "multibuy/multibuy-appearance-and-schedule#KB-062",
+        "multibuy/multibuy-discount-calculation#KB-067"
+      ],
+      "note": "Không có Portal role/sub-permission riêng nào được tài liệu hoá cho feature này — xem unknown_areas.",
+      "observed_kb_refs": [
+        "object:KB-015",
+        "object:KB-017"
+      ],
+      "refresh_note": "Staging: owner session tạo/sửa/xoá được; staff hạn quyền không kiểm."
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      "KB-004",
+      "KB-005",
+      "KB-006",
+      "KB-007",
+      "KB-009",
+      "KB-010",
+      "KB-011",
+      "KB-012",
+      "KB-013",
+      "KB-014",
+      "KB-015",
+      "KB-017",
+      "KB-018",
+      "KB-019",
+      "KB-020",
+      "KB-021",
+      "KB-022",
+      "KB-023",
+      "KB-024",
+      "KB-025",
+      "KB-026",
+      "KB-027",
+      "KB-028",
+      "KB-035",
+      "KB-037",
+      "KB-041",
+      "KB-042",
+      "KB-044",
+      "KB-045",
+      "KB-046",
+      "KB-047",
+      "KB-048",
+      "KB-052",
+      "KB-054",
+      "KB-055",
+      "KB-056",
+      "KB-057",
+      "KB-058",
+      "KB-059",
+      "KB-060",
+      "KB-061",
+      "KB-062",
+      "KB-063",
+      "KB-064",
+      "KB-065",
+      "KB-066",
+      "KB-070",
+      "KB-075",
+      "KB-078",
+      "KB-081",
+      "KB-082",
+      "KB-083",
+      "KB-084",
+      {
+        "item": "Form Multibuy staging (/offers/setting/multibuy): Offer title (Fixed price), Remaining quantity message, Discount type + 3 tier mặc định, Maximum discount uses (multiplier), Customer product selection behavior (3 radio + URL + recommendations), Appearance & style, Combination, Campaign scheduling",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-appearance-and-schedule#KB-085",
+          "multibuy/multibuy-discount-setup#KB-086",
+          "multibuy/multibuy-discount-setup#KB-087",
+          "multibuy/multibuy-product-selection#KB-088",
+          "multibuy/multibuy-appearance-and-schedule#KB-089",
+          "multibuy/multibuy-appearance-and-schedule#KB-090",
+          "multibuy/multibuy-appearance-and-schedule#KB-091",
+          "discount-offers/offer-create-and-manage#KB-012",
+          "discount-offers/offer-create-and-manage#KB-013"
+        ]
+      },
+      {
+        "item": "Manage offers / modal Delete / save bar / modal xin review sau lưu — staging (mức object)",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-016",
+          "discount-offers/offer-create-and-manage#KB-017",
+          "discount-offers/offer-create-and-manage#KB-018",
+          "discount-offers/offer-create-and-manage#KB-020"
+        ]
+      }
+    ],
+    "storefront": [
+      "KB-003",
+      "KB-008",
+      "KB-016",
+      "KB-029",
+      "KB-030",
+      "KB-031",
+      "KB-032",
+      "KB-033",
+      "KB-034",
+      "KB-036",
+      "KB-038",
+      "KB-039",
+      "KB-040",
+      "KB-049",
+      "KB-050",
+      "KB-051",
+      "KB-053",
+      "KB-068",
+      "KB-069",
+      "KB-072",
+      "KB-073",
+      "KB-076",
+      "KB-077",
+      "KB-079",
+      "KB-080",
+      {
+        "item": "PDP widget Multibuy (tiêu đề tier, badge 'Saved', progress, slot '+', recommendation, 'powered by qikify') — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-product-selection#KB-092"
+        ]
+      },
+      {
+        "item": "Popup modal chọn sản phẩm ('Pick', 'Done', Subtotal) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-product-selection#KB-094"
+        ]
+      },
+      {
+        "item": "Cart: mã QIKIFY-xxxxxx chia across theo tỷ lệ giá; Shopify tách line có/không discount — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-discount-calculation#KB-095",
+          "multibuy/multibuy-discount-setup#KB-087"
+        ]
+      },
+      {
+        "item": "Collection/search: badge 'MULTIBUY' góc trên-trái, radius 6px — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-appearance-and-schedule#KB-091",
+          "multibuy/multibuy-appearance-and-schedule#KB-090",
+          "discount-offers/offer-storefront-events#KB-031"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "item": "Backend app <QVL_API_BASE>: POST /api/offers, GET /api/offers/{id}, PUT /api/offers/{id}, DELETE /api/offers/{id} — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-appearance-and-schedule#KB-085",
+          "multibuy/multibuy-discount-setup#KB-086",
+          "multibuy/multibuy-discount-setup#KB-087",
+          "multibuy/multibuy-product-selection#KB-088",
+          "discount-offers/offer-create-and-manage#KB-015",
+          "discount-offers/offer-create-and-manage#KB-032"
+        ]
+      },
+      {
+        "item": "Shopify Admin GraphQL qua app proxy: discountAutomaticAppCreate / Update / Delete — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-015"
+        ]
+      },
+      {
+        "item": "Storefront cart: POST /cart/add.js?qvl-multibuy (popup Done / Pick inline), POST /cart/add (ATC theme), đổi số lượng, đọc cart — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-product-selection#KB-093",
+          "multibuy/multibuy-product-selection#KB-094",
+          "multibuy/multibuy-product-selection#KB-092",
+          "multibuy/multibuy-discount-calculation#KB-095",
+          "multibuy/multibuy-discount-setup#KB-087"
+        ]
+      },
+      {
+        "item": "POST <QVL_API_BASE>/api/events (view; add_to_cart — 'Done' popup chỉ gửi cho offer Multibuy) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-product-selection#KB-092",
+          "discount-offers/offer-storefront-events#KB-023"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "Offer lưu: allow_apply_multiple_discount, discount_type fixed_amount, discount_value_percentage, discount_apply_type 'per_combo', percentage_offer_title, product_selection_behavior (open_popup), multibuy_badge_text — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "multibuy/multibuy-appearance-and-schedule#KB-085",
+          "multibuy/multibuy-discount-setup#KB-086",
+          "multibuy/multibuy-discount-setup#KB-087",
+          "multibuy/multibuy-product-selection#KB-088",
+          "multibuy/multibuy-appearance-and-schedule#KB-091"
+        ]
+      }
+    ],
+    "code": [
+      "KB-043",
+      "KB-071"
+    ]
+  },
+  "dependencies": [
+    {
+      "depends_on": "Custom CSS (object-level shared advanced setting, discount-offers)",
+      "relation": "shared_advanced_setting",
+      "description": "Multibuy's Custom CSS field (Appearance & style) là shared setting dùng chung với Wholesale Pricing Offer và Quantity Break, gate behind contact-support-to-enable; phạm vi đầy đủ offer type dùng setting này có thể rộng hơn 3 loại đã xác nhận.",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-060",
+        "discount-offers/offer-create-and-manage#KB-001",
+        "discount-offers/offer-create-and-manage#KB-002"
+      ],
+      "observed_kb_refs": [
+        "KB-089"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "risk": "2 intra-doc conflict chưa resolve về default của Multibuy discount badge (border radius 6px vs 10px; text \"MULTIBUY\" vs \"Multi buy\") — không dùng giá trị nào làm oracle cho test case mặc định badge cho tới khi được xác nhận.",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-081",
+        "multibuy/multibuy-appearance-and-schedule#KB-082",
+        "multibuy/multibuy-appearance-and-schedule#KB-083",
+        "multibuy/multibuy-appearance-and-schedule#KB-084"
+      ],
+      "observed_kb_refs": [
+        "KB-090",
+        "KB-091"
+      ],
+      "refresh_note": "Staging nghiêng 6px / 'MULTIBUY' (store khác test-vl-1) — conflict vẫn mở."
+    },
+    {
+      "risk": "7 Business Rules section hoàn toàn từ ticket spec, chưa được QA re-confirm (Internal name/Offer title, Discount method, Customer selection core radio + popup detail, Discount combination, base Offer scheduling, base badge definition/position) — cùng tài liệu này đã phát hiện ít nhất 3 trường hợp khác nơi ticket spec KHÔNG khớp hành vi live (Trigger settings exclude option, Tier title notation single/double brace, Multibuy badge content/radius). Rủi ro cao các section ticket-only còn lại cũng đã drift khỏi hành vi thật.",
+      "kb_refs": [
+        "multibuy/multibuy-discount-setup#KB-004",
+        "multibuy/multibuy-discount-setup#KB-005",
+        "multibuy/multibuy-discount-setup#KB-006",
+        "multibuy/multibuy-discount-setup#KB-007",
+        "multibuy/multibuy-product-selection#KB-045",
+        "multibuy/multibuy-product-selection#KB-046",
+        "multibuy/multibuy-product-selection#KB-047",
+        "multibuy/multibuy-product-selection#KB-048",
+        "multibuy/multibuy-appearance-and-schedule#KB-061",
+        "multibuy/multibuy-appearance-and-schedule#KB-062",
+        "multibuy/multibuy-appearance-and-schedule#KB-063",
+        "multibuy/multibuy-appearance-and-schedule#KB-065",
+        "multibuy/multibuy-appearance-and-schedule#KB-066"
+      ],
+      "observed_kb_refs": [
+        "object:KB-010",
+        "KB-085",
+        "object:KB-011",
+        "KB-088",
+        "KB-094",
+        "object:KB-012"
+      ],
+      "refresh_note": "Staging xác nhận drift ở nhiều section ticket-only: Internal name không '#', Offer title khác, Discount code không khoá, selection mặc định Redirect + radio thứ 3, popup modal fade/Done, Combination mặc định checked."
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-18",
+    "base_observed_at": "2026-10-01"
+  },
+  "unknown_areas": [
+    {
+      "question": "Badge Multibuy có ẩn khi offer ngoài lịch, và countdown có hiện trên widget Multibuy không; offer sau giờ start/hết hạn hiển thị thế nào?",
+      "why_it_matters": "KB-076 chưa kiểm được riêng cho Multibuy; chuyển trạng thái theo thời gian NOT_COVERED.",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-076",
+        "multibuy/multibuy-appearance-and-schedule#KB-064",
+        "discount-offers/offer-create-and-manage#KB-013",
+        "discount-offers/offer-create-and-manage#KB-016"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-multibuy-030"
+    },
+    {
+      "question": "Popup và widget Multibuy trên mobile và với product có ảnh hiển thị thế nào?",
+      "why_it_matters": "Popup chỉ kiểm desktop; product thử không có ảnh (badge trên ảnh, lỗi console).",
+      "kb_refs": [
+        "multibuy/multibuy-product-selection#KB-094",
+        "multibuy/multibuy-appearance-and-schedule#KB-091"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-multibuy-031"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-04-multibuy-discount-setup",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "form mặc định, lưu, đổi selection behavior, bỏ multiplier, xoá",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-085",
+        "multibuy/multibuy-discount-setup#KB-086",
+        "multibuy/multibuy-discount-setup#KB-087",
+        "multibuy/multibuy-product-selection#KB-088",
+        "multibuy/multibuy-appearance-and-schedule#KB-089",
+        "discount-offers/offer-create-and-manage#KB-017"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-discount-setup",
+      "layer": "storefront",
+      "role": "buyer (guest)",
+      "state": "badge collection/search",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-090",
+        "multibuy/multibuy-appearance-and-schedule#KB-091"
+      ]
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "feature_id": "FEAT-04-multibuy-discount-setup",
+      "conflict_id": "CONF-DOC04-001",
+      "summary": "Badge border radius default: 6px (live-observed) vs 10px (ticket QVD-132) — UNRESOLVED.",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-081",
+        "multibuy/multibuy-appearance-and-schedule#KB-082"
+      ],
+      "resolution": "UNRESOLVED",
+      "observation_notes": [
+        {
+          "kb_ref": "KB-090",
+          "note": "Staging 2026-10-18: form Multibuy mới mặc định 6px, storefront render 6px — nghiêng phía KB-081 nhưng store khác test-vl-1; không đóng conflict."
+        }
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-discount-setup",
+      "conflict_id": "CONF-DOC04-002",
+      "summary": "Badge text default: \"MULTIBUY\" (live example) vs \"Multi buy\" (ticket QVD-132) — UNRESOLVED.",
+      "kb_refs": [
+        "multibuy/multibuy-appearance-and-schedule#KB-083",
+        "multibuy/multibuy-appearance-and-schedule#KB-084"
+      ],
+      "resolution": "UNRESOLVED",
+      "observation_notes": [
+        {
+          "kb_ref": "KB-091",
+          "note": "Staging 2026-10-18: form mới mặc định 'MULTIBUY', storefront 'MULTIBUY' — nghiêng phía KB-083; không đóng conflict."
+        }
+      ]
+    }
+  ],
+  "profile_relationships": []
+}

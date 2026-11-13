@@ -1,0 +1,1006 @@
+{
+  "feature_id": "FEAT-21-storefront-layer-visibility",
+  "feature_key": "storefront-layer-visibility",
+  "name": "Hiển thị layer và option theo điều kiện trên storefront",
+  "user_goal": "Buyer thấy đúng layer và option theo điều kiện Hide/Show và Group ẩn.",
+  "user_goal_kb_refs": [],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "[MỚI, CBS-011] guest-buyer trên storefront store không thuộc explorer (instance 520), SDK app-v2.js",
+      "permission_observed": "Personalize các campaign có layer action Hide (form + live preview), đổi giá trị nguồn, Add to cart mà không đăng nhập, trong lượt chạy test 2026-10-28. Không có khác biệt quyền nào được quan sát; không thử buyer đã đăng nhập.",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-232",
+        "sdk/storefront-layer-visibility#KB-234"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "[MỚI, CBS-011] Product page các campaign fixture TIB-5558 có layer action Hide (1 điều kiện, OR, AND, first load, nguồn Toggle / Additional Option) trên store test store không thuộc explorer (instance 520), staging",
+      "precondition": "Trình duyệt đã nhận SDK app-v2.js bản Last-Modified 2026-10-28 03:01:11 GMT (lần load đầu có thể nhận bản cũ đã cache — xem KB-237, quan sát một lượt)",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-237"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "[MỚI, CBS-006] Buyer preview trên storefront theo effective visibility của Group trong artwork",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-181, Testlane TC-TIB-6068 PASS, staging instance 520 / store không thuộc explorer, chạy 2026-10-16, shipped UNKNOWN). Với artwork có Group ẩn (các con giữ cờ ON), buyer preview SDK trên storefront chỉ hiển thị layer ngoài Group (chỉ OUTSIDE ở góc trên phải, không có LINE1/LINE2/ICON), khớp canvas Artwork Editor; cùng lượt chạy, Add to cart thành công (POST /api/merchant/shopify/customization 200, POST /cart/add thành công). Quy tắc effective visibility thuộc artwork (feature group-layer-effective-visibility).",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-181"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-006] Form cá nhân hoá và Add to cart khi artwork có Group ẩn — KNOWN_DEFECT (BUG-321..324), chưa có expected xác nhận",
+      "description": "OBSERVED_CURRENT/LOW, status KNOWN_DEFECT (KB-179, KB-180; lượt chạy test của agent 2026-10-16 trên staging, shipped UNKNOWN). Field required nằm trong Group ẩn vẫn chặn Add to cart ('FT2 * This field is required!' + 'Error: Some fields are required or invalid data', giỏ trống, không có request lưu customization). Field của layer con trong Group ẩn vẫn có trong form — kể cả khi condition buyer-side của layer con được thoả. Layer con bật 'Show this layer on first load' dưới Group ẩn không hiện ở lần load đầu, nhưng layer đó còn gắn condition nên chưa tách được hiệu ứng. Hành vi mong đợi theo QA plan/ticket của dev (form không có field, required không chặn, condition không pass) KHÔNG được nạp làm expected. Không dùng làm oracle.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-011] Layer action Hide trên form và live preview storefront — ẩn khi điều kiện khớp, hiện khi không khớp (1 điều kiện, OR, AND), cập nhật ngay, ngược chiều Show",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-231, KB-234; Testlane TC-TIB-7323..7330, TC-TIB-7336, TC-TIB-7337 PASS, staging store không thuộc explorer lượt retest 2026-10-28 với SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT, trước khi 6 PR của TIB-5558 merge 2026-10-29, build hash không rõ, shipped UNKNOWN). Layer action Hide và field (option) của nó cùng ẩn trên form và preview khi điều kiện khớp, cùng hiện khi không khớp, chữ nhập vào hiển thị đúng trên preview. Match OR: một điều kiện khớp là ẩn; match AND: chỉ ẩn khi mọi điều kiện khớp. Đổi giá trị nguồn cập nhật ngay trên cùng trang, không reload. Cùng điều kiện, layer Hide và layer Show cho kết quả ngược nhau. Nguồn điều kiện là layer Toggle hoặc Additional Option chạy đúng chiều (toggle bật / giá trị khớp → ẩn). Khi Add to cart, payload POST /api/merchant/shopify/customization chỉ chứa layer đang hiện. Chỉ kiểm trên app-v2.js; các quy tắc nguồn bị ẩn / linked layer / điều kiện 2 cấp chỉ có nguồn dev doc chưa kiểm (KB-235, xem observed_behavior).",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-234"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-011] First load của layer action Hide khi buyer chưa trả lời nguồn",
+      "description": "CONFIRMED_EXPECTED/MEDIUM chỉ cho nhánh 'Hide this layer on first load' BẬT (KB-232, Testlane TC-TIB-7331..7333 PASS, cùng lượt retest 2026-10-28): buyer chưa chọn gì thì layer không được vẽ trên preview nhưng field của layer vẫn hiện trên form; OR: layer còn ẩn tới khi mọi nguồn đều đã được trả lời giá trị không khớp; AND: layer hiện ngay khi một nguồn được trả lời giá trị không khớp. Nhánh toggle TẮT (layer hiện khi nguồn chưa trả lời) chỉ có trong tài liệu dev 2026-10-13, OBSERVED_CURRENT/LOW, chưa có test case (KB-233) — không dùng làm oracle.",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-232",
+        "sdk/storefront-layer-visibility#KB-233"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-011] Phiên bản SDK storefront nhận được khi rollout thay đổi Hide — quan sát cache, chưa xác nhận",
+      "description": "OBSERVED_CURRENT/LOW (KB-237, KB-236; 1 lượt chạy test 2026-10-28, S1). SDK app-v2.js bản 2026-10-28 03:01:11 GMT trả Cache-Control max-age=14400; lần load trang đầu trước khi xoá cache trình duyệt vẫn nhận bản cũ (Last-Modified 2026-10-14, chưa có code Hide) và trên bản cũ đó chiều ẩn/hiện layer Hide bị đảo (BUG-429), không tái hiện sau khi nhận bản mới. Trên bản SDK cũ, layer không điều kiện luôn hiện và layer Show giữ đúng chiều; chưa chạy lại trên SDK có code Hide (KB-236). Không phải quy tắc thời gian cache; không dùng làm oracle.",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-237",
+        "sdk/storefront-customization-storage#KB-236"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "[MỚI, CBS-006] form cá nhân hoá của artwork có Group ẩn, condition buyer-side của layer con chưa thoả",
+      "to": "field của layer con trong Group ẩn xuất hiện trong form",
+      "trigger": "buyer chọn giá trị làm condition của layer con được thoả",
+      "condition": "OBSERVED_CURRENT/LOW, KNOWN_DEFECT (BUG-321), TC-TIB-6067 Fail 2026-10-16, ghi chú 'Do bị cache' không có lần chạy lại có ngày",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-180"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-011] layer action Hide và field của nó đang hiện (điều kiện chưa khớp)",
+      "to": "field và node layer trên preview cùng ẩn; payload customization khi Add to cart không có dữ liệu của layer",
+      "trigger": "buyer chọn giá trị nguồn làm điều kiện khớp (OR: một điều kiện; AND: mọi điều kiện), hoặc bật layer Toggle / chọn giá trị Additional Option khớp",
+      "condition": "CONFIRMED_EXPECTED/MEDIUM, staging store không thuộc explorer, SDK app-v2.js 2026-10-28 03:01:11 GMT, trước khi 6 PR merge",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-234"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-011] layer action Hide đang ẩn (điều kiện khớp)",
+      "to": "field và layer hiện lại, chữ nhập vào hiển thị đúng trên preview",
+      "trigger": "buyer đổi giá trị nguồn sang không khớp (hoặc tắt Toggle / chọn giá trị Additional Option không khớp)",
+      "condition": "CONFIRMED_EXPECTED/MEDIUM; cập nhật ngay trên cùng trang, không reload (chuỗi Cat → Dog → Cat)",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-234"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-011] first load, buyer chưa trả lời nguồn, layer Hide bật 'Hide this layer on first load' (layer không vẽ trên preview, field vẫn hiện trên form)",
+      "to": "layer hiện trên preview",
+      "trigger": "OR: mọi nguồn đều đã được trả lời giá trị không khớp; AND: một nguồn được trả lời giá trị không khớp",
+      "condition": "CONFIRMED_EXPECTED/MEDIUM, TC-TIB-7331..7333; field của layer hiện xuyên suốt trên form",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-232"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-011] first load, buyer chưa trả lời nguồn, layer Hide tắt 'Hide this layer on first load'",
+      "to": "layer hiện (theo tài liệu dev)",
+      "trigger": "load trang",
+      "condition": "OBSERVED_CURRENT/LOW — chỉ từ tài liệu dev 2026-10-13, chưa có test case; không dùng làm oracle",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-233"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-011] option nguồn của layer Hide đang bị ẩn (toggle tắt hoặc bị ẩn bởi điều kiện của chính nó)",
+      "to": "điều kiện được tính là không khớp → layer Hide chỉ phụ thuộc option bị ẩn sẽ hiện; linked layer đi theo hiển thị cuối của layer gốc; điều kiện 2 cấp lan theo (theo tài liệu dev)",
+      "trigger": "option nguồn bị ẩn",
+      "condition": "OBSERVED_CURRENT/LOW — chỉ từ tài liệu dev 2026-10-13, chưa có test case; không dùng làm oracle",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-235"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-011] trình duyệt đã cache SDK app-v2.js bản cũ (Last-Modified 2026-10-14)",
+      "to": "trang nhận SDK bản 2026-10-28 03:01:11 GMT; chiều ẩn/hiện layer Hide không còn bị đảo (BUG-429)",
+      "trigger": "xoá cache trình duyệt rồi reload",
+      "condition": "OBSERVED_CURRENT/LOW, 1 lượt (2026-10-28); thời gian storefront còn chạy SDK cũ sau deploy chưa xác nhận",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-237"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "rule": "[MỚI, CBS-006] Buyer preview SDK trên storefront theo effective visibility của Group: với artwork có Group ẩn (các con giữ cờ ON), preview chỉ hiển thị layer ngoài Group, khớp canvas Artwork Editor.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging (instance 520 / store không thuộc explorer), guest buyer; Jira TIB-5584 Done (6/6 PR merged), shipped UNKNOWN; lượt chạy 2026-10-16 trên build staging @ 2026-10-16 13:54, build hash không rõ; production chưa xác nhận",
+      "caveats": "Một artwork fixture (#5046, campaign #3043) dựng qua MCP/API, chưa được PO/dev xác nhận là dữ liệu hợp lệ. Chỉ về preview — không áp cho form cá nhân hoá (KB-179, KB-180 là KNOWN_DEFECT). Lượt PASS chạy trước khi 3 PR còn OPEN merge; chưa chạy lại. Bundle/SDK version của store test không ghi.",
+      "confirmation_ref": "Testlane TC-TIB-6068 PASS (task TIB-211, Jira TIB-5584), chạy 2026-10-16",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-181"
+      ]
+    },
+    {
+      "rule": "[MỚI, CBS-011] Layer action Hide và field (option) của nó ẩn trên form và preview khi điều kiện khớp, hiện khi không khớp; match OR ẩn khi một điều kiện khớp, match AND chỉ ẩn khi mọi điều kiện khớp; đổi giá trị nguồn cập nhật ngay, không reload; với cùng điều kiện, layer Hide và layer Show cho kết quả ngược nhau.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging (instance 520 / store không thuộc explorer), guest buyer, SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT; Jira TIB-5558, lượt retest 2026-10-28 trước khi 6 PR merge 2026-10-29, build hash không rõ; shipped UNKNOWN; production chưa xác nhận",
+      "caveats": "Một lượt chạy; layer text 'QUOTE DOG', nguồn option Pet Type (1–2 điều kiện). Chỉ app-v2.js. Không gồm nguồn bị ẩn / linked layer / điều kiện 2 cấp (KB-235, chưa kiểm).",
+      "confirmation_ref": "Testlane TC-TIB-7323, TC-TIB-7324, TC-TIB-7325, TC-TIB-7326, TC-TIB-7327, TC-TIB-7328, TC-TIB-7329, TC-TIB-7330 PASS (task TIB-231, Jira TIB-5558), chạy 2026-10-28",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231"
+      ]
+    },
+    {
+      "rule": "[MỚI, CBS-011] Khi layer action Hide đang ẩn, payload POST /api/merchant/shopify/customization lúc Add to cart không mang dữ liệu của layer đó; payload chỉ chứa layer đang hiện kèm giá trị của nguồn.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging (instance 520 / store không thuộc explorer), guest buyer, SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT; lượt retest 2026-10-28 trước khi 6 PR merge; shipped UNKNOWN",
+      "caveats": "Một lượt chạy. Phần cart / order / print file của layer bị Hide thuộc object order (place-personalized-order-storefront, review-and-initiate-fulfillment-portal).",
+      "confirmation_ref": "Testlane TC-TIB-7323, TC-TIB-7336, TC-TIB-7337 PASS (task TIB-231, Jira TIB-5558), chạy 2026-10-28",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-234"
+      ]
+    },
+    {
+      "rule": "[MỚI, CBS-011] Layer action Hide bật 'Hide this layer on first load', buyer chưa trả lời nguồn: layer không được vẽ trên preview nhưng field của layer vẫn hiện trên form; với OR layer còn ẩn tới khi mọi nguồn đều được trả lời không khớp, với AND layer hiện ngay khi một nguồn được trả lời không khớp.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging (instance 520 / store không thuộc explorer), guest buyer, SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT; lượt retest 2026-10-28 trước khi 6 PR merge; shipped UNKNOWN",
+      "caveats": "Chỉ nhánh toggle BẬT. Nhánh toggle TẮT (KB-233) chỉ có tài liệu dev, OBSERVED_CURRENT/LOW — không thuộc rule này.",
+      "confirmation_ref": "Testlane TC-TIB-7331, TC-TIB-7332, TC-TIB-7333 PASS (task TIB-231, Jira TIB-5558), chạy 2026-10-28",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-232"
+      ]
+    },
+    {
+      "rule": "[MỚI, CBS-011] Layer Toggle và Additional Option dùng được làm nguồn điều kiện cho layer action Hide và chạy đúng chiều: toggle bật / giá trị Additional Option khớp thì field và layer ẩn, tắt / không khớp thì hiện; form và preview khớp nhau.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging (instance 520 / store không thuộc explorer), guest buyer, SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT; lượt retest 2026-10-28 trước khi 6 PR merge; shipped UNKNOWN",
+      "caveats": "Một lượt chạy; một toggle ('Add name') và một Additional Option ('Gift wrap').",
+      "confirmation_ref": "Testlane TC-TIB-7336, TC-TIB-7337 PASS (task TIB-231, Jira TIB-5558), chạy 2026-10-28",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-234"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "[MỚI, CBS-006] Trên form cá nhân hoá SDK của storefront với artwork có Group ẩn: khi condition buyer-side của một layer con được thoả thì field của layer đó xuất hiện trong form dù Group cha đang ẩn (TC-TIB-6067 Fail); một layer con khác trong cùng Group ẩn vẫn có field trong form (TC-TIB-6066, BUG-321); layer con bật 'Show this layer on first load' dưới Group ẩn không hiện ở lần load đầu, nhưng layer đó còn gắn condition nên chưa tách được hiệu ứng của Group ẩn với hiệu ứng của condition. TC-TIB-6067 có ghi chú '=>> Do bị cache' nhưng không có lần chạy lại có ngày; TC-TIB-6065 actualResult rỗng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "status": "KNOWN_DEFECT",
+      "scope": "staging (instance 520 / store không thuộc explorer), guest buyer, lượt chạy 2026-10-16, build hash không rõ, shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-180"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-011] Theo tài liệu dev Jira TIB-5558 comment #54404 (2026-10-13, tự sinh từ branch diff), trước khi buyer trả lời (option nguồn còn trống), nếu 'Hide this layer on first load' tắt thì layer action Hide được hiện; option cá nhân hoá của chính layer đó hiện trong cả hai trường hợp bật và tắt. Trường hợp tắt chưa có test case nào kiểm; tài liệu viết trước khi code còn thay đổi tới lúc 6 PR merge 2026-10-29. Chưa xác nhận — không dùng làm expected.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging, guest buyer; tài liệu dev 2026-10-13, chưa có case kiểm, shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-233"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-011] Theo tài liệu dev Jira TIB-5558 comment #54404 (2026-10-13, tự sinh từ branch diff): điều kiện có option nguồn đang bị ẩn (bị tắt bởi toggle show/hide của nó, hoặc bị ẩn bởi chính điều kiện của nó) được tính là không khớp, nên layer action Hide chỉ phụ thuộc vào các option đang bị ẩn sẽ được hiện; linked layer đi theo trạng thái hiển thị cuối cùng của layer mà nó link tới; với điều kiện 2 cấp (layer B action Show điều kiện 'A is X', A là một layer Hide), khi A bị ẩn bởi điều kiện của nó thì B cũng bị ẩn. Chưa có test case nào kiểm trên build cuối. Chưa xác nhận — không dùng làm expected.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging, guest buyer; tài liệu dev 2026-10-13, chưa có case kiểm, shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-235"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-011] Lượt chạy test 2026-10-28 (TC-TIB-7323, TC-TIB-7324): response SDK app-v2.js bản Last-Modified 2026-10-28 03:01:11 GMT có Cache-Control max-age=14400; ở lần load đầu, trước khi xoá cache, trình duyệt vẫn nhận bản SDK cũ (Last-Modified 2026-10-14) và trên bản đó chiều ẩn/hiện của layer action Hide bị đảo (BUG-429); lỗi không tái hiện sau khi trang nhận bản 03:01:11 GMT. Quan sát một lượt — thời gian storefront còn chạy SDK cũ sau deploy và cách khắc phục chưa xác nhận, không phải quy tắc.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging, store store không thuộc explorer, 2026-10-28, cache trình duyệt, shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-237"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      {
+        "path": "Launch dialog multi-store (chọn thêm store2) + link 'Campaign link' hiển thị URL storefront thật cho từng store",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-002"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Block General error messages của product page content: request_rate_limited, request_rate_limited_retry_after",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-449"
+        ]
+      }
+    ],
+    "storefront": [
+      {
+        "path": "store TIB_STORE_URL_1 -> /password -> product page (store1, SDK v1)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-001",
+          "sdk/storefront-buyer-facing#KB-004",
+          "sdk/storefront-buyer-facing#KB-005",
+          "sdk/storefront-buyer-facing#KB-010",
+          "sdk/storefront-customization-storage#KB-014",
+          "sdk/storefront-customization-storage#KB-016",
+          "sdk/storefront-customization-storage#KB-017",
+          "sdk/storefront-customization-storage#KB-019",
+          "sdk/storefront-customization-storage#KB-022"
+        ]
+      },
+      {
+        "path": "store TIB_STORE_URL_2 -> /password -> product page (store2, SDK v2)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-001",
+          "sdk/storefront-buyer-facing#KB-007",
+          "sdk/storefront-buyer-facing#KB-008",
+          "sdk/storefront-buyer-facing#KB-009",
+          "sdk/storefront-buyer-facing#KB-011",
+          "sdk/storefront-customization-storage#KB-014",
+          "sdk/storefront-customization-storage#KB-015",
+          "sdk/storefront-customization-storage#KB-016",
+          "sdk/storefront-customization-storage#KB-017",
+          "sdk/storefront-customization-storage#KB-018",
+          "sdk/storefront-customization-storage#KB-019",
+          "sdk/storefront-customization-storage#KB-020",
+          "sdk/storefront-customization-storage#KB-021",
+          "sdk/storefront-customization-storage#KB-022"
+        ]
+      },
+      {
+        "path": "/cart, cart-drawer (store2 only — store1 chưa từng có item trong cart)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-009",
+          "sdk/storefront-buyer-facing#KB-005",
+          "sdk/storefront-customization-storage#KB-021"
+        ]
+      },
+      {
+        "path": "localStorage 'teeinblue-customizations' / 'teeinblue-global-options' (client-side draft, cả 2 store)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-014",
+          "sdk/storefront-customization-storage#KB-015",
+          "sdk/storefront-customization-storage#KB-016",
+          "sdk/storefront-customization-storage#KB-017",
+          "sdk/storefront-customization-storage#KB-019",
+          "sdk/storefront-customization-storage#KB-020",
+          "sdk/storefront-customization-storage#KB-021"
+        ]
+      },
+      {
+        "path": "Storefront re-verification pass 2026-09-21 (2026-09-21) tren CHINH campaign 2595 da dung lam baseline 2026-09-12 -- ca 2 store, bao gom SDK bundle marker check, template option 2 dependency shape, preview mechanism, ATC-block khi field de trong, campaign identity re-verify",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-040",
+          "sdk/storefront-buyer-facing#KB-041",
+          "sdk/storefront-campaign-media-api#KB-042",
+          "sdk/storefront-buyer-facing#KB-043",
+          "sdk/storefront-campaign-media-api#KB-044"
+        ]
+      },
+      {
+        "path": "[MỚI] Product page campaign 2740 /vi-vn/ (API path), /zh-zh/ (inline path), /en-vn/ — widget personalization theo locale, staging SDK app-v1.js build TIB-5352",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-053",
+          "sdk/storefront-translations#KB-054",
+          "sdk/storefront-translations#KB-055",
+          "sdk/storefront-translations#KB-058",
+          "sdk/storefront-translations#KB-059",
+          "sdk/storefront-translations#KB-060"
+        ]
+      },
+      {
+        "path": "[MỚI] Cart → modal 'Edit design' (vi) — lần gọi dictionary kế tiếp trong cùng page session; nhãn thiếu trong dictionary hiển thị chữ gốc",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-057",
+          "sdk/storefront-translations#KB-058"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-008] localStorage 'teeinblue-customizations' sau khi personalize và Add-to-cart nhiều product (store test store không thuộc explorer, order 14 line item)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-066"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-006] Product page campaign #3043 (artwork #5046, Group ẩn), store test instance 520 store không thuộc explorer — buyer preview SDK theo effective visibility của Group",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-181"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-006] Form cá nhân hoá SDK + Add to cart với artwork có Group ẩn (field required trong Group, condition buyer-side của layer con, 'Show this layer on first load') — KNOWN_DEFECT",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-179",
+          "sdk/storefront-layer-visibility#KB-180"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] Product page các campaign fixture TIB-5558 (store test instance 520 store không thuộc explorer) — form cá nhân hoá + live preview SDK app-v2.js với layer action Hide: 1 điều kiện, OR, AND, first load, nguồn Toggle / Additional Option, so sánh với layer Show",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-231",
+          "sdk/storefront-layer-visibility#KB-232",
+          "sdk/storefront-layer-visibility#KB-233",
+          "sdk/storefront-layer-visibility#KB-234",
+          "sdk/storefront-layer-visibility#KB-235",
+          "sdk/storefront-customization-storage#KB-236"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] Cache trình duyệt của SDK app-v2.js (lần load đầu nhận bản cũ, xoá cache để nhận bản mới) — OBSERVED_CURRENT/LOW",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-237"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-009] Product page store test store không thuộc explorer (instance 520) — gallery SDK lọc mockup + video theo variant (setting bật / tắt), đổi variant, play video, thứ tự gallery, video 'Always load first' (BUG-359), khu vực preview khi variant chỉ gán video",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-320",
+          "sdk/storefront-campaign-media-api#KB-322",
+          "sdk/storefront-campaign-media-api#KB-323",
+          "sdk/storefront-campaign-media-api#KB-324",
+          "sdk/storefront-campaign-media-api#KB-325",
+          "sdk/storefront-campaign-media-api#KB-326",
+          "sdk/storefront-campaign-media-api#KB-327"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Product page store không thuộc explorer campaign #3270 (có Global Option), #3271 (dùng cùng GO), #3272 (không GO) — form, preview, reload, tự điền Global Option giữa campaign (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-358",
+          "sdk/storefront-buyer-facing#KB-359",
+          "sdk/storefront-customization-storage#KB-360",
+          "sdk/storefront-buyer-facing#KB-361",
+          "sdk/storefront-customization-storage#KB-362",
+          "sdk/storefront-campaign-media-api#KB-363"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Product page platform product #602 (/products/the-complete-snowboard, store không thuộc explorer) — trang thật không render form (lỗi đã biết BUG-310); form chỉ render khi HTML đã patch (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-364",
+          "sdk/storefront-buyer-facing#KB-365",
+          "sdk/storefront-campaign-media-api#KB-355"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Reload storefront sau thay đổi phía merchant (Save artwork + Update campaign; sửa + Publish platform product) — URL SDK ?v=1 vẫn trả bản cũ (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-356",
+          "sdk/storefront-campaign-media-api#KB-357"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-015] Product page store không thuộc explorer sản phẩm có artwork group ~250 layer ảnh → bấm Preview (popup preview) — quan sát, đếm DOM toàn trang",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-394"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Popup cross-sell: variant picker, giá, CTA \"Sold out\"",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-408",
+          "sdk/storefront-buyer-facing#KB-420",
+          "sdk/storefront-buyer-facing#KB-421",
+          "sdk/storefront-buyer-facing#KB-452",
+          "sdk/storefront-buyer-facing#KB-453"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Thông báo 429 ở upload và add-to-cart",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-418",
+          "sdk/storefront-buyer-facing#KB-419",
+          "sdk/storefront-buyer-facing#KB-450",
+          "sdk/storefront-buyer-facing#KB-451"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Product page sau reload: template picker \"Choose an option\", chọn lại template hiện lại ảnh và position (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-506"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Preview và thumbnail cart khi position bị sửa tay (NaN, lỗi console, mất ảnh / x=0) (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-507"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Field upload ảnh: tên file payload, SVG có script, HTML đổi đuôi .jpg; text layer sync hiển thị payload literal (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-508"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Preview vector layer: SVG inline với id prefix svg-<chuỗi>-<id gốc> khi áp màu, <image href=…svg> khi chưa áp màu, tham chiếu url()/href/xlink:href/marker-*/<style>",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-509",
+          "sdk/storefront-buyer-facing#KB-510",
+          "sdk/storefront-buyer-facing#KB-511",
+          "sdk/storefront-buyer-facing#KB-512"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "path": "POST /password (cả 2 store, form authenticity_token/password redacted)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-001"
+        ]
+      },
+      {
+        "path": "GET /api/instances/{instanceId}/themes/app-block-enabled (portal pre-flight, owner)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-012"
+        ]
+      },
+      {
+        "path": "GET /api/merchant/campaigns/{platformProductId}.json (public, no auth, cả 2 store)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-013"
+        ]
+      },
+      {
+        "path": "POST /cart/add, POST /cart/change.js, POST /cart/clear.js (SDK v2, store2 — thành công ở lần thử thứ hai); KHÔNG có request nào tương ứng ở SDK v1/store1",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-008",
+          "sdk/storefront-buyer-facing#KB-005",
+          "sdk/storefront-customization-storage#KB-021"
+        ]
+      },
+      {
+        "path": "POST https://staging-api.teeinblue.com/api/merchant/shopify/customization (API-OP-051) — chỉ fire tại thời điểm ATC (SDK v2, store2), 0 lần khi field-fill, absent khi ATC thất bại do thiếu click con grouped_clipart",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-018",
+          "sdk/storefront-customization-storage#KB-022"
+        ]
+      },
+      {
+        "path": "GET /cart.json (implicit, khong phai APIOP rieng) -- xac nhan item_count=0 ngay sau khi ADD TO CART bi chan client-side do field bat buoc de trong (KB-043), ca 2 store",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-043"
+        ]
+      },
+      {
+        "path": "[MỚI] GET /api/merchant/translations/<locale>.json?shop=<domain>&v=<translation_version> — do SDK gọi (API path); timeout 5s, fallback chữ gốc, retry lazy tối đa 2 fetch/page session; staging build TIB-5352",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-053",
+          "sdk/storefront-translations#KB-054",
+          "sdk/storefront-translations#KB-056",
+          "sdk/storefront-translations#KB-057"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] POST /api/merchant/shopify/customization lúc Add to cart — payload chỉ chứa layer đang hiện (layer action Hide đang ẩn không có key), kèm giá trị nguồn (option / Toggle / Additional Option)",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-231",
+          "sdk/storefront-layer-visibility#KB-234",
+          "sdk/storefront-customization-storage#KB-236"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-009] GET /api/merchant/campaigns/<id>.json — merchant JSON chỉ mang assignment media ↔ variant mới sau POST /api/campaigns/<id>/sync (quan sát 1 lượt, ngoài oracle)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-321"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] GET /api/merchant/campaigns/{shopify product id}.json?shop=…&v=<v chưa từng dùng> — có đủ key SDK cần, không còn field đã bỏ (CONFIRMED_EXPECTED/MEDIUM, TC-TIB-7507, chỉ cho v mới)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-350",
+          "sdk/storefront-campaign-media-api#KB-352"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] GET /api/merchant/campaigns/{shopify product id}.json?shop=…&v=1 (URL SDK gọi khi render) so với link preload v=<version> — v=1 trả bản cũ sau sửa phía merchant, còn artworks[].global_options (quan sát; BUG-437/446/439)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-354",
+          "sdk/storefront-campaign-media-api#KB-356",
+          "sdk/storefront-campaign-media-api#KB-357"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Giá trị resource_type ('campaign' / 'platform_product'), danh sách key artworks[] của platform product, campaigns/{shopify product id}.json là đường SDK dùng cho platform product (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-351",
+          "sdk/storefront-campaign-media-api#KB-353",
+          "sdk/storefront-campaign-media-api#KB-355"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] POST /api/merchant/shopify/customization → 201 với key layer-<id> và global-option-<id> (một giá trị cho GO dùng chung nhiều layer) (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-360",
+          "sdk/storefront-buyer-facing#KB-361",
+          "sdk/storefront-campaign-media-api#KB-363"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] GET /products/<shopify product id>.js → 404 mỗi lần load campaign (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-366"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Response public campaigns/{id}.json: không thấy access_token/token/secret/password; có config.maps_api_key (Mapbox 'pk.') (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-367"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Route single upload: edge, edge GenAI (genai-uploads), presigned (upload-url), photo-upload",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-447"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Poll upload: HTTP 200 với error_message = rate_limit_exceeded",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-448"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Request customization lúc Add to cart → 201, gửi nguyên giá trị position sửa tay, không có key position của campaign khác (quan sát TC-30)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-507"
+        ]
+      }
+    ],
+    "data": [
+      "platform_linked_id độc lập theo store (store1: 8138398629987, store2: 15280333291824) — quan sát qua GraphQL campaign_instances, KHÔNG có DB-level verification.",
+      "localStorage key 'teeinblue-customizations' (array 1 object {productId, customization, timestamp}) và 'teeinblue-global-options' (object keyed theo global-option id) — client-side only, không phải DB, cùng shape trên cả 2 store.",
+      "[MỚI, KB-059] window.teeinblueShopTranslations (dictionary inline trong HTML, in 1 lần trên /zh-zh/) — client-side, staging build TIB-5352.",
+      "[MỚI, CBS-008, KB-066] localStorage 'teeinblue-customizations' khi đã thao tác nhiều product: chỉ còn khoảng 10 entry gần nhất (chưa đếm độc lập), entry cùng product bị ghi đè — client-side, OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-011, KB-236] localStorage 'teeinblue-customizations' chỉ chứa giá trị của layer đang hiện — quan sát trên SDK bản cũ (2026-10-14), OBSERVED_CURRENT/LOW; phần cart/order của layer bị Hide thuộc object order.",
+      "[MỚI, CBS-013, KB-362] Lựa chọn Global Option tự điền khi mở campaign khác dùng cùng GO trong cùng trình duyệt — tester ghi trạng thái lấy từ localStorage; OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-013, KB-360] localStorage 'teeinblue-customizations' khớp payload customization có key global-option-<id> — OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-098, KB-506] localStorage vẫn giữ template, ảnh và position sau reload (picker không khôi phục) — OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-098, KB-507] Giá trị position trong localStorage do buyer sửa tay không bị clamp hay bỏ qua — OBSERVED_CURRENT/LOW."
+    ],
+    "code": [
+      {
+        "path": "staging-sdk.teeinblue.com/shopify/app-v1.js (SDK v1, store1) — chưa review, là 1 hướng điều tra đề xuất cho CFL-001",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-006"
+        ]
+      },
+      {
+        "path": "#teeinblue-wrapper (Vue3 app, SDK v2, store2) — chỉ quan sát qua DOM/SVG layer id, chưa review source",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-011"
+        ]
+      },
+      {
+        "path": "[MỚI] staging SDK app-v1.js build TIB-5352 — hàm fetch merchant/translations/<locale>.json: headersTimeout 5000 ms, bắt lỗi về null (INFERRED), cache promise theo 'shop|locale', cho gọi lại khi số lỗi < 2 (đọc bundle, người gửi CCR)",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-056",
+          "sdk/storefront-translations#KB-057"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-003] staging-sdk.teeinblue.com/shopify/app-v1.js (bundle theme-embed tải 2026-10-07) — theo grep do người gửi CCR tự thực hiện: không có generateDesignLinks/design_urls/onCustomizationCreated/notifyParentIFrame/window.parent.postMessage; EVENT_CUSTOMIZATION_CREATED định nghĩa nhưng không dispatch. Chỉ app-v1.js; app-v2.js chưa kiểm (OQ-sdk-063).",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-065"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] staging-sdk.teeinblue.com/shopify/app-v2.js — bản Last-Modified 2026-10-28 03:01:11 GMT (Cache-Control max-age=14400) có đánh giá action Hide; bản 2026-10-14 chưa có. Chỉ quan sát header/hành vi, chưa review source.",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-231",
+          "sdk/storefront-layer-visibility#KB-237"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Component của Cross-sell chứa thay đổi variant picker; CampaignForm không bị ảnh hưởng",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-408",
+          "sdk/storefront-buyer-facing#KB-454"
+        ]
+      }
+    ]
+  },
+  "dependencies": [
+    {
+      "description": "[MỚI, CBS-006] Buyer preview và form cá nhân hoá với artwork có Group ẩn phụ thuộc quy tắc effective visibility của Group do object artwork sở hữu (feature group-layer-effective-visibility: layer chỉ render khi cờ của nó và mọi Group tổ tiên đều ON) và condition buyer-side cấu hình ở artwork (feature conditional-setting-config). Preview (KB-181) đã theo quy tắc; form (KB-179, KB-180) chưa theo — known defect.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180",
+        "sdk/storefront-layer-visibility#KB-181"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-011] Ẩn/hiện layer action Hide trên storefront phụ thuộc cấu hình do object artwork sở hữu: action Show/Hide, điều kiện, match type và toggle first load (feature conditional-setting-config); với action Hide, show_by_default của dependency mang nghĩa 'Hide this layer on first load' (feature layer-condition-value-binding); danh sách layer type làm nguồn điều kiện được (Toggle, Additional Option) cũng thuộc artwork.",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-232",
+        "sdk/storefront-layer-visibility#KB-234"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-011] Hành vi Hide đúng chiều phụ thuộc việc trình duyệt buyer đã nhận SDK app-v2.js bản có code Hide; bản cũ đã cache cho chiều ẩn/hiện bị đảo ở lượt quan sát (OBSERVED_CURRENT/LOW).",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-237"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "description": "[MỚI, CBS-006] KNOWN_DEFECT BUG-321..324: buyer không Add to cart được khi artwork có Group ẩn chứa field required (field không thấy/không cần nhưng vẫn chặn), và field của layer con trong Group ẩn vẫn hiện trong form. Status Testlane của TC-TIB-6064 / TC-TIB-6067 ghi 'passed' trong khi actualResult ghi Fail, không có lần chạy lại có ngày (ghi chú '=>> Do bị cache') — không dùng status Testlane làm bằng chứng bug đã fix.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-006] Preview storefront đã theo effective visibility (KB-181) trong khi form cá nhân hoá chưa (KB-179, KB-180): buyer có thể bị yêu cầu nhập field cho layer không hiện trên preview. Không được suy rule preview sang form, và không viết check form theo kỳ vọng của QA plan dev khi chưa có xác nhận.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180",
+        "sdk/storefront-layer-visibility#KB-181"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-006] Mọi quan sát CBS-006 trên storefront đến từ 1 lượt chạy test của agent trên staging 2026-10-16, trước khi 3 PR của TIB-5584 còn OPEN lúc đó merge; build hash không rõ, production chưa xác nhận (shipped UNKNOWN); fixture 'Group ẩn + con visible ON' dựng qua MCP/API chưa được PO/dev xác nhận hợp lệ (repair command đã chạy trên dữ liệu thật). Bundle/SDK version của store test không ghi — không ghép với nhãn SDK v1/v2 của capability base.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180",
+        "sdk/storefront-layer-visibility#KB-181"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-011] Mọi rule Hide trên storefront (KB-231, KB-232, KB-234) đến từ 1 lượt chạy test của agent trên staging 2026-10-28 với SDK app-v2.js bản 03:01:11 GMT, trước khi 6 PR của TIB-5558 merge 2026-10-29; build hash không rõ, production chưa xác nhận (shipped UNKNOWN); chỉ kiểm app-v2.js. Không dùng làm expected cho production / build sau merge / app-v1.js khi chưa chạy lại có ngày + build.",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-232",
+        "sdk/storefront-layer-visibility#KB-234"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-011] Nhánh toggle first load TẮT (KB-233) và quy tắc nguồn bị ẩn / linked layer / điều kiện 2 cấp (KB-235) chỉ có tài liệu dev 2026-10-13 viết trước khi code còn đổi tới merge, chưa có test case — không viết check với expected từ hai item này cho tới khi PO xác nhận.",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-233",
+        "sdk/storefront-layer-visibility#KB-235"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-011] SDK app-v2.js có Cache-Control max-age=14400; ở lượt quan sát, lần load đầu nhận bản cũ đã cache và chiều ẩn/hiện của layer Hide bị đảo (BUG-429). Sau deploy, buyer có thể thấy layer Hide hiển thị ngược trong một khoảng thời gian chưa xác nhận; check storefront phải xác minh phiên bản SDK đã nhận (Last-Modified) trước khi đánh giá kết quả.",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-237"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-011] Phạm vi 'nguồn bị ẩn' của KB-235 (toggle tắt / bị ẩn bởi điều kiện) chưa rõ có gồm nguồn nằm trong Group ẩn không — vùng giao với known defect Group ẩn (KB-180) chưa được kiểm; không suy rule từ một bên sang bên kia.",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-235",
+        "sdk/storefront-layer-visibility#KB-180"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-29",
+    "source_observed_on": "2026-10-29"
+  },
+  "unknown_areas": [
+    {
+      "question": "[MỚI, CBS-006] Known defect BUG-321 (field của layer con trong Group ẩn vẫn có trong form, kể cả khi condition buyer-side thoả) đã được fix chưa? Ghi chú '=>> Do bị cache' của TC-TIB-6067 không có lần chạy lại có ngày; TC-TIB-6065 rỗng. Hiệu ứng 'Show this layer on first load' dưới Group ẩn khi layer không gắn condition là gì?",
+      "why_it_matters": "Chưa tách được hiệu ứng của Group ẩn với hiệu ứng của condition; checklist form với Group ẩn không có kết quả đáng tin cho tới khi chạy lại có ngày.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-180"
+      ],
+      "oq_id": "OQ-sdk-069"
+    },
+    {
+      "question": "[MỚI, CBS-006] Hành vi đúng của form cá nhân hoá storefront khi artwork có Group ẩn là gì — form không có field của layer trong Group ẩn, required của các field đó không chặn Add to cart, condition trỏ vào layer ẩn hiệu dụng không bao giờ pass (như QA plan/ticket của dev mô tả) — PO có xác nhận không?",
+      "why_it_matters": "Kỳ vọng này chỉ nằm trong QA plan/ticket của dev, CCR không cho nạp làm expected; check form với Group ẩn không có oracle cho tới khi PO xác nhận.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180"
+      ],
+      "oq_id": "OQ-sdk-070"
+    },
+    {
+      "question": "[MỚI, CBS-006] Buyer preview storefront theo effective visibility (TC-TIB-6068) có giữ nguyên trên build staging sau khi toàn bộ 6 PR của TIB-5584 merge, trên production khi TIB-5584 release, và trên cả hai bundle app-v1.js / app-v2.js không?",
+      "why_it_matters": "Lượt PASS duy nhất chạy trước khi 3 PR còn OPEN merge, build hash không rõ, shipped UNKNOWN, bundle của store test không ghi; confirmed_rule mới chỉ áp cho staging tới khi re-verify.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-181"
+      ],
+      "oq_id": "OQ-sdk-072"
+    },
+    {
+      "question": "[MỚI, CBS-011] Với 'Hide this layer on first load' TẮT và nguồn chưa trả lời, layer action Hide có hiện trên artwork preview trên build đã merge không (tài liệu dev 2026-10-13 nói có)?",
+      "why_it_matters": "Nhánh này chỉ có tài liệu dev viết trước khi code còn đổi tới merge 2026-10-29, chưa case nào kiểm; check first load nhánh tắt không có oracle cho tới khi PO xác nhận.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-233"
+      ],
+      "oq_id": "OQ-sdk-073"
+    },
+    {
+      "question": "[MỚI, CBS-011] PO xác nhận trên build đã merge: điều kiện có nguồn đang bị ẩn được tính là không khớp, linked layer đi theo hiển thị cuối của layer gốc, điều kiện 2 cấp lan theo — và 'nguồn bị ẩn' có bao gồm nguồn nằm trong Group ẩn không?",
+      "why_it_matters": "Ba quy tắc chỉ có tài liệu dev chưa kiểm; vùng giao với known defect Group ẩn (KB-180) chưa rõ — check cho nguồn bị ẩn / linked layer / 2 cấp không có oracle.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-235",
+        "sdk/storefront-layer-visibility#KB-180"
+      ],
+      "oq_id": "OQ-sdk-074"
+    },
+    {
+      "question": "[MỚI, CBS-011] Sau khi deploy production, storefront có thể chạy SDK cũ đã cache trong bao lâu (max-age=14400 hay khác), trong thời gian đó layer Hide hiển thị thế nào, và có cần cảnh báo merchant không?",
+      "why_it_matters": "Lượt quan sát cho thấy bản cũ đã cache đảo chiều ẩn/hiện (BUG-429); thời gian và cách khắc phục chưa xác nhận — ảnh hưởng cách kiểm sau deploy và thông báo merchant.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-237"
+      ],
+      "oq_id": "OQ-sdk-076"
+    },
+    {
+      "question": "[MỚI, CBS-011] Các rule Hide trên storefront (KB-231, KB-232, KB-234) có giữ nguyên trên build staging sau khi 6 PR của TIB-5558 merge (2026-10-29), trên production khi TIB-5558 release, và trên bundle app-v1.js không?",
+      "why_it_matters": "Lượt PASS duy nhất chạy trước khi 6 PR merge, build hash không rõ, shipped UNKNOWN, chỉ app-v2.js; confirmed_rules mới chỉ áp cho staging app-v2.js tới khi re-verify.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-232",
+        "sdk/storefront-layer-visibility#KB-234"
+      ],
+      "oq_id": "OQ-sdk-077"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  },
+  "environment_differences": [],
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "[MỚI, CBS-006] buyer preview SDK với artwork có Group ẩn (con giữ cờ ON)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-181"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM, 1 lượt chạy 2026-10-16, shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "[MỚI, CBS-006] form cá nhân hoá + Add to cart với artwork có Group ẩn (field required, condition layer con, 'Show this layer on first load')",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, KNOWN_DEFECT, Fail 2026-10-16, chưa chạy lại có ngày"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "[MỚI, CBS-006] 'Show this layer on first load' dưới Group ẩn, layer không gắn condition",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-180"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "[MỚI, CBS-006] preview / form với Group ẩn trên build sau merge đủ PR / release",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180",
+        "sdk/storefront-layer-visibility#KB-181"
+      ],
+      "basis": "shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront+api",
+      "role": "guest-buyer (store không thuộc explorer)",
+      "state": "[MỚI, CBS-011] layer action Hide: 1 điều kiện, OR, AND, đổi nguồn không reload, so với Show; payload customization chỉ layer đang hiện (SDK app-v2.js 2026-10-28)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM; 1 lượt retest 2026-10-28, trước khi 6 PR merge"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest-buyer (store không thuộc explorer)",
+      "state": "[MỚI, CBS-011] layer Hide bật 'Hide this layer on first load', nguồn chưa trả lời / trả lời một phần (OR, AND)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-232"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM; 1 lượt retest 2026-10-28"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest-buyer",
+      "state": "[MỚI, CBS-011] layer Hide tắt 'Hide this layer on first load', nguồn chưa trả lời",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-233"
+      ],
+      "basis": "chỉ tài liệu dev 2026-10-13, chưa có test case"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront+api",
+      "role": "guest-buyer (store không thuộc explorer)",
+      "state": "[MỚI, CBS-011] nguồn điều kiện Toggle / Additional Option cho layer Hide",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-234"
+      ],
+      "basis": "CONFIRMED_EXPECTED/MEDIUM; 1 lượt retest 2026-10-28"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest-buyer",
+      "state": "[MỚI, CBS-011] nguồn đang bị ẩn / linked layer / điều kiện 2 cấp với layer Hide",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-235"
+      ],
+      "basis": "chỉ tài liệu dev 2026-10-13, chưa có test case"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest-buyer (store không thuộc explorer)",
+      "state": "[MỚI, CBS-011] cache trình duyệt SDK app-v2.js: lần load đầu nhận bản cũ, Hide bị đảo (BUG-429)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-237"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt 2026-10-28"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest-buyer",
+      "state": "[MỚI, CBS-011] layer action Hide trên bundle app-v1.js",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest-buyer",
+      "state": "[MỚI, CBS-011] layer action Hide trên build sau merge 6 PR / release",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-232",
+        "sdk/storefront-layer-visibility#KB-234"
+      ],
+      "basis": "shipped UNKNOWN"
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-05-group-layer-effective-visibility",
+      "related_feature_key": "group-layer-effective-visibility",
+      "relationship": "applies_rule_owned_by (cross-object: artwork)",
+      "note": "[MỚI, CBS-006] Buyer preview storefront theo effective visibility của Group (KB-181, confirmed); form cá nhân hoá chưa theo (KB-179, KB-180, KNOWN_DEFECT). Quy tắc thuộc artwork (artwork KB-158).",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180",
+        "sdk/storefront-layer-visibility#KB-181"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-08-conditional-setting-config",
+      "related_feature_key": "conditional-setting-config",
+      "relationship": "evaluates_condition_configured_by (cross-object: artwork)",
+      "note": "[MỚI, CBS-006] Condition buyer-side của layer con trong Group ẩn vẫn làm field hiện trong form khi thoả (KB-180, KNOWN_DEFECT BUG-321). FEAT-08 ở đây là feature của object artwork, khác sdk FEAT-08-product-page-settings-config.",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-180"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-08-conditional-setting-config",
+      "related_feature_key": "conditional-setting-config",
+      "relationship": "evaluates_hide_action_configured_by (cross-object: artwork)",
+      "note": "[MỚI, CBS-011] Action Show/Hide, điều kiện, match type và toggle first load cấu hình ở artwork (artwork KB-221, KB-222); storefront đánh giá và ẩn/hiện layer + field theo đó (KB-231, KB-232, KB-234 confirmed; KB-233, KB-235 chưa xác nhận). FEAT-08 ở đây là feature của object artwork.",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-232",
+        "sdk/storefront-layer-visibility#KB-233",
+        "sdk/storefront-layer-visibility#KB-234",
+        "sdk/storefront-layer-visibility#KB-235"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-08-conditional-setting-config",
+      "related_feature_key": "layer-condition-value-binding",
+      "relationship": "reads_data_owned_by (cross-object: artwork)",
+      "note": "[MỚI, CBS-011] Với action Hide, show_by_default của dependency mang nghĩa 'Hide this layer on first load' (artwork layer-condition-value-binding). FEAT-10 ở đây là feature của object artwork, khác sdk FEAT-08-product-page-settings-config.",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-232"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-ORDER-01",
+      "related_feature_key": "place-personalized-order-storefront",
+      "relationship": "feeds_customization_to (cross-object: order)",
+      "note": "[MỚI, CBS-011] Payload customization chỉ chứa layer đang hiện (KB-231, KB-234); phía order xác nhận layer bị Hide không chặn Add to cart và không vào cart/order/print file (order KB-238, KB-239).",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-234"
+      ]
+    }
+  ]
+}

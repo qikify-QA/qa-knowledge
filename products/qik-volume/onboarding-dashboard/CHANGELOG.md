@@ -8,3 +8,4 @@
 - 2026-10-18 (`bootstrap`, REFRESH) — thêm 9 open question: OQ-onboarding-dashboard-005, OQ-onboarding-dashboard-006, OQ-onboarding-dashboard-007, OQ-onboarding-dashboard-008, OQ-onboarding-dashboard-009, OQ-onboarding-dashboard-010, OQ-onboarding-dashboard-011, OQ-onboarding-dashboard-012, OQ-onboarding-dashboard-013.
 - 2026-10-18 (`bootstrap`, REFRESH) — ghi chú quan sát staging (staging_observation) vào open question đang mở, không resolve: OQ-onboarding-dashboard-003, OQ-onboarding-dashboard-004.
 - 2026-11-08 (maintenance-2026-11-08) — Chuẩn hoá reference theo namespace; sửa OQ và phân loại oracle/expected theo nguồn hiện có. Không xác nhận thêm requirement hoặc thay đổi hành vi sản phẩm.
+- 2026-11-13 (restructure-2026-11-13) — Đổi cấu trúc theo contract §5 "Độ hạt object/feature": cập nhật reference/OQ theo vị trí mới. Giữ nguyên kb_id, statement, nguồn và test steps; OQ chuyển object được mint id mới kèm `supersedes`.

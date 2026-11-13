@@ -1,14 +1,21 @@
 {
   "feature_id": "FEAT-14-template-switch-photo-sync",
   "feature_key": "template-switch-photo-sync",
-  "name": "Template switch — sync ảnh và position của photo layer có reposition",
+  "name": "Ảnh buyer khi đổi template và reposition",
   "user_goal": "Là buyer trên storefront, khi template đang chọn đổi (buyer chọn trực tiếp hoặc đổi Size/option map sang template/artwork khác), ảnh đã upload vào photo layer có reposition được mang sang: layer đích cùng tỉ lệ thì giữ position và size đã chỉnh (scale theo layer đích), khác tỉ lệ thì reset theo Fit mode kèm warning tỉ lệ; position đã giữ đi theo customization data khi Add to cart.",
   "user_goal_kb_refs": [
     "sdk/template-switch-photo-sync#KB-490",
     "sdk/template-switch-photo-sync#KB-491",
     "sdk/template-switch-photo-sync#KB-492",
     "sdk/template-switch-photo-sync#KB-503",
-    "sdk/template-switch-photo-sync#KB-505"
+    "sdk/template-switch-photo-sync#KB-505",
+    "sdk/template-switch-photo-sync#KB-517",
+    "sdk/template-switch-photo-sync#KB-518",
+    "sdk/template-switch-photo-sync#KB-521",
+    "sdk/template-switch-photo-sync#KB-530",
+    "sdk/template-switch-photo-sync#KB-531",
+    "sdk/template-switch-photo-sync#KB-532",
+    "sdk/template-switch-photo-sync#KB-533"
   ],
   "stable_since_version": null,
   "actors": [
@@ -27,6 +34,47 @@
       "permission_observed": "Chưa có quan sát runtime (TC-17 chưa chạy). Theo dev, order design / file in dùng position đã giữ.",
       "kb_refs": [
         "sdk/template-switch-photo-sync#KB-505"
+      ]
+    },
+    {
+      "role": "buyer (guest)",
+      "permission_observed": "storefront, không cần login",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-516",
+        "sdk/template-switch-photo-sync#KB-517",
+        "sdk/template-switch-photo-sync#KB-518",
+        "sdk/template-switch-photo-sync#KB-519",
+        "sdk/template-switch-photo-sync#KB-520",
+        "sdk/template-switch-photo-sync#KB-522",
+        "sdk/template-switch-photo-sync#KB-524",
+        "sdk/template-switch-photo-sync#KB-525",
+        "sdk/template-switch-photo-sync#KB-526",
+        "sdk/template-switch-photo-sync#KB-527"
+      ]
+    },
+    {
+      "role": "store owner",
+      "permission_observed": "portal (Artwork Editor, Personalization Settings)",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-517",
+        "sdk/template-switch-photo-sync#KB-521",
+        "sdk/template-switch-photo-sync#KB-527"
+      ]
+    },
+    {
+      "role": "buyer (storefront)",
+      "permission_observed": "Chọn/nhập giá trị option, chuyển template; quan sát giá trị đã chọn được mang sang template cùng Option title. Theo QA-3350 TC-42 / QA-3286 TC-01 (staging, 2026-09-04/11).",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-530",
+        "sdk/template-switch-photo-sync#KB-533"
+      ]
+    },
+    {
+      "role": "store owner (portal, artwork editor)",
+      "permission_observed": "Đặt default value theo từng layer/template, cấu hình Global Template / Global Option. Quan sát default độc lập theo layer/template trừ ngoại lệ GT/GO. Theo QA-3350 TC-41/24/26 (staging, 2026-09-11).",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-531",
+        "sdk/template-switch-photo-sync#KB-532"
       ]
     }
   ],
@@ -51,6 +99,49 @@
       "precondition": "Nhánh \"Enable Reposition on main gallery\" = ON chưa kiểm; record Testlane của TC-28 chỉ ghi tạm dừng.",
       "kb_refs": [
         "sdk/template-switch-photo-sync#KB-513"
+      ]
+    },
+    {
+      "path": "storefront product customization page — main gallery (toggle 'Enable Reposition on main gallery' = ON)",
+      "precondition": "Layer bật Reposition, toggle product-page-settings-config = ON (xem feature product-page-settings-config)",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-517"
+      ]
+    },
+    {
+      "path": "storefront product customization page — popup Reposition riêng (toggle = OFF)",
+      "precondition": "Layer bật Reposition, toggle product-page-settings-config = OFF; chỉ liệt kê target đã customize",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-518"
+      ]
+    },
+    {
+      "path": "portal Artwork Editor — Personalization Settings, nút 'Re-position' (layer Clipart Category / Group of Clipart Categories)",
+      "precondition": "Store owner mở Artwork Editor, layer type là Clipart Category hoặc Group of Clipart Categories",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-521"
+      ]
+    },
+    {
+      "path": "portal Artwork Editor — Live preview",
+      "precondition": "Store owner mở tab Live preview để verify sync scale của linked copy (không phải nơi test cơ chế reposition thật của buyer — xem KB-517)",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-527"
+      ]
+    },
+    {
+      "path": "storefront — personalization form của campaign có >=2 template",
+      "precondition": "Campaign có >=2 template; các template có option cùng Option title và cùng personalization type/settings. Toggle sync_between_templates ở trạng thái quan sát (xem product-page-settings-config; default_value chưa xác nhận — OQ CONFLICT).",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-530"
+      ]
+    },
+    {
+      "path": "portal — artwork editor Live Preview / Global Options",
+      "precondition": "Store owner mở artwork editor; có Global Template hoặc Global Option đã cấu hình để kiểm ngoại lệ kế thừa default.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-531",
+        "sdk/template-switch-photo-sync#KB-532"
       ]
     }
   ],
@@ -109,6 +200,119 @@
       "description": "CONFIRMED_EXPECTED/MEDIUM (dev, đồng ý đề xuất QA): position đã giữ được lưu trong customization data gửi lúc Add to cart, nên cart preview, Edit design từ cart và order design / file in dùng đúng position đó (KB-505). Edit design từ cart (TC-16 phần Edit) và order design (TC-17) chưa kiểm.",
       "kb_refs": [
         "sdk/template-switch-photo-sync#KB-505"
+      ]
+    },
+    {
+      "name": "Reposition availability theo layer type",
+      "description": "Single-line Text hỗ trợ Reposition; Curve Text (type riêng 'curve-text') không có affordance reposition nào ở cả hai cơ chế — hành vi có từ trước, không phải regression.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-516"
+      ]
+    },
+    {
+      "name": "Ranh giới test: Portal (công tắc) vs Storefront (cơ chế thật)",
+      "description": "Portal (Artwork Editor, Live preview, Personalization Settings) chỉ có công tắc BẬT/TẮT; toàn bộ cơ chế Reposition thật (nút, popup, kéo/thả, Save, validate) chỉ tồn tại và test được trên storefront. Nút seller 'Re-position' trong Artwork Editor là cơ chế khác (seller baseline, capability riêng bên dưới), không phải cơ chế buyer.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-517"
+      ]
+    },
+    {
+      "name": "Popup Reposition đứng riêng — chỉ liệt kê target đã customize",
+      "description": "Khi toggle main-gallery OFF, popup Reposition riêng chỉ hiện các field đã được buyer customize (đã chọn/đã gõ), không phải mọi field đang bật Reposition.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-518"
+      ]
+    },
+    {
+      "name": "Affordance Reposition cho Category layer (Clipart/Group of Clipart/Vector Category)",
+      "description": "Không có nút/badge riêng; chọn xong giá trị radio thì artwork tương ứng tự động được select trên main gallery (resize handle, toolbar zoom/rotate/flip/move-layer) — đây chính là control reposition, kéo/resize làm trực tiếp trên canvas đã select.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-519"
+      ]
+    },
+    {
+      "name": "Affordance Reposition cho Static Image/Static Vector",
+      "description": "Có component DOM riêng .tee-static-reposition (tên, thumbnail, badge, text 'Reposition', click được) nằm ngay trong panel form, không chỉ xuất hiện khi hover main gallery.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-520"
+      ]
+    },
+    {
+      "name": "Kích hoạt và vòng đời control Reposition cho Category layer",
+      "description": "Kích hoạt = chọn radio khác giá trị đang checked (chọn lại giá trị cũ không kích hoạt lại); ~400ms sau control .tee-drr/.tee-layer-reposition hiện. Control biến mất sau khi mở/đóng cart drawer (Add to cart) — phải chọn lại giá trị mới mỗi lần muốn kéo tiếp.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-522"
+      ]
+    },
+    {
+      "name": "Seller đặt baseline vị trí layer nguồn (Artwork Editor)",
+      "description": "Layer Clipart Category/Group of Clipart Categories có nút 'Re-position' trong Personalization Settings mở panel Transform cho seller set rotate + vị trí (top-left/x,y) làm baseline mặc định trước khi buyer tự kéo thêm trên storefront. Là hành động thiết kế của seller, khác cơ chế buyer (KB-517).",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-521"
+      ]
+    },
+    {
+      "name": "Lưu trữ vị trí: Category/Image layer dùng tỉ lệ theo box layer",
+      "description": "Vị trí layer Clipart Category/Image lưu dạng tỉ lệ {a,h,w,x,y}: x_ratio = dx_px / chiều rộng ô kéo .tee-drr của chính layer, y_ratio tương tự theo chiều cao — không theo artwork hay stage area, không phải px tuyệt đối. Baseline lưu {x:0,y:0,w:1,h:1,a:0}.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-524"
+      ]
+    },
+    {
+      "name": "Lưu trữ vị trí: Text layer dùng px tuyệt đối",
+      "description": "Vị trí Text layer lưu px tuyệt đối, khác hẳn Category/Image layer (tỉ lệ 0-1). Không generalize giữa hai nhóm layer.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-525"
+      ]
+    },
+    {
+      "name": "Sync reposition/scale của linked copy khi base size khác origin",
+      "description": "Linked copy có base size/vị trí khác origin: reposition/scale sync theo tỉ lệ tương ứng áp lên kích thước gốc của chính copy, không kéo copy về kích thước tuyệt đối của origin; rotate vẫn y hệt. Đúng cả trên client-side canvas (Live preview, cùng engine storefront) real-time.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-526",
+        "sdk/template-switch-photo-sync#KB-527"
+      ]
+    },
+    {
+      "name": "Parity render file: server-side design-file áp đúng transform cho linked copy",
+      "description": "Server-side design-file render (PNG in, order_item_artworks.url) áp transform của nguồn cho linked copy đúng (cùng kích thước, cùng rotate, chỉ khác vị trí in). Bản ghi FACT-143 cũ nói ngược lại là lỗi thời (chưa kiểm lại trên production sau fix) — đang CONFLICT.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-528"
+      ]
+    },
+    {
+      "name": "Sync selection của buyer giữa template cùng Option title",
+      "description": "Giá trị buyer chọn/nhập được áp cho option cùng Option title + personalization type/settings ở template khác khi chuyển template.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-530"
+      ]
+    },
+    {
+      "name": "Default value độc lập theo layer/template",
+      "description": "Default do seller đặt không tự sync giữa template qua cơ chế sync-by-option-title.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-530"
+      ]
+    },
+    {
+      "name": "Kế thừa default qua Global Template",
+      "description": "Local template dùng GT kế thừa default của GT layer; seller không override ở local.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-531"
+      ]
+    },
+    {
+      "name": "Dùng chung default qua Global Option",
+      "description": "Layer liên kết cùng GO dùng chung default của GO; đổi default GO propagate tới mọi layer liên kết.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-532"
+      ]
+    },
+    {
+      "name": "Cross-type mismatch khi sync",
+      "description": "Hai template non-GT cùng Option title khác Color type thì template đích giữ nguyên state/default, không blank/lỗi/cross-apply.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-533"
       ]
     }
   ],
@@ -185,6 +389,52 @@
       "condition": "Edit design từ cart và order design chưa kiểm",
       "kb_refs": [
         "sdk/template-switch-photo-sync#KB-505"
+      ]
+    },
+    {
+      "from": "layer chưa bật Reposition",
+      "to": "layer bật Reposition, control chưa hiện",
+      "trigger": "store owner bật 'Allow customers to reposition...' cho field đó",
+      "condition": "Personalization Settings",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-517"
+      ]
+    },
+    {
+      "from": "control Reposition chưa hiện (Category layer)",
+      "to": "control .tee-drr/.tee-layer-reposition hiện (~400ms)",
+      "trigger": "buyer chọn giá trị radio khác giá trị đang checked",
+      "condition": "layer là Clipart/Group of Clipart/Vector Category",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-519",
+        "sdk/template-switch-photo-sync#KB-522"
+      ]
+    },
+    {
+      "from": "control Reposition đang hiện",
+      "to": "control biến mất, cần chọn lại giá trị mới để kéo tiếp",
+      "trigger": "mở rồi đóng cart drawer (Add to cart)",
+      "condition": "Category layer",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-522"
+      ]
+    },
+    {
+      "from": "buyer đã chọn giá trị ở template A",
+      "to": "template B hiển thị giá trị buyer đã chọn (cùng Option title/type)",
+      "trigger": "chuyển sang template B",
+      "condition": "option cùng Option title + personalization type/settings; cùng Color type nếu là Color option",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-530"
+      ]
+    },
+    {
+      "from": "buyer đã chọn giá trị ở template A (Color Solid)",
+      "to": "template B (Color Sequence) giữ nguyên default riêng",
+      "trigger": "chuyển sang template B khác Color type",
+      "condition": "cùng Option title nhưng khác Color type",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-533"
       ]
     }
   ],
@@ -385,6 +635,38 @@
       "kb_refs": [
         "sdk/template-switch-photo-sync#KB-514"
       ]
+    },
+    "KB-516: Curve Text không support Reposition (type riêng)",
+    "KB-519: Category layer auto-select artwork trên main gallery khi chọn radio",
+    "KB-520: Static Image/Vector có component .tee-static-reposition riêng",
+    "KB-521: Seller baseline qua nút Re-position trong Artwork Editor",
+    "KB-524: Category/Image layer lưu vị trí tỉ lệ theo box layer",
+    "KB-525: Text layer lưu vị trí px tuyệt đối",
+    "KB-527: Live preview sync scale linked copy real-time",
+    "KB-528: Server-side design-file render áp đúng transform cho linked copy (đang CONFLICT với FACT-143 cũ)",
+    {
+      "summary": "Selection của buyer sync theo Option title + personalization type; default value của seller độc lập theo layer/template.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-530"
+      ]
+    },
+    {
+      "summary": "Global Template: local kế thừa default của GT layer, không override được ở local.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-531"
+      ]
+    },
+    {
+      "summary": "Global Option: layer liên kết dùng chung default GO; đổi default GO propagate.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-532"
+      ]
+    },
+    {
+      "summary": "Cross-type mismatch: template đích khác Color type không đổi khi sync.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-533"
+      ]
     }
   ],
   "observed_validations": [
@@ -396,9 +678,43 @@
       "kb_refs": [
         "sdk/template-switch-photo-sync#KB-514"
       ]
+    },
+    {
+      "input": "chuyển template, option cùng Option title",
+      "message_verbatim": "",
+      "observed_count": 2,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-530"
+      ]
+    },
+    {
+      "input": "chuyển sang template khác Color type",
+      "message_verbatim": "",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-533"
+      ]
     }
   ],
-  "permissions": [],
+  "permissions": [
+    {
+      "role": "buyer (guest)",
+      "scope": "storefront reposition mechanism",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-517"
+      ]
+    },
+    {
+      "role": "store owner",
+      "scope": "portal toggle + Artwork Editor seller baseline",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-517",
+        "sdk/template-switch-photo-sync#KB-521"
+      ]
+    }
+  ],
   "surface_mapping": {
     "portal": [],
     "storefront": [
@@ -532,6 +848,29 @@
       "cross_feature_kb_refs": [
         "order KB-369"
       ]
+    },
+    {
+      "feature_key": "product-page-settings-config",
+      "relation": "toggle 'Enable Reposition on main gallery' quyết định UI inline vs popup riêng",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-517"
+      ]
+    },
+    {
+      "feature_key": "artwork",
+      "relation": "linked layer / Transform panel trên canvas toolbar của Artwork Editor",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-521",
+        "sdk/template-switch-photo-sync#KB-526"
+      ]
+    },
+    {
+      "feature_key": "product-page-settings-config",
+      "why": "Toggle sync_between_templates ở Product Page Settings điều khiển hành vi sync; default_value và cấp store chưa xác nhận (OQ CONFLICT / NEEDS_CONFIRMATION)."
+    },
+    {
+      "feature_key": "template-switch-photo-sync",
+      "why": "Cùng bối cảnh chuyển template; feature này tập trung sync selection của option, không phải ảnh/position của photo layer."
     }
   ],
   "risks": [
@@ -574,6 +913,27 @@
         "sdk/template-switch-photo-sync#KB-499",
         "sdk/template-switch-photo-sync#KB-500",
         "sdk/template-switch-photo-sync#KB-513"
+      ]
+    },
+    {
+      "risk": "Công thức lưu vị trí tỉ lệ (KB-524) chỉ khớp 4 số lẻ trong một phép đo trên production không ghi lại build — có thể sai với ô không vuông hoặc build khác.",
+      "priority": "P2",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-524"
+      ]
+    },
+    {
+      "risk": "Server-side design-file render transform cho linked copy đang CONFLICT (KB-528) với bản ghi cũ FACT-143, chưa kiểm lại trên production sau fix.",
+      "priority": "P2",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-528"
+      ]
+    },
+    {
+      "summary": "Toàn bộ expected do QA chốt, chưa có nguồn PO/Dev; mọi oracle là BASELINE, không dùng để kết luận bug.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-530",
+        "sdk/template-switch-photo-sync#KB-533"
       ]
     }
   ],
@@ -668,7 +1028,7 @@
       "oq_id": "OQ-sdk-171"
     },
     {
-      "question": "Layer populate target (TIB-5302) có bị sync bỏ qua trên build thật không (TC-18), và có cần ghi tham chiếu chéo ở artwork/populate-values qua CCR riêng không?",
+      "question": "Layer populate target (TIB-5302) có bị sync bỏ qua trên build thật không (TC-18), và có cần ghi tham chiếu chéo ở artwork-render/populate-channels-config qua CCR riêng không?",
       "why_it_matters": "KB-504 chạm object artwork mà run này không ghi vào; TC-18 chưa chạy.",
       "type": "NEEDS_CONFIRMATION",
       "kb_refs": [
@@ -742,6 +1102,125 @@
         17
       ],
       "oq_id": "OQ-sdk-168"
+    },
+    {
+      "question": "Curve Text không có Reposition là ý định thiết kế hay giới hạn hiện tại của sản phẩm? Chưa ai xác nhận, TC-61 chỉ phủ Single-line Text.",
+      "why_it_matters": "Không có oracle cho behavior Curve Text tới khi PO xác nhận là by-design; nếu không, đây có thể là gap cần fix.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-516"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-sdk-218"
+    },
+    {
+      "question": "Ranh giới \"Portal chỉ có công tắc BẬT/TẮT, cơ chế thật chỉ test được trên storefront\" có đúng không, khi nút seller 'Re-position' (KB-521) cũng nằm trong Portal?",
+      "why_it_matters": "Ảnh hưởng cách viết precondition/entry_points cho mọi check portal liên quan reposition.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-517",
+        "sdk/template-switch-photo-sync#KB-521"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-219"
+    },
+    {
+      "question": "Popup Reposition chỉ liệt kê target đã customize có đúng cả ở staging không? Staging hiện 6 target trong popup còn production chỉ 2, chưa giải thích được.",
+      "why_it_matters": "Oracle cho check popup Reposition phụ thuộc môi trường chưa rõ.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-518"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-220"
+    },
+    {
+      "question": "Với Clipart/Group of Clipart/Vector Category, việc tự select artwork trên main gallery khi chọn radio có phải là control Reposition chính thức không? Chỉ dựa trên screenshot QA, không có TC.",
+      "why_it_matters": "Không có oracle chính thức cho capability này tới khi Dev xác nhận.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-519"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-222"
+    },
+    {
+      "question": "Static Image/Static Vector bật Reposition có thật sự render component .tee-static-reposition trong panel form không, khi BUG-12 chưa được kết luận?",
+      "why_it_matters": "BUG-12 (không render field nào) chưa resolved, có thể mâu thuẫn với claim này.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-520"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-223"
+    },
+    {
+      "question": "Nút 'Re-position' của seller trong Artwork Editor có hoạt động như mô tả không (TC-19 chưa kết luận)? Ranh giới với KB-517 chưa được PO/Dev xác nhận.",
+      "why_it_matters": "Capability seller-baseline chưa có test case kết luận được.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-521"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-224"
+    },
+    {
+      "question": "Cơ chế kích hoạt Reposition của Clipart Category (~400ms, mất sau Add to cart) có đúng ở mọi campaign và là hành vi thiết kế không? Mới verify tay một campaign.",
+      "why_it_matters": "Oracle cho timing/lifecycle check chưa đủ mẫu.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-522"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-225"
+    },
+    {
+      "question": "Công thức lưu vị trí tỉ lệ (delta / kích thước ô kéo của layer) có đúng cho ô không vuông và theo build production hiện hành không? Build không ghi lại, verdict release-verification INCONCLUSIVE.",
+      "why_it_matters": "Không thể viết oracle STRONG cho check lưu vị trí tới khi xác nhận công thức tổng quát.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-524"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-226"
+    },
+    {
+      "question": "Text layer lưu vị trí px tuyệt đối (khác Category/Image lưu tỉ lệ) có phải là hành vi chủ ý và còn đúng ở build hiện tại không?",
+      "why_it_matters": "Chỉ đo tay trên staging, không có TC riêng; không thể khẳng định là spec.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-525"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-227"
+    },
+    {
+      "question": "Linked copy có base size khác origin sync position/scale theo tỉ lệ tương ứng (không \"y hệt origin\") có được Dev xác nhận là hành vi đúng không? Mới đo một fixture (~0.67).",
+      "why_it_matters": "Thiếu xác nhận Dev thì oracle cho check linked-copy-scale chỉ ở mức BASELINE.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-526"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-228"
+    },
+    {
+      "question": "Sync scale của linked copy trên storefront thật (POSITION và SCALE) có đúng như trong admin Live preview không? Mới verify SCALE trong Live preview.",
+      "why_it_matters": "Live preview và storefront thật có thể dùng engine khác biệt tinh vi chưa kiểm hết.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-527"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-229"
+    },
+    {
+      "question": "Server-side design-file render có áp transform của nguồn cho linked copy không? FACT-143 cũ nói KHÔNG, TC-38 PASS 2026-10-06 nói CÓ; chưa kiểm lại trên production sau fix.",
+      "why_it_matters": "Hai phía mâu thuẫn trực tiếp ảnh hưởng file in thật — cần Dev quyết trước khi dùng làm oracle STRONG.",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-528"
+      ],
+      "oq_type": "CONFLICT",
+      "oq_id": "OQ-sdk-230"
+    },
+    {
+      "question": "Tiêu chí match sync selection có đúng là Option title + personalization type (Layer name không phải tiêu chí) không? (CLAIM-01, không có TC riêng, phát biểu cũ đã bị đính chính)",
+      "why_it_matters": "Quyết định có cần TC riêng cho ca Layer name khác nhau hay không; ảnh hưởng cách viết test case sync.",
+      "oq_id": "OQ-sdk-235"
+    },
+    {
+      "question": "Các expected (sync chỉ selection, default độc lập, ngoại lệ GT/GO, cross-type không đổi) có được PO/Dev xác nhận không?",
+      "why_it_matters": "Hiện là OBSERVED_CURRENT/LOW do QA chốt; chưa thể dùng làm oracle STRONG.",
+      "oq_id": "OQ-sdk-231"
     }
   ],
   "last_updated": {
@@ -923,6 +1402,78 @@
         "sdk/template-switch-photo-sync#KB-490"
       ],
       "basis": "mọi item của shard có scope.environment = staging"
+    },
+    {
+      "feature_id": "FEAT-14-template-switch-photo-sync",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "layer bật Reposition",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-14-template-switch-photo-sync",
+      "layer": "portal",
+      "role": "store owner",
+      "state": "Artwork Editor baseline",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-14-template-switch-photo-sync",
+      "layer": "api",
+      "role": "buyer",
+      "state": "POST customization / design-file render",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-14-template-switch-photo-sync",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "sync selection cùng Option title",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-14-template-switch-photo-sync",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "cross-type mismatch",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-14-template-switch-photo-sync",
+      "layer": "portal",
+      "role": "store owner",
+      "state": "Global Template inheritance",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-14-template-switch-photo-sync",
+      "layer": "portal",
+      "role": "store owner",
+      "state": "Global Option shared default",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-14-template-switch-photo-sync",
+      "layer": "api",
+      "role": "buyer",
+      "state": "sync selection",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-14-template-switch-photo-sync",
+      "layer": "db",
+      "role": "store owner",
+      "state": "default value storage",
+      "environment": "staging",
+      "covered": false
     }
   ],
   "profile_conflicts": [
@@ -935,6 +1486,12 @@
       "kb_refs": [
         "sdk/template-switch-photo-sync#KB-494",
         "sdk/template-switch-photo-sync#KB-515"
+      ]
+    },
+    {
+      "conflict_group": "CBS-128__CLAIM-13__FACT-143",
+      "kb_refs": [
+        "sdk/template-switch-photo-sync#KB-528"
       ]
     }
   ],
@@ -990,6 +1547,16 @@
       "kb_refs": [
         "sdk/template-switch-photo-sync#KB-505"
       ]
+    },
+    {
+      "feature_key": "product-page-settings-config",
+      "relation": "depends_on_toggle",
+      "note": "Toggle 'Enable Reposition on main gallery' (CLAIM-04, đang CONFLICT với KB-026, chưa publish) quyết định UI inline vs popup."
+    },
+    {
+      "from_feature_key": "sync-selection-between-templates",
+      "to_feature_key": "product-page-settings-config",
+      "relationship": "controlled_by_toggle"
     }
   ]
 }

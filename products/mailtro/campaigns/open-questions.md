@@ -184,7 +184,7 @@ Tổng: 47 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-campaigns-009",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "campaign-wizard",
+  "feature_id": "campaign-wizard-contents",
   "summary": "PO quyết ngày 30/09/2026 (Jira MTRO-99) đổi hai nút ở bước Contents của campaign thành \"Choose a template\" / \"Create new template\", nhưng staging khảo sát 01/10/2026 vẫn hiện \"Choose email library\" / \"Create email library\". Thay đổi này đã được deploy lên staging chưa, từ build nào?",
   "kb_ids": [
     "KB-078",
@@ -202,7 +202,7 @@ Tổng: 47 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-campaigns-010",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "campaign-wizard",
+  "feature_id": "campaign-wizard-contents",
   "summary": "Picker email ở bước Contents (và Duplicate design) chỉ nạp một lần 50 email được sửa gần nhất, không có search hay phân trang, nên workspace có hơn 50 email không chọn được email cũ. Giới hạn 50 có chủ ý không, và có định thêm tìm kiếm / phân trang không?",
   "kb_ids": [
     "KB-081",
@@ -224,7 +224,7 @@ Tổng: 47 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-campaigns-011",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "campaign-wizard",
+  "feature_id": "campaign-wizard-recipients",
   "summary": "Tên segment không unique nên picker Recipients không phân biệt được hai segment trùng tên (BUG-69). PO muốn picker hiện thêm thông tin gì để phân biệt (ví dụ số contact, ngày tạo, người tạo)?",
   "kb_ids": [
     "KB-070",
@@ -246,7 +246,7 @@ Tổng: 47 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-campaigns-012",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "campaign-wizard",
+  "feature_id": "campaign-wizard-recipients",
   "summary": "Trang Email preferences hướng dẫn \"tick the choices this campaign is about\" ở bước Recipients, nhưng bước Recipients trên staging 01/10/2026 không có ô tick nào và cảnh báo trong bundle nói người đã tắt lựa chọn vẫn nhận campaign nếu segment không lọc. Người bỏ tick một lựa chọn có bị loại tự động khỏi campaign liên quan không, hay chỉ bị loại khi segment lọc theo field đó? Hướng dẫn trên trang là copy cũ hay wizard còn thiếu ô chọn?",
   "kb_ids": [
     "KB-071",
@@ -294,7 +294,7 @@ Tổng: 47 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-campaigns-014",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "campaign-wizard",
+  "feature_id": "campaign-wizard-recipients",
   "summary": "Trên staging 01/10/2026, dòng \"N estimated recipients\" ở bước Recipients bằng cột Contacts của segment; tài liệu không gắn rõ quyết định PO/Dev nào cho quy tắc này (PO 11/08/2026 đã bỏ helptext \"X contacts\" trong danh sách segment). PO xác nhận estimated recipients phải bằng cột Contacts của segment?",
   "kb_ids": [
     "KB-067",
@@ -383,7 +383,7 @@ Tổng: 47 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-campaigns-018",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": null,
+  "feature_id": "analytics-api",
   "summary": "Ma trận quyền cho Campaigns chưa chốt: role nào (Owner / Admin / role thứ 3 đang tranh chấp tên Member hay Marketer/Editor / custom role) được tạo, Save, Send, Schedule, xoá campaign và xem report; quyền có được chặn ở API không? Toàn bộ tài liệu Campaigns không ghi role, staging chỉ khảo sát bằng Owner, Admin chưa từng được quan sát.",
   "kb_ids": [
     "KB-023",
@@ -472,7 +472,7 @@ Tổng: 47 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-campaigns-021",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "campaign-report",
+  "feature_id": "campaign-report-metrics",
   "summary": "Epic Jira MTRO-16 ghi Click rate không tính link unsubscribe và link preference, nhưng caveat trên report chỉ nêu link unsubscribe. Click vào link {{preferences_url}} có bị loại khỏi Click rate không?",
   "kb_ids": [
     "KB-123",
@@ -494,7 +494,7 @@ Tổng: 47 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-campaigns-022",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "campaign-report",
+  "feature_id": "campaign-report-metrics",
   "summary": "Lọc bot (is_bot_event) có áp cho Total opens / Total clicks hay chỉ cho số unique? Event trước ngày 07/08/2026 (trước khi SES gắn cờ bot) được xử lý thế nào trong số liệu report?",
   "kb_ids": [
     "KB-140",
@@ -690,7 +690,7 @@ Tổng: 47 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-campaigns-032",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "campaign-report",
+  "feature_id": "analytics-api",
   "summary": "Có trang giao diện /analytics (analytics global) không? Hiện route /analytics trên staging là trang trắng và analytics global mới kiểm được ở mức API.",
   "kb_ids": [
     "KB-189",
@@ -712,7 +712,7 @@ Tổng: 47 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-campaigns-033",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "campaign-report",
+  "feature_id": "campaign-report-metrics",
   "summary": "Contact bị suppressed trong một campaign có được đếm vào Bounce / Spam complaint và vào mẫu số Sent của report campaign không? (Quyết định PO 02/10/2026 về việc này chỉ áp cho automation.)",
   "kb_ids": [
     "KB-190"
@@ -772,7 +772,7 @@ Tổng: 47 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-campaigns-036",
   "type": "OPEN_ISSUE",
-  "feature_id": "campaign-report",
+  "feature_id": "analytics-api",
   "summary": "Thiếu hợp đồng đầy đủ của Analytics API và MCP report: HTTP method / route đầy đủ của list campaigns và /campaigns/{id}/broadcast, shape response report campaign, tên tham số khoảng thời gian và mặc định, tên hai sổ ledger dùng để COUNT, và tool MCP report (Jira MTRO-60 mô tả trống). Cần bổ sung tài liệu API.",
   "kb_ids": [
     "KB-180",
@@ -815,7 +815,7 @@ Tổng: 47 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-campaigns-038",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "campaign-wizard",
+  "feature_id": "campaign-wizard-contents",
   "summary": "Khi thư viện email của workspace trống, picker email ở bước Contents phải hiện gì? Bundle có chuỗi `No emails in this workspace yet.` nhưng chưa thấy trên UI.",
   "kb_ids": [
     "KB-082"
@@ -883,7 +883,7 @@ Tổng: 47 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-campaigns-042",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "campaign-report",
+  "feature_id": "analytics-api",
   "summary": "Trên analytics global, `totals` có phải luôn dedupe người nhận (một người nhận cả campaign lẫn automation chỉ tính 1, nên totals có thể nhỏ hơn tổng sources) cho mọi chỉ số không, hay chỉ cho một số chỉ số?",
   "kb_ids": [
     "KB-185"

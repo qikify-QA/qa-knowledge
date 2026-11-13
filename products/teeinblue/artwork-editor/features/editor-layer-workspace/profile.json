@@ -1,0 +1,1586 @@
+{
+  "feature_id": "FEAT-01-editor-layer-workspace",
+  "feature_key": "editor-layer-workspace",
+  "name": "Không gian làm việc chung của Editor (thêm layer, chọn layer, toolbar/action bar)",
+  "user_goal": "Store owner thêm layer mới vào artwork và thao tác chọn/toolbar dùng chung trong canvas editor, độc lập với việc cấu hình chi tiết bên trong từng layer type.",
+  "user_goal_kb_refs": [
+    "artwork-editor/editor-layer-workspace#KB-001",
+    "artwork-editor/editor-layer-workspace#KB-042",
+    "artwork-editor/editor-layer-workspace#KB-043"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "store owner / staff (sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "permission_observed": "Toàn quyền thêm/chọn/xoá/nhân bản layer trong editor",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-001",
+        "artwork-editor/editor-layer-workspace#KB-042",
+        "artwork-editor/editor-layer-workspace#KB-043"
+      ]
+    },
+    {
+      "role": "merchant-owner (store owner/staff, instance 520 store không thuộc explorer)",
+      "permission_observed": "Chọn Group/layer con trong layer panel, dùng quick toolbar (Align), kéo Group, toggle mắt layer, Save (PUT /api/artworks/{id} trả 200).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-169",
+        "artwork-editor/editor-layer-workspace#KB-170",
+        "artwork-editor/editor-layer-workspace#KB-171",
+        "artwork-editor/editor-layer-workspace#KB-172",
+        "artwork-editor/editor-layer-workspace#KB-173"
+      ]
+    },
+    {
+      "role": "store owner / staff (sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "permission_observed": "Truy cập đầy đủ mọi icon/accordion boundary chung trên layer row đang cấu hình",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-002",
+        "artwork-editor/_object-level#KB-004"
+      ]
+    },
+    {
+      "role": "merchant-owner (store owner/staff, instance 520 store không thuộc explorer)",
+      "permission_observed": "Lock/unlock Group, đặt 'Display this layer on' ở Group, Save (PUT /api/artworks/{id} 200), sync campaign (POST /api/campaigns/{id}/sync 200).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-174"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "artwork editor, nút '+ Layer'",
+      "precondition": "đang trong artwork editor",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-001"
+      ]
+    },
+    {
+      "path": "artwork editor, canvas — click chọn layer",
+      "precondition": "artwork đã có ≥1 layer",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-042",
+        "artwork-editor/editor-layer-workspace#KB-043"
+      ]
+    },
+    {
+      "path": "Artwork Editor 2.0 → layer panel → chọn Group (đang ẩn hoặc đang hiện) hoặc một layer con của Group",
+      "precondition": "Artwork new-schema có ≥1 Group",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-169",
+        "artwork-editor/editor-layer-workspace#KB-170",
+        "artwork-editor/editor-layer-workspace#KB-171",
+        "artwork-editor/editor-layer-workspace#KB-172"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-079] artwork editor — multi-select các layer có giá trị Shadow hoặc Photo Border khác nhau",
+      "precondition": "Selection không có layer customization type Linked; ở Artwork 2.0, chọn một group thì ẩn Photo Border (KB-429)",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-426",
+        "artwork-editor/editor-layer-workspace#KB-427",
+        "artwork-editor/editor-layer-workspace#KB-429"
+      ]
+    },
+    {
+      "path": "artwork editor — layer row đã tồn tại, mở config panel",
+      "precondition": "artwork editor có ≥1 layer, bất kể layer type nào trong 35 type",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-002",
+        "artwork-editor/_object-level#KB-004",
+        "artwork-editor/_object-level#KB-011",
+        "artwork-editor/_object-level#KB-012"
+      ]
+    },
+    {
+      "path": "Artwork Editor 2.0 → layer row của Group (icon khoá) / config Group → EXTRA > 'Display this layer on'",
+      "precondition": "Artwork new-schema có Group chứa ≥1 layer con",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-174"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Popup chọn loại layer",
+      "description": "Popup 'Select a layer type' liệt kê 29 item chia 7 nhóm (TEXT/IMAGE/VECTOR/MAPS & ASTRONOMY/PUZZLES/OTHERS/FORM ELEMENTS); 6 item có submenu (mỗi submenu 2 lựa chọn) -> tổng 35 layer type khả dụng.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-001"
+      ]
+    },
+    {
+      "name": "Canvas toolbar theo nhóm layer",
+      "description": "Toolbar phía trên canvas đổi theo nhóm layer đang chọn: text hiện Transform/Align/Print Effects + font/size; image/vector hiện Transform/Align/Print Effects (không font); form-elements (color/toggle) chỉ hiện Align.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-042"
+      ],
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-CBS-092-02",
+      "conflict_note": "[MỚI, CBS-092] KB-042 là phía base của CONF-CBS-092-02 (supersede.md STEP 7). Vế đang tranh chấp là câu 'bar hành động KHÔNG đổi theo loại/số lượng layer chọn' của KB-042, đối với KB-909 (canMutate chặn Group / Duplicate / Delete khi selection có replica Global Template). Không dùng KB-042 làm oracle tới khi resolve; xem risks và unknown_areas[10]."
+    },
+    {
+      "name": "Layer action bar cố định",
+      "description": "Khi chọn ≥1 layer: Deselect / N selected / Group (Ctrl/Cmd+G) / Ungroup (Ctrl/Cmd+Shift+G) / Copy to clipboard / Duplicate / Duplicate & Link options / Delete — không có menu overflow '...' trong build này.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-043"
+      ],
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-CBS-092-01",
+      "related_conflict_groups": [
+        "CONF-CBS-092-02"
+      ],
+      "conflict_note": "[MỚI, CBS-092] KB-043 là phía base của CONF-CBS-092-01 (supersede.md STEP 7): KB-908 (TC-01 2026-10-30) quan sát menu More (…) có Bulk edit, Replace image layer, Link with another layer, Convert to another layer. Việc action bar 'cố định' cũng chạm CONF-CBS-092-02 (KB-909, selection có replica). Không dùng mô tả này làm oracle tới khi resolve; xem risks và unknown_areas[8], [10]."
+    },
+    {
+      "name": "Vector library rỗng chặn thêm layer nhóm VECTOR",
+      "description": "Picker vector hiện 'Empty data', không thêm được Static Vector/Vector Category/Vector Upload cho tới khi có ≥1 asset trong thư viện Vector.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-048"
+      ]
+    },
+    {
+      "name": "Asset picker khi add layer",
+      "description": "10 layer type mở picker ảnh/vector ngay khi add; nút xác nhận đổi label theo số item đã tick ('Select' -> 'Select 1 image'); item đầu tiên trong picker được tick sẵn.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-081"
+      ]
+    },
+    {
+      "name": "Chọn và thao tác Group theo trạng thái ẩn/hiện",
+      "description": "Group đang ẩn: không có box drag/resize/rotate, không có thao tác transform cho nội dung Group, kéo trên canvas không đổi vị trí/kích thước/góc xoay, bấm Align không đổi vị trí (Save toạ độ không đổi) (KB-169); chọn một con trong layer panel không mở quick editor (theo QA plan dev, KB-171). Group đang hiện: Align 6 hướng dịch layer đúng hướng, Save mang đúng toạ độ (KB-169); kéo Group thì mọi con di chuyển cùng kể cả con tự ẩn (theo QA plan dev, KB-172). Các mục khác của quick toolbar khi Group ẩn (Align hiển thị hay không, Print Effects, Mask) chưa có expected — chỉ có quan sát, xem observed_behavior (KB-170).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-169",
+        "artwork-editor/editor-layer-workspace#KB-170",
+        "artwork-editor/editor-layer-workspace#KB-171",
+        "artwork-editor/editor-layer-workspace#KB-172"
+      ]
+    },
+    {
+      "name": "Ẩn/hiện layer ở artwork không có Group (regression)",
+      "description": "Artwork không Group: layer ON hiển thị, layer tự ẩn không hiển thị, khớp giữa editor và buyer preview storefront; mắt layer ON không amber; toggle mắt từng layer đổi đúng cờ và PUT lưu đúng.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-173"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-079] Sửa Shadow và Photo Border khi multi-select có giá trị khác nhau",
+      "description": "CONFIRMED_EXPECTED theo dev, staging, role chưa chốt, shipped UNKNOWN. Shadow: toggle hiện Off trừ khi mọi layer đều bật; color hiện đen, blur/X/Y rỗng, Display không chọn gì; đổi một thuộc tính chỉ ghi thuộc tính đó lên mọi layer, phần còn lại giữ theo từng layer. Photo Border: thuộc tính khác nhau hiện default; bật toggle Border ghi đè mọi giá trị đang hiện (type, color, size, display, line) lên mọi layer; đổi một thuộc tính chỉ đổi thuộc tính đó nhưng cũng bật border cho mọi layer đang chọn. Mỗi thay đổi Shadow hoặc Photo Border là 1 undo step cho mọi layer bị ảnh hưởng; ô số (X, Y, blur, border size) lưu theo từng phím, gõ \"12\" là 2 step.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-426",
+        "artwork-editor/editor-layer-workspace#KB-427",
+        "artwork-editor/editor-layer-workspace#KB-428"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-079] Điều kiện ẩn Shadow, Photo Border, HD theo selection",
+      "description": "CONFIRMED_EXPECTED theo dev, staging, role chưa chốt, shipped UNKNOWN. Shadow, Photo Border, HD bị ẩn khi selection có layer customization type Linked. Layer replica của Global Template không có rule riêng. Artwork 2.0: chọn một group thì ẩn Photo Border, Shadow và HD vẫn hiện. Artwork 1.0 cùng rule, trừ Shadow trên paragraph chỉ có ở 2.0.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-429"
+      ]
+    },
+    {
+      "name": "Layer row icon buttons — baseline 34/35 type (5 icon chuẩn)",
+      "description": "Khi một layer bất kỳ (trừ Toggle Switch) đã được thêm vào artwork ở role owner/staging, layer row của nó hiển thị đúng 5 icon button theo thứ tự cố định: la-eye · la-unlock · la-pen · la-copy · la-trash-alt. Quan sát nhất quán trên 34/35 layer type trong 1 phiên capture đầy đủ (mỗi type 1 section riêng trong capture).",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-002"
+      ]
+    },
+    {
+      "name": "Accordion PERSONALIZATION SETTINGS — tồn tại ở 35/35 type (mechanism only)",
+      "description": "Accordion 'PERSONALIZATION SETTINGS' xuất hiện trong config panel của 35/35 layer type đã kiểm tra (tất cả). Đây là accordion duy nhất có mặt ở mọi layer type trong sample này. Nội dung field CỤ THỂ bên trong accordion này khác nhau hoàn toàn theo từng layer type — xem các KB item per-type KB-013..KB-041 (v2) để biết field riêng của từng type; item này CHỈ mô tả sự tồn tại của accordion, không mô tả nội dung.",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-004"
+      ]
+    },
+    {
+      "name": "Boundary accordion CONDITIONAL SETTING — 33/35 có, ngoại lệ trỏ FEAT-13 (KB-006/KB-007)",
+      "description": "Accordion 'CONDITIONAL SETTING' (Show this layer and its option when...) xuất hiện trong 33/35 layer type. 2 layer type KHÔNG có accordion này: Dynamic Clipart by Text › Manual Placement (data-type dynamic-by-text) và Dynamic Clipart by Text › Auto Placement (data-type clipart-frame). Chi tiết field/behavior riêng của 2 type ngoại lệ này (bao gồm việc thiếu accordion này) đã được tách sang KB-006 và KB-007 (v2) để 1 lần sửa riêng type nào không phải đụng item boundary chung này.",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-005"
+      ]
+    },
+    {
+      "name": "Boundary accordion EXTRA — 34/35 có, ngoại lệ Song Search trỏ FEAT-17 (KB-032)",
+      "description": "Accordion 'EXTRA' xuất hiện ở 34/35 layer type. Layer type duy nhất KHÔNG có accordion EXTRA: Song Search (data-type song-search) — layer type này chỉ có PERSONALIZATION SETTINGS + CONDITIONAL SETTING (xem KB-032 v2 cho chi tiết type này). Trong số 34 type CÓ accordion EXTRA, nội dung accordion KHÔNG đồng nhất: 6 type nhóm FORM ELEMENTS (Toggle Switch, Additional Option, Addon Charge, JSON List, Font, Color) chỉ có field 'Group name:' bên trong EXTRA (11 chars), KHÔNG có field 'Display this layer on:' — xem KB-009 (v2) cho chi tiết nhóm này.",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-008"
+      ]
+    },
+    {
+      "name": "Boundary accordion POPULATE VALUES — 22/35 có, 13 ngoại lệ trỏ profile per-type tương ứng",
+      "description": "Accordion 'POPULATE VALUES' chỉ xuất hiện ở 22/35 layer type. 13 layer type KHÔNG có accordion này: Additional Option, Addon Charge, Color, Dynamic Clipart by Text (Manual + Auto Placement — xem KB-006/KB-007 v2), Font, JSON List, Photo Upload › Multiple Uploads (xem KB-018 v2), Song Search (xem KB-032 v2), Star Maps (xem KB-026 v2), Static Image, Text to Image (AI) (xem KB-019 v2), Toggle Switch (xem KB-036 v2). Nội dung CỤ THỂ của accordion POPULATE VALUES ở 22 type còn lại KHÁC NHAU theo type (số channel: Content/Font/Color/Background/Shape) — xem các KB item per-type tương ứng, KB v1 chưa tách riêng.",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-010"
+      ]
+    },
+    {
+      "name": "Boundary field 'Custom class' — 33/35 có; 2 ngoại lệ (Static Image/FEAT-13, Static Vector/FEAT-14)",
+      "description": "Field 'Custom class:' (nằm trong accordion PERSONALIZATION SETTINGS hoặc EXTRA tuỳ type) xuất hiện ở 33/35 layer type quan sát qua DOM. 2 layer type KHÔNG có field này: Static Image (static-photo), Static Vector (static-vector). LƯU Ý: bundle-registry (code, INFERRED) cho ra con số 29 type khác với 33 type DOM quan sát — xem CONF-006 (giữ nguyên UNRESOLVED, không hoà giải).",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-011"
+      ]
+    },
+    {
+      "name": "Boundary field 'Group name' — 34/35 có, đồng nhất tập EXTRA (KB-008)",
+      "description": "Field 'Group name:' xuất hiện ở 34/35 layer type — đồng nhất với tập có accordion EXTRA ở KB-008 (v2), cùng vắng mặt ở Song Search. Riêng 6 type FORM ELEMENTS (KB-009 v2) có 'Group name:' là field DUY NHẤT trong EXTRA của chúng (không có 'Display this layer on'), trong khi 28 type còn lại có 'Group name:' đi kèm 'Display this layer on:'.",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-012"
+      ]
+    },
+    {
+      "name": "Cascade lock và display setting từ Group xuống layer con",
+      "description": "Lock Group thì mọi con bị lock (không kéo được); ẩn rồi hiện Group không làm mất lock của con; bỏ lock Group thì kéo con được. Đặt 'Display this layer on' (Form only / Design only) ở Group qua editor rồi Save: editor ghi layer_display cho cả Group và từng con; sau sync campaign, form và preview storefront áp đúng. Dữ liệu chỉ đặt ở Group (con null, tạo qua JSON/API) thì storefront không áp cascade (quan sát, chưa rõ expected).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-174",
+        "artwork-editor/editor-layer-workspace#KB-175"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "thư viện Vector của store trống",
+      "to": "không thêm được layer nhóm VECTOR, picker hiện 'Empty data'",
+      "trigger": "mở '+ Layer' > chọn 1 trong 3 type nhóm VECTOR",
+      "condition": "thư viện Vector store chưa có asset nào",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-048"
+      ]
+    },
+    {
+      "from": "chưa chọn layer nào trên canvas",
+      "to": "đã chọn 1..N layer — canvas toolbar + layer action bar hiện ra",
+      "trigger": "click chọn layer trên canvas",
+      "condition": "",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-042",
+        "artwork-editor/editor-layer-workspace#KB-043"
+      ],
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-CBS-092-01",
+      "related_conflict_groups": [
+        "CONF-CBS-092-02"
+      ],
+      "conflict_note": "[MỚI, CBS-092] Việc action bar hiện ra khi chọn layer không bị tranh chấp; thành phần của action bar (menu overflow, KB-043 vs KB-908) và việc nó đổi theo selection có replica (KB-042 vs KB-909) đang UNRESOLVED."
+    },
+    {
+      "from": "chưa chọn",
+      "to": "Group được chọn; không box drag/resize/rotate; không có thao tác transform; bấm Align không đổi vị trí",
+      "trigger": "chọn Group trong layer panel",
+      "condition": "Group đang ẩn (các mục khác của quick toolbar chưa có expected — xem observed_behavior KB-170)",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-169"
+      ]
+    },
+    {
+      "from": "Group ẩn được chọn",
+      "to": "Group hiện: Align 6 hướng dịch layer đúng hướng, Save mang đúng toạ độ",
+      "trigger": "hiện Group lại",
+      "condition": "—",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-169"
+      ]
+    },
+    {
+      "from": "chưa chọn",
+      "to": "layer con được chọn, không mở quick editor",
+      "trigger": "chọn một layer con trong layer panel",
+      "condition": "Group cha đang ẩn; theo QA plan dev, TC-TIB-6161 chưa chạy",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-171"
+      ]
+    },
+    {
+      "from": "Group hiện, có con tự ẩn",
+      "to": "box xuất hiện, mọi con (kể cả con tự ẩn) di chuyển cùng Group",
+      "trigger": "chọn Group rồi kéo",
+      "condition": "theo QA plan dev, TC-TIB-6162 chưa chạy",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-172"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-079] multi-select có giá trị Shadow khác nhau",
+      "to": "thuộc tính vừa đổi được ghi lên mọi layer, phần còn lại giữ theo từng layer",
+      "trigger": "đổi một thuộc tính Shadow",
+      "condition": "Staging; role chưa chốt; shipped UNKNOWN.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-426"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-079] multi-select có giá trị Photo Border khác nhau, thuộc tính khác nhau hiện default",
+      "to": "mọi giá trị đang hiện (type, color, size, display, line) được ghi đè lên mọi layer",
+      "trigger": "bật toggle Border",
+      "condition": "Staging; role chưa chốt; shipped UNKNOWN.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-427"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-079] multi-select có giá trị Photo Border khác nhau",
+      "to": "chỉ thuộc tính đó đổi, và border được bật cho mọi layer đang chọn",
+      "trigger": "đổi một thuộc tính Photo Border",
+      "condition": "Staging; role chưa chốt; shipped UNKNOWN.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-427"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-079] selection không có layer customization type Linked",
+      "to": "Shadow, Photo Border, HD bị ẩn",
+      "trigger": "selection có layer customization type Linked",
+      "condition": "Staging; role chưa chốt; shipped UNKNOWN.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-429"
+      ]
+    },
+    {
+      "from": "Group không lock, con kéo được",
+      "to": "Group và mọi con hiện icon khoá, con không kéo được",
+      "trigger": "lock Group",
+      "condition": "—",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-174"
+      ]
+    },
+    {
+      "from": "Group lock",
+      "to": "Group và con vẫn lock",
+      "trigger": "ẩn rồi hiện Group",
+      "condition": "—",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-174"
+      ]
+    },
+    {
+      "from": "Group/con layer_display chưa đặt",
+      "to": "layer_display 'form_only' hoặc 'design_only' ở Group và từng con; sau sync, form/preview storefront áp theo",
+      "trigger": "đặt 'Display this layer on' ở Group qua editor, Save, sync campaign",
+      "condition": "qua editor (không phải JSON/API)",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-174"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Chọn Group đang ẩn: canvas không hiện box drag/resize/rotate; quick toolbar không có thao tác transform cho nội dung Group; kéo không đổi vị trí/kích thước/góc xoay; bấm Align không đổi vị trí Group/layer con (Save toạ độ không đổi). Hiện Group lại thì Align 6 hướng dịch layer đúng hướng và Save mang đúng toạ độ.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "test_case",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-169"
+      ]
+    },
+    {
+      "statement": "Group đang ẩn: chọn một layer con trong layer panel không mở quick editor cho layer đó.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "note": "QA plan dev #54766; TC-TIB-6161 chưa chạy.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-171"
+      ]
+    },
+    {
+      "statement": "Group đang hiện có con tự ẩn: chọn Group và kéo thì box hiện và mọi con di chuyển cùng, kể cả con tự ẩn (hành vi không đổi).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "note": "QA plan dev #54766; TC-TIB-6162 chưa chạy.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-172"
+      ]
+    },
+    {
+      "statement": "Artwork không có Group render như trước ở editor và buyer preview (khớp nhau); mắt layer ON không amber; toggle mắt từng layer đổi đúng cờ, PUT lưu đúng.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "test_case",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-173"
+      ]
+    },
+    {
+      "statement": "Khi multi-select có giá trị Shadow khác nhau: toggle hiện Off trừ khi mọi layer đều bật; color hiện đen, blur/X/Y rỗng, Display không chọn gì. Đổi một thuộc tính chỉ ghi thuộc tính đó lên mọi layer, phần còn lại giữ theo từng layer.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, role chưa chốt, portal",
+      "shipped": "UNKNOWN",
+      "caveats": "Một nguồn xác nhận, chưa có test case.",
+      "confirmation_ref": "Jira TIB-5212 comment #55717 (dev), 2026-10-27",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-426"
+      ]
+    },
+    {
+      "statement": "Khi multi-select có giá trị Photo Border khác nhau: thuộc tính khác nhau hiện default. Bật toggle Border ghi đè mọi giá trị đang hiện (type, color, size, display, line) lên mọi layer. Đổi một thuộc tính chỉ đổi thuộc tính đó nhưng cũng bật border cho mọi layer đang chọn.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, role chưa chốt, portal",
+      "shipped": "UNKNOWN",
+      "caveats": "Một nguồn xác nhận, chưa có test case.",
+      "confirmation_ref": "Jira TIB-5212 comment #55717 (dev), 2026-10-27",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-427"
+      ]
+    },
+    {
+      "statement": "Mỗi thay đổi Shadow hoặc Photo Border là 1 undo step cho mọi layer bị ảnh hưởng. Ô số (X, Y, blur, border size) lưu theo từng phím, gõ \"12\" là 2 step.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, role chưa chốt, portal",
+      "shipped": "UNKNOWN",
+      "caveats": "Một nguồn xác nhận, chưa có test case. Câu nguồn viết \"Each change\" trong mục Shadow, Photo Border.",
+      "confirmation_ref": "Jira TIB-5212 comment #55717 (dev), 2026-10-27",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-428"
+      ]
+    },
+    {
+      "statement": "Shadow, Photo Border, HD bị ẩn khi selection có layer customization type Linked. Layer replica của Global Template không có rule riêng. Artwork 2.0: chọn một group thì ẩn Photo Border, Shadow và HD vẫn hiện. Artwork 1.0 cùng rule, trừ Shadow trên paragraph chỉ có ở 2.0.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, role chưa chốt, portal",
+      "shipped": "UNKNOWN",
+      "caveats": "Một nguồn xác nhận, chưa có test case. Nguồn viết \"the three fields\"; KB đọc là Shadow, Photo Border, HD.",
+      "confirmation_ref": "Jira TIB-5212 comment #55717 (dev), 2026-10-27",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-429"
+      ]
+    },
+    {
+      "statement": "Lock của Group cascade xuống mọi layer con; ẩn/hiện Group không làm mất lock của con. Đặt display setting ở Group qua editor thì editor ghi layer_display cho cả Group và từng con; sau sync campaign, form và preview storefront áp đúng.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "test_case",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-174"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Add/select layer trong editor không sinh API call (xem chi tiết ở FEAT-07-artwork-save-persist, KB-049) — mọi capability ở feature này thuần client-side cho tới khi Save.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-001",
+        "artwork-editor/editor-layer-workspace#KB-042",
+        "artwork-editor/editor-layer-workspace#KB-043"
+      ],
+      "observed_count": 5
+    },
+    {
+      "statement": "Chọn Group đang ẩn: quan sát thấy quick toolbar chỉ còn mục Align, không thấy Transform, Print Effects và Mask; Align hiển thị đủ 6 nút (Top/Left/Middle/Center/Bottom/Right), không nút nào disable, bấm không đổi vị trí. Khi Group hiện thì toolbar có đủ Transform, Align, Print Effects, Mask và box drag kèm handle. Expected của TC-TIB-6058 chỉ nói không có thao tác transform; expected TC-TIB-6059 ghi 'Align không khả dụng', QA plan dev ghi không có align; với Mask, expected TC-TIB-6060 ghi 'disable' (ẩn hay disable chưa chốt, xem KB-167 ở FEAT-22). PO chưa chốt Align/Print Effects/Mask khi Group ẩn — quan sát, không dùng làm expected.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-170"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-143] Theo change note dev TIB-5446 và lượt test staging: convert static-photo chưa có ảnh sang Photo Upload qua popup Convert to another layer bị chặn, toast 'Add an image to this layer before converting it.', layer giữ nguyên.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1022"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "Field 'Group name' vắng mặt đồng nhất với tập vắng accordion EXTRA (chỉ Song Search) — 2 quan sát khớp nhau tuyệt đối.",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-008",
+        "artwork-editor/_object-level#KB-012"
+      ],
+      "observed_count": 34
+    },
+    {
+      "statement": "Artwork có layer_display chỉ đặt ở Group, con để null (dữ liệu tạo qua JSON/API, seller không tạo được qua editor): storefront không áp cascade, form vẫn có field của con. Chưa rõ là hành vi đúng hay dữ liệu không hợp lệ.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-175"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "role": "store owner/staff",
+      "capability": "full access tới toàn bộ workspace editor",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-001",
+        "artwork-editor/editor-layer-workspace#KB-042",
+        "artwork-editor/editor-layer-workspace#KB-043"
+      ]
+    },
+    {
+      "role": "merchant-owner",
+      "capability": "chọn/kéo Group, quick toolbar, toggle mắt layer, Save",
+      "observed": true,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-169",
+        "artwork-editor/editor-layer-workspace#KB-172",
+        "artwork-editor/editor-layer-workspace#KB-173"
+      ]
+    },
+    {
+      "role": "[MỚI, CBS-079] unspecified",
+      "capability": "scope.role của KB-426..KB-429 là 'unspecified' có chủ ý; KB không xác định role áp dụng và không có quan sát về quyền.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-426",
+        "artwork-editor/editor-layer-workspace#KB-427",
+        "artwork-editor/editor-layer-workspace#KB-428",
+        "artwork-editor/editor-layer-workspace#KB-429"
+      ]
+    },
+    {
+      "role": "store owner/staff",
+      "capability": "full access tới toàn bộ icon/accordion boundary chung",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-002",
+        "artwork-editor/_object-level#KB-004",
+        "artwork-editor/_object-level#KB-005",
+        "artwork-editor/_object-level#KB-008",
+        "artwork-editor/_object-level#KB-010",
+        "artwork-editor/_object-level#KB-011",
+        "artwork-editor/_object-level#KB-012"
+      ]
+    },
+    {
+      "role": "merchant-owner",
+      "capability": "lock Group, đặt display setting ở Group, Save, sync campaign",
+      "observed": true,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-174"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      "artwork editor — popup Add Layer, canvas toolbar, layer action bar, asset picker",
+      {
+        "item": "Artwork Editor 2.0 → selection box (.drr/handle) và Align 6 nút khi chọn Group ẩn/hiện",
+        "kb_refs": [
+          "artwork-editor/editor-layer-workspace#KB-169",
+          "artwork-editor/editor-layer-workspace#KB-172"
+        ]
+      },
+      {
+        "item": "Artwork Editor 2.0 → thành phần quick toolbar (Transform/Print Effects/Mask/Align) khi Group ẩn — chỉ quan sát, expected chưa chốt",
+        "kb_refs": [
+          "artwork-editor/editor-layer-workspace#KB-170"
+        ]
+      },
+      {
+        "item": "Artwork Editor 2.0 → layer panel → chọn layer con / quick editor",
+        "kb_refs": [
+          "artwork-editor/editor-layer-workspace#KB-171"
+        ]
+      },
+      {
+        "item": "Artwork Editor 2.0 → mắt layer (không amber ở artwork không Group)",
+        "kb_refs": [
+          "artwork-editor/editor-layer-workspace#KB-173"
+        ]
+      },
+      {
+        "item": "[MỚI, CBS-079] Shadow khi multi-select: toggle, color, blur/X/Y, Display",
+        "kb_refs": [
+          "artwork-editor/editor-layer-workspace#KB-426",
+          "artwork-editor/editor-layer-workspace#KB-428"
+        ]
+      },
+      {
+        "item": "[MỚI, CBS-079] Photo Border khi multi-select: toggle Border, type, color, size, display, line",
+        "kb_refs": [
+          "artwork-editor/editor-layer-workspace#KB-427",
+          "artwork-editor/editor-layer-workspace#KB-428"
+        ]
+      },
+      {
+        "item": "[MỚI, CBS-079] Ẩn Shadow, Photo Border, HD theo selection (layer Linked, group ở Artwork 2.0, Artwork 1.0)",
+        "kb_refs": [
+          "artwork-editor/editor-layer-workspace#KB-429"
+        ]
+      },
+      {
+        "item": "[MỚI, CBS-092, UNRESOLVED] layer action bar → menu More (…): Bulk edit, Replace image layer, Link with another layer, Convert to another layer (chỉ quan sát TC-01, mâu thuẫn KB-043 / KB-085)",
+        "kb_refs": [
+          "artwork-editor/editor-layer-workspace#KB-908",
+          "artwork-editor/editor-layer-workspace#KB-043"
+        ],
+        "cross_feature_kb_refs": [
+          "KB-085"
+        ],
+        "status": "UNRESOLVED",
+        "conflict_group": "CONF-CBS-092-01"
+      },
+      {
+        "item": "[MỚI, CBS-092, UNRESOLVED] layer action bar → Group / Duplicate / Delete khi selection có replica Global Template (KB-909 vs KB-042)",
+        "kb_refs": [
+          "artwork-editor/editor-layer-workspace#KB-909",
+          "artwork-editor/editor-layer-workspace#KB-042"
+        ],
+        "status": "UNRESOLVED",
+        "conflict_group": "CONF-CBS-092-02"
+      }
+    ],
+    "storefront": [
+      {
+        "item": "Buyer preview storefront của artwork không Group (khớp editor)",
+        "kb_refs": [
+          "artwork-editor/editor-layer-workspace#KB-173"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "item": "PUT /api/artworks/{id} — toạ độ layer không đổi khi Align trên Group ẩn; layer.visible từng layer",
+        "kb_refs": [
+          "artwork-editor/editor-layer-workspace#KB-169",
+          "artwork-editor/editor-layer-workspace#KB-173"
+        ]
+      }
+    ],
+    "data": [],
+    "code": [
+      {
+        "item": "[MỚI, CBS-092, UNRESOLVED] cờ canMutate (có từ trước TIB-5299) chặn Group / Duplicate / Delete khi selection có replica; TIB-5299 bỏ cờ khỏi riêng mục Bulk edit (theo quote Dev 55846 C3)",
+        "kb_refs": [
+          "artwork-editor/editor-layer-workspace#KB-909"
+        ],
+        "status": "UNRESOLVED",
+        "conflict_group": "CONF-CBS-092-02"
+      }
+    ]
+  },
+  "dependencies": [
+    {
+      "type": "feature",
+      "description": "Dữ liệu layer/template vừa dựng trong workspace này chỉ được ghi DB khi qua FEAT-07-artwork-save-persist (Save & Close).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-001",
+        "artwork/artwork-save-persist#KB-049"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "Hành vi chọn/toolbar khi Group ẩn dựa trên quy tắc effective visibility của FEAT-05-group-layer-effective-visibility.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-169",
+        "artwork-editor/editor-layer-workspace#KB-171"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "[MỚI, CBS-079] Điều kiện ẩn HD ở KB-429 áp cho batch HD của FEAT-02-photo-upload-layer-config (KB-421 ở feature đó).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-429"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "[MỚI, CBS-079] Layer customization type Linked ở KB-429 liên quan FEAT-04-layer-duplicate-link-copy (KB-045 ở feature đó).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-429"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "[MỚI, CBS-092, UNRESOLVED] Theo KB-908 (quan sát TC-01), menu More (…) trên layer action bar là đường vào modal Bulk edit của FEAT-02-layer-bulk-edit; đang UNRESOLVED ở CONF-CBS-092-01 với KB-043 và KB-085 (FEAT-02-photo-upload-layer-config).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-908",
+        "artwork-editor/editor-layer-workspace#KB-043"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-085"
+      ],
+      "conflict_group": "CONF-CBS-092-01"
+    },
+    {
+      "type": "feature",
+      "description": "7 feature con FEAT-12..FEAT-18 (per nhóm sidebar TEXT/IMAGE/VECTOR/MAPS & ASTRONOMY/PUZZLES/OTHERS/FORM ELEMENTS) chứa TOÀN BỘ field/behavior riêng của từng layer type; feature này chỉ giữ phần mechanism/boundary chung làm precondition cho chúng.",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-002",
+        "artwork-editor/_object-level#KB-004",
+        "artwork-editor/_object-level#KB-005",
+        "artwork-editor/_object-level#KB-008",
+        "artwork-editor/_object-level#KB-010"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "7-field common envelope của layer object được xác nhận ở FEAT-07-artwork-save-persist (KB-055), corroborate 2 tầng UI+API.",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-004"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "Áp layer_display trên storefront cần sync campaign (POST /api/campaigns/{id}/sync) và được hiển thị bởi SDK storefront (object sdk, FEAT-07-storefront-buyer-facing).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-174"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "risk": "KB-042/KB-043 chỉ dựa trên 5 tổ hợp selection — chưa chắc bao phủ hết mọi combo nhóm layer (vd mix text + form-elements cùng lúc).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-042",
+        "artwork-editor/editor-layer-workspace#KB-043"
+      ]
+    },
+    {
+      "risk": "KB-171/KB-172 chỉ dựa QA plan của dev, test case chưa chạy; KB-169/KB-173 chạy trên staging 2026-10-16 trước khi merge đủ PR, shipped UNKNOWN.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-169",
+        "artwork-editor/editor-layer-workspace#KB-171",
+        "artwork-editor/editor-layer-workspace#KB-172",
+        "artwork-editor/editor-layer-workspace#KB-173"
+      ]
+    },
+    {
+      "risk": "Testlane TC-TIB-6058/6059 ghi PASS dù thành phần toolbar khi Group ẩn (Align còn hiển thị; không thấy Print Effects/Mask) chưa có expected chốt — không dùng status PASS làm bằng chứng cho phần này.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-170"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-079] KB-426..KB-429 shipped UNKNOWN: Jira TIB-5212 Done nhưng chưa có ngày deploy production; dùng các item này để đánh giá production có thể cho kết quả sai.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-426",
+        "artwork-editor/editor-layer-workspace#KB-427",
+        "artwork-editor/editor-layer-workspace#KB-428",
+        "artwork-editor/editor-layer-workspace#KB-429"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-079] Bật toggle Border hoặc đổi một thuộc tính Photo Border khi multi-select ghi lên mọi layer đang chọn (KB-427): giá trị riêng của từng layer bị thay; test multi-select cần kiểm từng layer, không chỉ layer đầu.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-427"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-092] CONF-CBS-092-01 UNRESOLVED — menu overflow trên layer action bar: KB-043 (base, OBSERVED_CURRENT/MEDIUM, 2026-09-10) không có menu '...'; KB-085 (base FEAT-13, OBSERVED_CURRENT/LOW, 2026-09-21) panel cấu hình chỉ qua '...' > 'Bulk edit'; KB-908 (CCR CLAIM-01, OBSERVED_CURRENT/LOW, TC-01 2026-10-30, AI do máy chạy) menu More (…) có Bulk edit đứng đầu + Replace image layer, Link with another layer, Convert to another layer, 6 mục bulk cũ không còn. Theo supersede.md STEP 7 cả hai phía UNRESOLVED, không phía nào làm oracle; CHK-005 (KB-043) và CHK-015 (KB-085) cần xét lại sau khi resolve.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-043",
+        "artwork-editor/editor-layer-workspace#KB-908"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-085"
+      ],
+      "conflict_group": "CONF-CBS-092-01",
+      "status": "UNRESOLVED"
+    },
+    {
+      "risk": "[MỚI, CBS-092] CONF-CBS-092-02 UNRESOLVED — action bar khi selection có replica Global Template: KB-042 (base, OBSERVED_CURRENT/MEDIUM, 2026-09-10) bar Deselect/Group/Duplicate/Delete không đổi theo loại/số lượng layer chọn (sample không có replica); KB-909 (CCR CLAIM-03, CONFIRMED_EXPECTED/LOW, Dev 55846 2026-10-28) cờ canMutate chặn Group / Duplicate / Delete khi selection có replica. Có thể chỉ khác state; không chọn bên, không làm oracle; CHK-006 (KB-042) cần xét lại sau khi resolve.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-042",
+        "artwork-editor/editor-layer-workspace#KB-909"
+      ],
+      "conflict_group": "CONF-CBS-092-02",
+      "status": "UNRESOLVED"
+    },
+    {
+      "risk": "[MỚI, CBS-092] Theo KB-908, mục \"Conditional setting\" đã bị bỏ khỏi menu More (…), chạm KB-225 / CHK-017 (Bulk apply Conditional setting từ action bar) của conditional-setting-config và OQ-artwork-154; KB-908 đang UNRESOLVED nên không sửa check đó ở run này.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-908"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-225"
+      ],
+      "conflict_group": "CONF-CBS-092-01",
+      "status": "UNRESOLVED"
+    },
+    {
+      "risk": "[MỚI, CBS-127] KB-1009, KB-1011, KB-1012, KB-1013, KB-1014, KB-1015, KB-1016 là rule QA (PROPOSED), chưa rõ đã ship; viết expected theo rule có thể sai. Vị trí Replace của image-family (so với KB-002) và danh sách 28 type (so với KB-001) chưa nạp, chờ operator quyết; layer type 'shape' chưa rõ (OQ-artwork-491).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1009",
+        "artwork-editor/editor-layer-workspace#KB-1011",
+        "artwork-editor/editor-layer-workspace#KB-1012",
+        "artwork-editor/editor-layer-workspace#KB-1013",
+        "artwork-editor/editor-layer-workspace#KB-1014",
+        "artwork-editor/editor-layer-workspace#KB-1015",
+        "artwork-editor/editor-layer-workspace#KB-1016"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-143] KB-1022 theo change note dev (OBSERVED_CURRENT); chưa thấy nút Convert to Photo Upload riêng.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1022"
+      ]
+    },
+    {
+      "risk": "CONF-006: bundle-registry (code, INFERRED) liệt kê 29 data-type có custom_class trong khi DOM quan sát trực tiếp cho 33/35 type — 2 nguồn evidence khác loại không khớp phạm vi, KHÔNG coi 1 trong 2 danh sách là đầy đủ/chính thức.",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-011"
+      ],
+      "conflict_id": "CONF-006"
+    },
+    {
+      "risk": "Restructuring thu hẹp scope feature này — mọi checklist/test case CŨ nào còn trỏ tới per-type detail (accordion content cụ thể) của layer-common-config bản v1 PHẢI được cập nhật để trỏ sang FEAT-12..FEAT-18 tương ứng, tránh đọc nhầm profile đã lỗi thời.",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-002",
+        "artwork-editor/_object-level#KB-004",
+        "artwork-editor/_object-level#KB-005",
+        "artwork-editor/_object-level#KB-008",
+        "artwork-editor/_object-level#KB-010",
+        "artwork-editor/_object-level#KB-011",
+        "artwork-editor/_object-level#KB-012"
+      ]
+    },
+    {
+      "risk": "KB-174 chạy trên staging 2026-10-16 trước khi merge đủ PR TIB-5584, shipped UNKNOWN; fixture Group ẩn dựng qua MCP/API (Q11 treo).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-174"
+      ]
+    },
+    {
+      "risk": "Check cascade layer_display dùng dữ liệu tạo qua JSON/API (chỉ ở Group) sẽ cho kết quả khác dữ liệu tạo qua editor — không dùng KB-175 làm expected.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-175"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-127] KB-1010 là rule QA (PROPOSED), chưa rõ đã ship; viết expected theo rule có thể sai.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1010"
+      ]
+    }
+  ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-11-06",
+    "source_observed_on": "2026-10-16",
+    "delta_observed_at": "2026-10-30"
+  },
+  "last_updated": {
+    "date": "2026-11-11",
+    "ccr_ref": "CBS-143"
+  },
+  "unknown_areas": [
+    {
+      "question": "Group thực sự làm gì sau khi bấm — Ungroup luôn disabled trong mọi sample vì chưa từng có group nào được tạo, nên chưa test được cặp Group/Ungroup end-to-end.",
+      "why_it_matters": "Đây là action chính trên action bar nhưng happy path chưa được verify."
+    },
+    {
+      "question": "29 item popup / 35 layer type có cố định qua các plan khác Blue (Test) không?",
+      "why_it_matters": "Danh sách layer type khả dụng có thể phụ thuộc plan/feature-flag, ảnh hưởng phạm vi checklist theo từng gói dịch vụ."
+    },
+    {
+      "question": "Ngoài nhóm VECTOR, các picker khác (image library, clipart...) có rơi vào trạng thái rỗng tương tự khi thư viện chưa có asset không — chỉ KB-048 test riêng Vector.",
+      "why_it_matters": "Chưa rõ đây là hành vi chung cho mọi picker cần asset hay đặc thù riêng Vector."
+    },
+    {
+      "question": "Hành vi runtime trên storefront của layer vừa thêm — 0 evidence storefront.",
+      "why_it_matters": "coverage_gaps #1 của KB gốc."
+    },
+    {
+      "question": "Hành vi workspace với role khác owner / cross-tenant — chưa test.",
+      "why_it_matters": "coverage_gaps #3 của KB gốc."
+    },
+    {
+      "question": "Khi chọn Group đang ẩn, các mục Align, Print Effects và Mask trên quick toolbar nên ẩn, disable hay hiển thị (hiện quan sát: Align hiển thị 6 nút không disable, bấm không tác dụng; Print Effects và Mask không thấy)?",
+      "why_it_matters": "QA plan dev và expected TC-TIB-6059 nói không có Align, expected TC-TIB-6060 nói Edit mask 'disable', quan sát thì khác — check thành phần toolbar cho Group ẩn không có expected.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-170"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-editor-017"
+    },
+    {
+      "question": "Khi Group đang ẩn, chọn một layer con trong layer panel có hiện box transform không, và các hành vi chọn/kéo theo QA plan dev có đúng khi chạy TC-TIB-6161/6162 không?",
+      "why_it_matters": "KB-171 chỉ phủ 'không mở quick editor'; phần box cho layer con và cả hai rule chọn/kéo chưa có lượt chạy test.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-171",
+        "artwork-editor/editor-layer-workspace#KB-172"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-artwork-editor-018"
+    },
+    {
+      "question": "[MỚI, CBS-079] Role áp dụng của KB-426..KB-429 là gì (owner, staff hay buyer), cho từng item?",
+      "why_it_matters": "scope.role của 4 item đang là 'unspecified' có chủ ý vì CCR ghi không rõ; checklist chưa biết chạy các item này với role nào.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-426",
+        "artwork-editor/editor-layer-workspace#KB-427",
+        "artwork-editor/editor-layer-workspace#KB-428",
+        "artwork-editor/editor-layer-workspace#KB-429"
+      ],
+      "oq_id": "OQ-artwork-editor-023"
+    },
+    {
+      "question": "[MỚI, CBS-092] Trên build cuối, layer action bar có menu overflow More (…) không, gồm những mục gì (KB-908: Bulk edit, Replace image layer, Link with another layer, Convert to another layer; 6 mục bulk cũ không còn), và panel cấu hình single-layer có tồn tại không (KB-085)?",
+      "why_it_matters": "CONF-CBS-092-01 UNRESOLVED: KB-043 (không có menu overflow, CHK-005) và KB-085 (panel chỉ qua '...' > 'Bulk edit', CHK-015) trái KB-908; supersede tắt ở teeinblue nên cần operator/owner quyết, kèm lượt explore hoặc test case có căn cứ expected trên build cuối.",
+      "type": "CONFLICT",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-043",
+        "artwork-editor/editor-layer-workspace#KB-908"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-085"
+      ],
+      "conflict_group": "CONF-CBS-092-01",
+      "draft_id": "OQ-artwork-286",
+      "oq_id": "OQ-artwork-editor-043"
+    },
+    {
+      "question": "[MỚI, CBS-092] Nội dung và nhãn menu More (…) (Bulk edit, Replace image layer, Link with another layer, Convert to another layer; Artwork 1.0 vẫn ghi \"Share with another layer\") có phải nội dung và nhãn đúng?",
+      "why_it_matters": "KB-908 chỉ là quan sát TC-01, khác nhãn trong TC expected và ticket; check nhãn menu chưa có oracle.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-908"
+      ],
+      "conflict_group": "CONF-CBS-092-01",
+      "draft_id": "OQ-artwork-287",
+      "oq_id": "OQ-artwork-editor-044"
+    },
+    {
+      "question": "[MỚI, CBS-092] Khi selection có layer replica Global Template, Group / Duplicate / Delete trên action bar bị chặn (ẩn hay disable) như KB-909 nói, hay bar không đổi như KB-042?",
+      "why_it_matters": "CONF-CBS-092-02 UNRESOLVED; sample của KB-042 không có replica nên có thể chỉ khác state. CHK-006 cần cập nhật theo kết quả đọc lại action bar với selection có replica trên build cuối.",
+      "type": "CONFLICT",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-042",
+        "artwork-editor/editor-layer-workspace#KB-909"
+      ],
+      "conflict_group": "CONF-CBS-092-02",
+      "draft_id": "OQ-artwork-288",
+      "oq_id": "OQ-artwork-editor-045"
+    },
+    {
+      "question": "[MỚI, CBS-092] KB-225 / CHK-017 (lối vào \"Bulk apply Conditional setting\" từ layer action bar) còn đúng không, khi theo KB-908 mục \"Conditional setting\" đã bị bỏ khỏi menu More (…) và Conditional nằm trong modal Bulk edit?",
+      "why_it_matters": "Chạm check đang publish của conditional-setting-config và OQ-artwork-154; cần run có lock conditional-setting-config sau khi CONF-CBS-092-01 được resolve.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-908"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-225"
+      ],
+      "conflict_group": "CONF-CBS-092-01",
+      "owner_feature_key": "conditional-setting-config",
+      "draft_id": "OQ-artwork-289",
+      "oq_id": "OQ-artwork-layer-config-095"
+    },
+    {
+      "question": "[MỚI, CBS-092] Live Preview trong portal artwork editor dùng teeinblue-sdk qua git submodule src/sdk; submodule đã được bump để có fix TIB-5412 chưa?",
+      "why_it_matters": "Claim S0 CLAIM-24 (note Dev TIB-5412 comment 51755, 2026-09-23) không thành KB; Live Preview trong editor có thể chưa có fix. Cần Dev xác nhận commit/PR có ngày.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [],
+      "source": "S0 CBS-092__CLAIM-24 (discarded_by_normalizer)",
+      "draft_id": "OQ-artwork-290",
+      "oq_id": "OQ-artwork-editor-046"
+    },
+    {
+      "question": "[MỚI, CBS-127] Convert layer type tự áp dụng vào draft local, server giữ bản cũ tới khi Save (KB-1009): Dev xác nhận đây là hành vi chủ ý đã ship?",
+      "why_it_matters": "Expected của check convert và của việc đọc type qua GraphQL ngay sau convert chưa xác nhận; KB-1009 là PROPOSED.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1009"
+      ],
+      "oq_id": "OQ-artwork-editor-073"
+    },
+    {
+      "question": "[MỚI, CBS-127] Layer vector-family không có Replace ở row lẫn panel la-pen (KB-1011): PO xác nhận đây là thiết kế?",
+      "why_it_matters": "'Đúng thiết kế' mới là lời QA chốt; vị trí Replace của image-family (row hay panel/menu) chưa nạp vì có thể mâu thuẫn KB-002.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1011"
+      ],
+      "oq_id": "OQ-artwork-editor-075"
+    },
+    {
+      "question": "[MỚI, CBS-127] Thumbnail layer vector dùng .svg gốc (KB-1012): Dev xác nhận là thiết kế?",
+      "why_it_matters": "Chỉ là hành vi quan sát QA chấp nhận, bug draft đã rút; KB-1012 là PROPOSED.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1012"
+      ],
+      "oq_id": "OQ-artwork-editor-076"
+    },
+    {
+      "question": "[MỚI, CBS-127] SVG thiếu viewBox không upload được, API 500 + dropzone [object Object] (KB-1013): Dev xác nhận còn hiện hành và expected đúng là gì?",
+      "why_it_matters": "Rule tự ghi phản hồi hiện tại là bug Low; expected (từ chối với message nào) chưa có.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1013"
+      ],
+      "oq_id": "OQ-artwork-editor-077"
+    },
+    {
+      "question": "[MỚI, CBS-127] Layer vector chỉ thêm từ storage TIB (KB-1014): Dev xác nhận?",
+      "why_it_matters": "Nguồn chỉ là 'user chốt'; KB-1014 là PROPOSED.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1014"
+      ],
+      "oq_id": "OQ-artwork-editor-078"
+    },
+    {
+      "question": "[MỚI, CBS-127] 'shape text' = Paragraph, không có 'clipart frame' (KB-1015): Dev xác nhận?",
+      "why_it_matters": "Câu hỏi BR-8 của dev được QA trả lời, chưa có Dev/PO xác nhận; KB-1015 là PROPOSED.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1015"
+      ],
+      "oq_id": "OQ-artwork-editor-079"
+    },
+    {
+      "question": "[MỚI, CBS-127] Undo/Redo trên toolbar làm mất focus còn Cmd/Ctrl+Z thì không (KB-1016): chủ ý hay lỗi?",
+      "why_it_matters": "Expected của check Undo phụ thuộc overlay chưa xác nhận; KB-1016 là PROPOSED.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1016"
+      ],
+      "oq_id": "OQ-artwork-editor-080"
+    },
+    {
+      "question": "[MỚI, CBS-143] Nút 'Convert to Photo Upload' riêng trên layer (KB-1022) hiện ở đâu / với layer nào — lượt test chỉ thấy popup Convert to another layer?",
+      "why_it_matters": "CHK-033 chỉ phủ đường popup.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1022"
+      ],
+      "oq_id": "OQ-artwork-editor-084"
+    },
+    {
+      "question": "[MỚI, CBS-143] Convert Artwork 1.0 → 2.0 với text layer có background_image (CBS-143 CLAIM-09, chưa nạp KB): layer tạo ra phải là static-photo có url (AC3, description TIB-5446) hay clipart-category có url (Dev 2026-11-06, đọc code 2026-10-31)? PO quyết AC3; canon chưa có feature cho convert 1.0 → 2.0.",
+      "why_it_matters": "Chờ quyết định nghiệp vụ; chưa có check.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "kb_refs": [],
+      "oq_id": "OQ-artwork-editor-085"
+    },
+    {
+      "question": "9 layer type không xuất hiện trong bundle-registry list nhưng có Custom class field trên DOM — chưa đối chiếu chéo trực tiếp cho từng type.",
+      "why_it_matters": "Ảnh hưởng việc coi 'Custom class' có phải field chuẩn ở mọi layer type hay không; liên quan CONF-006."
+    },
+    {
+      "question": "Hành vi runtime storefront (SDK) của các field/layer type trong nhóm này — 0 evidence, ngoài phạm vi 3 run bootstrap (thuộc storefront-explorer).",
+      "why_it_matters": "coverage_gaps #1 của KB gốc; không thể viết test case storefront cho các field này tới khi có evidence riêng."
+    },
+    {
+      "question": "Hành vi với role khác owner / cross-tenant cho các field/layer type trong nhóm này — chưa test, chỉ 1 role/1 tenant trong cả 3 run.",
+      "why_it_matters": "coverage_gaps #3 của KB gốc."
+    },
+    {
+      "question": "layer_display chỉ đặt ở Group (con null, dữ liệu tạo qua JSON/API) thì storefront không áp cascade — đây là hành vi đúng (dữ liệu ngoài đường editor không được hỗ trợ) hay lỗi?",
+      "why_it_matters": "Artwork tạo qua API/MCP có thể mang dữ liệu này; check cascade cho đường API không có expected.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-175"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-editor-019"
+    },
+    {
+      "question": "Print file (order design) của Group đặt display 'Design only' có chứa nội dung con như kỳ vọng không?",
+      "why_it_matters": "TC-TIB-6062 không đặt order nên đầu ra in của display setting cascade chưa kiểm.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-174"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-artwork-editor-020"
+    },
+    {
+      "question": "[MỚI, CBS-127] Bộ property cấu hình của layer khác nhau theo từng type, không có danh sách chung (KB-1010): Dev xác nhận và cho biết nguồn schema theo type?",
+      "why_it_matters": "Check/fixture giả định một danh sách field chung có thể sai; KB-1010 là PROPOSED.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1010"
+      ],
+      "oq_id": "OQ-artwork-editor-074"
+    }
+  ],
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "portal",
+      "role": "owner",
+      "state": "editor rỗng/đã có layer",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "api",
+      "role": "owner",
+      "state": "editor rỗng/đã có layer",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "storefront",
+      "role": "owner",
+      "state": "editor rỗng/đã có layer",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "chọn Group ẩn/hiện: box, transform, Align",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-169"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "thành phần quick toolbar khi Group ẩn (Align hiển thị, Print Effects/Mask)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-170"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, expected chưa chốt"
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "chọn con của Group ẩn; kéo Group hiện có con tự ẩn",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-171",
+        "artwork-editor/editor-layer-workspace#KB-172"
+      ],
+      "basis": "chỉ QA plan dev; TC-TIB-6161/6162 chưa chạy"
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "portal+api+storefront",
+      "role": "merchant-owner / guest buyer",
+      "state": "artwork không Group (regression ẩn/hiện)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-173"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "any",
+      "role": "any",
+      "state": "build TIB-5584 đã ship",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-169",
+        "artwork-editor/editor-layer-workspace#KB-173"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "portal",
+      "role": "unspecified",
+      "state": "[MỚI, CBS-079] multi-select Shadow và Photo Border có giá trị khác nhau, undo step",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-426",
+        "artwork-editor/editor-layer-workspace#KB-427",
+        "artwork-editor/editor-layer-workspace#KB-428"
+      ],
+      "basis": "nguồn dev, KB không kèm test case"
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "portal",
+      "role": "unspecified",
+      "state": "[MỚI, CBS-079] ẩn Shadow, Photo Border, HD theo selection, ở Artwork 2.0 và 1.0",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-429"
+      ],
+      "basis": "nguồn dev, KB không kèm test case"
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "portal",
+      "role": "unspecified",
+      "state": "[MỚI, CBS-079] toàn bộ item shipped UNKNOWN",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-426",
+        "artwork-editor/editor-layer-workspace#KB-427",
+        "artwork-editor/editor-layer-workspace#KB-428",
+        "artwork-editor/editor-layer-workspace#KB-429"
+      ],
+      "basis": "shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-092] menu overflow More (…) trên layer action bar và nội dung của nó",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-043",
+        "artwork-editor/editor-layer-workspace#KB-908"
+      ],
+      "basis": "UNRESOLVED CONF-CBS-092-01 (KB-043 vs KB-908, cùng KB-085 ở FEAT-13), không có oracle"
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-092] action bar khi selection có replica Global Template",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-042",
+        "artwork-editor/editor-layer-workspace#KB-909"
+      ],
+      "basis": "UNRESOLVED CONF-CBS-092-02, KB-909 chỉ có câu Dev; chưa đọc lại trên build cuối"
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-092] menu More (…) ở Artwork 1.0",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-908"
+      ],
+      "basis": "statement_limits của KB-908: Artwork 1.0 ghi \"Share with another layer\" chỉ được ghi nhận"
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-127] popup Convert layer hiện type hiện tại ở dòng FROM X TO Y; convert tự áp dụng và; layer vector-family không có nút Replace ở layer row lẫn panel la-pen; thumbnail layer vector trong layer panel là file .svg gốc, không có biến thể _th; SVG thiếu viewBox/kích thước không upload được (API 500, dropzone hiện [object O; layer vector chỉ được thêm vào editor từ storage của TIB; 'shape text' là layer Paragraph, 'clipart frame' không có trong popup Select a l; nút Undo/Redo trên toolbar làm layer đang chọn mất focus, phím tắt Cmd/Ctrl+Z th",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1009",
+        "artwork-editor/editor-layer-workspace#KB-1011",
+        "artwork-editor/editor-layer-workspace#KB-1012",
+        "artwork-editor/editor-layer-workspace#KB-1013",
+        "artwork-editor/editor-layer-workspace#KB-1014",
+        "artwork-editor/editor-layer-workspace#KB-1015",
+        "artwork-editor/editor-layer-workspace#KB-1016"
+      ],
+      "basis": "rule QA, chưa có record Testlane PASS"
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-143] convert static-photo chưa có ảnh sang Photo Upload",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1022"
+      ],
+      "basis": "change note dev + lượt test staging qua popup"
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "portal",
+      "role": "owner",
+      "state": "35/35 layer type (mechanism/boundary)",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "code",
+      "role": "owner",
+      "state": "bundle-registry",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "api",
+      "role": "owner",
+      "state": "layer JSON schema",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "storefront",
+      "role": "owner",
+      "state": "35/35 layer type",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "portal+api+storefront",
+      "role": "merchant-owner",
+      "state": "Group lock cascade; layer_display Form only / Design only đặt qua editor",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-174"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "api+storefront",
+      "role": "merchant-owner",
+      "state": "layer_display chỉ ở Group (con null, qua JSON/API)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-175"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, expected chưa rõ"
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "api",
+      "role": "guest buyer",
+      "state": "print file của 'Design only' cascade",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-174"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-127] bộ property cấu hình của layer khác nhau theo từng layer type, không có danh sác",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-1010"
+      ],
+      "basis": "rule QA, chưa có record Testlane PASS"
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "type": "CROSS_FEATURE_KB_REF_IN_BASE",
+      "detail": "Nội dung có sẵn (dependencies[0]) tham chiếu KB-049 — item thuộc FEAT-07-artwork-save-persist, không nằm trong kb.json của feature này. Giữ nguyên văn; không thêm tham chiếu mới tới item đó.",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-049"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "type": "CCR_CONTRADICTS_BASE_UNRESOLVED",
+      "conflict_group": "CONF-CBS-092-01",
+      "detail": "[MỚI, CBS-092] side_a: KB-043 (base, OBSERVED_CURRENT/MEDIUM, không có menu overflow, CHK-005) + KB-085 (base FEAT-13, OBSERVED_CURRENT/LOW, panel chỉ qua '...' > 'Bulk edit', CHK-015); side_b: KB-908 (CCR CLAIM-01, OBSERVED_CURRENT/LOW, menu More (…) có Bulk edit + 3 mục). supersede.md STEP 7: giữ cả hai, cả hai UNRESOLVED, không phía nào làm oracle. Base KB-043 trong profile được gắn status/conflict_group, chữ giữ nguyên.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-043",
+        "artwork-editor/editor-layer-workspace#KB-908"
+      ],
+      "cross_feature_kb_refs": [
+        "KB-085"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-editor-layer-workspace",
+      "type": "CCR_CONTRADICTS_BASE_UNRESOLVED",
+      "conflict_group": "CONF-CBS-092-02",
+      "detail": "[MỚI, CBS-092] side_a: KB-042 (base, OBSERVED_CURRENT/MEDIUM, bar hành động không đổi theo loại/số lượng layer chọn, CHK-006); side_b: KB-909 (CCR CLAIM-03, CONFIRMED_EXPECTED/LOW, canMutate chặn Group / Duplicate / Delete khi selection có replica). Sample KB-042 không có replica — có thể chỉ khác state; profile không phán xử. supersede.md STEP 7: cả hai UNRESOLVED.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-042",
+        "artwork-editor/editor-layer-workspace#KB-909"
+      ]
+    }
+  ],
+  "profile_relationships": [
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-01-editor-layer-workspace",
+      "relation": "contains",
+      "note": "Layer được thêm ở đây sau đó cấu hình chi tiết qua accordion chung mô tả ở FEAT-04."
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-04-layer-duplicate-link-copy",
+      "relation": "contains",
+      "note": "Nút 'Duplicate & Link options' nằm trên layer action bar mô tả ở đây, hành vi chi tiết ở FEAT-05."
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-07-artwork-save-persist",
+      "relation": "persists_via",
+      "note": "Mọi thao tác workspace chỉ ghi DB khi qua Save & Close."
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-05-group-layer-effective-visibility",
+      "relation": "constrained_by",
+      "note": "Selection box, thao tác transform/Align và quick editor đổi theo trạng thái ẩn của Group (quy tắc gốc ở FEAT-22); Print Effects/Mask khi Group ẩn chỉ là quan sát, Mask ẩn hay disable chưa chốt (KB-170; KB-167 ở FEAT-22).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-169",
+        "artwork-editor/editor-layer-workspace#KB-170",
+        "artwork-editor/editor-layer-workspace#KB-171",
+        "artwork-editor/editor-layer-workspace#KB-172"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-07-storefront-buyer-facing",
+      "to_object": "sdk",
+      "relation": "corroborates",
+      "note": "Buyer preview storefront của artwork không Group khớp editor.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-173"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-02-photo-upload-layer-config",
+      "relation": "related",
+      "note": "[MỚI, CBS-079] KB-429 ẩn HD theo selection; hành vi batch HD ở FEAT-13 (KB-421).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-429"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-02-layer-bulk-edit",
+      "relation": "contains",
+      "note": "[MỚI, CBS-092, UNRESOLVED] Theo KB-908, menu More (…) trên layer action bar chứa mục Bulk edit mở modal của FEAT-28; đang UNRESOLVED ở CONF-CBS-092-01 với KB-043 và KB-085 (FEAT-13).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-908"
+      ],
+      "conflict_group": "CONF-CBS-092-01"
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-02-photo-upload-layer-config",
+      "relation": "shares_conflict",
+      "note": "[MỚI, CBS-092] KB-085 (FEAT-13) là phía base cùng KB-043 của CONF-CBS-092-01 đối với KB-908.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-043",
+        "artwork-editor/editor-layer-workspace#KB-908"
+      ],
+      "conflict_group": "CONF-CBS-092-01"
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_key": "conditional-setting-config",
+      "relation": "related",
+      "note": "[MỚI, CBS-092, UNRESOLVED] Theo KB-908, mục \"Conditional setting\" bị bỏ khỏi menu More (…); chạm KB-225 / CHK-017 và OQ-artwork-154.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-908"
+      ],
+      "conflict_group": "CONF-CBS-092-01"
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-01-text-layer-config",
+      "relation": "delegates_per_type_detail",
+      "note": "Nội dung field riêng 6 layer type nhóm TEXT (KB-013..016 + 2 baseline) tách sang đây."
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-02-photo-upload-layer-config",
+      "relation": "delegates_per_type_detail",
+      "note": "Nội dung field riêng 8 layer type nhóm IMAGE (KB-006/007/017..021 + 3 baseline) tách sang đây."
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-05-vector-layer-config",
+      "relation": "delegates_per_type_detail",
+      "note": "Nội dung field riêng 3 layer type nhóm VECTOR (KB-022/023 + 1 baseline) tách sang đây."
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-06-special-layer-config",
+      "relation": "delegates_per_type_detail",
+      "note": "Nội dung field riêng 4 layer type nhóm MAPS & ASTRONOMY (KB-024..027) tách sang đây."
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-06-special-layer-config",
+      "relation": "delegates_per_type_detail",
+      "note": "Nội dung field riêng 4 layer type nhóm PUZZLES (KB-028..031) tách sang đây."
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-06-special-layer-config",
+      "relation": "delegates_per_type_detail",
+      "note": "Nội dung field riêng 4 layer type nhóm OTHERS (KB-032..035) tách sang đây."
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-07-form-elements-config",
+      "relation": "delegates_per_type_detail",
+      "note": "Nội dung field riêng 6 layer type nhóm FORM ELEMENTS (KB-003/009/036..041) tách sang đây."
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-08-conditional-setting-config",
+      "relation": "gates (precondition boundary)",
+      "note": "KB-005 (v2, = v1 KB-004) xác định 33/35 layer type có accordion CONDITIONAL SETTING — precondition cho FEAT-08."
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-05-populate-channels-config",
+      "relation": "gates (precondition boundary)",
+      "note": "KB-010 (v2, = v1 KB-006) xác định 22/35 layer type có accordion POPULATE VALUES — precondition cho FEAT-11."
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-07-artwork-save-persist",
+      "relation": "corroborated_by",
+      "note": "KB-055 (7-field common envelope trong JSON, = v1 KB-022) corroborate cùng kết luận 'layer có cấu trúc chung' từ góc nhìn API."
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-05-group-layer-effective-visibility",
+      "relation": "related",
+      "note": "Lock và layer_display cascade từ Group xuống con (ghi vào con), khác visible của Group (không ghi đè cờ con, chỉ ảnh hưởng render).",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-174"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-editor-layer-workspace",
+      "to_feature_id": "FEAT-07-storefront-buyer-facing",
+      "to_object": "sdk",
+      "relation": "displayed_in",
+      "note": "Form/preview storefront áp layer_display sau sync campaign.",
+      "kb_refs": [
+        "artwork-editor/editor-layer-workspace#KB-174",
+        "artwork-editor/editor-layer-workspace#KB-175"
+      ]
+    }
+  ]
+}

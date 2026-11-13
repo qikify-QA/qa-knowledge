@@ -1,0 +1,341 @@
+[
+  {
+    "kb_id": "KB-047",
+    "topic": "Artwork list row menu (la-ellipsis-h)",
+    "statement": "Trên /artworks, mỗi.artwork-item có 4 nút: la-search-plus (preview), la-pencil (edit details), la-copy (duplicate), la-ellipsis-h. Menu la-ellipsis-h chứa đúng 3 mục: 'Import to Translation' / 'Mark as archive' / 'Delete artwork'. Delete artwork mở dialog confirm nguyên văn 'Are you sure to remove <name>?' với 2 nút Remove/Cancel.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com)",
+      "role": "store owner / staff account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, staff sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-10",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-229",
+    "topic": "Duplicate artwork giữ action Hide/Show của layer; campaign dùng bản copy ẩn/hiện đúng chiều Hide trên storefront",
+    "statement": "Theo Testlane TC-TIB-7343 PASS (task TIB-231, Jira TIB-5558), staging @ 2026-10-28: tiêu chí 1–2 lượt đầu 05:15 +07, tiêu chí 3 retest sau SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT (sau lần TIB-5558 giao QA cuối 2026-10-13 12:00; build hash không rõ), chạy 2026-10-28 (2026-10-28; test chạy trước khi 6 PR của TIB-5558 merge ngày 2026-10-29; production chưa xác nhận), khi Duplicate artwork có layer đặt Conditional Setting, bản copy giữ action của layer: editor của bản copy từ artwork dùng Hide hiển thị action Hide, của bản copy từ artwork dùng Show hiển thị action Show (kiểm qua editor ở lượt đầu); campaign dùng bản copy của artwork Hide ẩn/hiện đúng chiều Hide trên storefront (giá trị nguồn khớp → field và layer ẩn; không khớp → hiện; kiểm ở lượt retest).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner/staff, instance 520 store không thuộc explorer)",
+      "surface": "portal (Artworks list → duplicate) · api (GraphQL) · storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5558",
+      "conditional-setting",
+      "hide-action",
+      "duplicate-artwork"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-list-and-clone#KB-047"
+    ],
+    "cross_object_refs": [
+      {
+        "object_id": "sdk",
+        "relation": "related_feature",
+        "note": "Hành vi ẩn/hiện của layer Hide trên storefront thuộc sdk, feature storefront-buyer-facing."
+      }
+    ],
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "Testlane TC-TIB-7343 PASS (task TIB-231, Jira TIB-5558), staging @ 2026-10-28: tiêu chí 1–2 lượt đầu 05:15 +07, tiêu chí 3 retest sau SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT (sau lần TIB-5558 giao QA cuối 2026-10-13 12:00; build hash không rõ), chạy 2026-10-28",
+      "authored_on": "2026-10-28",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-1028",
+    "topic": "Artwork đang được dùng (campaign qua product base, platform product, order design, có bản duplicate) không xoá được; lỗi nêu lý do",
+    "statement": "Theo spec-hub teeinblue, feature artwork-editor v3, rule artwork-editor-delete-blocked-when-used (sure green, đọc 2026-11-12): artwork không xoá được khi đang được dùng trong campaign qua product base, được dùng bởi platform product, đã được dùng cho order design, hoặc có bản duplicate làm từ nó; lỗi nêu lý do, với trường hợp duplicate thì liệt kê tên các bản duplicate. Ví dụ của rule: artwork đang nằm trong campaign thì portal yêu cầu gỡ artwork khỏi mọi campaign trước và đưa nút 'View campaigns list'; artwork có hai bản duplicate thì xoá thất bại và liệt kê hai bản đó. Rule không nói status code hay dạng body của response API khi bị chặn.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (staff có quyền manage artworks)",
+      "surface": "portal (Artworks list → Delete) · api (DELETE /api/artworks/{id})",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-107"
+    },
+    "tags": [
+      "delete-artwork",
+      "delete-blocked",
+      "artwork-in-use",
+      "campaign",
+      "spec-hub",
+      "P1-data-deletion"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-list-and-clone#KB-047",
+      "artwork/artwork-list-and-clone#KB-1031"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "spec-hub teeinblue, feature artwork-editor v3, rule artwork-editor-delete-blocked-when-used (sure green), đọc 2026-11-12",
+      "authored_on": "2026-11-12",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-1031",
+    "topic": "Xoá artwork chuyển artwork vào trash, không xoá hẳn",
+    "statement": "Theo spec-hub teeinblue, feature artwork-editor v3, rule artwork-editor-delete-to-trash (sure green, đọc 2026-11-12): xoá một artwork sẽ chuyển nó vào trash chứ không xoá hẳn. Rule không nói cơ chế lưu (cột hay cờ trong DB), không nói API/GraphQL còn trả artwork đã xoá hay không, và không nói thời hạn trước khi xoá hẳn.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (staff có quyền manage artworks)",
+      "surface": "portal (Artworks list → Delete) · api (DELETE /api/artworks/{id})",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-107"
+    },
+    "tags": [
+      "delete-artwork",
+      "soft-delete",
+      "trash",
+      "spec-hub",
+      "P1-data-deletion"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-list-and-clone#KB-047",
+      "artwork/artwork-list-and-clone#KB-1028"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "spec-hub teeinblue, feature artwork-editor v3, rule artwork-editor-delete-to-trash (sure green), đọc 2026-11-12",
+      "authored_on": "2026-11-12",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-1116",
+    "topic": "Response của duplicate, archive và unarchive artwork là PortalArtworkResource (attribute Artwork::$visible)",
+    "statement": "Theo Jira TIB-5689 comment 56448 Solution, bảng Portal hàng ArtworkController (Dev, 2026-11-04), response của duplicate artwork (clone), archive và unarchive artwork là cùng PortalArtworkResource mới, gồm các attribute Artwork::$visible: id, name, description, width, height, template_settings, data, is_locked, current_version_id, status, design_format, thumbnail, artwork_version_used, schema_version.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (/artworks) + portal API",
+      "brand": null
+    },
+    "tags": [
+      "response-contract",
+      "PortalArtworkResource",
+      "duplicate",
+      "archive",
+      "TIB-5689",
+      "ccr:CBS-163"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-list-and-clone#KB-047",
+      "artwork/artwork-list-and-clone#KB-1118",
+      "artwork/artwork-save-persist#KB-1115"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5689 comment 56448 Solution, bảng Portal hàng ArtworkController (Dev, 2026-11-04)",
+      "authored_on": "2026-11-04",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-163"
+    }
+  },
+  {
+    "kb_id": "KB-1118",
+    "topic": "Quan sát: duplicate 201 trả bản copy, archive 200 status 1 (tab Archived), unarchive 200 status 0, không relation, không user_id",
+    "statement": "Khi duplicate, Mark as archive rồi unarchive một artwork trên /artworks ở merchant-owner/staging (Testlane TC-TIB-8585 PASS 2026-11-07, build không ghi), quan sát thấy duplicate trả 201 và response là bản copy; archive trả 200 với status 1 và artwork hiện ở tab Archived; unarchive trả 200 với status 0; các response không có relation và không có user_id. Có thêm một lượt quan sát production 2026-11-11 (TC-TIB-8585) cho Archive và Unarchive; lượt này không dùng làm expected. Một lượt chạy; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (/artworks) + portal API",
+      "brand": null
+    },
+    "tags": [
+      "response-contract",
+      "duplicate",
+      "archive",
+      "observed",
+      "single-sample",
+      "TIB-5689",
+      "ccr:CBS-163"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-list-and-clone#KB-047",
+      "artwork/artwork-list-and-clone#KB-1116"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-163"
+    }
+  },
+  {
+    "kb_id": "KB-1082",
+    "topic": "Copy artwork sang account khác: ảnh gốc (url) của layer Clipart Category dùng lại ảnh preview clipart được remap sang clipart tương ứng trong category mới của bên đích, cùng clipart và default_value",
+    "statement": "Theo Dev trên Jira TIB-5619 comment 56033 (2026-10-29), khi artwork được copy sang store/account khác (duplicate campaign sang store khác, import artwork), layer có ảnh gốc dùng lại ảnh preview của clipart được đổi sang clipart tương ứng trong category mới của bên đích, cùng lúc với clipart category và default value của layer; theo mục Gợi ý test của cùng comment, mở artwork ở bên đích thì layer hiển thị ảnh (không trong suốt), chọn layer thấy đúng category của bên đích, không báo lỗi clipart category. Áp cho layer Clipart Category tự giữ category (category không nằm ở Global Option). Test case Testlane TC-TIB-8106 (import TIB Library), TC-TIB-8107 (admin import), TC-TIB-8110 (6 layer ở 6 category) PASS trên staging 2026-11-03..04, chỉ trên artwork 2.0, quan sát: url của layer bằng default_value, cùng category với clipart của layer, file tải được; mỗi layer trỏ đúng category đích của nó, không layer nào còn id category nguồn; Save artwork bên đích thành công. Production chưa verify.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (account đích)",
+      "surface": "portal (artwork editor) + api (import artwork, artwork JSON)",
+      "brand": null
+    },
+    "tags": [
+      "cross-store-clone",
+      "clipart-category",
+      "layer-url-remap",
+      "default_value",
+      "TIB-5619"
+    ],
+    "related_kb_ids": [],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5619 comment 56033 (Dev, Summary cho QA, PR teeinblue-api#4103), 2026-10-29",
+      "authored_on": "2026-10-29",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-157"
+    }
+  },
+  {
+    "kb_id": "KB-1083",
+    "topic": "Copy artwork sang account khác: layer dùng ảnh clipart không thuộc category của layer (vd Static photo) được copy file sang bên đích; đường dẫn vẫn mang id category nguồn",
+    "statement": "Theo Dev trên Jira TIB-5619 comment 56033 (2026-10-29), khi artwork được copy sang store/account khác, layer dùng ảnh clipart nhưng không thuộc category của layer (ví dụ layer Static photo chọn ảnh từ clipart) được copy file ảnh sang bên đích, không còn bị trong suốt; giới hạn đã biết của Dev: ảnh hiển thị đúng nhưng đường dẫn ảnh vẫn mang id category của bên nguồn, chỉ đổi phần user. Test case Testlane TC-TIB-8109 PASS staging 2026-11-04 (admin import). Production chưa verify.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (account đích)",
+      "surface": "portal (artwork editor) + artwork JSON",
+      "brand": null
+    },
+    "tags": [
+      "cross-store-clone",
+      "static-photo",
+      "clipart-file-copy",
+      "known-limitation",
+      "TIB-5619"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-list-and-clone#KB-1082"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5619 comment 56033 (Dev, Summary cho QA, PR teeinblue-api#4103), 2026-10-29",
+      "authored_on": "2026-10-29",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-157"
+    }
+  },
+  {
+    "kb_id": "KB-1084",
+    "topic": "Copy artwork sang account khác: layer có ảnh gốc từ Image library vẫn hiển thị đúng như trước (đối chứng)",
+    "statement": "Theo Dev trên Jira TIB-5619 comment 56033 (2026-10-29, mục Gợi ý test, đối chứng), sau khi artwork được copy sang store/account khác, layer có ảnh gốc từ Image library vẫn hiển thị đúng như trước bản sửa TIB-5619. Test case Testlane TC-TIB-8111 PASS staging (QA chốt 2026-11-04) trên artwork nhận qua import TIB Library, quan sát ảnh nằm ở thư mục image-layers của account đích, cùng tên file nguồn, tải được; chưa kiểm trên admin import. Production chưa verify.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (account đích)",
+      "surface": "portal (artwork editor)",
+      "brand": null
+    },
+    "tags": [
+      "cross-store-clone",
+      "image-library",
+      "control",
+      "TIB-5619"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-list-and-clone#KB-1082"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5619 comment 56033 (Dev, Summary cho QA, PR teeinblue-api#4103), 2026-10-29",
+      "authored_on": "2026-10-29",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-157"
+    }
+  },
+  {
+    "kb_id": "KB-1085",
+    "topic": "Sau admin import sang account khác: design preview từng template của artwork bên đích render được và giống nguồn (quan sát một lần, chưa xác nhận)",
+    "statement": "Khi admin import artwork sang account khác (role merchant-owner của account đích, staging 2026-11-04), quan sát thấy design preview (MCP render-design-preview) của từng template của artwork bên đích render xong, không lỗi, và so bằng mắt giống template tương ứng của nguồn: ảnh clipart và static photo lấy từ clipart hiện đủ, không vùng trống (test case Testlane TC-TIB-8113, 2 template, build không ghi). Expected về design preview là giả định do QA chốt; Dev chưa nói về design preview sau clone. Một lần chạy, chưa có xác nhận Dev/PO, không làm oracle.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (account đích)",
+      "surface": "design preview (MCP render-design-preview)",
+      "brand": null
+    },
+    "tags": [
+      "cross-store-clone",
+      "design-preview",
+      "needs-confirmation",
+      "TIB-5619"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-list-and-clone#KB-1082",
+      "artwork/artwork-list-and-clone#KB-1083"
+    ],
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-157"
+    }
+  },
+  {
+    "kb_id": "KB-1086",
+    "topic": "environment_difference",
+    "statement": "[ALTERNATIVE_SETUP] Môi trường test: portal không có thao tác cho QA để duplicate campaign sang store của account khác (clone campaign Product Base không chọn store; clone platform product chỉ chọn instance cùng account); Production: không rõ; Cách test: dùng một trong hai đường — (1) import từ TIB Library bằng account đích (POST /api/artworks/by-public), (2) admin import artwork từ account nguồn sang account đích, do người có quyền admin chạy theo artwork id và user id QA đưa. Theo ghi nhận của QA (2026-11-03), chưa có artifact hay xác nhận Dev/PO.",
+    "knowledge_kind": "INFERRED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (account đích)",
+      "surface": "portal + api",
+      "brand": null
+    },
+    "tags": [
+      "environment_difference",
+      "ALTERNATIVE_SETUP",
+      "cross-store-clone",
+      "TIB-5619"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-list-and-clone#KB-1082"
+    ],
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-157"
+    }
+  }
+]

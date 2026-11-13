@@ -1,0 +1,655 @@
+{
+  "feature_id": "FEAT-04-populate-output-chain",
+  "feature_key": "populate-output-chain",
+  "object_id": "artwork-render",
+  "checklist_version": "16",
+  "checks": [
+    {
+      "check_id": "CHK-019",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[NEW v3,, CCR CBS-003] Populate Content — Source=Multiple Uploads hiển thị đúng 4 token trong 'Available Value' picker",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer đích bật Populate Content, Source = layer Multiple Uploads (Maximum photos=3)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có layer Multiple Uploads (Maximum photos=3) và layer đích khác. CẦN fixture (artwork 4416,, còn sống).",
+      "steps": [
+        "Mở config layer đích, bật 'Populate Content from another option'.",
+        "Chọn Source option = layer Multiple Uploads.",
+        "Mở 'Available Value' picker, liệt kê token.",
+        "Chọn token '{{input.1}}', quan sát giá trị ghi vào Values field."
+      ],
+      "observation_point": "Danh sách token trong picker; giá trị literal ghi vào Values field sau khi chọn.",
+      "expected_result": "Đúng 4 token verbatim: '{{input.1}}', '{{input.2}}', '{{input.3}}' (khớp Maximum photos=3) và '{{output}}' (tooltip: chỉ khả dụng khi Output Type=Single Output). KHÔNG có token '{{input}}' trần trong session này. Chọn '{{input.1}}' ghi literal text '{{input.1}}' vào Values field — 1 sample duy nhất, đây là bằng chứng ĐẦU TIÊN cho feature này về Populate Content nói chung (trước đó chỉ có Font/Color/Word Cloud).",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-118"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-022",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[NEW v3,, FLAGSHIP, CCR CBS-003] Giá trị gốc (pre-effect) lan truyền tới layer đích NGAY LẬP TỨC — xác nhận cross-layer 3 tầng (portal+api+storefront)",
+      "applicability": {
+        "role": "owner/staff (portal + api) và staff-authenticated proxy cho buyer (storefront, KHÔNG phải guest thật)",
+        "state": "layer đích 'body' đã cấu hình Populate Content Source='top' (Multiple Uploads), Value='{{input.1}}'; layer nguồn 'top' CHƯA có ảnh nào upload",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Layer đích 'body' đã cấu hình Populate Content Source='top', Value='{{input.1}}' và đã Save & Close. CẦN fixture artwork 4416 (còn sống) hoặc tương đương.",
+      "steps": [
+        "Cấu hình layer đích 'body' (Source='top', Value='{{input.1}}'), Save & Close.",
+        "Đọc response POST /api/artworks (status 201), xác nhận retrieval_value_enabled=true, retrieval_layer='layer-703775', retrieval_value='{{input.1}}'.",
+        "Mở Live Preview widget của CÙNG artwork (staff-authenticated proxy cho buyer).",
+        "Upload 1 ảnh vào layer nguồn 'top' — KHÔNG bấm 'Generate image'.",
+        "Quan sát layer đích 'body' và canvas chính ngay lập tức."
+      ],
+      "observation_point": "Thời điểm và nội dung ảnh hiển thị ở layer đích 'body'/canvas chính, so với thời điểm upload vào layer nguồn.",
+      "expected_result": "Layer đích 'body' và canvas chính cập nhật NGAY LẬP TỨC hiển thị đúng ảnh vừa upload vào layer nguồn 'top', CHƯA qua effect nào, KHÔNG cần chờ bấm 'Generate image'. 3 evidence độc lập (portal config, API response, storefront runtime) hội tụ — observed_count=3, confidence HIGH (mức cao nhất trong run ). LƯU Ý: dù confidence HIGH, đây VẪN là OBSERVED_CURRENT (không có PO/dev xác nhận là expected behavior chính thức) — oracle_strength giữ BASELINE, KHÔNG viết thành CONFIRMED_EXPECTED. CHỈ xác nhận nửa 'giá trị gốc lan truyền ngay' — xem CHK-023 cho nửa còn lại (effect tự trigger) và CHK-024 cho caveat staff-proxy vs guest thật.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-120"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [
+        "Buyer-facing manifestation của cơ chế này được tham chiếu chéo (pointer, KHÔNG copy trùng nội dung) ở FEAT-02-genai-personalization-runtime (object sdk) — xem checklist genai-personalization-runtime.json."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-025",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[NEW v3,, CCR CBS-003] POST /api/artworks xác nhận cùng field name retrieval_value_enabled/retrieval_layer/retrieval_value như PUT (legacy CHK-003/004)",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "response POST /api/artworks sau khi save layer đích đã cấu hình Populate Content",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Layer đích đã cấu hình Populate Content (Source='top', Value='{{input.1}}'), Save qua flow tạo mới (POST) thay vì update (PUT).",
+      "steps": [
+        "Save artwork MỚI (POST /api/artworks) có layer đích đã cấu hình Populate Content.",
+        "Đọc response (status 201), xác nhận field retrieval_value_enabled/retrieval_layer/retrieval_value.",
+        "Đối chiếu tên field với CHK-003/004 (quan sát qua PUT)."
+      ],
+      "observation_point": "Tên field JSON qua POST có khớp với tên field đã biết qua PUT không.",
+      "expected_result": "Cùng field name retrieval_value_enabled/retrieval_layer/retrieval_value xuất hiện qua CẢ 2 endpoint (POST và PUT) — 1 sample cho POST, khớp với PUT đã biết trước đây (KB-076/CHK-003/004). Củng cố thêm (KHÔNG thay thế) oracle cũ.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-120"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-026",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Cùng ảnh cho hai populated option có thiết lập effect giống hệt: dùng chung một lần gọi effect",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "artwork có hai populated option dùng cùng một ảnh, cùng effect type, cùng prompt sau khi điền biến, cùng template, cùng thiết lập remove background, cùng kích thước layer",
+        "environment": "staging; ghi build SDK (Last-Modified của bundle) và ngày chạy",
+        "surface_or_device": "storefront PDP, desktop browser + DevTools Network"
+      },
+      "precondition": "Fixture dựng trên store explorer (playbook teeinblue), không dùng store/campaign của CCR. Hai layer cùng loại và cùng kích thước để kích thước layer không là biến (vế kích thước đang conflict, xem CHK-030). Mở DevTools Network, lọc request xử lý effect.",
+      "steps": [
+        "Mở PDP của campaign fixture, mở DevTools Network.",
+        "Upload một ảnh cho nguồn để cả hai populated option nhận cùng ảnh.",
+        "Đợi cả hai option có kết quả; đếm số request xử lý effect phát sinh cho ảnh đó.",
+        "So sánh ảnh kết quả của hai option."
+      ],
+      "observation_point": "Số request xử lý effect cho ảnh; ảnh kết quả của từng option.",
+      "expected_result": "Chỉ một lần gọi effect cho cả hai option; hai option hiện cùng kết quả của lần gọi đó.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-850"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-render/populate-output-chain#KB-850",
+        "artwork-render/populate-output-chain#KB-851",
+        "artwork-render/populate-output-chain#KB-852",
+        "artwork-render/populate-output-chain#KB-853"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Một citation dev (MEDIUM), shipped UNKNOWN. Lượt bị trừ khi dùng chung chưa đo, tách ra CHK-031."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-027",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "Cùng ảnh, hai populated option khác đúng một điểm trong thiết lập effect: mỗi option một lần gọi riêng",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "như CHK-026 nhưng mỗi lượt chỉ đổi một điểm: effect type, prompt sau khi điền biến, template, hoặc remove background",
+        "environment": "staging; ghi build SDK và ngày chạy",
+        "surface_or_device": "storefront PDP, desktop browser + DevTools Network"
+      },
+      "precondition": "Fixture như CHK-026 trên store explorer; chuẩn bị bốn biến thể cấu hình, mỗi biến thể khác cấu hình gốc đúng một điểm. Với biến thể prompt: hai prompt giống nhau trước khi điền biến nhưng khác nhau sau khi điền (biến lấy từ option khác nhau hoặc giá trị khác nhau).",
+      "steps": [
+        "Với từng biến thể: mở PDP, mở DevTools Network, upload cùng một ảnh cho nguồn.",
+        "Đợi cả hai option có kết quả; đếm số request xử lý effect cho ảnh đó.",
+        "Lặp lại cho đủ bốn biến thể; ghi kết quả theo biến thể."
+      ],
+      "observation_point": "Số request xử lý effect cho mỗi biến thể.",
+      "expected_result": "Mỗi biến thể có hai lần gọi effect riêng (một lần cho mỗi option), không dùng chung.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-850"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-render/populate-output-chain#KB-850"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Một citation dev (MEDIUM), shipped UNKNOWN."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-028",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "Gen AI trên hai layer Direct upload khác kích thước, cùng ảnh: gọi riêng và tính lượt riêng",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "hai populated option Direct upload dùng cùng ảnh, cùng effect Gen AI (cùng model, prompt sau khi điền biến, template, remove background), khác kích thước layer",
+        "environment": "staging; ghi build SDK và ngày chạy",
+        "surface_or_device": "storefront PDP + DevTools Network; portal để đọc lượt Gen AI của store"
+      },
+      "precondition": "Fixture trên store explorer: hai layer Direct upload khác kích thước (ví dụ 400×400 và 400×300), cùng effect Gen AI, provider key hợp lệ. Ghi số lượt Gen AI đã dùng của store trước khi chạy.",
+      "steps": [
+        "Mở PDP, mở DevTools Network, upload một ảnh cho nguồn.",
+        "Đợi cả hai option có kết quả; đếm số request xử lý effect Gen AI cho ảnh đó.",
+        "Ghi lại số lượt Gen AI đã dùng của store sau khi chạy; tính chênh lệch."
+      ],
+      "observation_point": "Số request xử lý effect Gen AI; chênh lệch lượt Gen AI của store.",
+      "expected_result": "Hai lần gọi Gen AI riêng (một cho mỗi layer) và mỗi lần gọi tính một lượt riêng.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-851"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-render/populate-output-chain#KB-851",
+        "artwork-render/populate-output-chain#KB-850",
+        "artwork-render/populate-output-chain#KB-852"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chạm lượt bị trừ của merchant (P1). Một citation dev (MEDIUM); lượt kiểm trước đó chỉ có Gemini trên Direct upload."
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-029",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "Gen AI trên hai layer Cropper khác kích thước, cùng ảnh: gọi riêng và tính lượt riêng",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "hai populated option Cropper dùng cùng ảnh, cùng effect Gen AI, khác kích thước layer",
+        "environment": "staging; ghi build SDK và ngày chạy",
+        "surface_or_device": "storefront PDP + DevTools Network; portal để đọc lượt Gen AI của store"
+      },
+      "precondition": "Như CHK-028 nhưng hai layer là Cropper (ví dụ 400×400 và 400×300). Cùng một vùng crop cho cả hai nếu UI cho phép, để crop không là biến.",
+      "steps": [
+        "Mở PDP, mở DevTools Network, upload một ảnh cho nguồn, xác nhận crop.",
+        "Đợi cả hai option có kết quả; đếm số request xử lý effect Gen AI cho ảnh đó.",
+        "Ghi chênh lệch lượt Gen AI của store trước và sau."
+      ],
+      "observation_point": "Số request xử lý effect Gen AI; chênh lệch lượt Gen AI của store.",
+      "expected_result": "Hai lần gọi Gen AI riêng (một cho mỗi layer) và mỗi lần gọi tính một lượt riêng.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-851"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-render/populate-output-chain#KB-851",
+        "artwork-render/populate-output-chain#KB-850",
+        "artwork-render/populate-output-chain#KB-852"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chạm lượt bị trừ (P1). Rule phát biểu cho cả Cropper nhưng nửa Cropper chưa có lượt kiểm nào; lần chạy đầu là lượt đối chiếu đầu tiên."
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-032",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Hai option chained {{output}} cùng nguồn, setup y hệt: dùng chung một lần gọi cho effect riêng",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "hai option populate {{output}} từ cùng một nguồn (chain một cấp), cùng effect riêng, cùng loại và kích thước layer, cùng effect của nguồn",
+        "environment": "staging; ghi build SDK và ngày chạy",
+        "surface_or_device": "storefront PDP + DevTools Network"
+      },
+      "precondition": "Fixture trên store explorer: một nguồn có effect riêng, hai option chained {{output}} một cấp với setup giống hệt nhau.",
+      "steps": [
+        "Mở PDP, mở DevTools Network, upload một ảnh cho nguồn.",
+        "Đợi nguồn và hai option có kết quả; đếm số request xử lý effect riêng của hai option (tách khỏi request của nguồn).",
+        "So sánh ảnh kết quả hai option."
+      ],
+      "observation_point": "Số request xử lý effect riêng của hai option; ảnh kết quả.",
+      "expected_result": "Chỉ một lần gọi cho effect riêng, dùng chung cho cả hai option; hai option hiện cùng kết quả.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-855"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-render/populate-output-chain#KB-855",
+        "artwork-render/populate-output-chain#KB-850",
+        "artwork-render/populate-output-chain#KB-861"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Một citation dev (MEDIUM), shipped UNKNOWN."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-033",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "Hai option chained {{output}} cùng nguồn khác một điểm setup: mỗi option một lần gọi",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "như CHK-032 nhưng mỗi lượt chỉ đổi một điểm: effect riêng, loại layer, kích thước layer, hoặc effect của nguồn mà option nhận",
+        "environment": "staging; ghi build SDK và ngày chạy",
+        "surface_or_device": "storefront PDP + DevTools Network"
+      },
+      "precondition": "Fixture như CHK-032 trên store explorer; chuẩn bị các biến thể, mỗi biến thể khác cấu hình gốc đúng một điểm.",
+      "steps": [
+        "Với từng biến thể: mở PDP, mở DevTools Network, upload cùng một ảnh cho nguồn.",
+        "Đếm số request xử lý effect riêng của hai option.",
+        "Ghi kết quả theo biến thể."
+      ],
+      "observation_point": "Số request xử lý effect riêng của hai option cho mỗi biến thể.",
+      "expected_result": "Mỗi biến thể có hai lần gọi effect riêng (một cho mỗi option).",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-855"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-render/populate-output-chain#KB-855"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Một citation dev (MEDIUM), shipped UNKNOWN."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-034",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Request xử lý effect của option chained {{output}} mang effect của nguồn ở phần riêng; server chỉ dùng khi nguồn chưa có kết quả full-size",
+      "applicability": {
+        "role": "buyer (storefront client gọi server)",
+        "state": "option populate {{output}} một cấp có effect riêng; nguồn có effect riêng",
+        "environment": "staging; ghi build SDK và ngày chạy",
+        "surface_or_device": "storefront PDP + DevTools Network"
+      },
+      "precondition": "Fixture trên store explorer: nguồn có effect riêng (ví dụ gray_scale), option chained {{output}} có effect riêng khác. Tên field và endpoint QA thấy trong Network không phải hợp đồng API; chỉ assert cấu trúc.",
+      "steps": [
+        "Lượt 1 (nguồn đã có kết quả full-size): upload ảnh cho nguồn, đợi nguồn xong; ghi payload request xử lý effect của option và ảnh kết quả của option.",
+        "Lượt 2 (nguồn chưa có kết quả full-size): làm chậm hoặc chặn kết quả của nguồn trong DevTools để option gửi request trước khi nguồn có kết quả full-size; ghi payload và ảnh kết quả của option.",
+        "So sánh ảnh kết quả của option ở hai lượt với ảnh kết quả của nguồn."
+      ],
+      "observation_point": "Payload request của option (có phần riêng chứa effect của nguồn cạnh effect của option không); ảnh kết quả của option.",
+      "expected_result": "Request của option mang effect của nguồn trong một phần riêng, đặt cạnh effect riêng của option. Lượt 1: kết quả của option bắt đầu từ kết quả của nguồn (đã qua effect của nguồn, rồi qua effect của option). Lượt 2: server dùng effect của nguồn được gửi kèm để kết quả của option vẫn có effect của nguồn và effect của option.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-866"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-render/populate-output-chain#KB-866",
+        "artwork-render/populate-output-chain#KB-854"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Một citation dev (MEDIUM); lượt kiểm RQ11 tạm dừng/chưa chạy. Không assert tên field/endpoint. Lượt 2 phụ thuộc khả năng làm chậm kết quả nguồn trong DevTools."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-035",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Nhiều option chained {{output}} cùng nguồn: effect của nguồn chạy một lần cho mỗi ảnh, option bắt đầu từ ảnh đã xử lý của nguồn",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "nguồn có effect riêng; hai hoặc nhiều option chained {{output}} một cấp có effect riêng khác nhau",
+        "environment": "staging; ghi build SDK và ngày chạy",
+        "surface_or_device": "storefront PDP + DevTools Network"
+      },
+      "precondition": "Fixture trên store explorer: một nguồn có effect riêng, hai option chained {{output}} với effect riêng khác nhau (để không dùng chung lần gọi theo CHK-033).",
+      "steps": [
+        "Mở PDP, mở DevTools Network, upload một ảnh cho nguồn.",
+        "Đếm số request chạy effect của nguồn cho ảnh đó.",
+        "So sánh ảnh kết quả của từng option với ảnh kết quả của nguồn (đã có effect của nguồn hay chưa)."
+      ],
+      "observation_point": "Số lần effect của nguồn chạy cho ảnh; ảnh kết quả từng option.",
+      "expected_result": "Baseline theo dev doc sinh từ branch diff (chưa có PO/Dev xác nhận là hành vi đúng): effect của nguồn chạy một lần cho ảnh dù có bao nhiêu option chained; mỗi option bắt đầu từ ảnh đã xử lý của nguồn và chỉ chạy effect riêng của nó. Lệch là cần điều tra, không phải bug.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-854"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Option chained {{output}} có effect riêng bắt đầu từ ảnh đã xử lý của nguồn, và effect của nguồn chỉ chạy một lần cho mỗi ảnh dù có nhiều option chained, có phải hành vi đúng không? Hiện chỉ có dev doc sinh từ branch diff (TIB-5504 comment 56020, 2026-10-29). Cần PO/Dev xác nhận nguyên văn có ngày và link.",
+      "related_kb_ids": [
+        "artwork-render/populate-output-chain#KB-854",
+        "artwork-render/populate-output-chain#KB-866",
+        "artwork-render/populate-output-chain#KB-855"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-854 OBSERVED_CURRENT/LOW (S1), không đủ làm oracle mạnh. Không thay đổi CHK-023 (OQ-artwork-093 giữ mở)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-render-105"
+    },
+    {
+      "check_id": "CHK-037",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Layer ảnh No personalization populate {{output}} từ nguồn Photo Cropper nhận ảnh đã crop",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "layer ảnh No personalization populate {{output}} từ nguồn Photo Cropper",
+        "environment": "staging; ghi build SDK và ngày chạy",
+        "surface_or_device": "storefront PDP"
+      },
+      "precondition": "Staging chưa có campaign dựng sẵn cấu hình này: dựng fixture trên store explorer (layer Photo Cropper làm nguồn, layer ảnh No personalization populate {{output}} từ nó).",
+      "steps": [
+        "Mở PDP, upload một ảnh cho nguồn Photo Cropper.",
+        "Crop một vùng khác rõ với ảnh gốc (ví dụ chỉ nửa trái), xác nhận crop.",
+        "Quan sát ảnh hiện ở layer No personalization."
+      ],
+      "observation_point": "Nội dung ảnh ở layer No personalization so với ảnh gốc và ảnh đã crop của nguồn.",
+      "expected_result": "Layer No personalization nhận ảnh hiện tại của nguồn, tức ảnh đã crop (không phải ảnh gốc chưa crop).",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-858"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-render/populate-output-chain#KB-858",
+        "artwork-render/populate-output-chain#KB-867"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Dev ghi đây là hành vi theo code, chưa kiểm trên UI; lần chạy đầu là lượt đối chiếu UI đầu tiên. Không thay ảnh trong check này (thay ảnh với nguồn Photo Cropper là known defect, CHK-045)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-038",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Layer ảnh No personalization populate {{output}} từ nguồn Photo Reposition: vị trí đi theo nguồn kể cả khi di chuyển sau, order render dùng vị trí đó",
+      "applicability": {
+        "role": "buyer (storefront) và order design render (portal)",
+        "state": "layer ảnh No personalization populate {{output}} từ nguồn Photo Reposition; buyer di chuyển nguồn sau khi populate",
+        "environment": "staging; ghi build SDK và ngày chạy",
+        "surface_or_device": "storefront PDP + checkout; portal order design"
+      },
+      "precondition": "Fixture trên store explorer. Không dùng preview storefront làm điểm quan sát vị trí (preview không vẽ vị trí này, known defect, CHK-039).",
+      "steps": [
+        "Mở PDP, upload ảnh cho nguồn Photo Reposition, di chuyển ảnh tới vị trí P1.",
+        "Di chuyển tiếp ảnh nguồn tới vị trí P2 khác rõ P1.",
+        "Add to Cart và đặt đơn test.",
+        "Mở order design render của đơn trên portal; so sánh vị trí ảnh ở layer No personalization với vị trí P2 của nguồn."
+      ],
+      "observation_point": "Vị trí ảnh của layer No personalization trong order design render.",
+      "expected_result": "Order render đặt ảnh của layer No personalization theo vị trí mới nhất của nguồn (P2), không phải vị trí mặc định hay P1.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-859"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-render/populate-output-chain#KB-859",
+        "artwork-render/populate-output-chain#KB-860"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Dữ liệu order render (bản in) sai là mất tiền/đơn (P1). Một citation dev (MEDIUM)."
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-041",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "Effect riêng của nguồn lỗi: nguồn hiện lỗi, option {{output}} để trống, không bắt đầu, không có lỗi riêng",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "option populate {{output}} một cấp từ nguồn có effect riêng; effect của nguồn lỗi",
+        "environment": "staging; lỗi giả lập trong trang (override response HTTP 500 hoặc status 3 qua DevTools); ghi build SDK và ngày chạy",
+        "surface_or_device": "storefront PDP + DevTools (Network override)"
+      },
+      "precondition": "Fixture trên store explorer: nguồn có effect riêng, option chained {{output}} có effect riêng. Chuẩn bị override response của request xử lý effect của nguồn thành HTTP 500 (hoặc status 3).",
+      "steps": [
+        "Bật override lỗi cho request effect của nguồn.",
+        "Upload ảnh cho nguồn.",
+        "Quan sát nguồn và option {{output}}; đếm request xử lý effect của option."
+      ],
+      "observation_point": "Thông báo lỗi trên nguồn; trạng thái/ảnh/lỗi trên option; số request effect của option.",
+      "expected_result": "Nguồn hiện lỗi của chính nó; option {{output}} để trống, không có request xử lý effect của option, và không có lỗi riêng nào hiện trên option.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-862"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-render/populate-output-chain#KB-862",
+        "artwork-render/populate-output-chain#KB-863",
+        "artwork-render/populate-output-chain#KB-864"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chỉ kiểm với lỗi giả lập; lỗi thật từ provider chưa kiểm (có thể khác mã/thời điểm)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-042",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "Nguồn thay ảnh mới mà xử lý lỗi: option {{output}} giữ kết quả của ảnh cũ",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "option populate {{output}} một cấp đã có kết quả của ảnh cũ; nguồn là Direct upload hoặc Photo Reposition (không áp cho nguồn Photo Cropper, xem CHK-045)",
+        "environment": "staging; lỗi giả lập trong trang (HTTP 500 hoặc status 3); ghi build SDK và ngày chạy",
+        "surface_or_device": "storefront PDP + DevTools (Network override)"
+      },
+      "precondition": "Fixture trên store explorer: nguồn có effect riêng, option chained {{output}}. Lượt đầu chạy bình thường để option có kết quả của ảnh cũ.",
+      "steps": [
+        "Upload ảnh cũ cho nguồn, đợi nguồn và option có kết quả; chụp kết quả của option.",
+        "Bật override lỗi cho request effect của nguồn.",
+        "Thay ảnh nguồn bằng ảnh mới khác rõ ảnh cũ.",
+        "Quan sát option {{output}}."
+      ],
+      "observation_point": "Ảnh hiện trên option sau khi lần xử lý ảnh mới lỗi.",
+      "expected_result": "Option {{output}} giữ kết quả của ảnh cũ.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-863"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-render/populate-output-chain#KB-863",
+        "artwork-render/populate-output-chain#KB-862",
+        "artwork-render/populate-output-chain#KB-867"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chỉ kiểm với lỗi giả lập. Với nguồn Photo Cropper có known defect khác hành vi này (KB-867), nên loại khỏi applicability."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-043",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "Effect riêng của option chained {{output}} lỗi: lỗi và Try again hiện trên option nguồn, Add to Cart bị chặn",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "nguồn đã xử lý xong; effect riêng của option chained {{output}} lỗi",
+        "environment": "staging; lỗi giả lập trong trang (HTTP 500 hoặc status 3); ghi build SDK và ngày chạy",
+        "surface_or_device": "storefront PDP + DevTools (Network override)"
+      },
+      "precondition": "Fixture trên store explorer: nguồn có effect riêng, option chained {{output}} có effect riêng. Override lỗi chỉ cho request effect của option, không cho nguồn.",
+      "steps": [
+        "Bật override lỗi cho request effect của option.",
+        "Upload ảnh cho nguồn, đợi nguồn xong.",
+        "Quan sát nơi hiện thông báo lỗi và nút Try again.",
+        "Bấm Add to Cart; ghi có vào giỏ không."
+      ],
+      "observation_point": "Vị trí thông báo lỗi và nút Try again; kết quả bấm Add to Cart.",
+      "expected_result": "Thông báo lỗi và nút Try again hiện trên option nguồn; Add to Cart bị chặn, sản phẩm không vào giỏ.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-864"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-render/populate-output-chain#KB-864",
+        "artwork-render/populate-output-chain#KB-862"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Buyer đặt được đơn với kết quả lỗi là mất tiền/đơn (P1). Vế Add to Cart bị chặn chưa được test riêng; chỉ kiểm với lỗi giả lập, lỗi thật từ provider chưa kiểm."
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-044",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "Reload trang khi option chained {{output}} đang processing: chạy lại từ đầu bằng lần gọi mới",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "option chained {{output}} đang processing effect riêng",
+        "environment": "staging; ghi build SDK và ngày chạy",
+        "surface_or_device": "storefront PDP + DevTools Network (Preserve log)"
+      },
+      "precondition": "Fixture trên store explorer: option chained {{output}} có effect riêng đủ chậm để reload kịp lúc processing (ví dụ Gen AI). Bật Preserve log trong Network.",
+      "steps": [
+        "Upload ảnh cho nguồn; khi option đang processing, ghi id/thời điểm request effect của option.",
+        "Reload trang.",
+        "Làm lại thao tác cần thiết để option chạy (nếu trang không giữ ảnh); ghi request effect mới của option.",
+        "Quan sát kết quả cuối của option."
+      ],
+      "observation_point": "Có request effect mới của option sau reload không; kết quả cuối có lấy từ job cũ không.",
+      "expected_result": "Không có gì được resume: sau reload option chạy lại từ đầu bằng một lần gọi mới; kết quả của job cũ không được dùng.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-865"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-render/populate-output-chain#KB-865"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Một citation dev (MEDIUM), shipped UNKNOWN. Lần gọi mới sau reload có thể tính thêm lượt; dev không nói về lượt."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    }
+  ],
+  "coverage_by_feature_and_risk": [],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-106"
+  }
+}

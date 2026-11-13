@@ -421,7 +421,7 @@ Tổng: 48 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-automations-017",
   "type": "OPEN_ISSUE",
-  "feature_id": "automation-steps",
+  "feature_id": "automation-wait-and-split-steps",
   "summary": "Các step của automation có lỗi validate / hiển thị đang mở trên staging (23/09–06/10/2026): From email / Reply-to sai định dạng chỉ báo toast khi PUT 422 (TC-MTRO-1044, 1046); Wait Duration 0 vẫn badge Configured, node \"0 days\"; Wait rỗng / chữ không có lỗi inline; nhãn Wait không có số ít (\"1 days\"); New value toàn khoảng trắng sau reload thành trống (TC-MTRO-1052, trái rule 18/09); chọn SMS mặc định Afghanistan +93; custom field đang được Update contact field dùng vẫn xoá được (06/10); BUG-54 (ô ngày split nhận text tự do) có vẻ đã sửa nhưng chưa chạy lại. Cần Dev xác nhận trạng thái sửa / retest; checklist dùng làm regression watch.",
   "kb_ids": [
     "KB-099",
@@ -453,7 +453,7 @@ Tổng: 48 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-automations-018",
   "type": "OPEN_ISSUE",
-  "feature_id": "automation-steps",
+  "feature_id": "automation-update-contact-field-step",
   "summary": "Quan sát 01/10/2026 ở Update contact field (đổi sang SMS vẫn giữ giá trị không phải số, không hiện \"Phone is invalid\"; field Boolean nhận giá trị không phải true/false) được Inventory ghi là nghi lỗi, nhưng PO/BA 02/10 BR-32 sau đó chốt việc không validate theo kiểu là chủ ý. Cần QA lead / Dev xác nhận đóng mục này hay vẫn còn phần lỗi (vd thông báo \"Phone is invalid\" có nên hiện khi rời ô).",
   "kb_ids": [
     "KB-131",
@@ -471,7 +471,7 @@ Tổng: 48 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-automations-019",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "automation-steps",
+  "feature_id": "automation-update-contact-field-step",
   "summary": "Engine xử lý thế nào khi step Update contact field ghi giá trị sai kiểu vào contact (hệ quả của BR-32, GAP-38 Major): ghi nguyên giá trị, bỏ qua, hay run Failed? Dev cần xác nhận để có expected result cho run.",
   "kb_ids": [
     "KB-132",
@@ -534,7 +534,7 @@ Tổng: 48 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-automations-022",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "automation-steps",
+  "feature_id": "automation-wait-and-split-steps",
   "summary": "Split rỗng (không có step dưới cả nhánh True lẫn False) có bị chặn chính thức không? Bundle có hint \"A split needs at least one step under True or False\" nhưng Jira AC không có, và câu hỏi mở được tài liệu trỏ tới không có trong bộ nguồn. PO cần xác nhận đây là rule hay chỉ là copy.",
   "kb_ids": [
     "KB-120"
@@ -915,7 +915,7 @@ Tổng: 48 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-automations-042",
   "type": "OPEN_ISSUE",
-  "feature_id": "automation-steps",
+  "feature_id": "automation-wait-and-split-steps",
   "summary": "Duration tối đa của Wait khi Unit là minutes hoặc hours là bao nhiêu?",
   "kb_ids": [
     "KB-102"
@@ -929,7 +929,7 @@ Tổng: 48 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của M
 {
   "oq_id": "OQ-automations-043",
   "type": "OPEN_ISSUE",
-  "feature_id": "automation-steps",
+  "feature_id": "automation-wait-and-split-steps",
   "summary": "Split có hiện operator cho biến số / custom field kiểu khác (is greater than, is any of, does not start with…) và lỗi ngày không hợp lệ trên UI không?",
   "kb_ids": [
     "KB-114",

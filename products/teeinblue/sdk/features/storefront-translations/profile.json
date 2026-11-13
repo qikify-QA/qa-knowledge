@@ -1,0 +1,814 @@
+{
+  "feature_id": "FEAT-20-storefront-translations",
+  "feature_key": "storefront-translations",
+  "name": "Dịch giao diện widget storefront",
+  "user_goal": "Buyer thấy widget theo ngôn ngữ storefront, và chữ gốc khi API dịch lỗi.",
+  "user_goal_kb_refs": [
+    "sdk/storefront-translations#KB-053",
+    "sdk/storefront-translations#KB-058"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "[MỚI, CBS-001] GUEST buyer xem widget theo locale (vi / zh-TW / en) trên storefront staging build TIB-5352",
+      "permission_observed": "Buyer GUEST mở product page theo locale prefix (/vi-vn/, /zh-zh/, /en-vn/) và modal 'Edit design' ở cart; SDK tự gọi translations/<locale>.json khi dictionary không nhúng inline. Không có khác biệt quyền nào được quan sát.",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-057",
+        "sdk/storefront-translations#KB-058"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "[MỚI] Product page campaign 2740 theo locale prefix /vi-vn/ (API path), /zh-zh/ (inline path), /en-vn/ và modal 'Edit design' ở cart — storefront staging",
+      "precondition": "Staging SDK app-v1.js build TIB-5352 (chưa release production); locale đã có dictionary Dynamic Translations",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-058",
+        "sdk/storefront-translations#KB-059"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "[MỚI, CBS-001] Widget vẫn dùng được khi dictionary translations từ API chậm hoặc lỗi — fallback chữ gốc",
+      "description": "CONFIRMED_EXPECTED (KB-053, staging build TIB-5352, chưa production): khi locale lấy dictionary qua API (vi ≥1000 key) và response translations/vi.json trễ quá 5 giây, ở mốc 3s widget chưa có nhãn, từ mốc 6s widget hiện chữ gốc ('QA5352 Your name', 'QA5352 Enter name', 'QA5352 Your photo'); trang và widget vẫn hoạt động, không crash. Chỉ OBSERVED/INFERRED, chưa xác nhận: với 500/503/abort widget cũng render chữ gốc, 1 request mỗi lần load (KB-054, từ TC FAILED); 1 pageerror 'signal is aborted without reason' khi timeout (KB-055, CCR cấm coi là expected); bundle dùng headersTimeout 5000 ms và nuốt lỗi về null (KB-056, INFERRED); retry lazy — cache promise theo 'shop|locale', tối đa 2 fetch, lần 2 chỉ ở lần gọi kế tiếp trong cùng page session (vd 'Edit design' ở cart), không retry khi load trang (KB-057).",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-054",
+        "sdk/storefront-translations#KB-055",
+        "sdk/storefront-translations#KB-056",
+        "sdk/storefront-translations#KB-057"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-001] Hiển thị nhãn widget khi chuỗi không có trong dictionary, và dictionary inline không in lặp",
+      "description": "CONFIRMED_EXPECTED (KB-058, staging build TIB-5352, chưa production): nhãn color picker 'Select a color' của photo layer, không có trong dictionary vi (1249 key) / zh-TW (50 key) / en (18 key), hiển thị chữ gốc 'Select a color', không rỗng, ở /vi-vn/ (API path), /zh-zh/ (inline path), /en-vn/ và modal 'Edit design' ở cart. Chỉ OBSERVED/INFERRED: HTML /zh-zh/ có 'window.teeinblueShopTranslations =' đúng 1 lần dù có 2 lần 'window.teeinblueShop =', app embed 'product-personalizer' và 4 cụm comment 'teeinblue scripts' (KB-059, 1 lần quan sát); việc trang render cả theme app extension và theme script là suy luận, chưa kiểm theme editor (KB-060).",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-058",
+        "sdk/storefront-translations#KB-059",
+        "sdk/storefront-translations#KB-060"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "[MỚI] widget chờ dictionary từ translations/<locale>.json (API path), chưa có nhãn",
+      "to": "widget render bằng chữ gốc, trang/widget vẫn hoạt động",
+      "trigger": "response translations/<locale>.json không về trong 5 giây",
+      "condition": "Staging build TIB-5352 (CONFIRMED_EXPECTED, KB-053). Mốc 5s được suy là headersTimeout trong bundle (KB-056, INFERRED). Kèm 1 pageerror 'signal is aborted without reason' (KB-055, OBSERVED, không phải expected).",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-055",
+        "sdk/storefront-translations#KB-056"
+      ]
+    },
+    {
+      "from": "[MỚI] widget chờ dictionary từ translations/<locale>.json (API path)",
+      "to": "widget render bằng chữ gốc, chỉ 1 request translations trong lần load",
+      "trigger": "response translations/<locale>.json là 500, 503 hoặc network abort",
+      "condition": "Staging build TIB-5352; chỉ OBSERVED_CURRENT/LOW từ test case FAILED TC-TIB-4696 — chưa là expected (OQ-sdk-051).",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-054"
+      ]
+    },
+    {
+      "from": "[MỚI] lần fetch translations đầu tiên trong page session đã lỗi (promise cache theo 'shop|locale' bị xoá vì số lỗi < 2)",
+      "to": "lần gọi kế tiếp trong cùng page session (vd bấm 'Edit design' ở cart lần 1) fetch lại; sau 2 lần lỗi không fetch thêm (lần 3 vẫn tổng 2 request)",
+      "trigger": "SDK cần dictionary lần nữa trong cùng page session",
+      "condition": "Staging build TIB-5352, response mock 500; OBSERVED_CURRENT/LOW, khác kỳ vọng '1 retry khi load' của TC-TIB-4696 — thiết kế mong muốn chưa xác nhận (OQ-sdk-053).",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-057"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "rule": "Khi response translations/<locale>.json (API path) không về trong 5 giây, widget personalization render bằng chữ gốc (không để trống nhãn vô thời hạn) và trang/widget vẫn hoạt động, không crash.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, GUEST buyer, SDK app-v1.js build TIB-5352 (chưa release production), locale vi 1249 key",
+      "caveats": "Chỉ nhánh timeout >5s. Không gồm 500/503/abort (KB-054), pageerror (KB-055), retry (KB-057).",
+      "confirmation_ref": "Testlane TC-TIB-4697 PASS",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053"
+      ]
+    },
+    {
+      "rule": "Nhãn widget không có trong dictionary của locale (vd 'Select a color' của color picker photo layer) hiển thị chữ gốc, không rỗng, ở cả API path, inline path, ngôn ngữ chính và modal 'Edit design' ở cart.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, GUEST buyer, SDK app-v1.js build TIB-5352 (chưa release production), campaign 2740",
+      "caveats": "Một chuỗi được test ('Select a color').",
+      "confirmation_ref": "Testlane TC-TIB-4710 PASS",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-058"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "[MỚI, CBS-001] Với response translations/vi.json bị giả lập 500, 503 hoặc network abort: mỗi lần load chỉ có 1 request translations (~0,9s sau load) và widget render chữ gốc ở cả 3 trường hợp. Lấy từ test case FAILED TC-TIB-4696 (fail ở kỳ vọng retry, không phải fallback) — chưa đủ làm nguồn xác nhận.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging build TIB-5352, chưa production",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-054"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-001] Khi translations/vi.json trễ quá 5s, phát sinh 1 pageerror 'signal is aborted without reason' (AbortController 5s) trong khi trang/widget vẫn hoạt động. CCR nói KHÔNG coi pageerror này là hành vi mong muốn.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging build TIB-5352, chưa production",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-055"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-001] Theo đoạn bundle app-v1.js do người gửi CCR đọc: hàm gọi merchant/translations/<locale>.json?shop=<domain> truyền headersTimeout 5000 ms và bắt mọi lỗi thành null; mốc 5s của KB-053 được suy là timeout chờ header. Suy luận từ mã build, chưa có nguồn thẩm quyền.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "scope": "staging build TIB-5352, chưa production",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-056"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-001] Retry fetch translations là lazy: với response mock 500, một lần load trang chỉ có 1 request; ở cart bấm 'Edit design' lần 1 → tổng 1, lần 2 → tổng 2, lần 3 → vẫn 2. Bundle cache promise theo khoá 'shop|locale', đếm lỗi, chỉ xoá cache cho phép gọi lại khi số lỗi < 2. Dev mô tả 'SDK chỉ thử lại đúng 1 lần' không nêu điều kiện; chưa xác nhận là thiết kế.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging build TIB-5352, chưa production",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-057"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-001] Raw HTML /zh-zh/ (zh-TW 50 key, inline path): 'window.teeinblueShopTranslations =' xuất hiện đúng 1 lần, key 'QA5352 Your name' 1 lần; cùng HTML có 2 lần 'window.teeinblueShop =', app embed 'product-personalizer' và 4 cụm comment 'teeinblue scripts'. Một lần quan sát; cấu hình theme chưa kiểm.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging build TIB-5352, chưa production",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-059"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-001] Suy luận của người gửi CCR: trang /zh-zh/ đang render cả theme app extension và theme script của teeinblue mà dictionary inline vẫn chỉ in 1 lần. Điều kiện '2 khối teeinblue' chưa được xác nhận bằng theme editor.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "scope": "staging build TIB-5352, chưa production",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-060"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      {
+        "path": "Launch dialog multi-store (chọn thêm store2) + link 'Campaign link' hiển thị URL storefront thật cho từng store",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-002"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Block General error messages của product page content: request_rate_limited, request_rate_limited_retry_after",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-449"
+        ]
+      }
+    ],
+    "storefront": [
+      {
+        "path": "store TIB_STORE_URL_1 -> /password -> product page (store1, SDK v1)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-001",
+          "sdk/storefront-buyer-facing#KB-004",
+          "sdk/storefront-buyer-facing#KB-005",
+          "sdk/storefront-buyer-facing#KB-010",
+          "sdk/storefront-customization-storage#KB-014",
+          "sdk/storefront-customization-storage#KB-016",
+          "sdk/storefront-customization-storage#KB-017",
+          "sdk/storefront-customization-storage#KB-019",
+          "sdk/storefront-customization-storage#KB-022"
+        ]
+      },
+      {
+        "path": "store TIB_STORE_URL_2 -> /password -> product page (store2, SDK v2)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-001",
+          "sdk/storefront-buyer-facing#KB-007",
+          "sdk/storefront-buyer-facing#KB-008",
+          "sdk/storefront-buyer-facing#KB-009",
+          "sdk/storefront-buyer-facing#KB-011",
+          "sdk/storefront-customization-storage#KB-014",
+          "sdk/storefront-customization-storage#KB-015",
+          "sdk/storefront-customization-storage#KB-016",
+          "sdk/storefront-customization-storage#KB-017",
+          "sdk/storefront-customization-storage#KB-018",
+          "sdk/storefront-customization-storage#KB-019",
+          "sdk/storefront-customization-storage#KB-020",
+          "sdk/storefront-customization-storage#KB-021",
+          "sdk/storefront-customization-storage#KB-022"
+        ]
+      },
+      {
+        "path": "/cart, cart-drawer (store2 only — store1 chưa từng có item trong cart)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-009",
+          "sdk/storefront-buyer-facing#KB-005",
+          "sdk/storefront-customization-storage#KB-021"
+        ]
+      },
+      {
+        "path": "localStorage 'teeinblue-customizations' / 'teeinblue-global-options' (client-side draft, cả 2 store)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-014",
+          "sdk/storefront-customization-storage#KB-015",
+          "sdk/storefront-customization-storage#KB-016",
+          "sdk/storefront-customization-storage#KB-017",
+          "sdk/storefront-customization-storage#KB-019",
+          "sdk/storefront-customization-storage#KB-020",
+          "sdk/storefront-customization-storage#KB-021"
+        ]
+      },
+      {
+        "path": "Storefront re-verification pass 2026-09-21 (2026-09-21) tren CHINH campaign 2595 da dung lam baseline 2026-09-12 -- ca 2 store, bao gom SDK bundle marker check, template option 2 dependency shape, preview mechanism, ATC-block khi field de trong, campaign identity re-verify",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-040",
+          "sdk/storefront-buyer-facing#KB-041",
+          "sdk/storefront-campaign-media-api#KB-042",
+          "sdk/storefront-buyer-facing#KB-043",
+          "sdk/storefront-campaign-media-api#KB-044"
+        ]
+      },
+      {
+        "path": "[MỚI] Product page campaign 2740 /vi-vn/ (API path), /zh-zh/ (inline path), /en-vn/ — widget personalization theo locale, staging SDK app-v1.js build TIB-5352",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-053",
+          "sdk/storefront-translations#KB-054",
+          "sdk/storefront-translations#KB-055",
+          "sdk/storefront-translations#KB-058",
+          "sdk/storefront-translations#KB-059",
+          "sdk/storefront-translations#KB-060"
+        ]
+      },
+      {
+        "path": "[MỚI] Cart → modal 'Edit design' (vi) — lần gọi dictionary kế tiếp trong cùng page session; nhãn thiếu trong dictionary hiển thị chữ gốc",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-057",
+          "sdk/storefront-translations#KB-058"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-008] localStorage 'teeinblue-customizations' sau khi personalize và Add-to-cart nhiều product (store test store không thuộc explorer, order 14 line item)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-066"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-006] Product page campaign #3043 (artwork #5046, Group ẩn), store test instance 520 store không thuộc explorer — buyer preview SDK theo effective visibility của Group",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-181"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-006] Form cá nhân hoá SDK + Add to cart với artwork có Group ẩn (field required trong Group, condition buyer-side của layer con, 'Show this layer on first load') — KNOWN_DEFECT",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-179",
+          "sdk/storefront-layer-visibility#KB-180"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] Product page các campaign fixture TIB-5558 (store test instance 520 store không thuộc explorer) — form cá nhân hoá + live preview SDK app-v2.js với layer action Hide: 1 điều kiện, OR, AND, first load, nguồn Toggle / Additional Option, so sánh với layer Show",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-231",
+          "sdk/storefront-layer-visibility#KB-232",
+          "sdk/storefront-layer-visibility#KB-233",
+          "sdk/storefront-layer-visibility#KB-234",
+          "sdk/storefront-layer-visibility#KB-235",
+          "sdk/storefront-customization-storage#KB-236"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] Cache trình duyệt của SDK app-v2.js (lần load đầu nhận bản cũ, xoá cache để nhận bản mới) — OBSERVED_CURRENT/LOW",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-237"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-009] Product page store test store không thuộc explorer (instance 520) — gallery SDK lọc mockup + video theo variant (setting bật / tắt), đổi variant, play video, thứ tự gallery, video 'Always load first' (BUG-359), khu vực preview khi variant chỉ gán video",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-320",
+          "sdk/storefront-campaign-media-api#KB-322",
+          "sdk/storefront-campaign-media-api#KB-323",
+          "sdk/storefront-campaign-media-api#KB-324",
+          "sdk/storefront-campaign-media-api#KB-325",
+          "sdk/storefront-campaign-media-api#KB-326",
+          "sdk/storefront-campaign-media-api#KB-327"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Product page store không thuộc explorer campaign #3270 (có Global Option), #3271 (dùng cùng GO), #3272 (không GO) — form, preview, reload, tự điền Global Option giữa campaign (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-358",
+          "sdk/storefront-buyer-facing#KB-359",
+          "sdk/storefront-customization-storage#KB-360",
+          "sdk/storefront-buyer-facing#KB-361",
+          "sdk/storefront-customization-storage#KB-362",
+          "sdk/storefront-campaign-media-api#KB-363"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Product page platform product #602 (/products/the-complete-snowboard, store không thuộc explorer) — trang thật không render form (lỗi đã biết BUG-310); form chỉ render khi HTML đã patch (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-364",
+          "sdk/storefront-buyer-facing#KB-365",
+          "sdk/storefront-campaign-media-api#KB-355"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Reload storefront sau thay đổi phía merchant (Save artwork + Update campaign; sửa + Publish platform product) — URL SDK ?v=1 vẫn trả bản cũ (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-356",
+          "sdk/storefront-campaign-media-api#KB-357"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-015] Product page store không thuộc explorer sản phẩm có artwork group ~250 layer ảnh → bấm Preview (popup preview) — quan sát, đếm DOM toàn trang",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-394"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Popup cross-sell: variant picker, giá, CTA \"Sold out\"",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-408",
+          "sdk/storefront-buyer-facing#KB-420",
+          "sdk/storefront-buyer-facing#KB-421",
+          "sdk/storefront-buyer-facing#KB-452",
+          "sdk/storefront-buyer-facing#KB-453"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Thông báo 429 ở upload và add-to-cart",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-418",
+          "sdk/storefront-buyer-facing#KB-419",
+          "sdk/storefront-buyer-facing#KB-450",
+          "sdk/storefront-buyer-facing#KB-451"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Product page sau reload: template picker \"Choose an option\", chọn lại template hiện lại ảnh và position (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-506"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Preview và thumbnail cart khi position bị sửa tay (NaN, lỗi console, mất ảnh / x=0) (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-507"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Field upload ảnh: tên file payload, SVG có script, HTML đổi đuôi .jpg; text layer sync hiển thị payload literal (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-508"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Preview vector layer: SVG inline với id prefix svg-<chuỗi>-<id gốc> khi áp màu, <image href=…svg> khi chưa áp màu, tham chiếu url()/href/xlink:href/marker-*/<style>",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-509",
+          "sdk/storefront-buyer-facing#KB-510",
+          "sdk/storefront-buyer-facing#KB-511",
+          "sdk/storefront-buyer-facing#KB-512"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "path": "POST /password (cả 2 store, form authenticity_token/password redacted)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-001"
+        ]
+      },
+      {
+        "path": "GET /api/instances/{instanceId}/themes/app-block-enabled (portal pre-flight, owner)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-012"
+        ]
+      },
+      {
+        "path": "GET /api/merchant/campaigns/{platformProductId}.json (public, no auth, cả 2 store)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-013"
+        ]
+      },
+      {
+        "path": "POST /cart/add, POST /cart/change.js, POST /cart/clear.js (SDK v2, store2 — thành công ở lần thử thứ hai); KHÔNG có request nào tương ứng ở SDK v1/store1",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-008",
+          "sdk/storefront-buyer-facing#KB-005",
+          "sdk/storefront-customization-storage#KB-021"
+        ]
+      },
+      {
+        "path": "POST https://staging-api.teeinblue.com/api/merchant/shopify/customization (API-OP-051) — chỉ fire tại thời điểm ATC (SDK v2, store2), 0 lần khi field-fill, absent khi ATC thất bại do thiếu click con grouped_clipart",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-018",
+          "sdk/storefront-customization-storage#KB-022"
+        ]
+      },
+      {
+        "path": "GET /cart.json (implicit, khong phai APIOP rieng) -- xac nhan item_count=0 ngay sau khi ADD TO CART bi chan client-side do field bat buoc de trong (KB-043), ca 2 store",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-043"
+        ]
+      },
+      {
+        "path": "[MỚI] GET /api/merchant/translations/<locale>.json?shop=<domain>&v=<translation_version> — do SDK gọi (API path); timeout 5s, fallback chữ gốc, retry lazy tối đa 2 fetch/page session; staging build TIB-5352",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-053",
+          "sdk/storefront-translations#KB-054",
+          "sdk/storefront-translations#KB-056",
+          "sdk/storefront-translations#KB-057"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] POST /api/merchant/shopify/customization lúc Add to cart — payload chỉ chứa layer đang hiện (layer action Hide đang ẩn không có key), kèm giá trị nguồn (option / Toggle / Additional Option)",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-231",
+          "sdk/storefront-layer-visibility#KB-234",
+          "sdk/storefront-customization-storage#KB-236"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-009] GET /api/merchant/campaigns/<id>.json — merchant JSON chỉ mang assignment media ↔ variant mới sau POST /api/campaigns/<id>/sync (quan sát 1 lượt, ngoài oracle)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-321"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] GET /api/merchant/campaigns/{shopify product id}.json?shop=…&v=<v chưa từng dùng> — có đủ key SDK cần, không còn field đã bỏ (CONFIRMED_EXPECTED/MEDIUM, TC-TIB-7507, chỉ cho v mới)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-350",
+          "sdk/storefront-campaign-media-api#KB-352"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] GET /api/merchant/campaigns/{shopify product id}.json?shop=…&v=1 (URL SDK gọi khi render) so với link preload v=<version> — v=1 trả bản cũ sau sửa phía merchant, còn artworks[].global_options (quan sát; BUG-437/446/439)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-354",
+          "sdk/storefront-campaign-media-api#KB-356",
+          "sdk/storefront-campaign-media-api#KB-357"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Giá trị resource_type ('campaign' / 'platform_product'), danh sách key artworks[] của platform product, campaigns/{shopify product id}.json là đường SDK dùng cho platform product (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-351",
+          "sdk/storefront-campaign-media-api#KB-353",
+          "sdk/storefront-campaign-media-api#KB-355"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] POST /api/merchant/shopify/customization → 201 với key layer-<id> và global-option-<id> (một giá trị cho GO dùng chung nhiều layer) (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-360",
+          "sdk/storefront-buyer-facing#KB-361",
+          "sdk/storefront-campaign-media-api#KB-363"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] GET /products/<shopify product id>.js → 404 mỗi lần load campaign (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-366"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Response public campaigns/{id}.json: không thấy access_token/token/secret/password; có config.maps_api_key (Mapbox 'pk.') (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-367"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Route single upload: edge, edge GenAI (genai-uploads), presigned (upload-url), photo-upload",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-447"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Poll upload: HTTP 200 với error_message = rate_limit_exceeded",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-448"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Request customization lúc Add to cart → 201, gửi nguyên giá trị position sửa tay, không có key position của campaign khác (quan sát TC-30)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-507"
+        ]
+      }
+    ],
+    "data": [
+      "platform_linked_id độc lập theo store (store1: 8138398629987, store2: 15280333291824) — quan sát qua GraphQL campaign_instances, KHÔNG có DB-level verification.",
+      "localStorage key 'teeinblue-customizations' (array 1 object {productId, customization, timestamp}) và 'teeinblue-global-options' (object keyed theo global-option id) — client-side only, không phải DB, cùng shape trên cả 2 store.",
+      "[MỚI, KB-059] window.teeinblueShopTranslations (dictionary inline trong HTML, in 1 lần trên /zh-zh/) — client-side, staging build TIB-5352.",
+      "[MỚI, CBS-008, KB-066] localStorage 'teeinblue-customizations' khi đã thao tác nhiều product: chỉ còn khoảng 10 entry gần nhất (chưa đếm độc lập), entry cùng product bị ghi đè — client-side, OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-011, KB-236] localStorage 'teeinblue-customizations' chỉ chứa giá trị của layer đang hiện — quan sát trên SDK bản cũ (2026-10-14), OBSERVED_CURRENT/LOW; phần cart/order của layer bị Hide thuộc object order.",
+      "[MỚI, CBS-013, KB-362] Lựa chọn Global Option tự điền khi mở campaign khác dùng cùng GO trong cùng trình duyệt — tester ghi trạng thái lấy từ localStorage; OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-013, KB-360] localStorage 'teeinblue-customizations' khớp payload customization có key global-option-<id> — OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-098, KB-506] localStorage vẫn giữ template, ảnh và position sau reload (picker không khôi phục) — OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-098, KB-507] Giá trị position trong localStorage do buyer sửa tay không bị clamp hay bỏ qua — OBSERVED_CURRENT/LOW."
+    ],
+    "code": [
+      {
+        "path": "staging-sdk.teeinblue.com/shopify/app-v1.js (SDK v1, store1) — chưa review, là 1 hướng điều tra đề xuất cho CFL-001",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-006"
+        ]
+      },
+      {
+        "path": "#teeinblue-wrapper (Vue3 app, SDK v2, store2) — chỉ quan sát qua DOM/SVG layer id, chưa review source",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-011"
+        ]
+      },
+      {
+        "path": "[MỚI] staging SDK app-v1.js build TIB-5352 — hàm fetch merchant/translations/<locale>.json: headersTimeout 5000 ms, bắt lỗi về null (INFERRED), cache promise theo 'shop|locale', cho gọi lại khi số lỗi < 2 (đọc bundle, người gửi CCR)",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-056",
+          "sdk/storefront-translations#KB-057"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-003] staging-sdk.teeinblue.com/shopify/app-v1.js (bundle theme-embed tải 2026-10-07) — theo grep do người gửi CCR tự thực hiện: không có generateDesignLinks/design_urls/onCustomizationCreated/notifyParentIFrame/window.parent.postMessage; EVENT_CUSTOMIZATION_CREATED định nghĩa nhưng không dispatch. Chỉ app-v1.js; app-v2.js chưa kiểm (OQ-sdk-063).",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-065"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] staging-sdk.teeinblue.com/shopify/app-v2.js — bản Last-Modified 2026-10-28 03:01:11 GMT (Cache-Control max-age=14400) có đánh giá action Hide; bản 2026-10-14 chưa có. Chỉ quan sát header/hành vi, chưa review source.",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-231",
+          "sdk/storefront-layer-visibility#KB-237"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Component của Cross-sell chứa thay đổi variant picker; CampaignForm không bị ảnh hưởng",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-408",
+          "sdk/storefront-buyer-facing#KB-454"
+        ]
+      }
+    ]
+  },
+  "dependencies": [
+    {
+      "description": "[MỚI, CBS-001] Nhãn widget theo locale phụ thuộc dictionary Dynamic Translations do object translation giao (feature dynamic-translations): inline window.teeinblueShopTranslations hoặc translations/<locale>.json theo số key (cross_layer_evidence_map của shard: translation KB-022, KB-025, KB-029). Các capability fallback/retry/nhãn thiếu ở đây chỉ có nghĩa với 2 đường giao đó.",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-057",
+        "sdk/storefront-translations#KB-058",
+        "sdk/storefront-translations#KB-059"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "description": "[MỚI, CBS-001] KB-053..KB-060 chỉ verify trên staging build TIB-5352 (Jira QA Review, PR còn OPEN), chưa release production — không dùng để đánh giá hành vi production (OQ-sdk-050).",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-054",
+        "sdk/storefront-translations#KB-055",
+        "sdk/storefront-translations#KB-056",
+        "sdk/storefront-translations#KB-057",
+        "sdk/storefront-translations#KB-058",
+        "sdk/storefront-translations#KB-059",
+        "sdk/storefront-translations#KB-060"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-001] Thiết kế retry chưa rõ: staging retry lazy (không retry khi load, tối đa 2 fetch/page session) trái với kỳ vọng '1 retry khi load' của TC-TIB-4696 (FAILED) và mô tả Dev không nêu điều kiện — checklist viết theo một trong hai cách hiểu đều có thể cho kết quả sai (OQ-sdk-053).",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-057"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-001] Khoảng 3–6s trước khi fallback, widget không có nhãn (KB-053), và timeout sinh pageerror 'signal is aborted without reason' (KB-055) — nếu pageerror là lỗi cần sửa, monitor lỗi JS của merchant có thể ghi nhận lỗi giả mỗi khi API chậm (OQ-sdk-052).",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-055"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-001] Nhãn bundle 'app-v1.js' trong KB-053..KB-060 (shop/campaign 2740) KHÔNG được ghép với nhãn 'SDK v1 (store1)' của các capability base (campaign 2595), vốn đang bị CFL-004 làm lung lay.",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-buyer-facing#KB-040"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-29",
+    "source_observed_on": "2026-10-29"
+  },
+  "unknown_areas": [
+    {
+      "question": "[MỚI, CBS-001] Các hành vi SDK về translations (KB-053..KB-060) có giữ nguyên khi TIB-5352 release production không?",
+      "why_it_matters": "Hiện chỉ verify trên staging build TIB-5352 (chưa release production); checklist production không được dựa vào các item này cho tới khi re-verify hoặc có xác nhận.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-054",
+        "sdk/storefront-translations#KB-055",
+        "sdk/storefront-translations#KB-056",
+        "sdk/storefront-translations#KB-057",
+        "sdk/storefront-translations#KB-058",
+        "sdk/storefront-translations#KB-059",
+        "sdk/storefront-translations#KB-060"
+      ],
+      "oq_id": "OQ-sdk-050"
+    },
+    {
+      "question": "[MỚI, CBS-001] Khi translations API trả 500/503 hoặc bị abort, widget có phải render chữ gốc (fallback) theo thiết kế không?",
+      "why_it_matters": "Fallback này chỉ quan sát trong test case FAILED TC-TIB-4696 (KB-054); chưa có test PASS hay xác nhận Dev/PO để làm oracle.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-054"
+      ],
+      "oq_id": "OQ-sdk-051"
+    },
+    {
+      "question": "[MỚI, CBS-001] pageerror 'signal is aborted without reason' khi translations API timeout là lỗi cần sửa hay chấp nhận được?",
+      "why_it_matters": "CCR cấm coi là expected; checklist cần biết có assert 'không có console error' cho nhánh timeout hay không.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-055"
+      ],
+      "oq_id": "OQ-sdk-052"
+    },
+    {
+      "question": "[MỚI, CBS-001] Thiết kế retry mong muốn khi fetch translations lỗi là gì: retry ngay khi load (như TC-TIB-4696 kỳ vọng) hay lazy ở lần gọi kế tiếp, tối đa 2 fetch/page session (như staging quan sát)?",
+      "why_it_matters": "Hai cách hiểu cho số request và thời điểm hiển thị bản dịch khác nhau; TC-TIB-4696 đang FAILED chính vì điểm này.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-057"
+      ],
+      "oq_id": "OQ-sdk-053"
+    },
+    {
+      "question": "[MỚI, CBS-001] Timeout >5s kết hợp lần gọi thứ hai trong cùng page session (vd 'Edit design' ở cart sau khi load đã timeout) cho kết quả gì?",
+      "why_it_matters": "Tổ hợp chưa chạy (TC-TIB-008); không suy được từ KB-053 (timeout) và KB-057 (500) riêng lẻ.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-057"
+      ],
+      "oq_id": "OQ-sdk-056"
+    },
+    {
+      "question": "[MỚI, CBS-001] Trang /zh-zh/ có thật sự render cả theme app extension và theme script của teeinblue không (cấu hình theme 'enable for all pages' chưa kiểm), và dictionary inline có còn chỉ in 1 lần khi cấu hình đã xác nhận?",
+      "why_it_matters": "KB-059 chỉ là 1 lần quan sát HTML, điều kiện '2 khối' (KB-060) là suy luận — chưa đủ làm oracle cho case duplicate dictionary.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-059",
+        "sdk/storefront-translations#KB-060"
+      ],
+      "oq_id": "OQ-sdk-054"
+    },
+    {
+      "question": "[MỚI, CBS-001] Các hành vi fallback/retry/nhãn thiếu (KB-053..KB-058) có giống trên bundle app-v2.js không?",
+      "why_it_matters": "Mọi evidence CBS-001 chỉ trên app-v1.js; profile base có cả store dùng app-v2.js (KB-040) — không được suy diễn là giống nhau.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-057",
+        "sdk/storefront-translations#KB-058",
+        "sdk/storefront-buyer-facing#KB-040"
+      ],
+      "oq_id": "OQ-sdk-057"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  },
+  "environment_differences": [],
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "GUEST buyer",
+      "state": "[MỚI] translations API timeout >5s → fallback chữ gốc",
+      "environment": "staging (build TIB-5352)",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-055",
+        "sdk/storefront-translations#KB-056"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "GUEST buyer",
+      "state": "[MỚI] translations API 500/503/abort → fallback chữ gốc (chỉ từ TC FAILED)",
+      "environment": "staging (build TIB-5352)",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-translations#KB-054"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "GUEST buyer",
+      "state": "[MỚI] retry fetch translations (load + cart 'Edit design' lần 1/2/3, mock 500)",
+      "environment": "staging (build TIB-5352)",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-translations#KB-057"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "GUEST buyer",
+      "state": "[MỚI] timeout >5s + lần gọi thứ hai cùng page session",
+      "environment": "staging (build TIB-5352)",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-057"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "GUEST buyer",
+      "state": "[MỚI] nhãn không có trong dictionary (API path, inline path, primary, cart Edit design)",
+      "environment": "staging (build TIB-5352)",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-translations#KB-058"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "GUEST buyer",
+      "state": "[MỚI] dictionary inline in 1 lần (/zh-zh/), cấu hình theme 'enable for all pages' đã xác nhận",
+      "environment": "staging (build TIB-5352)",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-translations#KB-059",
+        "sdk/storefront-translations#KB-060"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "code",
+      "role": "n/a",
+      "state": "[MỚI] bundle app-v1.js fetch translations (headersTimeout, promise cache) — chỉ đọc bundle, chưa review source",
+      "environment": "staging (build TIB-5352)",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-translations#KB-056",
+        "sdk/storefront-translations#KB-057"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "GUEST buyer",
+      "state": "[MỚI] toàn bộ hành vi translations của TIB-5352",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-058"
+      ]
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-03-06-dynamic-translations",
+      "related_feature_key": "dynamic-translations",
+      "relationship": "renders_dictionary_delivered_by (cross-object: translation)",
+      "note": "[MỚI, CBS-001] SDK đọc dictionary Dynamic Translations inline hoặc gọi translations/<locale>.json (translation KB-022, KB-025, KB-029 theo cross_layer_evidence_map); fallback/retry/nhãn thiếu là phần của profile này. Staging build TIB-5352 only.",
+      "kb_refs": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-057",
+        "sdk/storefront-translations#KB-058",
+        "sdk/storefront-translations#KB-059"
+      ]
+    }
+  ]
+}

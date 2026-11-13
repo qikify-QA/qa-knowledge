@@ -181,6 +181,260 @@
       "priority": "P3",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-product-base-122"
+    },
+    {
+      "check_id": "CHK-12-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Product Base CustomCat: Advanced options enable, mở editor Required options với label mới",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base CustomCat đã lưu",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Product Base > Edit (desktop)"
+      },
+      "precondition": "Product Base có Fulfillment provider = CustomCat trên store explorer (provider CustomCat đã kết nối). Fixture tự dựng trên store của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign của merchant hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Mở Product Base > Edit của Product Base CustomCat.",
+        "Ghi trạng thái nút Advanced options, bấm nút.",
+        "Ghi editor hiện ra và label của nó."
+      ],
+      "observation_point": "Trạng thái nút Advanced options; editor JSON Required options và label.",
+      "expected_result": "Nút Advanced options enable; bấm mở JSON editor Required options với label \"Required options (for merchOne, Printify, Printful, Myze, Printbelle and CustomCat)\".",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-catalog-import#KB-527"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "product-base/provider-catalog-import#KB-527",
+        "product-base/product-base-create#KB-020",
+        "product-base/product-base-create#KB-070"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-12-002",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Đổi provider của Product Base sang CustomCat chưa Save: editor Required options đã hiện",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base provider khác CustomCat, đổi sang CustomCat, chưa Save",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Product Base > Edit (desktop)"
+      },
+      "precondition": "Product Base của provider khác trên store explorer, CustomCat đã kết nối. Không Save trong check này. Fixture tự dựng trên store của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign của merchant hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Mở Product Base > Edit.",
+        "Đổi Fulfillment provider sang CustomCat, không Save.",
+        "Bấm Advanced options, ghi editor và label."
+      ],
+      "observation_point": "Editor Required options và label sau khi đổi provider, trước Save.",
+      "expected_result": "BASELINE (KB-532, OQ-product-base-116): Advanced options enable và mở editor Required options với label như CHK-12-001, dù chưa Save. Lệch = cần điều tra, không phải bug.",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-catalog-import#KB-532"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "product-base/provider-catalog-import#KB-532",
+        "product-base/provider-catalog-import#KB-527"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-product-base-116"
+    },
+    {
+      "check_id": "CHK-12-003",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Lưu JSON vào Required options của Product Base CustomCat và reload thấy lại đúng giá trị",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base CustomCat, Required options đang null hoặc giá trị cũ",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Product Base > Edit > Advanced options + network"
+      },
+      "precondition": "Product Base CustomCat trên store explorer (bản copy dành cho test). Fixture tự dựng trên store của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign của merchant hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Mở Advanced options, nhập {\"preset_id\": 4, \"preset_back_id\": 5} vào editor Required options.",
+        "Cho editor mất focus rồi bấm Save; ghi status của PUT /api/products/{id} và default_options trong body.",
+        "Reload trang, mở lại Advanced options, ghi giá trị editor."
+      ],
+      "observation_point": "Kết quả Save; giá trị editor sau reload.",
+      "expected_result": "BASELINE (KB-528, OQ-product-base-117): Save thành công; sau reload editor hiện đúng {\"preset_id\": 4, \"preset_back_id\": 5}. Lệch = cần điều tra, không phải bug.",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-catalog-import#KB-528"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "product-base/provider-catalog-import#KB-528",
+        "product-base/product-base-identity#KB-531"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-product-base-117"
+    },
+    {
+      "check_id": "CHK-12-004",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Editor Required options hiện ở Product Base merchOne, không hiện ở Product Base Gelato",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base merchOne; Product Base Gelato",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Product Base > Edit (desktop)"
+      },
+      "precondition": "Một Product Base merchOne và một Product Base Gelato trên store explorer. Khác biệt môi trường DIFFERENT_VALUE (KB-530): trên staging nút Advanced options của Gelato disabled, trên production enable và mở Design format — kiểm bằng sự vắng mặt của editor/label, không dựa vào trạng thái nút. Fixture tự dựng trên store của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign của merchant hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Mở Product Base merchOne > Edit, mở Advanced options, ghi editor và label.",
+        "Mở Product Base Gelato > Edit; nếu nút Advanced options bấm được thì bấm; ghi có hay không editor Required options và label Required options."
+      ],
+      "observation_point": "Có/không có editor Required options và label ở từng Product Base.",
+      "expected_result": "BASELINE (KB-529, OQ-product-base-118): merchOne có editor Required options với label mới; Gelato không có editor và label Required options (trạng thái nút Advanced options không phải tiêu chí). Lệch = cần điều tra, không phải bug.",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-catalog-import#KB-529"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "product-base/provider-catalog-import#KB-529",
+        "product-base/provider-catalog-import#KB-530"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-product-base-118"
+    },
+    {
+      "check_id": "CHK-10-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Rotate API key: key mới có hiệu lực ngay cho request sau",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "has_connected_provider",
+        "environment": "staging",
+        "surface_or_device": "portal, api"
+      },
+      "precondition": "Đã kết nối provider với API key A hợp lệ đang hoạt động.",
+      "steps": [
+        "Vào trang Fulfillments",
+        "Save API key B hợp lệ (khác A)",
+        "Gọi một request dùng tới key (vd list catalog)"
+      ],
+      "observation_point": "Request sau Save dùng key nào (B hay vẫn A đã cache)",
+      "expected_result": "Request sau khi Save key B dùng key B, không còn dùng key A (không cache).",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-catalog-import#KB-522"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "product-base/provider-catalog-import#KB-522"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-10-002",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Save API key sai: toast lỗi rõ ràng, không echo giá trị, key cũ được giữ",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "has_connected_provider",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã kết nối provider với API key A hợp lệ đang hoạt động.",
+      "steps": [
+        "Vào trang Fulfillments",
+        "Nhập một API key sai/không hợp lệ",
+        "Save",
+        "Reload trang"
+      ],
+      "observation_point": "Toast hiển thị sau Save; giá trị field sau reload",
+      "expected_result": "Toast lỗi chung xuất hiện (quan sát thực tế: 'Something went wrong! Invalid API key'), không echo lại giá trị key sai đã nhập; sau reload field vẫn hiển thị key A gốc (key cũ được giữ).",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-catalog-import#KB-522",
+          "product-base/provider-catalog-import#KB-524"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "product-base/provider-catalog-import#KB-522",
+        "product-base/provider-catalog-import#KB-524"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-product-base-110"
+    },
+    {
+      "check_id": "CHK-10-003",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "API key hiển thị raw (không mask) sau Save, qua GraphQL, cho mọi provider",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "has_connected_provider",
+        "environment": "staging",
+        "surface_or_device": "portal, api (GraphQL)"
+      },
+      "precondition": "Đã kết nối ít nhất một provider với API key hợp lệ.",
+      "steps": [
+        "Save API key cho một provider",
+        "Gọi GraphQL { user_fulfillments { id api_key } } qua portal proxy",
+        "Lặp lại cho các provider khác (customcat, printify, picanova, dreamship, printway, shirtee, posterflow)"
+      ],
+      "observation_point": "Giá trị api_key trả về trong response GraphQL",
+      "expected_result": "GraphQL trả api_key dạng raw (không mask) cho mọi provider đã kết nối — hành vi hiện tại quan sát được, CHƯA được PO xác nhận là chủ ý thiết kế (xem open question).",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-catalog-import#KB-523"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "product-base/provider-catalog-import#KB-523"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "rủi ro bảo mật: raw API key lộ qua GraphQL"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-product-base-109"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -202,6 +456,47 @@
         "CHK-11-005"
       ],
       "note": "CHK-11-004 STRONG; CHK-11-005 BASELINE. Production chưa có check."
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "item": "Capability: hiện editor Required options theo provider (KB-527, KB-532, KB-529)",
+      "check_ids": [
+        "CHK-12-001",
+        "CHK-12-002",
+        "CHK-12-004"
+      ],
+      "oracle": "STRONG (CHK-12-001); BASELINE (CHK-12-002, CHK-12-004)"
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "item": "Capability: lưu và tải lại Required options (KB-528)",
+      "check_ids": [
+        "CHK-12-003"
+      ],
+      "oracle": "BASELINE"
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "item": "Risk: trạng thái nút Advanced options Gelato khác giữa môi trường (KB-530)",
+      "check_ids": [
+        "CHK-12-004"
+      ],
+      "oracle": "BASELINE trên vế editor; trạng thái nút không assert"
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "dimension": "CORE",
+      "count": 1
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "dimension": "NEGATIVE",
+      "count": 1
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "dimension": "INTEGRATION",
+      "count": 1
     }
   ],
   "excluded_dimensions": [
@@ -224,6 +519,42 @@
     {
       "dimension": "REGRESSION",
       "reason": "Feature mới (FEAT-11), lần đầu publish — không có base trước để so sánh regression."
+    },
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Không có KB về JSON sai hoặc giá trị không hợp lệ khi Save (OQ-product-base-115); preset CustomCat không hợp lệ được kiểm ở order/fulfillment-provider-request CHK-010."
+    },
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Không có KB về giới hạn kích thước/định dạng của Required options."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "Không có KB về role khác owner."
+    },
+    {
+      "dimension": "INTEGRATION",
+      "reason": "Việc gửi preset sang CustomCat thuộc order/fulfillment-provider-request (CHK-008, CHK-009)."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Feature mới, KB-020 của product-base-create giữ nguyên, không có KNOWN_DEFECT."
+    },
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Không có KB nào đo giới hạn độ dài/format của API key."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "CLAIM-03 (trang Fulfillments không có Disconnect, không có role/permission gate riêng) chỉ S0 — nguồn là Dev nói qua Slack không quote, TC-29 bị skip — không nạp KB, không đủ oracle để tạo check PERMISSION; xem open question riêng (không gắn kb_id)."
+    },
+    {
+      "dimension": "STATE_DATA",
+      "reason": "Không có KB nào về persistence/reload ngoài phần đã gộp vào CHK-10-002 (key cũ giữ sau reload khi Save key sai)."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Feature mới (FEAT-10), lần đầu publish — không có base trước để so sánh regression."
     }
   ],
   "last_updated": {
