@@ -2,7 +2,7 @@
   "feature_id": "FEAT-12-required-addon-validation",
   "feature_key": "required-addon-validation",
   "object_id": "sdk",
-  "checklist_version": "14",
+  "checklist_version": "15",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -15,7 +15,7 @@
         "environment": "staging, ghi build, script src SDK và ngày chạy; shipped UNKNOWN, production chưa kiểm",
         "surface_or_device": "storefront cart và trang Checkout, desktop browser"
       },
-      "precondition": "Giả định setup, chưa có trong KB (unknown_areas[0] của profile): rule Checkout đã Active. Có sản phẩm chính yêu cầu add-on trên store test được phép; vượt password-gate bằng TIB_STORE_PASSWORD. Chỉ dùng phương thức thanh toán test, không dùng thanh toán thật.",
+      "precondition": "Checkout rule Teeinblue Required Addon Validation đã Active ở Shopify Admin > Settings > Checkout > Checkout rules của store test được phép (đã deploy extension) (KB-543). Có sản phẩm chính yêu cầu add-on trên store test được phép; vượt password-gate bằng TIB_STORE_PASSWORD. Chỉ dùng phương thức thanh toán test, không dùng thanh toán thật.",
       "steps": [
         "Thêm sản phẩm chính kèm add-on vào giỏ.",
         "Xoá riêng dòng add-on khỏi giỏ, giữ dòng sản phẩm chính.",
@@ -31,21 +31,20 @@
         ],
         "oracle_strength": "STRONG"
       },
-      "status": "NEEDS_CONFIRMATION",
-      "open_question_draft": "Điều kiện để rule Checkout (Function kiểm add-on) chạy là gì? Điều kiện này chưa có trong KB (unknown_areas[0] của profile required-addon-validation), nên khi Checkout không chặn thì chưa phân biệt được lỗi với rule chưa đủ điều kiện chạy.",
+      "status": "READY",
       "related_kb_ids": [
         "sdk/required-addon-validation#KB-417",
         "sdk/required-addon-validation#KB-441",
         "sdk/required-addon-validation#KB-416",
-        "sdk/required-addon-validation#KB-455"
+        "sdk/required-addon-validation#KB-455",
+        "sdk/required-addon-validation#KB-543"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
         "Đơn hoàn tất thiếu add-on bắt buộc gây thất thu và sai đơn"
       ],
       "priority": "P1",
-      "automation_suitability": "HYBRID",
-      "oq_id": "OQ-sdk-114"
+      "automation_suitability": "HYBRID"
     },
     {
       "check_id": "CHK-002",
@@ -58,7 +57,7 @@
         "environment": "staging, ghi build, script src SDK và ngày chạy; shipped UNKNOWN, production chưa kiểm",
         "surface_or_device": "storefront cart và trang Checkout, desktop browser"
       },
-      "precondition": "Giả định setup, chưa có trong KB (unknown_areas[0] của profile): rule Checkout đã Active. Như CHK-001.",
+      "precondition": "Checkout rule Teeinblue Required Addon Validation đã Active ở Shopify Admin > Settings > Checkout > Checkout rules của store test được phép (đã deploy extension) (KB-543). Như CHK-001.",
       "steps": [
         "Thêm sản phẩm chính kèm add-on vào giỏ với số lượng 2.",
         "Ghi số lượng dòng add-on; giảm số lượng dòng add-on đi 1, giữ nguyên sản phẩm chính.",
@@ -74,20 +73,19 @@
         ],
         "oracle_strength": "STRONG"
       },
-      "status": "NEEDS_CONFIRMATION",
-      "open_question_draft": "Điều kiện để rule Checkout (Function kiểm add-on) chạy là gì? Điều kiện này chưa có trong KB (unknown_areas[0] của profile required-addon-validation), nên khi Checkout không chặn thì chưa phân biệt được lỗi với rule chưa đủ điều kiện chạy.",
+      "status": "READY",
       "related_kb_ids": [
         "sdk/required-addon-validation#KB-441",
         "sdk/required-addon-validation#KB-417",
-        "sdk/required-addon-validation#KB-416"
+        "sdk/required-addon-validation#KB-416",
+        "sdk/required-addon-validation#KB-543"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
         "Đơn hoàn tất thiếu số lượng add-on gây thất thu và sai đơn"
       ],
       "priority": "P1",
-      "automation_suitability": "HYBRID",
-      "oq_id": "OQ-sdk-114"
+      "automation_suitability": "HYBRID"
     },
     {
       "check_id": "CHK-003",
@@ -100,7 +98,7 @@
         "environment": "staging, ghi build, script src SDK và ngày chạy; shipped UNKNOWN, production chưa kiểm",
         "surface_or_device": "storefront cart (đọc line item properties qua /cart.js) và trang Checkout"
       },
-      "precondition": "Giả định setup, chưa có trong KB (unknown_areas[0] của profile): rule Checkout đã Active. Có fixture nhiều add-on trên store test được phép; chỉ dùng phương thức thanh toán test.",
+      "precondition": "Checkout rule Teeinblue Required Addon Validation đã Active ở Shopify Admin > Settings > Checkout > Checkout rules của store test được phép (đã deploy extension) (KB-543). Có fixture nhiều add-on trên store test được phép; chỉ dùng phương thức thanh toán test.",
       "steps": [
         "Thêm sản phẩm chính kèm add-on vào giỏ; đọc /cart.js.",
         "Ghi giá trị _tib_addon_variant, property customization id trên dòng chính và dòng add-on (tên key thực tế).",
@@ -115,12 +113,15 @@
         "oracle_strength": "NONE"
       },
       "status": "NEEDS_CONFIRMATION",
-      "open_question_draft": "Function đối chiếu child line theo property nào: KB-416 ghi _tib_customization_id, KB-009 quan sát line item có _customization_id (sản phẩm không nêu add-on). Hai tên là hai property khác nhau hay lệch tên? Dev xác nhận. Check này cũng phụ thuộc điều kiện chạy rule Checkout (unknown_areas[0] của profile required-addon-validation).",
+      "open_question_draft": "Function đối chiếu child line theo property nào: KB-416 ghi _tib_customization_id, KB-009 quan sát line item có _customization_id (sản phẩm không nêu add-on). QA đề xuất (KB-542) line chính mang _customization_id, addon line mang _tib_customization_id cùng giá trị; Dev xác nhận.",
       "related_kb_ids": [
         "sdk/required-addon-validation#KB-416",
         "sdk/storefront-buyer-facing#KB-009",
         "sdk/required-addon-validation#KB-417",
-        "sdk/required-addon-validation#KB-441"
+        "sdk/required-addon-validation#KB-441",
+        "sdk/required-addon-validation#KB-542",
+        "sdk/required-addon-validation#KB-535",
+        "sdk/required-addon-validation#KB-543"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -141,7 +142,7 @@
         "environment": "staging, ghi build, script src SDK và ngày chạy; shipped UNKNOWN, production chưa kiểm",
         "surface_or_device": "trang Checkout ở ngôn ngữ không phải tiếng Anh"
       },
-      "precondition": "Giả định setup, chưa có trong KB (unknown_areas[0] của profile): rule Checkout đã Active. Như CHK-001, thêm ngôn ngữ thứ hai đã bật trên store.",
+      "precondition": "Checkout rule Teeinblue Required Addon Validation đã Active ở Shopify Admin > Settings > Checkout > Checkout rules của store test được phép (đã deploy extension) (KB-543). Như CHK-001, thêm ngôn ngữ thứ hai đã bật trên store.",
       "steps": [
         "Chuyển storefront sang ngôn ngữ thứ hai.",
         "Dựng giỏ thiếu add-on như CHK-001.",
@@ -155,19 +156,18 @@
         ],
         "oracle_strength": "STRONG"
       },
-      "status": "NEEDS_CONFIRMATION",
-      "open_question_draft": "Điều kiện để rule Checkout (Function kiểm add-on) chạy là gì? Điều kiện này chưa có trong KB (unknown_areas[0] của profile required-addon-validation), nên khi Checkout không chặn thì chưa phân biệt được lỗi với rule chưa đủ điều kiện chạy.",
+      "status": "READY",
       "related_kb_ids": [
         "sdk/required-addon-validation#KB-440",
-        "sdk/required-addon-validation#KB-417"
+        "sdk/required-addon-validation#KB-417",
+        "sdk/required-addon-validation#KB-543"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
         "Buyer ngôn ngữ khác thấy message tiếng Anh là giới hạn đã biết của Function runtime, không báo bug"
       ],
       "priority": "P3",
-      "automation_suitability": "HYBRID",
-      "oq_id": "OQ-sdk-114"
+      "automation_suitability": "HYBRID"
     },
     {
       "check_id": "CHK-005",
@@ -490,6 +490,315 @@
       "priority": "P3",
       "automation_suitability": "NOT_SUITABLE",
       "oq_id": "OQ-sdk-107"
+    },
+    {
+      "dimension": "CORE",
+      "layer": "storefront",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "rule Active; cart chỉ còn addon charge line của một item cá nhân hoá",
+        "environment": "staging, ghi build, script src SDK và ngày chạy; chỉ checkout thường bằng cổng test (Bogus), accelerated checkout không chạy trên staging (environment_differences[0]); production chưa verify",
+        "surface_or_device": "storefront cart và trang Checkout, desktop browser"
+      },
+      "steps": [
+        "Cá nhân hoá sản phẩm có chọn addon charge, Add to cart; đọc cart.js, ghi line chính và addon line.",
+        "Xoá line chính, giữ addon line. Dựng orphan addon trước khi autofixer dọn theo flow storefront-sdk (mục Checkout & order) và xác nhận lại cart.js ngay trước khi mở Checkout.",
+        "Mở Checkout; chờ banner đầu trang và ghi nguyên văn.",
+        "Bấm Pay now; ghi có tới trang thank-you hay không."
+      ],
+      "observation_point": "Banner đầu trang Checkout; nội dung message; kết quả Pay now. Banner của Function render trễ sau khi form Checkout hiện: chờ banner, chỉ kết luận không có banner sau timeout (flow storefront-sdk).",
+      "expected_result": "Checkout bị chặn, không hoàn tất được đơn; banner đầu trang hiện: The add-on \"<title addon product>\" is not linked to any personalized item in your cart. Please return to your cart, remove this add-on, and try again. với title thật của addon product. Message khác message thiếu add-on của CHK-001.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/required-addon-validation#KB-534"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/required-addon-validation#KB-534",
+        "sdk/required-addon-validation#KB-543",
+        "sdk/required-addon-validation#KB-417",
+        "sdk/required-addon-validation#KB-541"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Đơn chỉ có addon, không có item cá nhân hoá (đơn orphan) gây sai đơn và hoàn tiền"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "check_id": "CHK-013",
+      "title": "Checkout có orphan addon (line chính đã xoá): chặn thanh toán, banner đầu trang hiện message orphan với title addon",
+      "precondition": "Checkout rule Teeinblue Required Addon Validation đã Active ở Shopify Admin > Settings > Checkout > Checkout rules của store test được phép (đã deploy extension) (KB-543). Có campaign cá nhân hoá kèm addon charge (tạo addon line riêng) trên store test được phép. Chỉ dùng phương thức thanh toán test, không dùng thanh toán thật; vượt password-gate bằng TIB_STORE_PASSWORD."
+    },
+    {
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "rule Active; cart có item X và item Y, mỗi item kèm addon khác nhau; line chính X bị xoá",
+        "environment": "staging, ghi build, script src SDK và ngày chạy; chỉ checkout thường bằng cổng test (Bogus), accelerated checkout không chạy trên staging (environment_differences[0]); production chưa verify",
+        "surface_or_device": "storefront cart và trang Checkout, desktop browser"
+      },
+      "steps": [
+        "Add to cart item X kèm addon A, rồi item Y kèm addon B; đọc cart.js.",
+        "Xoá line chính X, giữ addon A, line chính Y và addon B. Dựng orphan addon trước khi autofixer dọn theo flow storefront-sdk (mục Checkout & order) và xác nhận lại cart.js ngay trước khi mở Checkout.",
+        "Mở Checkout; chờ banner và ghi mọi message."
+      ],
+      "observation_point": "Số message trên banner và title addon được nêu.",
+      "expected_result": "Chỉ có message orphan cho addon A; addon B (còn line chính Y) không bị nêu. Checkout vẫn bị chặn vì addon A.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/required-addon-validation#KB-535",
+          "sdk/required-addon-validation#KB-534"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/required-addon-validation#KB-535",
+        "sdk/required-addon-validation#KB-534",
+        "sdk/required-addon-validation#KB-542"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Rule chặn nhầm addon còn line chính hoặc bỏ sót addon mất line chính"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "check_id": "CHK-014",
+      "title": "Hai item cá nhân hoá kèm addon, xoá line chính của một item: chỉ addon của item đó bị nêu",
+      "precondition": "Checkout rule Teeinblue Required Addon Validation đã Active ở Shopify Admin > Settings > Checkout > Checkout rules của store test được phép (đã deploy extension) (KB-543). Hai campaign hoặc hai lần cá nhân hoá với addon product khác title. Chỉ dùng phương thức thanh toán test, không dùng thanh toán thật; vượt password-gate bằng TIB_STORE_PASSWORD."
+    },
+    {
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "rule Active; cart chỉ có addon product thêm lẻ, không qua personalization",
+        "environment": "staging, ghi build, script src SDK và ngày chạy; chỉ checkout thường bằng cổng test (Bogus), accelerated checkout không chạy trên staging (environment_differences[0]); production chưa verify",
+        "surface_or_device": "storefront product page của addon, trang Checkout"
+      },
+      "steps": [
+        "Mở thẳng trang product của addon product (không qua form cá nhân hoá), Add to cart.",
+        "Đọc cart.js; ghi line có mang _tib_customization_id không.",
+        "Vào Checkout, chờ banner tới timeout; bấm Pay now."
+      ],
+      "observation_point": "Banner Checkout; kết quả Pay now.",
+      "expected_result": "Không có message orphan; checkout hoàn tất.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/required-addon-validation#KB-536"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/required-addon-validation#KB-536",
+        "sdk/required-addon-validation#KB-534"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chặn nhầm buyer mua addon product như sản phẩm thường"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "check_id": "CHK-015",
+      "title": "Addon product mua lẻ từ trang product của nó: không bị chặn, checkout hoàn tất",
+      "precondition": "Checkout rule Teeinblue Required Addon Validation đã Active ở Shopify Admin > Settings > Checkout > Checkout rules của store test được phép (đã deploy extension) (KB-543). Chỉ dùng phương thức thanh toán test, không dùng thanh toán thật; vượt password-gate bằng TIB_STORE_PASSWORD."
+    },
+    {
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "rule Active; cart có orphan addon và ít nhất một line khác",
+        "environment": "staging, ghi build, script src SDK và ngày chạy; chỉ checkout thường bằng cổng test (Bogus), accelerated checkout không chạy trên staging (environment_differences[0]); production chưa verify",
+        "surface_or_device": "storefront trang /cart, cart drawer, trang Checkout"
+      },
+      "steps": [
+        "Dựng cart có orphan addon và thêm một line khác.",
+        "Trên trang /cart: tăng rồi giảm số lượng một line, xoá một line khác; ghi popup/banner lỗi nếu có.",
+        "Lặp lại trong cart drawer.",
+        "Vào Checkout; chờ banner và ghi."
+      ],
+      "observation_point": "Popup/banner lỗi ở trang Cart và Cart drawer; banner ở Checkout.",
+      "expected_result": "Trang Cart và Cart drawer không hiện popup hay banner lỗi khi sửa cart; vào Checkout thì bị chặn với message orphan như CHK-013.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/required-addon-validation#KB-537",
+          "sdk/required-addon-validation#KB-534"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/required-addon-validation#KB-537",
+        "sdk/required-addon-validation#KB-534"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lỗi hiện sớm ở cart làm phiền buyer, trái thiết kế"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "check_id": "CHK-016",
+      "title": "Cart có orphan addon: đổi số lượng, xoá line trên trang Cart và Cart drawer không hiện lỗi; lỗi chỉ ở Checkout",
+      "precondition": "Checkout rule Teeinblue Required Addon Validation đã Active ở Shopify Admin > Settings > Checkout > Checkout rules của store test được phép (đã deploy extension) (KB-543). Cần giữ trạng thái orphan trong lúc thao tác cart: tắt autofixer trong trang theo flow environment (dòng autofixer), chỉ cho phiên test. Chỉ dùng phương thức thanh toán test, không dùng thanh toán thật; vượt password-gate bằng TIB_STORE_PASSWORD."
+    },
+    {
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "rule Active; ba giỏ riêng: (a) line chính + addon line, (b) item cá nhân hoá không chọn addon, (c) addon charge dạng direct price",
+        "environment": "staging, ghi build, script src SDK và ngày chạy; chỉ checkout thường bằng cổng test (Bogus), accelerated checkout không chạy trên staging (environment_differences[0]); production chưa verify",
+        "surface_or_device": "storefront cart và trang Checkout, desktop browser"
+      },
+      "steps": [
+        "Với từng giỏ (a), (b), (c): Add to cart, đọc cart.js.",
+        "Vào Checkout, chờ banner tới timeout.",
+        "Bấm Pay now; ghi kết quả từng giỏ."
+      ],
+      "observation_point": "Banner Checkout; kết quả Pay now của từng giỏ.",
+      "expected_result": "Cả ba giỏ không hiện message orphan hay message thiếu add-on; checkout hoàn tất.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/required-addon-validation#KB-539"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/required-addon-validation#KB-539",
+        "sdk/required-addon-validation#KB-534",
+        "sdk/required-addon-validation#KB-417"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Rule chặn nhầm đơn hợp lệ làm mất doanh thu"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "check_id": "CHK-017",
+      "title": "Không chặn nhầm: line chính kèm addon, item không chọn addon, addon charge dạng direct price đều checkout hoàn tất",
+      "precondition": "Checkout rule Teeinblue Required Addon Validation đã Active ở Shopify Admin > Settings > Checkout > Checkout rules của store test được phép (đã deploy extension) (KB-543). Campaign có addon charge tạo addon line riêng và campaign có addon charge dạng direct price. Chỉ dùng phương thức thanh toán test, không dùng thanh toán thật; vượt password-gate bằng TIB_STORE_PASSWORD."
+    },
+    {
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "applicability": {
+        "role": "merchant (Shopify admin) + guest buyer",
+        "state": "rule Inactive; cart chỉ có orphan addon",
+        "environment": "staging, ghi build, script src SDK và ngày chạy; chỉ checkout thường bằng cổng test (Bogus), accelerated checkout không chạy trên staging (environment_differences[0]); production chưa verify",
+        "surface_or_device": "Shopify Admin > Settings > Checkout > Checkout rules; storefront Checkout"
+      },
+      "steps": [
+        "Đặt checkout rule Teeinblue Required Addon Validation sang Inactive ở Shopify Admin > Settings > Checkout > Checkout rules.",
+        "Dựng cart chỉ có orphan addon. Dựng orphan addon trước khi autofixer dọn theo flow storefront-sdk (mục Checkout & order) và xác nhận lại cart.js ngay trước khi mở Checkout.",
+        "Vào Checkout, chờ banner tới timeout; bấm Pay now; ghi order summary.",
+        "Bật lại rule Active và xác minh."
+      ],
+      "observation_point": "Banner Checkout; kết quả Pay now; line trong order.",
+      "expected_result": "Không có message orphan; checkout hoàn tất, order chỉ có addon line.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/required-addon-validation#KB-540"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/required-addon-validation#KB-540",
+        "sdk/required-addon-validation#KB-543",
+        "sdk/required-addon-validation#KB-534"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Quên bật lại rule làm store test mất lớp chặn cho các case sau"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "check_id": "CHK-018",
+      "title": "Checkout rule Inactive: cart chỉ có orphan addon vẫn checkout được",
+      "precondition": "Có quyền đổi trạng thái checkout rule trên store test được phép và bật lại Active ngay sau case; xác minh lại trạng thái Active sau khi xong. Chỉ dùng phương thức thanh toán test, không dùng thanh toán thật; vượt password-gate bằng TIB_STORE_PASSWORD."
+    },
+    {
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "rule Active; line chính có cross-sell item, line chính bị xoá",
+        "environment": "staging, ghi build, script src SDK và ngày chạy; chỉ checkout thường bằng cổng test (Bogus), accelerated checkout không chạy trên staging (environment_differences[0]); production chưa verify",
+        "surface_or_device": "storefront cart và trang Checkout, desktop browser"
+      },
+      "steps": [
+        "Cá nhân hoá sản phẩm chính và chọn cross-sell item, Add to cart; đọc cart.js, ghi property của line chính, line cross-sell (_parent_customization_id, _is_sub_item, _customization_id, _tib_customization_id).",
+        "Xoá line chính, giữ line cross-sell. Dựng orphan addon trước khi autofixer dọn theo flow storefront-sdk (mục Checkout & order) và xác nhận lại cart.js ngay trước khi mở Checkout.",
+        "Vào Checkout, chờ banner tới timeout; bấm Pay now; ghi kết quả, không phán pass/fail."
+      ],
+      "observation_point": "Property của line cross-sell; banner Checkout; kết quả Pay now.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk/required-addon-validation#KB-538",
+        "sdk/required-addon-validation#KB-534"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chưa có oracle: rule có thể chặn nhầm cross-sell hoặc để lọt đơn cross-sell không có line chính"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "check_id": "CHK-019",
+      "title": "Gap: cross-sell item còn lại sau khi xoá line chính có bị rule chặn không",
+      "precondition": "Checkout rule Teeinblue Required Addon Validation đã Active ở Shopify Admin > Settings > Checkout > Checkout rules của store test được phép (đã deploy extension) (KB-543). Product có cross-sell (cách gắn ở flow storefront-sdk mục Cross-sell). Chỉ dùng phương thức thanh toán test, không dùng thanh toán thật; vượt password-gate bằng TIB_STORE_PASSWORD.",
+      "oq_id": "OQ-sdk-236"
+    },
+    {
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "rule Active; cart chỉ có orphan addon",
+        "environment": "không chạy trên staging (NOT_TESTABLE, environment_differences[0]); chỉ store có cổng accelerated checkout",
+        "surface_or_device": "nút thanh toán nhanh ở cart/Checkout"
+      },
+      "steps": [
+        "Dựng cart chỉ có orphan addon.",
+        "Dùng nút thanh toán nhanh; ghi có tạo được order hay không, không phán pass/fail."
+      ],
+      "observation_point": "Kết quả tạo order qua accelerated checkout.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk/required-addon-validation#KB-541",
+        "sdk/required-addon-validation#KB-534"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Đơn orphan có thể lọt qua accelerated checkout mà chưa ai kiểm"
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "check_id": "CHK-020",
+      "title": "Gap: accelerated checkout (Shop Pay, PayPal, Apple Pay, Google Pay) với orphan addon",
+      "precondition": "Checkout rule Teeinblue Required Addon Validation đã Active ở Shopify Admin > Settings > Checkout > Checkout rules của store test được phép (đã deploy extension) (KB-543). Store có ít nhất một cổng accelerated checkout; không dùng thanh toán thật.",
+      "oq_id": "OQ-sdk-237"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -500,7 +809,7 @@
         "CHK-001",
         "CHK-002"
       ],
-      "covered": "STRONG theo dev, NEEDS_CONFIRMATION vì điều kiện chạy rule Checkout chưa có trong KB (unknown_areas[0])"
+      "covered": "STRONG theo dev; rule chạy khi checkout rule đã kích hoạt (KB-543)"
     },
     {
       "feature_id": "FEAT-12-required-addon-validation",
@@ -545,13 +854,35 @@
         "CHK-009",
         "CHK-010"
       ],
-      "covered": "STRONG theo dev; CHK-004 NEEDS_CONFIRMATION vì phụ thuộc unknown_areas[0]"
+      "covered": "STRONG theo dev"
     },
     {
       "feature_id": "FEAT-12-required-addon-validation",
       "risk": "Toàn bộ capability trên production",
       "checks": [],
       "covered": "Không phủ: shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-12-required-addon-validation",
+      "risk": "Đơn orphan: addon line không còn line chính vẫn checkout được, hoặc rule chặn nhầm đơn hợp lệ",
+      "checks": [
+        "CHK-013",
+        "CHK-014",
+        "CHK-015",
+        "CHK-016",
+        "CHK-017",
+        "CHK-018"
+      ],
+      "covered": "STRONG theo dev và test case PASS staging 2026-11-10; production chưa verify"
+    },
+    {
+      "feature_id": "FEAT-12-required-addon-validation",
+      "risk": "Cross-sell và accelerated checkout với orphan addon",
+      "checks": [
+        "CHK-019",
+        "CHK-020"
+      ],
+      "covered": "NONE + NEEDS_CONFIRMATION; CHK-020 không chạy trên staging"
     }
   ],
   "excluded_dimensions": [
@@ -561,11 +892,11 @@
     },
     {
       "dimension": "REGRESSION",
-      "reason": "Feature mới, không có checklist hay KB base để so; không có item KNOWN_DEFECT nên không có regression watch."
+      "reason": "TIB-5715 chỉ thêm nhánh orphan addon (ADD), không đổi hành vi base; nhánh thiếu add-on của TIB-5510 vẫn phủ ở CHK-001, CHK-002; không có item KNOWN_DEFECT nên không có regression watch."
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-155"
   }
 }

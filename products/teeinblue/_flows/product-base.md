@@ -45,13 +45,15 @@ Bản rút gọn tối thiểu (case không cần preview): title/internal name/
 - `/products` → ô `Search` theo title → hàng có `i.la-pencil` (edit) · **`i.la-copy` (duplicate)** · `i.las.la-ellipsis-h`. Selector: `main tbody tr:has(a[href="/products/<id>/edit"]) button:has(i.la-copy)`.
 - Click là clone NGAY (`POST /api/products/<id>/clone` 200), không confirm. Bản copy lên đầu, title + internal name = `<title> copy`.
 - Clone copy variants (id mới, giữ `available`), printareas (id mới), mockups (id mới, KHÔNG copy variant assignment), fulfillment provider.
-- Card `Basic information`: Save = `button.promise-button.btn.btn-primary` đầu tiên (PUT `/api/products/<id>` rồi POST `/sync`), disabled tới khi có thay đổi.
+- Card `Basic information`: Save = `button.promise-button.btn.btn-primary` đầu tiên, disabled tới khi có thay đổi; sau khi gõ vào editor Required options, Save chỉ enable khi editor mất focus. Một lần Save = **1 request** `PUT /api/products/<id>` gồm cả 8 field (title, label, internal_tags, fulfillment_id, fulfillment_linked_id, description, default_options, design_format); quan sát 2026-11-10 trên PB merchOne và PB CustomCat: không có request ghi nào khác trong 5s (không thấy POST `/sync`).
+- Clone qua API `POST /api/products/<id>/clone`: response trả object PB **gốc** (id gốc), không phải bản copy → tìm bản copy theo title `<title> copy`. Bản copy giữ fulfillment provider và catalog (đã thử với CustomCat). Mockup của PB gốc không có printarea layer thì bản copy cũng không có, phải thêm printarea layer trước khi gắn campaign. (TIB-5724, 2026-11-10)
 - PB legacy (vd 205 Men Basic T-shirt) có mockup chỉ 1 image layer, không printarea ⇒ Mockup Editor → ` Add Printarea` → `Save & Close` (`PUT /api/products/<pb>/mockups/<id>` 201).
 
 ## Mockup của PB
 
 - Trang `/products/<id>` chỉ là view; thao tác ở `/products/<id>/edit`. Card mockup: Edit / Duplicate / More (`Add to campaigns / Sync to campaigns / Remove from all campaigns / Delete mockup`).
 - Duplicate mockup: card `.mockup:has(img[src*="<preview hash>"])` → `button:has(span.sr-only:text-is("Duplicate mockup"))` ⇒ `POST /api/products/<pb>/mockups/<id>/clone` 201, không confirm. Bản clone **giữ layer id** và **giữ `variant_ids`**; card mới lên cuối. `position` có thể **trùng** mockup sẵn có (7748 clone → 8154 position 4 trùng 7967). Clone KHÔNG tự thêm vào campaign đã có PB.
+- Thêm printarea layer vào mockup của PB bằng MCP: layer chèn vào phải có `visible: true`, nếu không layer printarea không dùng được cho campaign. (TIB-5724, 2026-11-10)
 
 ## Custom variant's printarea
 

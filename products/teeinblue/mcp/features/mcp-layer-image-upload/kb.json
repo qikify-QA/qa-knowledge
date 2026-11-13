@@ -1,0 +1,318 @@
+[
+  {
+    "kb_id": "KB-1620",
+    "topic": "upload-layer-image-tool trả {id, name, status: processing, note} cho raster, không còn url/thumbnail/width/height",
+    "statement": "Theo Jira TIB-5709 comment 56698 Solution mục MCP URL tool (Dev, 2026-11-09), với ảnh raster, response của tool MCP upload-layer-image-tool (tải ảnh từ URL) là {id, name, status: \"processing\", note}; các field url, thumbnail, width, height không còn trong response. Cách theo dõi tới khi ảnh sẵn sàng quan sát ở KB-1621.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "MCP server: upload-layer-image-tool, create/confirm-layer-image-upload-tool, view/list-layer-images-tool",
+      "brand": null
+    },
+    "tags": [
+      "processing",
+      "response-contract",
+      "mcp",
+      "layer-image",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "mcp/mcp-layer-image-upload#KB-1621",
+      "mcp/mcp-layer-image-upload#KB-1622"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5709 comment 56698 Solution mục MCP URL tool (Dev, 2026-11-09)",
+      "authored_on": "2026-11-09",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  },
+  {
+    "kb_id": "KB-1621",
+    "topic": "Quan sát: note của upload-layer-image-tool nói poll view-layer-image-tool; khi có thumbnail, layer image có url, kích thước gốc",
+    "statement": "Khi gọi upload-layer-image-tool với URL public của PNG 12000x5093 (61 MP) qua token MCP ở merchant-owner/staging (Testlane TC-TIB-8770 PASS 2026-11-09, build không ghi), quan sát thấy response trả ngay status \"processing\" với note \"Image variants are generated asynchronously. Poll view-layer-image-tool (or list-layer-images-tool) until the thumbnail is set, then use the returned url in layers.\"; view-layer-image-tool sau khoảng 14 giây có thumbnail, url kết thúc _large.webp, width 12000, height 5093; bản _large.webp rộng 800 px bằng artwork_max_width của merchant, thumbnail 100x100. Việc job chạy trên queue make-previewable-images không quan sát được. Một lượt chạy; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "MCP server: upload-layer-image-tool, create/confirm-layer-image-upload-tool, view/list-layer-images-tool",
+      "brand": null
+    },
+    "tags": [
+      "processing",
+      "poll",
+      "observed",
+      "single-sample",
+      "mcp",
+      "layer-image",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "mcp/mcp-layer-image-upload#KB-1620"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  },
+  {
+    "kb_id": "KB-1622",
+    "topic": "Quan sát: description, server instructions và overview workflow nói raster trả processing, phải poll view-layer-image-tool",
+    "statement": "Khi đọc tools/list, instructions của initialize và overview của get-layer-schema-tool trên MCP staging (Testlane TC-TIB-8782 PASS 2026-11-09, build không ghi), quan sát thấy cả ba nơi nói ảnh raster qua upload-layer-image-tool được xử lý nền, trả status \"processing\" không có url, và phải poll view-layer-image-tool tới khi có thumbnail trước khi dùng url (overview đặt bước poll giữa upload-layer-image-tool và create-artwork-tool); không còn câu nói url trả về sẵn sàng ngay. Một lượt chạy; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "MCP server: upload-layer-image-tool, create/confirm-layer-image-upload-tool, view/list-layer-images-tool",
+      "brand": null
+    },
+    "tags": [
+      "tool-description",
+      "server-instructions",
+      "observed",
+      "single-sample",
+      "mcp",
+      "layer-image",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "mcp/mcp-layer-image-upload#KB-1620"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  },
+  {
+    "kb_id": "KB-1623",
+    "topic": "SVG qua upload-layer-image-tool vẫn trả {id, name, url, thumbnail, width, height} kèm status ready",
+    "statement": "Theo Jira TIB-5709 comment 56698 Solution mục MCP URL tool (Dev, 2026-11-09), với ảnh SVG, upload-layer-image-tool vẫn trả {id, name, url, thumbnail, width, height} và thêm status: \"ready\". Confirm tool với SVG quan sát ở KB-1624.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "MCP server: upload-layer-image-tool, create/confirm-layer-image-upload-tool, view/list-layer-images-tool",
+      "brand": null
+    },
+    "tags": [
+      "svg",
+      "response-contract",
+      "mcp",
+      "layer-image",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "mcp/mcp-layer-image-upload#KB-1624"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5709 comment 56698 Solution mục MCP URL tool (Dev, 2026-11-09)",
+      "authored_on": "2026-11-09",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  },
+  {
+    "kb_id": "KB-1624",
+    "topic": "Quan sát: SVG ready ngay qua URL tool, không lỗi cap; confirm-layer-image-upload-tool với SVG trả ready",
+    "statement": "Khi gọi upload-layer-image-tool với URL của một SVG (Testlane TC-TIB-8771) và create-layer-image-upload-tool → PUT → confirm-layer-image-upload-tool với file SVG (TC-TIB-8787) ở merchant-owner/staging (PASS 2026-11-09, build không ghi), quan sát thấy URL tool trả trong cùng call status \"ready\", url .svg, thumbnail, width 702, height 176, không có lỗi cap; confirm tool trả status \"ready\" với url .svg và note kết thúc \"Nothing to poll.\". Một lượt chạy; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "MCP server: upload-layer-image-tool, create/confirm-layer-image-upload-tool, view/list-layer-images-tool",
+      "brand": null
+    },
+    "tags": [
+      "svg",
+      "observed",
+      "single-sample",
+      "mcp",
+      "layer-image",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "mcp/mcp-layer-image-upload#KB-1623"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  },
+  {
+    "kb_id": "KB-1625",
+    "topic": "Quan sát: kết quả queue của upload-layer-image-tool giống đường inline portal /file khi layer_width = artwork_width",
+    "statement": "Khi upload cùng một PNG 12000x5093 qua upload-layer-image-tool và qua portal POST /api/layer-images/file với layer_width bằng artwork_width ở merchant-owner/staging (Testlane TC-TIB-8781 PASS 2026-11-09, build không ghi), quan sát thấy hai bản ghi cùng width/height 12000x5093, cùng _large.webp 800x340 (5566 B), cùng thumbnail 100x100 webp (440 B), master .png ở chế độ private (CDN 403) cả hai; chỉ khác tên file. Đường inline đổi kích thước large theo layer_width client gửi (layer_width 200 ra large 300x127); điều kiện so sánh layer_width = artwork_width là lựa chọn của QA. Một lượt chạy; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "MCP server: upload-layer-image-tool, create/confirm-layer-image-upload-tool, view/list-layer-images-tool",
+      "brand": null
+    },
+    "tags": [
+      "queue",
+      "parity",
+      "observed",
+      "single-sample",
+      "mcp",
+      "layer-image",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "mcp/mcp-layer-image-upload#KB-1621",
+      "image-library/image-layer-library#KB-069"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  },
+  {
+    "kb_id": "KB-1626",
+    "topic": "upload-layer-image-tool và confirm-layer-image-upload-tool từ chối raster trên 128 MP hoặc header không đọc được, trước khi tạo layer image",
+    "statement": "Theo Jira TIB-5709 comment 56698 Solution (Dev, 2026-11-09), các đường upload layer image, trong đó có tool MCP upload-layer-image-tool và confirm-layer-image-upload-tool, từ chối ảnh raster lớn hơn temporary_file_max_megapixel (mặc định 128 MP) hoặc có header không đọc được kích thước, trước khi layer image được tạo. Message và hành vi batch quan sát ở KB-1627, KB-1629; ranh giới 'lớn hơn' theo open-api KB-057, quan sát ở KB-1628.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "MCP server: upload-layer-image-tool, create/confirm-layer-image-upload-tool, view/list-layer-images-tool",
+      "brand": null
+    },
+    "tags": [
+      "pixel-cap",
+      "mcp",
+      "layer-image",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "mcp/mcp-layer-image-upload#KB-1627",
+      "mcp/mcp-layer-image-upload#KB-1628",
+      "mcp/mcp-layer-image-upload#KB-1629",
+      "open-api/open-api-asset-upload#KB-057"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5709 comment 56698 Solution, dòng Change (Dev, 2026-11-09)",
+      "authored_on": "2026-11-09",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  },
+  {
+    "kb_id": "KB-1627",
+    "topic": "Quan sát: lỗi cap 128 MP trên URL tool và confirm tool, upload bị xoá, batch failed/processing",
+    "statement": "Ở merchant-owner/staging (Testlane TC-TIB-8772, TC-TIB-8785, TC-TIB-8773, TC-TIB-8774 PASS 2026-11-09, build không ghi), quan sát thấy: upload-layer-image-tool với PNG hoặc JPEG 12000x12000 trả tool error \"The image is 12000x12000 px (144 MP), over the 128 MP limit. Resize it to at most 128 megapixels and upload again.\"; confirm-layer-image-upload-tool với PNG 144 MP trả error cùng message thêm \" The upload has been removed.\", confirm lại cùng temporary_file_id trả \"Upload not found or expired. Mint a new one with create-layer-image-upload-tool.\"; confirm batch với một file 144 MP và một file 61 MP trả entry 144 MP status \"failed\" kèm message trên, entry 61 MP status \"processing\" rồi ready, created_count 1, failed_count 1. Số layer image không đổi với file bị từ chối. Một lượt chạy; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "MCP server: upload-layer-image-tool, create/confirm-layer-image-upload-tool, view/list-layer-images-tool",
+      "brand": null
+    },
+    "tags": [
+      "pixel-cap",
+      "batch",
+      "observed",
+      "single-sample",
+      "mcp",
+      "layer-image",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "mcp/mcp-layer-image-upload#KB-1626"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  },
+  {
+    "kb_id": "KB-1628",
+    "topic": "Quan sát: qua upload-layer-image-tool, ảnh đúng 128.000.000 px được nhận, 16001x8000 bị từ chối",
+    "statement": "Khi gọi upload-layer-image-tool với PNG 16000x8000 (128.000.000 px) và PNG 16001x8000 ở merchant-owner/staging (Testlane TC-TIB-8779 PASS 2026-11-09, build không ghi), quan sát thấy ảnh 16000x8000 trả processing rồi ready (16000x8000, large 800x400), ảnh 16001x8000 trả tool error \"The image is 16001x8000 px (128.01 MP), over the 128 MP limit. Resize it to at most 128 megapixels and upload again.\" và không tạo layer image. Một lượt chạy; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "MCP server: upload-layer-image-tool, create/confirm-layer-image-upload-tool, view/list-layer-images-tool",
+      "brand": null
+    },
+    "tags": [
+      "pixel-cap",
+      "boundary",
+      "observed",
+      "single-sample",
+      "mcp",
+      "layer-image",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "mcp/mcp-layer-image-upload#KB-1626",
+      "open-api/open-api-asset-upload#KB-057"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  },
+  {
+    "kb_id": "KB-1629",
+    "topic": "Quan sát: PNG cắt cụt header bị từ chối trên URL tool và confirm tool với message không đọc được kích thước",
+    "statement": "Khi gửi PNG bị cắt còn 20 hoặc 24 byte qua upload-layer-image-tool (URL) và qua create-layer-image-upload-tool → PUT → confirm-layer-image-upload-tool ở merchant-owner/staging (Testlane TC-TIB-8780 PASS 2026-11-09, build không ghi), quan sát thấy URL tool trả tool error \"The image's pixel size could not be read from its header; the file may be corrupt or truncated. Re-export it as PNG, JPEG, GIF or WebP and upload again.\", confirm tool trả cùng message thêm \" The upload has been removed.\", và số layer image không đổi. Một lượt chạy; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "MCP server: upload-layer-image-tool, create/confirm-layer-image-upload-tool, view/list-layer-images-tool",
+      "brand": null
+    },
+    "tags": [
+      "pixel-cap",
+      "corrupt-header",
+      "observed",
+      "single-sample",
+      "mcp",
+      "layer-image",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "mcp/mcp-layer-image-upload#KB-1626"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  }
+]

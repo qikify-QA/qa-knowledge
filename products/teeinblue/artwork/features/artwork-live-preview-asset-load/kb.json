@@ -1,0 +1,187 @@
+[
+  {
+    "kb_id": "KB-1087",
+    "topic": "Live preview của artwork tải ảnh clipart lớn (_large.webp) của layer clipart, group clipart, background clipart kèm ?v=<version của clipart category>, không còn luôn là ?v=1",
+    "statement": "Theo Dev trên Jira TIB-5685 comment 56626 (Summary cho QA, PR teeinblue-portal#3911, 2026-11-06), Live preview của artwork (layer clipart, group clipart, background clipart) tải ảnh clipart lớn kèm đúng version của category (`?v=<version>`), thay vì luôn là `?v=1`. Áp cho Live preview mở trong Artwork editor (/artworks) và mở từ Campaign editor → Edit artwork (test case TC-TIB-8991, TC-TIB-8994 PASS staging 2026-11-10 và production 2026-11-11, không ghi build). Ảnh large là biến thể `<hash>_large.webp` (KB-090). Với group clipart, version là của sub-category chứa clipart (KB-1090); ảnh cuối trên canvas của group clipart có known defect ở SDK (KB-1091). Category chưa có version là giới hạn riêng (KB-1092).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (Artwork editor → Live preview; Campaign editor → Edit artwork → Live preview)",
+      "brand": null
+    },
+    "tags": [
+      "live-preview",
+      "clipart-category",
+      "asset-version",
+      "cache-bust",
+      "large-webp",
+      "TIB-5685"
+    ],
+    "related_kb_ids": [
+      "artwork/layer-config-image#KB-090",
+      "artwork/artwork-live-preview-asset-load#KB-1090",
+      "artwork/artwork-live-preview-asset-load#KB-1092"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5685 comment 56626 (Dev, Summary cho QA, PR teeinblue-portal#3911), 2026-11-06",
+      "authored_on": "2026-11-06",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-150"
+    }
+  },
+  {
+    "kb_id": "KB-1088",
+    "topic": "Live preview: background clipart cùng kích thước printarea được vẽ phủ kín printarea (quan sát)",
+    "statement": "Khi mở Live preview của artwork có layer background clipart cùng kích thước printarea, dùng category đã có version, ở role merchant-owner trên portal staging (mở từ /artworks và từ Campaign editor → Edit artwork), quan sát thấy trong test case TC-TIB-8991 và TC-TIB-8994 (PASS 2026-11-10, không ghi build): ảnh background được vẽ đúng bằng khung printarea của SVG preview (phủ kín, không co lại), request ảnh large mang `?v=<version của category>`. Đây là quan sát, chưa có trích nguyên văn nguồn xác nhận trong CCR (CCR chỉ ghi căn cứ là phần Expectation của ticket). Triệu chứng gốc (background co lại vì CDN còn giữ bản ảnh cũ khác kích thước ở `?v=1`) không tái hiện được trên staging do CDN trả cùng file cho mọi v, nên QA chỉ kết luận theo query v và kích thước ảnh vẽ.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (Artwork editor → Live preview; Campaign editor → Edit artwork → Live preview)",
+      "brand": null
+    },
+    "tags": [
+      "live-preview",
+      "background-clipart",
+      "printarea",
+      "TIB-5685"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-live-preview-asset-load#KB-1087"
+    ],
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-150"
+    }
+  },
+  {
+    "kb_id": "KB-1089",
+    "topic": "Đổi lựa chọn clipart nhiều lần trong Live preview: mỗi URL ảnh large có đúng một tham số v (quan sát)",
+    "statement": "Khi đổi lựa chọn clipart nhiều lần trong panel của Live preview (layer clipart category, category có version) ở role merchant-owner trên portal staging, quan sát thấy trong test case TC-TIB-8992 (PASS staging 2026-11-10 và production 2026-11-11, không ghi build): canvas hiển thị đúng clipart vừa chọn mỗi lần; mỗi URL ảnh large có đúng một tham số `?v=<version của category>`, không có `?v=…?v=` hay `&v=`; chọn lại clipart đã tải thì trình duyệt dùng cache, không phát request mới. Expected của test case ghi nguồn là gợi ý test của Dev trên TIB-5685 (2026-11-06), nhưng CCR không trích nguyên văn nguồn đó nên đây vẫn là quan sát, chưa phải expected đã xác nhận.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (Artwork editor → Live preview)",
+      "brand": null
+    },
+    "tags": [
+      "live-preview",
+      "clipart-category",
+      "asset-version",
+      "query-param",
+      "TIB-5685"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-live-preview-asset-load#KB-1087"
+    ],
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-150"
+    }
+  },
+  {
+    "kb_id": "KB-1090",
+    "topic": "Group of clipart categories trong Live preview: ảnh clipart lớn mang v của sub-category chứa clipart, không phải v của group cha",
+    "statement": "Theo Dev trên Jira TIB-5685 comment 56822 (2026-11-10, trả lời câu hỏi của QA), ảnh clipart lớn của layer Group of clipart categories phải mang v của sub-category chứa clipart, không phải của group cha. Cùng comment giải thích request mà Portal phát ra khi chọn clipart con là preload ảnh của ô chọn clipart, dùng version của sub-category, và phần portal đã đúng. Test case TC-TIB-8993 (PASS staging 2026-11-10, không ghi build) quan sát request đó mang `?v=<version của sub-category>`, preview hiển thị đúng clipart con đã chọn. Ảnh cuối cùng trên canvas của layer group vẫn tải `?v=1` là known defect ở SDK, xem KB-1091; item này không phủ ảnh canvas đó.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (Artwork editor → Live preview)",
+      "brand": null
+    },
+    "tags": [
+      "live-preview",
+      "group-clipart",
+      "sub-category",
+      "asset-version",
+      "TIB-5685"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-live-preview-asset-load#KB-1087",
+      "artwork/artwork-live-preview-asset-load#KB-1091"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5685 comment 56822 (Dev, trả lời câu hỏi QA ở comment 56817), 2026-11-10",
+      "authored_on": "2026-11-10",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-150"
+    }
+  },
+  {
+    "kb_id": "KB-1091",
+    "topic": "Known defect (SDK, ngoài TIB-5685): ảnh canvas của layer Group of clipart categories không có grouped setting / grouped reposition tải với ?v=1",
+    "statement": "Khi chọn clipart con của layer Group of clipart categories (layer không có grouped setting / grouped reposition) trong Live preview ở role merchant-owner trên portal staging, quan sát thấy trong test case TC-TIB-8993 (2026-11-10): sau request preload mang version của sub-category, ảnh large cuối cùng trên canvas tải với `?v=1`; lần mở đầu và khi đổi sub-category chỉ có request `?v=1`. Dev trên TIB-5685 comment 56822 (2026-11-10) xác nhận đây là bug, nằm ở SDK, có từ trước thay đổi này nên ngoài phạm vi ticket: transformer group clipart của SDK chỉ lấy v của sub-category khi layer có grouped setting / grouped reposition, không có thì dùng version của layer, mà layer group không có field này nên rơi về `?v=1`; storefront chạy cùng đoạn code nên cũng tải `?v=1` (QA chưa quan sát phía storefront); lỗi có từ 03/2025. Known defect, không phải hành vi mong muốn, không làm oracle.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (Artwork editor → Live preview); storefront SDK theo lời Dev",
+      "brand": null
+    },
+    "tags": [
+      "live-preview",
+      "group-clipart",
+      "known-defect",
+      "sdk",
+      "asset-version",
+      "TIB-5685"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-live-preview-asset-load#KB-1090"
+    ],
+    "status": "KNOWN_DEFECT",
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-150"
+    }
+  },
+  {
+    "kb_id": "KB-1092",
+    "topic": "Giới hạn đã biết: clipart category chưa có version (v rỗng / null) thì Live preview vẫn tải ảnh large với ?v=1",
+    "statement": "Theo Dev trên Jira TIB-5685 comment 56626, mục Known limitations (2026-11-06), category chưa có version (`v` rỗng) vẫn tải ảnh với `?v=1` như trước; đây là giới hạn đã biết của bản sửa, không phải lỗi. Test case TC-TIB-8996 (PASS staging 2026-11-10, không ghi build) quan sát Live preview tải ảnh large `?v=1`, ảnh hiển thị, đổi lựa chọn clipart vẫn `?v=1`.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (Artwork editor → Live preview)",
+      "brand": null
+    },
+    "tags": [
+      "live-preview",
+      "clipart-category",
+      "asset-version",
+      "known-limitation",
+      "TIB-5685"
+    ],
+    "related_kb_ids": [
+      "artwork/artwork-live-preview-asset-load#KB-1087"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5685 comment 56626 (Dev, Summary cho QA, mục Known limitations), 2026-11-06",
+      "authored_on": "2026-11-06",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-150"
+    }
+  }
+]

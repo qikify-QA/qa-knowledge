@@ -1,0 +1,195 @@
+[
+  {
+    "kb_id": "KB-561",
+    "topic": "Ref image của [Gemini] image filter được thu nhỏ về services.gemini.size theo cạnh dài trước khi gửi Gemini",
+    "statement": "Theo Jira TIB-5615 comment #56735 Solution mục api.4 (Dev, 2026-11-09), khi Photo layer có effect [Gemini] image filter bật Use Reference Image, server (GeminiImageService::applyImageFilter) thu nhỏ ref image về services.gemini.size theo cạnh dài, giữ tỉ lệ, trước khi gửi Gemini; ref image nhỏ hơn giữ nguyên kích thước (không phóng to). Theo description TIB-5615 (Root cause) và QA plan comment #56741 của Dev, services.gemini.size là 1400 px. Kích thước ảnh gửi Gemini không quan sát được từ trình duyệt; Dev chứng minh bằng unit test U1, U2.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "server GenAI (GeminiImageService::applyImageFilter), kích hoạt từ storefront Photo layer [Gemini] image filter + ref image",
+      "brand": null
+    },
+    "tags": [
+      "genai",
+      "gemini",
+      "image-filter",
+      "reference-image",
+      "downscale",
+      "TIB-5615"
+    ],
+    "related_kb_ids": [
+      "sdk/photo-genai-image-filter-runtime#KB-562",
+      "sdk/photo-genai-image-filter-runtime#KB-564",
+      "sdk/genai-personalization-runtime#KB-479"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5615 comment #56735 Solution mục api.4 (Dev, 2026-11-09)",
+      "authored_on": "2026-11-09",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-153"
+    }
+  },
+  {
+    "kb_id": "KB-562",
+    "topic": "Ref image rất lớn: effect [Gemini] image filter hoàn tất, upload không kẹt Processing (quan sát QA)",
+    "statement": "Ở Testlane TC-TIB-8953 (task TIB-323, PASS staging 2026-11-10, build không ghi), quan sát thấy khi buyer upload ảnh ngang 6000x4000 vào Photo layer có effect [Gemini] image filter với ref image 12000x12000, request genai-uploads trả 202, client poll status tới 2 sau khoảng 65 giây, preview hiện kết quả và upload không kẹt Processing; field Production của case ghi PASS 2026-11-11 với ref image 4000x5300. Một lượt chạy; chưa có nguồn expected được trích cho hành vi này.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page (Photo layer có effect [Gemini] image filter, Use Reference Image)",
+      "brand": null
+    },
+    "tags": [
+      "genai",
+      "gemini",
+      "image-filter",
+      "reference-image",
+      "async-polling",
+      "TIB-5615"
+    ],
+    "related_kb_ids": [
+      "sdk/photo-genai-image-filter-runtime#KB-561",
+      "sdk/photo-genai-image-filter-runtime#KB-566",
+      "sdk/storefront-buyer-facing#KB-447"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-153"
+    }
+  },
+  {
+    "kb_id": "KB-563",
+    "topic": "Kết quả [Gemini] image filter giữ đúng hướng ảnh buyer (dọc, ngang, EXIF Orientation 6) khi ref image lớn",
+    "statement": "Ở Testlane TC-TIB-8954, TC-TIB-8955, TC-TIB-8953 (task TIB-323, PASS staging 2026-11-10, build không ghi), quan sát thấy trên Photo layer có effect [Gemini] image filter với ref image lớn, ảnh buyer dọc (4000x5300), ngang (6000x4000) và ảnh dọc mang EXIF Orientation 6 đều cho kết quả đúng hướng: không xoay ngang hoặc ngược, không méo. Expected tương ứng nằm ở QA plan A.2 của Dev trên Jira TIB-5615 (comment #56741, 2026-11-09) và AC#2, không được trích trong CCR; build đã test không kiểm được là bản có thay đổi. Item này không nói về tỉ lệ kết quả.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page (Photo layer có effect [Gemini] image filter, Use Reference Image)",
+      "brand": null
+    },
+    "tags": [
+      "genai",
+      "gemini",
+      "image-filter",
+      "orientation",
+      "exif",
+      "TIB-5615"
+    ],
+    "related_kb_ids": [
+      "sdk/photo-genai-image-filter-runtime#KB-561",
+      "sdk/photo-genai-image-filter-runtime#KB-565",
+      "sdk/genai-personalization-runtime#KB-567"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-153"
+    }
+  },
+  {
+    "kb_id": "KB-564",
+    "topic": "Ref image nhỏ (dưới services.gemini.size): effect [Gemini] image filter vẫn hoàn tất như trước",
+    "statement": "Ở Testlane TC-TIB-8957 (task TIB-323, PASS staging 2026-11-10, build không ghi), quan sát thấy trên Photo layer có effect [Gemini] image filter với ref image nhỏ (200x200, dưới 1400 px), effect hoàn tất (status 2). Expected tương ứng (hoàn tất như trước thay đổi) nằm ở QA plan A.3 của Dev trên Jira TIB-5615 (comment #56741, 2026-11-09) và unit test U2, không được trích trong CCR; build đã test không kiểm được là bản có thay đổi.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page (Photo layer có effect [Gemini] image filter, Use Reference Image)",
+      "brand": null
+    },
+    "tags": [
+      "genai",
+      "gemini",
+      "image-filter",
+      "reference-image",
+      "TIB-5615"
+    ],
+    "related_kb_ids": [
+      "sdk/photo-genai-image-filter-runtime#KB-561"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-153"
+    }
+  },
+  {
+    "kb_id": "KB-565",
+    "topic": "Đề xuất của QA theo lời Dev: tỉ lệ kết quả GenAI của Photo layer theo size SDK gửi (Direct gửi kích thước layer)",
+    "statement": "Theo rule Dev do QA ghi trong CBS-153 (Testlane task TIB-323, 2026-11-10; dẫn src/use/useEffectsCollector.js:91), Photo layer thường (Direct upload) luôn gửi size bằng kích thước layer WxH cho effect GenAI, nên tỉ lệ kết quả theo khung layer, không theo ảnh buyer; Image Placement và Image Cropper chỉ gửi size khi bật is_layer_output_size, không bật thì dùng kích thước ảnh input (sau crop và downscale). Lời Dev đến qua người dùng, không có trên Jira TIB-5615; vế Image Placement và Image Cropper chưa chạy. Chưa có xác nhận của Dev hoặc PO trên nguồn có thể dẫn.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page (Photo layer có effect [Gemini] image filter, Use Reference Image)",
+      "brand": null
+    },
+    "tags": [
+      "genai",
+      "image-filter",
+      "aspect-ratio",
+      "size",
+      "qa-rule",
+      "TIB-5615"
+    ],
+    "related_kb_ids": [
+      "sdk/photo-genai-image-filter-runtime#KB-563",
+      "sdk/genai-personalization-runtime#KB-568",
+      "sdk/genai-personalization-runtime#KB-569"
+    ],
+    "qa_rule_ref": {
+      "code": "TIB-5615-dev-rule-size-ratio",
+      "owner_role": "QA",
+      "recorded_on": "2026-11-10",
+      "locator": "CBS-153 (Testlane task TIB-323), rule Dev chuyển qua QA 2026-11-10, dẫn src/use/useEffectsCollector.js:91"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-153"
+    }
+  },
+  {
+    "kb_id": "KB-566",
+    "topic": "environment_difference",
+    "statement": "[NOT_TESTABLE] Môi trường test: staging (và local) chạy image-effect-queue trên connection redis-long-running, retry_after 1800 (job crash thì upload kẹt tới khoảng 30 phút); Production: redis-image-effect retry_after 420 (job image-effect crash bị đánh failed sau khoảng 7 phút), redis-long-running giữ 1800, supervisor image-effect timeout 360; Cách test: không test được trên staging (Dev chứng minh bằng unit test U7, U8, U10); trên staging quá 6 phút chưa có kết quả thì ghi failed kèm upload id, không chờ 30 phút. Nguồn: Jira TIB-5615 comment #56735 Solution mục api.5, api.6 (Dev, 2026-11-09).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "server queue image-effect-queue (job ApplyImageFilterEffectJob), không quan sát từ trình duyệt",
+      "brand": null
+    },
+    "tags": [
+      "genai",
+      "queue",
+      "retry-after",
+      "environment_difference",
+      "NOT_TESTABLE",
+      "TIB-5615"
+    ],
+    "related_kb_ids": [
+      "sdk/photo-genai-image-filter-runtime#KB-562"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5615 comment #56735 Solution mục api.5 (Dev, 2026-11-09)",
+      "authored_on": "2026-11-09",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-153"
+    }
+  }
+]

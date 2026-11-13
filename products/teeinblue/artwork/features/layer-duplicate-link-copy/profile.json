@@ -88,6 +88,13 @@
         "artwork/layer-duplicate-link-copy#KB-1040",
         "artwork/layer-duplicate-link-copy#KB-1041"
       ]
+    },
+    {
+      "name": "[MỚI, CBS-149] Linked copy của curve / warp text render stroke theo layer gốc",
+      "description": "CONFIRMED_EXPECTED (Dev TIB-5699 comment 56557 U5 + Q5, 2026-11-05): stroke_width / stroke_color của linked copy curve / warp khi render là cặp của gốc; đổi stroke của gốc thì copy trong file design và preview đổi theo (TC-TIB-8987 staging). Spiral / shape text không có linked transformer (KB-045).",
+      "kb_refs": [
+        "artwork/layer-duplicate-link-copy#KB-1098"
+      ]
     }
   ],
   "state_transitions": [
@@ -157,6 +164,19 @@
       "confirmation_ref": "Jira TIB-5211 description (Story \"Convert layer types between all text types\"), mục Portal › Conversion behavior › Duplicate and Linked layers, 2026-07-20",
       "kb_refs": [
         "artwork/layer-duplicate-link-copy#KB-1040"
+      ]
+    },
+    {
+      "rule": "Linked copy (Duplicate & Link) của curve text và warp text render stroke theo cặp stroke_color / stroke_width của layer gốc; mỗi render dùng stroke editor của gốc, khớp preview. Spiral text và shape text không có linked transformer nên không thuộc rule.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner + buyer, portal · storefront preview · api render PNG",
+      "shipped": "SHIPPED",
+      "caveats": "Một citation; chỉ staging. Không nói về dữ liệu lưu của copy (quan sát: copy giữ cặp cũ của chính nó — unknown_areas).",
+      "confirmation_ref": "Jira TIB-5699 comment 56557 (Dev), 2026-11-05",
+      "kb_refs": [
+        "artwork/layer-duplicate-link-copy#KB-1098"
       ]
     }
   ],
@@ -229,6 +249,12 @@
         "kb_refs": [
           "artwork/layer-duplicate-link-copy#KB-935"
         ]
+      },
+      {
+        "item": "[MỚI, CBS-149] Preview storefront của linked copy curve / warp text theo stroke của gốc",
+        "kb_refs": [
+          "artwork/layer-duplicate-link-copy#KB-1098"
+        ]
       }
     ],
     "api": [
@@ -236,6 +262,12 @@
         "item": "[MỚI, CBS-095] Render phía API bản linked photo layer No personalization: mask_enable luôn false, không dùng color/cropper",
         "kb_refs": [
           "artwork/layer-duplicate-link-copy#KB-935"
+        ]
+      },
+      {
+        "item": "[MỚI, CBS-149] Render order design PNG của linked copy curve / warp text dùng cặp stroke của gốc (warp: cả vectorize.layers[0])",
+        "kb_refs": [
+          "artwork/layer-duplicate-link-copy#KB-1098"
         ]
       }
     ],
@@ -270,6 +302,16 @@
       "description": "[MỚI, CBS-095] Photo border của bản linked lấy từ layer gốc (FEAT-29-layer-photo-border); photo layer No personalization mô tả ở FEAT-13-layer-config-image và FEAT-30-no-personalization-photo-render.",
       "kb_refs": [
         "artwork/layer-duplicate-link-copy#KB-935"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "[MỚI, CBS-149] Cặp stroke của curve / warp text và renderer 1 stroke ở FEAT-20-text-multi-stroke (KB-1094).",
+      "kb_refs": [
+        "artwork/layer-duplicate-link-copy#KB-1098"
+      ],
+      "cross_feature_kb_refs": [
+        "artwork/text-multi-stroke#KB-1094"
       ]
     }
   ],
@@ -453,11 +495,21 @@
       ],
       "oq_type": "CONFLICT",
       "oq_id": "OQ-artwork-523"
+    },
+    {
+      "question": "[MỚI, CBS-149] Dữ liệu lưu của linked copy curve / warp text vẫn giữ cặp stroke_color / stroke_width cũ của chính nó (quan sát staging), trong khi render dùng cặp của gốc — đây là thiết kế hay dữ liệu thừa cần dọn? Có trường hợp nào (gỡ link, convert, copy artwork) mà cặp cũ của copy được dùng lại không?",
+      "why_it_matters": "Nếu cặp lưu của copy được dùng lại khi gỡ link hoặc qua API, copy có thể render stroke cũ; CHK-033 chỉ kiểm render.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/layer-duplicate-link-copy#KB-1098"
+      ],
+      "oq_id": "OQ-artwork-564"
     }
   ],
   "last_updated": {
     "date": "2026-11-12",
-    "ccr_ref": "CBS-116"
+    "ccr_ref": "CBS-149"
   },
   "coverage_matrix": [
     {
@@ -606,6 +658,18 @@
         "artwork/layer-duplicate-link-copy#KB-1051"
       ],
       "basis": "rule QA (S2) PROPOSED, dev_doc OBSERVED_CURRENT LOW và conflict CONF-CBS-116-01/02; chưa có expected"
+    },
+    {
+      "feature_id": "FEAT-05-layer-duplicate-link-copy",
+      "layer": "api",
+      "role": "merchant-owner + buyer",
+      "state": "[CBS-149] linked copy curve / warp text, đổi stroke của gốc: file design PNG và preview",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/layer-duplicate-link-copy#KB-1098"
+      ],
+      "basis": "Dev comment 56557 + TC-TIB-8987 PASS staging 2026-11-10 (không ghi build); production chưa chạy"
     }
   ],
   "profile_conflicts": [

@@ -1,0 +1,354 @@
+{
+  "feature_id": "FEAT-02-open-api-campaign-publish",
+  "feature_key": "open-api-campaign-publish",
+  "object_id": "open-api",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "PUT /api/user/api-token sau xác nhận password trả chỉ plain token và thay token hiện tại",
+      "applicability": {
+        "role": "merchant-owner (phiên portal của account explorer)",
+        "state": "phiên đã login, account đúng account_guard",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "client HTTP ngoài trình duyệt + phiên portal"
+      },
+      "precondition": "Account explorer của staging (TIB_STAGING_EMAIL, login {TIB_PORTAL_BASE}/login?staff=true); xác minh account theo playbook (GET /api/user đúng account_guard) trước khi thao tác và sau mỗi lần login lại. Cần operator đồng ý tường minh trước khi gọi PUT /api/user/api-token: lệnh này thay user API token hiện tại của account explorer, token cũ không khôi phục được và mọi tích hợp dùng token cũ sẽ hỏng; hỏi operator trước xem token hiện tại có đang được dùng không. Token mới chỉ giữ trong biến runtime, không in, không ghi file/.env/log. Không gọi trên production.",
+      "steps": [
+        "Trong phiên portal của account explorer, gọi POST /api/user/confirm-password với password của account (không ghi giá trị).",
+        "Gọi PUT /api/user/api-token; giữ body trong biến runtime, không in.",
+        "Ghi status, content-type, kiểu body (chuỗi hay JSON) và độ dài; không ghi giá trị token."
+      ],
+      "observation_point": "Status và body của PUT /api/user/api-token",
+      "expected_result": "Body chỉ là plain token (không kèm object hay field khác); token hiện tại của account bị thay bằng token này.",
+      "oracle": {
+        "kb_ids": [
+          "open-api/open-api-campaign-publish#KB-062"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "open-api/open-api-campaign-publish#KB-062",
+        "open-api/open-api-campaign-publish#KB-063"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "PUT /api/user/api-token khi chưa xác nhận password trả 423, không cấp token (quan sát)",
+      "applicability": {
+        "role": "merchant-owner (phiên portal của account explorer)",
+        "state": "phiên đã login, account đúng account_guard",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "client HTTP ngoài trình duyệt + phiên portal"
+      },
+      "precondition": "Account explorer của staging (TIB_STAGING_EMAIL, login {TIB_PORTAL_BASE}/login?staff=true); xác minh account theo playbook (GET /api/user đúng account_guard) trước khi thao tác và sau mỗi lần login lại. Cần operator đồng ý tường minh trước khi gọi PUT /api/user/api-token: lệnh này thay user API token hiện tại của account explorer, token cũ không khôi phục được và mọi tích hợp dùng token cũ sẽ hỏng; hỏi operator trước xem token hiện tại có đang được dùng không. Token mới chỉ giữ trong biến runtime, không in, không ghi file/.env/log. Không gọi trên production. Phiên mới login, chưa gọi confirm-password.",
+      "steps": [
+        "Gọi PUT /api/user/api-token trước khi confirm-password; ghi status và body.",
+        "Gọi POST /api/user/confirm-password, ghi status; gọi lại PUT, ghi status và header content-type (không ghi token)."
+      ],
+      "observation_point": "Status/body lần đầu; status confirm-password; content-type của PUT thành công",
+      "expected_result": "Baseline theo quan sát: lần đầu 423 {\"message\":\"Password confirmation required.\"}, chưa cấp token; confirm-password 201; PUT lại 200 với chuỗi token thuần, content-type text/html; charset=utf-8.",
+      "oracle": {
+        "kb_ids": [
+          "open-api/open-api-campaign-publish#KB-063"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "open-api/open-api-campaign-publish#KB-062",
+        "open-api/open-api-campaign-publish#KB-063"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-open-api-064"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "Publish qua Open API bằng user API token: response có campaign_instances, không artworks/campaign_artworks/campaign_products",
+      "applicability": {
+        "role": "integrator dùng user API token của account explorer",
+        "state": "campaign QA- Unpublished trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "client HTTP ngoài trình duyệt, không gửi Origin"
+      },
+      "precondition": "Account explorer của staging (TIB_STAGING_EMAIL, login {TIB_PORTAL_BASE}/login?staff=true); xác minh account theo playbook (GET /api/user đúng account_guard) trước khi thao tác và sau mỗi lần login lại. Cần operator đồng ý tường minh trước khi publish: lệnh đưa một sản phẩm lên store. Fixture tự dựng trên store explorer (instance theo TIB_STORE_INSTANCE_ID): campaign tên tiền tố QA-, trạng thái Unpublished; không dùng store/campaign/id trong CCR hay test case. Bearer là user API token lấy theo CHK-001 (cùng đồng ý của operator). Gọi từ client ngoài trình duyệt, không gửi Origin (curl/Postman/request context của Playwright), base {TIB_API_BASE}. Dọn dẹp trong cùng lượt: gỡ sản phẩm khỏi store, unpublish rồi xoá campaign QA-. Không gọi trên production.",
+      "steps": [
+        "Gọi POST {TIB_API_BASE}/api/open/instances/{instance}/campaigns/{campaign}/publish với Authorization: Bearer <user API token>, instance là store explorer, campaign là campaign QA- vừa dựng.",
+        "Ghi status và danh sách key mức trên của response."
+      ],
+      "observation_point": "Key của response",
+      "expected_result": "Response chứa campaign với campaign_instances; không có artworks, campaign_artworks, campaign_products.",
+      "oracle": {
+        "kb_ids": [
+          "open-api/open-api-campaign-publish#KB-064"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "Sau publish, row campaign_instances theo instance_id có platform_linked_id/handle và sản phẩm mở được trên store (quan sát)",
+      "applicability": {
+        "role": "integrator dùng user API token của account explorer",
+        "state": "campaign QA- Unpublished trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "client HTTP ngoài trình duyệt, không gửi Origin"
+      },
+      "precondition": "Account explorer của staging (TIB_STAGING_EMAIL, login {TIB_PORTAL_BASE}/login?staff=true); xác minh account theo playbook (GET /api/user đúng account_guard) trước khi thao tác và sau mỗi lần login lại. Cần operator đồng ý tường minh trước khi publish: lệnh đưa một sản phẩm lên store. Fixture tự dựng trên store explorer (instance theo TIB_STORE_INSTANCE_ID): campaign tên tiền tố QA-, trạng thái Unpublished; không dùng store/campaign/id trong CCR hay test case. Bearer là user API token lấy theo CHK-001 (cùng đồng ý của operator). Gọi từ client ngoài trình duyệt, không gửi Origin (curl/Postman/request context của Playwright), base {TIB_API_BASE}. Dọn dẹp trong cùng lượt: gỡ sản phẩm khỏi store, unpublish rồi xoá campaign QA-. Không gọi trên production. Chạy ngay sau CHK-003.",
+      "steps": [
+        "Trong campaign_instances của response CHK-003, chọn row có instance_id của store explorer; ghi các key, platform_linked_id, platform_linked_handle.",
+        "Mở {TIB_STORE_URL}/products/<platform_linked_handle> (mật khẩu store theo TIB_STORE_PASSWORD) và /products/<handle>.js; ghi product id và trạng thái hiển thị."
+      ],
+      "observation_point": "Row theo instance_id; trang sản phẩm trên storefront",
+      "expected_result": "Baseline theo quan sát: status 200; campaign_instances liệt kê store; row theo instance_id có platform_linked_id và platform_linked_handle; trang sản phẩm mở được, product id trùng platform_linked_id.",
+      "oracle": {
+        "kb_ids": [
+          "open-api/open-api-campaign-publish#KB-065"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-open-api-065"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "PERMISSION",
+      "layer": "api",
+      "title": "Personal access token làm bearer không publish được campaign",
+      "applicability": {
+        "role": "integrator dùng user API token của account explorer",
+        "state": "campaign QA- Unpublished trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "client HTTP ngoài trình duyệt, không gửi Origin"
+      },
+      "precondition": "Account explorer của staging (TIB_STAGING_EMAIL, login {TIB_PORTAL_BASE}/login?staff=true); xác minh account theo playbook (GET /api/user đúng account_guard) trước khi thao tác và sau mỗi lần login lại. Cần operator đồng ý tường minh trước khi publish: lệnh đưa một sản phẩm lên store. Fixture tự dựng trên store explorer (instance theo TIB_STORE_INSTANCE_ID): campaign tên tiền tố QA-, trạng thái Unpublished; không dùng store/campaign/id trong CCR hay test case. Bearer là user API token lấy theo CHK-001 (cùng đồng ý của operator). Gọi từ client ngoài trình duyệt, không gửi Origin (curl/Postman/request context của Playwright), base {TIB_API_BASE}. Dọn dẹp trong cùng lượt: gỡ sản phẩm khỏi store, unpublish rồi xoá campaign QA-. Không gọi trên production. Bearer là personal access token (loại /openapi/v1) của chính account explorer — biến env chỉ dùng khi đã xác minh token thuộc account explorer, nếu không thì operator cấp; không phải user API token; không cần lấy user API token mới cho check này. Nếu publish lỡ thành công thì dọn như trên.",
+      "steps": [
+        "Ghi trạng thái campaign QA- trên portal /campaigns (Unpublished).",
+        "Gọi POST {TIB_API_BASE}/api/open/instances/{instance}/campaigns/{campaign}/publish với Authorization: Bearer <PAT>; ghi status và body.",
+        "Reload /campaigns, ghi trạng thái campaign."
+      ],
+      "observation_point": "Status/body; trạng thái campaign sau lệnh gọi",
+      "expected_result": "Request bị từ chối, campaign không được publish. Status 401 \"Unauthenticated.\" là quan sát ở KB-065 (lệch status cần điều tra, không tự là bug).",
+      "oracle": {
+        "kb_ids": [
+          "open-api/open-api-campaign-publish#KB-064"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065",
+        "open-api/open-api-asset-upload#KB-001"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "PERMISSION",
+      "layer": "api",
+      "title": "Gọi publish không bearer trả 401, campaign không đổi (quan sát)",
+      "applicability": {
+        "role": "integrator dùng user API token của account explorer",
+        "state": "campaign QA- Unpublished trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "client HTTP ngoài trình duyệt, không gửi Origin"
+      },
+      "precondition": "Account explorer của staging (TIB_STAGING_EMAIL, login {TIB_PORTAL_BASE}/login?staff=true); xác minh account theo playbook (GET /api/user đúng account_guard) trước khi thao tác và sau mỗi lần login lại. Cần operator đồng ý tường minh trước khi publish: lệnh đưa một sản phẩm lên store. Fixture tự dựng trên store explorer (instance theo TIB_STORE_INSTANCE_ID): campaign tên tiền tố QA-, trạng thái Unpublished; không dùng store/campaign/id trong CCR hay test case. Bearer là user API token lấy theo CHK-001 (cùng đồng ý của operator). Gọi từ client ngoài trình duyệt, không gửi Origin (curl/Postman/request context của Playwright), base {TIB_API_BASE}. Dọn dẹp trong cùng lượt: gỡ sản phẩm khỏi store, unpublish rồi xoá campaign QA-. Không gọi trên production. Không cần lấy user API token mới cho check này. Nếu publish lỡ thành công thì dọn như trên.",
+      "steps": [
+        "Gọi POST {TIB_API_BASE}/api/open/instances/{instance}/campaigns/{campaign}/publish không có header Authorization, từ client không gửi Origin và không mang cookie portal.",
+        "Ghi status, body; kiểm trạng thái campaign trên /campaigns."
+      ],
+      "observation_point": "Status/body; trạng thái campaign",
+      "expected_result": "Baseline theo quan sát: 401 {\"message\":\"Unauthenticated.\"}; campaign vẫn Unpublished.",
+      "oracle": {
+        "kb_ids": [
+          "open-api/open-api-campaign-publish#KB-065"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-open-api-065"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "Gọi publish bằng fetch trong trang portal (có Origin của portal) trả 419 CSRF (quan sát)",
+      "applicability": {
+        "role": "merchant-owner (phiên portal của account explorer)",
+        "state": "campaign QA- Unpublished",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "trình duyệt, trang portal {TIB_PORTAL_BASE}"
+      },
+      "precondition": "Account explorer của staging (TIB_STAGING_EMAIL, login {TIB_PORTAL_BASE}/login?staff=true); xác minh account theo playbook (GET /api/user đúng account_guard) trước khi thao tác và sau mỗi lần login lại. Cần operator đồng ý tường minh trước khi publish: lệnh đưa một sản phẩm lên store. Fixture tự dựng trên store explorer (instance theo TIB_STORE_INSTANCE_ID): campaign tên tiền tố QA-, trạng thái Unpublished; không dùng store/campaign/id trong CCR hay test case. Bearer là user API token lấy theo CHK-001 (cùng đồng ý của operator). Gọi từ client ngoài trình duyệt, không gửi Origin (curl/Postman/request context của Playwright), base {TIB_API_BASE}. Dọn dẹp trong cùng lượt: gỡ sản phẩm khỏi store, unpublish rồi xoá campaign QA-. Không gọi trên production. Check này gọi từ trong trang portal (có Origin), không phải client ngoài trình duyệt. Nếu publish lỡ thành công thì dọn như trên.",
+      "steps": [
+        "Mở trang portal đã login, chạy fetch POST tới {TIB_API_BASE}/api/open/instances/{instance}/campaigns/{campaign}/publish với Authorization: Bearer <user API token>.",
+        "Ghi status, body; kiểm trạng thái campaign trên /campaigns."
+      ],
+      "observation_point": "Status/body; trạng thái campaign",
+      "expected_result": "Baseline theo quan sát: 419 CSRF token mismatch; campaign không được publish bởi lệnh gọi này.",
+      "oracle": {
+        "kb_ids": [
+          "open-api/open-api-campaign-publish#KB-065"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "open-api/open-api-campaign-publish#KB-065"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-open-api-066"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Portal không có nút lấy user API token (statement CCR, chưa quan sát)",
+      "applicability": {
+        "role": "merchant-owner (phiên portal của account explorer)",
+        "state": "đã login",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Account explorer của staging (TIB_STAGING_EMAIL, login {TIB_PORTAL_BASE}/login?staff=true); xác minh account theo playbook (GET /api/user đúng account_guard) trước khi thao tác và sau mỗi lần login lại. Chỉ xem, không bấm nút tạo/thay token nào.",
+      "steps": [
+        "Mở Settings > General và các trang cài đặt liên quan tới API trên portal.",
+        "Ghi có hay không nút/panel lấy user API token (khác Create new key ở /api-keys và Generate MCP token ở /mcp)."
+      ],
+      "observation_point": "Có nút/panel lấy user API token hay không",
+      "expected_result": "Baseline theo statement CCR (chưa quan sát): portal không có nút cho thao tác PUT /api/user/api-token.",
+      "oracle": {
+        "kb_ids": [
+          "open-api/open-api-campaign-publish#KB-063"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "open-api/open-api-campaign-publish#KB-063"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-open-api-064"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-02-open-api-campaign-publish",
+      "risk_or_gap_ref": "Capability: lấy user API token (thay token hiện tại, cần operator đồng ý)",
+      "covered_by_check_ids": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-008"
+      ],
+      "coverage_status": "COVERED_BASELINE",
+      "note": "CHK-001 STRONG."
+    },
+    {
+      "feature_id": "FEAT-02-open-api-campaign-publish",
+      "risk_or_gap_ref": "Capability: publish campaign qua Open API (đưa sản phẩm lên store, cần operator đồng ý và dọn dẹp)",
+      "covered_by_check_ids": [
+        "CHK-003",
+        "CHK-004"
+      ],
+      "coverage_status": "COVERED_BASELINE",
+      "note": "CHK-003 STRONG."
+    },
+    {
+      "feature_id": "FEAT-02-open-api-campaign-publish",
+      "risk_or_gap_ref": "Risk: PAT (token /openapi/v1, token MCP) hoặc không bearer dùng cho route publish",
+      "covered_by_check_ids": [
+        "CHK-005",
+        "CHK-006"
+      ],
+      "coverage_status": "COVERED_BASELINE",
+      "note": "CHK-005 STRONG; token MCP chưa có KB."
+    },
+    {
+      "feature_id": "FEAT-02-open-api-campaign-publish",
+      "risk_or_gap_ref": "Risk: gọi từ trình duyệt có Origin portal nhận 419 CSRF",
+      "covered_by_check_ids": [
+        "CHK-007"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-02-open-api-campaign-publish",
+      "risk_or_gap_ref": "Gap: production, token cũ sau khi bị thay, token MCP, account khác, campaign đã published",
+      "covered_by_check_ids": [],
+      "coverage_status": "NOT_COVERED"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Không có evidence về giới hạn kích thước/số lượng cho hai route này."
+    },
+    {
+      "dimension": "STATE_DATA",
+      "reason": "Token cũ sau khi bị thay và campaign đã published chưa có KB (OQ-open-api-067); chuyển trạng thái campaign đã nằm trong CHK-003..CHK-006."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Feature mới, không có base đã publish để so."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  }
+}

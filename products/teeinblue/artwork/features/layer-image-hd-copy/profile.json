@@ -1,0 +1,203 @@
+{
+  "feature_id": "FEAT-36-layer-image-hd-copy",
+  "feature_key": "layer-image-hd-copy",
+  "name": "Bản HD (master_large) của layer ảnh: tạo bất đồng bộ, decode, kích thước, hướng",
+  "user_goal": "Là merchant-owner trong artwork editor, khi bật HD cho một layer ảnh tôi nhận được bản HD (master_large) của chính ảnh đó, tạo bất đồng bộ, đúng hướng và đúng tỉ lệ, và việc đổi helper decode ở TIB-5615 không làm bản HD khác đi. Thao tác bật HD hàng loạt, limit mỗi lần bấm và điều kiện disable với layer clipart thuộc artwork/layer-config-image (KB-420..KB-423).",
+  "user_goal_kb_refs": [
+    "artwork/layer-image-hd-copy#KB-1101",
+    "artwork/layer-image-hd-copy#KB-1102"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner (account staging có quyền Manage Artwork)",
+      "permission_observed": "Bật HD trên toolbar layer ảnh trong artwork editor; nguồn không nêu khác biệt quyền.",
+      "kb_refs": [
+        "artwork/layer-image-hd-copy#KB-1101",
+        "artwork/layer-image-hd-copy#KB-1102"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "portal artwork editor → chọn layer ảnh (Static Image) → toolbar HD",
+      "precondition": "Đăng nhập staging bằng account staging có quyền Manage Artwork (TIB_STAGING_EMAIL/TIB_STAGING_PASSWORD); ảnh layer nằm trong image library (không phải layer cũ trỏ thẳng vào clipart, xem artwork/layer-config-image#KB-423). Chuẩn bị ảnh nguồn rất lớn: JPEG ngang, JPEG có EXIF orientation 6, PNG.",
+      "kb_refs": [
+        "artwork/layer-image-hd-copy#KB-1101",
+        "artwork/layer-image-hd-copy#KB-1102",
+        "artwork/layer-config-image#KB-423"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Tạo bản HD master_large bất đồng bộ cho layer ảnh",
+      "description": "OBSERVED_CURRENT/LOW (KB-1102): bật HD → yêu cầu create-master-large/batch chuyển sang ready, sinh _master_large.webp. API batch và limit thuộc artwork/layer-config-image KB-421/KB-422.",
+      "kb_refs": [
+        "artwork/layer-image-hd-copy#KB-1102",
+        "artwork/layer-config-image#KB-422"
+      ]
+    },
+    {
+      "name": "Decode và tính kích thước bản HD qua helper chung, không đổi kết quả",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-1101): MasterLargeMaker đọc/tính kích thước qua decodeWithin()/fitWithin(); các bước khác giữ nguyên; bản HD giống hệt từng byte so với trước TIB-5615.",
+      "kb_refs": [
+        "artwork/layer-image-hd-copy#KB-1101"
+      ]
+    },
+    {
+      "name": "Kích thước, tỉ lệ và hướng của bản HD",
+      "description": "OBSERVED_CURRENT/LOW (KB-1102): cạnh dài 4096, giữ tỉ lệ, xoay theo EXIF đúng một lần, file không còn EXIF; transparency chưa kiểm. Chưa có expected.",
+      "kb_refs": [
+        "artwork/layer-image-hd-copy#KB-1102"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "layer ảnh chưa có bản HD",
+      "to": "bản HD _master_large.webp ready",
+      "trigger": "merchant bật HD trên toolbar layer ảnh",
+      "condition": "ảnh layer trong image library; quan sát staging, chưa có expected",
+      "kb_refs": [
+        "artwork/layer-image-hd-copy#KB-1102"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "rule": "Bản HD (master_large) của layer image đọc và tính kích thước qua ImageService::decodeWithin()/fitWithin(); maxDimension(), tải ảnh, scaleImage, profile/orientation, encode WebP giữ nguyên, nên bản HD giống hệt từng byte so với trước thay đổi.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, portal artwork editor toolbar HD; SHIPPED (Jira Done 2026-11-10), production verify NOT-RUN",
+      "caveats": "Một nguồn. Không nêu giá trị cap cạnh dài.",
+      "confirmation_ref": "Jira TIB-5615 comment #56735 Solution mục api.2 và Architecture (Dev, 2026-11-09)",
+      "kb_refs": [
+        "artwork/layer-image-hd-copy#KB-1101"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Staging 2026-11-10 (3 test case, build không ghi): _master_large.webp cạnh dài 4096, giữ tỉ lệ (18174x6900 → 4096x1555; 12000x5093 → 4096x1738); JPEG EXIF 6 → 3091x4096 đứng thẳng, xoay đúng một lần, không còn EXIF. Transparency chưa kiểm.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "scope": "staging, merchant-owner, portal artwork editor toolbar HD",
+      "kb_refs": [
+        "artwork/layer-image-hd-copy#KB-1102"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      "artwork/layer-image-hd-copy#KB-1101",
+      "artwork/layer-image-hd-copy#KB-1102"
+    ],
+    "storefront": [],
+    "api": [
+      "artwork/layer-image-hd-copy#KB-1102",
+      "artwork/layer-config-image#KB-422"
+    ],
+    "data": [
+      "artwork/layer-image-hd-copy#KB-1102"
+    ],
+    "code": [
+      "artwork/layer-image-hd-copy#KB-1101"
+    ]
+  },
+  "dependencies": [
+    {
+      "feature_key": "artwork/layer-config-image",
+      "why": "Bật HD (đơn lẻ và batch), limit mỗi lần bấm, toast, undo, disable với layer clipart: KB-420..KB-423. Feature này chỉ mô tả bản HD sinh ra; không sửa profile đó."
+    },
+    {
+      "feature_key": "artwork/run-image-effects",
+      "why": "Run effects thành công tắt HD của layer (KB-804); Undo bật lại (KB-805)."
+    }
+  ],
+  "risks": [
+    {
+      "description": "Ảnh nguồn rất lớn hoặc có EXIF có thể làm bản HD sai hướng, sai tỉ lệ hoặc lệch so với trước khi đổi helper decode; cap 4096 và transparency chưa có expected.",
+      "kb_refs": [
+        "artwork/layer-image-hd-copy#KB-1101",
+        "artwork/layer-image-hd-copy#KB-1102"
+      ]
+    }
+  ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-11-12"
+  },
+  "unknown_areas": [
+    {
+      "question": "Bản HD master_large có cap cạnh dài 4096, giữ tỉ lệ, xoay EXIF đúng một lần, bỏ EXIF là expected không, và PNG có alpha có giữ transparency không?",
+      "why_it_matters": "KB-1102 chỉ là quan sát (quy tắc TIB-5420/TIB-5543 chưa có trong canon); CHK-001..003 không có oracle STRONG.",
+      "kb_refs": [
+        "artwork/layer-image-hd-copy#KB-1102"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-568"
+    },
+    {
+      "question": "Toast/spinner trạng thái khi bản HD đang tạo hoặc tạo lỗi hiển thị thế nào?",
+      "why_it_matters": "CCR nêu trong phạm vi feature nhưng không có nguồn hay quan sát; không tạo check.",
+      "kb_refs": [],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-569"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-153"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-36-layer-image-hd-copy",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "bật HD, ảnh nguồn rất lớn JPEG/PNG",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-36-layer-image-hd-copy",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "ảnh nguồn có EXIF orientation",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-36-layer-image-hd-copy",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "PNG có alpha",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-36-layer-image-hd-copy",
+      "layer": "portal",
+      "role": "any",
+      "state": "toàn feature",
+      "environment": "production",
+      "covered": false
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from_feature_key": "layer-image-hd-copy",
+      "to_feature_key": "artwork/layer-config-image",
+      "relationship": "hd_toggle_and_batch_boundary"
+    },
+    {
+      "from_feature_key": "layer-image-hd-copy",
+      "to_feature_key": "artwork/run-image-effects",
+      "relationship": "run_effects_turns_hd_off"
+    }
+  ]
+}

@@ -1,0 +1,499 @@
+{
+  "feature_id": "FEAT-02-mcp-layer-image-upload",
+  "feature_key": "mcp-layer-image-upload",
+  "name": "Upload layer image qua tool MCP (URL và presigned), theo dõi processing → ready, giới hạn 128 MP",
+  "user_goal": "Là merchant (hoặc agent dùng token MCP của merchant), mình đưa ảnh vào thư viện layer image qua tool MCP — từ URL hoặc qua upload presigned — rồi theo dõi tới khi ảnh sẵn sàng để dùng trong artwork; ảnh quá 128 MP hoặc hỏng bị từ chối trước khi tạo bản ghi.",
+  "user_goal_kb_refs": [
+    "mcp/mcp-layer-image-upload#KB-1620",
+    "mcp/mcp-layer-image-upload#KB-1623",
+    "mcp/mcp-layer-image-upload#KB-1626"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner (qua token MCP mang mcp:access)",
+      "permission_observed": "Gọi upload-layer-image-tool, create/confirm-layer-image-upload-tool, view-layer-image-tool trên staging trong test case của CCR; explorer chưa có token MCP đã xác minh (OQ-mcp-001).",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1621",
+        "mcp/mcp-layer-image-upload#KB-1627"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "MCP server → upload-layer-image-tool (tải ảnh từ URL public)",
+      "precondition": "Token MCP của account test có mcp:access (chưa có biến env trong _env.example; operator cấp). Fixture ảnh tự sinh, host ở URL public người chạy kiểm soát; không dùng file/URL trong CCR.",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1620",
+        "mcp/mcp-layer-image-upload#KB-1623",
+        "mcp/mcp-layer-image-upload#KB-1626"
+      ]
+    },
+    {
+      "path": "MCP server → create-layer-image-upload-tool → PUT upload_url → confirm-layer-image-upload-tool",
+      "precondition": "Như trên.",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1626",
+        "mcp/mcp-layer-image-upload#KB-1627"
+      ]
+    },
+    {
+      "path": "MCP server → view-layer-image-tool (poll tới khi có thumbnail)",
+      "precondition": "Có id layer image vừa tạo.",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1621"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Upload raster từ URL, xử lý nền",
+      "description": "CONFIRMED (KB-1620): raster trả {id, name, status processing, note}, không url/thumbnail/width/height. Quan sát (KB-1621, KB-1622): note và description bảo poll view-layer-image-tool; ready sau vài giây với kích thước gốc.",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1620",
+        "mcp/mcp-layer-image-upload#KB-1621",
+        "mcp/mcp-layer-image-upload#KB-1622"
+      ]
+    },
+    {
+      "name": "SVG trả ready ngay",
+      "description": "CONFIRMED (KB-1623): SVG trả {id, name, url, thumbnail, width, height} và status ready. Quan sát (KB-1624): confirm tool với SVG cũng ready.",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1623",
+        "mcp/mcp-layer-image-upload#KB-1624"
+      ]
+    },
+    {
+      "name": "Kết quả queue giống đường inline",
+      "description": "Quan sát (KB-1625): cùng kích thước, large, thumbnail, master private khi layer_width = artwork_width.",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1625"
+      ]
+    },
+    {
+      "name": "Giới hạn 128 MP và header hỏng",
+      "description": "CONFIRMED (KB-1626): URL tool và confirm tool từ chối raster > 128 MP hoặc header không đọc được, trước khi tạo layer image. Quan sát (KB-1627..KB-1629): message, upload bị xoá, batch, ranh giới.",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1626",
+        "mcp/mcp-layer-image-upload#KB-1627",
+        "mcp/mcp-layer-image-upload#KB-1628",
+        "mcp/mcp-layer-image-upload#KB-1629"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "URL raster",
+      "to": "layer image status processing (không url)",
+      "trigger": "upload-layer-image-tool",
+      "condition": "raster ≤ 128 MP, header đọc được",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1620"
+      ]
+    },
+    {
+      "from": "processing",
+      "to": "có thumbnail, url _large.webp, width/height",
+      "trigger": "job nền xong (poll view-layer-image-tool)",
+      "condition": "quan sát",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1621"
+      ]
+    },
+    {
+      "from": "upload presigned > 128 MP",
+      "to": "bị từ chối, upload bị xoá, không tạo layer image",
+      "trigger": "confirm-layer-image-upload-tool",
+      "condition": "raster > 128 MP hoặc header hỏng",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1626",
+        "mcp/mcp-layer-image-upload#KB-1627"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Theo Jira TIB-5709 comment 56698 (Dev, 2026-11-09), upload-layer-image-tool trả {id, name, status: \"processing\", note} cho raster, không còn url, thumbnail, width, height.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1620"
+      ]
+    },
+    {
+      "statement": "Theo Jira TIB-5709 comment 56698 (Dev, 2026-11-09), SVG qua upload-layer-image-tool vẫn trả {id, name, url, thumbnail, width, height} và thêm status \"ready\".",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1623"
+      ]
+    },
+    {
+      "statement": "Theo Jira TIB-5709 comment 56698 (Dev, 2026-11-09), upload-layer-image-tool và confirm-layer-image-upload-tool từ chối raster lớn hơn 128 MP hoặc có header không đọc được, trước khi layer image được tạo.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1626"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Note của response raster: \"Image variants are generated asynchronously. Poll view-layer-image-tool (or list-layer-images-tool) until the thumbnail is set, then use the returned url in layers.\"; view-layer-image-tool có thumbnail sau khoảng 14 giây, large ở artwork_max_width (TC-TIB-8770).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1621"
+      ]
+    },
+    {
+      "statement": "Description, server instructions và overview nói raster trả processing, poll view-layer-image-tool (TC-TIB-8782).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1622"
+      ]
+    },
+    {
+      "statement": "SVG ready cùng call trên URL tool; confirm tool với SVG trả ready, 'Nothing to poll.' (TC-TIB-8771, 8787).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1624"
+      ]
+    },
+    {
+      "statement": "Queue và inline (layer_width = artwork_width) cho cùng kích thước, large, thumbnail, master private (TC-TIB-8781).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1625"
+      ]
+    },
+    {
+      "statement": "Confirm batch: file over-cap failed, file hợp lệ processing rồi ready; created_count 1, failed_count 1 (TC-TIB-8774).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1627"
+      ]
+    },
+    {
+      "statement": "16000x8000 được nhận và ready; 16001x8000 bị từ chối (TC-TIB-8779).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1628"
+      ]
+    }
+  ],
+  "observed_validations": [
+    {
+      "input": "upload-layer-image-tool với PNG/JPEG 12000x12000",
+      "response_status": "tool error",
+      "message_verbatim": "The image is 12000x12000 px (144 MP), over the 128 MP limit. Resize it to at most 128 megapixels and upload again.",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1627"
+      ]
+    },
+    {
+      "input": "confirm-layer-image-upload-tool với PNG 12000x12000",
+      "response_status": "tool error",
+      "message_verbatim": "The image is 12000x12000 px (144 MP), over the 128 MP limit. Resize it to at most 128 megapixels and upload again. The upload has been removed.",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1627"
+      ]
+    },
+    {
+      "input": "confirm lại temporary_file_id đã bị từ chối",
+      "response_status": "tool error",
+      "message_verbatim": "Upload not found or expired. Mint a new one with create-layer-image-upload-tool.",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1627"
+      ]
+    },
+    {
+      "input": "upload-layer-image-tool với PNG 16001x8000",
+      "response_status": "tool error",
+      "message_verbatim": "The image is 16001x8000 px (128.01 MP), over the 128 MP limit. Resize it to at most 128 megapixels and upload again.",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1628"
+      ]
+    },
+    {
+      "input": "PNG cắt còn 20/24 byte qua URL tool (confirm tool thêm ' The upload has been removed.')",
+      "response_status": "tool error",
+      "message_verbatim": "The image's pixel size could not be read from its header; the file may be corrupt or truncated. Re-export it as PNG, JPEG, GIF or WebP and upload again.",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1629"
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "role": "merchant-owner (token MCP)",
+      "capability": "upload layer image qua tool MCP",
+      "observed": true,
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1621"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [],
+    "storefront": [],
+    "api": [
+      {
+        "item": "MCP tools: upload-layer-image-tool, create-layer-image-upload-tool, confirm-layer-image-upload-tool, view-layer-image-tool",
+        "kb_refs": [
+          "mcp/mcp-layer-image-upload#KB-1620",
+          "mcp/mcp-layer-image-upload#KB-1626",
+          "mcp/mcp-layer-image-upload#KB-1621"
+        ]
+      },
+      {
+        "item": "MCP initialize instructions, tools/list description, get-layer-schema-tool overview",
+        "kb_refs": [
+          "mcp/mcp-layer-image-upload#KB-1622"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "layer image: status processing → url _large.webp, thumbnail, width/height; master private",
+        "kb_refs": [
+          "mcp/mcp-layer-image-upload#KB-1621",
+          "mcp/mcp-layer-image-upload#KB-1625"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "description": "Kết nối và token MCP thuộc mcp/mcp-client-connection (endpoint, Bearer, mcp:access).",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1620"
+      ]
+    },
+    {
+      "description": "Layer image tạo qua MCP nằm trong cùng thư viện image-library; đường inline portal /file để so sánh ở image-library KB-069. Ranh giới cap theo open-api KB-057.",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1625",
+        "image-library/image-layer-library#KB-069",
+        "open-api/open-api-asset-upload#KB-057"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "description": "Client MCP cũ dùng url ngay sau upload-layer-image-tool nay nhận processing không có url; phải poll. Ảnh > 128 MP trước đây được nhận nay bị từ chối.",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1620",
+        "mcp/mcp-layer-image-upload#KB-1626"
+      ]
+    },
+    {
+      "description": "Phần lớn hành vi chỉ có một lượt quan sát không ghi build; explorer chưa có token MCP đã xác minh nên chưa tự chạy lại được (OQ-mcp-001). Production chưa verify.",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1621",
+        "mcp/mcp-layer-image-upload#KB-1627"
+      ]
+    }
+  ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-11-13",
+    "source_observed_on": "2026-11-09"
+  },
+  "unknown_areas": [
+    {
+      "question": "Note poll, large ở artwork_max_width và thời gian ready (KB-1621) có phải expected? Queue make-previewable-images không quan sát được.",
+      "why_it_matters": "KB-1621 OBSERVED_CURRENT/LOW; CHK-002 BASELINE.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1621"
+      ],
+      "oq_id": "OQ-mcp-011"
+    },
+    {
+      "question": "Nội dung bước poll trong description, server instructions, overview (KB-1622) là contract?",
+      "why_it_matters": "KB-1622 OBSERVED_CURRENT/LOW; CHK-003 BASELINE.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1622"
+      ],
+      "oq_id": "OQ-mcp-012"
+    },
+    {
+      "question": "SVG không bị kiểm pixel trên URL tool và confirm tool; confirm tool với SVG trả ready (KB-1624)?",
+      "why_it_matters": "KB-1624 OBSERVED_CURRENT/LOW; CHK-005 BASELINE.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1624"
+      ],
+      "oq_id": "OQ-mcp-013"
+    },
+    {
+      "question": "Parity queue vs inline (KB-1625) ở điều kiện layer_width = artwork_width do QA chọn — Dev muốn so ở điều kiện nào?",
+      "why_it_matters": "KB-1625 OBSERVED_CURRENT/LOW; CHK-006 BASELINE.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1625"
+      ],
+      "oq_id": "OQ-mcp-014"
+    },
+    {
+      "question": "Message cap, ' The upload has been removed.', message confirm lại và hành vi batch (KB-1627) là expected?",
+      "why_it_matters": "KB-1627 OBSERVED_CURRENT/LOW; CHK-009 BASELINE.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1627"
+      ],
+      "oq_id": "OQ-mcp-015"
+    },
+    {
+      "question": "Ranh giới 128 MP qua tool MCP (KB-1628) một lượt không build; confirm tool chưa chạy ranh giới.",
+      "why_it_matters": "KB-1628 OBSERVED_CURRENT/LOW; CHK-010 BASELINE.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1628"
+      ],
+      "oq_id": "OQ-mcp-016"
+    },
+    {
+      "question": "Message header hỏng trên URL tool và confirm tool (KB-1629) là expected?",
+      "why_it_matters": "KB-1629 OBSERVED_CURRENT/LOW; CHK-012 BASELINE.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1629"
+      ],
+      "oq_id": "OQ-mcp-017"
+    },
+    {
+      "question": "Chưa chạy: production, token MCP của account explore (OQ-mcp-001), list-layer-images-tool và create-layer-image-upload-tool ngoài test case.",
+      "why_it_matters": "Check cần token MCP hợp lệ; production verify NOT-RUN.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1620",
+        "mcp/mcp-layer-image-upload#KB-1626"
+      ],
+      "oq_id": "OQ-mcp-018"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-152"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-02-mcp-layer-image-upload",
+      "layer": "api",
+      "role": "merchant-owner (token MCP)",
+      "state": "raster dưới cap qua URL tool → processing → ready",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1620",
+        "mcp/mcp-layer-image-upload#KB-1621"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-mcp-layer-image-upload",
+      "layer": "api",
+      "role": "merchant-owner (token MCP)",
+      "state": "SVG qua URL tool và confirm tool",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1623",
+        "mcp/mcp-layer-image-upload#KB-1624"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-mcp-layer-image-upload",
+      "layer": "api",
+      "role": "merchant-owner (token MCP)",
+      "state": "raster > 128 MP, header hỏng, ranh giới",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1626",
+        "mcp/mcp-layer-image-upload#KB-1627",
+        "mcp/mcp-layer-image-upload#KB-1628",
+        "mcp/mcp-layer-image-upload#KB-1629"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-mcp-layer-image-upload",
+      "layer": "api",
+      "role": "merchant-owner (token MCP)",
+      "state": "mọi trạng thái",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1626"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-mcp-layer-image-upload",
+      "layer": "api",
+      "role": "merchant-owner (token MCP)",
+      "state": "list-layer-images-tool, lỗi khác của create-layer-image-upload-tool",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from_feature_id": "FEAT-02-mcp-layer-image-upload",
+      "to_feature_id": "FEAT-01-mcp-client-connection",
+      "relationship": "depends_on: kết nối và token MCP",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1620"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-02-mcp-layer-image-upload",
+      "to_feature_id": "mcp/mcp-artwork-tools (FEAT-03)",
+      "relationship": "scope boundary: tool MCP lớp artwork thuộc feature kia",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1620"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-02-mcp-layer-image-upload",
+      "to_feature_id": "image-library/image-layer-library",
+      "relationship": "cùng thư viện layer image; đường upload portal",
+      "kb_refs": [
+        "mcp/mcp-layer-image-upload#KB-1625"
+      ]
+    }
+  ]
+}

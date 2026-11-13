@@ -1363,6 +1363,10 @@
       "surface": "open-api",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-132"
+    },
     "tags": [
       "spec-hub:open-api-rate",
       "spec-hub:api-tokens-asset-limits",
@@ -1387,10 +1391,6 @@
       "owner_role": "code (spec-hub reads teeinblue-api source)",
       "recorded_on": "2026-11-11",
       "locator": "spec-hub mcp__spec-hub__ask log_id=144, 152 (re-ask log_id=203), rule id api-tokens-asset-limits (feature api-tokens) và open-api-rate (feature open-api)"
-    },
-    "last_updated": {
-      "date": "2026-11-11",
-      "ccr_ref": "CBS-132"
     }
   },
   {
@@ -1404,6 +1404,10 @@
       "role": "merchant-owner",
       "surface": "unspecified",
       "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-132"
     },
     "tags": [
       "spec-hub:api-tokens-see-limits",
@@ -1421,10 +1425,231 @@
       "owner_role": "code (spec-hub reads teeinblue-api source)",
       "recorded_on": "2026-11-11",
       "locator": "spec-hub mcp__spec-hub__ask log_id=144 (re-ask log_id=203), rule id api-tokens-see-limits (feature api-tokens)"
+    }
+  },
+  {
+    "kb_id": "KB-055",
+    "topic": "POST /layer-images từ chối raster trên 128 MP hoặc header không đọc được, trước khi tạo layer image",
+    "statement": "Theo Jira TIB-5709 comment 56698 Solution (Dev, 2026-11-09), đường upload layer image của Open API (POST /openapi/v1/layer-images với upload_id hoặc url) từ chối ảnh raster lớn hơn temporary_file_max_megapixel (mặc định 128 MP) hoặc có header không đọc được kích thước, trước khi layer image được tạo. Đường upload của portal: xem image-library KB-065, KB-069. Nhánh file của POST /layer-images không có nguồn hay quan sát. Message và status quan sát ở KB-056, KB-058; ranh giới ở KB-057.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "open-api",
+      "brand": null
+    },
+    "tags": [
+      "upload",
+      "pixel-cap",
+      "layer-image",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "open-api/open-api-asset-upload#KB-056",
+      "open-api/open-api-asset-upload#KB-057",
+      "open-api/open-api-asset-upload#KB-058",
+      "open-api/open-api-asset-upload#KB-047",
+      "open-api/open-api-asset-upload#KB-048",
+      "mcp/mcp-layer-image-upload#KB-1626"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5709 comment 56698 Solution, dòng Change (Dev, 2026-11-09)",
+      "authored_on": "2026-11-09",
+      "derivation": "prose"
     },
     "last_updated": {
-      "date": "2026-11-11",
-      "ccr_ref": "CBS-132"
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  },
+  {
+    "kb_id": "KB-056",
+    "topic": "Quan sát: 422 cap 128 MP trên POST /layer-images (url, upload_id), upload_id bị từ chối không dùng lại được",
+    "statement": "Khi gọi POST /openapi/v1/layer-images với url hoặc với upload_id của PNG 12000x12000 (144 MP) ở merchant-owner/staging (Testlane TC-TIB-8775, TC-TIB-8776 PASS 2026-11-09, build không ghi), quan sát thấy response 422 với message \"The image is 12000x12000 px (144 MP), over the 128 MP limit. Resize it to at most 128 megapixels and upload again.\" dưới errors.url hoặc errors.upload_id, và số layer image không đổi. Gọi lại cùng upload_id trả 422 \"The upload was not found or has expired. Create a new one with POST /uploads.\". Một lượt chạy; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "open-api",
+      "brand": null
+    },
+    "tags": [
+      "upload",
+      "pixel-cap",
+      "observed",
+      "single-sample",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "open-api/open-api-asset-upload#KB-055",
+      "open-api/open-api-asset-upload#KB-041",
+      "open-api/open-api-asset-upload#KB-048"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  },
+  {
+    "kb_id": "KB-057",
+    "topic": "Cap pixel là 'lớn hơn': ảnh bằng hoặc dưới 128 MP không bị từ chối",
+    "statement": "Theo Jira TIB-5709 comment 56698 Solution mục api.1 (Dev, 2026-11-09), bước kiểm pixel dùng chung của upload layer image không trả lỗi khi ảnh bằng hoặc dưới cap, nên chỉ ảnh lớn hơn 128 MP (128.000.000 px) bị từ chối. Ranh giới này chưa được chạy trên Open API; quan sát ranh giới qua tool MCP ở mcp/mcp-layer-image-upload KB-1628.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "open-api",
+      "brand": null
+    },
+    "tags": [
+      "upload",
+      "pixel-cap",
+      "boundary",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "open-api/open-api-asset-upload#KB-055",
+      "mcp/mcp-layer-image-upload#KB-1628"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5709 comment 56698 Solution mục api.1 Header cap (Dev, 2026-11-09)",
+      "authored_on": "2026-11-09",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  },
+  {
+    "kb_id": "KB-058",
+    "topic": "Quan sát: upload_id với PNG cắt cụt header bị 422 message không đọc được kích thước",
+    "statement": "Khi PUT một PNG bị cắt còn 20 byte hoặc 24 byte lên upload_url rồi gọi POST /openapi/v1/layer-images với upload_id ở merchant-owner/staging (Testlane TC-TIB-8780 PASS 2026-11-09, build không ghi), quan sát thấy response 422 với errors.upload_id \"The image's pixel size could not be read from its header; the file may be corrupt or truncated. Re-export it as PNG, JPEG, GIF or WebP and upload again.\" và không tạo layer image. Nhánh url với file hỏng chưa chạy trên Open API. Một lượt chạy; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "open-api",
+      "brand": null
+    },
+    "tags": [
+      "upload",
+      "pixel-cap",
+      "corrupt-header",
+      "observed",
+      "single-sample",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "open-api/open-api-asset-upload#KB-055"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  },
+  {
+    "kb_id": "KB-059",
+    "topic": "Message presign khi filewidth x fileheight vượt cap ghi theo megapixel",
+    "statement": "Theo Jira TIB-5709 comment 56698 Solution mục Presign message (Dev, 2026-11-09), khi presign có filewidth x fileheight vượt cap, message lỗi là \"file is too large to upload, maximum 128 megapixels.\" thay cho số pixel (trước đây \"maximum 128000000 megapixels\"); bước kiểm không đổi. POST /openapi/v1/uploads dùng chung request này. Status và field lỗi quan sát ở KB-060.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "open-api",
+      "brand": null
+    },
+    "tags": [
+      "upload",
+      "presign",
+      "pixel-cap",
+      "message",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "open-api/open-api-asset-upload#KB-060",
+      "open-api/open-api-asset-upload#KB-030",
+      "open-api/open-api-asset-upload#KB-031"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5709 comment 56698 Solution mục Presign message (Dev, 2026-11-09)",
+      "authored_on": "2026-11-09",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  },
+  {
+    "kb_id": "KB-060",
+    "topic": "Quan sát: POST /uploads với filewidth/fileheight 12000 trả 422 trên hai field",
+    "statement": "Khi gọi POST /openapi/v1/uploads với filewidth 12000 và fileheight 12000 ở merchant-owner/staging (Testlane TC-TIB-8783 PASS 2026-11-09, build không ghi), quan sát thấy response 422, errors.filewidth và errors.fileheight đều là \"file is too large to upload, maximum 128 megapixels.\", không còn chuỗi 128000000. Một lượt chạy; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "open-api",
+      "brand": null
+    },
+    "tags": [
+      "upload",
+      "presign",
+      "observed",
+      "single-sample",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "open-api/open-api-asset-upload#KB-059"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
+    }
+  },
+  {
+    "kb_id": "KB-061",
+    "topic": "Quan sát: raster dưới cap qua url / upload_id vẫn 201 processing rồi ready",
+    "statement": "Khi gọi POST /openapi/v1/layer-images với url của một raster 1000x667 và với upload_id của PNG 200x200 ở merchant-owner/staging (Testlane TC-TIB-8786 PASS 2026-11-09, build không ghi), quan sát thấy response 201 status processing với url null, rồi item ready với url kết thúc _large.webp và thumbnail_url có giá trị, như trước thay đổi TIB-5709. Một lượt chạy; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "open-api",
+      "brand": null
+    },
+    "tags": [
+      "upload",
+      "regression",
+      "observed",
+      "single-sample",
+      "TIB-5709",
+      "ccr:CBS-152"
+    ],
+    "related_kb_ids": [
+      "open-api/open-api-asset-upload#KB-037",
+      "open-api/open-api-asset-upload#KB-038",
+      "open-api/open-api-asset-upload#KB-055"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-152"
     }
   }
 ]

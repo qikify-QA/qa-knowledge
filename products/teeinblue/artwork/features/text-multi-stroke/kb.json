@@ -471,6 +471,10 @@
       "surface": "api (PNG order design) · portal (Artwork Editor preview)",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
     "tags": [
       "paragraph",
       "shadow",
@@ -482,10 +486,139 @@
     ],
     "related_kb_ids": [
       "artwork/text-multi-stroke#KB-133"
+    ]
+  },
+  {
+    "kb_id": "KB-1094",
+    "topic": "File design order (PNG, SVG) của curve / spiral / shape / warp text vẽ stroke theo cặp stroke_color / stroke_width, bỏ qua stroke_layers cũ, giống preview SDK",
+    "statement": "Theo Dev trên Jira TIB-5699 comment 56557 (Solution, Part 1 + doc correction, 2026-11-05), với layer curve text, spiral text, shape text và warp text (artwork schema 2), renderer đọc cặp legacy `stroke_color` / `stroke_width` và bỏ qua `stroke_layers` cũ nếu layer còn giữ, như preview của SDK; mọi transformer (curve, linked curve, spiral, shape, warp, linked warp) đi qua cùng getter. Mục Render parity của cùng comment: SDK đã đọc cặp này cho 4 loại (không đổi SDK), vectorize (SVG) vẽ theo payload. Vì vậy file design của order (PNG và SVG) vẽ stroke theo cặp đang đặt trong editor, khớp preview editor và preview storefront (Expectation của ticket: artwork, mockup preview và test design khớp nhau). Warp Text legacy schema 1 không đổi. Ngoại lệ Dev tự nêu ở mục Open questions của cùng comment: warp text bật stroke mà stroke_width rỗng hoặc 0 thì preview SDK không vẽ stroke, còn render api vẽ width mặc định 1 (hành vi có từ trước, Dev giữ nguyên, chưa chốt có tách ticket) — vế khớp preview không áp cho trường hợp này (OQ-artwork-567). Test case TC-TIB-8981, TC-TIB-8984 PASS staging 2026-11-10 (không ghi build) bổ trợ với layer mới đặt stroke. Production 2026-11-11 chỉ phần kiểm bằng máy pass (SVG design đúng màu / độ dày); ảnh PNG và preview chưa có người xem duyệt. Tình huống layer đã giữ sẵn `stroke_layers` cũ chỉ được Dev kiểm bằng unit test (\"Not for QA\"), QA chưa verify.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner + buyer",
+      "surface": "portal (Artwork Editor 2.0) · storefront preview (SDK) · api (render order design PNG/SVG)",
+      "brand": null
+    },
+    "tags": [
+      "curve-text",
+      "spiral-text",
+      "shape-text",
+      "warp-text",
+      "stroke",
+      "png-render",
+      "svg-render",
+      "TIB-5699"
+    ],
+    "related_kb_ids": [
+      "artwork/text-multi-stroke#KB-141",
+      "artwork/text-multi-stroke#KB-137",
+      "artwork/text-multi-stroke#KB-1095",
+      "artwork/layer-duplicate-link-copy#KB-1098"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5699 comment 56557 (Dev, Solution, Part 1 + doc correction), 2026-11-05",
+      "authored_on": "2026-11-05",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-149"
+    }
+  },
+  {
+    "kb_id": "KB-1095",
+    "topic": "Save artwork xoá stroke_layers khỏi layer curve / spiral / shape / warp text (kể cả vừa convert sang), giữ cặp stroke; Text và Paragraph giữ stroke_layers; không backfill",
+    "statement": "Theo Dev trên Jira TIB-5699 comment 56557 (Solution, Part 2 + doc correction, 2026-11-05), mỗi lần save artwork (hook `saving` của artwork, chỉ chạy khi `templates` thay đổi; gồm portal PUT/POST và mọi MCP write tool: update-artwork-layer-tool, create-artwork-tool, update-artwork-tool, bulk-update-artworks-tool, bulk-convert-artworks-tool), server xoá `stroke_layers` khỏi layer curve text, spiral text, shape text và warp text, kể cả layer vừa được convert sang một trong 4 loại này (\"converted to or saved as\"); cặp `stroke_color` / `stroke_width`, mọi key khác và các layer type khác (text, paragraph) giữ nguyên. Không backfill: row chưa được save lại thì giữ nguyên dữ liệu cũ. Test case TC-TIB-8983 (Text → Curve) và TC-TIB-8985 (Text → Warp) PASS staging 2026-11-10 (không ghi build) quan sát: convert Text đang có 2 lớp stroke sang Curve hoặc Warp, đặt stroke và Save thì layer lưu 1 stroke đúng giá trị editor, không còn `stroke_layers`, file PNG và SVG vẽ 1 stroke. Vế convert chỉ chạy staging; vế dữ liệu lưu có kiểm production 2026-11-11 (phần máy). Cùng chiều KB-137 (convert Paragraph → Curve / Warp), không thay KB-137.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (Artwork Editor 2.0 → Save, Convert to another layer) · api (PUT /api/artworks/{id}, MCP write tool)",
+      "brand": null
+    },
+    "tags": [
+      "stroke_layers",
+      "save",
+      "convert-layer",
+      "no-backfill",
+      "TIB-5699"
+    ],
+    "related_kb_ids": [
+      "artwork/text-multi-stroke#KB-137",
+      "artwork/text-multi-stroke#KB-141",
+      "artwork/text-multi-stroke#KB-143",
+      "artwork/text-multi-stroke#KB-1094",
+      "mcp/mcp-artwork-tools#KB-1099"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5699 comment 56557 (Dev, Solution, Part 2), 2026-11-05",
+      "authored_on": "2026-11-05",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-149"
+    }
+  },
+  {
+    "kb_id": "KB-1096",
+    "topic": "Regression sau TIB-5699: Text và Paragraph 2 lớp stroke vẫn render 2 vòng trong PNG / SVG và giữ 2 lớp sau Save, mở lại (quan sát test case)",
+    "statement": "Test case TC-TIB-8986 (PASS staging 2026-11-10, không ghi build; regression sau TIB-5699) quan sát thấy: layer Text và layer Paragraph mang 2 lớp stroke vẫn render đủ 2 vòng stroke trong file design PNG và SVG, trước và sau khi đổi text rồi Save; mở lại artwork thì popover Stroke của mỗi layer vẫn hiện stack 2 row và PUT /api/artworks/{id} vẫn gửi 2 entry `stroke_layers`. Expected của test case dựa trên comment 56557 (U3, Q4) và QA plan 56595 (D7) của Dev nhưng CCR chỉ nêu tên, không trích nguyên văn. Một test case, chỉ staging. Cùng chiều KB-143, KB-136, không thay. Đây là quan sát, chưa có nguồn xác nhận đủ chuẩn cho phần render.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner + buyer",
+      "surface": "portal (Artwork Editor 2.0) · api (PUT /api/artworks/{id}, render order design PNG/SVG)",
+      "brand": null
+    },
+    "tags": [
+      "text",
+      "paragraph",
+      "stroke_layers",
+      "regression",
+      "png-render",
+      "svg-render",
+      "TIB-5699"
+    ],
+    "related_kb_ids": [
+      "artwork/text-multi-stroke#KB-143",
+      "artwork/text-multi-stroke#KB-136",
+      "artwork/text-multi-stroke#KB-1095"
     ],
     "last_updated": {
-      "date": "2026-11-08",
-      "ccr_ref": "maintenance-2026-11-08"
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-149"
+    }
+  },
+  {
+    "kb_id": "KB-1097",
+    "topic": "Đổi stroke curve text nhiều lần, mỗi lần Save và render lại thì PNG theo stroke mới nhất của editor (quan sát test case)",
+    "statement": "Test case TC-TIB-8982 (PASS staging 2026-11-10, không ghi build) quan sát thấy: khi owner đổi stroke của layer curve text nhiều lần (tăng width, giảm width, đổi màu), Save và render lại sau mỗi lần thì mỗi PNG design theo stroke mới nhất của editor, không quay về giá trị cũ. QA plan 56595 của Dev (bước A2) có câu tương ứng nhưng CCR không trích nguyên văn. Chỉ kiểm curve text và PNG, chỉ staging. Đây là quan sát, chưa có nguồn xác nhận đủ chuẩn.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (Artwork Editor 2.0) · api (render PNG)",
+      "brand": null
+    },
+    "tags": [
+      "curve-text",
+      "stroke",
+      "png-render",
+      "TIB-5699"
+    ],
+    "related_kb_ids": [
+      "artwork/text-multi-stroke#KB-1094"
+    ],
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-149"
     }
   }
 ]

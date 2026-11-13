@@ -313,3 +313,57 @@
 ```json
 {"oq_id":"OQ-asset-category-055","type":"NEEDS_CONFIRMATION","feature_id":"asset-category-item-management","summary":"[CBS-135, KB-642, spec-hub rule api-tokens-asset-limits] Spec-hub ghi mỗi account tạo tối đa 1.000 clipart category, 4.000 clipart và 1.000 library image trong cửa sổ 24 giờ, dù tạo từ portal, API hay bulk upload. Dev xác nhận ngưỡng mặc định này và việc bulk upload zip ăn vào cùng bộ đếm? Cách tính cửa sổ vẫn thuộc OQ-asset-category-031; route nào ăn bộ đếm clipart xem thêm OQ-asset-category-038. Người trả lời: Dev."}
 ```
+
+## OQ-asset-category-056 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-asset-category-056", "type": "OPEN_ISSUE", "feature_id": "asset-category-item-management", "summary": "[CBS-141, KB-643, KB-644, KB-645, KB-646] Hành vi chuột phải lưu ảnh thumbnail clipart và luồng hover/click trái đổi thumbnail thuộc TIB-5676, CCR khai chưa ship. Jira TIB-5676 đọc lại 2026-11-12 đã Done (resolution 2026-11-12, PR merged), nhưng mọi test case chạy 2026-11-11 trên bản trước khi PR merge, build hash không rõ. Cần một CCR khai SHIPPED kèm lượt chạy trên bản đã ship (ghi build) để KB-643, KB-645 lên expected; CHK-028, CHK-030 chưa có oracle. Lựa chọn cho operator: (A) giữ PROPOSED tới CCR sau; (B) QA xác nhận bản đã ship rồi gửi lại CCR. Người trả lời: QA; operator."}
+```
+
+## OQ-asset-category-057 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-asset-category-057", "type": "NEEDS_CONFIRMATION", "feature_id": "asset-category-item-management", "summary": "[CBS-141, KB-644] \"Save image as...\" trên thumbnail clipart nên lưu file thumbnail đang hiển thị (webp 100x100 do hệ thống sinh) hay ảnh clipart gốc? Ticket TIB-5676 nói \"saves the correct image\" nhưng không nói ảnh nào; QA đã hỏi PO (Q1, blocker) và chưa có trả lời. CHK-028 chỉ ghi file lưu ra, không phán đúng sai. Người trả lời: PO."}
+```
+
+## OQ-asset-category-058 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-asset-category-058", "type": "NEEDS_CONFIRMATION", "feature_id": "asset-category-item-management", "summary": "[CBS-141, KB-643] Mọi PASS về chuột phải thumbnail clipart là bằng chứng gián tiếp (elementFromPoint trúng ảnh, contextmenu không bị preventDefault): chưa thấy menu native \"Save image as...\" và chưa mở file đã lưu trên trình duyệt nào; profile macOS là giả lập (engine chạy trên Windows, user agent Mac). Dev cũng ghi thao tác chuột phải thật cần QA test tay. Cần một lượt chạy tay trên Chrome, Edge, Firefox (Windows và Mac thật). Người trả lời: QA."}
+```
+
+## OQ-asset-category-059 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-asset-category-059", "type": "OPEN_ISSUE", "feature_id": "asset-category-item-management", "summary": "[CBS-141, KB-643, KB-646] Safari/macOS chưa kết luận (TC-TIB-9004 blocked): trên WebKit bản Windows giả lập Safari, chuột phải thumbnail clipart phát thêm click lên input file của label và mở hộp chọn file (đối chứng trên trang HTML trung lập: hành vi engine với mọi label gắn input file); Control-click không giả lập được. Nếu Safari thật trên macOS cũng vậy, user Safari chuột phải sẽ bị bật hộp chọn file. Cần kiểm trên Safari/Mac thật (CHK-029); nếu xảy ra thì Dev xác nhận có phải lỗi. Người trả lời: QA; Dev."}
+```
+
+## OQ-asset-category-060 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-asset-category-060", "type": "NEEDS_CONFIRMATION", "feature_id": "asset-category-item-management", "summary": "[CBS-141, KB-646] Chuột phải thumbnail clipart rồi Esc không mở hộp chọn file, không có request ghi, thumbnail giữ nguyên sau reload (test case TC-TIB-9009, Chrome/Windows và Firefox giả lập macOS) có phải expected không? Test case không có căn cứ expected; CHK-031 chỉ BASELINE. Người trả lời: Dev/PO."}
+```
+
+## OQ-asset-category-061 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-asset-category-061", "type": "NEEDS_CONFIRMATION", "feature_id": "asset-category-crud", "kb_ids": ["KB-650"], "check_ids": ["CHK-020"], "owner": "Dev", "summary": "[CBS-163] Quan sát KB-650 (TC-TIB-8591, một lượt staging): đổi/xoá thumbnail clipart category trả 12 key, clone 201 trả category bản sao, không relation, không user_id. Dev xác nhận 12 key này đúng là ClipartCategory::$visible (vế U10 không được trích trong CCR)?"}
+```
+
+## OQ-asset-category-062 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-asset-category-062", "type": "NEEDS_CONFIRMATION", "feature_id": "asset-category-crud", "kb_ids": ["KB-650"], "check_ids": [], "owner": "Dev", "summary": "[CBS-163] Response POST /api/clipart-categories/{id}/clone không có key thumbnail, trong khi response đổi/xoá thumbnail có (TC-TIB-8591, run-03 cũng vậy). Đây là expected hay khác biệt cần sửa?"}
+```
+
+## OQ-asset-category-063 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-asset-category-063", "type": "NEEDS_CONFIRMATION", "feature_id": "asset-category-item-management", "kb_ids": ["KB-648"], "check_ids": ["CHK-033"], "owner": "Dev", "summary": "[CBS-163] Quan sát KB-648 (TC-TIB-8590, một lượt staging): POST /api/cliparts/font, /svg, /{id}/thumbnail, PUT /api/cliparts/{id}, /by-temporary-file đủ 5 key, không category, không user_id; by-temporary-file có url/thumbnail sau xử lý nền. Dev xác nhận đây là expected? POST /api/cliparts (item không file) chưa chạy."}
+```
+
+## OQ-asset-category-064 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-asset-category-064", "type": "NEEDS_CONFIRMATION", "feature_id": "asset-category-item-management", "kb_ids": ["KB-015", "KB-031", "KB-647"], "check_ids": [], "owner": "Dev", "summary": "[CBS-163] Item cũ KB-015 (response SVG kèm name/url/thumbnail/id) và KB-031 (response font {name, url, thumbnail, id}) ghi 4 key, không có color; KB-647 nay nói mọi request ghi clipart trả 5 key gồm color. Dev xác nhận phần shape response trong KB-015, KB-031 đã lỗi thời sau TIB-5689?"}
+```

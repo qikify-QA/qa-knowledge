@@ -639,6 +639,22 @@
         "sdk/storefront-buyer-facing#KB-510",
         "sdk/storefront-buyer-facing#KB-512"
       ]
+    },
+    {
+      "name": "[CBS-163] Response của các action upload public /merchant/{platform}/ chỉ trả id, url, original (TIB-5689)",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-572): 6 action upload public trả đúng id, url, original; 201 khi tạo, 200 khi apply. OBSERVED_CURRENT/LOW (KB-573): không wrapper data, không key nhạy cảm (user_id, instance_id, ip, geo_location, user_agent, master, thumbnail, effects). imageFilterStatus và reply async 202 ngoài contract (OPEN_ISSUE).",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-572",
+        "sdk/storefront-buyer-facing#KB-573"
+      ]
+    },
+    {
+      "name": "[CBS-163] original của upload được SDK lưu thành customization <field>-origin, đi tới cart",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-574): storage key bị bỏ là master, thumbnail; original giữ vì SDK lưu thành <field>-origin. OBSERVED_CURRENT/LOW (KB-575): các loại upload hiện trên preview, cart line mang ảnh và property origin.",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-574",
+        "sdk/storefront-buyer-facing#KB-575"
+      ]
     }
   ],
   "state_transitions": [
@@ -1336,6 +1352,28 @@
       "kb_refs": [
         "sdk/storefront-buyer-facing#KB-511"
       ]
+    },
+    {
+      "rule": "[CBS-163] Response của photo-upload, photo-base64-upload, vector-upload, pdf-upload, customer-uploads/{id}/apply-effects, customer-uploads/{id}/image-filter-effects là đúng id, url, original; status 201 khi tạo, 200 khi apply.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, buyer/guest, storefront public API /merchant/{platform}/ + storefront UI",
+      "caveats": "Một citation; production verify NOT-RUN ở mức task. imageFilterStatus và reply async 202 ngoài rule này.",
+      "confirmation_ref": "Jira TIB-5689 comment 56448 Solution, Pinned readings AC1 (Dev, 2026-11-04)",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-572"
+      ]
+    },
+    {
+      "rule": "[CBS-163] Storage key bị bỏ khỏi response upload là master và thumbnail; original được giữ vì SDK đọc nó thành originPath và lưu làm giá trị customization <field>-origin mà populate và derive dùng.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, buyer/guest, storefront public API /merchant/{platform}/ + storefront UI",
+      "caveats": "Một citation; production verify NOT-RUN ở mức task.",
+      "confirmation_ref": "Jira TIB-5689 comment 56448 Solution, Pinned readings AC1 (Dev, 2026-11-04)",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-574"
+      ]
     }
   ],
   "observed_behavior": [
@@ -1771,6 +1809,26 @@
       "observed_count": 5,
       "kb_refs": [
         "sdk/storefront-buyer-facing#KB-512"
+      ]
+    },
+    {
+      "statement": "[CBS-163] Gọi trực tiếp 6 route upload public: body đúng id, url, original, không wrapper data, không user_id, instance_id, ip, geo_location, user_agent, master, thumbnail, effects; 201 cho 4 route upload, 200 cho apply-effects, image-filter-effects (TC-TIB-8577..8579, build không ghi).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging, buyer/guest, storefront public API /merchant/{platform}/ + storefront UI",
+      "observed_count": 1,
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-573"
+      ]
+    },
+    {
+      "statement": "[CBS-163] Upload không effect, crop, remove background, AI image filter, vector, PDF hiện trên preview; add to cart thì cart line mang ảnh upload và property origin của field (TC-TIB-8580..8583, build không ghi).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging, buyer/guest, storefront public API /merchant/{platform}/ + storefront UI",
+      "observed_count": 1,
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-575"
       ]
     }
   ],
@@ -2662,6 +2720,15 @@
         "sdk/storefront-buyer-facing#KB-506",
         "sdk/storefront-buyer-facing#KB-019"
       ]
+    },
+    {
+      "description": "[CBS-163] Response upload public từng lộ key nhạy cảm (user_id, ip, geo_location...); nay chỉ trả id, url, original. Nếu SDK còn đọc master/thumbnail từ response thì preview/cart có thể hỏng. imageFilterStatus và reply async 202 vẫn gửi master, effects (ngoài contract).",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-572",
+        "sdk/storefront-buyer-facing#KB-573",
+        "sdk/storefront-buyer-facing#KB-574",
+        "sdk/storefront-buyer-facing#KB-575"
+      ]
     }
   ],
   "freshness": {
@@ -3208,11 +3275,42 @@
         7
       ],
       "oq_id": "OQ-sdk-185"
+    },
+    {
+      "question": "[CBS-163] 6 route upload public: không wrapper data, không 8 key nhạy cảm, 201/200 (KB-573) — Dev xác nhận là expected?",
+      "why_it_matters": "KB-573 là OBSERVED_CURRENT/LOW; Dev chỉ nói đúng id, url, original và status giữ nguyên (KB-572).",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-573"
+      ],
+      "draft_id": "OQ-sdk-258",
+      "oq_id": "OQ-sdk-258"
+    },
+    {
+      "question": "[CBS-163] Các loại upload hiện trên preview và cart line mang ảnh upload cùng property origin (KB-575) — Dev xác nhận là expected?",
+      "why_it_matters": "KB-575 là OBSERVED_CURRENT/LOW, không ghi build; production chỉ một lượt smoke.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-575"
+      ],
+      "draft_id": "OQ-sdk-259",
+      "oq_id": "OQ-sdk-259"
+    },
+    {
+      "question": "[CBS-163] imageFilterStatus và các reply async 202 tới storefront vẫn gửi original, master, effects (Dev: follow-up issue, ngoài contract này) — follow-up nào, expected là gì?",
+      "why_it_matters": "Không có expected cho các reply này; không dùng KB-572 làm oracle cho chúng.",
+      "suggested_oq_type": "OPEN_ISSUE",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-572",
+        "sdk/storefront-buyer-facing#KB-574"
+      ],
+      "draft_id": "OQ-sdk-260",
+      "oq_id": "OQ-sdk-260"
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   },
   "environment_differences": [
     {
@@ -4264,6 +4362,45 @@
         "sdk/storefront-buyer-facing#KB-511"
       ],
       "basis": "TC-01, TC-03 tạm dừng; TC-16 chưa có kết quả"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "api",
+      "role": "buyer/guest",
+      "state": "[CBS-163] gọi trực tiếp 6 route upload public, key response và status",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-572",
+        "sdk/storefront-buyer-facing#KB-573"
+      ],
+      "basis": "TC-TIB-8577..8579 PASS staging"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "buyer/guest",
+      "state": "[CBS-163] upload các loại → preview → add to cart, property origin",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-574",
+        "sdk/storefront-buyer-facing#KB-575"
+      ],
+      "basis": "TC-TIB-8580..8583 PASS staging"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "api",
+      "role": "buyer/guest",
+      "state": "[CBS-163] contract response upload; production chưa verify; imageFilterStatus / reply async 202",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-572",
+        "sdk/storefront-buyer-facing#KB-574"
+      ],
+      "basis": "Production verify NOT-RUN ở mức task; chỉ một lượt quan sát production 2026-11-11"
     }
   ],
   "profile_conflicts": [

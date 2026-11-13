@@ -1,0 +1,488 @@
+{
+  "feature_id": "FEAT-01-view-current-subscription-plan",
+  "feature_key": "view-current-subscription-plan",
+  "name": "Xem plan subscription hiện tại",
+  "user_goal": "Merchant-owner xem plan và trạng thái subscription hiện tại của account (Blue) từ sidebar, danh sách Subscriptions, Subscription Details, Home và Usages. Quan sát chỉ trên một account Blue TEST ở store dev, chưa có nguồn xác nhận hành vi đúng.",
+  "user_goal_kb_refs": [
+    "KB-1201",
+    "KB-1202",
+    "KB-1204",
+    "KB-1206"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner",
+      "permission_observed": "Role owner truy cập được /subscriptions, /subscriptions/shopify-tier, /platform-usages/<platform> và thấy control Cancel subscription, Change Default billing store (không bấm). Role khác chưa thử.",
+      "kb_refs": [
+        "KB-1227"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Sidebar badge plan dưới tên store (link /subscriptions)",
+      "precondition": "Đã login portal bằng account owner có Blue TEST plan.",
+      "kb_refs": [
+        "KB-1201"
+      ]
+    },
+    {
+      "path": "Sidebar Organization > Subscriptions (/subscriptions)",
+      "precondition": "Như trên. Nhóm Organization đang thu gọn ở Home.",
+      "kb_refs": [
+        "KB-1201",
+        "KB-1202"
+      ]
+    },
+    {
+      "path": "/subscriptions bấm Manage -> /subscriptions/shopify-tier",
+      "precondition": "Account có dòng Shopify trong bảng Subscriptions.",
+      "kb_refs": [
+        "KB-1204"
+      ]
+    },
+    {
+      "path": "Home (/) và /platform-usages/shopify (card Plan)",
+      "precondition": "Đã login, account có Blue TEST plan.",
+      "kb_refs": [
+        "KB-1206"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Vào Subscriptions từ badge plan ở sidebar",
+      "description": "Badge hiện \"Blue (Test)\", là link tới /subscriptions, tooltip \"Manage Pricing & Subscription\". Một lần hover.",
+      "kb_refs": [
+        "KB-1201"
+      ]
+    },
+    {
+      "name": "Xem danh sách Subscriptions theo nền tảng",
+      "description": "Bảng một dòng Shopify (STORES, PRICE, NEXT BILL DATE, STATUS, ACTION), dòng chỉ hiện cho key khác null của all-subscriptions. Cột PRICE hiện USD 0.00 trong khi API trả 49 (conflict chưa giải).",
+      "kb_refs": [
+        "KB-1202",
+        "KB-1203",
+        "KB-1209"
+      ]
+    },
+    {
+      "name": "Xem Subscription Details của plan Blue",
+      "description": "Manage đi tới /subscriptions/shopify-tier; khối Store với badge Default và menu Change Default billing store (không bấm); banner TEST plan.",
+      "kb_refs": [
+        "KB-1204",
+        "KB-1205",
+        "KB-1207"
+      ]
+    },
+    {
+      "name": "Xem card Plan trên Home, Subscription Details và Usages",
+      "description": "Cả ba trang hiện card Plan Blue(Test), chu kỳ hiện tại và khối usage; link View usages và control Cancel subscription (không bấm) chỉ ở Subscription Details.",
+      "kb_refs": [
+        "KB-1206"
+      ]
+    },
+    {
+      "name": "Dữ liệu plan trả về từ API",
+      "description": "GET /api/user (has_new_pricing, tier_subscription, cycle) và GET /api/user/all-subscriptions; trial_days không nhất quán giữa các endpoint (conflict chưa giải). Xem trang không phát sinh request ghi billing.",
+      "kb_refs": [
+        "KB-1208",
+        "KB-1209",
+        "KB-1215",
+        "KB-1226"
+      ]
+    }
+  ],
+  "state_transitions": [],
+  "confirmed_rules": [],
+  "observed_behavior": [
+    {
+      "statement": "Khi hover badge plan dưới tên store ở sidebar portal (merchant-owner/staging, account Blue TEST), quan sát thấy badge hiện chữ \"Blue (Test)\", là link tới /subscriptions và hiện tooltip \"Manage Pricing & Subscription\". Nhóm menu Organization chứa \"Subscriptions\" (/subscriptions), \"Integrations\", \"Staff\"; ở trang Home nhóm này đang thu gọn. Một lần hover; chữ của badge ở plan khác chưa quan sát.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1201"
+      ]
+    },
+    {
+      "statement": "Khi mở /subscriptions (Organization > Subscriptions) ở merchant-owner/staging trên account Blue TEST, quan sát thấy heading \"Subscriptions\", mô tả \"Manage your subscriptions across platforms\", bảng cột PLATFORM, STORES, PRICE, NEXT BILL DATE, STATUS, ACTION với đúng một dòng Shopify: STORES \"2 stores\", NEXT BILL DATE \"N/A\", STATUS \"Active\", ACTION \"Manage\"; chân bảng \"Showing 1 to 1 of 1 entries\" và lựa chọn Show 20/50/100/250/500 entries. GET /api/user/all-subscriptions trả object có 7 key nền tảng (shopify, woocommerce, bigcommerce, shopbase, shopinblue, etsy, picanova), chỉ shopify khác null (subscription.type \"shopify\", status \"ACTIVE\", test true), và UI chỉ hiện dòng của key khác null đó. Một lần tải trang; chưa thấy bảng khi có nhiều nền tảng hoặc khi không có subscription.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1202"
+      ]
+    },
+    {
+      "statement": "Khi bấm \"Manage\" ở dòng Shopify trên /subscriptions (merchant-owner/staging, account Blue TEST), quan sát thấy điều hướng client-side tới /subscriptions/shopify-tier (không phải /subscriptions/shopify), heading \"Subscription Details\", breadcrumb Home / Subscriptions / Subscription Details; trang gọi GET /api/settings, GET /api/platforms/shopify/tier-plans, GET /api/user/shopify/tier-subscriptions. Một lần quan sát; đích của Manage ở account plan cũ chưa quan sát.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1204"
+      ]
+    },
+    {
+      "statement": "Khi mở /subscriptions/shopify-tier ở merchant-owner/staging trên account Blue TEST có 2 store, quan sát thấy khối \"Store:\" liệt kê 2 store, một store mang badge \"Default\", kèm chữ \"All charges are added to the Shopify Billings of the Default store\". Nút \"...\" mở menu có một mục \"Change Default billing store\" (không bấm, vì là ghi billing). Hành vi của mục này chưa quan sát.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1205"
+      ]
+    },
+    {
+      "statement": "Khi mở Home (/), /subscriptions/shopify-tier và /platform-usages/shopify ở merchant-owner/staging trên account Blue TEST, quan sát thấy cả ba trang hiện card Plan với \"Plan:\" \"Blue(Test)\", \"Current cycle (reset on <ngày>)\", \"Fees decrease as your monthly order volume increases.\" và khối usage. Chỉ card trên Subscription Details có thêm link \"View usages\" (/platform-usages/shopify) và control \"Cancel subscription\"; control này không phải thẻ <a>/<button> và không được bấm, nên chưa biết nó mở dialog hay thực thi ngay. Trên Home không có request tier-plans, dữ liệu card trùng với GET /api/user (tier_subscription, cycle).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1206"
+      ]
+    },
+    {
+      "statement": "Khi mở /subscriptions/shopify-tier ở merchant-owner/staging trên account Blue TEST chỉ có store dev, quan sát thấy hai banner: \"Test plan is limited to one development store.\" và \"You're following a TEST plan with no charge because Teeinblue is free for Development store.\" kèm dòng \"If your store transfers to a Shopify live plan, you will need to activate a plan to continue using.\" Trang Home chỉ hiện banner thứ hai. Chưa quan sát trang này ở store live hoặc subscription không phải test.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1207"
+      ]
+    },
+    {
+      "statement": "Khi tải trang portal ở merchant-owner/staging trên account Blue TEST, quan sát thấy GET /api/user trả has_new_pricing true, subscriptions [] (rỗng), boundless_instances_count 0, tier_subscription {display_name \"Blue\", price 49, status \"ACTIVE\", test true, type \"shopify\", tiers [{starting_from, unit_price}], tier_plan lồng bên trong} và cycle {unit_count, interval_days 30, reset_at, total_amount_usd}. Cùng một account và trạng thái ở 7 lần tải trang; chỉ là shape quan sát, không suy field bắt buộc hay enum. Giá trị trial_days lồng trong tier_plan nằm ở conflict CONF-SUB-001.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1208"
+      ]
+    },
+    {
+      "statement": "Khi mở /subscriptions ở merchant-owner/staging trên account Blue TEST, quan sát thấy GET /api/user/all-subscriptions trả shopify.shopify_subscription với status ACTIVE, interval EVERY_30_DAYS, price 49.0 USD, cappedAmount 9999.99 USD, balanceUsed 0.0, test true. Một sample.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1209"
+      ]
+    },
+    {
+      "statement": "Khi xem /subscriptions, /subscriptions/shopify-tier, Home, /platform-usages/<platform> và dùng calculator ở merchant-owner/staging trên account Blue TEST, quan sát thấy không có request ghi vào subscription/billing; request non-GET thấy được chỉ là POST /api/assistant/session-token (mỗi lần tải trang), POST /api/graphql (query đọc campaigns trên Home), POST /api/graphql/relay (query đọc usages) và request analytics. Control ghi billing (Cancel subscription, Change Default billing store, Current plan) không được bấm nên chưa có endpoint ghi nào được quan sát.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1226"
+      ]
+    },
+    {
+      "statement": "Khi đăng nhập role owner (merchant-owner/staging, account Blue TEST), quan sát thấy truy cập được /subscriptions, /subscriptions/shopify-tier và /platform-usages/<platform>, và thấy control \"Cancel subscription\" và \"Change Default billing store\" (không bấm). Role khác chưa được thử.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1227"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "statement": "Role owner truy cập được các trang subscription. Role khác chưa quan sát.",
+      "kb_refs": [
+        "KB-1227"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      {
+        "path": "/subscriptions",
+        "note": "Bảng Subscriptions theo nền tảng.",
+        "kb_refs": [
+          "KB-1202"
+        ]
+      },
+      {
+        "path": "/subscriptions/shopify-tier",
+        "note": "Subscription Details.",
+        "kb_refs": [
+          "KB-1204",
+          "KB-1205",
+          "KB-1207"
+        ]
+      },
+      {
+        "path": "/ và /platform-usages/shopify",
+        "note": "Card Plan.",
+        "kb_refs": [
+          "KB-1206"
+        ]
+      },
+      {
+        "path": "Sidebar badge plan",
+        "note": "Link tới /subscriptions.",
+        "kb_refs": [
+          "KB-1201"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "method": "GET",
+        "path": "/api/user",
+        "note": "has_new_pricing, tier_subscription, cycle.",
+        "kb_refs": [
+          "KB-1208"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/api/user/all-subscriptions",
+        "note": "7 key nền tảng, chỉ shopify khác null.",
+        "kb_refs": [
+          "KB-1202",
+          "KB-1209"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/api/platforms/shopify/tier-plans",
+        "note": "Gọi ở Subscription Details.",
+        "kb_refs": [
+          "KB-1204",
+          "KB-1215"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/api/user/shopify/tier-subscriptions",
+        "note": "Gọi ở Subscription Details.",
+        "kb_refs": [
+          "KB-1204",
+          "KB-1215"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/api/settings",
+        "note": "Gọi ở Subscription Details.",
+        "kb_refs": [
+          "KB-1204"
+        ]
+      }
+    ],
+    "data": [],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "description": "Cần đăng nhập portal bằng account owner có plan Blue.",
+      "kb_refs": [
+        "KB-1227"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "description": "Chỉ một account, một trạng thái (Blue TEST, store dev). Không dùng quan sát làm expected result hay suy ra hành vi ở store live, plan khác hay account chưa subscribe.",
+      "kb_refs": [
+        "KB-1207",
+        "KB-1202"
+      ]
+    },
+    {
+      "description": "Control ghi billing (Cancel subscription, Change Default billing store) không được bấm; chưa biết dialog hay hành vi.",
+      "kb_refs": [
+        "KB-1205",
+        "KB-1206",
+        "KB-1226"
+      ]
+    }
+  ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-11-12"
+  },
+  "unknown_areas": [
+    {
+      "question": "Cột PRICE ở /subscriptions lấy dữ liệu từ đâu và USD 0.00 có phải hành vi đúng cho test plan/store dev không (API trả 49)?",
+      "why_it_matters": "Không có oracle cho giá hiển thị khi hai phía lệch nhau.",
+      "level": "feature",
+      "oq_type": "CONFLICT",
+      "kb_refs": [
+        "KB-1203"
+      ],
+      "oq_id": "OQ-subscription-001"
+    },
+    {
+      "question": "trial_days của plan Blue có giá trị nào hiệu lực (tier-plans 0, /api/user 1, tier-subscriptions/all-subscriptions 7) và nguồn nào là chuẩn?",
+      "why_it_matters": "Cùng plan id 1 nhưng ba giá trị, không biết giá trị nào đúng khi kiểm API.",
+      "level": "feature",
+      "oq_type": "CONFLICT",
+      "kb_refs": [
+        "KB-1215"
+      ],
+      "oq_id": "OQ-subscription-002"
+    },
+    {
+      "question": "Trạng thái chưa subscribe (Active Plan, nút Subscribe/Choose plan) hiển thị thế nào?",
+      "why_it_matters": "Account đã quan sát đang có Blue test ACTIVE nên chưa quan sát trạng thái này.",
+      "level": "feature",
+      "oq_type": "OPEN_ISSUE",
+      "kb_refs": [
+        "KB-1202",
+        "KB-1206"
+      ],
+      "oq_id": "OQ-subscription-003"
+    },
+    {
+      "question": "Cancel subscription và Change Default billing store có dialog xác nhận hay thực thi ngay, kết quả ra sao?",
+      "why_it_matters": "Không được bấm vì là ghi billing nên chưa có hành vi nào để kiểm.",
+      "level": "feature",
+      "oq_type": "OPEN_ISSUE",
+      "kb_refs": [
+        "KB-1205",
+        "KB-1206"
+      ],
+      "oq_id": "OQ-subscription-004"
+    },
+    {
+      "question": "Blue ở store live (không phải test) hiển thị thế nào: NEXT BILL DATE, giá thật, banner, trạng thái trả phí?",
+      "why_it_matters": "Account chỉ có store dev nên chưa có quan sát cho trạng thái trả phí.",
+      "level": "feature",
+      "oq_type": "OPEN_ISSUE",
+      "kb_refs": [
+        "KB-1207",
+        "KB-1202"
+      ],
+      "oq_id": "OQ-subscription-005"
+    },
+    {
+      "question": "Role staff khác owner có xem được /subscriptions và các control billing không?",
+      "why_it_matters": "Mới thử role owner.",
+      "level": "feature",
+      "oq_type": "OPEN_ISSUE",
+      "kb_refs": [
+        "KB-1227"
+      ],
+      "oq_id": "OQ-subscription-007"
+    },
+    {
+      "question": "Bảng /subscriptions hiển thị thế nào khi có nhiều nền tảng hoặc khi không có subscription?",
+      "why_it_matters": "Mới thấy một dòng Shopify; UI chỉ hiện key khác null.",
+      "level": "feature",
+      "oq_type": "OPEN_ISSUE",
+      "kb_refs": [
+        "KB-1202"
+      ],
+      "oq_id": "OQ-subscription-006"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "bootstrap"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-01-view-current-subscription-plan",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Blue TEST ACTIVE, store dev, 2 store gắn subscription",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1201",
+        "KB-1202",
+        "KB-1204",
+        "KB-1205",
+        "KB-1206",
+        "KB-1207"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-view-current-subscription-plan",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "Blue TEST ACTIVE, store dev",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1208",
+        "KB-1209",
+        "KB-1226"
+      ],
+      "note": "trial_days và price có conflict UNRESOLVED."
+    },
+    {
+      "feature_id": "FEAT-01-view-current-subscription-plan",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "chưa subscribe",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-01-view-current-subscription-plan",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "store live / subscription không phải test",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-01-view-current-subscription-plan",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "nhiều nền tảng trong bảng Subscriptions",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-01-view-current-subscription-plan",
+      "layer": "portal",
+      "role": "role khác owner",
+      "state": "mọi state",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-01-view-current-subscription-plan",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "mọi state",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": []
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "conflict_group": "CONF-SUB-001",
+      "kb_refs": [
+        "KB-1215"
+      ],
+      "status": "UNRESOLVED",
+      "note": "trial_days 0/1/7 theo endpoint, không chọn phe."
+    },
+    {
+      "conflict_group": "CONF-SUB-003",
+      "kb_refs": [
+        "KB-1203",
+        "KB-1208",
+        "KB-1209"
+      ],
+      "status": "UNRESOLVED",
+      "note": "PRICE UI 0.00 so với API 49, không chọn phe."
+    }
+  ],
+  "profile_relationships": [
+    {
+      "from_feature_id": "FEAT-01-view-current-subscription-plan",
+      "to_feature_id": "FEAT-02-legacy-plan-pricing-display",
+      "relationship": "sibling_plan_view_route",
+      "kb_refs": [
+        "KB-1204",
+        "KB-1211"
+      ]
+    }
+  ]
+}

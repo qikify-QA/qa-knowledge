@@ -1,0 +1,206 @@
+{
+  "feature_id": "FEAT-12-provider-required-options",
+  "feature_key": "provider-required-options",
+  "object_id": "product-base",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-12-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Product Base CustomCat: Advanced options enable, mở editor Required options với label mới",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base CustomCat đã lưu",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Product Base > Edit (desktop)"
+      },
+      "precondition": "Product Base có Fulfillment provider = CustomCat trên store explorer (provider CustomCat đã kết nối). Fixture tự dựng trên store của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign của merchant hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Mở Product Base > Edit của Product Base CustomCat.",
+        "Ghi trạng thái nút Advanced options, bấm nút.",
+        "Ghi editor hiện ra và label của nó."
+      ],
+      "observation_point": "Trạng thái nút Advanced options; editor JSON Required options và label.",
+      "expected_result": "Nút Advanced options enable; bấm mở JSON editor Required options với label \"Required options (for merchOne, Printify, Printful, Myze, Printbelle and CustomCat)\".",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-required-options#KB-527"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "product-base/provider-required-options#KB-527",
+        "product-base/product-base-create#KB-020",
+        "product-base/product-base-create#KB-070"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-12-002",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Đổi provider của Product Base sang CustomCat chưa Save: editor Required options đã hiện",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base provider khác CustomCat, đổi sang CustomCat, chưa Save",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Product Base > Edit (desktop)"
+      },
+      "precondition": "Product Base của provider khác trên store explorer, CustomCat đã kết nối. Không Save trong check này. Fixture tự dựng trên store của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign của merchant hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Mở Product Base > Edit.",
+        "Đổi Fulfillment provider sang CustomCat, không Save.",
+        "Bấm Advanced options, ghi editor và label."
+      ],
+      "observation_point": "Editor Required options và label sau khi đổi provider, trước Save.",
+      "expected_result": "BASELINE (KB-532, OQ-product-base-116): Advanced options enable và mở editor Required options với label như CHK-12-001, dù chưa Save. Lệch = cần điều tra, không phải bug.",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-required-options#KB-532"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "product-base/provider-required-options#KB-532",
+        "product-base/provider-required-options#KB-527"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-product-base-116"
+    },
+    {
+      "check_id": "CHK-12-003",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Lưu JSON vào Required options của Product Base CustomCat và reload thấy lại đúng giá trị",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base CustomCat, Required options đang null hoặc giá trị cũ",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Product Base > Edit > Advanced options + network"
+      },
+      "precondition": "Product Base CustomCat trên store explorer (bản copy dành cho test). Fixture tự dựng trên store của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign của merchant hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Mở Advanced options, nhập {\"preset_id\": 4, \"preset_back_id\": 5} vào editor Required options.",
+        "Cho editor mất focus rồi bấm Save; ghi status của PUT /api/products/{id} và default_options trong body.",
+        "Reload trang, mở lại Advanced options, ghi giá trị editor."
+      ],
+      "observation_point": "Kết quả Save; giá trị editor sau reload.",
+      "expected_result": "BASELINE (KB-528, OQ-product-base-117): Save thành công; sau reload editor hiện đúng {\"preset_id\": 4, \"preset_back_id\": 5}. Lệch = cần điều tra, không phải bug.",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-required-options#KB-528"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "product-base/provider-required-options#KB-528",
+        "product-base/product-base-identity#KB-531"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-product-base-117"
+    },
+    {
+      "check_id": "CHK-12-004",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Editor Required options hiện ở Product Base merchOne, không hiện ở Product Base Gelato",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base merchOne; Product Base Gelato",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Product Base > Edit (desktop)"
+      },
+      "precondition": "Một Product Base merchOne và một Product Base Gelato trên store explorer. Khác biệt môi trường DIFFERENT_VALUE (KB-530): trên staging nút Advanced options của Gelato disabled, trên production enable và mở Design format — kiểm bằng sự vắng mặt của editor/label, không dựa vào trạng thái nút. Fixture tự dựng trên store của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign của merchant hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Mở Product Base merchOne > Edit, mở Advanced options, ghi editor và label.",
+        "Mở Product Base Gelato > Edit; nếu nút Advanced options bấm được thì bấm; ghi có hay không editor Required options và label Required options."
+      ],
+      "observation_point": "Có/không có editor Required options và label ở từng Product Base.",
+      "expected_result": "BASELINE (KB-529, OQ-product-base-118): merchOne có editor Required options với label mới; Gelato không có editor và label Required options (trạng thái nút Advanced options không phải tiêu chí). Lệch = cần điều tra, không phải bug.",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-required-options#KB-529"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "product-base/provider-required-options#KB-529",
+        "product-base/provider-required-options#KB-530"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-product-base-118"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-12-provider-required-options",
+      "item": "Capability: hiện editor Required options theo provider (KB-527, KB-532, KB-529)",
+      "check_ids": [
+        "CHK-12-001",
+        "CHK-12-002",
+        "CHK-12-004"
+      ],
+      "oracle": "STRONG (CHK-12-001); BASELINE (CHK-12-002, CHK-12-004)"
+    },
+    {
+      "feature_id": "FEAT-12-provider-required-options",
+      "item": "Capability: lưu và tải lại Required options (KB-528)",
+      "check_ids": [
+        "CHK-12-003"
+      ],
+      "oracle": "BASELINE"
+    },
+    {
+      "feature_id": "FEAT-12-provider-required-options",
+      "item": "Risk: trạng thái nút Advanced options Gelato khác giữa môi trường (KB-530)",
+      "check_ids": [
+        "CHK-12-004"
+      ],
+      "oracle": "BASELINE trên vế editor; trạng thái nút không assert"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Không có KB về JSON sai hoặc giá trị không hợp lệ khi Save (OQ-product-base-115); preset CustomCat không hợp lệ được kiểm ở order/fulfillment-provider-request CHK-010."
+    },
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Không có KB về giới hạn kích thước/định dạng của Required options."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "Không có KB về role khác owner."
+    },
+    {
+      "dimension": "INTEGRATION",
+      "reason": "Việc gửi preset sang CustomCat thuộc order/fulfillment-provider-request (CHK-008, CHK-009)."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Feature mới, KB-020 của product-base-create giữ nguyên, không có KNOWN_DEFECT."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-148"
+  }
+}

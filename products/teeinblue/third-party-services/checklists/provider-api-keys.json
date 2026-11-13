@@ -1,0 +1,698 @@
+{
+  "feature_id": "FEAT-02-manage-provider-api-keys",
+  "feature_key": "provider-api-keys",
+  "object_id": "third-party-services",
+  "checklist_version": "2",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Section Removal.AI hiện ô key rỗng, help text, Save và Check credits",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account explorer, chưa có key Removal.AI/Cutout.pro, có key ImagenHub",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc, không gõ vào ô key.",
+      "steps": [
+        "Mở /extras/extra-services, bấm tab Remove Background.",
+        "Tìm section Removal.ai, đọc nhãn \"Removal.AI API key:\", help text, các nút dưới ô.",
+        "Kiểm thuộc tính ô key (type, name, rỗng, disabled/read-only) bằng DevTools."
+      ],
+      "observation_point": "Section Removal.ai: nhãn, help text, ô key, nút Save và Check credits",
+      "expected_result": "Baseline một lần: ô key input text name removal_ai_api_key, rỗng, không disabled; help text \"This service only supports photos in JPG/PNG with up to 12mb.\"; có nút Save và Check credits enabled.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1514",
+          "KB-1515"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1514",
+        "KB-1515",
+        "KB-1531"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Ô key hiển thị sai hoặc mất"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-third-party-services-017"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Tab Cutout.Pro hiện ô key rỗng, help text, Save và Check credits",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account explorer, chưa có key Removal.AI/Cutout.pro, có key ImagenHub",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc, không gõ vào ô key.",
+      "steps": [
+        "Mở /extras/extra-services, bấm tab Cutout.Pro.",
+        "Đọc nhãn ô key, help text, các nút dưới ô.",
+        "Kiểm thuộc tính ô key bằng DevTools."
+      ],
+      "observation_point": "Ô key Cutout.pro, help text, nút Save và Check credits",
+      "expected_result": "Baseline một lần: ô key input text name cutout_pro_api_key, rỗng; help text \"This service only supports photos in JPG/PNG, max resolution 4096x4096px with less than 15mb.\"; có Save và Check credits enabled.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1516"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1516",
+        "KB-1529"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Ô key hiển thị sai hoặc mất"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-third-party-services-017"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Tab ImagenHub hiện ô key có giá trị, Save, không có Check credits",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account explorer, chưa có key Removal.AI/Cutout.pro, có key ImagenHub",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc, không gõ vào ô key.",
+      "steps": [
+        "Mở /extras/extra-services, bấm tab ImagenHub.",
+        "Đọc heading, nhãn \"ImagenHub API key:\", link lấy key, các nút.",
+        "Kiểm ô key có giá trị hay rỗng và type; không ghi lại giá trị."
+      ],
+      "observation_point": "Ô ImagenHub (có/không giá trị, type), nút Save, vắng Check credits",
+      "expected_result": "Baseline một lần: heading \"ImagenHub Service\", ô key name imagenhub_api_key có giá trị (không rỗng, dạng mask như CHK-006), có link \"Click here to get api key\" và nút Save; không có nút Check credits.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1517"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1517",
+        "KB-1526"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Ô key hiển thị sai hoặc mất"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-third-party-services-017"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "GET /api/user: field key trong private_config trên account quan sát",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account explorer, chưa có key Removal.AI/Cutout.pro, có key ImagenHub",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc, không gõ vào ô key. Mở DevTools Network trước khi tải trang.",
+      "steps": [
+        "Tải lại /extras/extra-services, tìm GET /api/user.",
+        "Trong private_config, liệt kê tên field có hậu tố _api_key và kiểu giá trị (string, rỗng hay không). Không ghi giá trị.",
+        "Đối chiếu với ô key trên các tab."
+      ],
+      "observation_point": "Tên field và kiểu trong private_config; giá trị chỉ ghi là REDACTED",
+      "expected_result": "Baseline trên account quan sát (hai lần đọc, một trạng thái): gpt_api_key, gemini_api_key, imagenhub_api_key, flux_kontext_api_key là string không rỗng (giá trị REDACTED); removal_ai_api_key, cutout_pro_api_key, maps_api_key vắng trong khi ô tương ứng rỗng. Không suy rộng sang account hay trạng thái khác (xem CHK-010).",
+      "oracle": {
+        "kb_ids": [
+          "KB-1518"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1518",
+        "KB-1522"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lộ key / sai dữ liệu cấu hình"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-third-party-services-017"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "PERMISSION",
+      "layer": "api",
+      "title": "Giá trị key trong GET /api/user là key đầy đủ hay đã mask",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account explorer, chưa có key Removal.AI/Cutout.pro, có key ImagenHub",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc, không gõ vào ô key. Dùng account test riêng nếu cần đối chiếu; chỉ ghi dạng giá trị (độ dài, có ký tự che), không ghi key.",
+      "steps": [
+        "Mở DevTools Network, tải /extras/extra-services, mở response GET /api/user.",
+        "Với từng field _api_key không rỗng, ghi độ dài và có mask hay không (ví dụ ký tự *); không sao chép giá trị.",
+        "Không lưu HAR chưa che vào evidence."
+      ],
+      "observation_point": "Dạng giá trị field key (đầy đủ hay mask) trong response",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1518",
+          "KB-1517"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1517",
+        "KB-1518"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lộ API key cho client"
+      ],
+      "priority": "P1",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-third-party-services-011"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "PERMISSION",
+      "layer": "portal",
+      "title": "Ô ImagenHub hiển thị key đã lưu ở dạng mask",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account explorer, chưa có key Removal.AI/Cutout.pro, có key ImagenHub",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc, không gõ vào ô key. Ô có giá trị: ImagenHub trên account explorer.",
+      "steps": [
+        "Mở tab ImagenHub, nhìn ô key có giá trị.",
+        "Ghi ô là input type text hay password và dạng hiển thị (chỉ ghi pattern: số ký tự đầu, dãy dấu *, số ký tự cuối); không ghi ký tự key, che giá trị trước khi chụp.",
+        "Không chụp màn hình lộ key vào evidence."
+      ],
+      "observation_point": "Dạng hiển thị giá trị ô key (pattern mask) và type của input",
+      "expected_result": "Baseline một lần: input type text, key đã lưu hiện dạng mask (4 ký tự đầu, dãy dấu *, 4 ký tự cuối), không hiện key đầy đủ. Chỉ khẳng định pattern trên UI, không nói về API (xem CHK-005).",
+      "oracle": {
+        "kb_ids": [
+          "KB-1517"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1514",
+        "KB-1517"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lộ API key trên giao diện"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-third-party-services-017"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "PERMISSION",
+      "layer": "portal",
+      "title": "Role staff khác owner xem/sửa key",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Account test riêng có role staff khác owner",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Account test riêng có thêm user staff không phải owner; không dùng account explorer. Account test riêng (không dùng account explorer) và một key dùng một lần/throwaway tạo ở dịch vụ bên thứ ba; không dùng key thật. Không dán giá trị key vào evidence, ghi chú hay screenshot (che hoặc chỉ ghi độ dài/dạng mask).",
+      "steps": [
+        "Đăng nhập bằng staff user, mở /extras/extra-services.",
+        "Ghi tab nào truy cập được, ô key và nút Save, Check credits enabled hay disabled.",
+        "Không nhập key thật; nếu cần thử Save thì dùng key throwaway và không ghi giá trị."
+      ],
+      "observation_point": "Truy cập trang, trạng thái control, thông báo quyền với role staff",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1531"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1514",
+        "KB-1531"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Role không đủ quyền xem/sửa key"
+      ],
+      "priority": "P1",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-third-party-services-015"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Save key Removal.AI/Cutout.pro lưu thành công",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Account test riêng, ô key rỗng",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Account test riêng (không dùng account explorer) và một key dùng một lần/throwaway tạo ở dịch vụ bên thứ ba; không dùng key thật. Không dán giá trị key vào evidence, ghi chú hay screenshot (che hoặc chỉ ghi độ dài/dạng mask).",
+      "steps": [
+        "Mở tab Remove Background hoặc Cutout.Pro, nhập key throwaway (che giá trị khỏi evidence), bấm Save.",
+        "Ghi thông báo, trạng thái nút, request Save (method, path, status; không ghi body có key).",
+        "Reload trang, kiểm ô key còn giá trị và GET /api/user có field tương ứng (chỉ ghi có/không)."
+      ],
+      "observation_point": "Thông báo sau Save, request Save, trạng thái ô key sau reload",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1515",
+          "KB-1516"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1515",
+        "KB-1516",
+        "KB-1518"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mất/ghi sai cấu hình key"
+      ],
+      "priority": "P1",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-third-party-services-012"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Check credits với key hợp lệ, key sai và ô rỗng",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Account test riêng, key throwaway",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Account test riêng (không dùng account explorer) và một key dùng một lần/throwaway tạo ở dịch vụ bên thứ ba; không dùng key thật. Không dán giá trị key vào evidence, ghi chú hay screenshot (che hoặc chỉ ghi độ dài/dạng mask).",
+      "steps": [
+        "Mở tab Remove Background hoặc Cutout.Pro với ô rỗng, bấm Check credits, ghi kết quả.",
+        "Nhập key sai (chuỗi giả, không phải key thật), bấm Check credits, ghi kết quả.",
+        "Với key throwaway hợp lệ đã Save, bấm Check credits, ghi kết quả và request GET /api/user/credit (không ghi key)."
+      ],
+      "observation_point": "Thông báo hiển thị, request /api/user/credit và status",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1515",
+          "KB-1516"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1515",
+        "KB-1516"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hiển thị credit sai hoặc lỗi không rõ"
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-third-party-services-013"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Đổi hoặc xoá key rồi reload",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Account test riêng, đã Save một key throwaway",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Account test riêng (không dùng account explorer) và một key dùng một lần/throwaway tạo ở dịch vụ bên thứ ba; không dùng key thật. Không dán giá trị key vào evidence, ghi chú hay screenshot (che hoặc chỉ ghi độ dài/dạng mask).",
+      "steps": [
+        "Đổi key sang key throwaway khác, Save, reload, ghi trạng thái.",
+        "Xoá giá trị ô, Save, reload, ghi trạng thái ô và field _api_key trong GET /api/user (chỉ ghi có/không).",
+        "Không ghi giá trị key."
+      ],
+      "observation_point": "Ô key và field private_config sau Save và reload",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1518"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1514",
+        "KB-1516",
+        "KB-1518"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Key cũ còn dùng hoặc mất cấu hình"
+      ],
+      "priority": "P1",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-third-party-services-014"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Save với key sai định dạng hoặc toàn khoảng trắng",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Account test riêng, ô key rỗng",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Account test riêng (không dùng account explorer) và một key dùng một lần/throwaway tạo ở dịch vụ bên thứ ba; không dùng key thật. Không dán giá trị key vào evidence, ghi chú hay screenshot (che hoặc chỉ ghi độ dài/dạng mask).",
+      "steps": [
+        "Nhập chuỗi giả không phải key (ngắn, có khoảng trắng đầu cuối, toàn khoảng trắng), bấm Save.",
+        "Ghi thông báo validate, request và kết quả sau reload.",
+        "Dùng chuỗi giả, không dùng key thật."
+      ],
+      "observation_point": "Thông báo lỗi, request Save, giá trị sau reload",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1515"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1515",
+        "KB-1516"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lưu key sai/hỏng cấu hình"
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-third-party-services-012"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Tải trang và đổi tab không gọi Check credits hay tải lại key",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account explorer, chưa có key Removal.AI/Cutout.pro, có key ImagenHub",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc, không gõ vào ô key. Mở DevTools Network trước khi tải trang.",
+      "steps": [
+        "Tải mới /extras/extra-services, ghi danh sách request.",
+        "Bấm lần lượt tab Remove Background, Cutout.Pro, ImagenHub, ghi request phát ra.",
+        "Đối chiếu có GET /api/user/credit hay request riêng của trang không."
+      ],
+      "observation_point": "Danh sách request khi tải trang và khi đổi tab",
+      "expected_result": "Baseline: tải trang không gọi /api/user/credit hay private-config riêng; đổi tab không phát request nào tới API host.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1521",
+          "KB-1520"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1515",
+        "KB-1518",
+        "KB-1520",
+        "KB-1521"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Gọi dịch vụ trả phí ngoài ý muốn"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-third-party-services-017"
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Trước shutdown: ô key Remove.bg read-only kèm notice shutdown với seller đang ở Remove.BG",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "seller đang chọn Remove.BG, trước mốc shutdown (Dev đặt mốc tương lai)",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Chỉ đúng trước mốc shutdown. Staging hiện compile mốc quá khứ (remove-background-provider KB-1509) nên Dev phải đặt mốc shutdown về tương lai và rebuild portal trước khi test (xem environment_differences). Account test riêng (không dùng account explorer). Không ghi giá trị key vào evidence, ghi chú hay screenshot. Account đang ở Remove.BG.",
+      "steps": [
+        "Nhờ Dev xác nhận mốc shutdown của staging đang ở tương lai.",
+        "Đăng nhập account test, mở /extras/extra-services, bấm tab Remove Background.",
+        "Tìm ô key Remove.bg, kiểm có read-only (không sửa được) và có notice shutdown; thử gõ vào ô (không Save)."
+      ],
+      "observation_point": "Ô key Remove.bg: trạng thái read-only và notice shutdown trên tab Remove Background",
+      "expected_result": "Trước mốc shutdown, với seller đang ở Remove.BG, ô key Remove.bg read-only kèm notice shutdown. Không áp dụng sau mốc shutdown. Nếu mốc staging còn ở quá khứ thì check không chạy được, không phải lỗi.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1547"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1547",
+        "third-party-services/remove-background-provider#KB-1507",
+        "third-party-services/remove-background-provider#KB-1508",
+        "third-party-services/remove-background-provider#KB-1509"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Ô key Remove.bg sửa được hoặc thiếu notice trước shutdown"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "STATE_DATA",
+      "layer": "db",
+      "title": "Sau shutdown: key Remove.bg đã lưu bị xoá với seller còn ở Remove.BG",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "seller đang ở Remove.BG có key Remove.bg đã lưu, sau mốc shutdown (staging: mốc giả lập)",
+        "environment": "staging",
+        "surface_or_device": "db"
+      },
+      "precondition": "Chỉ đúng sau mốc shutdown. Staging cần Dev mô phỏng mốc shutdown và chạy migration (remove-background-provider KB-1546); đây là mô phỏng, không phải expected của production. Account test riêng (không dùng account explorer). Không ghi giá trị key vào evidence, ghi chú hay screenshot. Account test đã lưu key Remove.bg throwaway.",
+      "steps": [
+        "Ghi trước: account có key Remove.bg đã lưu (chỉ ghi có/không, không ghi giá trị).",
+        "Nhờ Dev đặt mốc shutdown quá khứ và chạy migration trên staging.",
+        "Sau migration, kiểm key Remove.bg của account: ô key trên portal và private_config trong GET /api/user (chỉ ghi có/không)."
+      ],
+      "observation_point": "Key Remove.bg đã lưu của account sau migration (portal và private_config; chỉ có/không)",
+      "expected_result": "Sau mốc shutdown, key Remove.bg đã lưu của seller không còn (bị xoá). Chỉ verify mô phỏng trên staging; không khẳng định cho production.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1548"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1548",
+        "KB-1518",
+        "third-party-services/remove-background-provider#KB-1542",
+        "third-party-services/remove-background-provider#KB-1546"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Xoá key hàng loạt sau shutdown (mất dữ liệu)"
+      ],
+      "priority": "P1",
+      "automation_suitability": "NOT_SUITABLE"
+    },
+    {
+      "check_id": "CHK-015",
+      "dimension": "STATE_DATA",
+      "layer": "db",
+      "title": "Sau shutdown: key Remove.bg bị xoá cả với seller đã chuyển provider khác trước mốc",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "seller đã chuyển sang provider khác trước mốc, còn key Remove.bg đã lưu, sau mốc shutdown (staging: mốc giả lập)",
+        "environment": "staging",
+        "surface_or_device": "db"
+      },
+      "precondition": "Chỉ đúng sau mốc shutdown. Staging cần Dev mô phỏng mốc shutdown và chạy migration (remove-background-provider KB-1546); không phải expected của production. Account test riêng (không dùng account explorer). Không ghi giá trị key vào evidence, ghi chú hay screenshot. Account test đã lưu key Remove.bg throwaway rồi chuyển provider khác trước khi đặt mốc.",
+      "steps": [
+        "Chuẩn bị account có key Remove.bg đã lưu và đang chọn provider khác (chỉ ghi có/không, không ghi giá trị key).",
+        "Nhờ Dev đặt mốc shutdown quá khứ và chạy migration trên staging.",
+        "Sau migration, kiểm key Remove.bg của account trên portal và private_config (chỉ ghi có/không)."
+      ],
+      "observation_point": "Key Remove.bg đã lưu của account đã chuyển provider, sau migration (chỉ có/không)",
+      "expected_result": "Sau mốc shutdown, key Remove.bg đã lưu bị xoá cả với seller đã chuyển sang provider khác trước mốc. Chỉ verify mô phỏng trên staging; không khẳng định cho production.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1548"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1548",
+        "third-party-services/remove-background-provider#KB-1542",
+        "third-party-services/remove-background-provider#KB-1546"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Xoá key hàng loạt sau shutdown (mất dữ liệu)"
+      ],
+      "priority": "P1",
+      "automation_suitability": "NOT_SUITABLE"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "risk_or_gap_ref": "Capability: nhập key Removal.AI",
+      "covered_by_check_ids": [
+        "CHK-001"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "risk_or_gap_ref": "Capability: Save và Check credits Removal.AI/Cutout.pro",
+      "covered_by_check_ids": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-008",
+        "CHK-009"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "risk_or_gap_ref": "Capability: nhập key Cutout.pro",
+      "covered_by_check_ids": [
+        "CHK-002"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "risk_or_gap_ref": "Capability: nhập key ImagenHub",
+      "covered_by_check_ids": [
+        "CHK-003"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "risk_or_gap_ref": "Capability: key trong private_config",
+      "covered_by_check_ids": [
+        "CHK-004",
+        "CHK-005",
+        "CHK-012"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "risk_or_gap_ref": "Risk P1: lộ key (API và UI)",
+      "covered_by_check_ids": [
+        "CHK-004",
+        "CHK-005",
+        "CHK-006"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "risk_or_gap_ref": "Risk P1: permission role",
+      "covered_by_check_ids": [
+        "CHK-007"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "risk_or_gap_ref": "Gap: đổi/xoá key, validate định dạng",
+      "covered_by_check_ids": [
+        "CHK-010",
+        "CHK-011"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "risk_or_gap_ref": "Capability: ô key Remove.bg read-only trước shutdown",
+      "covered_by_check_ids": [
+        "CHK-013"
+      ],
+      "coverage_status": "COVERED"
+    },
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "risk_or_gap_ref": "Risk P1: xoá key Remove.bg sau shutdown (staging mô phỏng; production chưa verify)",
+      "covered_by_check_ids": [
+        "CHK-014",
+        "CHK-015"
+      ],
+      "coverage_status": "COVERED"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Có áp dụng nhưng chưa có evidence: giới hạn độ dài/định dạng key chưa quan sát; gộp vào CHK-011 (NONE). Giới hạn file ảnh 12mb/15mb là help text của feature chọn provider."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "KB-1547/1548 chỉ thêm hành vi mới, không item base nào đổi statement và không có KNOWN_DEFECT; check mới đặt ở CORE/STATE_DATA."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-151"
+  }
+}

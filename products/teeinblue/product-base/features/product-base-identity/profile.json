@@ -51,6 +51,23 @@
       "kb_refs": [
         "product-base/product-base-identity#KB-072"
       ]
+    },
+    {
+      "name": "[CBS-148] Save Basic information và Required options đã lưu",
+      "description": "Quan sát (LOW): sửa field khác (ví dụ Internal tags) rồi Save, PUT gửi lại default_options hiện tại, reload vẫn thấy Required options cũ (KB-531; hệ quả của full-replace KB-027). Chờ PO xác nhận ý định (OQ-product-base-119).",
+      "kb_refs": [
+        "product-base/product-base-identity#KB-531",
+        "product-base/product-base-identity#KB-027"
+      ]
+    },
+    {
+      "name": "[CBS-163] Shape response của đổi/xoá thumbnail Product Base",
+      "description": "Theo Dev (TIB-5689): response đổi/xoá thumbnail là attribute Product::$visible, không printareas, fulfillment (KB-533); không còn user_id, fulfillment_id, internal_tags giữ có chủ đích (KB-534). Một lượt quan sát staging: 20 key, có fulfillment_linked_id (KB-535).",
+      "kb_refs": [
+        "product-base/product-base-identity#KB-533",
+        "product-base/product-base-identity#KB-534",
+        "product-base/product-base-identity#KB-535"
+      ]
     }
   ],
   "state_transitions": [
@@ -109,6 +126,22 @@
       "kb_refs": [
         "product-base/product-base-identity#KB-073"
       ]
+    },
+    {
+      "statement": "[CBS-163] Theo Jira TIB-5689 comment 56448 Solution hàng U11 (Dev, 2026-11-04), đổi và xoá thumbnail Product Base (ProductThumbnailController store/destroy) trả attribute Product::$visible, không có printareas và fulfillment.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "product-base/product-base-identity#KB-533"
+      ]
+    },
+    {
+      "statement": "[CBS-163] Theo Jira TIB-5689 comment 56714 mục 4 (Dev, 2026-11-09), user_id và fulfillment_id đã được bỏ khỏi response của product base; internal_tags vẫn giữ, có chủ đích.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "product-base/product-base-identity#KB-534"
+      ]
     }
   ],
   "observed_behavior": [
@@ -123,6 +156,20 @@
       "kb_refs": [
         "product-base/product-base-identity#KB-025"
       ]
+    },
+    {
+      "behavior": "[CBS-148] Save Basic information sau khi sửa field khác giữ nguyên Required options (default_options) đã lưu.",
+      "kb_refs": [
+        "product-base/product-base-identity#KB-531"
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "behavior": "[CBS-163] KB-535 (một lượt TC-TIB-8592, staging, phiên owner, build không ghi): đổi thumbnail qua modal thư viện 200, xoá 200 (thumbnail null); response 20 key, có internal_tags và fulfillment_linked_id, không printareas/fulfillment/user_id/fulfillment_id.",
+      "kb_refs": [
+        "product-base/product-base-identity#KB-535"
+      ],
+      "confidence": "LOW"
     }
   ],
   "observed_validations": [
@@ -200,7 +247,8 @@
         "product-base/product-base-identity#KB-027",
         "product-base/product-base-identity#KB-071"
       ]
-    }
+    },
+    "Required options (default_options) do product-base/provider-required-options quản lý; Save Basic information gửi lại giá trị đó (KB-531)."
   ],
   "risks": [
     {
@@ -219,11 +267,78 @@
       "kb_refs": [
         "product-base/product-base-identity#KB-072"
       ]
+    },
+    {
+      "risk": "[CBS-163] Response thumbnail Product Base vẫn có fulfillment_linked_id mà Dev không nêu (KB-535); nếu Dev định bỏ thì check dựa trên quan sát sẽ lệch. Danh sách Product::$visible chưa đối chiếu source.",
+      "severity": "LOW",
+      "category": "api-contract",
+      "kb_refs": [
+        "product-base/product-base-identity#KB-534",
+        "product-base/product-base-identity#KB-535"
+      ]
     }
   ],
-  "unknown_areas": [],
+  "unknown_areas": [
+    {
+      "question": "[CBS-148] PO xác nhận ý định: sửa field khác của Basic information rồi Save phải giữ nguyên Required options đã lưu (QA đã ghi nhận là mong muốn, chưa có PO/Dev)?",
+      "why_it_matters": "KB-531 OBSERVED_CURRENT/LOW, chạm mất dữ liệu; CHK-03-010 (P1) chỉ BASELINE.",
+      "kb_refs": [
+        "product-base/product-base-identity#KB-531"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-product-base-119"
+    },
+    {
+      "question": "[CBS-163] 20 key của response đổi/xoá thumbnail Product Base (KB-535) có đúng là Product::$visible?",
+      "why_it_matters": "KB-535 là OBSERVED_CURRENT/LOW, một lượt chạy không ghi build.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "product-base/product-base-identity#KB-535"
+      ],
+      "oq_id": "OQ-product-base-120"
+    },
+    {
+      "question": "[CBS-163] Response thumbnail Product Base còn fulfillment_linked_id (KB-535): có chủ đích?",
+      "why_it_matters": "Quan sát ngoài statement của claim; Dev chỉ nêu user_id, fulfillment_id, internal_tags.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "product-base/product-base-identity#KB-535",
+        "product-base/product-base-identity#KB-534"
+      ],
+      "oq_id": "OQ-product-base-121"
+    }
+  ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
-  }
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-03-product-base-identity",
+      "layer": "api",
+      "role": "owner",
+      "state": "[CBS-163] response đổi/xoá thumbnail Product Base",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "product-base/product-base-identity#KB-533",
+        "product-base/product-base-identity#KB-534",
+        "product-base/product-base-identity#KB-535"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-product-base-identity",
+      "layer": "api",
+      "role": "owner",
+      "state": "[CBS-163] response đổi/xoá thumbnail Product Base",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "product-base/product-base-identity#KB-533",
+        "product-base/product-base-identity#KB-534"
+      ]
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": []
 }

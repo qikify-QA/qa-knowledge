@@ -1,0 +1,555 @@
+{
+  "feature_id": "FEAT-01-view-current-subscription-plan",
+  "feature_key": "view-current-subscription-plan",
+  "object_id": "subscription",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Badge plan ở sidebar dẫn tới Subscriptions",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account Blue TEST ACTIVE, store dev, 2 store gắn subscription",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account owner có Blue TEST plan (store dev).",
+      "steps": [
+        "Mở Home, tìm badge plan dưới tên store ở sidebar.",
+        "Hover badge, đọc chữ và tooltip.",
+        "Bấm badge, đọc URL."
+      ],
+      "observation_point": "Chữ badge, tooltip, URL sau khi bấm",
+      "expected_result": "Baseline một lần hover: badge hiện \"Blue (Test)\", là link tới /subscriptions, tooltip \"Manage Pricing & Subscription\".",
+      "oracle": {
+        "kb_ids": [
+          "KB-1201"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1201"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-027"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Danh sách Subscriptions theo nền tảng",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account Blue TEST ACTIVE, store dev, 2 store gắn subscription",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account owner có Blue TEST plan (store dev).",
+      "steps": [
+        "Mở DevTools tab Network.",
+        "Mở sidebar Organization > Subscriptions (/subscriptions).",
+        "Đọc heading, mô tả, header và dòng của bảng, chân bảng, lựa chọn Show entries (bỏ qua cột PRICE, xem check riêng).",
+        "Đọc response GET /api/user/all-subscriptions."
+      ],
+      "observation_point": "Heading, bảng, chân bảng, response all-subscriptions",
+      "expected_result": "Baseline một lần tải: heading \"Subscriptions\", mô tả \"Manage your subscriptions across platforms\"; cột PLATFORM, STORES, PRICE, NEXT BILL DATE, STATUS, ACTION; một dòng Shopify: STORES \"2 stores\", NEXT BILL DATE \"N/A\", STATUS \"Active\", ACTION \"Manage\"; chân bảng \"Showing 1 to 1 of 1 entries\", Show 20/50/100/250/500; all-subscriptions có 7 key nền tảng, chỉ shopify khác null.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1202"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1202"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-027"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Manage dẫn tới Subscription Details của Blue",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account Blue TEST ACTIVE, store dev, 2 store gắn subscription",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account owner có Blue TEST plan (store dev).",
+      "steps": [
+        "Mở DevTools tab Network.",
+        "Mở /subscriptions, bấm \"Manage\" ở dòng Shopify.",
+        "Đọc URL, heading, breadcrumb và các request GET."
+      ],
+      "observation_point": "URL, heading, breadcrumb, request",
+      "expected_result": "Baseline một lần: điều hướng client-side tới /subscriptions/shopify-tier (không phải /subscriptions/shopify); heading \"Subscription Details\"; breadcrumb Home / Subscriptions / Subscription Details; gọi GET /api/settings, GET /api/platforms/shopify/tier-plans, GET /api/user/shopify/tier-subscriptions.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1204"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1204"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-027"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Khối Store và Default billing store",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account Blue TEST ACTIVE, store dev, 2 store gắn subscription",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account owner có Blue TEST plan (store dev).",
+      "steps": [
+        "Mở /subscriptions/shopify-tier.",
+        "Đọc khối \"Store:\", badge Default và dòng chú thích.",
+        "Mở menu \"...\" và đọc mục có trong menu. Không bấm mục nào (ghi billing)."
+      ],
+      "observation_point": "Khối Store, badge Default, mục menu",
+      "expected_result": "Baseline một lần: khối \"Store:\" liệt kê 2 store, một store mang badge \"Default\", kèm \"All charges are added to the Shopify Billings of the Default store\"; menu \"...\" có một mục \"Change Default billing store\".",
+      "oracle": {
+        "kb_ids": [
+          "KB-1205"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1205"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-027"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Card Plan trên Home, Subscription Details và Usages",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account Blue TEST ACTIVE, store dev, 2 store gắn subscription",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account owner có Blue TEST plan (store dev).",
+      "steps": [
+        "Mở Home (/), đọc card Plan.",
+        "Mở /subscriptions/shopify-tier, đọc card Plan, tìm link \"View usages\" và control \"Cancel subscription\" (không bấm).",
+        "Mở /platform-usages/shopify, đọc card Plan.",
+        "Trên Home, kiểm tra Network không có request tier-plans."
+      ],
+      "observation_point": "Card Plan ở ba trang, link và control, Network Home",
+      "expected_result": "Baseline: cả ba trang hiện \"Plan:\" \"Blue(Test)\", \"Current cycle (reset on <ngày>)\", \"Fees decrease as your monthly order volume increases.\" và khối usage; chỉ Subscription Details có link \"View usages\" (/platform-usages/shopify) và control \"Cancel subscription\"; Home không có request tier-plans, dữ liệu card trùng GET /api/user.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1206"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1206"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-027"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Banner TEST plan cho store dev",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account Blue TEST chỉ có store dev",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account owner có Blue TEST plan (store dev).",
+      "steps": [
+        "Mở /subscriptions/shopify-tier, đọc các banner.",
+        "Mở Home, đọc các banner."
+      ],
+      "observation_point": "Banner ở hai trang",
+      "expected_result": "Baseline: Subscription Details hiện \"Test plan is limited to one development store.\" và \"You're following a TEST plan with no charge because Teeinblue is free for Development store.\" kèm \"If your store transfers to a Shopify live plan, you will need to activate a plan to continue using.\"; Home chỉ hiện banner thứ hai.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1207"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1207"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-027"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Field plan trong GET /api/user",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account Blue TEST ACTIVE, store dev, 2 store gắn subscription",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Đã login portal bằng account owner có Blue TEST plan (store dev).",
+      "steps": [
+        "Mở DevTools tab Network, tải lại một trang portal.",
+        "Đọc response GET /api/user (bỏ qua trial_days, xem check riêng)."
+      ],
+      "observation_point": "Response GET /api/user",
+      "expected_result": "Baseline shape quan sát qua 7 lần tải: has_new_pricing true; subscriptions []; boundless_instances_count 0; tier_subscription {display_name \"Blue\", price 49, status \"ACTIVE\", test true, type \"shopify\", tiers, tier_plan}; cycle {unit_count, interval_days 30, reset_at, total_amount_usd}. Không suy field bắt buộc hay enum.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1208"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1208"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-027"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Subscription phía Shopify trong all-subscriptions",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account Blue TEST ACTIVE, store dev, 2 store gắn subscription",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Đã login portal bằng account owner có Blue TEST plan (store dev).",
+      "steps": [
+        "Mở DevTools tab Network, mở /subscriptions.",
+        "Đọc shopify.shopify_subscription trong response GET /api/user/all-subscriptions (bỏ qua trialDays)."
+      ],
+      "observation_point": "Response all-subscriptions",
+      "expected_result": "Baseline một sample: shopify.shopify_subscription có status ACTIVE, interval EVERY_30_DAYS, price 49.0 USD, cappedAmount 9999.99 USD, balanceUsed 0.0, test true.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1209"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1209",
+        "KB-1202"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-027"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "PERMISSION",
+      "layer": "portal",
+      "title": "Role owner xem được các trang subscription",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account Blue TEST ACTIVE, store dev, 2 store gắn subscription",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account owner có Blue TEST plan (store dev).",
+      "steps": [
+        "Mở /subscriptions, /subscriptions/shopify-tier và /platform-usages/shopify.",
+        "Trên Subscription Details, tìm control \"Cancel subscription\" và \"Change Default billing store\" (không bấm)."
+      ],
+      "observation_point": "Truy cập trang, control",
+      "expected_result": "Baseline một lần: role owner truy cập được cả ba trang và thấy hai control billing. Role khác chưa quan sát, không suy.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1227"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1227"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-027"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Xem các trang subscription không phát sinh request ghi billing",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account Blue TEST ACTIVE, store dev, 2 store gắn subscription",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Đã login portal bằng account owner có Blue TEST plan (store dev).",
+      "steps": [
+        "Mở DevTools tab Network, bật Preserve log.",
+        "Lần lượt mở /subscriptions, /subscriptions/shopify-tier, Home, /platform-usages/shopify và dùng calculator.",
+        "Liệt kê request non-GET."
+      ],
+      "observation_point": "Danh sách request non-GET",
+      "expected_result": "Baseline (31 lần quan sát): không có request ghi vào subscription/billing; request non-GET chỉ là POST /api/assistant/session-token, POST /api/graphql (đọc campaigns trên Home), POST /api/graphql/relay (đọc usages) và request analytics. Không bấm Cancel subscription / Change Default billing store.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1226"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1226"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mất tiền nếu xem trang gây ghi billing"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-027"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Cột PRICE của dòng Shopify so với giá API",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account Blue TEST ACTIVE, store dev, 2 store gắn subscription",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account owner có Blue TEST plan (store dev).",
+      "steps": [
+        "Mở DevTools tab Network, mở /subscriptions.",
+        "Đọc cột PRICE của dòng Shopify.",
+        "Đọc price trong GET /api/user (tier_subscription), all-subscriptions và bảng Pricing Plans trên Subscription Details."
+      ],
+      "observation_point": "Cột PRICE, price trong API, bảng Pricing Plans",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1203"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1203",
+        "KB-1208",
+        "KB-1209"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hiển thị giá sai"
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-subscription-001"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "trial_days của plan Blue giữa các endpoint",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account Blue TEST ACTIVE, store dev, 2 store gắn subscription",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Đã login portal bằng account owner có Blue TEST plan (store dev).",
+      "steps": [
+        "Mở DevTools tab Network, mở /subscriptions và /subscriptions/shopify-tier.",
+        "Đọc trial_days trong tier-plans, tier_subscription.tier_plan trong /api/user, trialDays trong tier-subscriptions và all-subscriptions."
+      ],
+      "observation_point": "trial_days/trialDays ở bốn nguồn",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1215"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1215",
+        "KB-1208"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-subscription-002"
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Trang Subscriptions khi store live hoặc subscription không phải test",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account có Blue không phải test hoặc store live (chưa có fixture)",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Cần account hoặc fixture có gói Blue không phải test.",
+      "steps": [
+        "Mở /subscriptions và /subscriptions/shopify-tier.",
+        "Đọc NEXT BILL DATE, giá, banner, trạng thái."
+      ],
+      "observation_point": "Bảng Subscriptions, Subscription Details",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1202",
+        "KB-1207"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-subscription-005"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-01-view-current-subscription-plan",
+      "risk_or_gap_ref": "Capability: vào Subscriptions từ badge sidebar",
+      "covered_by_check_ids": [
+        "CHK-001"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-01-view-current-subscription-plan",
+      "risk_or_gap_ref": "Capability: xem danh sách Subscriptions theo nền tảng",
+      "covered_by_check_ids": [
+        "CHK-002",
+        "CHK-011"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-01-view-current-subscription-plan",
+      "risk_or_gap_ref": "Capability: xem Subscription Details của Blue",
+      "covered_by_check_ids": [
+        "CHK-003",
+        "CHK-004",
+        "CHK-006"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-01-view-current-subscription-plan",
+      "risk_or_gap_ref": "Capability: card Plan trên Home, Details, Usages",
+      "covered_by_check_ids": [
+        "CHK-005"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-01-view-current-subscription-plan",
+      "risk_or_gap_ref": "Capability: dữ liệu plan từ API",
+      "covered_by_check_ids": [
+        "CHK-007",
+        "CHK-008",
+        "CHK-012"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-01-view-current-subscription-plan",
+      "risk_or_gap_ref": "Risk: xem trang gây ghi billing (P1)",
+      "covered_by_check_ids": [
+        "CHK-010"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-01-view-current-subscription-plan",
+      "risk_or_gap_ref": "Risk: giá hiển thị sai (PRICE 0.00 so với 49)",
+      "covered_by_check_ids": [
+        "CHK-011"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-01-view-current-subscription-plan",
+      "risk_or_gap_ref": "Gap: store live, chưa subscribe",
+      "covered_by_check_ids": [
+        "CHK-013"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Có áp dụng nhưng chưa có evidence: chưa quan sát trạng thái chưa subscribe hay lỗi; Cancel subscription / Change Default billing store không được bấm."
+    },
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Có áp dụng nhưng chưa có evidence: bảng chỉ có một dòng Shopify, chưa quan sát nhiều nền tảng hay phân trang."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Không áp dụng: object mới, không có base và không có item KNOWN_DEFECT."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "bootstrap"
+  }
+}

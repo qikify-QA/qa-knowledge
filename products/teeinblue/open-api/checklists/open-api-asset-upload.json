@@ -2529,6 +2529,272 @@
       "priority": "P3",
       "automation_suitability": "UNKNOWN",
       "oq_id": "OQ-open-api-049"
+    },
+    {
+      "check_id": "CHK-069",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "[CBS-152] POST /layer-images với url của raster trên 128 MP bị từ chối, không tạo layer image",
+      "applicability": {
+        "role": "unspecified",
+        "state": "token Open API hợp lệ trong TIB_FULL_ACCESS_TOKEN",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "open-api"
+      },
+      "precondition": "Gọi trên host của TIB_API_BASE với Authorization Bearer bằng token trong TIB_FULL_ACCESS_TOKEN và Accept: application/json. Fixture ảnh tự sinh (không dùng file hay URL trong CCR); đếm layer image qua GET /openapi/v1/layer-images (duyệt hết cursor) trước và sau. Xoá layer image test tạo ra sau lượt chạy. Cần một PNG 12000x12000 (144 MP, dưới 64 MB) ở URL public do người chạy kiểm soát.",
+      "steps": [
+        "Đếm layer image.",
+        "POST /openapi/v1/layer-images với url của PNG 144 MP.",
+        "Ghi status, message và errors.",
+        "Đếm lại layer image."
+      ],
+      "observation_point": "Status, message, errors của response; số layer image trước/sau",
+      "expected_result": "Request bị từ chối; không có layer image mới (số layer image không đổi).",
+      "oracle": {
+        "kb_ids": [
+          "open-api/open-api-asset-upload#KB-055"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "open-api/open-api-asset-upload#KB-055",
+        "open-api/open-api-asset-upload#KB-056",
+        "open-api/open-api-asset-upload#KB-047"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Message và status 422 chỉ là quan sát (KB-056), kiểm ở CHK-071."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-070",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "[CBS-152] POST /layer-images với upload_id của raster trên 128 MP bị từ chối, không tạo layer image",
+      "applicability": {
+        "role": "unspecified",
+        "state": "token Open API hợp lệ trong TIB_FULL_ACCESS_TOKEN",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "open-api"
+      },
+      "precondition": "Gọi trên host của TIB_API_BASE với Authorization Bearer bằng token trong TIB_FULL_ACCESS_TOKEN và Accept: application/json. Fixture ảnh tự sinh (không dùng file hay URL trong CCR); đếm layer image qua GET /openapi/v1/layer-images (duyệt hết cursor) trước và sau. Xoá layer image test tạo ra sau lượt chạy.",
+      "steps": [
+        "Đếm layer image.",
+        "POST /openapi/v1/uploads với filename và filesize của PNG 144 MP, không gửi filewidth/fileheight.",
+        "PUT file lên upload_url.",
+        "POST /openapi/v1/layer-images với upload_id.",
+        "Đếm lại layer image."
+      ],
+      "observation_point": "Status, message, errors của bước finalize; số layer image trước/sau",
+      "expected_result": "Finalize bị từ chối; không có layer image mới.",
+      "oracle": {
+        "kb_ids": [
+          "open-api/open-api-asset-upload#KB-055"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "open-api/open-api-asset-upload#KB-055",
+        "open-api/open-api-asset-upload#KB-056",
+        "open-api/open-api-asset-upload#KB-048"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-071",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-152] Message, field lỗi và upload_id sau khi bị từ chối vì vượt cap (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "unspecified",
+        "state": "token Open API hợp lệ trong TIB_FULL_ACCESS_TOKEN",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "open-api"
+      },
+      "precondition": "Gọi trên host của TIB_API_BASE với Authorization Bearer bằng token trong TIB_FULL_ACCESS_TOKEN và Accept: application/json. Fixture ảnh tự sinh (không dùng file hay URL trong CCR); đếm layer image qua GET /openapi/v1/layer-images (duyệt hết cursor) trước và sau. Xoá layer image test tạo ra sau lượt chạy. Chạy cùng fixture của CHK-069 và CHK-070.",
+      "steps": [
+        "Ghi message và key trong errors của response từ chối ở CHK-069 (url) và CHK-070 (upload_id).",
+        "Gửi lại POST /openapi/v1/layer-images với cùng upload_id; ghi status và message."
+      ],
+      "observation_point": "Message, key trong errors, response của lần gửi lại",
+      "expected_result": "Baseline theo quan sát: 422 với message \"The image is 12000x12000 px (144 MP), over the 128 MP limit. Resize it to at most 128 megapixels and upload again.\" dưới errors.url hoặc errors.upload_id; gửi lại upload_id trả 422 \"The upload was not found or has expired. Create a new one with POST /uploads.\".",
+      "oracle": {
+        "kb_ids": [
+          "open-api/open-api-asset-upload#KB-056"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "open-api/open-api-asset-upload#KB-055",
+        "open-api/open-api-asset-upload#KB-056",
+        "open-api/open-api-asset-upload#KB-041"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-open-api-059"
+    },
+    {
+      "check_id": "CHK-072",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "[CBS-152] Ranh giới cap: ảnh đúng 128.000.000 px được nhận, ảnh lớn hơn bị từ chối",
+      "applicability": {
+        "role": "unspecified",
+        "state": "token Open API hợp lệ trong TIB_FULL_ACCESS_TOKEN",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "open-api"
+      },
+      "precondition": "Gọi trên host của TIB_API_BASE với Authorization Bearer bằng token trong TIB_FULL_ACCESS_TOKEN và Accept: application/json. Fixture ảnh tự sinh (không dùng file hay URL trong CCR); đếm layer image qua GET /openapi/v1/layer-images (duyệt hết cursor) trước và sau. Xoá layer image test tạo ra sau lượt chạy. Cần PNG 16000x8000 (đúng 128.000.000 px) và 16001x8000.",
+      "steps": [
+        "POST /openapi/v1/layer-images (url hoặc upload_id) với PNG 16000x8000; poll GET theo id tới khi ready hoặc hết 2 phút.",
+        "Lặp lại với PNG 16001x8000.",
+        "Đếm layer image."
+      ],
+      "observation_point": "Status của hai request; status cuối của layer image 16000x8000; số layer image",
+      "expected_result": "Ảnh 16000x8000 không bị từ chối vì cap (tạo layer image); ảnh 16001x8000 bị từ chối, không tạo layer image.",
+      "oracle": {
+        "kb_ids": [
+          "open-api/open-api-asset-upload#KB-055",
+          "open-api/open-api-asset-upload#KB-057"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "open-api/open-api-asset-upload#KB-055",
+        "open-api/open-api-asset-upload#KB-057"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Ranh giới chưa từng chạy trên Open API (chỉ qua tool MCP); ghi build."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-073",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-152] upload_id với PNG có header hỏng bị từ chối, không tạo layer image",
+      "applicability": {
+        "role": "unspecified",
+        "state": "token Open API hợp lệ trong TIB_FULL_ACCESS_TOKEN",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "open-api"
+      },
+      "precondition": "Gọi trên host của TIB_API_BASE với Authorization Bearer bằng token trong TIB_FULL_ACCESS_TOKEN và Accept: application/json. Fixture ảnh tự sinh (không dùng file hay URL trong CCR); đếm layer image qua GET /openapi/v1/layer-images (duyệt hết cursor) trước và sau. Xoá layer image test tạo ra sau lượt chạy. Fixture: 20 byte đầu của một PNG hợp lệ.",
+      "steps": [
+        "POST /openapi/v1/uploads, PUT file 20 byte lên upload_url.",
+        "POST /openapi/v1/layer-images với upload_id.",
+        "Ghi status, message, errors; đếm layer image."
+      ],
+      "observation_point": "Status, message, errors; số layer image",
+      "expected_result": "Finalize bị từ chối; không có layer image mới.",
+      "oracle": {
+        "kb_ids": [
+          "open-api/open-api-asset-upload#KB-055"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "open-api/open-api-asset-upload#KB-055",
+        "open-api/open-api-asset-upload#KB-058"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Message quan sát (KB-058, chưa xác nhận): \"The image's pixel size could not be read from its header; the file may be corrupt or truncated. Re-export it as PNG, JPEG, GIF or WebP and upload again.\""
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-074",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-152] Presign POST /uploads vượt cap báo lỗi theo megapixel",
+      "applicability": {
+        "role": "unspecified",
+        "state": "token Open API hợp lệ trong TIB_FULL_ACCESS_TOKEN",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "open-api"
+      },
+      "precondition": "Gọi trên host của TIB_API_BASE với Authorization Bearer bằng token trong TIB_FULL_ACCESS_TOKEN và Accept: application/json. Không cần file.",
+      "steps": [
+        "POST /openapi/v1/uploads với filename big.png, filesize 1000000, filewidth 12000, fileheight 12000.",
+        "Ghi status, message và errors."
+      ],
+      "observation_point": "Message lỗi về kích thước",
+      "expected_result": "Message lỗi là \"file is too large to upload, maximum 128 megapixels.\"; không có chuỗi 128000000.",
+      "oracle": {
+        "kb_ids": [
+          "open-api/open-api-asset-upload#KB-059"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "open-api/open-api-asset-upload#KB-059",
+        "open-api/open-api-asset-upload#KB-060"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Status 422 và field errors.filewidth/fileheight là quan sát (KB-060)."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-075",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "[CBS-152] Raster dưới cap qua url và upload_id vẫn 201 processing rồi ready (quan sát)",
+      "applicability": {
+        "role": "unspecified",
+        "state": "token Open API hợp lệ trong TIB_FULL_ACCESS_TOKEN",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "open-api"
+      },
+      "precondition": "Gọi trên host của TIB_API_BASE với Authorization Bearer bằng token trong TIB_FULL_ACCESS_TOKEN và Accept: application/json. Fixture ảnh tự sinh (không dùng file hay URL trong CCR); đếm layer image qua GET /openapi/v1/layer-images (duyệt hết cursor) trước và sau. Xoá layer image test tạo ra sau lượt chạy. Fixture PNG nhỏ (vd 200x200) và URL public của một raster nhỏ.",
+      "steps": [
+        "POST /openapi/v1/layer-images với url của raster nhỏ.",
+        "POST /uploads → PUT → POST /layer-images với upload_id.",
+        "Poll GET theo id tới khi ready."
+      ],
+      "observation_point": "Status và body của hai request; url, thumbnail_url, width, height khi ready",
+      "expected_result": "Baseline theo quan sát: 201 status processing, url null; sau đó ready với url kết thúc _large.webp và thumbnail_url có giá trị.",
+      "oracle": {
+        "kb_ids": [
+          "open-api/open-api-asset-upload#KB-061"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "open-api/open-api-asset-upload#KB-061",
+        "open-api/open-api-asset-upload#KB-037",
+        "open-api/open-api-asset-upload#KB-038"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-open-api-062"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -2818,6 +3084,21 @@
       "covered_by_check_ids": [],
       "coverage_status": "NOT_COVERED",
       "note": "Mọi check áp cho staging."
+    },
+    {
+      "feature_id": "FEAT-01-open-api-asset-upload",
+      "risk_or_gap_ref": "[CBS-152] Capability: giới hạn pixel 128 MP khi upload layer image",
+      "covered_by_check_ids": [
+        "CHK-069",
+        "CHK-070",
+        "CHK-071",
+        "CHK-072",
+        "CHK-073",
+        "CHK-074",
+        "CHK-075"
+      ],
+      "coverage_status": "COVERED_BASELINE",
+      "note": "CHK-069, 070, 072, 073, 074 STRONG; CHK-071, 075 BASELINE. Production chưa chạy."
     }
   ],
   "excluded_dimensions": [
@@ -2827,7 +3108,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-132"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-152"
   }
 }

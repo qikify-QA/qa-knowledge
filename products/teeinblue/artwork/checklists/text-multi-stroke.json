@@ -953,6 +953,164 @@
       "priority": "P2",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-artwork-164"
+    },
+    {
+      "check_id": "CHK-028",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "[CBS-149] File design PNG và SVG của curve / spiral / shape / warp text vẽ stroke theo cặp stroke_color / stroke_width của editor, khớp preview",
+      "applicability": {
+        "role": "merchant-owner (cấu hình) + buyer (đặt order test)",
+        "state": "layer curve text, spiral text, shape text, warp text mới đặt stroke (artwork schema 2)",
+        "environment": "staging; ghi build api / sdk và ngày chạy",
+        "surface_or_device": "portal Artwork Editor 2.0 + storefront preview (SDK) + file design PNG / SVG của order"
+      },
+      "precondition": "Store explorer trên staging (xác minh account theo explore playbook trước khi thao tác và sau mỗi lần login lại); fixture tự dựng trên store explorer, không dùng store / artwork / campaign / order nêu trong CCR, Jira hay production. Build có TIB-5699 (ghi build api và ngày chạy). Artwork Artwork 2.0 throwaway gắn vào campaign đã publish trên store explorer; store cho phép order test (Bogus gateway) để lấy file design PNG / SVG.",
+      "steps": [
+        "Trên artwork throwaway, tạo 4 layer curve, spiral, shape, warp text; bật stroke, đặt màu và width khác mặc định cho từng layer; Save.",
+        "Chụp preview Artwork Editor và preview storefront của từng layer.",
+        "Đặt 1 order test; tải file design PNG và SVG; ghi màu và độ dày stroke của từng layer (SVG: thuộc tính stroke / stroke-width).",
+        "So PNG và SVG với preview editor và preview storefront."
+      ],
+      "observation_point": "Màu và độ dày stroke của 4 loại layer trên PNG, SVG, preview editor, preview storefront.",
+      "expected_result": "File design PNG và SVG vẽ stroke theo cặp stroke_color / stroke_width đang đặt trong editor cho cả 4 loại, khớp preview editor và preview storefront. Lệch = bug. Ghi riêng stroke-width của spiral text trên SVG (quan sát width 5 → stroke-width 3, khác tỉ lệ × 0.875 của loại khác; chưa có trả lời của Dev, không phán). Không áp cho warp text bật stroke với width rỗng hoặc 0 (preview không vẽ stroke, render vẽ width 1; OQ-artwork-567) — check này đặt width khác mặc định.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/text-multi-stroke#KB-1094"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/text-multi-stroke#KB-141",
+        "artwork/text-multi-stroke#KB-1095"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "File in của khách dùng stroke khác editor (lỗi gốc TIB-5699).",
+        "So hình bằng mắt có thể bỏ sót chênh lệch nhỏ về độ dày."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-029",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "[CBS-149] Save xoá stroke_layers khỏi curve / spiral / shape / warp text (kể cả vừa convert từ Text 2 lớp), giữ cặp stroke; Text và Paragraph giữ stroke_layers",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "layer Text 2 lớp stroke convert sang Curve và sang Warp; layer 4 loại mới đặt stroke; layer Text và Paragraph 2 lớp",
+        "environment": "staging; ghi build api và ngày chạy",
+        "surface_or_device": "portal Artwork Editor 2.0 (Save, Convert to another layer) + DevTools Network / GraphQL đọc artwork"
+      },
+      "precondition": "Store explorer trên staging (xác minh account theo explore playbook trước khi thao tác và sau mỗi lần login lại); fixture tự dựng trên store explorer, không dùng store / artwork / campaign / order nêu trong CCR, Jira hay production. Build có TIB-5699 (ghi build api và ngày chạy). Artwork Artwork 2.0 throwaway, không Save artwork thật.",
+      "steps": [
+        "Tạo layer Text có 2 lớp stroke; Convert to another layer sang Curve Text; đặt stroke; Save; ghi body PUT /api/artworks/{id} và đọc lại layer.",
+        "Lặp lại với Convert sang Warp Text.",
+        "Trên cùng artwork có layer Text và Paragraph 2 lớp stroke; Save; đọc lại 2 layer này.",
+        "Nếu có order test (CHK-028), ghi số vòng stroke của layer đã convert trên PNG / SVG."
+      ],
+      "observation_point": "Field stroke_layers, stroke_color, stroke_width của từng layer trong dữ liệu lưu sau Save.",
+      "expected_result": "Layer curve / warp text (gồm layer vừa convert) lưu không có stroke_layers, cặp stroke_color / stroke_width = giá trị editor; layer Text và Paragraph vẫn có stroke_layers đủ 2 entry. Lệch = bug. PNG + SVG chỉ vẽ 1 stroke cho layer đã convert là quan sát của TC-TIB-8983 / 8985, ghi lại.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/text-multi-stroke#KB-1095"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/text-multi-stroke#KB-137",
+        "artwork/text-multi-stroke#KB-136",
+        "artwork/text-multi-stroke#KB-1094"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mất stack stroke của Text / Paragraph nếu hook save áp nhầm type."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-030",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "[CBS-149] Text và Paragraph 2 lớp stroke sau TIB-5699: PNG / SVG vẽ 2 vòng, đổi text + Save + mở lại vẫn 2 lớp",
+      "applicability": {
+        "role": "merchant-owner + buyer (đặt order test)",
+        "state": "layer Text và Paragraph có 2 lớp stroke",
+        "environment": "staging; ghi build api và ngày chạy",
+        "surface_or_device": "portal Artwork Editor 2.0 + file design PNG / SVG của order"
+      },
+      "precondition": "Store explorer trên staging (xác minh account theo explore playbook trước khi thao tác và sau mỗi lần login lại); fixture tự dựng trên store explorer, không dùng store / artwork / campaign / order nêu trong CCR, Jira hay production. Build có TIB-5699 (ghi build api và ngày chạy). Artwork Artwork 2.0 throwaway gắn vào campaign đã publish trên store explorer; store cho phép order test (Bogus gateway) để lấy file design PNG / SVG.",
+      "steps": [
+        "Tạo layer Text và Paragraph, mỗi layer 2 lớp stroke khác màu / width; Save; đặt order test; tải PNG và SVG; ghi số vòng stroke.",
+        "Đổi text của 2 layer; Save; ghi body PUT (số entry stroke_layers).",
+        "Mở lại artwork; ghi số row trong popover Stroke của mỗi layer.",
+        "Đặt order test lần 2; ghi số vòng stroke trên PNG và SVG."
+      ],
+      "observation_point": "Số vòng stroke trên PNG / SVG trước và sau Save; số row popover Stroke và số entry stroke_layers trong PUT.",
+      "expected_result": "Baseline quan sát (TC-TIB-8986, staging 2026-11-10, không ghi build): PNG và SVG vẽ đủ 2 vòng trước và sau đổi text + Save; mở lại vẫn 2 row; PUT gửi 2 entry stroke_layers. Lệch = cần điều tra. (Việc Text / Paragraph giữ stroke_layers khi save là STRONG ở CHK-029.)",
+      "oracle": {
+        "kb_ids": [
+          "artwork/text-multi-stroke#KB-1096"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/text-multi-stroke#KB-143",
+        "artwork/text-multi-stroke#KB-136",
+        "artwork/text-multi-stroke#KB-1095"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Bản sửa 1 stroke cho 4 loại làm vỡ stack của Text / Paragraph."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-559"
+    },
+    {
+      "check_id": "CHK-031",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "[CBS-149] Đổi stroke curve text nhiều lần: mỗi PNG theo stroke mới nhất của editor, không quay về giá trị cũ",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "layer curve text có bật stroke",
+        "environment": "staging; ghi build api và ngày chạy",
+        "surface_or_device": "portal Artwork Editor 2.0 + file design PNG (order test hoặc render test)"
+      },
+      "precondition": "Store explorer trên staging (xác minh account theo explore playbook trước khi thao tác và sau mỗi lần login lại); fixture tự dựng trên store explorer, không dùng store / artwork / campaign / order nêu trong CCR, Jira hay production. Build có TIB-5699 (ghi build api và ngày chạy). Artwork Artwork 2.0 throwaway gắn vào campaign đã publish trên store explorer; store cho phép order test (Bogus gateway) để lấy file design PNG / SVG.",
+      "steps": [
+        "Đặt stroke curve text (màu A, width nhỏ); Save; render PNG; ghi màu / độ dày.",
+        "Tăng width; Save; render lại; ghi.",
+        "Giảm width; Save; render lại; ghi.",
+        "Đổi màu; Save; render lại; ghi; so từng PNG với giá trị editor của lần đó."
+      ],
+      "observation_point": "Màu và độ dày stroke của từng PNG so với giá trị editor tại lần Save tương ứng.",
+      "expected_result": "Baseline quan sát (TC-TIB-8982, staging 2026-11-10, không ghi build): mỗi PNG theo stroke mới nhất của editor, không quay về giá trị cũ. Lệch = cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/text-multi-stroke#KB-1097"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/text-multi-stroke#KB-1094"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Render dùng lại stroke cũ đã cache / lưu."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-560"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1115,6 +1273,30 @@
         "CHK-020"
       ],
       "oracle": "BASELINE chỉ phần UI; payload chặn bởi lỗi Save ở checklist artwork-save-persist"
+    },
+    {
+      "feature_id": "FEAT-20-text-multi-stroke",
+      "item": "[CBS-149] Stroke 1 cặp của curve / spiral / shape / warp text: render PNG / SVG, save xoá stroke_layers, convert Text → Curve / Warp",
+      "check_ids": [
+        "CHK-028",
+        "CHK-029"
+      ],
+      "oracle": "STRONG (KB-1094, KB-1095; Dev TIB-5699 comment 56557)"
+    },
+    {
+      "feature_id": "FEAT-20-text-multi-stroke",
+      "item": "[CBS-149] Regression Text / Paragraph 2 lớp; đổi stroke nhiều lần",
+      "check_ids": [
+        "CHK-030",
+        "CHK-031"
+      ],
+      "oracle": "BASELINE (KB-1096, KB-1097 OBSERVED_CURRENT/LOW)"
+    },
+    {
+      "feature_id": "FEAT-20-text-multi-stroke",
+      "item": "Gap [CBS-149]: layer 4 loại đã giữ sẵn stroke_layers cũ (Dev Not for QA); ảnh render production chưa người xem duyệt",
+      "check_ids": [],
+      "oracle": "NONE — unknown_areas, không dựng check vì QA không được sửa data bằng tay"
     }
   ],
   "excluded_dimensions": [
@@ -1128,7 +1310,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-149"
   }
 }

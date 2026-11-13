@@ -1,0 +1,662 @@
+{
+  "feature_id": "FEAT-03-tier-plan-pricing-display",
+  "feature_key": "tier-plan-pricing-display",
+  "object_id": "subscription",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Bảng Pricing Plans hiện cột plan, giá tháng và các hàng bậc order items",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở /subscriptions/shopify-tier.",
+        "Đọc heading, tên cột plan, giá/tháng và từng hàng bậc.",
+        "Ghi lại nhãn từng hàng và đơn giá."
+      ],
+      "observation_point": "UI bảng Pricing Plans for Shopify",
+      "expected_result": "Quan sát trên staging, plan Blue, Order items 0: heading \"Pricing Plans for Shopify\"; một cột \"BLUE\" \"$49/month\"; hàng \"0 - 1 order items per month\" = \"$0 / item\", \"2 - 5 ...\" = \"$0.5 / item\", \"6 - 9 ...\" = \"$0.2 / item\", \"10+ order items per month\" = \"$0.1 / item\". Giá trị staging, chưa biết production.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1213"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1214"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Giá trị staging khác production chưa xác nhận"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-025"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Bảng Pricing Plans khớp response GET tier-plans cùng môi trường",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở DevTools tab Network.",
+        "Mở /subscriptions/shopify-tier.",
+        "Mở response GET /api/platforms/shopify/tier-plans.",
+        "So price, tiers[].starting_from, tiers[].unit_price với giá và nhãn hàng trên bảng."
+      ],
+      "observation_point": "Response tier-plans và UI bảng",
+      "expected_result": "Quan sát trên staging, plan Blue, Order items 0, hai lần tải: response là mảng một phần tử Blue (price 49, tiers starting_from 2/6/10, unit_price 0.5/0.2/0.1, capped_amount 9999.99); mốc và đơn giá trùng nhãn và giá trên bảng; hàng \"0 - 1\" không có phần tử trong tiers và hiện \"$0 / item\".",
+      "oracle": {
+        "kb_ids": [
+          "KB-1214",
+          "KB-1213"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1214",
+        "KB-1213"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hiển thị sai giá/bậc làm merchant hiểu sai chi phí"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-025"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Nút Current plan, link Pricing FAQ và control không có trên account đã subscribe",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở /subscriptions/shopify-tier.",
+        "Kiểm tra trạng thái nút Current plan và hover.",
+        "Bấm link Pricing FAQ, kiểm tra tab mới (chỉ xem điều hướng).",
+        "Tìm \"View other plans\", \"Free Orders/Month\", nút Subscribe/Upgrade."
+      ],
+      "observation_point": "UI trang, tab mới",
+      "expected_result": "Baseline: nút \"Current plan\" disabled, hover không có tooltip; \"Pricing FAQ\" mở tab mới tới trang pricing của site support; không thấy \"View other plans\", \"Free Orders/Month\" hay nút Subscribe/Upgrade trên account Blue đã subscribe.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1213"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1213"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-025"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Calculator hiện nhãn, giá trị mặc định, slider và Total fee",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở /subscriptions/shopify-tier.",
+        "Đọc khối calculator: nhãn, giá trị mặc định ô nhập, mốc slider, Total fee."
+      ],
+      "observation_point": "UI khối calculator",
+      "expected_result": "Baseline: nhãn \"Number of order items per month:\"; ô number min 0 mặc định 2; slider min 0, max 1, step 0.001 với mốc \"2 ($0.5/item)\", \"6 ($0.2/item)\", \"10+ ($0.1/item)\"; \"Total fee:\" \"$49.50\" \"/month\" \"Includes monthly plan + transaction fees\"; không có tiêu đề \"Estimate your cost\". Mốc và đơn giá là cấu hình staging.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1216"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1213"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-025"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Total fee theo số order items nhập tại các giá trị mẫu",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở /subscriptions/shopify-tier.",
+        "Lần lượt nhập 0, 1, 2, 5, 6, 9, 10, 15, 100, 1000 vào ô Number of order items per month.",
+        "Ghi Total fee sau mỗi giá trị."
+      ],
+      "observation_point": "Total fee trên UI",
+      "expected_result": "Quan sát trên staging, plan Blue $49, Order items 0: nhập 0 -> $49.00; 1 -> $49.00; 2 -> $49.50; 5 -> $51.00; 6 -> $51.20; 9 -> $51.80; 10 -> $51.90; 15 -> $52.40; 100 -> $60.90; 1000 -> $150.90, hiển thị dạng \"$<số>.<2 chữ số>\". Chỉ là các giá trị đã quan sát; không áp cho production.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1217"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1216",
+        "KB-1218"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Công thức Total fee chỉ là suy luận"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-025"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "Calculator với giá trị biên: trống, âm, thập phân, slider",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở /subscriptions/shopify-tier.",
+        "Xoá trống ô nhập, ghi Total fee.",
+        "Nhập -1, ghi ô nhập và Total fee.",
+        "Nhập 2.5, ghi Total fee và slider.",
+        "Focus slider, bấm End; đặt lại ô 2 rồi bấm ArrowRight 3 lần; ghi ô, Total fee, slider."
+      ],
+      "observation_point": "UI calculator",
+      "expected_result": "Baseline một lần quan sát: trống -> $49.00; -1 -> ô hiện 0, $49.00; 2.5 -> $49.75 (slider 0.222); End -> ô 10, $51.90, slider 1; từ ô 2 ArrowRight 3 lần -> ô 0, $49.00, slider 0.002. Slider và ô nhập không đổi tuyến tính theo nhau. Chưa biết đây có phải hành vi mong muốn.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1219"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1216"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Calculator xử lý biên lạ chưa biết có phải ý định"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-025"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Công thức Total fee khớp cách tính lũy tiến theo bậc",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở /subscriptions/shopify-tier.",
+        "Nhập một giá trị trong mỗi bậc và một giá trị thập phân.",
+        "Tự tính $49 cộng phí từng item theo đơn giá của bậc chứa item đó và so với Total fee."
+      ],
+      "observation_point": "Total fee trên UI so với phép tính tay",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1218",
+        "KB-1217"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Công thức Total fee chỉ là suy luận"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-015"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Nhập calculator và kéo slider không phát sinh request",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở DevTools tab Network, xoá log.",
+        "Nhập vài giá trị vào ô và kéo slider.",
+        "Đếm request mới trong log."
+      ],
+      "observation_point": "Network log",
+      "expected_result": "Baseline: nhập giá trị và dùng slider không phát sinh request (13 lần nhập, 2 lần slider trong evidence); Total fee tính ở client.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1216"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1216"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-025"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Tải lại trang cho dữ liệu tier-plans và bảng giá giống nhau",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở /subscriptions/shopify-tier, ghi bảng và response tier-plans.",
+        "Tải lại trang.",
+        "So lại bảng và response."
+      ],
+      "observation_point": "UI bảng, response tier-plans",
+      "expected_result": "Baseline: hai lần tải cùng dữ liệu tier-plans và cùng bảng giá, khi dữ liệu cấu hình không đổi giữa hai lần.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1214"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1213"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-025"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "PERMISSION",
+      "layer": "portal",
+      "title": "Role owner truy cập được trang subscription tier",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Đăng nhập bằng account owner.",
+        "Mở /subscriptions/shopify-tier.",
+        "Kiểm tra trang hiện và control Cancel subscription, Change Default billing store có hiện (không bấm)."
+      ],
+      "observation_point": "UI trang",
+      "expected_result": "Baseline: owner truy cập được /subscriptions/shopify-tier và thấy control \"Cancel subscription\", \"Change Default billing store\". Role khác chưa quan sát nên check này không suy cho role khác.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1227"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1227"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Role khác owner chưa thử"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-025"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Xem trang và dùng calculator không phát sinh request ghi subscription/billing",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở DevTools tab Network, lọc request non-GET.",
+        "Mở /subscriptions/shopify-tier, dùng calculator.",
+        "Liệt kê request non-GET."
+      ],
+      "observation_point": "Network log",
+      "expected_result": "Baseline: request non-GET chỉ gồm POST /api/assistant/session-token mỗi lần tải trang và request analytics; không có request ghi subscription/billing. Control ghi billing không được bấm nên chưa quan sát endpoint ghi.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1226"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1226"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Request ghi billing ngoài ý muốn khi chỉ xem"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-025"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-154] Active Plan của account Blue ghi \"order items\" thay cho \"orders\"",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account Blue, store Shopify chưa subscribe (Active Plan)",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner has_new_pricing (Blue) có store Shopify chưa subscribe Blue (account của biến env TIB_ONBOARDING_PRICING). Không bấm control ghi billing. Số liệu theo tier config staging (KB-1231): không so số production.",
+      "steps": [
+        "Mở /active-plan.",
+        "Đọc dòng free quota (\"NO transaction fee for <N> order items/month\") và dòng \"transaction fee from order item <N>+\".",
+        "Đọc list \"Lower fees as your sales increase\": mỗi dòng bậc.",
+        "Hover hai tooltip (?), đọc nội dung (chỉ kiểm có nói theo order item).",
+        "Đọc tiêu đề \"Estimate your cost\" và nhãn calculator.",
+        "Tìm chữ \"orders\" còn sót ở các vị trí trên."
+      ],
+      "observation_point": "UI Active Plan (free quota, Lower fees, tooltip, calculator)",
+      "expected_result": "Ở mọi vị trí trên, chữ dùng \"order items\" thay cho \"orders\": free quota \"... order items/month\"; \"transaction fee from order item <N>+\"; mỗi dòng Lower fees dạng \"<khoảng> order items: <phí>/item\"; hai tooltip nói theo order item; calculator ghi \"Number of order items per month:\". Con số theo tier config của môi trường; chữ \"orders\" không còn ở các vị trí này.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1228"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1230",
+        "KB-1231",
+        "KB-1213"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chữ orders/order items lệch ở vị trí bị bỏ sót; số staging khác production (KB-1231)"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-154] Subscription details Blue ghi \"order items\" ở usage bar, bảng giá và calculator",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account đã subscribe Blue",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner đã subscribe Blue (account của biến env TIB_ONBOARDING). Không bấm control ghi billing. Số liệu theo tier config staging (KB-1231): không so số production.",
+      "steps": [
+        "Mở /subscriptions/shopify-tier.",
+        "Đọc nhãn usage bar.",
+        "Đọc nhãn từng hàng bảng giá.",
+        "Đọc nhãn calculator.",
+        "Tìm chữ \"orders\" còn sót ở các vị trí trên."
+      ],
+      "observation_point": "UI Subscription details (usage bar, bảng giá, calculator)",
+      "expected_result": "Usage bar ghi \"Order items:\"; mỗi hàng bảng giá dạng \"<khoảng> order items per month\"; calculator ghi \"Number of order items per month:\". Chữ \"orders\" không còn ở các vị trí này. Con số theo tier config của môi trường.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1228"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1230",
+        "KB-1231",
+        "KB-1213",
+        "KB-1216"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chữ orders/order items lệch ở vị trí bị bỏ sót"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-154] Active Plan staging: nhãn số theo tier config và tier cuối dạng \"{from}+\"",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account Blue, store Shopify chưa subscribe (Active Plan)",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner has_new_pricing (Blue) có store Shopify chưa subscribe Blue (account của biến env TIB_ONBOARDING_PRICING). Không bấm control ghi billing. Số liệu theo tier config staging (KB-1231): không so số production.",
+      "steps": [
+        "Mở /active-plan.",
+        "Ghi free quota, dòng \"transaction fee from order item <N>+\" và các dòng Lower fees.",
+        "So số trên nhãn với mốc tier config của plan staging (response tier-plans cùng môi trường).",
+        "Ghi tier cuối có dạng \"{from}+\" không."
+      ],
+      "observation_point": "UI Active Plan so với tier config staging",
+      "expected_result": "Baseline quan sát trên staging (mốc 2/6/10, QA PASS 2026-11-10): \"NO transaction fee for 1 order items/month\"; \"$0.1 - $0.5 transaction fee from order item 2+\"; Lower fees \"2-5 order items: $0.5/item\", \"6-9 order items: $0.2/item\", \"10+ order items: $0.1/item\". Tier cuối ghi \"{from}+\". Số đổi theo tier config; chưa quan sát nhãn từ 1,000 trở lên (dấu phẩy).",
+      "oracle": {
+        "kb_ids": [
+          "KB-1230"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1228",
+        "KB-1231",
+        "KB-1214"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Số staging khác production chưa xác nhận (KB-1231)"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-029"
+    },
+    {
+      "check_id": "CHK-015",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-154] Popup \"View other plans\" dùng chữ \"order items\"",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account Blue với môi trường có ≥2 tier plan; staging hiện chỉ 1 plan nên nút không render (KB-1231)",
+        "environment": "môi trường có ≥2 tier plan (staging hiện không có)",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Cần môi trường/cấu hình có từ 2 tier plan để nút \"View other plans\" render; staging hiện không có (KB-1231). Chưa có fixture; account Active Plan theo biến env TIB_ONBOARDING_PRICING.",
+      "steps": [
+        "Mở /active-plan.",
+        "Bấm \"View other plans\" nếu có.",
+        "Đọc nhãn bảng giá trong popup và so với chữ ở Active Plan."
+      ],
+      "observation_point": "Popup \"View other plans\"",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1228",
+        "KB-1231"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Popup chưa quan sát (KB-1228 nói dùng chung bảng giá)"
+      ],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-subscription-028"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-03-tier-plan-pricing-display",
+      "risk_or_gap_ref": "Capability: xem bảng Pricing Plans",
+      "covered_by_check_ids": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-003",
+        "CHK-009"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-03-tier-plan-pricing-display",
+      "risk_or_gap_ref": "Capability: ước tính Total fee bằng calculator",
+      "covered_by_check_ids": [
+        "CHK-004",
+        "CHK-005",
+        "CHK-006",
+        "CHK-008"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-03-tier-plan-pricing-display",
+      "risk_or_gap_ref": "Risk: công thức Total fee suy luận",
+      "covered_by_check_ids": [
+        "CHK-007"
+      ],
+      "coverage_status": "GAP_NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-03-tier-plan-pricing-display",
+      "risk_or_gap_ref": "Risk: hiển thị sai giá/bậc",
+      "covered_by_check_ids": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-005"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-03-tier-plan-pricing-display",
+      "risk_or_gap_ref": "Permission owner; request ghi khi xem",
+      "covered_by_check_ids": [
+        "CHK-010",
+        "CHK-011"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-03-tier-plan-pricing-display",
+      "risk_or_gap_ref": "CBS-154: chữ \"order items\" thay \"orders\" ở Active Plan và Subscription details Blue",
+      "covered_by_check_ids": [
+        "CHK-012",
+        "CHK-013"
+      ],
+      "coverage_status": "COVERED_STRONG"
+    },
+    {
+      "feature_id": "FEAT-03-tier-plan-pricing-display",
+      "risk_or_gap_ref": "CBS-154: nhãn số Active Plan theo tier config staging",
+      "covered_by_check_ids": [
+        "CHK-014"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-03-tier-plan-pricing-display",
+      "risk_or_gap_ref": "CBS-154: popup \"View other plans\" chưa quan sát",
+      "covered_by_check_ids": [
+        "CHK-015"
+      ],
+      "coverage_status": "GAP_NEEDS_CONFIRMATION"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Dimension áp dụng nhưng chưa có evidence: trang chỉ đọc, chưa có input sai ngoài biên calculator (đã ở BOUNDARY); trạng thái chưa subscribe chưa quan sát."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Không áp dụng: object chưa có base và feature không có item KNOWN_DEFECT."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-154"
+  }
+}

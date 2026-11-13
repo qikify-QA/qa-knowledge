@@ -69,7 +69,9 @@
         "artwork/run-image-effects#KB-803",
         "artwork/run-image-effects#KB-804",
         "artwork/run-image-effects#KB-806",
-        "artwork/run-image-effects#KB-812"
+        "artwork/run-image-effects#KB-812",
+        "artwork/run-image-effects#KB-1119",
+        "artwork/run-image-effects#KB-1120"
       ]
     },
     {
@@ -348,6 +350,18 @@
       "kb_refs": [
         "artwork/run-image-effects#KB-817"
       ]
+    },
+    {
+      "rule": "[CBS-163] Response của lượt chạy effect trên layer ảnh là danh sách tường minh: status, error_message, layer_image (id, url, thumbnail, width, height); user_id của lượt chạy bị bỏ.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner, portal (Artwork editor) + portal API",
+      "caveats": "Quote không nói route, status code hay response lúc đang chạy.",
+      "confirmation_ref": "Jira TIB-5689 comment 56448 Solution, bảng Portal hàng LayerImageController::effectsRun (Dev, 2026-11-04)",
+      "kb_refs": [
+        "artwork/run-image-effects#KB-1119"
+      ]
     }
   ],
   "observed_behavior": [
@@ -440,6 +454,15 @@
       "kb_refs": [
         "artwork/run-image-effects#KB-816"
       ]
+    },
+    {
+      "statement": "[CBS-163] Run effects tới khi xong: layer nhận ảnh kết quả; response trạng thái lượt chạy có status và layer_image, không user_id (TC-TIB-8597, build không ghi).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/run-image-effects#KB-1120"
+      ],
+      "observed_count": 1
     }
   ],
   "known_limitations": [
@@ -491,7 +514,8 @@
       "Server từ chối lượt chạy từ staff không có Manage Artwork (KB-815); endpoint không nêu trong KB",
       "Server kiểm lại API key lúc bắt đầu lượt chạy (KB-816, quan sát)",
       "Hàng đợi và timeout phía server: chờ hàng đợi 5 phút, xử lý khoảng 6 phút (KB-809, KB-810)",
-      "Giới hạn tần suất theo store và giới hạn upload layer image (KB-813, KB-814)"
+      "Giới hạn tần suất theo store và giới hạn upload layer image (KB-813, KB-814)",
+      "[CBS-163] Response lượt chạy (LayerImageController::effectsRun): status, error_message, layer_image (id, url, thumbnail, width, height), không user_id (KB-1119)"
     ],
     "data": [
       "Image library: kết quả thành ảnh mới, ảnh cũ giữ nguyên, còn sau Undo, còn khi layer không được thay (KB-803, KB-805, KB-807, KB-809)",
@@ -543,6 +567,14 @@
         "artwork/run-image-effects#KB-816",
         "artwork/run-image-effects#KB-817"
       ]
+    },
+    {
+      "type": "cross_object",
+      "description": "Object sdk: rule tỉ lệ đầu ra Gemini (sdk/genai-personalization-runtime#KB-569, PROPOSED) giải thích kích thước kết quả 2528x1696 ở KB-1103; chỉ tham chiếu, không làm oracle.",
+      "kb_refs": [
+        "artwork/run-image-effects#KB-1103",
+        "sdk/genai-personalization-runtime#KB-569"
+      ]
     }
   ],
   "risks": [
@@ -589,6 +621,19 @@
         "artwork/run-image-effects#KB-811",
         "artwork/run-image-effects#KB-812"
       ]
+    },
+    {
+      "risk": "[CBS-153] Ref image rất lớn của effect Gemini từng làm worker effect bị OOM (TIB-5615); với Run effects trong editor chỉ có một lượt PASS staging và expected là suy luận QA (KB-1103).",
+      "kb_refs": [
+        "artwork/run-image-effects#KB-1103"
+      ]
+    },
+    {
+      "risk": "[CBS-163] Response lượt chạy đổi sang danh sách key tường minh (KB-1119); chỉ có một lượt quan sát staging với lượt chạy thành công (KB-1120), chưa quan sát response khi lỗi (error_message).",
+      "kb_refs": [
+        "artwork/run-image-effects#KB-1119",
+        "artwork/run-image-effects#KB-1120"
+      ]
     }
   ],
   "environment_differences": [],
@@ -597,8 +642,8 @@
     "observed_at": "2026-10-28"
   },
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-140"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   },
   "unknown_areas": [
     {
@@ -817,6 +862,27 @@
         "artwork/run-image-effects#KB-818"
       ],
       "oq_id": "OQ-artwork-453"
+    },
+    {
+      "question": "[MỚI, CBS-153] Run effects có [Gemini] image filter dùng ref image rất lớn (12000x12000): ApplyLayerImageEffectsJob có đi qua applyImageFilter() (ref image cap services.gemini.size) không, và expected có phải lượt chạy hoàn tất, layer thay bằng ảnh đã lọc, đứng thẳng, tỉ lệ theo rule tỉ lệ Gemini không?",
+      "why_it_matters": "KB-1103 là PROPOSED (đề xuất QA TIB-5615-A3, TC-TIB-8961 PASS staging 2026-11-10); QA plan Dev không có mục Run effects. CHK-031 không có oracle.",
+      "type": "NEEDS_CONFIRMATION",
+      "knowledge_kind": "PROPOSED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/run-image-effects#KB-1103",
+        "sdk/genai-personalization-runtime#KB-569"
+      ],
+      "oq_id": "OQ-artwork-570"
+    },
+    {
+      "question": "[CBS-163] Layer nhận ảnh kết quả và response lượt chạy có status, layer_image, không user_id (KB-1120) — Dev xác nhận là expected? error_message có mặt khi thành công không? (OQ-artwork-579)",
+      "why_it_matters": "KB-1120 là OBSERVED_CURRENT/LOW một lượt, build không ghi.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/run-image-effects#KB-1120"
+      ],
+      "oq_id": "OQ-artwork-579"
     }
   ],
   "coverage_matrix": [
@@ -1069,6 +1135,43 @@
       "covered": false,
       "kb_refs": [],
       "basis": "Mọi item scope staging"
+    },
+    {
+      "feature_id": "FEAT-26-run-image-effects",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Photo layer có [Gemini] image filter với ref image rất lớn",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/run-image-effects#KB-1103"
+      ],
+      "basis": "PROPOSED/LOW, không oracle"
+    },
+    {
+      "feature_id": "FEAT-26-run-image-effects",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] response lượt chạy thành công",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/run-image-effects#KB-1119",
+        "artwork/run-image-effects#KB-1120"
+      ],
+      "basis": "STRONG cho key set (KB-1119)"
+    },
+    {
+      "feature_id": "FEAT-26-run-image-effects",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] response lượt chạy lỗi (error_message); production",
+      "environment": "staging+production",
+      "covered": false,
+      "kb_refs": [
+        "artwork/run-image-effects#KB-1119"
+      ],
+      "basis": "chưa quan sát"
     }
   ],
   "profile_conflicts": [],

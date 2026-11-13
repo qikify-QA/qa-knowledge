@@ -1,0 +1,308 @@
+[
+  {
+    "kb_id": "KB-552",
+    "topic": "Gõ vào layer shape-text, spiral, warp-text: khoảng 1 request preview mỗi lần dừng gõ 1 giây, URL có ?slot=<layer id>.0",
+    "statement": "Theo Jira TIB-5666 comment #56294 QA plan bước 1-3 và comment #56230 Solution mục sdk (Dev, 2026-11-03), khi buyer gõ text dài vào layer shape-text, spiral hoặc warp-text trên storefront, SDK gửi khoảng một request games/shape-text, games/spiral hoặc games/warp_text cho mỗi lần dừng gõ khoảng một giây (debounce trailing 1000 ms, trước đây 300 ms), không phải một request mỗi từ. Mỗi URL request kết thúc bằng ?slot=<layer id>.0; request trước còn đang chạy hiện là cancelled hoặc 409; preview cuối là ảnh của text đầy đủ. Áp dụng storefront dùng SDK mới; theo comment #56488 (Dev, 2026-11-05), portal editor vẫn dùng SDK cũ tới khi submodule src/sdk của portal được bump.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page (layer shape-text, spiral, warp-text)",
+      "brand": null
+    },
+    "tags": [
+      "game-text",
+      "shape-text",
+      "spiral",
+      "warp-text",
+      "debounce",
+      "slot",
+      "TIB-5666"
+    ],
+    "related_kb_ids": [
+      "sdk/game-text-preview-render#KB-553",
+      "sdk/game-text-preview-render#KB-554",
+      "sdk/game-text-preview-render#KB-560"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5666 comment #56294 QA plan bước 1-3 và comment #56230 Solution mục sdk (Dev, 2026-11-03)",
+      "authored_on": "2026-11-03",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-159"
+    }
+  },
+  {
+    "kb_id": "KB-553",
+    "topic": "Spinner khi request preview đang chạy không tính là blank; blank là layer trống sau khi request kết thúc",
+    "statement": "Theo Jira TIB-5666 comment #56619 trả lời Q4 (Dev, 2026-11-06), trong lúc request preview của layer shape-text, spiral, warp-text đang chạy, layer chỉ hiện spinner (ảnh cũ không hiện, giống trước TIB-5666; Solution #56230: imageData vẫn set null nên spinner và loading look không đổi), và spinner không tính là blank. Blank nghĩa là layer trống (không ảnh, không spinner) sau khi request đã kết thúc; layer không được blank trong lúc gõ (QA plan #56294).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page (layer shape-text, spiral, warp-text)",
+      "brand": null
+    },
+    "tags": [
+      "game-text",
+      "spinner",
+      "blank",
+      "TIB-5666"
+    ],
+    "related_kb_ids": [
+      "sdk/game-text-preview-render#KB-552",
+      "sdk/game-text-preview-render#KB-554"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5666 comment #56619 trả lời Q4 (Dev, 2026-11-06)",
+      "authored_on": "2026-11-06",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-159"
+    }
+  },
+  {
+    "kb_id": "KB-554",
+    "topic": "Render preview bị request mới hơn (cùng client, cùng slot, khác payload) thay thế trả 409 no-store; SDK giữ ảnh cũ",
+    "statement": "Theo Jira TIB-5666 comment #56294 QA plan bước 6 và comment #56230 Solution mục api, sdk, Architecture (Dev, 2026-11-03), với shape-text, spiral, warp_text, GET games/{type}/{payload}.json và POST games/{type} trả 409 với Cache-Control: no-store khi một payload mới hơn, khác payload, từ cùng client và cùng instance layer (slot) đã thay thế render đó. Mở lại đúng URL của request 409 sau đó không nhận 409 đã cache (cf-cache-status không phải HIT) mà render preview. Payload giống hệt nhau (vd một layer mở hai lần trên SDK cũ, hoặc duplicate giữ nguyên text) không bao giờ thay thế nhau. SDK mới giữ ảnh trước đó khi nhận 409 và không báo lỗi image data.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "api storefront public GET games/{type}/{payload}.json, POST games/{type}",
+      "brand": null
+    },
+    "tags": [
+      "game-text",
+      "supersede",
+      "409",
+      "cache-control",
+      "api",
+      "TIB-5666"
+    ],
+    "related_kb_ids": [
+      "sdk/game-text-preview-render#KB-552",
+      "sdk/game-text-preview-render#KB-555",
+      "sdk/game-text-preview-render#KB-560"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5666 comment #56294 QA plan bước 6 và comment #56230 Solution mục api, sdk, Architecture (Dev, 2026-11-03)",
+      "authored_on": "2026-11-03",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-159"
+    }
+  },
+  {
+    "kb_id": "KB-555",
+    "topic": "Layer duplicate có slot riêng theo layer id; slot .1 chỉ khi cùng layer hiện hai lần trên trang",
+    "statement": "Theo Jira TIB-5666 comment #56619 trả lời Q3 và comment #56294 QA plan bước 4 (Dev, 2026-11-06), layer shape-text được duplicate có layer id riêng nên gửi slot riêng theo id của nó; mỗi instance hiện preview của chính nó và không instance nào blank khi gõ. Shape-text không có dialog reposition. Slot .1 chỉ xuất hiện khi cùng một layer hiện hai lần trên trang cùng lúc (vd sản phẩm addon hoặc cross-sell dùng chung artwork với sản phẩm chính); vế này Dev cho bỏ khỏi test staging khi không có setup như vậy vì unit test U17 phủ, chưa kiểm trên storefront.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page (layer shape-text duplicate)",
+      "brand": null
+    },
+    "tags": [
+      "game-text",
+      "slot",
+      "duplicate-layer",
+      "TIB-5666"
+    ],
+    "related_kb_ids": [
+      "sdk/game-text-preview-render#KB-552",
+      "sdk/game-text-preview-render#KB-554"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5666 comment #56619 trả lời Q3 và comment #56294 QA plan bước 4 (Dev, 2026-11-06)",
+      "authored_on": "2026-11-06",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-159"
+    }
+  },
+  {
+    "kb_id": "KB-556",
+    "topic": "Layer shape-text cỡ lớn (5952.98 × 7288.89) render được preview 200, hiện đủ mọi từ",
+    "statement": "Theo Jira TIB-5666 comment #56488 trả lời Q2 (Dev, 2026-11-05) và comment #56757 (Dev, 2026-11-10), layer shape-text cỡ 5952.98 × 7288.89 (text-path/master/guitar-portrait.svg, font Roboto) phải render được preview: response 200, preview được scale về 1673 × 2048; 400 kèm signal 6 ở cỡ này là bug. Ảnh preview phải hiện đủ mọi từ: lỗi mất từ cuối là bug có từ trước trong phép tìm font-size shape-text của vectorize, có cả trên production, đã sửa. Dev nêu một order staging đã lưu print file bị mất từ trước bản sửa cần regenerate design sau release; phạm vi order production chưa rõ (open-questions).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page + api preview render (shape-text cỡ lớn)",
+      "brand": null
+    },
+    "tags": [
+      "game-text",
+      "shape-text",
+      "large-shape",
+      "vectorize",
+      "TIB-5666"
+    ],
+    "related_kb_ids": [
+      "sdk/game-text-preview-render#KB-552"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5666 comment #56488 trả lời Q2 (Dev, 2026-11-05) và comment #56757 (Dev, 2026-11-10)",
+      "authored_on": "2026-11-10",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-159"
+    }
+  },
+  {
+    "kb_id": "KB-557",
+    "topic": "Preview text ngắn không đổi so với trước fix; nhập lại cùng text được CDN phục vụ (HIT)",
+    "statement": "Theo Jira TIB-5666 comment #56294 QA plan bước 5 và comment #56230 Solution mục Cache key (Dev, 2026-11-03), preview text ngắn (một hai từ) của layer shape-text, spiral, warp-text nhìn giống trước deploy (hoặc production). Reload trang rồi nhập lại cùng text thì request được phục vụ từ CDN (cf-cache-status: HIT ở lần lặp), vì slot là một phần của cache key và preview chính của cùng một layer gửi cùng <layer id>.0 cho mọi buyer, nên cache CDN dùng chung cho text ngắn vẫn hoạt động; chỉ instance thứ hai (.1) cache riêng.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page (layer shape-text, spiral, warp-text, text ngắn)",
+      "brand": null
+    },
+    "tags": [
+      "game-text",
+      "cdn-cache",
+      "slot",
+      "regression",
+      "TIB-5666"
+    ],
+    "related_kb_ids": [
+      "sdk/game-text-preview-render#KB-552",
+      "sdk/game-text-preview-render#KB-555"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5666 comment #56294 QA plan bước 5 và comment #56230 Solution mục Cache key (Dev, 2026-11-03)",
+      "authored_on": "2026-11-03",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-159"
+    }
+  },
+  {
+    "kb_id": "KB-558",
+    "topic": "Layer image-data khác (maps, clock, photo effects, word-cloud) không gửi slot, URL không đổi",
+    "statement": "Theo Jira TIB-5666 comment #56230 Solution mục sdk (Dev, 2026-11-03), chỉ shape-text, spiral, warp-text bật request_slot; mọi layer image-data khác (maps, clock, photo effects và các layer còn lại) không gửi slot và giữ nguyên URL request như trước TIB-5666.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page (layer image-data khác: clock, word-cloud, maps, photo effects)",
+      "brand": null
+    },
+    "tags": [
+      "image-data",
+      "slot",
+      "regression",
+      "TIB-5666"
+    ],
+    "related_kb_ids": [
+      "sdk/game-text-preview-render#KB-552"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5666 comment #56230 Solution mục sdk (Dev, 2026-11-03)",
+      "authored_on": "2026-11-03",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-159"
+    }
+  },
+  {
+    "kb_id": "KB-559",
+    "topic": "Ranh giới: render design in của order không đổi hành vi do TIB-5666",
+    "statement": "Theo Jira TIB-5666 comment #56230 Solution mục Architecture và mục api (Dev, 2026-11-03), SVGDesignClient, VectorRenderer và DesignConverter dùng chung với renderer in (print); ở đó hành vi không đổi vì binding mặc định là guard không bao giờ superseded và không có giới hạn tài nguyên của preview, nên render design in, mockup, job và MCP giữ hành vi như trước. Cơ chế 409 supersede và giới hạn tài nguyên chỉ áp cho request preview shape-text, spiral, warp_text.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "order design (print render) của order có layer shape-text, spiral, warp-text",
+      "brand": null
+    },
+    "tags": [
+      "game-text",
+      "print-render",
+      "order-design",
+      "regression",
+      "TIB-5666"
+    ],
+    "related_kb_ids": [
+      "sdk/game-text-preview-render#KB-554",
+      "sdk/game-text-preview-render#KB-556"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5666 comment #56230 Solution mục Architecture (Dev, 2026-11-03)",
+      "authored_on": "2026-11-03",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-159"
+    }
+  },
+  {
+    "kb_id": "KB-560",
+    "topic": "environment_difference",
+    "statement": "[DIFFERENT_VALUE] Môi trường test: staging giới hạn route games 3 request/phút/IP, gõ nhanh thì phần lớn request nhận 429 trước khi tới render nên không thấy 409/supersede; Production: không rõ; Cách test: gõ chậm (giãn các lần dừng) hoặc nhờ Dev nâng MERCHANT_GAMES_GENERATE_RATE_LIMIT trên staging trong lúc test, 429 trên staging không tính là fail của case nhịp request. Nguồn: Jira TIB-5666 comment #56619 (Dev, 2026-11-06).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "api storefront public games/{type} (rate limit staging)",
+      "brand": null
+    },
+    "tags": [
+      "game-text",
+      "rate-limit",
+      "environment_difference",
+      "DIFFERENT_VALUE",
+      "TIB-5666"
+    ],
+    "related_kb_ids": [
+      "sdk/game-text-preview-render#KB-552",
+      "sdk/game-text-preview-render#KB-554"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5666 comment #56619 (Dev, 2026-11-06)",
+      "authored_on": "2026-11-06",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-159"
+    }
+  }
+]

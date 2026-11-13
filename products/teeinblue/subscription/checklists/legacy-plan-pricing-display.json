@@ -1,0 +1,326 @@
+{
+  "feature_id": "FEAT-02-legacy-plan-pricing-display",
+  "feature_key": "legacy-plan-pricing-display",
+  "object_id": "subscription",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Route plan cũ render trống khi account không có plan cũ",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account has_new_pricing true, subscriptions [], boundless_instances_count 0",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account owner có Blue TEST plan và không có plan cũ.",
+      "steps": [
+        "Mở DevTools tab Network.",
+        "Mở trực tiếp /subscriptions/shopify, /subscriptions/etsy, /subscriptions/boundless.",
+        "Với mỗi route, đọc breadcrumb, tiêu đề, thân trang và request."
+      ],
+      "observation_point": "Breadcrumb, tiêu đề, thân trang, request",
+      "expected_result": "Baseline phủ định (3 lần): mỗi route chỉ render breadcrumb \"Home / Subscriptions / Subscription Details\" và tiêu đề; thân trang trống (không bảng giá, không \"Active Plan\", không wording \"orders\" hay \"Free Orders/Month\"); không có request dữ liệu subscription riêng. Không suy giao diện plan cũ từ kết quả này.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1211"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1211"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-024"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-154] Trang Manage plan cũ giữ chữ \"orders\", không có \"order items\"",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account có plan cũ (Shopify theo store, Etsy hoặc Boundless)",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có plan cũ tương ứng (fixture của TC-TIB-8965/8966; biến env chưa được KB nêu). Không bấm control ghi billing.",
+      "steps": [
+        "Mở trang Manage của plan Shopify theo store, của Etsy và của Boundless (route quan sát ở CHK-006..008).",
+        "Đọc mọi nhãn và mô tả về số lượng order/phí.",
+        "Tìm chữ \"order item\" hoặc \"order items\"."
+      ],
+      "observation_point": "UI trang Manage từng plan cũ",
+      "expected_result": "Mọi nhãn/mô tả về số lượng dùng chữ \"orders\"; không có chữ \"order item(s)\" ở bất kỳ trang plan cũ nào (chữ \"order items\" chỉ áp cho account new pricing/Blue).",
+      "oracle": {
+        "kb_ids": [
+          "KB-1232"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1233",
+        "KB-1228",
+        "KB-1211"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Fix \"order items\" cho Blue lan nhầm sang plan cũ"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Điều kiện chọn route plan cũ hoặc route Blue khi bấm Manage",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account có plan cũ so với account has_new_pricing true; chưa có fixture",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Cần ít nhất một account có plan cũ và một account has_new_pricing true; chỉ account sau có sẵn.",
+      "steps": [
+        "Mở /subscriptions, bấm Manage ở từng dòng.",
+        "Ghi URL đích (/subscriptions/<platform> hay /subscriptions/shopify-tier)."
+      ],
+      "observation_point": "URL đích sau khi bấm Manage",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1211",
+        "KB-1204"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-subscription-011"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Route /subscriptions/etsy-tier",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "chưa xác định",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Chưa có quan sát lưu lại; cần xác nhận trước khi chạy.",
+      "steps": [
+        "Mở trực tiếp /subscriptions/etsy-tier.",
+        "Ghi những gì hiển thị và request."
+      ],
+      "observation_point": "Nội dung route",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1211"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-subscription-010"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-154] Shopify plan cũ: bộ nhãn orders và calculator",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account có plan Shopify cũ theo store (vd Starter (Test))",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có plan cũ tương ứng (fixture của TC-TIB-8965/8966; biến env chưa được KB nêu). Không bấm control ghi billing.",
+      "steps": [
+        "Mở trang Manage plan Shopify cũ (route quan sát /subscriptions/<instance-id>).",
+        "Ghi nhãn usage/cycle, nhãn bảng giá và nhãn calculator."
+      ],
+      "observation_point": "UI Manage Shopify plan cũ",
+      "expected_result": "Baseline quan sát trên staging (QA PASS 2026-11-10): \"Orders in cycle\", \"Free orders\", \"Extra orders\", \"Free Orders/Month\", \"Transaction Fee (per extra order)\", calculator \"Number of orders/month:\". Route khác KB-1211, chưa giải thích.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1233"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1232",
+        "KB-1211"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Route lệch KB-1211; nhãn calculator Shopify khác nhãn Dev ghi"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-032"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-154] Etsy plan cũ: nhãn orders và calculator",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account có plan Etsy cũ",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có plan cũ tương ứng (fixture của TC-TIB-8965/8966; biến env chưa được KB nêu). Không bấm control ghi billing.",
+      "steps": [
+        "Mở trang Manage Etsy (route quan sát /subscriptions/platform/etsy).",
+        "Ghi nhãn và nhãn calculator, so với Shopify plan cũ."
+      ],
+      "observation_point": "UI Manage Etsy",
+      "expected_result": "Baseline quan sát trên staging (QA PASS 2026-11-10): cùng nhãn như Shopify plan cũ (\"Orders in cycle\", \"Free orders\", \"Extra orders\", \"Free Orders/Month\", \"Transaction Fee (per extra order)\") nhưng calculator ghi \"Number of Orders per month:\" (O hoa, \"per month\").",
+      "oracle": {
+        "kb_ids": [
+          "KB-1233"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1232",
+        "KB-1211"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nhãn calculator Shopify khác Etsy; Dev ghi cùng một nhãn cho cả hai"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-032"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-154] Boundless plan cũ: tính theo domain, không có khối free/extra",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account có plan Boundless (có domain)",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có plan cũ tương ứng (fixture của TC-TIB-8965/8966; biến env chưa được KB nêu). Không bấm control ghi billing.",
+      "steps": [
+        "Mở trang Manage Boundless (route quan sát /subscriptions/manage-domains).",
+        "Ghi nội dung theo domain và có/không khối free/extra/per month."
+      ],
+      "observation_point": "UI Manage Boundless",
+      "expected_result": "Baseline quan sát trên staging (QA PASS 2026-11-10): tính theo domain, chỉ có \"No transaction fees. Unlimited orders.\"; không có khối free/extra/per month.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1233"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1232",
+        "KB-1211"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-032"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-02-legacy-plan-pricing-display",
+      "risk_or_gap_ref": "Capability: mở route plan cũ trên account không có plan cũ",
+      "covered_by_check_ids": [
+        "CHK-001"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-02-legacy-plan-pricing-display",
+      "risk_or_gap_ref": "Gap: giao diện plan cũ khi có plan cũ",
+      "covered_by_check_ids": [
+        "CHK-002"
+      ],
+      "coverage_status": "COVERED_STRONG"
+    },
+    {
+      "feature_id": "FEAT-02-legacy-plan-pricing-display",
+      "risk_or_gap_ref": "Gap: điều kiện chọn route plan cũ/Blue",
+      "covered_by_check_ids": [
+        "CHK-003"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-02-legacy-plan-pricing-display",
+      "risk_or_gap_ref": "Gap: route /subscriptions/etsy-tier",
+      "covered_by_check_ids": [
+        "CHK-004"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-02-legacy-plan-pricing-display",
+      "risk_or_gap_ref": "CBS-154: nhãn Manage Shopify/Etsy/Boundless cũ theo quan sát",
+      "covered_by_check_ids": [
+        "CHK-006",
+        "CHK-007",
+        "CHK-008"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Có áp dụng nhưng chưa có evidence: chưa quan sát plan cũ nên chưa có trường hợp sai nào ngoài route trống ở CHK-001."
+    },
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Có áp dụng nhưng chưa có evidence: chưa quan sát bảng giá plan cũ."
+    },
+    {
+      "dimension": "PERMISSION",
+      "reason": "Có áp dụng nhưng chưa có evidence: chỉ role owner, chưa thử role khác."
+    },
+    {
+      "dimension": "STATE_DATA",
+      "reason": "Có áp dụng nhưng chưa có evidence: không quan sát được dữ liệu plan cũ."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Không áp dụng: object mới, không có base và không có item KNOWN_DEFECT."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-154"
+  }
+}

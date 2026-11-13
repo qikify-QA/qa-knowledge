@@ -24,7 +24,7 @@
       "QA-3423"
     ],
     "related_kb_ids": [
-      "artwork/mcp-artwork-tools#KB-1004",
+      "mcp/mcp-artwork-tools#KB-1004",
       "asset-category/asset-category-item-management#KB-561",
       "asset-category/asset-category-item-management#KB-564"
     ]
@@ -55,7 +55,7 @@
       "QA-3423"
     ],
     "related_kb_ids": [
-      "artwork/mcp-artwork-tools#KB-1003",
+      "mcp/mcp-artwork-tools#KB-1003",
       "asset-category/_object-level#KB-035",
       "asset-category/_object-level#KB-036"
     ]
@@ -86,7 +86,7 @@
       "QA-3423"
     ],
     "related_kb_ids": [
-      "artwork/mcp-artwork-tools#KB-1003"
+      "mcp/mcp-artwork-tools#KB-1003"
     ]
   },
   {
@@ -145,7 +145,7 @@
     ],
     "related_kb_ids": [
       "artwork/artwork-list-management#KB-047",
-      "artwork/mcp-artwork-tools#KB-1053"
+      "mcp/mcp-artwork-tools#KB-1053"
     ],
     "qa_rule_ref": {
       "code": "FACT-174",
@@ -182,7 +182,7 @@
       "dev-doc"
     ],
     "related_kb_ids": [
-      "artwork/mcp-artwork-tools#KB-1052"
+      "mcp/mcp-artwork-tools#KB-1052"
     ]
   },
   {
@@ -211,7 +211,7 @@
       "dev-doc"
     ],
     "related_kb_ids": [
-      "artwork/mcp-artwork-tools#KB-1055"
+      "mcp/mcp-artwork-tools#KB-1055"
     ]
   },
   {
@@ -240,7 +240,7 @@
       "QA-3425"
     ],
     "related_kb_ids": [
-      "artwork/mcp-artwork-tools#KB-1054"
+      "mcp/mcp-artwork-tools#KB-1054"
     ],
     "qa_rule_ref": {
       "code": "FACT-176",
@@ -261,6 +261,10 @@
       "surface": "api (REST PUT artwork khi dựng fixture; MCP Artwork server: bulk-convert-artworks-tool dry_run); data customization_type của layer",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-108"
+    },
     "tags": [
       "mcp",
       "bulk-convert-artworks-tool",
@@ -275,8 +279,8 @@
       "QA-3409"
     ],
     "related_kb_ids": [
-      "artwork/mcp-artwork-tools#KB-1054",
-      "artwork/mcp-artwork-tools#KB-1055",
+      "mcp/mcp-artwork-tools#KB-1054",
+      "mcp/mcp-artwork-tools#KB-1055",
       "artwork/layer-bulk-edit#KB-890",
       "artwork/layer-duplicate-link-copy#KB-1040"
     ],
@@ -285,10 +289,67 @@
       "owner_role": "QA",
       "recorded_on": "2026-10-23",
       "locator": "Proposal CBS-108 CLAIM-01; task Testlane TIB-208 (QA-3409) TC-66 = TC-TIB-6901"
+    }
+  },
+  {
+    "kb_id": "KB-1099",
+    "topic": "MCP: layer schema của curve / spiral / shape / warp text không có stroke_layers; MCP write tool gửi stroke_layers lên curve / warp thì layer lưu không có stroke_layers, giữ cặp; Text giữ list",
+    "statement": "Theo Dev trên Jira TIB-5699 comment 56557 (Solution, Part 2 + U14 + Q6, 2026-11-05), layer schema của MCP (get-layer-schema-tool) không cung cấp `stroke_layers` cho 4 loại curve-text, spiral-text, shape-text, warp-text (schema các loại này chỉ liệt kê cặp stroke); hook save xoá `stroke_layers` trên 4 loại áp cho mọi MCP write tool, nên update-artwork-layer-tool gửi `stroke_layers` lên layer curve text hoặc warp text thì get-artwork-tool trả layer không có `stroke_layers` và giữ cặp stroke đang có; cùng lệnh trên layer Text thì list được giữ (Q6). Test case TC-TIB-8988, TC-TIB-8990 PASS staging 2026-11-10 và production 2026-11-11 (không ghi build) quan sát thêm: schema 4 loại có `stroke_enabled`, `stroke_color`, `stroke_width`; schema text và paragraph có `stroke_layers` (array, tối đa 3) — `stroke_enabled` và \"tối đa 3\" là chi tiết quan sát từ test case, không nằm trong lời Dev.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "api (MCP Artwork server: get-layer-schema-tool, update-artwork-layer-tool, get-artwork-tool)",
+      "brand": null
+    },
+    "tags": [
+      "mcp",
+      "layer-schema",
+      "stroke_layers",
+      "update-artwork-layer-tool",
+      "TIB-5699"
+    ],
+    "related_kb_ids": [
+      "artwork/text-multi-stroke#KB-1095"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5699 comment 56557 (Dev, Solution, Part 2 + U14 + Q6), 2026-11-05",
+      "authored_on": "2026-11-05",
+      "derivation": "prose"
     },
     "last_updated": {
       "date": "2026-11-12",
-      "ccr_ref": "CBS-108"
+      "ccr_ref": "CBS-149"
+    }
+  },
+  {
+    "kb_id": "KB-1100",
+    "topic": "MCP update-artwork-layer-tool patch cặp stroke mới cho curve text: get-artwork-tool trả cặp mới, không stroke_layers; design và preview vẽ theo cặp mới (quan sát test case)",
+    "statement": "Test case TC-TIB-8989 (PASS staging 2026-11-10, không ghi build; production 2026-11-11 chỉ phần kiểm bằng máy pass, ảnh render chưa có người xem duyệt) quan sát thấy: gọi MCP update-artwork-layer-tool patch cặp `stroke_color` / `stroke_width` mới cho layer curve text thì get-artwork-tool trả cặp mới và không có `stroke_layers`; file design order và preview storefront vẽ stroke theo cặp mới. Design lấy qua order test (Bogus gateway) vì generate-test-design-tool không dùng được trên dev store. Expected của test case dựa trên QA plan 56595 bước E9 của Dev nhưng CCR chỉ nêu tên bước, không trích nguyên văn. Đây là quan sát, chưa có nguồn xác nhận đủ chuẩn.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (qua token MCP)",
+      "surface": "api (MCP: update-artwork-layer-tool, get-artwork-tool) · storefront preview · order design",
+      "brand": null
+    },
+    "tags": [
+      "mcp",
+      "update-artwork-layer-tool",
+      "get-artwork-tool",
+      "stroke",
+      "TIB-5699"
+    ],
+    "related_kb_ids": [
+      "mcp/mcp-artwork-tools#KB-1099",
+      "artwork/text-multi-stroke#KB-1094"
+    ],
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-149"
     }
   }
 ]

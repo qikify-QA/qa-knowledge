@@ -1,0 +1,438 @@
+{
+  "feature_id": "FEAT-38",
+  "feature_key": "general-settings-page",
+  "name": "General Settings (cài đặt chung theo store)",
+  "user_goal": "Merchant-owner mở trang General Settings của một store để xem và cấu hình các cài đặt chung (Blacklisted Words, SKU, Bulk Fulfill, tag Fulfillment ID, Line Item Properties, design URL trong Shopify order, nút sửa design trong cart, product template) rồi lưu bằng Save/Reset cấp trang. Quan sát chỉ đọc trên một store staging, chưa lưu hay đổi control nào; card Order storage time thuộc feature expired-time-setting.",
+  "user_goal_kb_refs": [
+    "KB-1637",
+    "KB-1638",
+    "KB-1640",
+    "KB-1655"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner",
+      "permission_observed": "Mở được /general-settings, thấy 10 card và nút Save, Reset không disabled khi tải (không bấm). Role staff khác chưa quan sát.",
+      "kb_refs": [
+        "KB-1637",
+        "KB-1638",
+        "KB-1640"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Sidebar Store Settings > General Settings (/general-settings)",
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard); mở rộng nhóm Store Settings trong sidebar. Trang hiển thị cài đặt của store đang chọn.",
+      "kb_refs": [
+        "KB-1637",
+        "KB-1652",
+        "KB-1654"
+      ]
+    },
+    {
+      "path": "GET /api/instances/{instance}/expired-time-setting (request duy nhất tới API host khi tải trang)",
+      "precondition": "Session portal hợp lệ; mở DevTools Network trước khi tải /general-settings. Request này phục vụ card Order storage time (feature expired-time-setting).",
+      "kb_refs": [
+        "KB-1653",
+        "KB-1654"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Vào trang General Settings từ sidebar",
+      "description": "Nhóm Store Settings trong sidebar có link General Settings trỏ /general-settings; trang mở với breadcrumb Home / General settings. Một lần quan sát.",
+      "kb_refs": [
+        "KB-1637",
+        "KB-1652"
+      ]
+    },
+    {
+      "name": "Xem trang gắn với một store",
+      "description": "Trang hiển thị dòng For store (tên và domain store, đã redact) kèm link Switch store?, và request đọc của trang có path theo instance. Chỉ một store, không bấm Switch store.",
+      "kb_refs": [
+        "KB-1639",
+        "KB-1654"
+      ]
+    },
+    {
+      "name": "Save và Reset cấp trang",
+      "description": "Một cặp nút Save và Reset duy nhất ở header, hiển thị và không disabled khi tải; không card nào có nút riêng. Chưa bấm, chưa biết phạm vi lưu và tác dụng Reset.",
+      "kb_refs": [
+        "KB-1638",
+        "KB-1655"
+      ]
+    },
+    {
+      "name": "Chặn từ nhạy cảm (Blacklisted Words)",
+      "description": "Card có help text mô tả rule Not case-sensitive và Exact match only, ô nhập Add words or phrases rỗng, hai nút icon disabled. Rule là text trên UI, hành vi chặn chưa quan sát.",
+      "kb_refs": [
+        "KB-1641"
+      ]
+    },
+    {
+      "name": "Cấu hình SKU biến thể lên platform",
+      "description": "Card Sync Variant's SKU to platform: toggle Create unique SKU for variants in platform đang bật, ô Change platform SKU prefix có maxlength 10, hint Up to 10 characters, giá trị không rỗng (đã redact).",
+      "kb_refs": [
+        "KB-1642"
+      ]
+    },
+    {
+      "name": "Cấu hình Bulk Fulfill",
+      "description": "Hai card: Show non-Teeinblue items (toggle tắt) và Combine orders by Shipping Address (toggle bật), kèm help text. Hành vi gộp và hiển thị chưa quan sát.",
+      "kb_refs": [
+        "KB-1643",
+        "KB-1644"
+      ]
+    },
+    {
+      "name": "Tag Fulfillment ID, Line Item Properties và nút sửa design trong cart",
+      "description": "Ba card chỉ có một toggle, cả ba đang tắt: Enable sync fulfillment ID as Shopify order tag, Show Line Item Properties in Order Details and Bulk Fulfill pages, Show button for customers to edit design in cart. Hiệu ứng chưa quan sát.",
+      "kb_refs": [
+        "KB-1645",
+        "KB-1648",
+        "KB-1649"
+      ]
+    },
+    {
+      "name": "Chọn nơi ghi design URL vào Shopify order",
+      "description": "Card Add order design URL to Shopify Orders có radio add_design_links ba option (note, property đang checked, both), mỗi option có help icon hiện popover chỉ chứa ảnh minh hoạ (không text, alt Order Notes, Line item property, Both) khi hover, và hộp cảnh báo về theme.",
+      "kb_refs": [
+        "KB-1646",
+        "KB-1647"
+      ]
+    },
+    {
+      "name": "Tự gán Shopify product template khi publish",
+      "description": "Card có help text và toggle Enable auto-assign product template đang tắt; khi tắt không có ô chọn template. Trạng thái bật chưa quan sát.",
+      "kb_refs": [
+        "KB-1650"
+      ]
+    }
+  ],
+  "state_transitions": [],
+  "confirmed_rules": [],
+  "observed_behavior": [
+    {
+      "statement": "Ở merchant-owner/staging/account explorer, sidebar có nhóm \"Store Settings\" dạng thu gọn được (header nhóm kèm sub-label là tên store, đã redact); khi mở rộng nhóm, link đầu tiên là \"General Settings\" trỏ /general-settings. Bấm link này mở trang ở route /general-settings với breadcrumb \"Home / General settings\". Một lần quan sát.",
+      "kb_refs": [
+        "KB-1637"
+      ]
+    },
+    {
+      "statement": "Khi mở /general-settings ở merchant-owner/staging/account explorer, quan sát thấy heading (h4) \"General settings\" cùng hai nút \"Save\" và \"Reset\" ở header; cả hai hiển thị và không disabled ngay khi tải trang. Không bấm nút nào nên tác dụng của Save/Reset chưa quan sát. Một lần tải trang.",
+      "kb_refs": [
+        "KB-1638"
+      ]
+    },
+    {
+      "statement": "Khi mở /general-settings ở merchant-owner/staging/account explorer, dưới header có dòng \"For store: <tên store> | <domain store>\" (giá trị đã redact) và một link-button \"(Switch store?)\". Không bấm Switch store. Một lần tải trang, một store.",
+      "kb_refs": [
+        "KB-1639"
+      ]
+    },
+    {
+      "statement": "Khi mở /general-settings ở merchant-owner/staging/account explorer, quan sát thấy 10 card setting xếp hai cột, heading (h6) theo thứ tự DOM: Blacklisted Words; Sync Variant's SKU to platform; Bulk Fulfill: Show non-Teeinblue items; Bulk Fulfill: Combine orders by Shipping Address; Add Fulfillment ID to Shopify Order's tag; Order storage time; Add order design URL to Shopify Orders; Line Item Properties; Cart items; Assign Shopify product template. Trang cao khoảng gấp đôi viewport nên phải cuộn; không có tab, không có modal khi tải. Một lần tải trang.",
+      "kb_refs": [
+        "KB-1640"
+      ]
+    },
+    {
+      "statement": "Khi mở /general-settings ở merchant-owner/staging/account explorer, card \"Blacklisted Words\" có help text: định nghĩa danh sách từ không mong muốn/nhạy cảm để chặn trong input của buyer, kèm hai block rule: \"Not case-sensitive\" (\"Teeinblue\" và \"teeinblue\" như nhau) và \"Exact match only\" (chặn \"Teeinblue\" không chặn \"Teeinblu\"; chặn \"Teeinblue App\" không chặn riêng \"Teeinblue\" hay \"App\"). Control: một ô nhập aria-label \"Add words or phrases\", placeholder \"Press Enter to add value\", rỗng khi tải, cùng hai nút icon (copy và thùng rác theo icon) đều disabled. Không gõ vào ô nên hành vi chặn chưa quan sát; các rule trên là text trên UI.",
+      "kb_refs": [
+        "KB-1641"
+      ]
+    },
+    {
+      "statement": "Khi mở /general-settings ở merchant-owner/staging/account explorer, card \"Sync Variant's SKU to platform\" có help text: tạo SKU biến thể khác nhau ở mỗi campaign làm SKU trên platform; nếu tắt thì Fulfilled SKU được dùng để sync lên platform; hữu ích để đưa biến thể lên Google Shopping. Toggle \"Create unique SKU for variants in platform\" đang bật. Ô \"Change platform SKU prefix:\" (name sku_prefix, maxlength 10, hint \"Up to 10 characters\", bộ đếm \"3/10\") đang có giá trị không rỗng (đã redact). Một lần tải trang, một store.",
+      "kb_refs": [
+        "KB-1642"
+      ]
+    },
+    {
+      "statement": "Khi mở /general-settings ở merchant-owner/staging/account explorer, card \"Bulk Fulfill: Show non-Teeinblue items\" có help text: liệt kê item không thuộc Teeinblue (sản phẩm của store không gắn campaign nào) vào Bulk Fulfill, có thể cần SKU Mapping để fulfill. Toggle \"Show non-Teeinblue items\" (id show-non-tib-items-toggle) đang tắt. Một lần tải trang, một store.",
+      "kb_refs": [
+        "KB-1643"
+      ]
+    },
+    {
+      "statement": "Khi mở /general-settings ở merchant-owner/staging/account explorer, card \"Bulk Fulfill: Combine orders by Shipping Address\" có help text: khi chọn nhiều order để fulfill cùng lúc trong Bulk Fulfill, Teeinblue gộp các order cùng địa chỉ giao hàng thành một order; nếu tắt chỉ gộp order cùng Order ID. Toggle \"Combine with Shipping Address\" (id combine-shipping-toggle) đang bật. Một lần tải trang, một store; hành vi gộp chưa quan sát.",
+      "kb_refs": [
+        "KB-1644"
+      ]
+    },
+    {
+      "statement": "Khi mở /general-settings ở merchant-owner/staging/account explorer, card \"Add Fulfillment ID to Shopify Order's tag\" có help text: khi order được provider fulfill, một Fulfillment ID được sinh và Teeinblue tạo tag trong Shopify Order với ID đó. Toggle \"Enable sync fulfillment ID as Shopify order tag\" (id order-tag-toggle) đang tắt. Một lần tải trang, một store.",
+      "kb_refs": [
+        "KB-1645"
+      ]
+    },
+    {
+      "statement": "Khi mở /general-settings ở merchant-owner/staging/account explorer, card \"Add order design URL to Shopify Orders\" có label \"Add to:\" và nhóm radio name add_design_links gồm \"Order Notes (Additional details)\" (value note), \"Line item property (under each order item)\" (value property, đang checked), \"Both Notes & Line item property\" (value both); mỗi option có một help icon. Bên dưới có hộp cảnh báo: \"In some themes, this line item property might show up under cart item on Cart page, so customers might be able to see it. Please contact our support to hide on Cart page if it shows.\" Một lần tải trang, một store.",
+      "kb_refs": [
+        "KB-1646"
+      ]
+    },
+    {
+      "statement": "Khi hover từng help icon cạnh các option \"Add to:\" của card \"Add order design URL to Shopify Orders\" ở merchant-owner/staging/account explorer, quan sát thấy mỗi icon hiện một popover tooltip render ngoài vùng main, chỉ chứa một ảnh, không có text: (1) icon cạnh \"Order Notes (Additional details)\": ảnh alt \"Order Notes\" minh hoạ trang order mẫu có card Notes (\"No notes from customer\") và khối \"Additional details\" được khoanh đỏ, liệt kê các dòng link design; (2) icon cạnh \"Line item property (under each order item)\": ảnh alt \"Line item property\" minh hoạ một line item mẫu (sản phẩm, giá, số lượng, nút Fulfill item) với các property link design dưới item được khoanh đỏ; (3) icon cạnh \"Both Notes & Line item property\": ảnh alt \"Both\" minh hoạ cả hai vị trí, property dưới line item và khối Additional details, đều khoanh đỏ. Nội dung ảnh là dữ liệu mẫu, không phải dữ liệu store. Icon không có title hay aria-label. Mỗi icon quan sát một lần.",
+      "kb_refs": [
+        "KB-1647"
+      ]
+    },
+    {
+      "statement": "Khi mở /general-settings ở merchant-owner/staging/account explorer, card \"Line Item Properties\" chỉ có toggle \"Show Line Item Properties in Order Details and Bulk Fulfill pages\" (id line-item-properties-toggle), đang tắt; không có help text riêng. Một lần tải trang, một store.",
+      "kb_refs": [
+        "KB-1648"
+      ]
+    },
+    {
+      "statement": "Khi mở /general-settings ở merchant-owner/staging/account explorer, card \"Cart items\" chỉ có toggle \"Show button for customers to edit design in cart\" (id cart-edit-button-toggle), đang tắt; không có help text riêng. Hiệu ứng trên storefront chưa quan sát. Một lần tải trang, một store.",
+      "kb_refs": [
+        "KB-1649"
+      ]
+    },
+    {
+      "statement": "Khi mở /general-settings ở merchant-owner/staging/account explorer, card \"Assign Shopify product template\" có help text \"Select a Shopify product template to automatically apply to all campaigns when publishing.\" và toggle \"Enable auto-assign product template\" (id product-template-toggle) đang tắt; khi toggle tắt không có ô chọn template nào được render. Trạng thái khi bật chưa quan sát. Một lần tải trang, một store.",
+      "kb_refs": [
+        "KB-1650"
+      ]
+    },
+    {
+      "statement": "Khi quét DOM của /general-settings sau khi cuộn hết trang ở merchant-owner/staging/account explorer, không thấy phần tử ẩn chứa text, không có section thu gọn, không có panel API token / API key / MCP. Một lần quan sát.",
+      "kb_refs": [
+        "KB-1651"
+      ]
+    },
+    {
+      "statement": "Khi mở rộng nhóm sidebar \"Store Settings\" ở merchant-owner/staging/account explorer, quan sát thấy 7 link theo thứ tự: General Settings (/general-settings), Product Page Settings (/product-page-settings), Product Page Content (/product-page-content), Customization Image (/customization-image), Shipping Methods (/shipping-method-match), Inventory Locations (/inventory-locations-match), SKU Mapping (/sku-mapping). Các trang lân cận chỉ ghi tên và route, không mở. Một lần quan sát.",
+      "kb_refs": [
+        "KB-1652"
+      ]
+    },
+    {
+      "statement": "Khi mở /general-settings ở merchant-owner/staging/account explorer, request duy nhất tới host TIB_API_BASE trong cửa sổ tải trang là GET /api/instances/{instance}/expired-time-setting; không có request nào khác (không có request instance config) và không có request ghi nào trong mọi cửa sổ action. Vì vậy giá trị của các card khác (Blacklisted Words, SKU, toggle, Add to) không được nạp bằng request trong cửa sổ đó; nguồn của chúng chưa quan sát. Một lần tải trang; listener chỉ bắt API host.",
+      "kb_refs": [
+        "KB-1653"
+      ]
+    },
+    {
+      "statement": "Ở merchant-owner/staging/account explorer, trang /general-settings hiển thị dòng \"For store: <tên store> | <domain store>\" kèm \"(Switch store?)\", và request đọc của trang có path /api/instances/{instance}/... : trang hiển thị cài đặt của store (instance) đang chọn. Chỉ quan sát một store; giá trị có khác giữa các store hay không chưa quan sát.",
+      "kb_refs": [
+        "KB-1654"
+      ]
+    },
+    {
+      "statement": "Khi mở /general-settings ở merchant-owner/staging/account explorer, quan sát thấy một cặp nút \"Save\"/\"Reset\" duy nhất ở header trang; không card nào (kể cả Order storage time) có nút Save/Reset riêng. Không bấm nên phạm vi lưu (một lần cho mọi card hay không) chưa quan sát. Một lần tải trang.",
+      "kb_refs": [
+        "KB-1655"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "statement": "Role merchant-owner xem được trang và các nút Save, Reset không disabled khi tải. Role staff khác, account khác chưa quan sát.",
+      "kb_refs": [
+        "KB-1638",
+        "KB-1640"
+      ]
+    },
+    {
+      "statement": "Trang hiển thị cài đặt theo store (instance) đang chọn; chưa quan sát giá trị khác giữa các store.",
+      "kb_refs": [
+        "KB-1639",
+        "KB-1654"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      {
+        "path": "/general-settings",
+        "note": "Header (heading, Save, Reset), dòng For store, 10 card hai cột.",
+        "kb_refs": [
+          "KB-1637",
+          "KB-1638",
+          "KB-1639",
+          "KB-1640"
+        ]
+      },
+      {
+        "path": "Sidebar nhóm Store Settings",
+        "note": "7 link: General Settings, Product Page Settings, Product Page Content, Customization Image, Shipping Methods, Inventory Locations, SKU Mapping.",
+        "kb_refs": [
+          "KB-1637",
+          "KB-1652"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "method": "GET",
+        "path": "/api/instances/{instance}/expired-time-setting",
+        "note": "Request duy nhất tới API host khi tải trang; không có request ghi nào.",
+        "kb_refs": [
+          "KB-1653",
+          "KB-1654"
+        ]
+      }
+    ],
+    "data": [],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "description": "Card Order storage time trên trang thuộc feature sibling store-settings/expired-time-setting; request GET expired-time-setting phục vụ card đó.",
+      "kb_refs": [
+        "KB-1640",
+        "KB-1653"
+      ]
+    },
+    {
+      "description": "Nhóm Store Settings còn các trang lân cận (ví dụ Product Page Settings /product-page-settings, SKU Mapping /sku-mapping) chỉ ghi tên và route, chưa mở. Help text Bulk Fulfill nhắc SKU Mapping có thể cần để fulfill.",
+      "kb_refs": [
+        "KB-1652",
+        "KB-1643"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "description": "Save/Reset cấp trang có thể ghi đè hoặc hoàn nguyên cài đặt của cả store; phạm vi chưa quan sát, cần store test riêng.",
+      "kb_refs": [
+        "KB-1638",
+        "KB-1655"
+      ]
+    },
+    {
+      "description": "Giá trị các card khác không nạp bằng request trong cửa sổ tải trang; nguồn chưa biết nên khó xác định trạng thái đúng sau reload.",
+      "kb_refs": [
+        "KB-1653"
+      ]
+    },
+    {
+      "description": "Chỉ một store, một phiên, một trạng thái, staging; không suy rộng sang store khác, role khác hay production.",
+      "kb_refs": [
+        "KB-1654",
+        "KB-1640"
+      ]
+    }
+  ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-11-13"
+  },
+  "unknown_areas": [
+    {
+      "question": "Save ở header lưu những card nào (mọi card một lần hay chỉ card đã đổi), có bị disabled cho tới khi có thay đổi không, và Reset làm gì (về giá trị đã lưu hay về mặc định)?",
+      "why_it_matters": "Cả hai nút enabled khi tải và chưa được bấm; không biết phạm vi lưu, thông báo hay Reset về đâu (OQ-store-settings-006).",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1638",
+        "KB-1655"
+      ],
+      "oq_id": "OQ-store-settings-006"
+    },
+    {
+      "question": "Giá trị của các card ngoài Order storage time (Blacklisted Words, SKU prefix, các toggle, Add to) được nạp từ đâu?",
+      "why_it_matters": "Không có request nào tới API host mang chúng trong cửa sổ tải trang (OQ-store-settings-007).",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1653"
+      ],
+      "oq_id": "OQ-store-settings-007"
+    },
+    {
+      "question": "Hành vi khi gõ, bật/tắt hoặc đổi control (Blacklisted Words, SKU prefix, toggle, Add to) và template picker khi bật Assign Shopify product template là gì?",
+      "why_it_matters": "Run chỉ đọc, không tương tác control; mọi rule trên UI chưa được kiểm hành vi (coverage gap).",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1641",
+        "KB-1642",
+        "KB-1643",
+        "KB-1644",
+        "KB-1645",
+        "KB-1648",
+        "KB-1649",
+        "KB-1650"
+      ],
+      "oq_id": "OQ-store-settings-008"
+    },
+    {
+      "question": "Giá trị setting có khác giữa các store (instance) của cùng account không, và Switch store đổi gì?",
+      "why_it_matters": "Chỉ quan sát một store, không bấm Switch store (coverage gap).",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1639",
+        "KB-1654"
+      ],
+      "oq_id": "OQ-store-settings-009"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "bootstrap"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-38",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "store của account explorer (staging); Order storage time chưa đặt; chưa lưu/bấm control nào",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1637",
+        "KB-1640"
+      ]
+    },
+    {
+      "feature_id": "FEAT-38",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "store của account explorer (staging); Order storage time chưa đặt; chưa lưu/bấm control nào",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1653"
+      ]
+    },
+    {
+      "feature_id": "FEAT-38",
+      "layer": "storefront",
+      "role": "merchant-owner",
+      "state": "store của account explorer (staging); Order storage time chưa đặt; chưa lưu/bấm control nào",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-38",
+      "layer": "db",
+      "role": "merchant-owner",
+      "state": "store của account explorer (staging); Order storage time chưa đặt; chưa lưu/bấm control nào",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from_feature_id": "FEAT-38",
+      "to_feature_id": "FEAT-37",
+      "relationship": "hosts_card_of_sibling_feature",
+      "kb_refs": [
+        "KB-1640",
+        "KB-1653"
+      ]
+    }
+  ]
+}

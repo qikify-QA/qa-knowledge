@@ -7,9 +7,9 @@ Các mục dưới đây còn mở. Mục đã có lời dev trả lời một p
 | Loại | Số lượng |
 |---|---|
 | CONFLICT | 1 |
-| NEEDS_CONFIRMATION | 46 |
+| NEEDS_CONFIRMATION | 57 |
 | OPEN_ISSUE | 9 |
-| **Tổng** | **56** |
+| **Tổng** | **67** |
 
 ## OQ-open-api-001 — NEEDS_CONFIRMATION
 
@@ -357,4 +357,58 @@ Các mục dưới đây còn mở. Mục đã có lời dev trả lời một p
 
 ```json
 {"oq_id":"OQ-open-api-058","type":"NEEDS_CONFIRMATION","feature_id":"open-api-asset-upload","summary":"Theo spec-hub (rule api-tokens-see-limits; S2, KB-054), merchant xem được daily limit, số còn lại và thời gian đến khi reset cho clipart, clipart category và library image. Merchant xem ở đâu (portal, response Open API), và có liên quan tới header x-ratelimit-* (KB-010, KB-011) không? Header đo giới hạn nào: xem OQ-open-api-049. Cần Dev xác nhận.","kb_ids":["KB-054"]}
+```
+
+## OQ-open-api-059 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-open-api-059", "type": "NEEDS_CONFIRMATION", "feature_id": "open-api-asset-upload", "summary": "[CBS-152, TIB-5709] POST /openapi/v1/layer-images với url hoặc upload_id của raster trên 128 MP (KB-056, quan sát TC-TIB-8775/8776 không ghi build): status 422, message \"The image is {w}x{h} px ({n} MP), over the 128 MP limit. Resize it to at most 128 megapixels and upload again.\" dưới errors.url / errors.upload_id, và upload_id bị từ chối thành \"The upload was not found or has expired. …\" khi gửi lại — có phải expected? CHK-071 chỉ BASELINE.", "kb_ids": ["KB-056"], "needs": "Dev xác nhận status, message, field lỗi và vòng đời upload_id bị từ chối, kèm nguyên văn có ngày."}
+```
+
+## OQ-open-api-060 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-open-api-060", "type": "NEEDS_CONFIRMATION", "feature_id": "open-api-asset-upload", "summary": "[CBS-152, TIB-5709] Ảnh header hỏng qua upload_id trả 422 errors.upload_id \"The image's pixel size could not be read from its header; …\" (KB-058, quan sát không ghi build). Nhánh url với file header hỏng trả gì (chưa chạy trên Open API)?", "kb_ids": ["KB-058"], "needs": "Dev xác nhận message và hành vi nhánh url."}
+```
+
+## OQ-open-api-061 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-open-api-061", "type": "NEEDS_CONFIRMATION", "feature_id": "open-api-asset-upload", "summary": "[CBS-152, TIB-5709] Presign POST /openapi/v1/uploads với filewidth x fileheight vượt cap trả 422, lỗi trên errors.filewidth và errors.fileheight (KB-060, quan sát không ghi build). KB-059 chỉ xác nhận message.", "kb_ids": ["KB-060"], "needs": "Dev xác nhận status và field lỗi."}
+```
+
+## OQ-open-api-062 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-open-api-062", "type": "NEEDS_CONFIRMATION", "feature_id": "open-api-asset-upload", "summary": "[CBS-152, TIB-5709] Raster dưới cap qua url / upload_id vẫn 201 processing rồi ready như trước TIB-5709 (KB-061, quan sát TC-TIB-8786 không ghi build). CHK-075 chỉ BASELINE.", "kb_ids": ["KB-061"], "needs": "Dev xác nhận; hoặc QA chạy lại có ghi build."}
+```
+
+## OQ-open-api-063 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-open-api-063", "type": "NEEDS_CONFIRMATION", "feature_id": "open-api-asset-upload", "summary": "[CBS-152, TIB-5709] Chưa chạy trên Open API: ranh giới đúng 128.000.000 px (16000x8000 nhận, 16001x8000 từ chối; quan sát trong CCR chạy qua tool MCP) và production (verify NOT-RUN theo CCR, fixture production thiếu token).", "kb_ids": ["KB-055", "KB-057"], "needs": "QA chạy CHK-072 và lượt production, ghi build."}
+```
+
+## OQ-open-api-064 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-open-api-064", "type": "NEEDS_CONFIRMATION", "feature_id": "open-api-campaign-publish", "kb_ids": ["KB-063"], "check_ids": ["CHK-002", "CHK-008"], "owner": "Dev", "summary": "[CBS-163] PUT /api/user/api-token (KB-063): lần đầu 423 'Password confirmation required.', sau confirm-password trả 200 với body chuỗi token thuần và content-type text/html — có phải expected? Statement CCR nói portal không có nút cho thao tác này; chưa có quan sát, Dev xác nhận."}
+```
+
+## OQ-open-api-065 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-open-api-065", "type": "NEEDS_CONFIRMATION", "feature_id": "open-api-campaign-publish", "kb_ids": ["KB-065"], "check_ids": ["CHK-004", "CHK-006"], "owner": "Dev", "summary": "[CBS-163] Publish qua Open API (KB-065): user API token trả 200, row campaign_instances chọn theo instance_id có platform_linked_id/platform_linked_handle, sản phẩm lên store; không bearer 401; PAT 401 'Unauthenticated.' và campaign vẫn Unpublished — xác nhận status và shape là expected."}
+```
+
+## OQ-open-api-066 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-open-api-066", "type": "NEEDS_CONFIRMATION", "feature_id": "open-api-campaign-publish", "kb_ids": ["KB-065"], "check_ids": ["CHK-007"], "owner": "Dev", "summary": "[CBS-163] Gọi POST /api/open/.../publish bằng fetch từ trong trang portal (request mang Origin của portal) trả 419 CSRF token mismatch (KB-065): route auth:public-api xử lý request có Origin của portal như request SPA có phải chủ đích không? Integrator gọi từ trình duyệt có bị chặn tương tự không?"}
+```
+
+## OQ-open-api-067 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-open-api-067", "type": "NEEDS_CONFIRMATION", "feature_id": "open-api-campaign-publish", "kb_ids": ["KB-062", "KB-064"], "check_ids": [], "owner": "QA", "summary": "[CBS-163] Chưa chạy: production (verify NOT-RUN); token cũ sau khi bị PUT /api/user/api-token thay; token MCP làm bearer trên route publish; instance/campaign của account khác; campaign đã published. Không suy kết quả từ KB-062/KB-064."}
 ```

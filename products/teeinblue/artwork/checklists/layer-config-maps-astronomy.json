@@ -226,6 +226,279 @@
       "priority": "P3",
       "automation_suitability": "NOT_SUITABLE",
       "oq_id": "OQ-artwork-190"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-106] Layer Star Map có setting 'Display in date format' lưu trong layer, mỗi design một format riêng",
+      "applicability": {
+        "role": "merchant-owner (account staging có quyền Manage Artwork)",
+        "state": "layer Star Map trong 2 artwork Artwork 2.0 khác nhau",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": "portal artwork editor desktop"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway có layer Star Map, không dùng artwork/campaign thật. Hai artwork throwaway, mỗi artwork một layer Star Map.",
+      "steps": [
+        "Mở Personalization Settings của layer Star Map ở artwork 1, ghi có setting 'Display in date format' không",
+        "Đặt format X ở artwork 1, Save",
+        "Đặt format Y khác X ở artwork 2, Save",
+        "Mở lại cả hai artwork, ghi format của từng layer"
+      ],
+      "observation_point": "Setting 'Display in date format' trên layer Star Map; format đã lưu của từng artwork",
+      "expected_result": "Layer Star Map có setting 'Display in date format' giống setting của date picker. Format lưu trong chính layer: artwork 1 giữ X, artwork 2 giữ Y, không ảnh hưởng nhau.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/layer-config-maps-astronomy#KB-1104"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/layer-config-maps-astronomy#KB-1104",
+        "artwork/layer-config-maps-astronomy#KB-026"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle là một nguồn spec_doc (TIB-5609, MEDIUM). Lệch là bug theo nguồn đó; không nói danh sách preset (xem CHK-009)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-106] Danh sách preset, ô Custom và field lưu của 'Display in date format' trên portal Artwork 2.0 (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "merchant-owner (account staging có quyền Manage Artwork)",
+        "state": "layer Star Map Artwork 2.0, Personalization Settings",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": "portal artwork editor desktop; Network"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway có layer Star Map, không dùng artwork/campaign thật.",
+      "steps": [
+        "Mở Personalization Settings của layer Star Map, ghi vị trí setting và danh sách tuỳ chọn trong dropdown",
+        "Chọn Custom, ghi ô 'Custom date format' và placeholder",
+        "Chọn một preset, Save, ghi body PUT /api/artworks/{id}: key star_maps_date_format, có hay vắng star_maps_custom_date_format",
+        "Lặp lại với Custom và một chuỗi date-fns hợp lệ"
+      ],
+      "observation_point": "Dropdown preset, ô Custom, body PUT /api/artworks/{id}",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "artwork/layer-config-maps-astronomy#KB-1105"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/layer-config-maps-astronomy#KB-1105",
+        "artwork/layer-config-maps-astronomy#KB-1104",
+        "artwork/layer-config-maps-astronomy#KB-026"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1105 là OBSERVED_CURRENT/LOW, preset 24h do Dev dựng chưa PO xác nhận. Ghi lại quan sát, không phán pass hay fail. Artwork 1.0 / Global Option Star Maps chưa kiểm."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-571"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-106] Lựa chọn format của Star Map gồm cả giờ, không giây; ô giờ hiện cả giờ phút",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "Star Map có Display in date format chọn một format có giờ; UI date picker Teeinblue bật",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "storefront desktop"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway có layer Star Map, không dùng artwork/campaign thật. Store bật 'Use Teeinblue's Date Picker instead of browser's'. Format của layer Star Map chọn một lựa chọn có giờ phút.",
+      "steps": [
+        "Mở product page của artwork, tới ô giờ Star Map",
+        "Chọn một ngày giờ có phút khác 0",
+        "Ghi nội dung hiển thị của ô giờ",
+        "Với từng lựa chọn format đang có ở portal, ghi có giờ phút và không có giây không"
+      ],
+      "observation_point": "Nội dung hiển thị của ô giờ Star Map; danh sách lựa chọn format ở portal",
+      "expected_result": "Mọi lựa chọn format đều gồm giờ phút và không có giây; ô giờ sau khi chọn hiện cả giờ phút, không giây.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/layer-config-maps-astronomy#KB-1106"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/layer-config-maps-astronomy#KB-1106",
+        "artwork/layer-config-maps-astronomy#KB-1104",
+        "artwork/layer-config-maps-astronomy#KB-1107"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle là một nguồn spec_doc (TIB-5609, MEDIUM). Không khẳng định chuỗi hiển thị chính xác của từng format (đó là quan sát KB-1107, xem CHK-011)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "[CBS-106] Ô giờ Star Map hiện theo format đã chọn, giá trị lưu vẫn dạng máy (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "Star Map có Display in date format; UI date picker Teeinblue bật; SDK v2",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "storefront desktop; localStorage"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway có layer Star Map, không dùng artwork/campaign thật. Hai artwork/layer: một format dd.MM.yyyy HH:mm, một format Custom 12h AM/PM (vd yyyy.MM.dd hh:mm a).",
+      "steps": [
+        "Với format dd.MM.yyyy HH:mm, chọn 2026-10-21 11:24, ghi ô giờ và input ẩn của date picker",
+        "Với Custom 12h, chọn 00:05, 12:00, 13:24, 23:59, ghi ô giờ",
+        "Add to cart, đọc giá trị time của Star Map trong localStorage teeinblue-customizations",
+        "Ghi build SDK; nếu có store SDK v1 thì lặp lại và ghi riêng"
+      ],
+      "observation_point": "Ô giờ, input ẩn, giá trị time trong localStorage",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "artwork/layer-config-maps-astronomy#KB-1107"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/layer-config-maps-astronomy#KB-1107",
+        "artwork/layer-config-maps-astronomy#KB-1106"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1107 là OBSERVED_CURRENT/LOW, không ghi build. Ghi lại quan sát, không phán pass hay fail. SDK v1 chưa kiểm."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-572"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "[CBS-106] Với date picker native, ngôn ngữ và format của ô giờ Star Map theo trình duyệt của buyer, không theo setting Star Map",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "Star Map có Display in date format; store tắt 'Use Teeinblue's Date Picker instead of browser's'",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "storefront desktop"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway có layer Star Map, không dùng artwork/campaign thật. Store tắt 'Use Teeinblue's Date Picker instead of browser's'. Format của layer đặt một giá trị dễ phân biệt với mặc định trình duyệt.",
+      "steps": [
+        "Mở product page, tới ô giờ Star Map",
+        "Ghi loại input và cách hiển thị ngày giờ",
+        "Đổi ngôn ngữ trình duyệt (hoặc dùng trình duyệt khác ngôn ngữ), tải lại, ghi lại cách hiển thị"
+      ],
+      "observation_point": "Loại input và cách hiển thị ngày giờ của ô giờ",
+      "expected_result": "Ô giờ dùng date picker native; ngôn ngữ và format hiển thị theo trình duyệt của buyer, không theo 'Display in date format' của Star Map.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/layer-config-maps-astronomy#KB-1110"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/layer-config-maps-astronomy#KB-1110",
+        "artwork/layer-config-maps-astronomy#KB-1111"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle là một nguồn spec_doc (TIB-5609, MEDIUM) chỉ cho ô hiển thị; vế populate {{time}} không nằm trong expected này (xem CHK-013)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[CBS-106] {{time}} populate từ Star Map khi dùng date picker native (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "Star Map có Display in date format dd.MM.yyyy HH:mm; store tắt UI date picker Teeinblue; có text layer populate {{time}} và {{time.yyyy/MM/dd}}",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "storefront desktop; localStorage"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway có layer Star Map, không dùng artwork/campaign thật. Store tắt 'Use Teeinblue's Date Picker instead of browser's'; thêm hai text layer populate {{time}} và {{time.yyyy/MM/dd}} từ layer Star Map.",
+      "steps": [
+        "Nhập 2026-10-21 11:24 vào ô giờ Star Map (input datetime-local)",
+        "Ghi nội dung hai text layer populate trong preview",
+        "Ghi giá trị time trong localStorage teeinblue-customizations"
+      ],
+      "observation_point": "Hai text layer populate và localStorage",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "artwork/layer-config-maps-astronomy#KB-1111"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/layer-config-maps-astronomy#KB-1111",
+        "artwork/layer-config-maps-astronomy#KB-1110",
+        "artwork/populate-values#KB-1108"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1111 là OBSERVED_CURRENT/LOW; câu Scope của TIB-5609 chưa rõ có phủ populate. Ghi lại quan sát, không phán pass hay fail."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-573"
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[CBS-106] Layer Star Map không vẽ ngày lên design; ngày chỉ hiện qua text layer populate",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "artwork có layer Star Map với Display in date format và một text layer populate ngày từ Star Map",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "storefront preview + design order (print file) desktop"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway có layer Star Map, không dùng artwork/campaign thật. Thêm một text layer populate {{time}} từ Star Map. Bước design order cần đơn test theo quy trình test của product.",
+      "steps": [
+        "Chọn một ngày giờ ở ô giờ Star Map",
+        "Ghi preview storefront: layer Star Map có chữ ngày không, text layer populate hiện gì",
+        "Tạo đơn test, mở print file của design order (print area front), ghi như trên"
+      ],
+      "observation_point": "Preview storefront và print file của design order",
+      "expected_result": "Layer Star Map không vẽ ngày lên design (preview và print file); ngày chỉ hiện ở text layer populate riêng.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/layer-config-maps-astronomy#KB-1112"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/layer-config-maps-astronomy#KB-1112",
+        "artwork/populate-values#KB-1108"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle là một nguồn spec_doc (TIB-5609, MEDIUM). Mới có lượt chạy trên print area front; print area back chưa kiểm."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -240,16 +513,38 @@
         "CHK-007"
       ],
       "covered": "gap, NONE, NOT_APPLICABLE trên staging"
+    },
+    {
+      "feature_id": "FEAT-15-layer-config-maps-astronomy",
+      "risk": "[CBS-106] Display in date format của Star Map: lưu theo layer, format có giờ, picker native, không vẽ ngày lên design",
+      "checks": [
+        "CHK-008",
+        "CHK-009",
+        "CHK-010",
+        "CHK-011",
+        "CHK-012",
+        "CHK-013",
+        "CHK-014"
+      ],
+      "covered": "CHK-008, CHK-010, CHK-012, CHK-014 STRONG (một nguồn spec_doc TIB-5609, MEDIUM); CHK-009, CHK-011, CHK-013 NONE (OBSERVED_CURRENT/LOW)"
     }
   ],
   "excluded_dimensions": [
     {
       "dimension": "CORE / NEGATIVE / BOUNDARY / PERMISSION / STATE_DATA / REGRESSION — phạm vi CBS-079",
       "reason": "KB-419 chỉ là dòng khác biệt môi trường, INFERRED, không mô tả hành vi nào để kiểm. Không có item status KNOWN_DEFECT."
+    },
+    {
+      "dimension": "PERMISSION, BOUNDARY — phạm vi CBS-106",
+      "reason": "KB mới không nói role khác hay giới hạn format; không viết check giả định."
+    },
+    {
+      "dimension": "REGRESSION — phạm vi CBS-106",
+      "reason": "Mọi item CBS-106 relation ADD, không đổi hành vi item base; shard không có item KNOWN_DEFECT nên không có regression watch."
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-106"
   }
 }

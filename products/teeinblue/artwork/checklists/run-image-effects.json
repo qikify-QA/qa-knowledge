@@ -253,7 +253,8 @@
       "related_kb_ids": [
         "artwork/run-image-effects#KB-803",
         "artwork/run-image-effects#KB-802",
-        "artwork/run-image-effects#KB-805"
+        "artwork/run-image-effects#KB-805",
+        "artwork/run-image-effects#KB-1120"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
@@ -1112,6 +1113,84 @@
       "priority": "P3",
       "automation_suitability": "UNKNOWN",
       "oq_id": "OQ-artwork-229"
+    },
+    {
+      "regression_watch_kb_ids": [],
+      "check_id": "CHK-031",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[CBS-153] Run effects với [Gemini] image filter dùng ref image rất lớn: ghi lượt chạy có hoàn tất và ảnh kết quả (đề xuất QA, chưa xác nhận)",
+      "applicability": {
+        "role": "merchant-owner (account staging có quyền Manage Artwork)",
+        "state": "Photo layer Normal có effect [Gemini] image filter với ref image rất lớn (cạnh khoảng 12000)",
+        "environment": "staging; ghi build portal và ngày chạy; production verify chưa chạy",
+        "surface_or_device": "portal artwork editor"
+      },
+      "precondition": "Như CHK-001 (Photo layer Normal, store không phải Etsy); có API key Gemini ở Extras → Extra services. Không Save artwork sau khi chạy nếu chỉ để test.",
+      "steps": [
+        "Cấu hình effect [Gemini] image filter với ref image rất lớn trên Photo layer có ảnh ngang (vd 6000x4000) trên box layer ngang.",
+        "Bấm Run effects; trong Network theo dõi POST /api/layer-images/effects và poll trạng thái tới khi kết thúc.",
+        "Ghi thời gian chạy, ảnh layer sau khi xong (hướng, kích thước, tỉ lệ)."
+      ],
+      "observation_point": "Network (mã trả về, trạng thái poll); ảnh layer sau lượt chạy.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/run-image-effects#KB-1103",
+        "artwork/run-image-effects#KB-803",
+        "artwork/run-image-effects#KB-804",
+        "artwork/run-image-effects#KB-809",
+        "sdk/genai-personalization-runtime#KB-569"
+      ],
+      "risk_refs": [
+        "Ref image lớn làm worker effect OOM (TIB-5615)"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-570"
+    },
+    {
+      "check_id": "CHK-032",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-163] Response lượt chạy effect chỉ gồm status, error_message, layer_image; không user_id",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Photo layer Normal có ảnh, có ít nhất một effect chạy được",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor + portal API (Network)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Artwork fixture tự dựng trên store explorer, không dùng artwork, store hay id trong CCR/test case. Đọc response qua tab Network của portal (TIB_PORTAL_BASE). Dọn fixture sau khi chạy. Chuỗi effect chạy được trên store explorer (dịch vụ trong chuỗi đã có key, hoặc dịch vụ không cần key). Lượt chạy thêm ảnh vào image library và tính vào giới hạn upload; không Save artwork nếu không cần.",
+      "steps": [
+        "Mở artwork fixture, chọn Photo layer → Image effects → Run effects.",
+        "Chờ tới khi lượt chạy xong; ghi body response trạng thái lượt chạy khi xong.",
+        "So key của response và key trong layer_image với danh sách."
+      ],
+      "observation_point": "Key của response trạng thái lượt chạy khi xong; key trong layer_image",
+      "expected_result": "Response chỉ chứa key trong danh sách status, error_message, layer_image; layer_image chỉ chứa id, url, thumbnail, width, height; không có user_id.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/run-image-effects#KB-1119"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/run-image-effects#KB-1119",
+        "artwork/run-image-effects#KB-1120",
+        "artwork/run-image-effects#KB-803"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Response khi lượt chạy lỗi chưa quan sát."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1221,11 +1300,28 @@
         "CHK-027"
       ],
       "covered": "Watch, không oracle"
+    },
+    {
+      "feature_id": "FEAT-26-run-image-effects",
+      "risk": "Ref image Gemini rất lớn (CBS-153, KB-1103)",
+      "checks": [
+        "CHK-031"
+      ],
+      "covered": "Không oracle, chờ xác nhận"
+    },
+    {
+      "feature_id": "FEAT-26-run-image-effects",
+      "risk": "[CBS-163] Response contract của lượt chạy (KB-1119, KB-1120)",
+      "checks": [
+        "CHK-032",
+        "CHK-007"
+      ],
+      "covered": "STRONG (KB-1119) cho CHK-032; KB-1120 (layer nhận ảnh) gắn related vào CHK-007 sẵn có."
     }
   ],
   "excluded_dimensions": [],
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-140"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   }
 }

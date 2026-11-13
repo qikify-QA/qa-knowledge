@@ -268,6 +268,119 @@
       "priority": "P3",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-order-081"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "[CBS-148] CustomCat: item mang preset_id/preset_back_id khi Product Base khai, không gửi key khác của default_options",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base CustomCat có Required options {\"preset_id\": 4, \"preset_back_id\": 5, \"print_method\": ...}",
+        "environment": "staging qua CustomCat sandbox (ALTERNATIVE_SETUP, KB-789); không gửi trên production; ghi build và ngày chạy",
+        "surface_or_device": "portal Bulk Fulfill + request_data đã lưu"
+      },
+      "precondition": "Store explorer đã kết nối CustomCat trên staging (sandbox); campaign của store explorer dùng variant thuộc Product Base CustomCat; tạo order test trên store explorer. Đọc request đã lưu theo _flows/orders-fulfillment.md mục 'Đọc payload đã gửi provider'; che api_key trong request_data trước khi lưu evidence. Fixture tự dựng trên store của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign của merchant hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Đặt Required options của Product Base CustomCat gồm preset_id, preset_back_id và một key khác (vd print_method).",
+        "Gửi order item qua Bulk Fulfill (Confirm & send).",
+        "Đọc fulfiller.request_data của item ở Items Sent; ghi các key của item."
+      ],
+      "observation_point": "Các key của item trong request_data đã lưu.",
+      "expected_result": "Item có preset_id và preset_back_id; không có print_method hay key nào khác lấy từ default_options.",
+      "oracle": {
+        "kb_ids": [
+          "KB-785"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-785",
+        "KB-786",
+        "KB-789",
+        "product-base/provider-required-options#KB-528"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "observation_guidance": "Quan sát (KB-786, BASELINE, OQ-order-088): item còn có quantity, catalog_sku, design_url; giá trị preset như đã lưu. Ghi nguyên kiểu giá trị, không dựa vào thứ tự key."
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "[CBS-148] CustomCat: preset null, chuỗi rỗng hoặc không khai thì key không được gửi",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base CustomCat với preset_id có giá trị và preset_back_id null hoặc \"\"; và Product Base không có preset",
+        "environment": "staging qua CustomCat sandbox (ALTERNATIVE_SETUP, KB-789); không gửi trên production; ghi build và ngày chạy",
+        "surface_or_device": "portal Bulk Fulfill + request_data đã lưu"
+      },
+      "precondition": "Store explorer đã kết nối CustomCat trên staging (sandbox); campaign của store explorer dùng variant thuộc Product Base CustomCat; tạo order test trên store explorer. Đọc request đã lưu theo _flows/orders-fulfillment.md mục 'Đọc payload đã gửi provider'; che api_key trong request_data trước khi lưu evidence. Fixture tự dựng trên store của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign của merchant hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Đặt Required options {\"preset_id\": 4, \"preset_back_id\": null}, gửi một item; đọc request_data.",
+        "Đổi preset_back_id thành \"\" (chuỗi rỗng), gửi item khác; đọc request_data.",
+        "Với Product Base không có preset (default_options null), gửi item; đọc request_data."
+      ],
+      "observation_point": "Có/không có key preset_id, preset_back_id trong item.",
+      "expected_result": "Key null hoặc chuỗi rỗng không có trong item (chỉ preset_id ở hai lượt đầu); Product Base không có preset thì item không có preset_id, preset_back_id.",
+      "oracle": {
+        "kb_ids": [
+          "KB-785"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-785",
+        "KB-786"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "observation_guidance": "Quan sát (KB-786, BASELINE): không preset thì item chỉ có quantity, catalog_sku, design_url."
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-148] CustomCat từ chối preset không hợp lệ: order item hiện lần gửi thất bại kèm lý do",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base CustomCat có preset_id CustomCat không nhận (vd 99999)",
+        "environment": "staging qua CustomCat sandbox (ALTERNATIVE_SETUP, KB-789); không gửi trên production; ghi build và ngày chạy",
+        "surface_or_device": "portal Bulk Fulfill + order detail"
+      },
+      "precondition": "Store explorer đã kết nối CustomCat trên staging (sandbox); campaign của store explorer dùng variant thuộc Product Base CustomCat; tạo order test trên store explorer. Đọc request đã lưu theo _flows/orders-fulfillment.md mục 'Đọc payload đã gửi provider'; che api_key trong request_data trước khi lưu evidence. Fixture tự dựng trên store của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign của merchant hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Đặt Required options {\"preset_id\": 99999} cho Product Base CustomCat.",
+        "Gửi order item qua Bulk Fulfill.",
+        "Ghi trạng thái item ở Bulk Fulfill và nội dung Item Activity logs / Latest log ở order detail."
+      ],
+      "observation_point": "Trạng thái item; text lý do của CustomCat.",
+      "expected_result": "CustomCat từ chối; order item hiện lần gửi thất bại kèm lý do của CustomCat.",
+      "oracle": {
+        "kb_ids": [
+          "KB-787"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-787",
+        "KB-788"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "observation_guidance": "Quan sát (KB-788, BASELINE, OQ-order-089): item ở Failed / Items Have Error; text lý do chỉ ở Item Activity logs / Latest log, danh sách Items Have Error không hiện text. Lệch vị trí hiển thị = cần điều tra, không phải bug."
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -313,13 +426,36 @@
         "CHK-003"
       ],
       "oracle": "NONE"
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "item": "[CBS-148] Capability: item gửi CustomCat mang preset từ Product Base (KB-785, KB-786)",
+      "check_ids": [
+        "CHK-008",
+        "CHK-009"
+      ],
+      "oracle": "STRONG (vế có/không có key); BASELINE cho shape item"
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "item": "[CBS-148] Capability: lần gửi CustomCat thất bại kèm lý do (KB-787, KB-788)",
+      "check_ids": [
+        "CHK-010"
+      ],
+      "oracle": "STRONG; BASELINE cho vị trí hiển thị lý do"
+    },
+    {
+      "feature_id": "FEAT-07-fulfillment-provider-request",
+      "item": "[CBS-148] Risk: payload CustomCat không verify được trên production (KB-789)",
+      "check_ids": [
+        "CHK-008",
+        "CHK-009",
+        "CHK-010"
+      ],
+      "oracle": "applicability chỉ staging"
     }
   ],
   "excluded_dimensions": [
-    {
-      "dimension": "NEGATIVE",
-      "reason": "Không có KB về xử lý lỗi provider, retry hay input sai; claim liên quan là S0 (chỉ OQ)."
-    },
     {
       "dimension": "BOUNDARY",
       "reason": "Không có KB về giới hạn kích thước/số lượng."
@@ -334,7 +470,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-138"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-148"
   }
 }

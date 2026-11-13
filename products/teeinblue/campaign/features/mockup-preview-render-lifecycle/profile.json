@@ -1,0 +1,522 @@
+{
+  "feature_id": "FEAT-23-mockup-preview-render-lifecycle",
+  "feature_key": "mockup-preview-render-lifecycle",
+  "name": "Vòng đời file preview mockup khi render lại: preview cũ vào trashed_images và được job cleanup dọn",
+  "user_goal": "Là merchant owner, khi mockup của campaign hoặc platform product được render lại (sửa mockup, clone campaign), preview mới hiển thị trên portal và storefront, còn file preview cũ được đưa vào hàng xoá trashed_images và dọn bởi job đêm thay vì để lại rác, mà không mockup nào mất ảnh.",
+  "user_goal_kb_refs": [
+    "campaign/mockup-preview-render-lifecycle#KB-454",
+    "campaign/mockup-preview-render-lifecycle#KB-459",
+    "campaign/mockup-preview-render-lifecycle#KB-460"
+  ],
+  "stable_since_version": null,
+  "scope_in": "Khi campaign mockup hoặc platform mockup được render lại, preview mới thay preview cũ và file preview cũ (preview_url, preview_thumbnail) được đưa vào hàng đợi xoá trashed_images; job đêm cleanup:expired-trashed-images xoá file hoặc hoãn nếu còn mockup khác dùng. Gồm render lần đầu/import từ Product Base (không tạo dòng), video mockup (không render), clone campaign, và regression hiển thị preview.",
+  "scope_out": [
+    "Dọn file khi xoá mockup.",
+    "Dọn file cũ còn sót từ trước bản fix.",
+    "Cấu hình layer trong Mockup Editor.",
+    "Đồng bộ media lên Shopify: campaign/campaign-shopify-media-sync."
+  ],
+  "actors": [
+    {
+      "role": "merchant-owner (portal)",
+      "permission_observed": "Sửa mockup trong Mockup Editor rồi Save, thêm/import mockup, Duplicate campaign; là user_id của dòng trashed_images.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-454",
+        "campaign/mockup-preview-render-lifecycle#KB-455",
+        "campaign/mockup-preview-render-lifecycle#KB-457",
+        "campaign/mockup-preview-render-lifecycle#KB-461"
+      ]
+    },
+    {
+      "role": "buyer (storefront)",
+      "permission_observed": "Xem campaign trên storefront, chỉ là regression surface.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-459"
+      ]
+    },
+    {
+      "role": "job nền cleanup:expired-trashed-images",
+      "permission_observed": "Xoá file trong trashed_images, hoãn path còn mockup khác dùng.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-460",
+        "campaign/mockup-preview-render-lifecycle#KB-462"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "portal — Mockup Editor của campaign mockup (sửa layer hoặc width/height/background rồi Save)",
+      "precondition": "Campaign của store test được phép có mockup ảnh đã có preview. Kiểm trashed_images cần quyền query DB read-only; query trước job đêm 01:00 hoặc trước khi gọi cleanup.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-454",
+        "campaign/mockup-preview-render-lifecycle#KB-456",
+        "campaign/mockup-preview-render-lifecycle#KB-460"
+      ]
+    },
+    {
+      "path": "portal — campaign by Product Base: thêm mockup mới hoặc import mockup From Product base",
+      "precondition": "Campaign by Product Base của store test được phép.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-455"
+      ]
+    },
+    {
+      "path": "portal — Mockup Editor của platform product (campaign by Shopify / Boundless)",
+      "precondition": "Platform product của store test được phép, có mockup mặc định đã có preview.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-457"
+      ]
+    },
+    {
+      "path": "portal — campaign có video mockup (YouTube/Vimeo)",
+      "precondition": "Campaign có ít nhất một video mockup.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-458"
+      ]
+    },
+    {
+      "path": "portal — list campaign, Duplicate campaign",
+      "precondition": "Campaign gốc có mockup ảnh.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-461"
+      ]
+    },
+    {
+      "path": "staging — endpoint nội bộ cleanup (thay cho chờ job đêm)",
+      "precondition": "Chỉ staging; làm theo environment_differences[0].",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-462"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Re-render campaign mockup đưa preview cũ vào hàng xoá",
+      "description": "Preview mới hiển thị; mỗi re-render một dòng trashed_images giữ cặp preview ngay trước đó, user_id chủ campaign, deletes_at thời điểm re-render; không dòng nào giữ preview đang hiển thị; file cũ không xoá ngay.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-454",
+        "campaign/mockup-preview-render-lifecycle#KB-456"
+      ]
+    },
+    {
+      "name": "Render lần đầu không tạo rác",
+      "description": "Mockup mới hoặc import từ Product Base: preview trống sau import, render đầu ghi vào thư mục riêng của mockup, không có dòng trashed_images.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-455"
+      ]
+    },
+    {
+      "name": "Re-render platform mockup",
+      "description": "Shopify/Etsy/Boundless cùng hành vi; Save mockup mặc định có thể ra 2 dòng (mockup và preview tổng hợp của platform product).",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-457"
+      ]
+    },
+    {
+      "name": "Video mockup không bao giờ render",
+      "description": "Link video không đổi, không vào trashed_images.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-458"
+      ]
+    },
+    {
+      "name": "Clone campaign dọn bản copy tạm",
+      "description": "Clone copy tạm preview vào thư mục clone, render lại ngay, bản copy tạm vào trashed_images mỗi mockup ảnh một dòng; không đụng file campaign gốc.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-461"
+      ]
+    },
+    {
+      "name": "Job cleanup xoá file đã đến hạn",
+      "description": "Job đêm 01:00 xoá file trong trashed_images, hoãn path còn mockup khác dùng (log Postponed trashed image ...); staging có endpoint chạy ngay.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-460",
+        "campaign/mockup-preview-render-lifecycle#KB-462"
+      ]
+    },
+    {
+      "name": "Preview vẫn hiển thị sau re-render",
+      "description": "Portal và storefront hiển thị preview mới, không mockup nào mất ảnh.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-459"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "mockup ảnh có preview P0",
+      "to": "preview P1 hiển thị; trashed_images có dòng giữ cặp P0",
+      "trigger": "sửa mockup (layer/width/height/background) rồi Save",
+      "condition": "mockup không phải video",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-454",
+        "campaign/mockup-preview-render-lifecycle#KB-456",
+        "campaign/mockup-preview-render-lifecycle#KB-458"
+      ]
+    },
+    {
+      "from": "mockup vừa import từ Product Base (preview trống)",
+      "to": "preview trong thư mục riêng của mockup, không dòng trashed_images",
+      "trigger": "render lần đầu",
+      "condition": "",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-455"
+      ]
+    },
+    {
+      "from": "dòng trashed_images đã đến hạn",
+      "to": "file bị xoá, hoặc hoãn nếu còn mockup khác dùng path",
+      "trigger": "job đêm cleanup:expired-trashed-images 01:00 (staging: endpoint cleanup force=true)",
+      "condition": "",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-460",
+        "campaign/mockup-preview-render-lifecycle#KB-462"
+      ]
+    },
+    {
+      "from": "campaign gốc",
+      "to": "campaign clone có preview render mới; bản copy tạm vào trashed_images",
+      "trigger": "Duplicate campaign",
+      "condition": "mỗi mockup ảnh một dòng",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-461"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "rule": "Re-render campaign mockup (sửa layer hoặc width/height/background rồi Save): preview mới; trashed_images có dòng mới giữ 2 path cũ (preview_url, preview_thumbnail), user_id = chủ campaign, deletes_at = thời điểm re-render; file cũ không xoá ngay.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, portal Mockup Editor của campaign + back-end (bảng trashed_images); shipped SHIPPED (Jira Done), production verify NOT-RUN",
+      "caveats": "Một nguồn xác nhận (Dev assignee TIB-5629).",
+      "confirmation_ref": "Jira TIB-5629 comment 56375 Ready for QA, How to test bước 1 (Dev, 2026-11-04)",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-454"
+      ]
+    },
+    {
+      "rule": "Mockup mới thêm (render lần đầu) render được, không có dòng trashed_images; import mockup từ Product Base xoá preview trước khi tạo bản ghi, preview trống ngay sau import, render đầu ghi vào thư mục riêng của campaign mockup.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, portal campaign by Product Base (thêm/import mockup) + back-end; shipped SHIPPED (Jira Done), production verify NOT-RUN",
+      "caveats": "Hai comment cùng một Dev, cùng ticket: một nguồn.",
+      "confirmation_ref": "Jira TIB-5629 comment 56375 bước 2 (Dev, 2026-11-04) và comment 56655 mục 1 (Dev, 2026-11-06)",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-455"
+      ]
+    },
+    {
+      "rule": "Mỗi lần re-render trên cùng mockup tạo một dòng mới giữ cặp preview ngay trước đó; không dòng nào giữ preview đang hiển thị.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, portal Mockup Editor của campaign + back-end (bảng trashed_images); shipped SHIPPED (Jira Done), production verify NOT-RUN",
+      "caveats": "Một nguồn. Save liên tiếp khi render chưa xong chưa có expected (unknown_areas).",
+      "confirmation_ref": "Jira TIB-5629 comment 56375 How to test bước 3 (Dev, 2026-11-04)",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-456"
+      ]
+    },
+    {
+      "rule": "Platform mockup (Shopify/Etsy/Boundless) re-render như campaign mockup; Save mockup mặc định của platform product có thể ra 2 dòng lệch vài giây (mockup và preview tổng hợp), là đúng; campaign mockup chỉ 1 dòng mỗi lần.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, portal Mockup Editor của platform product (Shopify, Boundless) + back-end; shipped SHIPPED (Jira Done), production verify NOT-RUN",
+      "caveats": "Một nguồn. Etsy chưa chạy riêng (unknown_areas).",
+      "confirmation_ref": "Jira TIB-5629 comment 56375 What changed + bước 4 (Dev, 2026-11-04) và comment 56655 mục 3 (Dev, 2026-11-06)",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-457"
+      ]
+    },
+    {
+      "rule": "Video mockup không bao giờ render: link không đổi, không có dòng trashed_images, link không bao giờ vào hàng xoá.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, portal Mockup Editor của campaign (video mockup) + back-end; shipped SHIPPED (Jira Done), production verify NOT-RUN",
+      "caveats": "Một nguồn xác nhận (Dev assignee TIB-5629).",
+      "confirmation_ref": "Jira TIB-5629 comment 56375 bước 5 (Dev, 2026-11-04) và comment 56655 mục 2 (Dev, 2026-11-06)",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-458"
+      ]
+    },
+    {
+      "rule": "Sau mỗi re-render, preview mới hiển thị trên portal và storefront; không mockup nào mất ảnh.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, portal campaign + storefront (buyer xem campaign); shipped SHIPPED (Jira Done), production verify NOT-RUN",
+      "caveats": "Một nguồn. Vế gallery Shopify sau sync chưa có expected (unknown_areas).",
+      "confirmation_ref": "Jira TIB-5629 comment 56375 How to test bước 6 (Dev, 2026-11-04)",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-459"
+      ]
+    },
+    {
+      "rule": "File preview cũ không xoá lúc re-render; job đêm cleanup:expired-trashed-images (01:00) xoá file trong trashed_images và hoãn path còn mockup khác dùng, log \"Postponed trashed image ...\".",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, back-end job cleanup:expired-trashed-images + CDN file preview; shipped SHIPPED (Jira Done), production verify NOT-RUN",
+      "caveats": "Một nguồn. Mã HTTP file cũ sau cleanup, nhánh Postponed và múi giờ chưa có expected (unknown_areas).",
+      "confirmation_ref": "Jira TIB-5629 comment 56375 How to test (Dev, 2026-11-04)",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-460"
+      ]
+    },
+    {
+      "rule": "Duplicate campaign: copy tạm preview vào thư mục clone rồi render lại ngay; bản copy tạm vào trashed_images, mỗi mockup ảnh một dòng; không đụng file của campaign gốc.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, portal Duplicate campaign + back-end; shipped SHIPPED (Jira Done), production verify NOT-RUN",
+      "caveats": "Một nguồn xác nhận (Dev assignee TIB-5629).",
+      "confirmation_ref": "Jira TIB-5629 comment 56655 mục 4 (Dev, 2026-11-06)",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-461"
+      ]
+    }
+  ],
+  "observed_behavior": [],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      "campaign/mockup-preview-render-lifecycle#KB-454",
+      "campaign/mockup-preview-render-lifecycle#KB-455",
+      "campaign/mockup-preview-render-lifecycle#KB-456",
+      "campaign/mockup-preview-render-lifecycle#KB-457",
+      "campaign/mockup-preview-render-lifecycle#KB-458",
+      "campaign/mockup-preview-render-lifecycle#KB-459",
+      "campaign/mockup-preview-render-lifecycle#KB-461"
+    ],
+    "storefront": [
+      "campaign/mockup-preview-render-lifecycle#KB-459"
+    ],
+    "api": [
+      "campaign/mockup-preview-render-lifecycle#KB-462"
+    ],
+    "data": [
+      "campaign/mockup-preview-render-lifecycle#KB-454",
+      "campaign/mockup-preview-render-lifecycle#KB-455",
+      "campaign/mockup-preview-render-lifecycle#KB-456",
+      "campaign/mockup-preview-render-lifecycle#KB-457",
+      "campaign/mockup-preview-render-lifecycle#KB-458",
+      "campaign/mockup-preview-render-lifecycle#KB-460",
+      "campaign/mockup-preview-render-lifecycle#KB-461"
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "feature_key": "campaign/create-campaign-by-product-base",
+      "why": "Thêm/import mockup From Product base và Duplicate campaign là điểm vào của KB-455, KB-461."
+    },
+    {
+      "feature_key": "campaign/create-campaign-by-shopify",
+      "why": "Platform product (Shopify) là điểm vào của KB-457."
+    },
+    {
+      "feature_key": "sdk/storefront-buyer-facing",
+      "why": "Regression hiển thị preview trên storefront (KB-459); không nạp item vào object sdk."
+    }
+  ],
+  "risks": [
+    {
+      "description": "Dọn nhầm file preview đang dùng làm mockup mất ảnh trên portal/storefront (P1 mất dữ liệu hiển thị); mọi rule một nguồn, chỉ verify staging, production verify NOT-RUN.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-456",
+        "campaign/mockup-preview-render-lifecycle#KB-459",
+        "campaign/mockup-preview-render-lifecycle#KB-460",
+        "campaign/mockup-preview-render-lifecycle#KB-461"
+      ]
+    },
+    {
+      "description": "Rác file preview không được dọn (dòng trashed_images thiếu hoặc job không chạy).",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-454",
+        "campaign/mockup-preview-render-lifecycle#KB-457",
+        "campaign/mockup-preview-render-lifecycle#KB-460"
+      ]
+    }
+  ],
+  "environment_differences": [
+    {
+      "type": "ALTERNATIVE_SETUP",
+      "test_env": "Staging có endpoint nội bộ POST /api/internal/trashed-images/cleanup (không cần token): mặc định dry-run, body {\"force\": true} xoá thật; response trả số dòng trước/sau, deleted, postponed và log",
+      "production": "Endpoint không deploy (môi trường khác trả 404); chỉ có job đêm cleanup:expired-trashed-images 01:00",
+      "how_to_test": "Query trashed_images trước khi gọi; gọi dry-run rồi mới gọi force=true thay vì chờ job đêm",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-462"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-11-12"
+  },
+  "limitations": [
+    "Production verify NOT-RUN: mọi rule chỉ PASS trên staging 2026-11-05/06; spec production chưa chạy vì thiếu fixture production.",
+    "Vế trashed_images chỉ kiểm được bằng query DB read-only; merchant không thấy khác trên UI."
+  ],
+  "unknown_areas": [
+    {
+      "question": "2 lần Save liên tiếp khi render đầu chưa xong: mỗi lần vẫn đúng 1 dòng, preview cuối vẫn tải được sau cleanup? (QA TC-TIB-8413 PASS, Dev chưa nêu expected)",
+      "why_it_matters": "Race khi merchant Save nhanh có thể đưa preview đang dùng vào hàng xoá.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-456"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-campaign-096"
+    },
+    {
+      "question": "Sau Update/sync lên Shopify, gallery Shopify có dùng file preview mới và sync có giữ nguyên preview_url? (quan sát QA TC-TIB-8408)",
+      "why_it_matters": "Gallery Shopify trỏ file cũ sẽ mất ảnh sau cleanup.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-459"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-campaign-097"
+    },
+    {
+      "question": "File preview cũ trên CDN sau cleanup trả mã gì (QA thấy 403 kể cả query cache-busting) và dòng đã xử lý có biến mất khỏi bảng?",
+      "why_it_matters": "Quyết định cách kết luận \"file đã xoá\" trong check cleanup.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-460"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-campaign-098"
+    },
+    {
+      "question": "Nhánh hoãn (Postponed) của job cleanup chưa từng chạy thật trên staging (postponed 0): dựng path dùng chung thế nào?",
+      "why_it_matters": "Nhánh bảo vệ file còn được mockup khác dùng chưa có coverage.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-460"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-campaign-099"
+    },
+    {
+      "question": "Job đêm 01:00 chạy theo múi giờ nào?",
+      "why_it_matters": "Hạn query trashed_images trước khi dòng biến mất.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-462"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-campaign-100"
+    },
+    {
+      "question": "Etsy platform product chưa chạy riêng (Dev nói dùng chung code path với Shopify/Boundless).",
+      "why_it_matters": "Coverage platform mockup chỉ có Shopify và Boundless.",
+      "kb_refs": [
+        "campaign/mockup-preview-render-lifecycle#KB-457"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-campaign-101"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-160"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-23-mockup-preview-render-lifecycle",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "re-render campaign mockup",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-23-mockup-preview-render-lifecycle",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "render lần đầu / import Product Base",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-23-mockup-preview-render-lifecycle",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "platform mockup Shopify, Boundless",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-23-mockup-preview-render-lifecycle",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "platform mockup Etsy",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-23-mockup-preview-render-lifecycle",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "video mockup",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-23-mockup-preview-render-lifecycle",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Duplicate campaign",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-23-mockup-preview-render-lifecycle",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "preview sau re-render",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-23-mockup-preview-render-lifecycle",
+      "layer": "db",
+      "role": "job nền",
+      "state": "cleanup xoá file",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-23-mockup-preview-render-lifecycle",
+      "layer": "db",
+      "role": "job nền",
+      "state": "cleanup nhánh Postponed",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-23-mockup-preview-render-lifecycle",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "mọi trạng thái",
+      "environment": "production",
+      "covered": false
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from_feature_key": "mockup-preview-render-lifecycle",
+      "to_feature_key": "create-campaign-by-product-base",
+      "relationship": "entry_point_import_and_duplicate"
+    },
+    {
+      "from_feature_key": "mockup-preview-render-lifecycle",
+      "to_feature_key": "create-campaign-by-shopify",
+      "relationship": "entry_point_platform_mockup"
+    },
+    {
+      "from_feature_key": "mockup-preview-render-lifecycle",
+      "to_feature_key": "campaign-shopify-media-sync",
+      "relationship": "out_of_scope_adjacent"
+    },
+    {
+      "from_feature_key": "mockup-preview-render-lifecycle",
+      "to_feature_key": "sdk/storefront-buyer-facing",
+      "relationship": "regression_surface"
+    }
+  ]
+}

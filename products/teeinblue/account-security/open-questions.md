@@ -7,9 +7,9 @@ Các mục dưới đây còn mở. Mục đã có lời dev trả lời một p
 | Loại | Số lượng |
 |---|---|
 | CONFLICT | 1 |
-| NEEDS_CONFIRMATION | 32 |
+| NEEDS_CONFIRMATION | 36 |
 | OPEN_ISSUE | 24 |
-| **Tổng** | **57** |
+| **Tổng** | **61** |
 
 ## OQ-account-security-001 — OPEN_ISSUE
 
@@ -278,13 +278,7 @@ Các mục dưới đây còn mở. Mục đã có lời dev trả lời một p
 ## OQ-account-security-045 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id":"OQ-account-security-045","type":"NEEDS_CONFIRMATION","feature_id":"social-login","summary":"GOOGLE_OAUTH_RATE_LIMIT đang đặt giá trị nào trên staging và production, và vượt limit nhận response gì? KB-026 chỉ nêu mặc định. Liên quan: CHK-011, CHK-012. Cần dev xác nhận."}
-```
-
-## OQ-account-security-046 — NEEDS_CONFIRMATION
-
-```json
-{"oq_id":"OQ-account-security-046","type":"NEEDS_CONFIRMATION","feature_id":"social-login","summary":"Text hiển thị của oauth_failed, invite_pending, no_account là gì, và các mã này có đọc ở social_error như email_unverified không? Liên quan: KB-022, KB-024, KB-027; CHK-003, CHK-004, CHK-005, CHK-009. Cần dev xác nhận."}
+{"oq_id":"OQ-account-security-045","type":"NEEDS_CONFIRMATION","feature_id":"social-login","summary":"GOOGLE_OAUTH_RATE_LIMIT đang đặt giá trị nào trên staging và production, và vượt limit nhận response gì? KB-026 chỉ nêu mặc định. KB-049 ghi quan sát của QA trên staging (6 request/phút/IP, vượt thì 429 có retry-after), chưa có xác nhận nên không làm expected. Liên quan: CHK-011, CHK-012. Cần dev xác nhận."}
 ```
 
 ## OQ-account-security-047 — OPEN_ISSUE
@@ -363,4 +357,22 @@ Các mục dưới đây còn mở. Mục đã có lời dev trả lời một p
 
 ```json
 {"oq_id":"OQ-account-security-059","type":"NEEDS_CONFIRMATION","feature_id":"confirm-password-dialog","summary":"Xoá role không hỏi xác nhận password như KB-040 có phải ý đồ sản phẩm không, hay xoá role cũng nên hỏi xác nhận như tạo và sửa role (KB-019)? KB-040 lấy từ rule spec-hub mô tả code hiện tại và là oracle của CHK-014; spec-hub cũng đang treo câu hỏi này cho PO. Cần PO xác nhận."}
+```
+
+## OQ-account-security-060 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-account-security-060","type":"NEEDS_CONFIRMATION","feature_id":"social-login","summary":"OAuth consent screen của Google trên staging có đang ở chế độ Testing, chỉ Gmail đã được thêm làm test user mới đăng nhập được, và production ở External/published như KB-050 không? KB-050 là lời kể chưa có trích nguyên văn, chỉ dùng làm setup ở precondition của CHK-001 đến CHK-008 và CHK-015 đến CHK-024. Cần dev xác nhận nguyên văn."}
+```
+
+## OQ-account-security-061 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-account-security-061","type":"NEEDS_CONFIRMATION","feature_id":"social-login","summary":"AUTH_EXCHANGE_TTL trên staging là bao nhiêu? Route và endpoint của bước hand-off sau callback Google là gì? Sau khi đổi mã, Staff không 2FA bắt đầu session còn Staff có 2FA chỉ bắt đầu challenge, và thời hạn mã không tính thời gian nhập code 2FA, có đúng không? KB-042 chỉ có phần dev viết nguyên văn; chưa có check hết hạn mã. Liên quan: CHK-019. Cần dev xác nhận."}
+```
+
+## OQ-account-security-062 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-account-security-062","type":"NEEDS_CONFIRMATION","feature_id":"social-login","summary":"Các hành vi xác thực và quyền truy cập của Google login ở KB-041, KB-042, KB-044, KB-045, KB-046, KB-048 (2FA sau Google, mã hand-off một lần, không tự tạo account, không bỏ qua accept lời mời, mất liên kết org thì bị từ chối, Staff tạo từ Shopify install vào bằng Google) có đúng ý định sản phẩm không? Hiện chỉ có lời dev. Liên quan: CHK-015, CHK-016, CHK-017, CHK-019, CHK-020, CHK-021, CHK-023, CHK-024. Cần PO xác nhận."}
 ```

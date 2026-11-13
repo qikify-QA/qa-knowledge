@@ -2114,6 +2114,123 @@
       "automation_suitability": "SUITABLE",
       "conflict_refs": [],
       "oq_id": "OQ-artwork-505"
+    },
+    {
+      "check_id": "CHK-061",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-106] {{time}} không format dùng format của Star Map; {{time.yyyy/MM/dd}} dùng format trong token",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "Star Map có Display in date format (vd dd.MM.yyyy HH:mm); hai text layer populate {{time}} và {{time.yyyy/MM/dd}}",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": "storefront preview, cart, design order desktop"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway có layer Star Map, không dùng artwork/campaign thật. Store bật UI date picker của Teeinblue.",
+      "steps": [
+        "Thêm hai text layer đích: một populate {{time}}, một populate {{time.yyyy/MM/dd}} từ layer Star Map",
+        "Chọn một ngày giờ ở ô giờ Star Map",
+        "Ghi nội dung hai text layer ở preview",
+        "Add to cart và tạo đơn test, ghi hai text layer ở design order"
+      ],
+      "observation_point": "Nội dung hai text layer ở preview và design order",
+      "expected_result": "{{time}} hiện theo format đã chọn ở 'Display in date format' của Star Map; {{time.yyyy/MM/dd}} hiện theo format trong token (yyyy/MM/dd), không theo format Star Map.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/populate-values#KB-1108"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/populate-values#KB-1108",
+        "artwork/populate-values#KB-1109",
+        "artwork/layer-config-maps-astronomy#KB-1104"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle là một nguồn spec_doc (TIB-5609, MEDIUM). Không khẳng định chuỗi cụ thể; chuỗi quan sát là KB-1109 (CHK-062)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-062",
+      "dimension": "REGRESSION",
+      "layer": "storefront",
+      "title": "[CBS-106] Star Map chưa set format và text layer đích Date picker khi populate từ Star Map (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "Star Map không set Display in date format; text layer populate {{time}}; text layer đích Input type Date picker populate từ Star Map",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": "storefront preview, localStorage, design order desktop"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway có layer Star Map, không dùng artwork/campaign thật.",
+      "steps": [
+        "Với Star Map chưa set format, chọn một ngày giờ, ghi ô giờ và text layer populate {{time}}",
+        "Với text layer đích Input type Date picker populate từ Star Map đã set format, ghi giá trị hiển thị và giá trị lưu trong localStorage teeinblue-customizations",
+        "Ghi build và ngày chạy"
+      ],
+      "observation_point": "Ô giờ, text layer populate, text layer đích Date picker, localStorage",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "artwork/populate-values#KB-1109"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-1109",
+        "artwork/populate-values#KB-1108",
+        "artwork/populate-values#KB-990"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1109 là OBSERVED_CURRENT/LOW, mặc định yyyy-MM-dd HH:mm chưa có nguồn trích. Ghi lại quan sát, không phán pass hay fail."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-574"
+    },
+    {
+      "check_id": "CHK-063",
+      "dimension": "REGRESSION",
+      "layer": "storefront",
+      "title": "[CBS-106] Moon Phase {{date}} và Route {{route_start_date}} không đổi sau thay đổi Star Map (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "buyer (storefront)",
+        "state": "artwork có layer Moon Phase và layer Route Maps populate sang text layer",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": "storefront preview desktop"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway có layer Star Map, không dùng artwork/campaign thật. Có layer Moon Phase populate {{date}} và layer Route Maps populate {{route_start_date}}.",
+      "steps": [
+        "Chọn ngày cho Moon Phase và ngày giờ bắt đầu cho Route Maps",
+        "Ghi nội dung text layer populate {{date}} và {{route_start_date}}",
+        "So với kết quả cùng thao tác trên build trước thay đổi nếu có"
+      ],
+      "observation_point": "Nội dung text layer populate {{date}}, {{route_start_date}}",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "artwork/populate-values#KB-1109"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/populate-values#KB-1109",
+        "artwork/populate-values#KB-1108"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-1109 là OBSERVED_CURRENT/LOW, không ghi build. Ghi lại quan sát, không phán pass hay fail."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-574"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -2274,6 +2391,16 @@
         "CHK-060"
       ],
       "confidence": "CHK-059 NONE (KNOWN_DEFECT watch, KB-1025/KB-1026); CHK-060 BASELINE (KB-1027, OBSERVED_CURRENT/LOW)"
+    },
+    {
+      "feature_id": "FEAT-11-populate-values",
+      "risk": "[CBS-106] Populate {{time}} từ Star Map: format không token theo Star Map, token có format thắng, nguồn ngày khác giữ hành vi cũ",
+      "covered_by": [
+        "CHK-061",
+        "CHK-062",
+        "CHK-063"
+      ],
+      "confidence": "CHK-061 STRONG (một nguồn spec_doc TIB-5609, MEDIUM); CHK-062, CHK-063 NONE (KB-1109 OBSERVED_CURRENT/LOW)"
     }
   ],
   "excluded_dimensions": [
@@ -2284,10 +2411,14 @@
     {
       "dimension": "REGRESSION (thay đổi so với base)",
       "reason": "Mọi item CBS-091 relation ADD, không đổi hành vi của item base; REGRESSION chỉ có dạng defect watch (CHK-039, CHK-045)."
+    },
+    {
+      "dimension": "PERMISSION, NEGATIVE, BOUNDARY — phạm vi CBS-106",
+      "reason": "KB-1108/1109 không nói role khác, input sai hay giới hạn; không viết check giả định."
     }
   ],
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-118"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-106"
   }
 }

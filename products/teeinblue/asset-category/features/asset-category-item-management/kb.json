@@ -588,6 +588,10 @@
       "surface": "portal+api",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-135"
+    },
     "tags": [
       "spec-hub:api-tokens-asset-limits",
       "daily-limit",
@@ -604,10 +608,200 @@
       "owner_role": "code (spec-hub reads teeinblue-api source)",
       "recorded_on": "2026-11-11",
       "locator": "spec-hub mcp__spec-hub__ask log_id=162 (re-ask log_id=195), rule id api-tokens-asset-limits (feature api-tokens)"
+    }
+  },
+  {
+    "kb_id": "KB-643",
+    "topic": "Chuột phải thumbnail clipart không bị lớp phủ \"Change thumbnail\" chặn (TIB-5676, chưa ship)",
+    "statement": "Theo các test case Testlane TC-TIB-8998, 8999, 9000, 9001, 9002, 9003, 9005 (QA chạy bằng AI 2026-11-11 trên staging, bản trước khi PR của TIB-5676 merge; căn cứ expected là description ticket TIB-5676: chuột phải thumbnail lại có \"Save image as...\" và lưu được ảnh), trong danh sách clipart của một Clipart Category, khi hover thumbnail clipart thì lớp phủ \"Change thumbnail\" (pseudo-element ::before của label, pointer-events: none) hiện nhưng không chặn chuột phải: điểm giữa thumbnail là thẻ <img> thumbnail, sự kiện contextmenu có target là ảnh và không bị preventDefault, ảnh lấy ra khớp đúng clipart được bấm (không lẫn clipart bên cạnh). Bằng chứng là gián tiếp: chưa thấy menu native \"Save image as...\" và chưa mở file đã lưu trên trình duyệt nào; đã chạy Chrome, Edge, Firefox trên Windows và Chrome, Edge, Firefox giả lập macOS (engine chạy trên Windows với user agent Mac). Safari/macOS chưa kết luận (TC-TIB-9004 blocked). Ticket chưa ship lúc gửi CCR; đây chưa phải expected.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "owner",
+      "surface": "portal (Assets > Clipart Categories > category > danh sách clipart, thumbnail clipart)",
+      "brand": null
     },
     "last_updated": {
-      "date": "2026-11-11",
-      "ccr_ref": "CBS-135"
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-141"
+    },
+    "tags": [
+      "clipart-thumbnail",
+      "right-click",
+      "save-image",
+      "change-thumbnail-overlay",
+      "not-shipped",
+      "TIB-5676",
+      "ccr:CBS-141"
+    ],
+    "related_kb_ids": [
+      "asset-category/asset-category-item-management#KB-644",
+      "asset-category/asset-category-item-management#KB-645",
+      "asset-category/asset-category-item-management#KB-646",
+      "global-option/global-option-additional-option-items#KB-734"
+    ]
+  },
+  {
+    "kb_id": "KB-644",
+    "topic": "Ảnh lấy ra khi chuột phải thumbnail clipart là file thumbnail, không phải ảnh gốc (expected chưa được PO xác nhận)",
+    "statement": "Theo kết quả QA chạy bằng AI trong test case Testlane TC-TIB-8999 (2026-11-11, staging; chưa được PO/Dev xác nhận), với clipart không có custom thumbnail, ảnh mà thumbnail trong danh sách clipart hiển thị (và là ảnh trình duyệt lấy khi chuột phải \"Save image as...\") là file thumbnail webp 100x100 do hệ thống sinh, không phải ảnh clipart gốc (clipart PNG 500x500 có file _large.webp riêng). QA đọc qua currentSrc của thẻ ảnh, chưa lưu file thật qua menu native. Lưu thumbnail hay ảnh gốc mới là \"correct image\" theo ticket TIB-5676 là câu hỏi QA đã gửi PO và còn mở; không dùng làm expected.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "owner",
+      "surface": "portal (Assets > Clipart Categories > category > danh sách clipart, thumbnail clipart không có custom thumbnail)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-141"
+    },
+    "tags": [
+      "clipart-thumbnail",
+      "right-click",
+      "save-image",
+      "thumbnail-vs-original",
+      "not-shipped",
+      "TIB-5676",
+      "ccr:CBS-141"
+    ],
+    "related_kb_ids": [
+      "asset-category/asset-category-item-management#KB-643"
+    ],
+    "qa_rule_ref": {
+      "code": "CBS-141-CLAIM-02",
+      "owner_role": "QA",
+      "recorded_on": "2026-11-11",
+      "locator": "Proposal CBS-141 CLAIM-02; Testlane TC-TIB-8999 (task TIB-328)"
+    }
+  },
+  {
+    "kb_id": "KB-645",
+    "topic": "Hover thumbnail clipart vẫn hiện \"Change thumbnail\"; click trái vẫn mở hộp chọn file để đổi thumbnail (TIB-5676, chưa ship)",
+    "statement": "Theo comment \"Summary cho QA\" của Dev trên Jira TIB-5676 (2026-11-06, PR teeinblue-portal#3912), sau thay đổi này hover thumbnail clipart vẫn hiện lớp phủ \"Change thumbnail\" và click trái vẫn mở hộp chọn file để đổi thumbnail như cũ. Test case Testlane TC-TIB-9006, 9007 (Chrome/Windows) và TC-TIB-9008 (WebKit giả lập Safari/macOS), QA chạy bằng AI 2026-11-11 trên staging, ghi: rê chuột ra thì lớp phủ ẩn; chọn ảnh mới thì portal gọi POST /api/cliparts/{id}/thumbnail (200), response giữ nguyên url ảnh gốc của clipart và trả đường dẫn thumbnail mới; thumbnail mới (webp 100x100) còn sau khi tải lại trang, ảnh gốc không đổi. Ticket chưa ship lúc gửi CCR (test chạy trước khi PR merge); đây chưa phải expected.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "owner",
+      "surface": "portal (Assets > Clipart Categories > category > danh sách clipart, đổi thumbnail clipart) + api (POST /api/cliparts/{id}/thumbnail)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-141"
+    },
+    "tags": [
+      "clipart-thumbnail",
+      "change-thumbnail",
+      "upload-thumbnail",
+      "regression",
+      "not-shipped",
+      "TIB-5676",
+      "ccr:CBS-141"
+    ],
+    "related_kb_ids": [
+      "asset-category/asset-category-item-management#KB-643",
+      "asset-category/asset-category-item-management#KB-646"
+    ]
+  },
+  {
+    "kb_id": "KB-646",
+    "topic": "Chuột phải rồi Esc trên thumbnail clipart không mở hộp chọn file và không ghi gì",
+    "statement": "Khi chuột phải thumbnail clipart trong danh sách clipart rồi bấm Esc đóng menu, ở owner/staging (test case Testlane TC-TIB-9009, QA chạy bằng AI 2026-11-11 trên Chrome/Windows và Firefox giả lập macOS), quan sát thấy không mở hộp chọn file, chuột phải không phát sự kiện click, không có request ghi nào (không có POST /api/cliparts/{id}/thumbnail), và src thumbnail giữ nguyên sau khi tải lại trang. Chưa có nguồn nói đây là expected; không áp cho Safari (WebKit giả lập mở hộp chọn file sau chuột phải, TC-TIB-9004). Quan sát trên bản staging trước khi PR của TIB-5676 merge.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "owner",
+      "surface": "portal (Assets > Clipart Categories > category > danh sách clipart, thumbnail clipart)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-141"
+    },
+    "tags": [
+      "clipart-thumbnail",
+      "right-click",
+      "no-write",
+      "not-shipped",
+      "TIB-5676",
+      "ccr:CBS-141"
+    ],
+    "related_kb_ids": [
+      "asset-category/asset-category-item-management#KB-643",
+      "asset-category/asset-category-item-management#KB-645"
+    ]
+  },
+  {
+    "kb_id": "KB-647",
+    "topic": "Mọi request ghi clipart trả cùng 5 key id, name, url, thumbnail, color",
+    "statement": "Theo Jira TIB-5689 comment 56714 mục 1 (Dev, 2026-11-09), mọi request ghi clipart (POST /api/cliparts, /font, /svg, /by-temporary-file, PUT, thumbnail) trả cùng 5 key id, name, url, thumbnail, color; giá trị clipart không có thì là null (font hoặc SVG không có color; by-temporary-file chưa có url và thumbnail vì file được xử lý nền).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (Assets) + portal API",
+      "brand": null
+    },
+    "tags": [
+      "api-response",
+      "clipart",
+      "response-shape",
+      "TIB-5689",
+      "ccr:CBS-163"
+    ],
+    "related_kb_ids": [
+      "asset-category/asset-category-item-management#KB-648",
+      "asset-category/asset-category-item-management#KB-014",
+      "asset-category/asset-category-item-management#KB-015",
+      "asset-category/asset-category-item-management#KB-031"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5689 comment 56714, mục 1 (Dev, 2026-11-09)",
+      "authored_on": "2026-11-09",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-163"
+    }
+  },
+  {
+    "kb_id": "KB-648",
+    "topic": "Quan sát: response font, SVG, thumbnail, PUT, by-temporary-file của clipart đủ 5 key, không category, không user_id",
+    "statement": "Khi thêm font clipart, upload SVG clipart, đổi thumbnail clipart, sửa color clipart và upload ảnh clipart ở merchant-owner/staging (Testlane TC-TIB-8590 PASS 2026-11-09, build không ghi), quan sát thấy POST /api/cliparts/font 201, POST /api/cliparts/svg 201, POST /api/cliparts/{id}/thumbnail 200, PUT /api/cliparts/{id} 200 và POST /api/cliparts/by-temporary-file 201 đều có đủ 5 key id, name, url, thumbnail, color, không có category, không có user_id; font và SVG có color null; clipart tạo qua by-temporary-file trả url, thumbnail null và có url, thumbnail sau khi xử lý nền. POST /api/cliparts (item không file) chưa chạy. Một lượt chạy; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (Assets) + portal API",
+      "brand": null
+    },
+    "tags": [
+      "api-response",
+      "clipart",
+      "response-shape",
+      "observed",
+      "single-sample",
+      "TIB-5689",
+      "ccr:CBS-163"
+    ],
+    "related_kb_ids": [
+      "asset-category/asset-category-item-management#KB-647",
+      "asset-category/asset-category-item-management#KB-014",
+      "asset-category/asset-category-item-management#KB-015",
+      "asset-category/asset-category-item-management#KB-031"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-163"
     }
   }
 ]

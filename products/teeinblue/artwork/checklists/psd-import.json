@@ -180,6 +180,114 @@
       "priority": "P3",
       "automation_suitability": "SUITABLE",
       "oq_id": "OQ-artwork-151"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-152] PSD Single template có layer 144 MP: layer không bị từ chối vì cap, artwork lưu được",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account explorer, user không beta",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artworks > Import + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác). File PSD tự dựng 12000x12000 có một layer raster 12000x12000 (144 MP); artwork test throwaway, xoá sau lượt chạy. Mở network để bắt POST /api/layer-images/file và POST /api/artworks.",
+      "steps": [
+        "Artworks > Import > PSD Single template, chọn file PSD 144 MP.",
+        "Nhập tên, Save, rồi Save & Close.",
+        "Ghi status của /api/layer-images/file và /api/artworks, toast.",
+        "Mở lại artwork, ghi kích thước layer ảnh."
+      ],
+      "observation_point": "Status hai request, toast, layer trong artwork mở lại",
+      "expected_result": "Layer 144 MP không bị từ chối vì cap 128 MP; artwork được tạo.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/psd-import#KB-1113"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/psd-import#KB-1113",
+        "artwork/psd-import#KB-1114",
+        "image-library/image-layer-library#KB-069"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-152] PSD Group-to-template có layer 144 MP: layer không bị từ chối vì cap, artwork lưu được",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account explorer, user không beta",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artworks > Import + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác). File PSD tự dựng 12000x12000 có một layer raster 12000x12000 (144 MP); artwork test throwaway, xoá sau lượt chạy. Mở network.",
+      "steps": [
+        "Artworks > Import > PSD Group-to-template, chọn cùng file PSD.",
+        "Save & Close.",
+        "Ghi status của /api/layer-images/file và /api/artworks, toast."
+      ],
+      "observation_point": "Status hai request, toast",
+      "expected_result": "Layer 144 MP không bị từ chối vì cap 128 MP; artwork được tạo.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/psd-import#KB-1113"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/psd-import#KB-1113",
+        "artwork/psd-import#KB-1114"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "[CBS-152] Toast và dữ liệu artwork sau import PSD có layer 144 MP (quan sát)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account explorer, user không beta",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artworks > Import + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác). File PSD tự dựng 12000x12000 có một layer raster 12000x12000 (144 MP); artwork test throwaway, xoá sau lượt chạy. Chạy cùng lượt CHK-006/CHK-007.",
+      "steps": [
+        "Ghi toast sau Save & Close của hai luồng.",
+        "Mở lại artwork (editor hoặc API), ghi width/height và type của layer ảnh."
+      ],
+      "observation_point": "Toast; width/height và type của layer",
+      "expected_result": "Baseline theo quan sát: toast \"Your artwork has been created\", không có toast lỗi cap; artwork có layer static-photo 12000x12000.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/psd-import#KB-1114"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/psd-import#KB-1114"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-576"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -216,6 +324,16 @@
         "CHK-001"
       ],
       "oracle": "STRONG; cần chạy lại trên build ship"
+    },
+    {
+      "feature_id": "FEAT-23-psd-import",
+      "item": "[CBS-152] Capability: layer PSD không bị cap 128 MP",
+      "check_ids": [
+        "CHK-006",
+        "CHK-007",
+        "CHK-008"
+      ],
+      "oracle": "STRONG (KB-1113) cho CHK-006, CHK-007; BASELINE (KB-1114) cho CHK-008. Bulk upload PSD chưa có check."
     }
   ],
   "excluded_dimensions": [
@@ -233,7 +351,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-152"
   }
 }

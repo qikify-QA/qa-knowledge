@@ -405,6 +405,19 @@
       "kb_refs": [
         "translation/dynamic-translations#KB-038"
       ]
+    },
+    {
+      "rule": "Ở locale đã dịch, hai option photo upload có bản dịch tiêu đề chỉ khác nhau ở dấu cách đầu/cuối là hai field ảnh riêng trên storefront: ảnh upload vào field này không sang field kia, và field đầu giữ ảnh của nó khi field kia nhận ảnh khác.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, GUEST buyer, storefront",
+      "shipped": "SHIPPED",
+      "caveats": "Chỉ locale đã dịch với bản dịch nhập tay giữ dấu cách (KB-032). Không nói về ngôn ngữ gốc hay cart line item property. Production chưa verify.",
+      "confirmation_ref": "Testlane TC-TIB-7775, PASS 2026-10-29, staging, locale vi đã dịch (TIB-5585); căn cứ expected: description Jira TIB-5585 và comment Dev #55043 (2026-10-19)",
+      "kb_refs": [
+        "translation/dynamic-translations#KB-044",
+        "translation/dynamic-translations#KB-032"
+      ]
     }
   ],
   "observed_behavior": [
@@ -454,6 +467,15 @@
       "kb_refs": [
         "translation/dynamic-translations#KB-028"
       ]
+    },
+    {
+      "statement": "[MỚI, CBS-106] Storefront staging, locale en (Testlane PASS 2026-11-10, không ghi build; storefront không phục vụ locale phụ nên dictionary en thay German/Vietnamese): Star Map có Display in date format dd.MM.yyyy HH:mm, ô giờ trống: dictionary có entry 'dd.mm.yyyy hh:mm' → 'tt.mm.jjjj hh:mm' thì placeholder là 'tt.mm.jjjj hh:mm'; không có entry thì placeholder là khoá viết thường 'dd.mm.yyyy hh:mm'; giá trị đã chọn ('21.10.2026 11:24') và {{time}} không bị dịch. Chưa PO/Dev xác nhận dạng khoá có giờ; chưa kiểm locale ngoài tiếng Anh.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "translation/dynamic-translations#KB-045"
+      ],
+      "observed_count": null
     }
   ],
   "observed_validations": [],
@@ -504,7 +526,15 @@
     "[MỚI, KB-022, KB-029] Trên build TIB-5352 (staging), hiển thị bản dịch ở storefront phụ thuộc vào SDK storefront (object sdk, feature storefront-buyer-facing): SDK đọc dictionary inline hoặc gọi translations/<locale>.json, và cách SDK xử lý timeout/lỗi/retry/thiếu key thuộc profile storefront-buyer-facing (cross_layer_evidence_map của shard: sdk KB-053, KB-054, KB-057, KB-058, KB-059).",
     "[MỚI, KB-022] Ranh giới inline/API phụ thuộc biến môi trường cấu hình ngưỡng ở backend (tên biến, giá trị production chưa biết).",
     "[MỚI, CBS-076, KB-033] Fallback chữ gốc khi API translations lỗi hoặc quá 5 giây liên quan feature storefront-buyer-facing của object sdk (sdk KB-053, KB-054).",
-    "[MỚI, CBS-076, KB-034] Thay đổi LAYER_TRANSLATABLE_FIELDS chỉ ở SDK; portal nhận khi bump submodule SDK, chưa có căn cứ về thời điểm."
+    "[MỚI, CBS-076, KB-034] Thay đổi LAYER_TRANSLATABLE_FIELDS chỉ ở SDK; portal nhận khi bump submodule SDK, chưa có căn cứ về thời điểm.",
+    {
+      "type": "cross_object",
+      "description": "[CBS-106] Placeholder ô giờ Star Map phụ thuộc setting 'Display in date format' của layer Star Map (artwork/layer-config-maps-astronomy#KB-1107, OBSERVED_CURRENT). Chỉ tham chiếu, không làm oracle.",
+      "kb_refs": [
+        "translation/dynamic-translations#KB-045",
+        "artwork/layer-config-maps-astronomy#KB-1107"
+      ]
+    }
   ],
   "risks": [
     "CONFLICT-001 (UNRESOLVED, see open-questions.md OQ-translation-001): if Dynamic Translations are by-design NOT propagated to storefront, any QA checklist or merchant-facing expectation assuming propagation will produce false-positive defect reports. If it IS a defect, merchants creating Dynamic Translation entries currently get zero buyer-facing effect for at least the 'Product base name' sub-scope, with no error/warning shown in the portal UI to indicate this. Either interpretation is currently unverified — treat both as open until authority resolves.",
@@ -519,15 +549,21 @@
     "[MỚI, CBS-076, KB-032, KB-036] Không dùng các item này để đóng CONFLICT-001: KB-032 không áp cho tên Product base, Variants name; KB-036 nói về tiêu đề option. OQ-translation-001, OQ-translation-011 vẫn mở.",
     "[MỚI, CBS-076, KB-037] Dev ghi đây là rủi ro lớn nhất của thay đổi: áp cho toàn bộ thao tác Save của trang, không riêng ô bản dịch, trên mọi nền tảng.",
     "[MỚI, CBS-076, KB-039] Câu 'SDK thử lại đúng 1 lần' là PROPOSED, không làm oracle: sdk KB-054, KB-057 quan sát một lần load trang chỉ có 1 request và TC-TIB-4696 FAILED ở kỳ vọng retry (OQ-sdk-053).",
-    "[MỚI, CBS-076, KB-040] Câu entry DD.MM.YYYY, dd.MM.yyyy không áp dụng là PROPOSED, không làm oracle: TC-TIB-8314 không ghi ngày chạy và build, comment dev Jira TIB-5608 #56400 để ngỏ các key này."
+    "[MỚI, CBS-076, KB-040] Câu entry DD.MM.YYYY, dd.MM.yyyy không áp dụng là PROPOSED, không làm oracle: TC-TIB-8314 không ghi ngày chạy và build, comment dev Jira TIB-5608 #56400 để ngỏ các key này.",
+    {
+      "risk": "[CBS-106, KB-045] OBSERVED_CURRENT/LOW, không làm oracle: khoá dịch của placeholder có giờ là format viết thường nguyên chuỗi; khi không có entry, placeholder hiện khoá viết thường. Mới kiểm locale en.",
+      "kb_refs": [
+        "translation/dynamic-translations#KB-045"
+      ]
+    }
   ],
   "environment_differences": [],
   "freshness": {
     "observed_at": "2026-11-06"
   },
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-134"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-106"
   },
   "unknown_areas": [
     {
@@ -649,15 +685,6 @@
       "oq_id": "OQ-translation-034"
     },
     {
-      "question": "[MỚI, CBS-076] Thao tác Save của Dynamic Translations có gồm thêm, sửa, xoá ngôn ngữ không?",
-      "why_it_matters": "KB-037 chỉ nêu xoá dòng dịch và mọi nền tảng. Jira TIB-5585 comment #55043 có vế 'gồm thêm, sửa, xoá ngôn ngữ', còn ghi chú QA 2026-10-30 nói danh sách và tên ngôn ngữ đồng bộ từ Shopify, Portal không có UI add, rename, xoá ngôn ngữ. Chưa ai chốt nên vế ngôn ngữ chưa có oracle.",
-      "type": "NEEDS_CONFIRMATION",
-      "kb_refs": [
-        "translation/dynamic-translations#KB-037"
-      ],
-      "oq_id": "OQ-translation-035"
-    },
-    {
       "question": "[MỚI, CBS-076] Placeholder riêng của Global Option có phải được gợi ý ở Import to Translation không?",
       "why_it_matters": "TC-TIB-8308 ghi quan sát chưa có expected: Placeholder riêng của Global Option không được gợi ý, trong khi Placeholder của layer thường có. KB-030 chỉ nói key format, không nói Placeholder text, nên checklist chưa có oracle cho trường hợp này.",
       "type": "NEEDS_CONFIRMATION",
@@ -711,6 +738,17 @@
         "translation/dynamic-translations#KB-019"
       ],
       "oq_id": "OQ-translation-063"
+    },
+    {
+      "question": "[MỚI, CBS-106] Placeholder ô giờ Star Map: dạng khoá dịch có giờ là format viết thường nguyên chuỗi (vd 'dd.mm.yyyy hh:mm' → 'tt.mm.jjjj hh:mm'), không có entry thì hiện khoá viết thường, giá trị đã chọn không bị dịch — có đúng ý không? Hành vi trên locale ngoài tiếng Anh (de/vi) chưa kiểm vì storefront staging không phục vụ locale phụ.",
+      "why_it_matters": "KB-045 là OBSERVED_CURRENT/LOW; CHK-046 và CHK-047 không có oracle.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "translation/dynamic-translations#KB-045",
+        "translation/dynamic-translations#KB-031",
+        "translation/dynamic-translations#KB-040"
+      ],
+      "oq_id": "OQ-translation-065"
     }
   ],
   "coverage_matrix": [
@@ -1076,6 +1114,41 @@
       "kb_refs": [
         "translation/dynamic-translations#KB-040"
       ]
+    },
+    {
+      "feature_id": "FEAT-03-06-dynamic-translations",
+      "layer": "storefront",
+      "role": "GUEST buyer",
+      "state": "[MỚI, CBS-158] 2 option photo upload có bản dịch tiêu đề chỉ khác nhau ở dấu cách: ảnh upload không sync giữa 2 field (test case PASS)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "translation/dynamic-translations#KB-044"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-06-dynamic-translations",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[CBS-106] Placeholder ô giờ Star Map có Display in date format: có/không có entry dịch (locale en)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "translation/dynamic-translations#KB-045"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, không oracle"
+    },
+    {
+      "feature_id": "FEAT-03-06-dynamic-translations",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[CBS-106] Placeholder ô giờ Star Map ở locale ngoài tiếng Anh (de/vi)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "translation/dynamic-translations#KB-045"
+      ],
+      "basis": "storefront staging không phục vụ locale phụ"
     }
   ],
   "profile_conflicts": [

@@ -1,14 +1,14 @@
 # Object: Asset Category (product: teeinblue) — Feature Summary
-**Published context version:** 5
+**Published context version:** 7
 
 Trạng thái hiện tại của object `asset-category`: 6 loại category asset (Clipart, Vector, Color, Additional Option, Map Style, Font Category) + luồng thêm item vào category + luồng bulk-upload zip.
 
 - **Environment:** staging. **Role đã test:** duy nhất `owner` ("explorer (TIB_STAGING_EMAIL)" — định danh `sub=<explorer>` trong nội dung cũ; hạ tầng hiện dùng Sanctum cookie+XSRF, verify bằng `GET /api/user` → id=<explorer>). 1 organization/store duy nhất.
 - **4 feature có profile + checklist:** `asset-category-route-entity-clarification`, `asset-category-crud`, `asset-category-item-management`, `asset-category-bulk-upload`. Feature đầu tiên KHÔNG phải tính năng user-facing (xem ghi chú riêng).
-- **KB:** 54 item. 5 item dùng chung toàn object nằm ở `kb.json`; phần còn lại nằm trong `features/<feature-key>/kb.json`.
-- **Knowledge kind:** 35 item `OBSERVED_CURRENT`; 7 item `CONFIRMED_EXPECTED` (KB-561..KB-567 theo lời dev, riêng KB-567 đang conflict); 8 item `INFERRED` (KB-019, KB-020, KB-022, KB-023, KB-026, KB-027, KB-033 — nhãn xác nhận legacy thiếu nguồn hợp lệ, có OQ hỏi nguồn; KB-569 khác biệt môi trường), trong đó KB-022 đang conflict; 4 item `PROPOSED`: KB-038, KB-040 (phía kỳ vọng của 2 conflict chưa ngã ngũ), KB-641 (rule QA spec-hub, đang conflict) và KB-642 (rule QA spec-hub).
+- **KB:** 58 item. 5 item dùng chung toàn object nằm ở `kb.json`; phần còn lại nằm trong `features/<feature-key>/kb.json`.
+- **Knowledge kind:** 36 item `OBSERVED_CURRENT` (gồm KB-646); 7 item `CONFIRMED_EXPECTED` (KB-561..KB-567 theo lời dev, riêng KB-567 đang conflict); 8 item `INFERRED` (KB-019, KB-020, KB-022, KB-023, KB-026, KB-027, KB-033 — nhãn xác nhận legacy thiếu nguồn hợp lệ, có OQ hỏi nguồn; KB-569 khác biệt môi trường), trong đó KB-022 đang conflict; 7 item `PROPOSED`: KB-643, KB-644, KB-645 (TIB-5676 chưa ship, thumbnail clipart); KB-038, KB-040 (phía kỳ vọng của 2 conflict chưa ngã ngũ), KB-641 (rule QA spec-hub, đang conflict) và KB-642 (rule QA spec-hub).
 - **Conflict chưa ngã ngũ:** 4 nhóm — `CFL-001` (khung diễn giải naming convention field `type`), `CFL-002` (kỳ vọng `vector_category` vs giá trị thật `vector`), `CFL-003` (cách tính cửa sổ daily limit) và `CONF-CBS-135-01` (giới hạn bulk-upload zip: banner plan Blue vs tier theo spec-hub). Xem `open-questions.md` (OQ-asset-category-006/007/031/054).
-- **Open question:** 55 mục trong `open-questions.md` (38 NEEDS_CONFIRMATION, 4 CONFLICT, 13 OPEN_ISSUE).
+- **Open question:** 60 mục trong `open-questions.md` (41 NEEDS_CONFIRMATION, 4 CONFLICT, 15 OPEN_ISSUE).
 
 ---
 
@@ -48,6 +48,7 @@ Trạng thái hiện tại của object `asset-category`: 6 loại category asse
 
 ## FEAT-02 — `asset-category-crud` (Quản lý category tài sản)
 
+**Cập nhật CBS-163 (TIB-5689):** response đổi/xoá thumbnail và clone của clipart category không còn `user_id` (KB-649, `CONFIRMED_EXPECTED`/MEDIUM theo Dev). Quan sát KB-650: 12 key, response clone không có key `thumbnail` (OQ-asset-category-061, 062). Check CHK-019, CHK-020.
 **Goal:** Tạo, sửa, nhân bản, xoá 1 category dùng để nhóm item asset (Clipart/Vector/Color/Additional Option/Map Style/Font) trước khi thêm item con.
 **Entry points:** `/cliparts` · `/vectors` · `/color-categories` · `/additional-options` · `/map-styles` · `/font-categories`
 
@@ -81,6 +82,7 @@ Portal layer: form field mapping ✅ chỉ Clipart, ❌ 5 loại còn lại · s
 
 ## FEAT-03 — `asset-category-item-management` (Thêm item vào category)
 
+**Cập nhật CBS-163 (TIB-5689):** mọi request ghi clipart (`POST /api/cliparts`, `/font`, `/svg`, `/by-temporary-file`, `PUT`, thumbnail) trả cùng 5 key `id, name, url, thumbnail, color`, `null` khi không có (KB-647, `CONFIRMED_EXPECTED`/MEDIUM theo Dev); quan sát KB-648. KB-015, KB-031 (response 4 key không `color`) có thể đã lỗi thời, xem OQ-asset-category-064. Check CHK-032, CHK-033.
 **Goal:** Thêm 1 item cụ thể (màu / lựa chọn / kiểu bản đồ / ảnh clipart / vector / font) vào category đã tồn tại, qua 3 cơ chế: nhập nhanh tại chỗ (Color/Additional Option/Map Style), upload file thật qua dropzone (Clipart/Vector), hoặc chọn từ danh sách có sẵn rồi copy (Font).
 **Entry points:** `/color-categories?id=` · `/additional-options?id=` · `/map-styles?id=` · `/font-categories?id=` · `/cliparts?id=` · `/vectors?id=`
 
@@ -95,6 +97,7 @@ Portal layer: form field mapping ✅ chỉ Clipart, ❌ 5 loại còn lại · s
 8. Daily limit upload asset: theo dev, 1,000 layer image, 4,000 clipart, 1,000 clipart category mỗi 24h, dùng chung portal và Open API (KB-565). Setup để test 429: "… max attempts" ở admin panel, xong trả lại giá trị cũ (KB-566). Cách tính cửa sổ đang conflict, không làm oracle: KB-567 (lời dev), KB-568 (QA ghi nhận), OQ-asset-category-031. Rule QA spec-hub ghi cùng ngưỡng và tính cả bulk upload vào bộ đếm (KB-642, PROPOSED/LOW, OQ-asset-category-055).
 9. Kết quả dropzone: QA ghi nhận trong test case kết quả hiện bằng text, không thấy icon; chưa có người xác nhận (KB-560, OBSERVED_CURRENT/LOW, OQ-asset-category-030).
 10. Thumbnail SVG có clip-path lồng qua nhiều `<clipPath>`: theo mô tả dev tự sinh từ branch diff (TIB-5350, 2026-09-23), thumbnail rasterize qua resvg trước pipeline Imagick nên hiện đúng hình đã mask, không hiện outer bounding shape. Chưa quan sát, chưa có người xác nhận, không làm oracle STRONG (KB-640, OBSERVED_CURRENT/LOW, CHK-027, OQ-asset-category-041).
+11. [CBS-141, TIB-5676, chưa ship] Thumbnail clipart trong danh sách clipart: hover hiện lớp phủ "Change thumbnail" nhưng không chặn chuột phải, ảnh lấy ra đúng clipart được bấm (KB-643, PROPOSED/LOW, bằng chứng gián tiếp, Safari chưa kết luận); ảnh lấy ra là thumbnail webp 100x100 chứ không phải ảnh gốc, chưa rõ đó có phải "correct image" (KB-644, PROPOSED/LOW); hover/click trái đổi thumbnail qua `POST /api/cliparts/{id}/thumbnail`, ảnh gốc giữ nguyên (KB-645, PROPOSED/LOW theo lời Dev); chuột phải rồi Esc không mở hộp chọn file, không ghi gì (KB-646, OBSERVED_CURRENT/LOW). CHK-028..CHK-031.
 
 **Khác biệt môi trường:** Horizon `NOT_TESTABLE` mức vế (KB-569, INFERRED/LOW, không làm oracle, OQ-asset-category-032).
 
@@ -108,6 +111,7 @@ Portal layer: form field mapping ✅ chỉ Clipart, ❌ 5 loại còn lại · s
 - OQ-asset-category-014 (cơ chế Add new của Font chưa re-verify độc lập) · OQ-asset-category-015 (staff log khi insert lỗi) · OQ-asset-category-016 (Clipart `.txt` bước sau) · OQ-asset-category-019 (Map Style cần field cấu hình nào) · OQ-asset-category-021 (chưa có sample `.svg` thành công) · OQ-asset-category-022 (staff log thiếu ở 2/3 category mới) · OQ-asset-category-023 (chưa re-test 3 category gốc 6008/6009/6010)
 - OQ-asset-category-033..040: uploader layer image và mockup library phía thành công, zip vượt cap, nghĩa của "không có reset", ngày lên production, cap áp ở đâu, route ăn bộ đếm clipart, field "… max attempts" và account admin, phụ thuộc bước PUT của CHK-018, CHK-021..CHK-023.
 - OQ-asset-category-041..045: thumbnail SVG clip-path lồng (và "SVG clipart" có phải item của `/vectors`), ngày lên production của fix thumbnail SVG, thumbnail layer image SVG ở artwork, thumbnail SVG không clip-path sau khi đổi renderer và thời điểm sinh thumbnail, API có chuẩn hoá `name` clipart lúc lưu không.
+- OQ-asset-category-056..060 (CBS-141): TIB-5676 chưa ship lúc gửi CCR, thumbnail hay ảnh gốc mới là "correct image" (PO), menu native chưa kiểm tay, Safari/macOS có bật hộp chọn file khi chuột phải không, Esc sau chuột phải có phải expected.
 
 ---
 
@@ -137,7 +141,7 @@ Portal layer: form field mapping ✅ chỉ Clipart, ❌ 5 loại còn lại · s
 | **Data layer (DB)** | Không có verification ở tầng DB cho object này — mọi state delta chỉ dựa trên response API/GraphQL/DOM | OQ-asset-category-001 |
 | **Cross-role / cross-tenant** | Thiếu hoàn toàn trên cả 4 feature (chỉ 1 account khả dụng); dimension PERMISSION bị exclude ở cả 4 checklist. Đáng chú ý nhất ở FEAT-03 vì `insert_cliparts` gọi thẳng Hasura từ client | OQ-asset-category-002, OQ-asset-category-017 |
 | **Rate-limit window** | Chỉ verify giá trị limit qua header; window reset 24h và việc dùng chung counter giữa 6 loại category chưa verify runtime | OQ-asset-category-003, OQ-asset-category-011, OQ-asset-category-021 |
-| **Confirmation status** | Chỉ 7/54 KB item có nguồn thẩm quyền hợp lệ (lời dev KB-561..KB-567, riêng KB-567 đang conflict). Các item `OBSERVED_CURRENT` còn lại KHÔNG được đối xử như business rule đã confirm — nhiều PO-answer chỉ là uỷ quyền THỰC THI test, không phải xác nhận hành vi đúng | — |
+| **Confirmation status** | Chỉ 7/58 KB item có nguồn thẩm quyền hợp lệ (lời dev KB-561..KB-567, riêng KB-567 đang conflict). Các item `OBSERVED_CURRENT` còn lại KHÔNG được đối xử như business rule đã confirm — nhiều PO-answer chỉ là uỷ quyền THỰC THI test, không phải xác nhận hành vi đúng | — |
 | **4 conflict chưa ngã ngũ** | `CFL-001` (khung diễn giải naming convention field `type`), `CFL-002` (kỳ vọng `vector_category` vs giá trị thật `vector`), `CFL-003` (cách tính cửa sổ daily limit), `CONF-CBS-135-01` (giới hạn bulk-upload zip) — giữ cả 2 phía, không tự chọn | OQ-asset-category-006, OQ-asset-category-007, OQ-asset-category-031, OQ-asset-category-054 |
 | **KB bị hạ phạm vi** | KB-008 (form field: chỉ còn đúng cho Clipart), KB-010 (sidebar tree action buttons: UNVERIFIED), KB-012 (cơ chế Add new của Font: chưa re-verify độc lập) — KHÔNG ngang hàng với các KB đã network/DOM-verified đầy đủ, không dùng làm oracle | OQ-asset-category-009, OQ-asset-category-012, OQ-asset-category-014 |
 | **Global Option instance** | Ngoài phạm vi object này theo quyết định 2026-09-14 — đọc object `global-option` | OQ-asset-category-004, OQ-asset-category-005 |

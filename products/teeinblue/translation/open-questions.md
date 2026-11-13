@@ -5,9 +5,9 @@ Mỗi mục dưới đây là 1 entry độc lập với `oq_id` ổn định (k
 | Loại | Số lượng |
 |---|---|
 | CONFLICT | 1 |
-| NEEDS_CONFIRMATION | 53 |
+| NEEDS_CONFIRMATION | 52 |
 | OPEN_ISSUE | 10 |
-| **Tổng** | **64** |
+| **Tổng** | **63** |
 
 ## OQ-translation-001 — CONFLICT
 
@@ -213,12 +213,6 @@ Mỗi mục dưới đây là 1 entry độc lập với `oq_id` ổn định (k
 {"oq_id": "OQ-translation-034", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "scope.role của KB-032..KB-039 đang là 'unspecified' vì nguồn không nêu role. Cần chốt role áp dụng cho từng item (owner, staff, buyer) (checklist ref: CHK-044).", "kb_ids": ["KB-032", "KB-033", "KB-034", "KB-035", "KB-036", "KB-037", "KB-038", "KB-039"]}
 ```
 
-## OQ-translation-035 — NEEDS_CONFIRMATION
-
-```json
-{"oq_id": "OQ-translation-035", "type": "NEEDS_CONFIRMATION", "feature_id": "dynamic-translations", "summary": "Thao tác Save của Dynamic Translations có gồm thêm, sửa, xoá ngôn ngữ và lưu tên ngôn ngữ không. Comment dev Jira TIB-5585 #55043 (2026-10-19) liệt kê các thao tác này; ghi chú QA 2026-10-30 nói Portal không có UI thêm, đổi tên, xoá ngôn ngữ. Ghi chú QA không đủ nguồn nên chưa nạp; KB-037 chỉ nêu xoá dòng dịch và mọi nền tảng. Cần Dev/PO chốt (checklist ref: CHK-038).", "kb_ids": ["KB-037"]}
-```
-
 ## OQ-translation-036 — NEEDS_CONFIRMATION
 
 ```json
@@ -359,4 +353,19 @@ Mỗi mục dưới đây là 1 entry độc lập với `oq_id` ổn định (k
 
 ```json
 {"oq_id":"OQ-translation-064","type":"NEEDS_CONFIRMATION","feature_id":"product-page-content-translation","summary":"[CBS-134, KB-015, spec-hub rule product-page-settings-sync] Spec-hub ghi khi settings, texts hoặc custom code của store đổi, Teeinblue push lên store ở nền và storefront hiện thay đổi 'shortly after saving'; KB-015 ghi propagate IMMEDIATE (một mẫu, browser context sạch). Rule có áp cho Product Page Content translation (PUT config-translations) không, và độ trễ thực tế có đáng kể không? Claim CBS-134 CLAIM-03 chưa nạp vào KB, đang chờ PO quyết giữ cả hai (mở conflict với KB-015) hay giữ KB-015. Người trả lời: Dev (độ trễ), PO (quyết định)."}
+```
+
+## OQ-translation-065 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-translation-065",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "dynamic-translations",
+  "summary": "[CBS-106, TIB-5609] Placeholder ô giờ Star Map (KB-045, OBSERVED_CURRENT/LOW): khoá dịch là format viết thường nguyên chuỗi kèm giờ (vd 'dd.mm.yyyy hh:mm' → 'tt.mm.jjjj hh:mm'), không có entry thì hiện khoá viết thường, giá trị đã chọn và text layer {{time}} không bị dịch — có đúng ý không? Mới kiểm trên dictionary locale en; locale ngoài tiếng Anh (de/vi) chưa kiểm vì storefront staging không phục vụ locale phụ. Liên quan KB-031 (TIB-5608).",
+  "kb_ids": [
+    "KB-045"
+  ],
+  "needs": "PO/Dev xác nhận dạng khoá có giờ, nguyên văn có ngày; lượt chạy trên locale ngoài tiếng Anh."
+}
 ```

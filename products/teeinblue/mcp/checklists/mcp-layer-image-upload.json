@@ -1,0 +1,484 @@
+{
+  "feature_id": "FEAT-02-mcp-layer-image-upload",
+  "feature_key": "mcp-layer-image-upload",
+  "object_id": "mcp",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "upload-layer-image-tool với raster trả status processing, không có url/thumbnail/width/height",
+      "applicability": {
+        "role": "merchant-owner (token MCP)",
+        "state": "token MCP hợp lệ của account test",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP client"
+      },
+      "precondition": "Token MCP của account test có mcp:access (chưa có biến env trong _env.example; operator cấp; xác minh account là account explore theo playbook trước). Gọi qua client MCP tới endpoint {TIB_API_BASE}/mcp. Fixture ảnh tự sinh, host ở URL public do người chạy kiểm soát; không dùng file/URL trong CCR. Đếm layer image (list-layer-images-tool) trước và sau; xoá layer image test sau lượt chạy.",
+      "steps": [
+        "Gọi upload-layer-image-tool với URL public của PNG khoảng 61 MP (vd 12000x5093).",
+        "Ghi toàn bộ response."
+      ],
+      "observation_point": "Các field của response",
+      "expected_result": "Response có id, name, status \"processing\" và note; không có url, thumbnail, width, height.",
+      "oracle": {
+        "kb_ids": [
+          "mcp/mcp-layer-image-upload#KB-1620"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "mcp/mcp-layer-image-upload#KB-1620",
+        "mcp/mcp-layer-image-upload#KB-1621"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "Poll view-layer-image-tool tới khi có thumbnail (quan sát)",
+      "applicability": {
+        "role": "merchant-owner (token MCP)",
+        "state": "token MCP hợp lệ của account test",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP client"
+      },
+      "precondition": "Token MCP của account test có mcp:access (chưa có biến env trong _env.example; operator cấp; xác minh account là account explore theo playbook trước). Gọi qua client MCP tới endpoint {TIB_API_BASE}/mcp. Fixture ảnh tự sinh, host ở URL public do người chạy kiểm soát; không dùng file/URL trong CCR. Đếm layer image (list-layer-images-tool) trước và sau; xoá layer image test sau lượt chạy.",
+      "steps": [
+        "Sau CHK-001, gọi view-layer-image-tool với id mỗi 5 giây tới khi có thumbnail hoặc hết 2 phút.",
+        "Ghi url, thumbnail, width, height, thời gian; tải _large.webp đo chiều rộng; đọc artwork_max_width của merchant."
+      ],
+      "observation_point": "url, thumbnail, width/height, chiều rộng large, thời gian tới ready",
+      "expected_result": "Baseline theo quan sát: note của response là \"Image variants are generated asynchronously. Poll view-layer-image-tool (or list-layer-images-tool) until the thumbnail is set, then use the returned url in layers.\"; có thumbnail sau vài chục giây, url kết thúc _large.webp, width/height bằng ảnh gốc, large rộng bằng artwork_max_width của merchant.",
+      "oracle": {
+        "kb_ids": [
+          "mcp/mcp-layer-image-upload#KB-1621"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "mcp/mcp-layer-image-upload#KB-1620",
+        "mcp/mcp-layer-image-upload#KB-1621"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-mcp-011"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Description, server instructions và overview nói raster trả processing, phải poll (quan sát)",
+      "applicability": {
+        "role": "merchant-owner (token MCP)",
+        "state": "token MCP hợp lệ của account test",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP client"
+      },
+      "precondition": "Token MCP của account test có mcp:access (chưa có biến env trong _env.example; operator cấp; xác minh account là account explore theo playbook trước). Gọi qua client MCP tới endpoint {TIB_API_BASE}/mcp. Fixture ảnh tự sinh, host ở URL public do người chạy kiểm soát; không dùng file/URL trong CCR. Đếm layer image (list-layer-images-tool) trước và sau; xoá layer image test sau lượt chạy.",
+      "steps": [
+        "tools/list: đọc description của upload-layer-image-tool.",
+        "initialize: đọc instructions, đoạn nói về upload-layer-image-tool.",
+        "get-layer-schema-tool (overview): đọc dòng Workflow."
+      ],
+      "observation_point": "Text ba nguồn",
+      "expected_result": "Baseline theo quan sát: cả ba nói raster trả \"processing\" không url, poll view-layer-image-tool tới khi có thumbnail trước khi dùng url; không có câu url sẵn sàng ngay.",
+      "oracle": {
+        "kb_ids": [
+          "mcp/mcp-layer-image-upload#KB-1622"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "mcp/mcp-layer-image-upload#KB-1622"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-mcp-012"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "SVG qua upload-layer-image-tool trả url, thumbnail, width, height và status ready",
+      "applicability": {
+        "role": "merchant-owner (token MCP)",
+        "state": "token MCP hợp lệ của account test",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP client"
+      },
+      "precondition": "Token MCP của account test có mcp:access (chưa có biến env trong _env.example; operator cấp; xác minh account là account explore theo playbook trước). Gọi qua client MCP tới endpoint {TIB_API_BASE}/mcp. Fixture ảnh tự sinh, host ở URL public do người chạy kiểm soát; không dùng file/URL trong CCR. Đếm layer image (list-layer-images-tool) trước và sau; xoá layer image test sau lượt chạy.",
+      "steps": [
+        "Gọi upload-layer-image-tool với URL public của một SVG nhỏ hợp lệ.",
+        "Ghi response."
+      ],
+      "observation_point": "Các field của response",
+      "expected_result": "Response có id, name, url, thumbnail, width, height và status \"ready\" trong cùng call.",
+      "oracle": {
+        "kb_ids": [
+          "mcp/mcp-layer-image-upload#KB-1623"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "mcp/mcp-layer-image-upload#KB-1623",
+        "mcp/mcp-layer-image-upload#KB-1624"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "confirm-layer-image-upload-tool với SVG trả ready, không lỗi cap (quan sát)",
+      "applicability": {
+        "role": "merchant-owner (token MCP)",
+        "state": "token MCP hợp lệ của account test",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP client"
+      },
+      "precondition": "Token MCP của account test có mcp:access (chưa có biến env trong _env.example; operator cấp; xác minh account là account explore theo playbook trước). Gọi qua client MCP tới endpoint {TIB_API_BASE}/mcp. Fixture ảnh tự sinh, host ở URL public do người chạy kiểm soát; không dùng file/URL trong CCR. Đếm layer image (list-layer-images-tool) trước và sau; xoá layer image test sau lượt chạy.",
+      "steps": [
+        "create-layer-image-upload-tool với tên file .svg; PUT file; confirm-layer-image-upload-tool.",
+        "Ghi response."
+      ],
+      "observation_point": "status, url, note",
+      "expected_result": "Baseline theo quan sát: status \"ready\" với url .svg, note kết thúc \"Nothing to poll.\"; không lỗi cap hay header.",
+      "oracle": {
+        "kb_ids": [
+          "mcp/mcp-layer-image-upload#KB-1624"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "mcp/mcp-layer-image-upload#KB-1623",
+        "mcp/mcp-layer-image-upload#KB-1624"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-mcp-013"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Kết quả queue giống đường inline portal /file với cùng file (quan sát)",
+      "applicability": {
+        "role": "merchant-owner (token MCP)",
+        "state": "token MCP hợp lệ của account test",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP client"
+      },
+      "precondition": "Token MCP của account test có mcp:access (chưa có biến env trong _env.example; operator cấp; xác minh account là account explore theo playbook trước). Gọi qua client MCP tới endpoint {TIB_API_BASE}/mcp. Fixture ảnh tự sinh, host ở URL public do người chạy kiểm soát; không dùng file/URL trong CCR. Đếm layer image (list-layer-images-tool) trước và sau; xoá layer image test sau lượt chạy.",
+      "steps": [
+        "Upload PNG 12000x5093 qua upload-layer-image-tool, poll tới ready.",
+        "Upload cùng file qua portal POST /api/layer-images/file với layer_width = artwork_width (phiên portal của account explore).",
+        "So width/height, kích thước và định dạng large, thumbnail; mở master không có chữ ký."
+      ],
+      "observation_point": "width/height, large, thumbnail, quyền đọc master của hai bản ghi",
+      "expected_result": "Baseline theo quan sát: hai bản ghi cùng width/height, cùng kích thước và định dạng webp của large và thumbnail, master private ở cả hai; chỉ khác tên file.",
+      "oracle": {
+        "kb_ids": [
+          "mcp/mcp-layer-image-upload#KB-1625"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "mcp/mcp-layer-image-upload#KB-1625",
+        "image-library/image-layer-library#KB-069"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-mcp-014"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "upload-layer-image-tool từ chối raster trên 128 MP, không tạo layer image",
+      "applicability": {
+        "role": "merchant-owner (token MCP)",
+        "state": "token MCP hợp lệ của account test",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP client"
+      },
+      "precondition": "Token MCP của account test có mcp:access (chưa có biến env trong _env.example; operator cấp; xác minh account là account explore theo playbook trước). Gọi qua client MCP tới endpoint {TIB_API_BASE}/mcp. Fixture ảnh tự sinh, host ở URL public do người chạy kiểm soát; không dùng file/URL trong CCR. Đếm layer image (list-layer-images-tool) trước và sau; xoá layer image test sau lượt chạy.",
+      "steps": [
+        "Đếm layer image.",
+        "Gọi upload-layer-image-tool với URL public của PNG 12000x12000 (144 MP, dưới 64 MB).",
+        "Đếm lại."
+      ],
+      "observation_point": "Response, số layer image",
+      "expected_result": "Tool trả lỗi; không có layer image mới.",
+      "oracle": {
+        "kb_ids": [
+          "mcp/mcp-layer-image-upload#KB-1626"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "mcp/mcp-layer-image-upload#KB-1626",
+        "mcp/mcp-layer-image-upload#KB-1627"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Message lỗi là quan sát (KB-1627, CHK-009)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "confirm-layer-image-upload-tool từ chối raster trên 128 MP, không tạo layer image",
+      "applicability": {
+        "role": "merchant-owner (token MCP)",
+        "state": "token MCP hợp lệ của account test",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP client"
+      },
+      "precondition": "Token MCP của account test có mcp:access (chưa có biến env trong _env.example; operator cấp; xác minh account là account explore theo playbook trước). Gọi qua client MCP tới endpoint {TIB_API_BASE}/mcp. Fixture ảnh tự sinh, host ở URL public do người chạy kiểm soát; không dùng file/URL trong CCR. Đếm layer image (list-layer-images-tool) trước và sau; xoá layer image test sau lượt chạy.",
+      "steps": [
+        "Đếm layer image.",
+        "create-layer-image-upload-tool với PNG 144 MP; PUT file; confirm-layer-image-upload-tool.",
+        "Đếm lại."
+      ],
+      "observation_point": "Response, số layer image",
+      "expected_result": "Confirm trả lỗi; không có layer image mới.",
+      "oracle": {
+        "kb_ids": [
+          "mcp/mcp-layer-image-upload#KB-1626"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "mcp/mcp-layer-image-upload#KB-1626",
+        "mcp/mcp-layer-image-upload#KB-1627"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "Message cap, upload bị xoá, confirm lại và batch trên tool MCP (quan sát)",
+      "applicability": {
+        "role": "merchant-owner (token MCP)",
+        "state": "token MCP hợp lệ của account test",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP client"
+      },
+      "precondition": "Token MCP của account test có mcp:access (chưa có biến env trong _env.example; operator cấp; xác minh account là account explore theo playbook trước). Gọi qua client MCP tới endpoint {TIB_API_BASE}/mcp. Fixture ảnh tự sinh, host ở URL public do người chạy kiểm soát; không dùng file/URL trong CCR. Đếm layer image (list-layer-images-tool) trước và sau; xoá layer image test sau lượt chạy.",
+      "steps": [
+        "Ghi message của CHK-007 và CHK-008.",
+        "Confirm lại cùng temporary_file_id của CHK-008.",
+        "create-layer-image-upload-tool với hai file (144 MP và 61 MP), PUT, confirm batch; poll file 61 MP."
+      ],
+      "observation_point": "Message, response confirm lại, results của batch",
+      "expected_result": "Baseline theo quan sát: URL tool \"The image is 12000x12000 px (144 MP), over the 128 MP limit. Resize it to at most 128 megapixels and upload again.\"; confirm thêm \" The upload has been removed.\"; confirm lại \"Upload not found or expired. Mint a new one with create-layer-image-upload-tool.\"; batch: file 144 MP status \"failed\" với message trên, file 61 MP \"processing\" rồi ready, created_count 1, failed_count 1.",
+      "oracle": {
+        "kb_ids": [
+          "mcp/mcp-layer-image-upload#KB-1627"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "mcp/mcp-layer-image-upload#KB-1626",
+        "mcp/mcp-layer-image-upload#KB-1627"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-mcp-015"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "Ranh giới cap qua upload-layer-image-tool: 16000x8000 nhận, 16001x8000 từ chối (quan sát)",
+      "applicability": {
+        "role": "merchant-owner (token MCP)",
+        "state": "token MCP hợp lệ của account test",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP client"
+      },
+      "precondition": "Token MCP của account test có mcp:access (chưa có biến env trong _env.example; operator cấp; xác minh account là account explore theo playbook trước). Gọi qua client MCP tới endpoint {TIB_API_BASE}/mcp. Fixture ảnh tự sinh, host ở URL public do người chạy kiểm soát; không dùng file/URL trong CCR. Đếm layer image (list-layer-images-tool) trước và sau; xoá layer image test sau lượt chạy.",
+      "steps": [
+        "Gọi upload-layer-image-tool với PNG 16000x8000; poll tới ready.",
+        "Gọi với PNG 16001x8000.",
+        "Đếm layer image."
+      ],
+      "observation_point": "Response hai lần gọi, số layer image",
+      "expected_result": "Baseline theo quan sát: 16000x8000 trả processing rồi ready; 16001x8000 trả tool error \"The image is 16001x8000 px (128.01 MP), over the 128 MP limit. Resize it to at most 128 megapixels and upload again.\", không tạo layer image.",
+      "oracle": {
+        "kb_ids": [
+          "mcp/mcp-layer-image-upload#KB-1628"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "mcp/mcp-layer-image-upload#KB-1628",
+        "open-api/open-api-asset-upload#KB-057"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-mcp-016"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "PNG có header hỏng bị từ chối trên URL tool và confirm tool, không tạo layer image",
+      "applicability": {
+        "role": "merchant-owner (token MCP)",
+        "state": "token MCP hợp lệ của account test",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP client"
+      },
+      "precondition": "Token MCP của account test có mcp:access (chưa có biến env trong _env.example; operator cấp; xác minh account là account explore theo playbook trước). Gọi qua client MCP tới endpoint {TIB_API_BASE}/mcp. Fixture ảnh tự sinh, host ở URL public do người chạy kiểm soát; không dùng file/URL trong CCR. Đếm layer image (list-layer-images-tool) trước và sau; xoá layer image test sau lượt chạy.",
+      "steps": [
+        "Gọi upload-layer-image-tool với URL public của 20 byte đầu một PNG.",
+        "create-layer-image-upload-tool → PUT cùng file → confirm-layer-image-upload-tool.",
+        "Đếm layer image."
+      ],
+      "observation_point": "Response, số layer image",
+      "expected_result": "Cả hai tool trả lỗi; không có layer image mới.",
+      "oracle": {
+        "kb_ids": [
+          "mcp/mcp-layer-image-upload#KB-1626"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "mcp/mcp-layer-image-upload#KB-1626",
+        "mcp/mcp-layer-image-upload#KB-1629"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "Message header hỏng trên tool MCP (quan sát)",
+      "applicability": {
+        "role": "merchant-owner (token MCP)",
+        "state": "token MCP hợp lệ của account test",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "MCP client"
+      },
+      "precondition": "Token MCP của account test có mcp:access (chưa có biến env trong _env.example; operator cấp; xác minh account là account explore theo playbook trước). Gọi qua client MCP tới endpoint {TIB_API_BASE}/mcp. Fixture ảnh tự sinh, host ở URL public do người chạy kiểm soát; không dùng file/URL trong CCR. Đếm layer image (list-layer-images-tool) trước và sau; xoá layer image test sau lượt chạy.",
+      "steps": [
+        "Ghi message của hai lỗi ở CHK-011."
+      ],
+      "observation_point": "Message",
+      "expected_result": "Baseline theo quan sát: URL tool \"The image's pixel size could not be read from its header; the file may be corrupt or truncated. Re-export it as PNG, JPEG, GIF or WebP and upload again.\"; confirm tool cùng message thêm \" The upload has been removed.\".",
+      "oracle": {
+        "kb_ids": [
+          "mcp/mcp-layer-image-upload#KB-1629"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "mcp/mcp-layer-image-upload#KB-1629"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-mcp-017"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-02-mcp-layer-image-upload",
+      "risk_or_gap_ref": "Capability: upload raster/SVG qua tool MCP",
+      "covered_by_check_ids": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-003",
+        "CHK-004",
+        "CHK-005",
+        "CHK-006"
+      ],
+      "coverage_status": "COVERED_BASELINE",
+      "note": "CHK-001, CHK-004 STRONG."
+    },
+    {
+      "feature_id": "FEAT-02-mcp-layer-image-upload",
+      "risk_or_gap_ref": "Capability: giới hạn 128 MP và header hỏng",
+      "covered_by_check_ids": [
+        "CHK-007",
+        "CHK-008",
+        "CHK-009",
+        "CHK-010",
+        "CHK-011",
+        "CHK-012"
+      ],
+      "coverage_status": "COVERED_BASELINE",
+      "note": "CHK-007, CHK-008, CHK-011 STRONG."
+    },
+    {
+      "feature_id": "FEAT-02-mcp-layer-image-upload",
+      "risk_or_gap_ref": "Gap: production, list-layer-images-tool, token MCP explore",
+      "covered_by_check_ids": [],
+      "coverage_status": "NOT_COVERED"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "PERMISSION",
+      "reason": "Chưa có evidence về token thiếu mcp:access hay role khác; thuộc mcp-client-connection (OQ-mcp-004, OQ-mcp-010)."
+    },
+    {
+      "dimension": "STATE_DATA",
+      "reason": "Ngoài trạng thái processing → ready (CHK-002), chưa có evidence persistence khác."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-152"
+  }
+}

@@ -1,8 +1,9 @@
 # Object: Product Base (product: teeinblue) — Feature Profile Summary
-**Published context version:** 11
+**Published context version:** 13
 
 - **Phạm vi đã kiểm thử:** role `owner` (explorer (TIB_STAGING_EMAIL), sub=<explorer>), 1 organization, store `store TIB_STORE_URL_1`, environment staging. Chưa có evidence cho role khác (không có tài khoản thứ 2 để test permission/cross-tenant).
-- **11/11 feature có profile:** product-base-browse, product-base-create, product-base-identity, printarea-definition, variant-catalog, variant-add-to-campaigns, mockup-attachment, product-base-lifecycle, product-base-campaign-link, fulfillment-provider-connection, provider-catalog-import. Confidence tổng thể object: MEDIUM. `product-base-campaign-link` là feature yếu nhất (confidence LOW, gần như không có bằng chứng cho đường ghi dữ liệu).
+- **12/12 feature có profile:** product-base-browse, product-base-create, product-base-identity, printarea-definition, variant-catalog, variant-add-to-campaigns, mockup-attachment, product-base-lifecycle, product-base-campaign-link, fulfillment-provider-connection, provider-catalog-import, provider-required-options. Confidence tổng thể object: MEDIUM. `product-base-campaign-link` là feature yếu nhất (confidence LOW, gần như không có bằng chứng cho đường ghi dữ liệu).
+- **Cập nhật CBS-148 (TIB-5724, CustomCat Required options):** feature mới `provider-required-options` (FEAT-12): editor Required options (`default_options`) theo provider, 1 item CONFIRMED_EXPECTED (lời Dev 2026-11-10), 3 item OBSERVED_CURRENT/LOW (test case PASS staging, CCR không ghi build) và 1 khác biệt môi trường (INFERRED/LOW). `product-base-identity` thêm KB-531 (OBSERVED_CURRENT/LOW): Save Basic information giữ Required options đã lưu, chờ PO xác nhận ý định. 6 open question mới (OQ-product-base-114..OQ-product-base-119).
 - **Cập nhật CBS-121 (QA-3416, gộp từ CBS-046):** `printarea-definition` thêm KB-525 (quy tắc mapping variant→artwork theo tên printarea; product base chuẩn dùng chung 1 artwork cho mỗi printarea) và `variant-catalog` thêm KB-526 (luồng setup custom printarea không có bước map option↔layer, gắn artwork ở Campaign). Cả 2 ở mức PROPOSED/LOW với qa_rule_ref (FACT-163, FACT-180) — nguồn QA suy luận/sửa trực tiếp, không PO/Dev, không test case; không item nào đạt CONFIRMED_EXPECTED. 2 open question mới (OQ-product-base-112, OQ-product-base-113) chờ Dev xác nhận.
 - **Cập nhật CBS-119 (TIB-4778/QA-3365, provider PosterFlow, staging):** thêm 2 feature mới `fulfillment-provider-connection` (FEAT-10, trang Fulfillments: rotate API key, API key không mask) và `provider-catalog-import` (FEAT-11, import product từ catalog nhà in, danh sách catalog phân trang). Nguồn gốc là knowledge QA local (product_facts.md), không phải quan sát trực tiếp; mọi KB item ở mức OBSERVED_CURRENT/LOW, không có claim nào đạt CONFIRMED_EXPECTED. 8 open question mới (OQ-product-base-104..111).
 - Lịch sử thay đổi chi tiết: xem `CHANGELOG.md`. Câu hỏi/mâu thuẫn còn mở: xem `open-questions.md`.
@@ -63,6 +64,7 @@
 ---
 
 ## Sửa Thông tin Cơ bản (`product-base-identity`)
+**Cập nhật CBS-163 (TIB-5689):** đổi/xoá thumbnail Product Base trả attribute `Product::$visible`, không `printareas`, `fulfillment` (KB-533), không `user_id`, `fulfillment_id`, `internal_tags` giữ có chủ đích (KB-534) — `CONFIRMED_EXPECTED`/MEDIUM theo Dev. Quan sát KB-535 còn `fulfillment_linked_id` (OQ-product-base-121). Check CHK-03-011, CHK-03-012.
 **Goal:** Xem và cập nhật thông tin cơ bản (title/label/tags/fulfillment/description/thumbnail) của 1 product base đã tồn tại.
 **Entry points:** `/products/{id}/edit`
 
@@ -76,6 +78,8 @@
 **Confidence:** MEDIUM-HIGH
 **Risks:**
 - Full-replace PUT tạo khả năng mất dữ liệu nếu 2 tab/2 user sửa đồng thời (last-write-wins) — rủi ro đã được xác nhận là chấp nhận được, không cần fix
+
+**Cập nhật CBS-148:** sửa field khác (vd Internal tags) rồi Save không làm mất Required options đã lưu — PUT gửi lại `default_options` hiện tại (KB-531, OBSERVED_CURRENT/LOW, test case TC-TIB-9019 PASS staging không ghi build; CHK-03-010, P1, BASELINE; chờ PO xác nhận ý định, OQ-product-base-119).
 
 ---
 
@@ -247,6 +251,7 @@
 ---
 
 ## Import Product từ Catalog Nhà in (`provider-catalog-import`)
+**Cập nhật CBS-163 (TIB-5689):** Import printarea từ provider (Import from <provider> trên Product Base) trả 201, list key `Printarea::$visible` (KB-536, `CONFIRMED_EXPECTED`/MEDIUM theo Dev); quan sát KB-537. Check CHK-11-004, CHK-11-005.
 **Goal:** Import 1 sản phẩm từ catalog của provider in ấn (vd PosterFlow) qua modal Import, tạo Product Base mang sẵn title/description/mockup/printarea/variant của catalog đó.
 **Entry points:** `/products` (modal Import product, chọn provider đã kết nối → catalog)
 **Nguồn:** CBS-119 (TIB-4778/QA-3365), knowledge QA local (product_facts.md), mọi lượt chạy trên staging provider PosterFlow; production chưa xác nhận.
@@ -262,6 +267,25 @@
 **Risks:**
 - Endpoint/body import và dạng phân trang chỉ là quan sát qua test (QA-3365 TC-6/TC-7), chưa xác nhận là hợp đồng API chính thức — xem OQ-product-base-104, OQ-product-base-105
 - Chưa xác nhận có endpoint nào lộ stock/availability trước khi import ở provider khác PosterFlow — xem OQ-product-base-106
+
+---
+
+## Required options theo Fulfillment provider (`provider-required-options`)
+**Goal:** Owner khai option bắt buộc mà nhà in cần (Required options, lưu ở `products.default_options`, ví dụ `preset_id`/`preset_back_id` của CustomCat) trên Product Base của provider được hỗ trợ, lưu và xem lại được, để TIB gửi kèm khi fulfill đơn.
+**Entry points:** `/products/{id}/edit` → nút Advanced options → editor Required options
+
+**Đã xác nhận (CONFIRMED_EXPECTED/MEDIUM, lời Dev 2026-11-10):** Product Base CustomCat (đã lưu) có Advanced options enable, mở JSON editor Required options với label "Required options (for merchOne, Printify, Printful, Myze, Printbelle and CustomCat)" (KB-527, CHK-12-001 STRONG).
+
+**Quan sát hiện tại (OBSERVED_CURRENT/LOW, test case PASS staging 2026-11-10, CCR không ghi build; chờ Dev xác nhận):**
+1. Vừa đổi provider sang CustomCat chưa Save đã hiện editor (KB-532, OQ-product-base-116)
+2. Lưu JSON vào Required options rồi Save: thành công, reload hiện đúng giá trị (KB-528, OQ-product-base-117)
+3. Editor vẫn hiện cho Product Base merchOne, không có cho Product Base Gelato (KB-529, OQ-product-base-118)
+
+**Khác biệt môi trường (DIFFERENT_VALUE, INFERRED/LOW, KB-530):** Gelato trên staging có nút Advanced options disabled, production enable và mở khối Design format. Kiểm "Gelato không có Required options" bằng sự vắng mặt của editor/label, không theo trạng thái nút (OQ-product-base-114).
+
+**Coverage:** portal CustomCat/merchOne/Gelato ✅ · Printify, Printful, Myze, Printbelle ❌ · JSON sai / validate ❌ (OQ-product-base-115) · production ❌
+**Confidence:** LOW-MEDIUM
+**Liên quan:** preset được gửi kèm order item sang CustomCat ở `order/fulfillment-provider-request`; KB-020 của `product-base-create` (điều kiện enable Advanced options ở Product Base tạo tay) giữ nguyên.
 
 ---
 

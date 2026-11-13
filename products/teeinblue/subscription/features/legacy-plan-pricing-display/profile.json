@@ -1,0 +1,263 @@
+{
+  "feature_id": "FEAT-02-legacy-plan-pricing-display",
+  "feature_key": "legacy-plan-pricing-display",
+  "name": "Hiển thị bảng giá và Manage của plan cũ",
+  "user_goal": "Merchant xem bảng giá, trang Manage và wording của plan cũ (Shopify theo store, Etsy, Boundless) trong khu Subscriptions. Plan cũ giữ chữ \"orders\" (Dev xác nhận); quan sát trang Manage chỉ từ test case QA trên staging, và trên account không có plan cũ các route render trống.",
+  "user_goal_kb_refs": [
+    "KB-1211",
+    "KB-1232",
+    "KB-1233"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner",
+      "permission_observed": "Role owner mở được các route plan cũ (render trống) trên account không có plan cũ. Role khác và account có plan cũ chưa quan sát.",
+      "kb_refs": [
+        "KB-1211"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "/subscriptions/shopify, /subscriptions/etsy, /subscriptions/boundless (mở trực tiếp)",
+      "precondition": "Account has_new_pricing true, subscriptions [] và boundless_instances_count 0 (Blue TEST), đã login role owner.",
+      "kb_refs": [
+        "KB-1211"
+      ]
+    },
+    {
+      "path": "/subscriptions/<instance-id> (Shopify plan cũ theo store, vd plan Starter (Test)); /subscriptions/platform/etsy (Etsy); /subscriptions/manage-domains (Boundless)",
+      "precondition": "Đã đăng nhập portal staging bằng account owner có plan cũ tương ứng (Shopify theo store, Etsy hoặc Boundless). Route ghi theo quan sát của test case TC-TIB-8965/8966 (không phải xác nhận); lệch với route trong KB-1211 chưa giải thích. Biến env cho account plan cũ chưa được KB nêu.",
+      "kb_refs": [
+        "KB-1233"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Mở route plan cũ trên account không có plan cũ",
+      "description": "Cả ba route chỉ render breadcrumb Home / Subscriptions / Subscription Details và tiêu đề, thân trang trống: không bảng giá, không Active Plan, không wording orders hay Free Orders/Month, không request dữ liệu subscription riêng. Đây là quan sát phủ định; giao diện plan cũ chưa quan sát.",
+      "kb_refs": [
+        "KB-1211"
+      ]
+    },
+    {
+      "name": "Xem trang Manage plan cũ với wording \"orders\"",
+      "description": "Khi account có plan cũ, trang Manage hiện \"orders\" (không phải \"order items\"). Quan sát trên staging: Shopify plan cũ có \"Orders in cycle\", \"Free orders\", \"Extra orders\", \"Free Orders/Month\", \"Transaction Fee (per extra order)\", calculator \"Number of orders/month:\"; Etsy cùng nhãn, calculator \"Number of Orders per month:\"; Boundless tính theo domain, chỉ \"No transaction fees. Unlimited orders.\".",
+      "kb_refs": [
+        "KB-1232",
+        "KB-1233"
+      ]
+    }
+  ],
+  "state_transitions": [],
+  "confirmed_rules": [
+    {
+      "statement": "Plan cũ (Shopify theo store, Etsy, Boundless) giữ nguyên chữ \"orders\"; việc đổi sang \"order items\" chỉ áp cho account new pricing (Blue).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, account có plan cũ; nguồn Jira TIB-5711 comment 56750 (Dev, 2026-11-10)",
+      "kb_refs": [
+        "KB-1232"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Khi mở trực tiếp /subscriptions/shopify, /subscriptions/etsy, /subscriptions/boundless ở merchant-owner/staging trên account có has_new_pricing true, subscriptions [] và boundless_instances_count 0 (Blue TEST), quan sát thấy cả ba route chỉ render breadcrumb \"Home / Subscriptions / Subscription Details\" và tiêu đề, thân trang trống: không có bảng giá, không có \"Active Plan\", không có wording \"orders\" hay \"Free Orders/Month\"; không có request dữ liệu subscription riêng trong cửa sổ action. Đây là quan sát phủ định ở account không có plan cũ; giao diện plan cũ khi account có plan cũ chưa quan sát.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1211"
+      ]
+    },
+    {
+      "statement": "Trên account có plan cũ (TC-TIB-8965, TC-TIB-8966, QA PASS 2026-11-10, staging): Shopify plan cũ (route /subscriptions/<instance-id>, plan Starter (Test)) hiện \"Orders in cycle\", \"Free orders\", \"Extra orders\", \"Free Orders/Month\", \"Transaction Fee (per extra order)\" và calculator \"Number of orders/month:\"; Etsy (/subscriptions/platform/etsy) cùng nhãn nhưng calculator \"Number of Orders per month:\"; Boundless (/subscriptions/manage-domains) tính theo domain, chỉ có \"No transaction fees. Unlimited orders.\", không có khối free/extra/per month. Không trang plan cũ nào có chữ \"order item(s)\". Expected của hai test case là giả định của QA, không phải lời Dev. Bộ chữ Shopify plan cũ cũng thấy trên production 2026-11-11 (chỉ đọc).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1233"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "statement": "Role owner mở được route plan cũ; role khác chưa quan sát.",
+      "kb_refs": [
+        "KB-1211"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      {
+        "path": "/subscriptions/shopify, /subscriptions/etsy, /subscriptions/boundless",
+        "note": "Render trống trên account không có plan cũ.",
+        "kb_refs": [
+          "KB-1211"
+        ]
+      },
+      {
+        "path": "/subscriptions/<instance-id>, /subscriptions/platform/etsy, /subscriptions/manage-domains",
+        "note": "Trang Manage plan cũ theo quan sát test case; lệch với route trong KB-1211.",
+        "kb_refs": [
+          "KB-1233"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "method": "GET",
+        "path": "/api/user",
+        "note": "subscriptions [] và boundless_instances_count 0 ở trạng thái quan sát; không có request dữ liệu subscription riêng ở các route này.",
+        "kb_refs": [
+          "KB-1211"
+        ]
+      }
+    ],
+    "data": [],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "description": "Phụ thuộc điều kiện chọn giữa route plan cũ và route Blue khi bấm Manage ở view-current-subscription-plan; điều kiện chưa biết.",
+      "kb_refs": [
+        "KB-1211",
+        "KB-1204"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "description": "Quan sát giao diện plan cũ chỉ từ test case QA (KB-1233, LOW); route trống ở KB-1211 là account không có plan cũ. Không suy bảng giá hay hành vi Manage ngoài những gì KB-1233 ghi.",
+      "kb_refs": [
+        "KB-1211"
+      ]
+    },
+    {
+      "description": "Giữ riêng khỏi tier-plan-pricing-display vì plan cũ cần trạng thái account khác (account có plan cũ) và hiện chưa có KB giao diện plan cũ; sẽ bổ sung KB khi quan sát được.",
+      "kb_refs": [
+        "KB-1211"
+      ]
+    },
+    {
+      "description": "Nhãn calculator Shopify plan cũ \"Number of orders/month:\" (test case) khác Etsy \"Number of Orders per month:\"; Dev ghi \"Number of Orders per month:\" cho cả Shopify plan cũ và Etsy. Chưa biết nhãn Shopify có phải ý định. Plan cũ có thể bị đổi nhầm sang \"order items\" khi fix cho Blue.",
+      "kb_refs": [
+        "KB-1232",
+        "KB-1233"
+      ]
+    }
+  ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-11-13"
+  },
+  "unknown_areas": [
+    {
+      "question": "Route /subscriptions/etsy-tier có tồn tại không và dùng cho trường hợp nào? Chưa có quan sát lưu lại.",
+      "why_it_matters": "Không có evidence lưu để kiểm.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1211"
+      ],
+      "oq_id": "OQ-subscription-010"
+    },
+    {
+      "question": "Điều kiện nào chọn route plan cũ (/subscriptions/<platform>) thay vì route Blue (/subscriptions/shopify-tier) khi bấm Manage?",
+      "why_it_matters": "Mới thấy một account has_new_pricing true.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1211",
+        "KB-1204"
+      ],
+      "oq_id": "OQ-subscription-011"
+    },
+    {
+      "question": "Route plan cũ trống trên account không có plan cũ có phải hành vi đúng (hay nên redirect/hiện thông báo)?",
+      "why_it_matters": "Chỉ có quan sát phủ định, chưa có nguồn thẩm quyền.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1211"
+      ],
+      "oq_id": "OQ-subscription-012"
+    },
+    {
+      "question": "Nhãn calculator Shopify plan cũ \"Number of orders/month:\" (test case) khác nhãn Dev ghi \"Number of Orders per month:\" (Dev ghi cùng nhãn này cho cả Shopify plan cũ và Etsy; Etsy khớp): Shopify đúng nhãn nào?",
+      "why_it_matters": "Dev xác nhận chữ \"orders\" nhưng nhãn Shopify quan sát khác nhãn Dev ghi.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1232",
+        "KB-1233"
+      ],
+      "oq_id": "OQ-subscription-032"
+    },
+    {
+      "question": "Route plan cũ ở test case (/subscriptions/<instance-id>, /subscriptions/platform/etsy, /subscriptions/manage-domains) khác route KB-1211 (/subscriptions/shopify, /etsy, /boundless): route nào là chuẩn và vì sao hai bộ khác nhau?",
+      "why_it_matters": "Hai bộ route cùng thuộc plan cũ nhưng quan sát ở hai account khác trạng thái; chưa biết route nào là đường vào thật.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1211",
+        "KB-1233"
+      ],
+      "oq_id": "OQ-subscription-033"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-154"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-02-legacy-plan-pricing-display",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "account không có plan cũ (route trống)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1211"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-legacy-plan-pricing-display",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "account có plan cũ",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1232",
+        "KB-1233"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-legacy-plan-pricing-display",
+      "layer": "portal",
+      "role": "role khác owner",
+      "state": "mọi state",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from_feature_id": "FEAT-02-legacy-plan-pricing-display",
+      "to_feature_id": "FEAT-01-view-current-subscription-plan",
+      "relationship": "sibling_plan_view_route",
+      "kb_refs": [
+        "KB-1204",
+        "KB-1211"
+      ]
+    }
+  ]
+}

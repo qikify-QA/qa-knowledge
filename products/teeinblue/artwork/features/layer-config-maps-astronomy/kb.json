@@ -75,6 +75,10 @@
       "surface": "storefront",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
     "tags": [
       "NOT_TESTABLE",
       "strava",
@@ -84,10 +88,215 @@
     ],
     "related_kb_ids": [
       "artwork/layer-config-maps-astronomy#KB-025"
+    ]
+  },
+  {
+    "kb_id": "KB-1104",
+    "topic": "Layer Star Map có setting 'Display in date format', giữ trong layer nên mỗi design có format riêng",
+    "statement": "Theo Jira TIB-5609 description mục Solution (2026-10-21), layer Star Map có setting 'Display in date format' giống setting của date picker, lưu trong chính layer nên mỗi design có thể chọn format khác nhau.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal Artwork Editor 2.0, layer Star Map, Personalization Settings",
+      "brand": null
+    },
+    "tags": [
+      "star-maps",
+      "date-format",
+      "portal"
+    ],
+    "related_kb_ids": [
+      "artwork/layer-config-maps-astronomy#KB-026",
+      "artwork/layer-config-maps-astronomy#KB-1105"
+    ],
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "Jira TIB-5609 description, mục Solution, 2026-10-21",
+      "authored_on": "2026-10-21",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-106"
+    }
+  },
+  {
+    "kb_id": "KB-1105",
+    "topic": "Danh sách preset 'Display in date format' của Star Map, ô Custom và field JSON lưu format (quan sát)",
+    "statement": "Khi merchant-owner mở Personalization Settings của layer Star Map (Artwork 2.0) trên staging, quan sát thấy (Testlane TC-TIB-8805, TC-TIB-8806 PASS ngày 2026-11-10, không ghi build): 'Display in date format' nằm ngay dưới time label; dropdown có 7 preset dạng 24h không giây (MM/DD/YYYY HH:mm, DD/MM/YYYY HH:mm, DD-MM-YY HH:mm, YYYY-MM-DD HH:mm, YYYY/MM/DD HH:mm, DD.MM.YYYY HH:mm, MM.DD.YYYY HH:mm) và Custom; chọn Custom thì hiện ô 'Custom date format' placeholder dd.MM.yyyy HH:mm. Save gửi PUT /api/artworks/{id} = 200 với layer Star Map có star_maps_date_format theo dạng date-fns (vd DD.MM.YYYY HH:mm lưu 'dd.MM.yyyy HH:mm', MM/DD/YYYY HH:mm lưu 'MM/dd/yyyy HH:mm'); khi chọn preset body không có key star_maps_custom_date_format (vắng, không phải chuỗi rỗng). Hai artwork lưu format độc lập. Preset 24h là cách Dev dựng, chưa có PO xác nhận; Artwork 1.0 không kiểm.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal Artwork Editor 2.0, layer Star Map, Personalization Settings; Network PUT /api/artworks/{id}",
+      "brand": null
+    },
+    "tags": [
+      "star-maps",
+      "date-format",
+      "portal",
+      "api"
+    ],
+    "related_kb_ids": [
+      "artwork/layer-config-maps-astronomy#KB-1104",
+      "artwork/layer-config-maps-astronomy#KB-026"
     ],
     "last_updated": {
-      "date": "2026-11-08",
-      "ccr_ref": "maintenance-2026-11-08"
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-106"
+    }
+  },
+  {
+    "kb_id": "KB-1106",
+    "topic": "Format hiển thị của ô giờ Star Map phải gồm cả giờ, không giây",
+    "statement": "Theo Jira TIB-5609 description mục Solution (2026-10-21), vì giá trị Star Map mang cả giờ nên các lựa chọn format phải gồm cả giờ, ví dụ hh:mm, không có giây; trước thay đổi ô picker của Star Map luôn hiện dạng ISO.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront personalization form, ô giờ Star Map (UI date picker Teeinblue bật)",
+      "brand": null
+    },
+    "tags": [
+      "star-maps",
+      "date-format",
+      "storefront"
+    ],
+    "related_kb_ids": [
+      "artwork/layer-config-maps-astronomy#KB-1104",
+      "artwork/layer-config-maps-astronomy#KB-1107"
+    ],
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "Jira TIB-5609 description, mục Solution, 2026-10-21",
+      "authored_on": "2026-10-21",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-106"
+    }
+  },
+  {
+    "kb_id": "KB-1107",
+    "topic": "Ô giờ Star Map trên storefront hiện theo format đã chọn, giá trị lưu vẫn dạng máy (quan sát)",
+    "statement": "Khi buyer chọn ngày giờ ở ô giờ Star Map trên storefront staging (SDK v2, UI date picker Teeinblue bật), quan sát thấy (Testlane TC-TIB-8807, TC-TIB-8808, TC-TIB-8815 PASS ngày 2026-11-10, không ghi build): với dd.MM.yyyy HH:mm, chọn 2026-10-21 11:24 thì ô hiện '21.10.2026 11:24' (input ẩn của flatpickr giữ '2026-10-21T11:24'); với Custom 'yyyy.MM.dd hh:mm a', 00:05 / 12:00 / 13:24 / 23:59 hiện '2026.10.21 12:05 AM' / '12:00 PM' / '01:24 PM' / '11:59 PM'; sau Add to cart, giá trị time của Star Map trong localStorage teeinblue-customizations vẫn dạng máy 24h có chữ T (vd '2026-10-21T13:24'), không theo format hiển thị. Chưa kiểm trên SDK v1 (TC-TIB-8819 blocked vì thiếu store SDK v1).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront (SDK v2), ô giờ Star Map; localStorage teeinblue-customizations",
+      "brand": null
+    },
+    "tags": [
+      "star-maps",
+      "date-format",
+      "storefront",
+      "localStorage"
+    ],
+    "related_kb_ids": [
+      "artwork/layer-config-maps-astronomy#KB-1106"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-106"
+    }
+  },
+  {
+    "kb_id": "KB-1110",
+    "topic": "Display in date format của Star Map chỉ áp cho date picker của Teeinblue; picker native theo trình duyệt",
+    "statement": "Theo Jira TIB-5609 description mục Solution, câu Scope (2026-10-21), setting format chỉ áp cho date picker của Teeinblue; khi dùng date picker native của trình duyệt thì ngôn ngữ và format theo trình duyệt của buyer.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront, ô giờ Star Map khi store tắt 'Use Teeinblue's Date Picker instead of browser's'",
+      "brand": null
+    },
+    "tags": [
+      "star-maps",
+      "date-format",
+      "storefront",
+      "native-picker"
+    ],
+    "related_kb_ids": [
+      "artwork/layer-config-maps-astronomy#KB-1111",
+      "artwork/layer-config-maps-astronomy#KB-1106"
+    ],
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "Jira TIB-5609 description, mục Solution (Scope), 2026-10-21",
+      "authored_on": "2026-10-21",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-106"
+    }
+  },
+  {
+    "kb_id": "KB-1111",
+    "topic": "Picker native: ô giờ là datetime-local, nhưng {{time}} vẫn in theo format Star Map (quan sát)",
+    "statement": "Khi store tắt 'Use Teeinblue's Date Picker instead of browser's' và buyer nhập 2026-10-21 11:24 vào ô giờ Star Map trên storefront staging, quan sát thấy (Testlane TC-TIB-8812 PASS ngày 2026-11-10, không ghi build; giá trị nhập bằng fill() vào input, không mở popup của trình duyệt): ô giờ là input[type=datetime-local] của trình duyệt, không áp format dd.MM.yyyy HH:mm; text layer populate {{time}} vẫn là '21.10.2026 11:24' theo format Star Map, {{time.yyyy/MM/dd}} là '2026/10/21'; localStorage giữ time '2026-10-21T11:24'. Câu Scope của TIB-5609 (KB-1110) đọc được là phủ cả populate, nên vế {{time}} với picker native chưa có expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront, ô giờ Star Map và text layer populate khi UI date picker Teeinblue tắt",
+      "brand": null
+    },
+    "tags": [
+      "star-maps",
+      "date-format",
+      "storefront",
+      "native-picker",
+      "populate"
+    ],
+    "related_kb_ids": [
+      "artwork/layer-config-maps-astronomy#KB-1110",
+      "artwork/populate-values#KB-1108"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-106"
+    }
+  },
+  {
+    "kb_id": "KB-1112",
+    "topic": "Layer Star Map không vẽ ngày lên design",
+    "statement": "Theo Jira TIB-5609 description mục Case (2026-10-21), layer Star Map không vẽ ngày lên design; date picker chỉ chọn thời điểm dùng để load bản đồ sao, ngày thường được populate sang một text layer riêng. Lượt chạy Testlane TC-TIB-8816 (2026-11-10, không ghi build) chỉ kiểm print area front của design order.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "design order (print file) và preview storefront",
+      "brand": null
+    },
+    "tags": [
+      "star-maps",
+      "design-order",
+      "render"
+    ],
+    "related_kb_ids": [
+      "artwork/populate-values#KB-1108"
+    ],
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "Jira TIB-5609 description, mục Case, 2026-10-21",
+      "authored_on": "2026-10-21",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-106"
     }
   }
 ]

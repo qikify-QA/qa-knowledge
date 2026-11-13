@@ -150,6 +150,22 @@
       "kb_refs": [
         "artwork/text-multi-stroke#KB-144"
       ]
+    },
+    {
+      "name": "[MỚI, CBS-149] Stroke 1 cặp của curve / spiral / shape / warp text: render file design và dữ liệu lưu",
+      "description": "CONFIRMED_EXPECTED (Dev TIB-5699 comment 56557, 2026-11-05): 4 loại layer này render PNG / SVG theo cặp stroke_color / stroke_width, bỏ qua stroke_layers cũ, giống preview SDK (KB-1094); save artwork (portal và MCP write tool) xoá stroke_layers khỏi 4 loại, kể cả layer vừa convert sang, giữ cặp; Text / Paragraph giữ list; không backfill (KB-1095). Đổi stroke nhiều lần mỗi PNG theo giá trị mới nhất là quan sát test case (KB-1097).",
+      "kb_refs": [
+        "artwork/text-multi-stroke#KB-1094",
+        "artwork/text-multi-stroke#KB-1095",
+        "artwork/text-multi-stroke#KB-1097"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-149] Regression stack 2 lớp của Text / Paragraph sau TIB-5699",
+      "description": "OBSERVED_CURRENT/LOW (TC-TIB-8986 staging): Text và Paragraph 2 lớp stroke vẫn render 2 vòng trong PNG / SVG, giữ 2 row sau đổi text + Save + mở lại, PUT gửi 2 entry stroke_layers.",
+      "kb_refs": [
+        "artwork/text-multi-stroke#KB-1096"
+      ]
     }
   ],
   "state_transitions": [
@@ -245,8 +261,35 @@
       ]
     }
   ],
-  "confirmed_rules": [],
-  "confirmed_rules_note": "Không có item CONFIRMED_EXPECTED: mọi item là quan sát staging trước khi 7 PR TIB-5580 merge (2026-10-22), ship production chưa xác nhận, chưa có PO/business xác nhận.",
+  "confirmed_rules": [
+    {
+      "rule": "Layer curve text, spiral text, shape text, warp text (artwork schema 2): file design order PNG và SVG vẽ stroke theo cặp stroke_color / stroke_width đang đặt trong editor, bỏ qua stroke_layers cũ nếu layer còn giữ, như preview SDK.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner + buyer, portal · storefront preview · api render",
+      "shipped": "SHIPPED",
+      "caveats": "Một citation. Production chỉ phần kiểm bằng máy pass, ảnh PNG / preview chưa có người xem duyệt; layer đã giữ sẵn stroke_layers cũ chỉ được Dev kiểm bằng unit test.",
+      "confirmation_ref": "Jira TIB-5699 comment 56557 (Dev), 2026-11-05",
+      "kb_refs": [
+        "artwork/text-multi-stroke#KB-1094"
+      ]
+    },
+    {
+      "rule": "Mỗi lần save artwork (portal PUT/POST và MCP write tool), server xoá stroke_layers khỏi layer curve / spiral / shape / warp text, kể cả layer vừa convert sang một trong 4 loại; giữ cặp stroke_color / stroke_width; Text và Paragraph giữ stroke_layers; row chưa save lại không bị backfill.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner, portal Save / Convert to another layer · api",
+      "shipped": "SHIPPED",
+      "caveats": "Một citation. Convert Text 2 lớp sang Curve / Warp còn 1 stroke, PNG + SVG 1 stroke là quan sát TC-TIB-8983, 8985 (chỉ staging).",
+      "confirmation_ref": "Jira TIB-5699 comment 56557 (Dev), 2026-11-05",
+      "kb_refs": [
+        "artwork/text-multi-stroke#KB-1095"
+      ]
+    }
+  ],
+  "confirmed_rules_note": "Chỉ KB-1094, KB-1095 (CBS-149, Dev TIB-5699 comment 56557) là CONFIRMED_EXPECTED. Các item còn lại là quan sát staging (trước khi 7 PR TIB-5580 merge 2026-10-22, hoặc test case TIB-5699 không ghi build), chưa có PO/business xác nhận.",
   "observed_behavior": [
     {
       "statement": "Popover Stroke của Paragraph new-schema là stack tối đa 3 lớp; ở 3 row nút 'Add stroke' disable, click cưỡng bức không tạo row thứ 4. PUT /api/artworks/{id} trả 200 với stroke_layers đúng số entry (2 hoặc 3), đúng thứ tự row, width giữ nguyên không làm tròn; màu các lớp ngoài lớp 1 lưu hex chữ thường (vd \"#00ff00\"); reload giữ đúng. Một artwork (#5177), 3 test case.",
@@ -400,6 +443,24 @@
       "kb_refs": [
         "artwork/text-multi-stroke#KB-251"
       ]
+    },
+    {
+      "statement": "[MỚI, CBS-149] Text và Paragraph 2 lớp stroke vẫn render 2 vòng trong PNG và SVG trước / sau đổi text + Save; mở lại vẫn hiện 2 row, PUT gửi 2 entry stroke_layers. Một test case staging (TC-TIB-8986), không ghi build.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork/text-multi-stroke#KB-1096"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-149] Đổi stroke curve text nhiều lần (tăng, giảm width, đổi màu), Save và render lại sau mỗi lần: mỗi PNG theo stroke mới nhất của editor. Một test case staging (TC-TIB-8982), không ghi build.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork/text-multi-stroke#KB-1097"
+      ]
     }
   ],
   "observed_validations": [],
@@ -528,6 +589,12 @@
         "kb_refs": [
           "artwork/text-multi-stroke#KB-144"
         ]
+      },
+      {
+        "item": "[MỚI, CBS-149] Preview storefront (SDK) đọc cặp stroke của curve / spiral / shape / warp text; file design phải khớp",
+        "kb_refs": [
+          "artwork/text-multi-stroke#KB-1094"
+        ]
       }
     ],
     "api": [
@@ -563,6 +630,15 @@
         "kb_refs": [
           "artwork/text-multi-stroke#KB-144"
         ]
+      },
+      {
+        "item": "[MỚI, CBS-149] Render order design PNG / SVG (vectorize) của curve / spiral / shape / warp text đọc cặp stroke_color / stroke_width; save (PUT/POST, MCP write tool) xoá stroke_layers khỏi 4 loại",
+        "kb_refs": [
+          "artwork/text-multi-stroke#KB-1094",
+          "artwork/text-multi-stroke#KB-1095",
+          "artwork/text-multi-stroke#KB-1096",
+          "artwork/text-multi-stroke#KB-1097"
+        ]
       }
     ],
     "data": [
@@ -587,6 +663,13 @@
         "item": "layer.stroke_enabled: false vẫn giữ stroke_layers",
         "kb_refs": [
           "artwork/text-multi-stroke#KB-135"
+        ]
+      },
+      {
+        "item": "[MỚI, CBS-149] Layer curve / spiral / shape / warp text sau save: không có stroke_layers, chỉ cặp stroke_color / stroke_width; Text / Paragraph giữ stroke_layers; row cũ chưa save lại không đổi",
+        "kb_refs": [
+          "artwork/text-multi-stroke#KB-1095",
+          "artwork/text-multi-stroke#KB-1096"
         ]
       }
     ],
@@ -614,6 +697,17 @@
         "artwork/text-multi-stroke#KB-138",
         "artwork/text-multi-stroke#KB-139",
         "artwork/text-multi-stroke#KB-251"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-149] Cùng bản sửa TIB-5699: linked copy của curve / warp render theo cặp stroke của gốc (FEAT-05-layer-duplicate-link-copy, KB-1098); MCP layer schema và MCP write tool bỏ stroke_layers trên 4 loại (FEAT-03-mcp-artwork-tools, KB-1099).",
+      "kb_refs": [
+        "artwork/text-multi-stroke#KB-1094",
+        "artwork/text-multi-stroke#KB-1095"
+      ],
+      "cross_feature_kb_refs": [
+        "artwork/layer-duplicate-link-copy#KB-1098",
+        "mcp/mcp-artwork-tools#KB-1099"
       ]
     }
   ],
@@ -875,11 +969,55 @@
       ],
       "oq_type": "NEEDS_CONFIRMATION",
       "oq_id": "OQ-artwork-162"
+    },
+    {
+      "question": "[MỚI, CBS-149] Trên production, ảnh render PNG và preview của curve / spiral / shape / warp text sau TIB-5699 có khớp stroke editor khi người xem duyệt không? Production 2026-11-11 chỉ phần kiểm bằng máy pass (NOT-RUN phần duyệt ảnh ở mức task); KB-1096, KB-1097 và vế convert của KB-1095 chỉ chạy staging (linked copy KB-1098 cũng chỉ staging).",
+      "why_it_matters": "CHK-028..031 chưa có bằng chứng production cho phần hình; không ghi được kết quả production cho các check này.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/text-multi-stroke#KB-1094",
+        "artwork/text-multi-stroke#KB-1095",
+        "artwork/text-multi-stroke#KB-1096",
+        "artwork/text-multi-stroke#KB-1097"
+      ],
+      "oq_id": "OQ-artwork-561"
+    },
+    {
+      "question": "[MỚI, CBS-149] Spiral text trên SVG design: width 5 cho stroke-width=\"3\", trong khi các loại khác stroke-width = width × 0.875 — đây là hành vi đúng hay lệch? Chưa có trả lời của Dev.",
+      "why_it_matters": "Quyết định expected cho độ dày stroke spiral text trong SVG ở CHK-028; hiện chỉ ghi quan sát, không phán.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/text-multi-stroke#KB-1094"
+      ],
+      "oq_id": "OQ-artwork-562"
+    },
+    {
+      "question": "[MỚI, CBS-149] Layer curve / spiral / shape / warp text đã giữ sẵn stroke_layers cũ (tình huống gốc của TIB-5699) có render theo cặp và bị xoá list khi save lại không? Dev ghi \"Not for QA (covered by unit tests)\", dặn không sửa data bằng tay; QA chưa dựng được fixture.",
+      "why_it_matters": "Đúng tình huống lỗi của khách nhưng chưa có QA verify; checklist chỉ kiểm layer mới đặt stroke.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/text-multi-stroke#KB-1094",
+        "artwork/text-multi-stroke#KB-1095"
+      ],
+      "oq_id": "OQ-artwork-563"
+    },
+    {
+      "question": "[MỚI, CBS-149] Warp text bật stroke mà stroke_width rỗng hoặc 0: preview SDK không vẽ stroke, còn render api vẽ width mặc định 1 (Dev tự nêu ở Open questions của TIB-5699 comment 56557, giữ nguyên hành vi, hỏi có tách ticket không). Đây là lệch chấp nhận hay bug cần ticket riêng?",
+      "why_it_matters": "Vế 'design khớp preview' của KB-1094 không áp cho trường hợp này; CHK-028 phải đặt width khác mặc định để tránh.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/text-multi-stroke#KB-1094"
+      ],
+      "oq_id": "OQ-artwork-567"
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-149"
   },
   "coverage_matrix": [
     {
@@ -1103,6 +1241,57 @@
         "artwork/text-multi-stroke#KB-129"
       ],
       "basis": "ship production chưa xác nhận; production không được kiểm"
+    },
+    {
+      "feature_id": "FEAT-20-text-multi-stroke",
+      "layer": "api",
+      "role": "merchant-owner + buyer",
+      "state": "[CBS-149] curve / spiral / shape / warp text mới đặt stroke: render PNG / SVG, save xoá stroke_layers, convert Text → Curve / Warp",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/text-multi-stroke#KB-1094",
+        "artwork/text-multi-stroke#KB-1095",
+        "artwork/text-multi-stroke#KB-1097"
+      ],
+      "basis": "Dev comment 56557 + test case PASS staging 2026-11-10 (không ghi build)"
+    },
+    {
+      "feature_id": "FEAT-20-text-multi-stroke",
+      "layer": "api",
+      "role": "merchant-owner + buyer",
+      "state": "[CBS-149] ảnh render PNG / preview sau TIB-5699 do người xem duyệt",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "artwork/text-multi-stroke#KB-1094"
+      ],
+      "basis": "production 2026-11-11 chỉ phần kiểm bằng máy pass"
+    },
+    {
+      "feature_id": "FEAT-20-text-multi-stroke",
+      "layer": "data",
+      "role": "merchant-owner",
+      "state": "[CBS-149] layer 4 loại đã giữ sẵn stroke_layers cũ",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/text-multi-stroke#KB-1094",
+        "artwork/text-multi-stroke#KB-1095"
+      ],
+      "basis": "Dev: Not for QA (unit test); QA không dựng fixture"
+    },
+    {
+      "feature_id": "FEAT-20-text-multi-stroke",
+      "layer": "api",
+      "role": "merchant-owner + buyer",
+      "state": "[CBS-149] regression Text / Paragraph 2 lớp stroke sau TIB-5699",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/text-multi-stroke#KB-1096"
+      ],
+      "basis": "một test case PASS staging 2026-11-10 (OBSERVED_CURRENT/LOW)"
     }
   ],
   "profile_conflicts": [],

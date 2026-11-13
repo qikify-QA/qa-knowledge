@@ -1,12 +1,12 @@
 # Object: Campaign (product: teeinblue) — Feature Profile Summary
-**Published context version:** 9
+**Published context version:** 11
 
 - **Environment mọi fact dưới đây được quan sát:** staging
-- **Gần như toàn bộ profile là `OBSERVED_CURRENT`** — item `CONFIRMED_EXPECTED` là KB-184 (CBS-006, test case Testlane PASS, staging 2026-10-16) và KB-300, KB-302, KB-304, KB-305, KB-306, KB-310, KB-312, KB-314 (CBS-009, test case Testlane PASS trên staging 2026-10-22, trước khi code merge; production chưa xác nhận)
+- **Gần như toàn bộ profile là `OBSERVED_CURRENT`** — item `CONFIRMED_EXPECTED` là KB-184 (CBS-006, test case Testlane PASS, staging 2026-10-16) KB-300, KB-302, KB-304, KB-305, KB-306, KB-310, KB-312, KB-314 (CBS-009, test case Testlane PASS trên staging 2026-10-22, trước khi code merge; production chưa xác nhận) và KB-454 tới KB-462 (CBS-160, comment Dev trên Jira TIB-5629; production chưa verify)
 - **Actor duy nhất đã exercise:** role `owner` (explorer (TIB_STAGING_EMAIL), sub=<explorer>), 1 organization
-- **9 feature có profile:** FEAT-00, FEAT-01, FEAT-02, FEAT-03, FEAT-04, FEAT-06, FEAT-07 (`campaign-shopify-media-sync`, mới từ CBS-009), FEAT-08 (`campaign-artwork-mockup-reflection`), FEAT-09 (`campaign-publication-history`), hai feature mới từ CBS-075. FEAT-05 không tồn tại trong sequence (chưa giải thích — `OQ-campaign-005`)
+- **10 feature có profile:** FEAT-00, FEAT-01, FEAT-02, FEAT-03, FEAT-04, FEAT-06, FEAT-07 (`campaign-shopify-media-sync`, mới từ CBS-009), FEAT-08 (`campaign-artwork-mockup-reflection`), FEAT-09 (`campaign-publication-history`), hai feature mới từ CBS-075, FEAT-23 (`mockup-preview-render-lifecycle`, mới từ CBS-160). FEAT-05 không tồn tại trong sequence (chưa giải thích — `OQ-campaign-005`)
 - **Surface storefront/buyer-facing KHÔNG thuộc object này** — được theo dõi ở object độc lập `sdk` (`knowledge/products/teeinblue/objects/sdk/`). Không được diễn giải là Campaign đã cover storefront (`OQ-campaign-004`)
-- **Độ chắc chắn của checklist:** 61/109 check (56%) đang ở `NEEDS_CONFIRMATION` — baseline observed, chưa phải business rule đã confirm. Mỗi check như vậy có 1 `oq_ref` trỏ tới `open-questions.md`
+- **Độ chắc chắn của checklist:** 65/122 check (53%) đang ở `NEEDS_CONFIRMATION` — baseline observed, chưa phải business rule đã confirm. Mỗi check như vậy có 1 `oq_ref` trỏ tới `open-questions.md`
 
 ---
 
@@ -28,6 +28,7 @@
 ---
 
 ## FEAT-01 — Create Campaign by Product Base
+**Cập nhật CBS-163 (TIB-5689):** đổi/xoá featured image (Edit campaign info > Product Thumbnail) trả key `PortalCampaignResource` có `featured_image_url`, `featured_image_thumbnail`, không `platform_config`, `internal_tags` (KB-465, `CONFIRMED_EXPECTED`/MEDIUM theo Dev); quan sát KB-466. Check CHK-040, CHK-041.
 **Goal:** Tạo campaign gắn Product Base có sẵn, gán artwork theo print area, publish 1 hoặc nhiều store.
 **Entry points:** `/campaigns/new` → redirect `/campaigns/{id}/edit`
 **Cập nhật CBS-006 (TIB-5584, staging 2026-10-16):** preview trên mockup của Campaign Editor theo effective visibility của Group — Group ẩn thì preview không có layer con của Group (KB-184). Checklist CHK-017..CHK-019; OQ-campaign-049..050.
@@ -88,6 +89,7 @@
 ---
 
 ## FEAT-03 — Browse & Manage Campaign Lists
+**Cập nhật CBS-163 (TIB-5689):** archive/unarchive campaign trả key `PortalCampaignResource`, không `platform_config`, `internal_tags` (KB-463, `CONFIRMED_EXPECTED`/MEDIUM theo Dev); quan sát KB-464 trên campaign chưa publish (campaign đã publish không có Mark as archive, OQ-campaign-103). Check CHK-016, CHK-017.
 **Goal:** Xem/lọc/tìm danh sách campaign (cả 2 loại) để theo dõi trạng thái và truy cập action quản lý.
 **Entry points:** `/campaigns` · `/platform-products`
 
@@ -168,6 +170,16 @@
 **Goal:** Đọc message của lượt publish trong Publication History.
 **Chưa có rule đã xác nhận.** Theo lời dev, chưa có người đối chiếu nguồn (KB-452, PROPOSED/LOW, không làm oracle, `OQ-campaign-081`): thành công không có message; lỗi lưu nguyên message của exception, hiển thị text thường, không render HTML. Chưa cắt độ dài, chưa lọc nội dung (`OQ-campaign-076`). CHK-001 tới CHK-004 ở `NEEDS_CONFIRMATION`, chưa có expected.
 **Risks/Unknowns:** dòng `Published to Shopify` là nhãn hay message (`OQ-campaign-077`); chưa có cách tạo lượt publish lỗi trên staging (`OQ-campaign-078`); loại campaign khác (`OQ-campaign-079`); lượt publish qua MCP, theo comment Jira chưa xác minh, không có row (`OQ-campaign-082`).
+
+---
+
+## FEAT-23 — Vòng đời file preview khi mockup render lại (`mockup-preview-render-lifecycle`, mới từ CBS-160)
+**Goal:** Khi campaign mockup hoặc platform mockup render lại, preview mới thay preview cũ và file preview cũ được đưa vào hàng đợi xoá `trashed_images`, rồi job đêm xoá hoặc hoãn. Hiệu ứng ở back-end; merchant không thấy khác trên UI.
+**Không thuộc:** dọn file khi xoá mockup, dọn file cũ trước bản fix, cấu hình layer trong Mockup Editor, đồng bộ media lên Shopify (FEAT-07).
+- **Đã xác nhận (KB-454 tới KB-461, CONFIRMED_EXPECTED/MEDIUM, comment Dev trên Jira TIB-5629, 2026-11-04 và 2026-11-06):** re-render campaign mockup ra preview mới và 1 dòng `trashed_images` giữ cặp `preview_url` + `preview_thumbnail` cũ (`user_id` chủ campaign, `deletes_at` lúc re-render), file chưa xoá ngay; mỗi lần re-render 1 dòng, không dòng nào giữ preview đang hiển thị; render đầu và import mockup từ Product Base không tạo dòng; platform mockup (Shopify/Etsy/Boundless) hành vi như nhau, một lần Save trên mockup mặc định có thể ra 2 dòng (preview mockup và preview tổng hợp), không phải trùng lặp; video mockup không bao giờ render, link không vào hàng xoá; preview mới hiển thị trên portal và storefront; clone đưa bản copy tạm trong thư mục bản clone vào hàng xoá, mỗi mockup ảnh 1 dòng, không đụng file campaign gốc; job `cleanup:expired-trashed-images` (01:00) xoá file và hoãn path còn mockup khác dùng.
+- **Khác biệt môi trường (KB-462, ALTERNATIVE_SETUP):** staging có endpoint cleanup nội bộ cho QA (dry-run mặc định, `force` xoá thật); production không có, chỉ có job đêm.
+- **Chưa xác nhận, không làm oracle:** 2 lần Save liên tiếp khi render đầu chưa xong (`OQ-campaign-096`, CHK-010); gallery Shopify sau sync và `preview_url` không đổi (`OQ-campaign-097`, CHK-011); mã trả về trên CDN sau cleanup, QA thấy 403 (`OQ-campaign-098`, CHK-012); nhánh Postponed chưa từng chạy (`OQ-campaign-099`, CHK-013); múi giờ của job 01:00 (`OQ-campaign-100`).
+**Coverage:** staging, portal + DB read-only + CDN; Etsy chưa chạy riêng, production verify chưa chạy (`OQ-campaign-101`).
 
 ---
 

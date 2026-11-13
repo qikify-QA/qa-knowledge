@@ -24,6 +24,14 @@
         "product-base/provider-catalog-import#KB-519",
         "product-base/provider-catalog-import#KB-520"
       ]
+    },
+    {
+      "path": "/products/{id}/edit > Import from <provider>",
+      "precondition": "[CBS-163] Product Base gắn fulfillment provider đã kết nối; popup liệt kê printarea của provider.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-536",
+        "product-base/provider-catalog-import#KB-537"
+      ]
     }
   ],
   "capabilities": [
@@ -47,6 +55,14 @@
       "kb_refs": [
         "product-base/provider-catalog-import#KB-521"
       ]
+    },
+    {
+      "name": "[CBS-163] Import printarea từ provider vào Product Base",
+      "description": "Theo Dev (TIB-5689), import printarea từ fulfillment provider (PrintareaController::store) trả 201, body là list key Printarea::$visible (KB-536). Một lượt quan sát staging: POST /api/printareas 201, list 7 key, không relation, danh sách printarea hiện printarea mới (KB-537).",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-536",
+        "product-base/provider-catalog-import#KB-537"
+      ]
     }
   ],
   "state_transitions": [
@@ -60,7 +76,16 @@
       ]
     }
   ],
-  "confirmed_rules": [],
+  "confirmed_rules": [
+    {
+      "statement": "[CBS-163] Theo Jira TIB-5689 comment 56448 Solution hàng U11 (Dev, 2026-11-04), import printarea từ fulfillment provider (PrintareaController::store) trả 201, body là list key Printarea::$visible.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-536"
+      ]
+    }
+  ],
   "observed_behavior": [
     {
       "topic": "Import gọi REST proxy, không gọi trực tiếp PosterFlow từ browser",
@@ -78,6 +103,14 @@
       "topic": "List catalog response hẹp field, không lộ stock/availability trước khi import",
       "kb_refs": [
         "product-base/provider-catalog-import#KB-521"
+      ]
+    },
+    {
+      "topic": "[CBS-163] Import from <provider> 2 printarea: POST /api/printareas 201, list 2 phần tử key id, product_id, name, display_name, width, height, dpi, không relation; danh sách printarea tải lại hiện 2 printarea mới (KB-537, một lượt TC-TIB-8593).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-537"
       ]
     }
   ],
@@ -107,6 +140,13 @@
           "product-base/provider-catalog-import#KB-520",
           "product-base/provider-catalog-import#KB-521"
         ]
+      },
+      {
+        "item": "[CBS-163] POST /api/printareas (import printarea từ provider, PrintareaController::store)",
+        "kb_refs": [
+          "product-base/provider-catalog-import#KB-536",
+          "product-base/provider-catalog-import#KB-537"
+        ]
       }
     ],
     "data": [
@@ -120,11 +160,13 @@
     "code": []
   },
   "dependencies": [
-    "fulfillment-provider-connection (feature cùng object, cần kết nối provider trước khi import được)"
+    "fulfillment-provider-connection (feature cùng object, cần kết nối provider trước khi import được)",
+    "[CBS-163] printarea-definition (cùng object): printarea sau import được sửa/xoá ở đó; DPI mặc định từ popup Import theo product-base/printarea-definition#KB-508."
   ],
   "risks": [
     "Import lại một catalog đã import (CLAIM-06, S0, không nạp KB) có thể tạo duplicate câm — chưa xác nhận PO, xem unknown_areas",
-    "Không nạp quyền/role gate riêng cho modal Import (chưa có KB xác nhận)"
+    "Không nạp quyền/role gate riêng cho modal Import (chưa có KB xác nhận)",
+    "[CBS-163] Tập 7 key của response import printarea (KB-537) chỉ là một lượt quan sát; danh sách Printarea::$visible chưa đối chiếu source."
   ],
   "environment_differences": [],
   "freshness": {
@@ -150,11 +192,20 @@
       "question": "Hành vi phân trang catalog (meta.page/per_page/total, ví dụ total=241) có phải contract ổn định không, hay chỉ quan sát qua test trên staging (QA-3365 TC-6)?",
       "why_it_matters": "Nếu dev đổi shape phân trang, checklist CHK-11-002 cần biết đây chỉ là quan sát để không coi lệch là bug chắc chắn.",
       "oq_id": "OQ-product-base-105"
+    },
+    {
+      "question": "[CBS-163] 7 key id, product_id, name, display_name, width, height, dpi của response import printarea (KB-537) có đúng là Printarea::$visible, không relation?",
+      "why_it_matters": "KB-537 là OBSERVED_CURRENT/LOW, một lượt chạy không ghi build.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-537"
+      ],
+      "oq_id": "OQ-product-base-122"
     }
   ],
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-119"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   },
   "coverage_matrix": [
     {
@@ -180,6 +231,29 @@
       "state": "post_import",
       "environment": "staging",
       "covered": true
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] import printarea từ provider vào Product Base",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-536",
+        "product-base/provider-catalog-import#KB-537"
+      ]
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] import printarea từ provider vào Product Base",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-536"
+      ]
     }
   ],
   "profile_conflicts": [],

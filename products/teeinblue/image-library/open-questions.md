@@ -7,9 +7,9 @@ _Mọi mục dưới đây chưa có nguồn thẩm quyền (spec/PO/Dev/test ca
 | Loại | Số lượng |
 |---|---|
 | CONFLICT | 5 |
-| NEEDS_CONFIRMATION | 13 |
+| NEEDS_CONFIRMATION | 21 |
 | OPEN_ISSUE | 19 |
-| **Tổng** | **37** |
+| **Tổng** | **45** |
 
 ## OQ-image-library-001 — CONFLICT
 
@@ -237,4 +237,46 @@ _Mọi mục dưới đây chưa có nguồn thẩm quyền (spec/PO/Dev/test ca
 
 ```json
 {"oq_id": "OQ-image-library-038", "type": "NEEDS_CONFIRMATION", "feature_id": "mockup-layer-library", "kb_ids": ["image-library/mockup-layer-library#KB-064"], "owner": "PO", "summary": "KB-064 (spec-hub: ảnh mockup library đang được dùng ở mockup thì không xoá được, báo 'The layer has already been used!') chạm hành vi xoá dữ liệu. PO xác nhận rule áp cho cả xoá một ảnh (đường xoá đơn không gọi kiểm tra in-use, KB-062) lẫn xoá nhiều ảnh cùng lúc (KB-063)."}
+```
+
+## OQ-image-library-039 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-image-library-039", "type": "NEEDS_CONFIRMATION", "feature_id": "image-layer-library", "summary": "[CBS-152, TIB-5709] POST /api/layer-images/by-temporary-file với raster trên 128 MP trả 422 message cap dưới errors.temporary_file_id (KB-066, quan sát TC-TIB-8777 build e96975614) — expected? File tạm trên storage có bị xoá khi bị từ chối không (liên quan KB-011 của object)?", "kb_ids": ["image-library/image-layer-library#KB-066"], "needs": "Dev xác nhận status, field và việc xoá file tạm."}
+```
+
+## OQ-image-library-040 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-image-library-040", "type": "NEEDS_CONFIRMATION", "feature_id": "image-layer-library", "summary": "[CBS-152, TIB-5709] Presign portal (temporary-files/upload-url) vượt cap trả 422 với lỗi trên errors.filewidth / errors.fileheight (KB-068, quan sát không ghi build). KB-067 chỉ xác nhận message.", "kb_ids": ["image-library/image-layer-library#KB-068"], "needs": "Dev xác nhận status và field."}
+```
+
+## OQ-image-library-041 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-image-library-041", "type": "NEEDS_CONFIRMATION", "feature_id": "image-layer-library", "summary": "[CBS-152, TIB-5709] POST /api/layer-images/file nhận raster 144 MP, không bị cap (KB-069, quan sát TC-TIB-8778 build e96975614). Câu Dev bỏ cap ở route này có trên Jira (comment 56721) nhưng CCR không trích. Đây là expected lâu dài, hay đổi khi TIB-5718 đưa layer PSD portal sang queue?", "kb_ids": ["image-library/image-layer-library#KB-069"], "needs": "Dev xác nhận kèm nguyên văn có ngày; theo dõi TIB-5718."}
+```
+
+## OQ-image-library-042 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-image-library-042", "type": "NEEDS_CONFIRMATION", "feature_id": "image-layer-library", "summary": "[CBS-152, TIB-5709] Raster dưới cap qua by-temporary-file (201 url null rồi ready) và /file (201 với id, name, url, thumbnail, width, height, layer_image_category_id) — KB-070, quan sát không ghi build. Có phải expected?", "kb_ids": ["image-library/image-layer-library#KB-070"], "needs": "Dev xác nhận hành vi và shape response của /file."}
+```
+
+## OQ-image-library-043 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-image-library-043", "type": "NEEDS_CONFIRMATION", "feature_id": "image-layer-library", "summary": "[CBS-152, TIB-5709] Chưa quan sát: dropzone portal chặn ảnh > 128 MP ở trình duyệt (chỉ có trong ghi chú CCR/Dev) và message hiện trên dòng upload; ranh giới đúng 128 MP qua by-temporary-file; production (verify NOT-RUN).", "kb_ids": ["image-library/image-layer-library#KB-065"], "needs": "QA chạy trên portal UI và production, ghi build."}
+```
+
+## OQ-image-library-044 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-image-library-044", "type": "NEEDS_CONFIRMATION", "feature_id": "image-layer-library", "kb_ids": ["KB-072"], "check_ids": ["CHK-050"], "owner": "Dev", "summary": "[CBS-163] /file, /svg, by-temporary-file đều trả 7 key id, name, url, thumbnail, width, height, layer_image_category_id, không master, không timestamp (KB-072, quan sát TC-TIB-8596 không ghi build) — Dev xác nhận danh sách 7 key là expected?"}
+```
+
+## OQ-image-library-045 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-image-library-045", "type": "NEEDS_CONFIRMATION", "feature_id": "image-layer-library", "kb_ids": ["KB-023", "KB-071"], "check_ids": [], "owner": "Dev", "summary": "[CBS-163] KB-023 (quan sát cũ: by-temporary-file 201 với bản ghi có master rỗng) mâu thuẫn KB-071 (Dev 2026-11-09: by-temporary-file không trả master). Dev xác nhận KB-023 đã lỗi thời về key master (phần url/thumbnail/width/height null lúc tạo có còn đúng)?"}
 ```

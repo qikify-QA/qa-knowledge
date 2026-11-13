@@ -4565,6 +4565,151 @@
       "priority": "P3",
       "automation_suitability": "NOT_SUITABLE",
       "oq_id": "OQ-sdk-182"
+    },
+    {
+      "check_id": "CHK-126",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "[CBS-163] 6 action upload public /merchant/{platform}/ trả đúng id, url, original; 201 khi tạo, 200 khi apply",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign tự dựng trên store explorer có field upload",
+        "environment": "staging; ghi build SDK/API và ngày chạy; không chạy production",
+        "surface_or_device": "storefront public API /merchant/{platform}/ (gọi trực tiếp)"
+      },
+      "precondition": "Campaign tự dựng bằng account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại) và publish lên store explorer; publish campaign lên store cần operator đồng ý và dọn dẹp sau khi chạy. Fixture ảnh/SVG/PDF tự dựng, không dùng store/campaign/id/file trong CCR hay test case. Không gọi production. Gọi trực tiếp route public với shop của store explorer.",
+      "steps": [
+        "POST photo-upload, photo-base64-upload, vector-upload, pdf-upload với fixture hợp lệ; ghi status và body.",
+        "Với id upload vừa tạo, POST customer-uploads/{id}/apply-effects và customer-uploads/{id}/image-filter-effects; ghi status và body."
+      ],
+      "observation_point": "Status và tập key của body từng response",
+      "expected_result": "Body của mỗi response là đúng id, url, original; 4 route upload trả 201, apply-effects và image-filter-effects trả 200.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-buyer-facing#KB-572"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-buyer-facing#KB-572",
+        "sdk/storefront-buyer-facing#KB-573"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "image-filter-effects có thể gọi AI; imageFilterStatus / reply async 202 ngoài check này (OQ-sdk-260)."
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-127",
+      "dimension": "PERMISSION",
+      "layer": "api",
+      "title": "[CBS-163] Response upload public không wrapper data, không key nhạy cảm (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign tự dựng trên store explorer có field upload",
+        "environment": "staging; ghi build SDK/API và ngày chạy; không chạy production",
+        "surface_or_device": "storefront public API /merchant/{platform}/ (gọi trực tiếp)"
+      },
+      "precondition": "Campaign tự dựng bằng account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại) và publish lên store explorer; publish campaign lên store cần operator đồng ý và dọn dẹp sau khi chạy. Fixture ảnh/SVG/PDF tự dựng, không dùng store/campaign/id/file trong CCR hay test case. Không gọi production. Chạy cùng response của CHK-126.",
+      "steps": [
+        "Với từng response của CHK-126, ghi có hay không wrapper data và các key user_id, instance_id, ip, geo_location, user_agent, master, thumbnail, effects."
+      ],
+      "observation_point": "Tập key của body",
+      "expected_result": "Baseline theo quan sát: không wrapper data; không có user_id, instance_id, ip, geo_location, user_agent, master, thumbnail, effects.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-buyer-facing#KB-573"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk/storefront-buyer-facing#KB-573",
+        "sdk/storefront-buyer-facing#KB-572"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-sdk-258"
+    },
+    {
+      "check_id": "CHK-128",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[CBS-163] original của response upload được lưu thành customization <field>-origin; response không có master, thumbnail",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign tự dựng trên store explorer có field upload",
+        "environment": "staging; ghi build SDK/API và ngày chạy; không chạy production",
+        "surface_or_device": "storefront product page, desktop browser, DevTools Network"
+      },
+      "precondition": "Campaign tự dựng bằng account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại) và publish lên store explorer; publish campaign lên store cần operator đồng ý và dọn dẹp sau khi chạy. Fixture ảnh/SVG/PDF tự dựng, không dùng store/campaign/id/file trong CCR hay test case. Không gọi production.",
+      "steps": [
+        "Mở product page của campaign fixture, upload ảnh vào field upload; ghi request upload và body response (ghi route thực tế).",
+        "Add to cart; ghi payload customization gửi lên."
+      ],
+      "observation_point": "Body response upload; giá trị <field>-origin trong payload customization",
+      "expected_result": "Response upload có original, không có master và thumbnail; payload customization có <field>-origin bằng original của response upload.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-buyer-facing#KB-574"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-buyer-facing#KB-574",
+        "sdk/storefront-buyer-facing#KB-575"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nếu upload đi route khác ngoài photo-upload thì ghi route và đối chiếu lại; Dev chỉ nêu photo-upload."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-129",
+      "dimension": "REGRESSION",
+      "layer": "storefront",
+      "title": "[CBS-163] Các loại upload hiện trên preview; cart line mang ảnh và property origin (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign tự dựng trên store explorer có field upload",
+        "environment": "staging; ghi build SDK/API và ngày chạy; không chạy production",
+        "surface_or_device": "storefront product page + cart, desktop browser"
+      },
+      "precondition": "Campaign tự dựng bằng account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại) và publish lên store explorer; publish campaign lên store cần operator đồng ý và dọn dẹp sau khi chạy. Fixture ảnh/SVG/PDF tự dựng, không dùng store/campaign/id/file trong CCR hay test case. Không gọi production. Fixture: field upload không effect, crop, remove background, AI image filter, vector, PDF.",
+      "steps": [
+        "Upload vào từng field; ghi preview.",
+        "Add to cart; mở cart, ghi property của line."
+      ],
+      "observation_point": "Preview sau mỗi upload; property của cart line",
+      "expected_result": "Baseline theo quan sát: mỗi upload hiện trên preview; cart line mang ảnh upload và property origin của field.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-buyer-facing#KB-575"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk/storefront-buyer-facing#KB-575",
+        "sdk/storefront-buyer-facing#KB-574"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "AI image filter gọi AI: tốn quota, kết quả có thể chậm."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-259"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -5037,6 +5182,17 @@
         "CHK-125"
       ],
       "covered": "gap NONE + NEEDS_CONFIRMATION; không assert prefix"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "risk": "[CBS-163] Contract response upload public và <field>-origin (KB-572..575)",
+      "checks": [
+        "CHK-126",
+        "CHK-127",
+        "CHK-128",
+        "CHK-129"
+      ],
+      "covered": "CHK-126, CHK-128 STRONG; CHK-127, CHK-129 BASELINE + NEEDS_CONFIRMATION. imageFilterStatus / reply async 202: gap OPEN_ISSUE (OQ-sdk-260). Production chưa có check."
     }
   ],
   "excluded_dimensions": [
@@ -5102,7 +5258,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   }
 }

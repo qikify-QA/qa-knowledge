@@ -221,6 +221,23 @@
       "kb_refs": [
         "sdk/genai-personalization-runtime#KB-487"
       ]
+    },
+    {
+      "name": "[MỚI, CBS-153] Multiple Uploads giữ đúng hướng ảnh EXIF trong kết quả",
+      "description": "OBSERVED_CURRENT/LOW (KB-567, TC-TIB-8956 PASS staging, build không ghi): Gemini Multiple Uploads single output với 2 ảnh lớn, một ảnh dọc EXIF Orientation 6: generate hoàn tất, không ảnh nào bị xoay ngang. Không làm oracle STRONG.",
+      "kb_refs": [
+        "sdk/genai-personalization-runtime#KB-567"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-153] [PROPOSED] Tỉ lệ và resolution output theo size layer và provider",
+      "description": "PROPOSED/LOW, không làm oracle: Text to Image / Multiple Uploads gửi size bằng kích thước layer (KB-568); Gemini snap 10 tỉ lệ, mặc định 1:1 (KB-569); resolution mặc định khi không lưu gemini_resolution (KB-570); rule GPT, Flux Kontext, ImagenHub (KB-571, relation UNKNOWN).",
+      "kb_refs": [
+        "sdk/genai-personalization-runtime#KB-568",
+        "sdk/genai-personalization-runtime#KB-569",
+        "sdk/genai-personalization-runtime#KB-570",
+        "sdk/genai-personalization-runtime#KB-571"
+      ]
     }
   ],
   "state_transitions": [
@@ -507,6 +524,16 @@
       "kb_refs": [
         "sdk/genai-personalization-runtime#KB-489"
       ]
+    },
+    {
+      "statement": "[MỚI, CBS-153] Gemini Multiple Uploads (single output) với 2 ảnh lớn, một ảnh dọc EXIF Orientation 6: generate hoàn tất và không ảnh nào bị xoay ngang trong kết quả. Expected ở QA plan B.4 của Dev chưa được trích trong CCR.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "scope": "staging, buyer, storefront, TC-TIB-8956 PASS 2026-11-10 (build không ghi)",
+      "kb_refs": [
+        "sdk/genai-personalization-runtime#KB-567"
+      ]
     }
   ],
   "known_limitations": [
@@ -578,7 +605,8 @@
       "[MỚI, CBS-081] Layer Text, Additional Option, JSON List điền prompt variable; artwork template selector (\"Choose a design\") không điền được (KB-415)",
       "[MỚI, CBS-094] Ảnh generate trên layer Multiple Uploads / Text to Image có kích thước theo provider và Resolution (KB-472, KB-473, KB-477, KB-478, KB-479, KB-480, KB-481)",
       "[MỚI, CBS-094] Generate bằng backup hoặc hiện lỗi khi model bị coi là down (KB-474, KB-485); lỗi generate khi account bị ép còn ở model retired (KB-483, INFERRED)",
-      "[MỚI, CBS-094] Layer populate target hiển thị ảnh mặc định đã xử lý, chỉ chạy effect trên ảnh buyer upload vào layer nguồn (KB-487)"
+      "[MỚI, CBS-094] Layer populate target hiển thị ảnh mặc định đã xử lý, chỉ chạy effect trên ảnh buyer upload vào layer nguồn (KB-487)",
+      "[MỚI, CBS-153] Multiple Uploads với ảnh EXIF giữ đúng hướng (KB-567); tỉ lệ/resolution output theo size layer và provider, đề xuất (KB-568, KB-569, KB-570, KB-571)"
     ],
     "api": [
       "POST /api/merchant/shopify/customer-uploads/generate-from-multiple-images (202, job reference) — Multiple Uploads (KB-013)",
@@ -662,6 +690,15 @@
       "description": "[MỚI, CBS-094] populate-values (object artwork): KB-487 trả lời một phần OQ-artwork-093 (artwork KB-120) theo cross_object_refs của shard. Không sửa object artwork.",
       "kb_refs": [
         "sdk/genai-personalization-runtime#KB-487"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "[MỚI, CBS-153] photo-genai-image-filter-runtime (sdk, FEAT-19): Photo layer GenAI image filter dùng cùng rule tỉ lệ Gemini (KB-569) và resolution mặc định 2K (KB-570).",
+      "kb_refs": [
+        "sdk/genai-personalization-runtime#KB-569",
+        "sdk/genai-personalization-runtime#KB-570",
+        "sdk/photo-genai-image-filter-runtime#KB-565"
       ]
     }
   ],
@@ -784,6 +821,16 @@
       "kb_refs": [
         "sdk/genai-personalization-runtime#KB-483"
       ]
+    },
+    {
+      "risk": "[MỚI, CBS-153] KB-567 chỉ là quan sát staging không ghi build. KB-569 có hai nguồn trái nhau về tỉ lệ khi thiếu size (rule chuyển lại: 1:1; U3 Jira: tỉ lệ ảnh buyer). KB-568..KB-571 là PROPOSED (lời Dev chuyển qua người dùng/QA, không có trên Jira TIB-5615); không làm oracle. KB-570: nano_banana_pro ra 2K bị Dev gọi là nhầm lẫn cũ, khác cách KB-477 mô tả ('giữ 2K như trước'). KB-571 relation UNKNOWN với KB-477, KB-478, KB-480.",
+      "kb_refs": [
+        "sdk/genai-personalization-runtime#KB-568",
+        "sdk/genai-personalization-runtime#KB-569",
+        "sdk/genai-personalization-runtime#KB-570",
+        "sdk/genai-personalization-runtime#KB-571",
+        "sdk/genai-personalization-runtime#KB-477"
+      ]
     }
   ],
   "environment_differences": [
@@ -801,8 +848,8 @@
     "observed_at": "2026-10-30"
   },
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-153"
   },
   "unknown_areas": [
     {
@@ -964,6 +1011,53 @@
       "why_it_matters": "Chỉ KB-487 (effect không chạy trên ảnh mặc định) có nguồn; phần còn lại của storefront sau TIB-5470 chưa có expected.",
       "kb_refs": [],
       "oq_id": "OQ-sdk-156"
+    },
+    {
+      "question": "[MỚI, CBS-153] Text to Image / Multiple Uploads luôn gửi size bằng kích thước layer: Dev xác nhận trên nguồn dẫn được?",
+      "why_it_matters": "KB-568 PROPOSED; CHK-054 chưa có oracle.",
+      "kb_refs": [
+        "sdk/genai-personalization-runtime#KB-568"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-252"
+    },
+    {
+      "question": "[MỚI, CBS-153] Không có size thì Gemini dùng 1:1 (rule Dev chuyển lại) hay tỉ lệ ảnh buyer (unit test U3, Jira TIB-5615 #56735)? Kèm danh sách 10 tỉ lệ và 512 chỉ cho nano_banana_31.",
+      "why_it_matters": "KB-569 PROPOSED, hai nguồn trái nhau ở vế thiếu size; bổ sung KB-479 (CONFIRMED) về tỉ lệ gần nhất.",
+      "kb_refs": [
+        "sdk/genai-personalization-runtime#KB-569",
+        "sdk/genai-personalization-runtime#KB-479"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-253"
+    },
+    {
+      "question": "[MỚI, CBS-153] Resolution mặc định khi layer không lưu gemini_resolution (Photo 2K; MU/T2I 1K với nano_banana_31, nano_banana_21); nano_banana_pro ra 2K là expected hay lỗi?",
+      "why_it_matters": "KB-570 PROPOSED; vế nano_banana_pro / nano_banana_21 chưa chạy.",
+      "kb_refs": [
+        "sdk/genai-personalization-runtime#KB-570",
+        "sdk/genai-personalization-runtime#KB-477"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-254"
+    },
+    {
+      "question": "[MỚI, CBS-153] Rule tỉ lệ/kích thước của GPT, Flux Kontext, ImagenHub: Dev xác nhận, quan hệ với KB-477, KB-478, KB-480?",
+      "why_it_matters": "KB-571 PROPOSED, relation UNKNOWN, ngoài scope TIB-5615, chưa verify.",
+      "kb_refs": [
+        "sdk/genai-personalization-runtime#KB-571"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-255"
+    },
+    {
+      "question": "[MỚI, CBS-153] Multiple Uploads ảnh EXIF Orientation 6 không bị xoay ngang chỉ có TC-TIB-8956 PASS staging không ghi build: chạy lại trên build có TIB-5615 để dùng QA plan B.4 của Dev làm expected?",
+      "why_it_matters": "KB-567 hạ OBSERVED_CURRENT sau review vòng 1; CHK-053 chỉ BASELINE.",
+      "kb_refs": [
+        "sdk/genai-personalization-runtime#KB-567"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-257"
     }
   ],
   "coverage_matrix": [
@@ -1300,6 +1394,33 @@
         "sdk/genai-personalization-runtime#KB-487"
       ],
       "basis": "mọi nguồn CBS-094 là staging; chưa có kết quả production"
+    },
+    {
+      "feature_id": "FEAT-09-genai-personalization-runtime",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[MỚI, CBS-153] Multiple Uploads ảnh EXIF Orientation 6",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/genai-personalization-runtime#KB-567"
+      ],
+      "basis": "TC-TIB-8956 PASS 2026-11-10, build không ghi (OBSERVED_CURRENT)"
+    },
+    {
+      "feature_id": "FEAT-09-genai-personalization-runtime",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[MỚI, CBS-153] tỉ lệ/resolution output theo size layer, provider (đề xuất)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "sdk/genai-personalization-runtime#KB-568",
+        "sdk/genai-personalization-runtime#KB-569",
+        "sdk/genai-personalization-runtime#KB-570",
+        "sdk/genai-personalization-runtime#KB-571"
+      ],
+      "basis": "chỉ PROPOSED, oracle NONE"
     }
   ],
   "profile_conflicts": [
@@ -1378,6 +1499,17 @@
       "kb_refs": [
         "sdk/genai-personalization-runtime#KB-477",
         "sdk/genai-personalization-runtime#KB-475"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-09-genai-personalization-runtime",
+      "to_feature_id": "FEAT-19-photo-genai-image-filter-runtime",
+      "relation": "related_feature (cùng object sdk, rule kích thước/tỉ lệ Gemini dùng chung)",
+      "note": "[MỚI, CBS-153] KB-569, KB-570 áp cho cả Photo image filter; KB-568 cùng rule size với KB-565.",
+      "kb_refs": [
+        "sdk/genai-personalization-runtime#KB-568",
+        "sdk/genai-personalization-runtime#KB-569",
+        "sdk/genai-personalization-runtime#KB-570"
       ]
     }
   ]

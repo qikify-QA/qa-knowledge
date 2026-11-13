@@ -1,0 +1,333 @@
+{
+  "feature_id": "FEAT-18-game-text-preview-render",
+  "feature_key": "game-text-preview-render",
+  "object_id": "sdk",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Gõ text dài vào shape-text, spiral, warp-text: khoảng một request mỗi lần dừng 1 giây, URL có ?slot=<layer id>.0, preview cuối là text đầy đủ",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign có layer shape-text, spiral, warp-text",
+        "environment": "staging (storefront với SDK mới; không dùng portal editor); production verify chưa chạy",
+        "surface_or_device": "storefront, desktop browser"
+      },
+      "precondition": "Storefront staging dùng SDK mới (không dùng portal editor), vượt password-gate bằng TIB_STORE_PASSWORD; devtools Network lọc theo games/. Rate limit staging: làm theo environment_differences[0] (gõ chậm hoặc nhờ Dev nâng MERCHANT_GAMES_GENERATE_RATE_LIMIT); 429 không tính là fail.",
+      "steps": [
+        "Mở trang product; gõ một câu dài (khoảng 300 ký tự) vào layer shape-text từng từ, dừng ngắn giữa các từ và thỉnh thoảng dừng khoảng 1 giây.",
+        "Đếm request games/shape-text trong Network so với số lần dừng khoảng 1 giây; xem query của từng URL.",
+        "Lặp với layer spiral (games/spiral) và warp-text (games/warp_text).",
+        "So preview cuối với text đã gõ."
+      ],
+      "observation_point": "Network (số request, query ?slot=, trạng thái cancelled/409); preview cuối của layer.",
+      "expected_result": "Khoảng một request games/<type> cho mỗi lần dừng khoảng 1 giây, không phải một request mỗi từ; mỗi URL kết thúc bằng ?slot=<layer id>.0; request cũ còn chạy hiện cancelled hoặc 409; preview cuối là ảnh của text đầy đủ.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/game-text-preview-render#KB-552"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/game-text-preview-render#KB-552",
+        "sdk/game-text-preview-render#KB-553",
+        "sdk/game-text-preview-render#KB-560"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Dồn render khi buyer gõ nhanh"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Layer không blank khi gõ: spinner trong lúc request chạy, có ảnh sau response cuối",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "đang gõ vào layer game text",
+        "environment": "staging (storefront với SDK mới; không dùng portal editor); production verify chưa chạy",
+        "surface_or_device": "storefront, desktop browser"
+      },
+      "precondition": "Storefront staging dùng SDK mới (không dùng portal editor), vượt password-gate bằng TIB_STORE_PASSWORD; devtools Network lọc theo games/. Rate limit staging: làm theo environment_differences[0] (gõ chậm hoặc nhờ Dev nâng MERCHANT_GAMES_GENERATE_RATE_LIMIT); 429 không tính là fail.",
+      "steps": [
+        "Gõ vào layer shape-text với các lần dừng khoảng 1 giây.",
+        "Quan sát layer trong lúc request đang chạy và sau khi từng request kết thúc."
+      ],
+      "observation_point": "Layer trên trang (ảnh, spinner) theo thời gian; trạng thái request trong Network.",
+      "expected_result": "Trong lúc request chạy layer hiện spinner (không tính là blank); sau khi request cuối kết thúc layer có ảnh, không trống (không ảnh, không spinner).",
+      "oracle": {
+        "kb_ids": [
+          "sdk/game-text-preview-render#KB-553"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/game-text-preview-render#KB-553",
+        "sdk/game-text-preview-render#KB-554"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Layer trống làm buyer tưởng mất personalization"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Render bị thay bởi payload mới hơn cùng slot: 409 no-store, mở lại URL đó thì render preview",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "hai tab cùng sản phẩm, cùng client IP",
+        "environment": "staging (storefront với SDK mới; không dùng portal editor); production verify chưa chạy",
+        "surface_or_device": "storefront + gọi trực tiếp api public, desktop browser"
+      },
+      "precondition": "Storefront staging dùng SDK mới (không dùng portal editor), vượt password-gate bằng TIB_STORE_PASSWORD; devtools Network lọc theo games/. Rate limit staging: làm theo environment_differences[0] (gõ chậm hoặc nhờ Dev nâng MERCHANT_GAMES_GENERATE_RATE_LIMIT); 429 không tính là fail. Mở cùng sản phẩm ở hai tab.",
+      "steps": [
+        "Gõ text khác nhau vào cùng layer shape-text ở hai tab gần như cùng lúc cho tới khi một request trả 409.",
+        "Xem header Cache-Control của response 409.",
+        "Mở trực tiếp URL của request 409 ở tab mới; xem status và cf-cache-status.",
+        "Xem layer ở tab nhận 409 có giữ ảnh trước đó không."
+      ],
+      "observation_point": "Response 409 (status, Cache-Control); response khi mở lại URL (status, cf-cache-status); layer ở tab nhận 409.",
+      "expected_result": "Response 409 có Cache-Control: no-store; mở lại URL đó không nhận 409 đã cache (cf-cache-status không phải HIT) mà render preview; layer nhận 409 giữ ảnh trước đó, không báo lỗi.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/game-text-preview-render#KB-554"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/game-text-preview-render#KB-554",
+        "sdk/game-text-preview-render#KB-560"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "409 bị cache ở CDN làm buyer khác nhận lỗi"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Layer duplicate: mỗi layer có slot riêng, preview riêng, không blank khi gõ",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign có layer shape-text và bản duplicate",
+        "environment": "staging (storefront với SDK mới; không dùng portal editor); production verify chưa chạy",
+        "surface_or_device": "storefront, desktop browser"
+      },
+      "precondition": "Storefront staging dùng SDK mới (không dùng portal editor), vượt password-gate bằng TIB_STORE_PASSWORD; devtools Network lọc theo games/. Rate limit staging: làm theo environment_differences[0] (gõ chậm hoặc nhờ Dev nâng MERCHANT_GAMES_GENERATE_RATE_LIMIT); 429 không tính là fail. Artwork có layer shape-text và bản duplicate (layer id khác).",
+      "steps": [
+        "Gõ vào layer shape-text, rồi vào bản duplicate.",
+        "So query ?slot= của request từ hai layer.",
+        "Quan sát preview hai layer trong và sau khi gõ."
+      ],
+      "observation_point": "Query ?slot= của request từng layer; preview hai layer.",
+      "expected_result": "Request của bản duplicate mang slot khác (theo layer id của nó); mỗi layer hiện preview của chính nó; gõ vào layer này không làm layer kia trống.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/game-text-preview-render#KB-555"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/game-text-preview-render#KB-555",
+        "sdk/game-text-preview-render#KB-554"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Layer duplicate mất ảnh vì render của layer kia"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "Layer shape-text cỡ lớn (5952.98 × 7288.89): preview 200 và đủ mọi từ",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "layer shape-text cỡ lớn trên text-path shape",
+        "environment": "staging (storefront với SDK mới; không dùng portal editor); production verify chưa chạy",
+        "surface_or_device": "storefront, desktop browser"
+      },
+      "precondition": "Storefront staging dùng SDK mới (không dùng portal editor), vượt password-gate bằng TIB_STORE_PASSWORD; devtools Network lọc theo games/. Rate limit staging: làm theo environment_differences[0] (gõ chậm hoặc nhờ Dev nâng MERCHANT_GAMES_GENERATE_RATE_LIMIT); 429 không tính là fail. Layer shape-text 5952.98 × 7288.89, shape text-path/master/guitar-portrait.svg, font Roboto. Chỉ chạy trên staging; không gửi request cỡ này lên production khi chưa được đồng ý (flow qa-rules). Dùng text mới hoặc slot mới để có render MISS (flow troubleshooting).",
+      "steps": [
+        "Nhập text ngắn (2 từ) vào layer; chờ request cuối.",
+        "Nhập text khoảng 300 ký tự; chờ request cuối.",
+        "Xem status, kích thước ảnh, cf-cache-status; so ảnh với text đã nhập."
+      ],
+      "observation_point": "Response request cuối (status, cf-cache-status, kích thước ảnh); nội dung ảnh preview.",
+      "expected_result": "Request cuối trả 200, ảnh preview scale về 1673 × 2048, hiện đủ mọi từ đã nhập (cả text ngắn lẫn khoảng 300 ký tự); 400 signal 6 là bug.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/game-text-preview-render#KB-556"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/game-text-preview-render#KB-556",
+        "sdk/game-text-preview-render#KB-552"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Print file mất từ cuối",
+        "Render nặng làm api quá tải"
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "Text ngắn: preview giống trước fix, nhập lại sau reload được CDN phục vụ (HIT)",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "text ngắn 1-2 từ",
+        "environment": "staging (storefront với SDK mới; không dùng portal editor); production verify chưa chạy",
+        "surface_or_device": "storefront, desktop browser"
+      },
+      "precondition": "Storefront staging dùng SDK mới (không dùng portal editor), vượt password-gate bằng TIB_STORE_PASSWORD; devtools Network lọc theo games/. Rate limit staging: làm theo environment_differences[0] (gõ chậm hoặc nhờ Dev nâng MERCHANT_GAMES_GENERATE_RATE_LIMIT); 429 không tính là fail.",
+      "steps": [
+        "Nhập text 1-2 từ vào từng layer shape-text, spiral, warp-text; so ảnh với cùng text trước deploy hoặc production (ảnh lưu sẵn, không gửi request nặng lên production).",
+        "Reload trang; nhập lại đúng text đó; xem cf-cache-status của request lặp."
+      ],
+      "observation_point": "Ảnh preview; header cf-cache-status của request lặp.",
+      "expected_result": "Preview nhìn giống trước fix; request lặp sau reload có cf-cache-status: HIT.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/game-text-preview-render#KB-557"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/game-text-preview-render#KB-557",
+        "sdk/game-text-preview-render#KB-552"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Slot phá cache CDN dùng chung"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "REGRESSION",
+      "layer": "storefront",
+      "title": "Layer image-data khác (clock, word-cloud...) không gửi slot",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "campaign có layer clock hoặc word-cloud",
+        "environment": "staging (storefront với SDK mới; không dùng portal editor); production verify chưa chạy",
+        "surface_or_device": "storefront, desktop browser"
+      },
+      "precondition": "Storefront staging dùng SDK mới (không dùng portal editor), vượt password-gate bằng TIB_STORE_PASSWORD; devtools Network lọc theo games/. Rate limit staging: làm theo environment_differences[0] (gõ chậm hoặc nhờ Dev nâng MERCHANT_GAMES_GENERATE_RATE_LIMIT); 429 không tính là fail.",
+      "steps": [
+        "Nhập giá trị vào layer clock và layer word-cloud.",
+        "Xem URL request trong Network."
+      ],
+      "observation_point": "URL request của layer image-data khác.",
+      "expected_result": "URL không có slot, giữ nguyên dạng như trước TIB-5666.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/game-text-preview-render#KB-558"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/game-text-preview-render#KB-558"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Đổi URL làm mất cache của layer khác"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "Design in của order có layer shape-text, spiral, warp-text không đổi hành vi",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "order có layer game text",
+        "environment": "staging (storefront với SDK mới; không dùng portal editor); production verify chưa chạy",
+        "surface_or_device": "portal order detail + storefront checkout"
+      },
+      "precondition": "Đặt order test trên storefront staging (phương thức thanh toán test) với layer shape-text, spiral, warp-text đã nhập text; mở order trên portal.",
+      "steps": [
+        "Đặt order có ba layer game text.",
+        "Chờ design của order tạo xong; mở design.",
+        "Ghi trạng thái tạo design và nội dung từng layer."
+      ],
+      "observation_point": "Trạng thái tạo design của order; file design.",
+      "expected_result": "Design của order tạo như trước TIB-5666 (không có 409 hay lỗi giới hạn tài nguyên của preview trên đường render in).",
+      "oracle": {
+        "kb_ids": [
+          "sdk/game-text-preview-render#KB-559"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/game-text-preview-render#KB-559",
+        "sdk/game-text-preview-render#KB-556"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Print file sai hoặc lỗi"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-18-game-text-preview-render",
+      "core_covered": true,
+      "p1_covered": "không có rủi ro P1 (không mất tiền, dữ liệu, quyền)"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "PERMISSION",
+      "reason": "Route preview public, không có khác biệt quyền trong nguồn."
+    },
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Slot sai định dạng chỉ có ở unit test U14 (nguồn Dev); hành vi khi 429 chưa có expected (unknown_areas), không tạo check có oracle."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-159"
+  }
+}

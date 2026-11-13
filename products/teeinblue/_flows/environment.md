@@ -17,6 +17,7 @@ Host, auth, tool, chạy song song, production. Store dùng cho việc gì và g
 - Nhận biết môi trường của storefront: xem script SDK (`staging-sdk` = staging).
 - **Auth staging = Sanctum session:** `GET /sanctum/csrf-cookie` (Origin/Referer = portal) → `POST /api/login` kèm `X-XSRF-TOKEN` → cookie session. Gọi thẳng `staging-graphql.teeinblue.com` lỗi "Invalid response from authorization hook". Thiếu User-Agent → 403. `scripts/make-mcp-storage-state.mjs` làm sẵn bước này.
 - **Session portal staging (`playwright/.auth/mcp-isolated.json`) mặc định vào org `TIB_STAGING`**, không phải org `TIB_USER_A` của store <TIB_STORE_URL>. Data của instance `TIB_STORE_INSTANCE_ID` cần acting user `TIB_USER_A` (`portal.open(page, route, { acting: 64 })`, header `x-acting-user-id`). Ngoại lệ: staff của org `TIB_USER_B` không dùng header này (xem catalog).
+- Gọi portal API từ trình duyệt của MCP/Playwright với acting user: sessionStorage phải có `teeinblue_acting_user_id`, thiếu thì request trả 403 `This action is unauthorized`.
 - **GraphQL Hasura:** id kiểu `bigint` (vd `printareas_by_pk(id: $id)` với `$id: bigint!`), truyền `Int` sẽ lỗi.
 - **Máy QA không có ImageMagick (`identify`).** Đọc kích thước/DPI file design bằng `design.meta()` trong `scripts/tib/lib.mjs` (PNG pHYs, JPEG JFIF, PDF MediaBox).
 - **2FA portal staging:** tắt từ 2026-10-28. Nếu `/login/two-factor` xuất hiện lại → nhờ người dùng nhập mã trong server Playwright `playwright` (preflight).
@@ -31,7 +32,8 @@ Chép `_env.example` thành `.env` rồi điền giá trị do operator cấp. T
 - **Translations storefront cache immutable 1 năm theo `translation_version`**: vừa Save có thể chưa tăng version → đợi rồi reload, hoặc mở context sạch.
 - **Customization data của field trên storefront nằm ở localStorage** (global option ở key `teeinblue-global-options`) → dùng context sạch, localStorage giữ customization cũ.
 - **Dialog Confirm password có hiệu lực 15 phút**: case cần thấy dialog phải fresh login hoặc chờ quá 15 phút.
-- **Theme <TIB_STORE_URL> đặt `teeinblue.autofixerDelay: 2000` trong inline script**, ưu tiên hơn config public (config không có key này). Đọc `window.teeinblue.autofixerDelay` trên trang thật; cần delay 0 thì ghi đè trong trang, mất khi reload. <TIB_SDK_V2> không đặt, delay 0. (2026-11-05 TIB-5665)
+- **Option `window.teeinblue` của <TIB_STORE_URL> đến từ `teeinblue-custom-script` do app embed teeinblue render (không phải theme)** và ưu tiên hơn config public. Giá trị (`autofixerDelay`, `autofixerCallback`) do Dev đổi theo store, không cố định. Đầu lượt luôn đọc `window.teeinblue` trên trang thật; cần delay 0 thì ghi đè trong trang, mất khi reload. <TIB_SDK_V2> không đặt, delay 0. (TIB-5665)
+- **Tắt autofixer trong trang mà không đổi theme** (2026-11-10, TIB-5715): `addInitScript(() => { window.teeinblue = Object.assign(window.teeinblue || {}, { autofixerDisable: false }) })`. Tên option ngược nghĩa: `false` = tắt. Đã verify: có override thì orphan addon còn sau 10s, không override thì bị dọn sau khoảng 1.7s. Theo đọc bundle (chưa kiểm hành vi riêng): autofixer v2 lấy delay từ `window.teeinblue.autofixerDelay || settings.autofixer_delay || 0`, không đọc `window.teeinblueShop.autofixerDelay` trong custom script của <TIB_SDK_V2>.
 - **`default_layer_value` của user `TIB_USER_A`** do người dùng tự đặt, có thể đổi (lần gần nhất `{required: true, show_in_cart: true}`, 2026-10-21) → đọc lại giá trị thật trước khi test.
 
 ## Tool: MCP và Shopify

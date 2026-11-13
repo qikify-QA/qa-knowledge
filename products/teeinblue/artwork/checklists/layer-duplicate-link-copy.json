@@ -1155,6 +1155,47 @@
       ],
       "observation_guidance": "Hai rule QA mâu thuẫn (render rỗng vs vẫn hiện nội dung origin); ghi kết quả kèm build, không phán pass/fail.",
       "oq_id": "OQ-artwork-523"
+    },
+    {
+      "check_id": "CHK-033",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-149] Linked copy của curve text và warp text render stroke theo cặp của layer gốc; đổi stroke gốc thì copy đổi theo trong file design và preview",
+      "applicability": {
+        "role": "merchant-owner (cấu hình) + buyer (đặt order test)",
+        "state": "curve text và warp text origin, mỗi layer có 1 linked copy (Duplicate & Link); spiral / shape text chỉ để đối chứng (copy thường)",
+        "environment": "staging; ghi build api / sdk và ngày chạy",
+        "surface_or_device": "portal Artwork Editor 2.0 + storefront preview + file design PNG của order"
+      },
+      "precondition": "Store explorer trên staging (xác minh account theo explore playbook trước khi thao tác và sau mỗi lần login lại); fixture tự dựng trên store explorer, không dùng store / artwork / campaign / order nêu trong CCR, Jira hay production. Build có TIB-5699 (ghi build api và ngày chạy). Artwork Artwork 2.0 throwaway gắn vào campaign đã publish trên store explorer; store cho phép order test (Bogus gateway) để lấy file design PNG / SVG.",
+      "steps": [
+        "Tạo curve text và warp text có bật stroke; Duplicate & Link mỗi layer; Save.",
+        "Đặt order test; tải PNG; ghi stroke của origin và copy.",
+        "Đổi màu và width stroke của origin; Save; ghi preview editor và preview storefront của copy.",
+        "Đặt order test lần 2; tải PNG; ghi stroke của copy so với origin.",
+        "Ghi (không phán) cặp stroke lưu trong dữ liệu của copy qua GraphQL."
+      ],
+      "observation_point": "Màu và độ dày stroke của linked copy trên PNG và preview so với origin, trước và sau khi đổi stroke origin.",
+      "expected_result": "Linked copy của curve text và warp text render stroke theo cặp stroke_color / stroke_width của layer gốc trên file design và preview; đổi stroke gốc thì copy đổi theo. Lệch = bug. Spiral / shape text không thuộc check (không có linked transformer, KB-045). Cặp lưu trong dữ liệu của copy chỉ ghi lại (unknown, không phán).",
+      "oracle": {
+        "kb_ids": [
+          "artwork/layer-duplicate-link-copy#KB-1098"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/layer-duplicate-link-copy#KB-045",
+        "artwork/layer-duplicate-link-copy#KB-1035",
+        "artwork/text-multi-stroke#KB-1094"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Copy in stroke cũ của chính nó thay vì của gốc."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1238,6 +1279,14 @@
         "CHK-032"
       ],
       "oracle": "NONE (PROPOSED/OBSERVED_CURRENT LOW hoặc UNRESOLVED CONF-CBS-116-01, CONF-CBS-116-02)"
+    },
+    {
+      "feature_id": "FEAT-05-layer-duplicate-link-copy",
+      "item": "[CBS-149] Stroke của linked copy curve / warp text theo layer gốc",
+      "check_ids": [
+        "CHK-033"
+      ],
+      "oracle": "STRONG (KB-1098; Dev TIB-5699 comment 56557 U5/Q5)"
     }
   ],
   "excluded_dimensions": [
@@ -1256,6 +1305,6 @@
   ],
   "last_updated": {
     "date": "2026-11-12",
-    "ccr_ref": "CBS-116"
+    "ccr_ref": "CBS-149"
   }
 }

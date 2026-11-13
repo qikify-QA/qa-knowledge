@@ -33,6 +33,7 @@
 - `Import` là label cho `input[type=file][accept=".csv"]` (`label:has-text("Import")`); file phải nằm trong thư mục project (`.playwright-mcp/`). `Export` tải `artwork-translations-<locale>.csv`.
 - Import đọc theo dòng, bỏ dòng đầu, cột 1 = key, phần còn lại = value; key chưa có tự thêm; chỉ nạp vào form locale đang chọn — **phải Save** mới lưu.
 - 🔴 CSV **không được có dấu nháy kép**: parser tách dòng thô, giữ `"` ⇒ key rác (`"QA5352-key-0001"`, TIB-5352 từng sinh 1200 key). Dùng header `Default,<Tên ngôn ngữ>` rồi `key,value` không nháy (không chứa dấu phẩy). Import thử ~5 dòng trước.
+- File tải từ `Export` bọc **mọi ô** trong `"..."`, nên Export rồi Import lại nguyên file sẽ sinh key rác có ngoặc kép. Code Export/Import của portal production và staging giống nhau (so bundle khi test TIB-5585, chưa import thật trên production), nên lỗi này không do các ticket trim/whitespace. Khi test Import: tự soạn CSV không nháy theo dòng trên, đừng dùng file Export.
 
 ## Import to Translation (gom key từ campaign / artwork)
 

@@ -1,463 +1,552 @@
 {
-  "checklists": [
+  "feature_id": "FEAT-03-campaign-list-browse",
+  "feature_key": "campaign-list-browse",
+  "object_id": "campaign",
+  "checks": [
     {
-      "feature_id": "FEAT-03-campaign-list-browse",
-      "feature_key": "campaign-list-browse",
-      "checks": [
-        {
-          "check_id": "CHK-001",
-          "dimension": "CORE",
-          "layer": "portal",
-          "title": "/campaigns hiển thị đúng filter tabs, filter row, và cột bảng cho danh sách by-product-base",
-          "applicability": {
-            "role": "owner",
-            "state": "có/không có campaign",
-            "environment": "staging",
-            "theme_or_device": "n/a"
-          },
-          "precondition": "Role owner đã đăng nhập",
-          "steps": [
-            "Mở /campaigns",
-            "Quan sát filter tabs, filter row, cột bảng"
-          ],
-          "observation_point": "UI list page /campaigns",
-          "expected_result": "Filter tabs: All/Published/Unpublished/Archived/Update required(N); filter row: Search + Published on store + Internal Tags + Type + Vendor + Tags; cột: CAMPAIGN MOCKUPS/NAME/INTERNAL TAGS/LISTING INFO/STATUS-CREATED/ACTION; data fetch qua GraphQL getData{campaigns_aggregate, campaigns}",
-          "oracle": {
-            "kb_ids": [
-              "campaign/campaign-list-browse#KB-025"
-            ],
-            "oracle_strength": "BASELINE"
-          },
-          "status": "READY",
-          "risk_refs": [],
-          "priority": "P2",
-          "automation_suitability": "SUITABLE"
-        },
-        {
-          "check_id": "CHK-002",
-          "dimension": "CORE",
-          "layer": "portal",
-          "title": "/platform-products hiển thị đúng filter tabs, filter row, và cột bảng riêng cho danh sách by-Shopify",
-          "applicability": {
-            "role": "owner",
-            "state": "có/không có platform-product",
-            "environment": "staging",
-            "theme_or_device": "n/a"
-          },
-          "precondition": "Role owner đã đăng nhập",
-          "steps": [
-            "Mở /platform-products",
-            "Quan sát filter tabs, filter row, cột bảng"
-          ],
-          "observation_point": "UI list page /platform-products",
-          "expected_result": "Filter tabs chỉ All/Published/Unpublished (KHÔNG Archived/Update required); filter row chỉ Search + Internal Tags + Store; cột: MOCKUP/NAME/INTERNAL TAGS/DOMAIN/STATUS-CREATED/ACTION (KHÔNG LISTING INFO/TYPE/VENDOR); data fetch qua GraphQL getData{platform_products_aggregate, platform_products}",
-          "oracle": {
-            "kb_ids": [
-              "campaign/campaign-list-browse#KB-026"
-            ],
-            "oracle_strength": "BASELINE"
-          },
-          "status": "READY",
-          "risk_refs": [],
-          "priority": "P2",
-          "automation_suitability": "SUITABLE"
-        },
-        {
-          "check_id": "CHK-003",
-          "dimension": "STATE_DATA",
-          "layer": "portal",
-          "title": "/campaigns list count cập nhật đúng sau khi tạo campaign mới trong phiên",
-          "applicability": {
-            "role": "owner",
-            "state": "trước/sau khi tạo campaign",
-            "environment": "staging",
-            "theme_or_device": "n/a"
-          },
-          "precondition": "Đã có ≥1 campaign pre-existing",
-          "steps": [
-            "Ghi nhận số lượng campaign hiện tại trong list",
-            "Tạo thêm 1-2 campaign mới qua FEAT-01",
-            "Quay lại /campaigns, xác nhận count"
-          ],
-          "observation_point": "Số lượng item trong list trước/sau",
-          "expected_result": "Count tăng đúng theo số campaign vừa tạo (quan sát 1 -> 3 sau khi tạo 2 campaign)",
-          "oracle": {
-            "kb_ids": [
-              "campaign/campaign-list-browse#KB-025"
-            ],
-            "oracle_strength": "BASELINE"
-          },
-          "status": "READY",
-          "risk_refs": [],
-          "priority": "P2",
-          "automation_suitability": "SUITABLE"
-        },
-        {
-          "check_id": "CHK-004",
-          "dimension": "STATE_DATA",
-          "layer": "portal",
-          "title": "/platform-products chuyển đúng từ empty-state sang có data sau khi tạo platform-product đầu tiên",
-          "applicability": {
-            "role": "owner",
-            "state": "empty -> có data",
-            "environment": "staging",
-            "theme_or_device": "n/a"
-          },
-          "precondition": "Chưa có platform-product nào",
-          "steps": [
-            "Xác nhận /platform-products đang ở empty-state",
-            "Tạo 1 platform-product qua FEAT-02",
-            "Quay lại /platform-products"
-          ],
-          "observation_point": "Trạng thái UI trước/sau khi có data",
-          "expected_result": "Chuyển từ empty-state (0 item) sang hiển thị đúng 1 item vừa tạo",
-          "oracle": {
-            "kb_ids": [
-              "campaign/campaign-list-browse#KB-026"
-            ],
-            "oracle_strength": "BASELINE"
-          },
-          "status": "READY",
-          "risk_refs": [],
-          "priority": "P2",
-          "automation_suitability": "SUITABLE"
-        },
-        {
-          "check_id": "CHK-005",
-          "dimension": "CORE",
-          "layer": "portal",
-          "title": "Row action icons /campaigns tồn tại đầy đủ (rocket/link, pencil, '...' overflow 6 mục) — existence only",
-          "applicability": {
-            "role": "owner",
-            "state": "có ≥1 campaign",
-            "environment": "staging",
-            "theme_or_device": "n/a"
-          },
-          "precondition": "Danh sách /campaigns có ≥1 item",
-          "steps": [
-            "Quan sát icon trên 1 row: rocket/link, pencil, '...' overflow",
-            "Mở '...' overflow, liệt kê các mục"
-          ],
-          "observation_point": "Icon + menu items hiển thị trên row",
-          "expected_result": "Tồn tại đúng: icon rocket/link (mở Multi-store launch dialog), icon pencil (edit), '...' overflow gồm 6 mục: See campaign info, View campaign logs, Duplicate campaign, Mark as archive, Import to Translation, Delete campaign — CHỈ xác nhận sự TỒN TẠI của 5/6 mục, KHÔNG xác nhận chức năng (trừ Delete, xem FEAT-04)",
-          "oracle": {
-            "kb_ids": [
-              "campaign/campaign-list-browse#KB-027"
-            ],
-            "oracle_strength": "BASELINE"
-          },
-          "status": "READY",
-          "risk_refs": [],
-          "priority": "P3",
-          "automation_suitability": "SUITABLE"
-        },
-        {
-          "check_id": "CHK-006",
-          "dimension": "NEGATIVE",
-          "layer": "portal",
-          "title": "NEEDS_CONFIRMATION: chức năng thực tế của 'See campaign info' và 'View campaign logs'",
-          "applicability": {
-            "role": "owner",
-            "state": "có ≥1 campaign",
-            "environment": "staging",
-            "theme_or_device": "n/a"
-          },
-          "precondition": "Danh sách /campaigns có ≥1 item",
-          "steps": [
-            "Mở '...' overflow",
-            "Click 'See campaign info'",
-            "Click 'View campaign logs'"
-          ],
-          "observation_point": "Nội dung/hành vi khi click từng mục",
-          "expected_result": null,
-          "oracle": {
-            "kb_ids": [
-              "campaign/campaign-list-browse#KB-027"
-            ],
-            "oracle_strength": "NONE"
-          },
-          "status": "NEEDS_CONFIRMATION",
-          "oq_ref": "OQ-campaign-027",
-          "risk_refs": [],
-          "priority": "P3",
-          "automation_suitability": "SUITABLE"
-        },
-        {
-          "check_id": "CHK-007",
-          "dimension": "CORE",
-          "layer": "portal",
-          "title": "NEEDS_CONFIRMATION: chức năng 'Duplicate campaign' (clone product/artwork/listing info, ảnh hưởng publish state ra sao)",
-          "applicability": {
-            "role": "owner",
-            "state": "có ≥1 campaign",
-            "environment": "staging",
-            "theme_or_device": "n/a"
-          },
-          "precondition": "Danh sách /campaigns có ≥1 item",
-          "steps": [
-            "Mở '...' overflow",
-            "Click 'Duplicate campaign'",
-            "Quan sát campaign mới tạo ra"
-          ],
-          "observation_point": "Kết quả sau khi Duplicate",
-          "expected_result": null,
-          "oracle": {
-            "kb_ids": [
-              "campaign/campaign-list-browse#KB-027"
-            ],
-            "oracle_strength": "NONE"
-          },
-          "status": "NEEDS_CONFIRMATION",
-          "oq_ref": "OQ-campaign-028",
-          "risk_refs": [],
-          "priority": "P2",
-          "automation_suitability": "SUITABLE"
-        },
-        {
-          "check_id": "CHK-008",
-          "dimension": "CORE",
-          "layer": "portal",
-          "title": "NEEDS_CONFIRMATION: chức năng 'Mark as archive' và quan hệ với filter tab 'Archived'",
-          "applicability": {
-            "role": "owner",
-            "state": "có ≥1 campaign",
-            "environment": "staging",
-            "theme_or_device": "n/a"
-          },
-          "precondition": "Danh sách /campaigns có ≥1 item",
-          "steps": [
-            "Mở '...' overflow",
-            "Click 'Mark as archive'",
-            "Kiểm tra tab 'Archived' có hiện campaign vừa archive không"
-          ],
-          "observation_point": "Trạng thái campaign + tab Archived sau khi archive",
-          "expected_result": null,
-          "oracle": {
-            "kb_ids": [
-              "campaign/campaign-list-browse#KB-027"
-            ],
-            "oracle_strength": "NONE"
-          },
-          "status": "NEEDS_CONFIRMATION",
-          "oq_ref": "OQ-campaign-029",
-          "risk_refs": [],
-          "priority": "P2",
-          "automation_suitability": "SUITABLE"
-        },
-        {
-          "check_id": "CHK-009",
-          "dimension": "CORE",
-          "layer": "portal",
-          "title": "NEEDS_CONFIRMATION: chức năng 'Import to Translation' hoàn toàn chưa khám phá",
-          "applicability": {
-            "role": "owner",
-            "state": "có ≥1 campaign",
-            "environment": "staging",
-            "theme_or_device": "n/a"
-          },
-          "precondition": "Danh sách /campaigns có ≥1 item",
-          "steps": [
-            "Mở '...' overflow",
-            "Click 'Import to Translation'",
-            "Quan sát flow tiếp theo"
-          ],
-          "observation_point": "Hành vi khi click 'Import to Translation'",
-          "expected_result": null,
-          "oracle": {
-            "kb_ids": [
-              "campaign/campaign-list-browse#KB-027"
-            ],
-            "oracle_strength": "NONE"
-          },
-          "status": "NEEDS_CONFIRMATION",
-          "oq_ref": "OQ-campaign-030",
-          "risk_refs": [],
-          "priority": "P3",
-          "automation_suitability": "SUITABLE"
-        },
-        {
-          "check_id": "CHK-010",
-          "dimension": "CORE",
-          "layer": "portal",
-          "title": "NEEDS_CONFIRMATION: 'Bulk creator' (/campaigns/bulk-editor) hoạt động thế nào",
-          "applicability": {
-            "role": "owner",
-            "state": "n/a",
-            "environment": "staging",
-            "theme_or_device": "n/a"
-          },
-          "precondition": "Truy cập entry point 'Bulk creator' trên /campaigns",
-          "steps": [
-            "Click entry point 'Bulk creator'",
-            "Khám phá flow tiếp theo"
-          ],
-          "observation_point": "Flow/route khi vào Bulk creator",
-          "expected_result": null,
-          "oracle": {
-            "kb_ids": [
-              "campaign/campaign-list-browse#KB-025"
-            ],
-            "oracle_strength": "NONE"
-          },
-          "status": "NEEDS_CONFIRMATION",
-          "oq_ref": "OQ-campaign-031",
-          "risk_refs": [],
-          "priority": "P3",
-          "automation_suitability": "SUITABLE"
-        },
-        {
-          "check_id": "CHK-011",
-          "dimension": "CORE",
-          "layer": "portal",
-          "title": "NEEDS_CONFIRMATION: 'Bulk Fulfill' hoạt động thế nào",
-          "applicability": {
-            "role": "owner",
-            "state": "n/a",
-            "environment": "staging",
-            "theme_or_device": "n/a"
-          },
-          "precondition": "Truy cập entry point 'Bulk Fulfill' trên list page",
-          "steps": [
-            "Click entry point 'Bulk Fulfill'",
-            "Khám phá flow tiếp theo"
-          ],
-          "observation_point": "Flow/route khi vào Bulk Fulfill",
-          "expected_result": null,
-          "oracle": {
-            "kb_ids": [],
-            "oracle_strength": "NONE"
-          },
-          "status": "NEEDS_CONFIRMATION",
-          "oq_ref": "OQ-campaign-032",
-          "risk_refs": [],
-          "priority": "P3",
-          "automation_suitability": "SUITABLE"
-        },
-        {
-          "check_id": "CHK-012",
-          "dimension": "NEGATIVE",
-          "layer": "portal",
-          "title": "NEEDS_CONFIRMATION: filter/search (Search, Published on store, Internal Tags, Type, Vendor, Tags, Store) có lọc đúng kết quả với giá trị thật không",
-          "applicability": {
-            "role": "owner",
-            "state": "có nhiều campaign/platform-product",
-            "environment": "staging",
-            "theme_or_device": "n/a"
-          },
-          "precondition": "Danh sách có đủ đa dạng data để test filter",
-          "steps": [
-            "Nhập giá trị thật vào từng filter field",
-            "Xác nhận kết quả list được lọc đúng theo giá trị nhập"
-          ],
-          "observation_point": "Kết quả list sau khi áp filter",
-          "expected_result": null,
-          "oracle": {
-            "kb_ids": [
-              "campaign/campaign-list-browse#KB-025",
-              "campaign/campaign-list-browse#KB-026"
-            ],
-            "oracle_strength": "NONE"
-          },
-          "status": "NEEDS_CONFIRMATION",
-          "oq_ref": "OQ-campaign-033",
-          "risk_refs": [],
-          "priority": "P2",
-          "automation_suitability": "SUITABLE"
-        },
-        {
-          "check_id": "CHK-013",
-          "dimension": "INTEGRATION",
-          "layer": "api",
-          "title": "NEEDS_CONFIRMATION/CAUTION: liên kết giữa mở menu '...' và 2 GraphQL query (instances, instances_aggregate) chỉ là co-occurrence, KHÔNG phải causation đã xác nhận",
-          "applicability": {
-            "role": "owner",
-            "state": "mở menu '...' ",
-            "environment": "staging",
-            "theme_or_device": "n/a"
-          },
-          "precondition": "Danh sách /campaigns có ≥1 item",
-          "steps": [
-            "Mở menu '...' trên 1 row",
-            "Quan sát network log GraphQL trong cùng thời điểm"
-          ],
-          "observation_point": "Network log GraphQL khi mở menu",
-          "expected_result": null,
-          "oracle": {
-            "kb_ids": [
-              "campaign/campaign-list-browse#KB-027"
-            ],
-            "oracle_strength": "NONE"
-          },
-          "status": "NEEDS_CONFIRMATION",
-          "oq_ref": "OQ-campaign-034",
-          "risk_refs": [],
-          "priority": "P3",
-          "automation_suitability": "NOT_SUITABLE"
-        },
-        {
-          "check_id": "CHK-014",
-          "dimension": "PERMISSION",
-          "layer": "portal",
-          "title": "NEEDS_CONFIRMATION: role khác owner có xem được cả 2 list đầy đủ như owner không",
-          "applicability": {
-            "role": "non-owner/restricted staff",
-            "state": "any",
-            "environment": "staging",
-            "theme_or_device": "n/a"
-          },
-          "precondition": "Cần tài khoản role khác owner",
-          "steps": [
-            "Đăng nhập role khác owner",
-            "Mở /campaigns và /platform-products"
-          ],
-          "observation_point": "Nội dung list hiển thị theo role",
-          "expected_result": null,
-          "oracle": {
-            "kb_ids": [
-              "campaign/campaign-security-permissions#KB-029"
-            ],
-            "oracle_strength": "NONE"
-          },
-          "status": "NEEDS_CONFIRMATION",
-          "oq_ref": "OQ-campaign-035",
-          "risk_refs": [
-            "FEAT-06-RISK-single-role-baseline"
-          ],
-          "priority": "P1",
-          "automation_suitability": "SUITABLE"
-        },
-        {
-          "check_id": "CHK-015",
-          "dimension": "STATE_DATA",
-          "layer": "portal",
-          "title": "NEEDS_CONFIRMATION: hành vi list khi hard reload hoặc pagination vượt quá offset=0 mặc định",
-          "applicability": {
-            "role": "owner",
-            "state": "nhiều item vượt quá 1 trang",
-            "environment": "staging",
-            "theme_or_device": "n/a"
-          },
-          "precondition": "Danh sách có đủ item để cần pagination",
-          "steps": [
-            "Hard reload trang list",
-            "Cuộn/chuyển trang nếu có pagination control"
-          ],
-          "observation_point": "UI/data sau reload hoặc chuyển trang",
-          "expected_result": null,
-          "oracle": {
-            "kb_ids": [
-              "campaign/campaign-list-browse#KB-025",
-              "campaign/campaign-list-browse#KB-026"
-            ],
-            "oracle_strength": "NONE"
-          },
-          "status": "NEEDS_CONFIRMATION",
-          "oq_ref": "OQ-campaign-036",
-          "risk_refs": [],
-          "priority": "P2",
-          "automation_suitability": "SUITABLE"
-        }
-      ]
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "/campaigns hiển thị đúng filter tabs, filter row, và cột bảng cho danh sách by-product-base",
+      "applicability": {
+        "role": "owner",
+        "state": "có/không có campaign",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Role owner đã đăng nhập",
+      "steps": [
+        "Mở /campaigns",
+        "Quan sát filter tabs, filter row, cột bảng"
+      ],
+      "observation_point": "UI list page /campaigns",
+      "expected_result": "Filter tabs: All/Published/Unpublished/Archived/Update required(N); filter row: Search + Published on store + Internal Tags + Type + Vendor + Tags; cột: CAMPAIGN MOCKUPS/NAME/INTERNAL TAGS/LISTING INFO/STATUS-CREATED/ACTION; data fetch qua GraphQL getData{campaigns_aggregate, campaigns}",
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-list-browse#KB-025"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "/platform-products hiển thị đúng filter tabs, filter row, và cột bảng riêng cho danh sách by-Shopify",
+      "applicability": {
+        "role": "owner",
+        "state": "có/không có platform-product",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Role owner đã đăng nhập",
+      "steps": [
+        "Mở /platform-products",
+        "Quan sát filter tabs, filter row, cột bảng"
+      ],
+      "observation_point": "UI list page /platform-products",
+      "expected_result": "Filter tabs chỉ All/Published/Unpublished (KHÔNG Archived/Update required); filter row chỉ Search + Internal Tags + Store; cột: MOCKUP/NAME/INTERNAL TAGS/DOMAIN/STATUS-CREATED/ACTION (KHÔNG LISTING INFO/TYPE/VENDOR); data fetch qua GraphQL getData{platform_products_aggregate, platform_products}",
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-list-browse#KB-026"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "/campaigns list count cập nhật đúng sau khi tạo campaign mới trong phiên",
+      "applicability": {
+        "role": "owner",
+        "state": "trước/sau khi tạo campaign",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Đã có ≥1 campaign pre-existing",
+      "steps": [
+        "Ghi nhận số lượng campaign hiện tại trong list",
+        "Tạo thêm 1-2 campaign mới qua FEAT-01",
+        "Quay lại /campaigns, xác nhận count"
+      ],
+      "observation_point": "Số lượng item trong list trước/sau",
+      "expected_result": "Count tăng đúng theo số campaign vừa tạo (quan sát 1 -> 3 sau khi tạo 2 campaign)",
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-list-browse#KB-025"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "/platform-products chuyển đúng từ empty-state sang có data sau khi tạo platform-product đầu tiên",
+      "applicability": {
+        "role": "owner",
+        "state": "empty -> có data",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Chưa có platform-product nào",
+      "steps": [
+        "Xác nhận /platform-products đang ở empty-state",
+        "Tạo 1 platform-product qua FEAT-02",
+        "Quay lại /platform-products"
+      ],
+      "observation_point": "Trạng thái UI trước/sau khi có data",
+      "expected_result": "Chuyển từ empty-state (0 item) sang hiển thị đúng 1 item vừa tạo",
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-list-browse#KB-026"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Row action icons /campaigns tồn tại đầy đủ (rocket/link, pencil, '...' overflow 6 mục) — existence only",
+      "applicability": {
+        "role": "owner",
+        "state": "có ≥1 campaign",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Danh sách /campaigns có ≥1 item",
+      "steps": [
+        "Quan sát icon trên 1 row: rocket/link, pencil, '...' overflow",
+        "Mở '...' overflow, liệt kê các mục"
+      ],
+      "observation_point": "Icon + menu items hiển thị trên row",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-list-browse#KB-027"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-campaign-105"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION: chức năng thực tế của 'See campaign info' và 'View campaign logs'",
+      "applicability": {
+        "role": "owner",
+        "state": "có ≥1 campaign",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Danh sách /campaigns có ≥1 item",
+      "steps": [
+        "Mở '...' overflow",
+        "Click 'See campaign info'",
+        "Click 'View campaign logs'"
+      ],
+      "observation_point": "Nội dung/hành vi khi click từng mục",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-list-browse#KB-027"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-campaign-027",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-campaign-027"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION: chức năng 'Duplicate campaign' (clone product/artwork/listing info, ảnh hưởng publish state ra sao)",
+      "applicability": {
+        "role": "owner",
+        "state": "có ≥1 campaign",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Danh sách /campaigns có ≥1 item",
+      "steps": [
+        "Mở '...' overflow",
+        "Click 'Duplicate campaign'",
+        "Quan sát campaign mới tạo ra"
+      ],
+      "observation_point": "Kết quả sau khi Duplicate",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-list-browse#KB-027"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-campaign-028",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-campaign-028"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "'Mark as archive' và Unarchive campaign chưa publish; quan hệ với filter tab 'Archived'",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "campaign fixture chưa publish",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": "portal /campaigns + portal API (Network)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Campaign fixture tự dựng trên store explorer, chưa publish và không publish lên store; không dùng campaign, store hay id trong CCR/test case. Đọc response qua tab Network của portal (TIB_PORTAL_BASE). Dọn fixture sau khi chạy.",
+      "steps": [
+        "Mở '...' overflow của campaign fixture",
+        "Click 'Mark as archive'; ghi status code và status trong response",
+        "Kiểm tra tab 'Archived' có hiện campaign vừa archive không",
+        "Unarchive; ghi status code và status trong response"
+      ],
+      "observation_point": "Trạng thái campaign + tab Archived sau khi archive",
+      "expected_result": "Baseline theo quan sát: archive 200 với status 1, campaign hiện ở tab Archived; unarchive 200 với status 0.",
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-list-browse#KB-464"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-campaign-029",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "related_kb_ids": [
+        "campaign/campaign-list-browse#KB-027",
+        "campaign/campaign-list-browse#KB-463",
+        "campaign/campaign-list-browse#KB-464"
+      ],
+      "oq_id": "OQ-campaign-102"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION: chức năng 'Import to Translation' hoàn toàn chưa khám phá",
+      "applicability": {
+        "role": "owner",
+        "state": "có ≥1 campaign",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Danh sách /campaigns có ≥1 item",
+      "steps": [
+        "Mở '...' overflow",
+        "Click 'Import to Translation'",
+        "Quan sát flow tiếp theo"
+      ],
+      "observation_point": "Hành vi khi click 'Import to Translation'",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-list-browse#KB-027"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-campaign-030",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-campaign-030"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION: 'Bulk creator' (/campaigns/bulk-editor) hoạt động thế nào",
+      "applicability": {
+        "role": "owner",
+        "state": "n/a",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Truy cập entry point 'Bulk creator' trên /campaigns",
+      "steps": [
+        "Click entry point 'Bulk creator'",
+        "Khám phá flow tiếp theo"
+      ],
+      "observation_point": "Flow/route khi vào Bulk creator",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-list-browse#KB-025"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-campaign-031",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-campaign-031"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION: 'Bulk Fulfill' hoạt động thế nào",
+      "applicability": {
+        "role": "owner",
+        "state": "n/a",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Truy cập entry point 'Bulk Fulfill' trên list page",
+      "steps": [
+        "Click entry point 'Bulk Fulfill'",
+        "Khám phá flow tiếp theo"
+      ],
+      "observation_point": "Flow/route khi vào Bulk Fulfill",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-campaign-032",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-campaign-032"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION: filter/search (Search, Published on store, Internal Tags, Type, Vendor, Tags, Store) có lọc đúng kết quả với giá trị thật không",
+      "applicability": {
+        "role": "owner",
+        "state": "có nhiều campaign/platform-product",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Danh sách có đủ đa dạng data để test filter",
+      "steps": [
+        "Nhập giá trị thật vào từng filter field",
+        "Xác nhận kết quả list được lọc đúng theo giá trị nhập"
+      ],
+      "observation_point": "Kết quả list sau khi áp filter",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-list-browse#KB-025",
+          "campaign/campaign-list-browse#KB-026"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-campaign-033",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-campaign-033"
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "NEEDS_CONFIRMATION/CAUTION: liên kết giữa mở menu '...' và 2 GraphQL query (instances, instances_aggregate) chỉ là co-occurrence, KHÔNG phải causation đã xác nhận",
+      "applicability": {
+        "role": "owner",
+        "state": "mở menu '...' ",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Danh sách /campaigns có ≥1 item",
+      "steps": [
+        "Mở menu '...' trên 1 row",
+        "Quan sát network log GraphQL trong cùng thời điểm"
+      ],
+      "observation_point": "Network log GraphQL khi mở menu",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-list-browse#KB-027"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-campaign-034",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-campaign-034"
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "PERMISSION",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION: role khác owner có xem được cả 2 list đầy đủ như owner không",
+      "applicability": {
+        "role": "non-owner/restricted staff",
+        "state": "any",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Cần tài khoản role khác owner",
+      "steps": [
+        "Đăng nhập role khác owner",
+        "Mở /campaigns và /platform-products"
+      ],
+      "observation_point": "Nội dung list hiển thị theo role",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-security-permissions#KB-029"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-campaign-035",
+      "risk_refs": [
+        "FEAT-06-RISK-single-role-baseline"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-campaign-035"
+    },
+    {
+      "check_id": "CHK-015",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION: hành vi list khi hard reload hoặc pagination vượt quá offset=0 mặc định",
+      "applicability": {
+        "role": "owner",
+        "state": "nhiều item vượt quá 1 trang",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Danh sách có đủ item để cần pagination",
+      "steps": [
+        "Hard reload trang list",
+        "Cuộn/chuyển trang nếu có pagination control"
+      ],
+      "observation_point": "UI/data sau reload hoặc chuyển trang",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-list-browse#KB-025",
+          "campaign/campaign-list-browse#KB-026"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-campaign-036",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-campaign-036"
+    },
+    {
+      "check_id": "CHK-016",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-163] Response archive / unarchive campaign có featured_image_url, featured_image_thumbnail, không platform_config, internal_tags",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "campaign fixture chưa publish",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": "portal /campaigns + portal API (Network)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Campaign fixture tự dựng trên store explorer, chưa publish và không publish lên store; không dùng campaign, store hay id trong CCR/test case. Đọc response qua tab Network của portal (TIB_PORTAL_BASE). Dọn fixture sau khi chạy.",
+      "steps": [
+        "Mark as archive campaign fixture từ menu '...'; ghi body response.",
+        "Unarchive; ghi body response.",
+        "Kiểm key của hai response."
+      ],
+      "observation_point": "Key top-level của response archive và unarchive",
+      "expected_result": "Hai response có featured_image_url và featured_image_thumbnail; không có platform_config, không có internal_tags.",
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-list-browse#KB-463"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "campaign/campaign-list-browse#KB-463",
+        "campaign/campaign-list-browse#KB-464"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Danh sách đủ key là quan sát (KB-464)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-017",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-163] Menu '...' của campaign đã publish không có Mark as archive (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "campaign fixture đã publish lên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "theme_or_device": "portal /campaigns"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Campaign fixture tự dựng trên store explorer, không dùng campaign, store hay id trong CCR/test case. Bước publish campaign lên store tạo product thật và không hoàn tác được: chỉ chạy khi operator đồng ý, và dọn product/campaign sau khi chạy.",
+      "steps": [
+        "Publish campaign fixture lên store explorer (cần operator đồng ý).",
+        "Trên /campaigns mở '...' của campaign đó; ghi danh sách mục.",
+        "So với menu của một campaign chưa publish."
+      ],
+      "observation_point": "Danh sách mục trong menu '...' của campaign đã publish và chưa publish",
+      "expected_result": "Baseline theo quan sát: menu của campaign đã publish không có Mark as archive; campaign chưa publish có.",
+      "oracle": {
+        "kb_ids": [
+          "campaign/campaign-list-browse#KB-464"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "campaign/campaign-list-browse#KB-464",
+        "campaign/campaign-list-browse#KB-027",
+        "campaign/create-campaign-by-product-base#KB-453"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-campaign-103"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -499,19 +588,17 @@
       "checks": [
         "CHK-014"
       ]
+    },
+    {
+      "feature_id": "FEAT-03-campaign-list-browse",
+      "risk": "[CBS-163] Archive / unarchive campaign và response contract",
+      "checks": [
+        "CHK-008",
+        "CHK-016",
+        "CHK-017"
+      ],
+      "covered": "STRONG (KB-463) cho CHK-016; BASELINE + NEEDS_CONFIRMATION (KB-464) cho CHK-008, CHK-017."
     }
-  ],
-  "checks_needing_confirmation": [
-    "CHK-006",
-    "CHK-007",
-    "CHK-008",
-    "CHK-009",
-    "CHK-010",
-    "CHK-011",
-    "CHK-012",
-    "CHK-013",
-    "CHK-014",
-    "CHK-015"
   ],
   "excluded_dimensions": [
     {
@@ -524,7 +611,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   }
 }

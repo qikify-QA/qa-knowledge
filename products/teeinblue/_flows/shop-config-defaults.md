@@ -71,6 +71,12 @@ Instance khác:
 - **Product Page Settings** (`/product-page-settings`, tab `Elements & Behaviors` / `Styles & Colors`): mục `Price:` có `Show Compare at Price`, `Show "Save" badge` (+ radio `action_button_in_show_save_badge` amount/percentage, `position_of_price`), `Show custom info below price`; mục `Addon Charge:` có `Show addon price warning message`, `Show addon price on options`, **`Add addon price to product price`** ("Only work with Campaigns by Product base"). Toggle `label.vue-js-switch` (aria-checked / `toggled`).
 - **Product Page Content** (`/product-page-content`): `Other:` có `“Saving amount” in Price` (= `saving`), `Custom info below price` (= `inc. Tax`); `Addon Charge:` có template `Selection will add {{PRICE}} to the price` và `+{{VALUE}}`. Không có setting "custom compare price template" (2026-10-14).
 - 3rd-party Services: `emboss_provider` (`/api/user` private_config) — <TIB_STORE_URL> = `teeinblue`.
+- 3rd-party Services, tab Remove Background (Extras → 3rd-party Services, cấp account, TIB-5399):
+  - Provider lưu ở `private_config.background_remover_name` của `/api/user` (giá trị `removal.ai`, `remove.bg`, `cutout.pro`, `teeinblue`). Option "Use the photo's original size…" lưu ở `private_config.remove_bg_master_only`, toggle `label.vue-js-switch`.
+  - Save gọi `PUT /api/user/private-config`, body `{config:{…toàn bộ private_config…}}`. Gửi qua API thì đặt mọi key trong `config`; key nằm ngoài `config` bị bỏ qua (staging trả 200, không đổi gì).
+  - Nút Save là `button.promise-button` có text ẩn "Loading...", nên `getByRole('button', {name: 'Save', exact: true})` không khớp; chọn theo class trong đúng section. Khi chờ response, lọc đúng URL `private-config`: portal gọi song song `GET /api/assistant/session-token` trả 404, không liên quan.
+  - `/api/user` và response PUT trả API key dạng mask; portal gửi lại bản mask khi Save và key đã lưu vẫn giữ (quan sát staging). Không ghi key vào evidence.
+  - Xác định provider nào đã xử lý một lần Remove background (network storefront không ghi tên provider): bấm Check credits ở box Remove.bg, đọc response của request `credit` (`provider_key=remove_bg`; không chép tham số key), dạng `{result:{Credits:{…,Total}, Api:{"Free calls", Sizes}}}`. So "Free calls" trước và sau đúng 1 lần upload: giảm 1 là remove.bg đã xử lý, không đổi là không gọi remove.bg. Mỗi lần upload tiêu hạn mức thật của key, nên chỉ upload 1 lần mỗi mốc.
 
 ## Money / market
 

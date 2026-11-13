@@ -1,0 +1,716 @@
+{
+  "feature_id": "FEAT-04-tier-usage-metering",
+  "feature_key": "tier-usage-metering",
+  "name": "Theo dõi usage order items theo chu kỳ",
+  "user_goal": "Merchant owner theo dõi số order items đã dùng trong chu kỳ billing, bậc tier kế tiếp và lịch sử usage trên card Plan và trang Usages của nền tảng. Từ CBS-161 có quy tắc Dev cho cách tạo tier usage (1 usage cho mỗi customization, tạo ở design đầu tiên; re-generate không tính thêm) và mốc gửi email chuyển tier. Quan sát portal của bootstrap chỉ ở Order items 0; hai conflict về chu kỳ và cách đếm vẫn UNRESOLVED.",
+  "user_goal_kb_refs": [
+    "KB-1220",
+    "KB-1222",
+    "KB-1223"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner",
+      "permission_observed": "Truy cập được card Plan và /platform-usages/<platform> trên account Blue TEST; role khác chưa thử.",
+      "kb_refs": [
+        "KB-1227"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Home, /subscriptions/shopify-tier (card Plan)",
+      "precondition": "Đã đăng nhập portal bằng account owner có Blue TEST plan (test true, ACTIVE) trên store dev, Order items 0 trong chu kỳ.",
+      "kb_refs": [
+        "KB-1220",
+        "KB-1227"
+      ]
+    },
+    {
+      "path": "/platform-usages/shopify",
+      "precondition": "Như trên; mở bằng \"View usages\" trên Subscription Details. Account có 2 store.",
+      "kb_refs": [
+        "KB-1222",
+        "KB-1225"
+      ]
+    },
+    {
+      "path": "/platform-usages/etsy, /platform-usages/boundless",
+      "precondition": "Mở trực tiếp; account không có plan Etsy hay Boundless.",
+      "kb_refs": [
+        "KB-1212"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Xem usage hiện tại trên card Plan",
+      "description": "Order items, Next tier, Usages ($ và $/item), progressbar, Current cycle reset on. Quan sát ở Order items 0.",
+      "kb_refs": [
+        "KB-1220",
+        "KB-1221"
+      ]
+    },
+    {
+      "name": "Xem lịch sử usage trên trang Usages",
+      "description": "Bảng usage với cột, ba dòng lưu ý, bộ lọc Store, nút Export, chọn số dòng; dữ liệu từ tier_usages_connection.",
+      "kb_refs": [
+        "KB-1222",
+        "KB-1223",
+        "KB-1225"
+      ]
+    },
+    {
+      "name": "Xem trang usage của nền tảng không có plan",
+      "description": "Etsy hiện \"No plan\" và bảng rỗng; Boundless hiện bảng rỗng không có khối No plan.",
+      "kb_refs": [
+        "KB-1212"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "Card Plan, Order items 0",
+      "to": "Order items, Next tier, Usages đổi khi có order",
+      "trigger": "Phát sinh order items trong chu kỳ",
+      "condition": "Bootstrap chưa quan sát trạng thái này trên card (explorer không đặt order). Quy tắc tạo usage xem transition kế tiếp.",
+      "kb_refs": [
+        "KB-1220"
+      ]
+    },
+    {
+      "from": "Cycle count N, customization chưa có tier usage",
+      "to": "Cycle count N+1, 1 dòng usage mới trên /platform-usages/shopify",
+      "trigger": "Design đầu tiên của customization trên order item Shopify được tạo",
+      "condition": "Merchant new pricing (Blue). Design sau của cùng customization (printarea khác) và re-generate không tạo usage; mỗi customization khác nhau tạo usage riêng.",
+      "kb_refs": [
+        "KB-1234",
+        "KB-1235",
+        "KB-1236",
+        "KB-1237"
+      ]
+    },
+    {
+      "from": "Cycle count = starting_from của tier kế tiếp − 2",
+      "to": "Cycle count = starting_from của tier kế tiếp − 1, 1 email TierUp (hoặc TierTopReached trước tier cuối)",
+      "trigger": "Một tier usage mới commit",
+      "condition": "Email queue sau commit; order multi-printarea vẫn chỉ 1 email.",
+      "kb_refs": [
+        "KB-1238",
+        "KB-1239",
+        "KB-1240"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Order item có customization của product 2 printarea (2 design) tạo đúng 1 tier usage, cycle count tăng 1; design thứ 2 trở đi không tạo usage.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, merchant new pricing (Blue) trên Shopify; nguồn Jira TIB-5625 comment 56722 (Dev, 2026-11-09)",
+      "kb_refs": [
+        "KB-1234"
+      ]
+    },
+    {
+      "statement": "Tier usage tính một lần cho mỗi customization, không theo order: order 2 item với 2 customization tạo 2 usage, cycle count tăng 2.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, merchant new pricing (Blue) trên Shopify; nguồn Jira TIB-5625 comment 56145 (Dev, 2026-10-31)",
+      "kb_refs": [
+        "KB-1235"
+      ]
+    },
+    {
+      "statement": "Order item 1 printarea tạo 1 tier usage, cycle count tăng 1 (regression).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, merchant new pricing (Blue) trên Shopify; nguồn Jira TIB-5625 comment 56722 (Dev, 2026-11-09)",
+      "kb_refs": [
+        "KB-1236"
+      ]
+    },
+    {
+      "statement": "Re-generate design (kể cả từng printarea của item 2 printarea) không tạo thêm tier usage, không đổi cycle count.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, merchant new pricing (Blue) trên Shopify; nguồn spec-hub design-generation-usage (green, đọc 2026-11-13)",
+      "kb_refs": [
+        "KB-1237"
+      ]
+    },
+    {
+      "statement": "Email TierUp, TierTopReached bắn khi unit_count = starting_from của tier kế tiếp − 1 (tier staging 2/6/10: TierUp ở 5, TierTopReached ở 9); TierFreeExceeded chỉ bắn khi starting_from của tier đầu − 1 ≥ 2 nên không bắn trên plan 2/6/10; count không chạm mốc thì không có email.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, gói Blue; nguồn Jira TIB-5625 comment 56913 (Dev, 2026-11-11)",
+      "kb_refs": [
+        "KB-1238"
+      ]
+    },
+    {
+      "statement": "Order multi-printarea đưa count qua mốc email gửi đúng 1 email tier, đúng count.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, gói Blue; nguồn Jira TIB-5625 comment 56722 (Dev, 2026-11-09)",
+      "kb_refs": [
+        "KB-1239"
+      ]
+    },
+    {
+      "statement": "Email chuyển tier chỉ queue sau khi transaction tier usage commit; rollback thì không có email. Không kiểm được trên staging.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "backend; nguồn Jira TIB-5625 comment 56145 (Dev, 2026-10-31)",
+      "kb_refs": [
+        "KB-1240"
+      ]
+    },
+    {
+      "statement": "Hai webhook job xử lý cùng một customization cùng lúc chỉ tạo 1 tier usage. Không kiểm được trên staging.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "backend; nguồn Jira TIB-5625 comment 56145 (Dev, 2026-10-31)",
+      "kb_refs": [
+        "KB-1241"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Card Plan (Home, /subscriptions/shopify-tier, /platform-usages/shopify) với Order items 0: \"Order items: 0\", \"Next tier: 2\", \"Usages: $0 ($0/item)\", \"$0.5/item\"; progressbar aria-valuenow 0, aria-valuemax 100, width 0%; hover \"Usages:\" không có tooltip. \"Next tier: 2\" và \"$0.5/item\" trùng starting_from và unit_price của bậc đầu trong tiers; GET /api/user trả cycle.unit_count 0 và total_amount_usd 0.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1220"
+      ]
+    },
+    {
+      "statement": "UI hiện \"Current cycle (reset on <ngày>)\" sớm hơn một ngày so với ngày UTC của GET /api/user cycle.reset_at (portal GMT-05:00), interval_days 30; GET /api/user/shopify/tier-subscriptions trả currentPeriodStart/End lệch khoảng 7 tuần so với reset_at. Conflict CONF-SUB-002 UNRESOLVED.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1221"
+      ]
+    },
+    {
+      "statement": "/platform-usages/shopify: heading \"Usages\", card Plan, ba dòng lưu ý \"Shopify’s test orders will not be counted or charged\" (link tới bài hướng dẫn test order), \"Order price excludes shipping fees and non-Teeinblue products.\", \"Once an extra order is created, its transaction fee will be charged and non-refundable.\"; lọc \"Store: Any\", nút \"Export\" (không bấm); cột PLATFORM, DOMAIN, ORDER, QUANTITY, FEE (USD), FREE, CHARGED, CREATED AT; Show 20/50/100/250/500 entries. Mẫu một dòng QUANTITY 1, FEE \"0 USD\", cột FREE hiện một icon dấu tick (DOM snapshot cell rỗng vì icon không có text), cột CHARGED trống.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1222"
+      ]
+    },
+    {
+      "statement": "POST /api/graphql/relay (getData, query đọc) gọi tier_usages_connection(first: 20, order_by id desc); node gồm id, amount_usd, tier_transaction_id, created_at, instance{platform{display_name}, id, platform_domain}, order_item{order{id, name}, quantity}. Mẫu một edge amount_usd 0, tier_transaction_id null, quantity 1.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1223"
+      ]
+    },
+    {
+      "statement": "Card hiện Order items 0 và cycle.unit_count 0 trong khi tier_usages_connection trả 1 edge (quantity 1) và bảng hiện dòng đó; created_at trước khoảng chu kỳ suy từ reset_at và interval_days. Conflict CONF-SUB-004 UNRESOLVED.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1224"
+      ]
+    },
+    {
+      "statement": "Dropdown Store trên /platform-usages/shopify: tiêu đề \"Store:\", placeholder \"Select a value\", 2 lựa chọn dạng \"<tên store> | <domain>\". Chưa chọn giá trị nên hành vi lọc chưa quan sát.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1225"
+      ]
+    },
+    {
+      "statement": "/platform-usages/etsy: \"No plan\" và chữ \"You have to active a plan to start selling\", ba dòng lưu ý như Shopify, bảng \"Empty data\"; /platform-usages/boundless: không có khối No plan, \"Empty data\". Cả hai gọi POST /api/graphql/relay với usages_connection, trả edges [].",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1212"
+      ]
+    },
+    {
+      "statement": "Xem Home, trang subscription và /platform-usages không phát sinh request ghi subscription/billing; non-GET thấy được là assistant/session-token, graphql đọc, graphql/relay đọc, analytics.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1226"
+      ]
+    },
+    {
+      "statement": "[DIFFERENT_VALUE] Staging: order test Shopify (Bogus) trên dev store có tạo tier usage và tăng Order items, dù trang Usages ghi test order không được đếm (KB-1222); production chưa rõ. Suy từ dòng khối B của QA và record test case, không phải expected.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1242"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "role": "merchant-owner",
+      "statement": "Truy cập được các trang usage; role khác chưa thử.",
+      "kb_refs": [
+        "KB-1227"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      {
+        "path": "Home, /subscriptions/shopify-tier",
+        "note": "Card Plan.",
+        "kb_refs": [
+          "KB-1220",
+          "KB-1221"
+        ]
+      },
+      {
+        "path": "/platform-usages/shopify",
+        "note": "Bảng Usages, lọc Store, Export.",
+        "kb_refs": [
+          "KB-1222",
+          "KB-1225"
+        ]
+      },
+      {
+        "path": "/platform-usages/etsy, /platform-usages/boundless",
+        "note": "Nền tảng không có plan.",
+        "kb_refs": [
+          "KB-1212"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "method": "GET",
+        "path": "/api/user",
+        "note": "cycle.unit_count, reset_at, interval_days, total_amount_usd.",
+        "kb_refs": [
+          "KB-1220",
+          "KB-1221"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/api/user/shopify/tier-subscriptions",
+        "note": "currentPeriodStart/End.",
+        "kb_refs": [
+          "KB-1221"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/api/graphql/relay",
+        "note": "tier_usages_connection (Shopify), usages_connection (Etsy, Boundless); query đọc.",
+        "kb_refs": [
+          "KB-1223",
+          "KB-1212"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "path": "tier_usages, user_cycles.unit_count",
+        "note": "Dev: 1 dòng tier_usages cho mỗi customization (unique theo customization); unit_count của cycle tăng cùng transaction. QA không đọc DB; đọc qua portal.",
+        "kb_refs": [
+          "KB-1234",
+          "KB-1235",
+          "KB-1241"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "description": "Next tier và đơn giá trên card lấy từ cấu hình tier của plan (tier-plan-pricing-display); số Order items từ cycle.unit_count nhưng bảng Usages lấy từ tier_usages_connection, hai nguồn đang conflict.",
+      "kb_refs": [
+        "KB-1220",
+        "KB-1224"
+      ]
+    },
+    {
+      "description": "Tier usage được tạo khi design đầu tiên của customization trên order item được sinh (object order, design generation); re-generate design không tính thêm usage.",
+      "kb_refs": [
+        "KB-1234",
+        "KB-1237"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "description": "Đếm order items quyết định bậc tier và phí; card 0 trong khi bảng có 1 dòng là conflict chưa giải quyết, chưa biết số nào đúng.",
+      "kb_refs": [
+        "KB-1224"
+      ]
+    },
+    {
+      "description": "Mốc chu kỳ usage không thống nhất giữa UI, /api/user và tier-subscriptions.",
+      "kb_refs": [
+        "KB-1221"
+      ]
+    },
+    {
+      "description": "Mọi baseline ở Order items 0, một account, một store dev; không suy hành vi khi có order.",
+      "kb_refs": [
+        "KB-1220"
+      ]
+    },
+    {
+      "description": "Tier usage quyết định phí merchant: usage thừa (mỗi printarea một usage) hoặc thiếu (gộp theo order) là sai tiền. Rollback và hai job đồng thời chỉ được Dev kiểm bằng unit test.",
+      "kb_refs": [
+        "KB-1234",
+        "KB-1235",
+        "KB-1240",
+        "KB-1241"
+      ]
+    },
+    {
+      "description": "Email chuyển tier gửi sai count, trùng hoặc thiếu; mốc gửi là một count trước tier kế tiếp nên test phải đẩy count tới đúng mốc đó.",
+      "kb_refs": [
+        "KB-1238",
+        "KB-1239"
+      ]
+    },
+    {
+      "description": "Mọi test case staging dùng order test Bogus, được đếm trên staging dù trang ghi không đếm; không suy hành vi production.",
+      "kb_refs": [
+        "KB-1242",
+        "KB-1222"
+      ]
+    }
+  ],
+  "environment_differences": [
+    {
+      "type": "DIFFERENT_VALUE",
+      "test_env": "Staging: order test Shopify (Bogus gateway) trên dev store có tạo tier usage và tăng Order items (dòng usage xuất hiện khoảng 5 giây sau order), dù trang Usages ghi test order không được đếm; tier Blue staging 2 / 6 / 10, free 1 order item.",
+      "production": "Chưa rõ, chưa quan sát; rule spec-hub về test order chỉ nói plan cũ.",
+      "how_to_test": "Đặt order Bogus trên dev store staging, đọc Order items ở /subscriptions/shopify-tier và dòng usage ở /platform-usages/shopify; không suy hành vi production từ staging.",
+      "kb_refs": [
+        "KB-1242"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-11-13"
+  },
+  "unknown_areas": [
+    {
+      "question": "Chu kỳ usage tính theo mốc nào: /api/user cycle.reset_at hay currentPeriodStart/End của Shopify tier-subscriptions (lệch khoảng 7 tuần), và ngày \"reset on\" ở UI hiển thị theo timezone nào?",
+      "why_it_matters": "Conflict CONF-SUB-002 UNRESOLVED; không có oracle cho mốc reset.",
+      "level": "feature",
+      "oq_type": "CONFLICT",
+      "kb_refs": [
+        "KB-1221"
+      ],
+      "oq_id": "OQ-subscription-017"
+    },
+    {
+      "question": "Quy tắc đếm order items theo chu kỳ: vì sao card hiện 0 (cycle.unit_count) trong khi danh sách usage có 1 dòng quantity 1 tạo trước chu kỳ hiện tại, và nguồn của \"Order items\" là cycle.unit_count hay order-count?",
+      "why_it_matters": "Conflict CONF-SUB-004 UNRESOLVED; ảnh hưởng bậc tier và phí.",
+      "level": "feature",
+      "oq_type": "CONFLICT",
+      "kb_refs": [
+        "KB-1224"
+      ],
+      "oq_id": "OQ-subscription-018"
+    },
+    {
+      "question": "Khi order items > 0, Next tier đổi thế nào, nhãn ở bậc cao nhất (10+), progressbar có giá trị gì, Usages $ khác 0 ra sao?",
+      "why_it_matters": "Chưa có quan sát; không được đặt order để đẩy tier.",
+      "level": "feature",
+      "oq_type": "OPEN_ISSUE",
+      "kb_refs": [
+        "KB-1220"
+      ],
+      "oq_id": "OQ-subscription-019"
+    },
+    {
+      "question": "Page-size selector và nút Export của bảng Usages hoạt động ra sao?",
+      "why_it_matters": "Select không nhận giá trị khi thử, Export chưa bấm.",
+      "level": "feature",
+      "oq_type": "OPEN_ISSUE",
+      "kb_refs": [
+        "KB-1222"
+      ],
+      "oq_id": "OQ-subscription-021"
+    },
+    {
+      "question": "Wording \"You have to active a plan to start selling\" ở trang Etsy và việc trang Boundless không có khối \"No plan\" có phải ý định không?",
+      "why_it_matters": "Mỗi trang quan sát một lần.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1212"
+      ],
+      "oq_id": "OQ-subscription-022"
+    },
+    {
+      "question": "Bộ lọc Store lọc bảng Usages ra sao khi chọn một store?",
+      "why_it_matters": "Mới mở dropdown, chưa chọn giá trị.",
+      "level": "feature",
+      "oq_type": "OPEN_ISSUE",
+      "kb_refs": [
+        "KB-1225"
+      ],
+      "oq_id": "OQ-subscription-023"
+    },
+    {
+      "question": "Role staff khác owner có xem được các trang usage không?",
+      "why_it_matters": "Mọi quan sát từ role owner.",
+      "level": "feature",
+      "oq_type": "OPEN_ISSUE",
+      "kb_refs": [
+        "KB-1227"
+      ],
+      "oq_id": "OQ-subscription-007"
+    },
+    {
+      "question": "PO có xác nhận các quy tắc tier usage và email chuyển tier (KB-1234 đến KB-1241) là ý định không?",
+      "why_it_matters": "Quy tắc quyết định phí merchant và email gửi merchant; nguồn hiện là Dev và spec-hub.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1234",
+        "KB-1235",
+        "KB-1236",
+        "KB-1237",
+        "KB-1238",
+        "KB-1239",
+        "KB-1240",
+        "KB-1241"
+      ],
+      "oq_id": "OQ-subscription-034"
+    },
+    {
+      "question": "Order test Shopify (Bogus) được đếm vào tier usage trên staging có đúng không, production có đếm không, và lưu ý \"test orders will not be counted\" có áp cho gói Blue không?",
+      "why_it_matters": "Mọi test case staging dùng order test; chữ lưu ý trên trang Usages nói ngược lại.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1242",
+        "KB-1222"
+      ],
+      "oq_id": "OQ-subscription-035"
+    },
+    {
+      "question": "Thời điểm email (spec-hub nói lúc chuyển tier, Dev nói một count trước mốc), TierFreeExceeded trên plan free ≥ 2, chữ \"orders\" trong email TierUp, và TierTopReached ở count 9 thế nào?",
+      "why_it_matters": "Thay phần còn mở của câu hỏi email cũ; nội dung email và hai mốc chưa test.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1238",
+        "KB-1239"
+      ],
+      "oq_id": "OQ-subscription-036"
+    },
+    {
+      "question": "Tier usage đếm thế nào khi quantity > 1, khi cùng customization dùng lại ở order item khác, và với order Etsy?",
+      "why_it_matters": "Nguồn hiện chỉ nói 1 usage cho mỗi customization.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1234",
+        "KB-1235"
+      ],
+      "oq_id": "OQ-subscription-037"
+    },
+    {
+      "question": "Cycle trên portal đổi khi nào: test case thấy cycle cũ đã quá ngày reset vẫn hiện tới khi có order mới?",
+      "why_it_matters": "Baseline Order items có thể là của cycle cũ; liên quan hai conflict chu kỳ và cách đếm.",
+      "level": "feature",
+      "oq_type": "OPEN_ISSUE",
+      "kb_refs": [
+        "KB-1236",
+        "KB-1221",
+        "KB-1224"
+      ],
+      "oq_id": "OQ-subscription-038"
+    },
+    {
+      "question": "Account gói Blue nào (tên biến env) được phép đặt order test để kiểm tier usage?",
+      "why_it_matters": "Account Blue dùng ở TIB-5625 thuộc nhóm TIB_ONBOARDING_* mà guide ghi chỉ đọc.",
+      "level": "feature",
+      "oq_type": "OPEN_ISSUE",
+      "kb_refs": [
+        "KB-1234"
+      ],
+      "oq_id": "OQ-subscription-039"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-161"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Order items 0, đã subscribe Blue TEST",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1220",
+        "KB-1222",
+        "KB-1225"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "Order items 0, đã subscribe Blue TEST",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1220",
+        "KB-1223",
+        "KB-1226"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "nền tảng không có plan",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1212"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Order items > 0",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-1220"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "đổi chu kỳ / sau reset",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-1221"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "layer": "portal",
+      "role": "role khác owner",
+      "state": "mọi state",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-1227"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "lọc Store, phân trang, Export",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-1225",
+        "KB-1222"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "order 1 hoặc 2 printarea, 2 customization, re-generate (qua test case staging)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1234",
+        "KB-1235",
+        "KB-1236",
+        "KB-1237"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "layer": "any",
+      "role": "merchant-owner",
+      "state": "email TierUp ở count 5 (staging 2/6/10)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1238",
+        "KB-1239"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "layer": "any",
+      "role": "merchant-owner",
+      "state": "TierTopReached ở count 9, TierFreeExceeded",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-1238"
+      ]
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "layer": "any",
+      "role": "—",
+      "state": "rollback transaction, hai webhook job đồng thời (chỉ unit test Dev)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-1240",
+        "KB-1241"
+      ]
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "conflict_group": "CONF-SUB-002",
+      "kb_refs": [
+        "KB-1221"
+      ],
+      "note": "Mốc chu kỳ usage, UNRESOLVED, không hoà giải."
+    },
+    {
+      "conflict_group": "CONF-SUB-004",
+      "kb_refs": [
+        "KB-1224",
+        "KB-1220",
+        "KB-1223"
+      ],
+      "note": "Order items 0 so với 1 dòng usage, UNRESOLVED, không hoà giải."
+    }
+  ],
+  "profile_relationships": [
+    {
+      "from_feature_key": "tier-usage-metering",
+      "to_feature_key": "tier-plan-pricing-display",
+      "type": "RELATED",
+      "note": "Next tier và $/item trên card trùng tiers của tier-plans.",
+      "kb_refs": [
+        "KB-1214",
+        "KB-1220"
+      ]
+    }
+  ]
+}

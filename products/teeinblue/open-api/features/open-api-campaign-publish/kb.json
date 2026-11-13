@@ -1,0 +1,135 @@
+[
+  {
+    "kb_id": "KB-062",
+    "topic": "PUT /api/user/api-token (phiên owner, sau xác nhận password) trả chỉ plain token và thay token hiện tại của account",
+    "statement": "Theo Jira TIB-5689 comment 56491 QA plan bước 21 (Dev, 2026-11-05), PUT /api/user/api-token được gọi bằng phiên đăng nhập của owner, sau bước xác nhận password; câu trả lời chỉ là plain token; lệnh này thay token hiện tại của account. Quan sát trên staging ở KB-063.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (integrator dùng token của merchant)",
+      "surface": "Open API /api/open/... (auth:public-api) + portal API PUT /api/user/api-token",
+      "brand": null
+    },
+    "tags": [
+      "user-api-token",
+      "token-replace",
+      "response-contract",
+      "open-api",
+      "TIB-5689",
+      "ccr:CBS-163"
+    ],
+    "related_kb_ids": [
+      "open-api/open-api-campaign-publish#KB-063",
+      "open-api/open-api-campaign-publish#KB-064"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5689 comment 56491 QA plan, bước 21 (Dev, 2026-11-05)",
+      "authored_on": "2026-11-05",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-163"
+    }
+  },
+  {
+    "kb_id": "KB-063",
+    "topic": "Quan sát: PUT /api/user/api-token lần đầu 423, sau confirm-password trả 200 với body là chuỗi token thuần, content-type text/html",
+    "statement": "Khi gọi PUT /api/user/api-token bằng phiên owner ở merchant-owner/staging (Testlane TC-TIB-8588 PASS 2026-11-09, build không ghi), quan sát thấy lần gọi đầu trả 423 {\"message\":\"Password confirmation required.\"} và chưa cấp token; POST /api/user/confirm-password trả 201; gọi lại PUT trả 200 với body là chuỗi token thuần, không phải JSON (không có object hay key nào), header content-type text/html; charset=utf-8. Statement của CCR còn nêu portal không có nút cho thao tác này; kết quả test case không ghi quan sát về nút trên portal. Một lượt chạy; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (integrator dùng token của merchant)",
+      "surface": "Open API /api/open/... (auth:public-api) + portal API PUT /api/user/api-token",
+      "brand": null
+    },
+    "tags": [
+      "user-api-token",
+      "password-confirmation",
+      "observed",
+      "single-sample",
+      "open-api",
+      "TIB-5689",
+      "ccr:CBS-163"
+    ],
+    "related_kb_ids": [
+      "open-api/open-api-campaign-publish#KB-062"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-163"
+    }
+  },
+  {
+    "kb_id": "KB-064",
+    "topic": "POST /api/open/instances/{instance}/campaigns/{campaign}/publish dùng guard auth:public-api: personal access token không dùng được; response có campaign_instances, không artworks/campaign_artworks/campaign_products",
+    "statement": "Theo Jira TIB-5689 comment 56491 QA plan bước 22 (Dev, 2026-11-05), POST /api/open/instances/{instance}/campaigns/{campaign}/publish dùng guard auth:public-api nên personal access token không dùng được ở route này; response chứa campaign với campaign_instances và không có artworks, campaign_artworks hay campaign_products. Quan sát trên staging ở KB-065.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (integrator dùng token của merchant)",
+      "surface": "Open API /api/open/... (auth:public-api) + portal API PUT /api/user/api-token",
+      "brand": null
+    },
+    "tags": [
+      "campaign-publish",
+      "auth-public-api",
+      "personal-access-token",
+      "response-contract",
+      "open-api",
+      "TIB-5689",
+      "ccr:CBS-163"
+    ],
+    "related_kb_ids": [
+      "open-api/open-api-campaign-publish#KB-062",
+      "open-api/open-api-campaign-publish#KB-065",
+      "open-api/open-api-asset-upload#KB-001"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5689 comment 56491 QA plan, bước 22 (Dev, 2026-11-05)",
+      "authored_on": "2026-11-05",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-163"
+    }
+  },
+  {
+    "kb_id": "KB-065",
+    "topic": "Quan sát: publish qua Open API — user API token 200 và sản phẩm lên store; không bearer 401; PAT 401, campaign vẫn Unpublished; gọi từ trang portal có Origin trả 419 CSRF",
+    "statement": "Khi gọi POST /api/open/instances/{instance}/campaigns/{campaign}/publish ở merchant-owner/staging (Testlane TC-TIB-8584 PASS 2026-11-09 và TC-TIB-8600 PASS 2026-11-07, build không ghi), quan sát thấy: với bearer là user API token vừa lấy qua PUT /api/user/api-token, gọi từ client không gửi Origin, trả 200; response có campaign_instances liệt kê store, row chọn theo instance_id của store có platform_linked_id và platform_linked_handle, và sản phẩm mở được trên storefront của store đó; cùng request không gửi bearer trả 401 \"Unauthenticated.\"; với personal access token (loại token dùng cho /openapi/v1) làm bearer trả 401 \"Unauthenticated.\" và campaign vẫn Unpublished; gọi bằng fetch từ trong trang portal (request mang Origin của portal) trả 419 CSRF token mismatch. Một lượt chạy cho mỗi nhánh; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (integrator dùng token của merchant)",
+      "surface": "Open API /api/open/... (auth:public-api) + portal API PUT /api/user/api-token",
+      "brand": null
+    },
+    "tags": [
+      "campaign-publish",
+      "auth-public-api",
+      "personal-access-token",
+      "csrf",
+      "observed",
+      "single-sample",
+      "open-api",
+      "TIB-5689",
+      "ccr:CBS-163"
+    ],
+    "related_kb_ids": [
+      "open-api/open-api-campaign-publish#KB-064",
+      "open-api/open-api-campaign-publish#KB-062"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-163"
+    }
+  }
+]

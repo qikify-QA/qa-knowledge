@@ -1,0 +1,253 @@
+[
+  {
+    "kb_id": "KB-1213",
+    "topic": "Bảng Pricing Plans for Shopify của Blue",
+    "statement": "Khi mở /subscriptions/shopify-tier ở merchant-owner/staging trên account Blue TEST, quan sát thấy heading \"Pricing Plans for Shopify\" với một cột \"BLUE\" \"$49/month\" và các hàng nguyên văn: \"0 - 1 order items per month\" = \"$0 / item\"; \"2 - 5 order items per month\" = \"$0.5 / item\"; \"6 - 9 order items per month\" = \"$0.2 / item\"; \"10+ order items per month\" = \"$0.1 / item\". Nút \"Current plan\" disabled, hover không có tooltip; có link \"Pricing FAQ\" mở tab mới tới trang pricing của site support. Trên account này không thấy \"View other plans\", \"Free Orders/Month\" hay nút Subscribe/Upgrade. Giá trị là của staging.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "bootstrap"
+    },
+    "tags": [
+      "pricing-table",
+      "order-items-wording"
+    ],
+    "related_kb_ids": [
+      "KB-1214",
+      "KB-1203"
+    ]
+  },
+  {
+    "kb_id": "KB-1214",
+    "topic": "Dữ liệu tier plan từ GET /api/platforms/shopify/tier-plans",
+    "statement": "Khi mở /subscriptions/shopify-tier ở merchant-owner/staging, quan sát thấy GET /api/platforms/shopify/tier-plans trả mảng một phần tử: id 1, name/display_name \"Blue\", price 49, tiers [{starting_from 2, unit_price 0.5}, {starting_from 6, unit_price 0.2}, {starting_from 10, unit_price 0.1}], capped_amount 9999.99, type \"Regular\", affiliate_discount null. Các mốc 2/6/10 và đơn giá trùng với nhãn và giá của bảng Pricing Plans; khoảng \"0 - 1\" không có phần tử tương ứng trong tiers và hiện \"$0 / item\". Hai lần tải cùng dữ liệu; trial_days nằm ở conflict CONF-SUB-001.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "bootstrap"
+    },
+    "tags": [
+      "tier-plans-api"
+    ],
+    "related_kb_ids": [
+      "KB-1213",
+      "KB-1215"
+    ]
+  },
+  {
+    "kb_id": "KB-1216",
+    "topic": "Calculator Number of order items per month",
+    "statement": "Khi mở /subscriptions/shopify-tier ở merchant-owner/staging trên account Blue TEST, quan sát thấy khối calculator gồm nhãn \"Number of order items per month:\", ô number (min 0, mặc định 2), slider (min 0, max 1, step 0.001) có mốc \"2 ($0.5/item)\", \"6 ($0.2/item)\", \"10+ ($0.1/item)\", và kết quả \"Total fee:\" \"$49.50\" \"/month\" \"Includes monthly plan + transaction fees\". Không có tiêu đề \"Estimate your cost\" trên trang này. 13 lần nhập giá trị và 2 lần dùng slider đều không phát sinh request.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "bootstrap"
+    },
+    "tags": [
+      "calculator",
+      "client-side"
+    ],
+    "related_kb_ids": [
+      "KB-1217",
+      "KB-1219"
+    ]
+  },
+  {
+    "kb_id": "KB-1217",
+    "topic": "Total fee theo số order items nhập",
+    "statement": "Khi gõ giá trị vào ô \"Number of order items per month\" trên /subscriptions/shopify-tier (merchant-owner/staging, account Blue TEST), quan sát thấy Total fee: 0 -> $49.00; 1 -> $49.00; 2 -> $49.50; 5 -> $51.00; 6 -> $51.20; 9 -> $51.80; 10 -> $51.90; 15 -> $52.40; 100 -> $60.90; 1000 -> $150.90. Mỗi giá trị nhập một lần, chỉ ở UI.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "bootstrap"
+    },
+    "tags": [
+      "calculator",
+      "total-fee"
+    ],
+    "related_kb_ids": [
+      "KB-1216",
+      "KB-1218"
+    ]
+  },
+  {
+    "kb_id": "KB-1218",
+    "topic": "Total fee của calculator khớp cách tính lũy tiến theo bậc",
+    "statement": "Suy từ 10 giá trị Total fee quan sát được ở KB-1217 và 2.5 -> $49.75 ở KB-1219: mọi giá trị khớp với $49 cộng phí từng item theo đơn giá của bậc chứa item đó (item thứ 1 $0, item 2-5 $0.5, item 6-9 $0.2, từ item 10 $0.1). Đây là suy luận từ output calculator ở staging, chưa có nguồn xác nhận, và không cho biết phí thật được tính như vậy.",
+    "knowledge_kind": "INFERRED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "bootstrap"
+    },
+    "tags": [
+      "calculator",
+      "formula-inferred"
+    ],
+    "related_kb_ids": [
+      "KB-1217",
+      "KB-1213"
+    ]
+  },
+  {
+    "kb_id": "KB-1219",
+    "topic": "Calculator với giá trị biên và slider",
+    "statement": "Khi nhập giá trị biên vào calculator trên /subscriptions/shopify-tier (merchant-owner/staging, account Blue TEST), quan sát thấy: để trống -> $49.00; -1 -> ô hiện 0, $49.00; 2.5 -> $49.75 (slider 0.222). Với slider: phím End -> ô nhập 10, $51.90, slider 1; từ ô nhập 2 bấm ArrowRight 3 lần -> ô nhập 0, $49.00, slider 0.002. Slider và ô nhập không đổi tuyến tính theo nhau; ghi nguyên trạng, mỗi trường hợp một lần.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "bootstrap"
+    },
+    "tags": [
+      "calculator",
+      "boundary",
+      "slider"
+    ],
+    "related_kb_ids": [
+      "KB-1216",
+      "KB-1217"
+    ]
+  },
+  {
+    "kb_id": "KB-1228",
+    "topic": "Account Blue ghi free quota và mức phí theo \"order items\" (TIB-5711)",
+    "statement": "Theo Jira TIB-5711 comment 56750 của Dev (2026-11-10), với account new pricing (Blue) portal chỉ đổi chữ: free quota và các mức phí ghi \"order items\" thay cho \"orders\". Dev liệt kê các chỗ đổi: Active Plan có \"NO transaction fee for 100 order items/month\", \"transaction fee from order item 101+\", list \"Lower fees as your sales increase\" ghi dạng \"101-1,000 order items: …/item\", hai tooltip (?) nói theo order item, calculator \"Estimate your cost\" ghi \"Number of order items per month:\"; Subscription details Blue có usage bar \"Order items:\", bảng giá dạng \"101 - 1,000 order items per month\", calculator \"Number of order items per month:\"; popup \"View other plans\" dùng chung bảng giá nên cũng đổi. Các con số trong chuỗi Dev liệt kê là giá trị production; trên staging số theo tier config của môi trường (xem KB-1231), nên phần được xác nhận là chữ \"order items\" ở các vị trí trên, không phải con số. Chuỗi nguyên văn của hai tooltip không thuộc lời xác nhận. Popup \"View other plans\" chưa quan sát trên staging.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (Active Plan /active-plan; Organization > Subscriptions > Shopify Manage /subscriptions/shopify-tier)",
+      "brand": null
+    },
+    "tags": [
+      "order-items-wording",
+      "new-pricing",
+      "blue",
+      "active-plan",
+      "pricing-table",
+      "calculator",
+      "TIB-5711",
+      "ccr:CBS-154"
+    ],
+    "related_kb_ids": [
+      "subscription/tier-plan-pricing-display#KB-1213",
+      "subscription/tier-plan-pricing-display#KB-1216",
+      "subscription/tier-plan-pricing-display#KB-1230",
+      "subscription/tier-plan-pricing-display#KB-1231",
+      "subscription/legacy-plan-pricing-display#KB-1232"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5711 comment 56750 (Dev, Summary cho QA, PR teeinblue-portal#3927), 2026-11-10",
+      "authored_on": "2026-11-10",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-154"
+    }
+  },
+  {
+    "kb_id": "KB-1230",
+    "topic": "Số trên nhãn giá Blue theo tier config của plan (staging)",
+    "statement": "Khi chạy TC-TIB-8962 và TC-TIB-8963 ở merchant-owner/staging (QA, PASS 2026-11-10) trên account Blue, quan sát thấy số trên nhãn giá khớp tier config của plan staging (mốc 2/6/10): Subscription details (/subscriptions/shopify-tier) hiện \"0 - 1 / 2 - 5 / 6 - 9 / 10+ order items per month\"; Active Plan (/active-plan) hiện \"NO transaction fee for 1 order items/month\", \"$0.1 - $0.5 transaction fee from order item 2+\" và Lower fees \"2-5 order items: $0.5/item\", \"6-9 order items: $0.2/item\", \"10+ order items: $0.1/item\". Tier cuối ghi dạng \"{from}+\". Quy tắc định dạng số có dấu phẩy (vd \"1,000\") chỉ đọc từ bundle portal staging, chưa quan sát nhãn từ 1,000 trở lên trên UI. Căn cứ expected khai cho test case (spec-hub usage-charges-new-tiers) nói về đơn giá theo bậc, không nói về nhãn, \"{from}+\" hay dấu phẩy, nên đây là quan sát hiện tại, chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (/subscriptions/shopify-tier, /active-plan)",
+      "brand": null
+    },
+    "tags": [
+      "order-items-wording",
+      "tier-label-format",
+      "blue",
+      "TIB-5711",
+      "ccr:CBS-154"
+    ],
+    "related_kb_ids": [
+      "subscription/tier-plan-pricing-display#KB-1213",
+      "subscription/tier-plan-pricing-display#KB-1214",
+      "subscription/tier-plan-pricing-display#KB-1228",
+      "subscription/tier-plan-pricing-display#KB-1231"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-154"
+    }
+  },
+  {
+    "kb_id": "KB-1231",
+    "topic": "environment_difference",
+    "statement": "[DIFFERENT_VALUE] Môi trường test: tier config Blue trên staging là config test, bậc 2 / 6 / 10 (nhãn 0 - 1, 2 - 5, 6 - 9, 10+), free quota 1 order item; chỉ có 1 tier plan nên nút \"View other plans\" không render; Production: theo ticket TIB-5711 là 101 / 1,001 / 10,001 (free 100 order items), chưa quan sát vì production chưa có account Blue (2026-11-11), giá trị production chưa xác nhận; Cách test: kiểm chữ và quy tắc format trên staging, không so số 100/1,000/10,000; Active Plan cần account has_new_pricing có store Shopify chưa subscribe Blue (biến env TIB_ONBOARDING_PRICING), Subscription details cần account đã subscribe Blue (biến env TIB_ONBOARDING). Nguồn: dòng khối B của CBS-154 (QA, 2026-11-11); phía staging trùng record test case TC-TIB-8962/8963/8964.",
+    "knowledge_kind": "INFERRED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (/subscriptions/shopify-tier, /active-plan)",
+      "brand": null
+    },
+    "tags": [
+      "environment_difference",
+      "DIFFERENT_VALUE",
+      "tier-config",
+      "blue",
+      "TIB-5711",
+      "ccr:CBS-154"
+    ],
+    "related_kb_ids": [
+      "subscription/tier-plan-pricing-display#KB-1214",
+      "subscription/tier-plan-pricing-display#KB-1213",
+      "subscription/tier-plan-pricing-display#KB-1228",
+      "subscription/tier-plan-pricing-display#KB-1230"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-154"
+    }
+  }
+]

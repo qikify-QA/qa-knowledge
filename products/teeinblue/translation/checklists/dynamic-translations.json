@@ -1433,40 +1433,6 @@
       "automation_suitability": "HYBRID"
     },
     {
-      "check_id": "CHK-038",
-      "dimension": "STATE_DATA",
-      "layer": "portal",
-      "title": "[CBS-076] Gap: thao tác Save của Dynamic Translations có gồm thêm, sửa, xoá ngôn ngữ và tên ngôn ngữ không — chưa có expected",
-      "applicability": {
-        "role": "unspecified (chưa chốt)",
-        "state": "trang Dynamic Translations có danh sách ngôn ngữ của shop",
-        "environment": "staging",
-        "surface_or_device": "portal desktop"
-      },
-      "precondition": "Đã đăng nhập portal. Không xoá ngôn ngữ nếu chưa có cách khôi phục.",
-      "steps": [
-        "Mở /artwork-translations, ghi lại trang có UI thêm, sửa tên hay xoá ngôn ngữ không",
-        "Nếu không có UI đó, ghi lại và dừng",
-        "Nếu có, ghi lại thao tác, tên ngôn ngữ trước và sau Save, và khoảng trắng đầu/cuối của tên"
-      ],
-      "observation_point": "UI quản lý ngôn ngữ trên trang; tên ngôn ngữ sau Save",
-      "expected_result": "",
-      "oracle": {
-        "kb_ids": [],
-        "oracle_strength": "NONE"
-      },
-      "status": "NEEDS_CONFIRMATION",
-      "open_question_draft": "Thao tác Save của Dynamic Translations có gồm thêm, sửa, xoá ngôn ngữ không? Comment dev Jira TIB-5585 #55043 nêu vế này và nói tên ngôn ngữ không còn bị cắt dấu cách; ghi chú QA 2026-10-30 nói danh sách, tên ngôn ngữ đồng bộ từ Shopify và Portal không có UI add, rename, xoá. Vế ngôn ngữ của comment áp ở đâu?",
-      "related_kb_ids": [
-        "translation/dynamic-translations#KB-037"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [],
-      "priority": "P3",
-      "automation_suitability": "NOT_SUITABLE",
-      "oq_id": "OQ-translation-035"
-    },
-    {
       "check_id": "CHK-039",
       "dimension": "STATE_DATA",
       "layer": "portal",
@@ -1695,6 +1661,122 @@
       "priority": "P2",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-translation-034"
+    },
+    {
+      "check_id": "CHK-045",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[CBS-158] Hai option photo upload có bản dịch tiêu đề chỉ khác nhau ở dấu cách đầu/cuối không sync ảnh trên storefront",
+      "applicability": {
+        "role": "GUEST buyer (dựng dictionary bằng tài khoản portal)",
+        "state": "campaign có 2 option photo upload trên cùng template; bản dịch nhập tay của 2 tiêu đề ở locale đích chỉ khác nhau ở dấu cách đầu/cuối",
+        "environment": "staging",
+        "surface_or_device": "portal /artwork-translations + storefront desktop"
+      },
+      "precondition": "Dùng campaign trên store explorer. Trên /artwork-translations, locale đích, đặt bản dịch của 2 tiêu đề option thành 2 chuỗi chỉ khác nhau ở dấu cách đầu/cuối (vd Foto␣ và ␣Foto␣), Save. Xác nhận trước trên storefront 2 tiêu đề đã hiện bản dịch; nếu chưa hiện thì dừng, không phán check này fail. Ký hiệu ␣ là một dấu cách. Chuẩn bị 2 ảnh khác nhau.",
+      "steps": [
+        "Mở product page ở locale đích",
+        "Upload ảnh 1 vào option tiêu đề Foto␣, ghi lại ảnh hiện ở cả 2 field",
+        "Upload ảnh 2 vào option tiêu đề ␣Foto␣, ghi lại ảnh hiện ở cả 2 field",
+        "Khôi phục bản dịch ban đầu, Save"
+      ],
+      "observation_point": "Ảnh hiện ở từng field photo upload sau mỗi lần upload",
+      "expected_result": "Sau bước 2, chỉ field Foto␣ có ảnh 1, field ␣Foto␣ vẫn trống. Sau bước 3, field ␣Foto␣ có ảnh 2, field Foto␣ vẫn giữ ảnh 1.",
+      "oracle": {
+        "kb_ids": [
+          "translation/dynamic-translations#KB-044"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "translation/dynamic-translations#KB-044",
+        "translation/dynamic-translations#KB-032"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Merchant dùng dấu cách trong Option Title để tách ảnh upload giữa các option (TIB-5585); sync nhầm làm ảnh của buyer sang sai field.",
+        "Không phát biểu cho ngôn ngữ gốc hay cart line item property."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-046",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[CBS-106] Placeholder ô giờ Star Map dịch theo khoá format viết thường kèm giờ; không có entry thì hiện khoá viết thường (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "buyer (storefront); dictionary dựng bằng tài khoản portal",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /artwork-translations + storefront desktop",
+        "state": "Star Map có Display in date format dd.MM.yyyy HH:mm, ô giờ trống; dictionary locale en có hoặc không có entry 'dd.mm.yyyy hh:mm'"
+      },
+      "precondition": "Dùng campaign trên store explorer (xác minh account theo playbook); artwork throwaway có layer Star Map với Display in date format dd.MM.yyyy HH:mm, ô giờ chưa có giá trị. Storefront chỉ phục vụ locale en trên staging nên dùng dictionary locale en; ghi rõ đây là locale en. Trên /artwork-translations thêm entry 'dd.mm.yyyy hh:mm' → 'tt.mm.jjjj hh:mm' (lần 1), rồi xoá entry (lần 2).",
+      "steps": [
+        "Với entry có mặt, mở product page, ghi placeholder ô giờ Star Map",
+        "Xoá entry, Save, tải lại product page, ghi placeholder ô giờ",
+        "Khôi phục dictionary ban đầu"
+      ],
+      "observation_point": "Placeholder của ô giờ Star Map",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "translation/dynamic-translations#KB-045"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "translation/dynamic-translations#KB-045",
+        "translation/dynamic-translations#KB-031",
+        "translation/dynamic-translations#KB-040",
+        "artwork/layer-config-maps-astronomy#KB-1107"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-045 là OBSERVED_CURRENT/LOW, chỉ locale en. Ghi lại quan sát, không phán pass hay fail."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-translation-065"
+    },
+    {
+      "check_id": "CHK-047",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "[CBS-106] Giá trị đã chọn ở ô giờ Star Map và {{time}} không bị dịch (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "buyer (storefront); dictionary dựng bằng tài khoản portal",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /artwork-translations + storefront desktop",
+        "state": "Star Map có Display in date format dd.MM.yyyy HH:mm; dictionary locale en có entry 'dd.mm.yyyy hh:mm'; text layer populate {{time}}"
+      },
+      "precondition": "Dùng campaign trên store explorer (xác minh account theo playbook); artwork throwaway có layer Star Map với Display in date format dd.MM.yyyy HH:mm, ô giờ chưa có giá trị. Storefront chỉ phục vụ locale en trên staging nên dùng dictionary locale en; ghi rõ đây là locale en. Dictionary locale en có entry 'dd.mm.yyyy hh:mm' → 'tt.mm.jjjj hh:mm'; có text layer populate {{time}}.",
+      "steps": [
+        "Chọn 2026-10-21 11:24 ở ô giờ Star Map",
+        "Ghi nội dung ô giờ và text layer {{time}}"
+      ],
+      "observation_point": "Nội dung ô giờ và text layer {{time}} sau khi chọn",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "translation/dynamic-translations#KB-045"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "translation/dynamic-translations#KB-045"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-045 là OBSERVED_CURRENT/LOW, chỉ locale en. Ghi lại quan sát, không phán pass hay fail."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-translation-065"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1796,10 +1878,10 @@
         "CHK-035",
         "CHK-036",
         "CHK-037",
-        "CHK-038",
-        "CHK-039"
+        "CHK-039",
+        "CHK-045"
       ],
-      "covered": "STRONG trên staging, nguồn dev, chưa có test case PASS. Phần storefront chỉ ở tiêu đề option. Vế ngôn ngữ (CHK-038) và Import file (CHK-039) là gap."
+      "covered": "STRONG trên staging, nguồn dev, chưa có test case PASS cho vế portal. Phần storefront ở tiêu đề option (CHK-032, CHK-033) và ảnh upload không sync giữa 2 option chỉ khác nhau ở dấu cách (CHK-045, test case PASS). Import file (CHK-039) là gap. Vế thêm, sửa, xoá ngôn ngữ đã gỡ (CBS-158): trang không có thao tác này."
     },
     {
       "feature_id": "FEAT-03-06-dynamic-translations",
@@ -1858,6 +1940,15 @@
       "risk": "[CBS-076] Production: KB-032..KB-039 shipped UNKNOWN, KB-030 mới kiểm một phần trên production",
       "checks": [],
       "covered": "không có check, mọi check mới chỉ áp cho staging"
+    },
+    {
+      "feature_id": "FEAT-03-06-dynamic-translations",
+      "risk": "[CBS-106] Placeholder ô giờ Star Map: khoá dịch có giờ, hiện khoá viết thường khi thiếu entry (KB-045, locale en)",
+      "checks": [
+        "CHK-046",
+        "CHK-047"
+      ],
+      "covered": "Không oracle (KB-045 OBSERVED_CURRENT/LOW), chờ xác nhận; locale ngoài en chưa kiểm"
     }
   ],
   "excluded_dimensions": [
@@ -1900,10 +1991,14 @@
     {
       "dimension": "OUT_OF_SCOPE: hành vi buyer-facing của prefix, suffix",
       "reason": "KB-034 chỉ phát biểu về danh sách trong code. Viết check storefront sẽ phải tự đặt expected."
+    },
+    {
+      "dimension": "PERMISSION, BOUNDARY, NEGATIVE — phạm vi CBS-106",
+      "reason": "KB-045 không nói role, giới hạn hay input sai; không viết check giả định."
     }
   ],
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-134"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-106"
   }
 }

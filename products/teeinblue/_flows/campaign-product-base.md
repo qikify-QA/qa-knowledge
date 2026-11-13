@@ -135,6 +135,7 @@ Mở artwork editor trực tiếp: URL `/campaigns/<id>/edit?product-id=<pbId>&a
 - 🔴 PB 3139: mockup 7966 và 7967 có layer printarea `Front` thiếu `visible:true` (eye OFF) ⇒ preview báo `No printarea found. Edit this mockup and add printarea to view changes.` Sửa: Mockup Editor → click ô eye (x≈16) hàng `Front (1400x1400)` → `Save & Close`. Mockup 7748 chỉ có printarea `Back`. Mockup Front visible: 7749 (pos0, model nữ, vuông), 8154 (pos4, model nam, printarea tròn).
 - Mockup đầu tiên của PB 3139 có print area tròn trên preview storefront ⇒ phần mép artwork 1600 có thể bị viền tròn che (chỉ là preview mockup).
 - Lật preview: `.tee-slider__button--next`.
+- Import mockup From Product base: `preview_url` của campaign mockup null ngay sau import, rồi render đầu ghi vào `users/<u>/campaign-products/<cp>/<hash>.webp` (+ `_thumbnail.webp`), không dùng chung file preview của PB.
 - **Mockup assignment của campaign PB lưu ở `campaign_mockups.variant_ids`**, không đụng `mockups.variant_ids` của PB. Dialog `Mockup assignments` hàng theo position, chỉ hiện tên printarea (không id) ⇒ đối chiếu GraphQL `campaign_mockups(order_by:{position:asc})`. Gỡ variant: `.multiselect__tag-icon` (×); Save phải bấm **2 lần** (lần 1 chỉ đóng dropdown).
 - Storefront đổi variant: ảnh chính gallery đổi theo campaign_mockup gán variant.
 
@@ -145,7 +146,7 @@ Mở artwork editor trực tiếp: URL `/campaigns/<id>/edit?product-id=<pbId>&a
 
 ## Duplicate / archive campaign
 
-- Clone (2026-11-05, TIB-5629): preview của bản clone nằm thư mục riêng `campaign-products/<cp mới>/`, không trùng path bản gốc. Campaign không artwork: job render lại ra `<hash>.webp`. Campaign có artwork: `<hash>_preview.webp`. Mockup nguồn có file preview đã mất ⇒ bản clone `preview_url` null. Video giữ link, thumbnail dùng chung `users/64/images/...`.
+- Clone (2026-11-05, TIB-5629): preview của bản clone nằm thư mục riêng `campaign-products/<cp mới>/`, không trùng path bản gốc. Campaign không artwork: job render lại ra `<hash>.webp`. Campaign có artwork: `<hash>_preview.webp`. Mockup nguồn có file preview đã mất ⇒ bản clone `preview_url` null. Video giữ link, thumbnail dùng chung `users/64/images/...`. Server tự render lại mọi mockup ảnh ngay sau clone; bản copy tạm `_preview` trong thư mục clone vào `trashed_images` (1 dòng mỗi mockup ảnh), không đụng file bản gốc.
 - Thứ tự để mỗi mockup chỉ render 1 lần: gắn artwork trước (MCP `attach-artwork-to-campaign-tool` chạy được khi chưa có mockup), rồi mới gắn mockup. Gắn mockup trước thì mockup render ngay, gắn artwork sau là một lần re-render.
 
 - **Duplicate**: `...` → `Duplicate campaign` ⇒ `POST /api/campaigns/<id>/clone` 200, không dialog/toast. Bản copy `<tên> copy`, giữ Internal tags, PB, mockup (campaign_mockups mới), **DÙNG CHUNG artwork gốc**, chưa publish.

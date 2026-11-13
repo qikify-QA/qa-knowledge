@@ -1,0 +1,495 @@
+[
+  {
+    "kb_id": "KB-1220",
+    "topic": "Khối usage trên card Plan khi Order items 0",
+    "statement": "Khi mở card Plan (Home, /subscriptions/shopify-tier, /platform-usages/shopify) ở merchant-owner/staging trên account Blue TEST có Order items 0 trong chu kỳ, quan sát thấy \"Order items: 0\", \"Next tier: 2\", \"Usages: $0 ($0/item)\" và \"$0.5/item\"; thanh progressbar aria-valuenow 0, aria-valuemax 100, width 0%; hover dòng \"Usages:\" không hiện tooltip. \"Next tier: 2\" và \"$0.5/item\" trùng với starting_from và unit_price của bậc đầu trong tiers; GET /api/user trả cycle.unit_count 0 và total_amount_usd 0. Trạng thái Order items > 0 chưa quan sát.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "bootstrap"
+    },
+    "tags": [
+      "usage-bar",
+      "next-tier"
+    ],
+    "related_kb_ids": [
+      "KB-1206",
+      "KB-1214",
+      "KB-1224"
+    ]
+  },
+  {
+    "kb_id": "KB-1221",
+    "topic": "Ngày reset chu kỳ khác nhau giữa UI, /api/user và Shopify",
+    "statement": "Khi mở card Plan ở merchant-owner/staging trên account Blue TEST, quan sát thấy UI hiện \"Current cycle (reset on <ngày>)\" với ngày sớm hơn một ngày so với ngày UTC của GET /api/user cycle.reset_at (portal hiển thị timezone GMT-05:00, reset_at rơi vào đầu ngày UTC), cycle.interval_days 30; còn GET /api/user/shopify/tier-subscriptions trả currentPeriodStart/currentPeriodEnd lệch khoảng 7 tuần so với reset_at. Chưa xác định chu kỳ usage tính theo mốc nào; không hoà giải.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "bootstrap"
+    },
+    "tags": [
+      "billing-cycle",
+      "conflict",
+      "timezone"
+    ],
+    "related_kb_ids": [
+      "KB-1220"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-SUB-002"
+  },
+  {
+    "kb_id": "KB-1222",
+    "topic": "Trang Usages của Shopify (View usages)",
+    "statement": "Khi bấm \"View usages\" trên Subscription Details (merchant-owner/staging, account Blue TEST), quan sát thấy /platform-usages/shopify với heading \"Usages\", card Plan, ba dòng lưu ý nguyên văn \"Shopify’s test orders will not be counted or charged\" (phần \"Shopify’s test orders\" là link tới bài hướng dẫn test order trên site support), \"Order price excludes shipping fees and non-Teeinblue products.\", \"Once an extra order is created, its transaction fee will be charged and non-refundable.\"; ô lọc \"Store: Any\", nút \"Export\" (không bấm); bảng cột PLATFORM, DOMAIN, ORDER, QUANTITY, FEE (USD), FREE, CHARGED, CREATED AT, và lựa chọn Show 20/50/100/250/500 entries. Mẫu có một dòng với QUANTITY 1, FEE \"0 USD\", cột FREE hiện một icon dấu tick (trong DOM snapshot cell FREE là cell rỗng vì icon không có text), cột CHARGED trống.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "bootstrap"
+    },
+    "tags": [
+      "usages-page",
+      "export-not-clicked"
+    ],
+    "related_kb_ids": [
+      "KB-1223",
+      "KB-1225"
+    ]
+  },
+  {
+    "kb_id": "KB-1223",
+    "topic": "Bảng usages Blue lấy từ tier_usages_connection",
+    "statement": "Khi mở /platform-usages/shopify ở merchant-owner/staging trên account Blue TEST, quan sát thấy POST /api/graphql/relay (operationName \"getData\", query đọc) gọi tier_usages_connection(first: 20, order_by id desc), node gồm id, amount_usd, tier_transaction_id, created_at, instance{platform{display_name}, id, platform_domain}, order_item{order{id, name}, quantity}. Mẫu trả 1 edge với amount_usd 0, tier_transaction_id null, quantity 1. Một sample.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "bootstrap"
+    },
+    "tags": [
+      "tier-usages-api",
+      "graphql-relay"
+    ],
+    "related_kb_ids": [
+      "KB-1222",
+      "KB-1224"
+    ]
+  },
+  {
+    "kb_id": "KB-1224",
+    "topic": "Order items 0 trong khi danh sách usage có 1 dòng",
+    "statement": "Khi mở card Plan và /platform-usages/shopify ở merchant-owner/staging trên account Blue TEST, quan sát thấy card hiện \"Order items: 0\" và GET /api/user cycle.unit_count 0, trong khi tier_usages_connection trả 1 edge (quantity 1, amount_usd 0) và bảng Usages hiện dòng đó. created_at của dòng này trước khoảng chu kỳ suy từ reset_at và interval_days; chưa xác định unit_count có loại dòng này vì lý do chu kỳ hay lý do khác. Bảng Usages hiện dấu tick ở cột FREE của dòng này, cột CHARGED trống; chưa xác định dấu tick FREE có liên quan tới việc unit_count không đếm dòng này hay không. Không hoà giải.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "bootstrap"
+    },
+    "tags": [
+      "unit-count",
+      "conflict"
+    ],
+    "related_kb_ids": [
+      "KB-1220",
+      "KB-1223",
+      "KB-1221"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-SUB-004"
+  },
+  {
+    "kb_id": "KB-1225",
+    "topic": "Bộ lọc Store trên trang Usages",
+    "statement": "Khi bấm \"Any\" ở ô lọc Store trên /platform-usages/shopify (merchant-owner/staging, account Blue TEST có 2 store), quan sát thấy dropdown tiêu đề \"Store:\" với placeholder \"Select a value\" và 2 lựa chọn dạng \"<tên store> | <domain>\". Không chọn giá trị nào nên hành vi lọc chưa quan sát.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "bootstrap"
+    },
+    "tags": [
+      "usages-filter"
+    ],
+    "related_kb_ids": [
+      "KB-1222"
+    ]
+  },
+  {
+    "kb_id": "KB-1212",
+    "topic": "Trang usages của nền tảng không có plan (Etsy, Boundless)",
+    "statement": "Khi mở trực tiếp /platform-usages/etsy và /platform-usages/boundless ở merchant-owner/staging trên account không có plan Etsy/Boundless (has_new_pricing true, Blue TEST cho Shopify), quan sát thấy: trang Etsy hiện \"No plan\" và chữ nguyên văn \"You have to active a plan to start selling\", cùng ba dòng lưu ý như trang Shopify và bảng \"Empty data\"; trang Boundless không có khối \"No plan\", cũng \"Empty data\". Cả hai trang gọi POST /api/graphql/relay với usages_connection (field amount, rate, fee, is_free, usage_charge_id, currency_code), trả edges []. Mỗi trang một lần.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "bootstrap"
+    },
+    "tags": [
+      "usages-page",
+      "no-plan",
+      "usages-connection"
+    ],
+    "related_kb_ids": [
+      "KB-1211",
+      "KB-1222"
+    ]
+  },
+  {
+    "kb_id": "KB-1234",
+    "topic": "Order item 2 printarea chỉ tạo 1 tier usage (TIB-5625)",
+    "statement": "Theo Jira TIB-5625 comment 56722 \"Ready for QA\" của Dev (2026-11-09), với merchant new pricing (Blue) trên Shopify, một order item có customization của product 2 printarea (front và back, 2 design trên cùng order item) tạo đúng 1 tier usage cho order item đó và cycle count (`unit_count`) của merchant tăng đúng 1; design thứ 2 trở đi của item multi-printarea được bỏ qua, không tạo usage thêm. Comment Solution 56145 của Dev (2026-10-31) nêu cùng luật: một tier usage cho mỗi customization, tạo khi design đầu tiên của nó được tạo; các design sau (printarea khác, printarea bị trash rồi tạo lại) bị bỏ qua. Dev kiểm số usage ở admin \"Tier usages\" (QA không có quyền); trên portal merchant đọc qua \"Order items\" ở /subscriptions/shopify-tier và trang View usages /platform-usages/shopify. Test case TC-TIB-9034 PASS staging 2026-11-10: 1 dòng usage mới cho order, Order items 1 → 2, item có 2 design và về Ready. Vế Sentry của test case không thuộc item này.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "backend webhook order + portal (/subscriptions/shopify-tier, /platform-usages/shopify)",
+      "brand": null
+    },
+    "tags": [
+      "tier-usage",
+      "multi-printarea",
+      "unit-count",
+      "billing",
+      "TIB-5625",
+      "ccr:CBS-161"
+    ],
+    "related_kb_ids": [
+      "subscription/tier-usage-metering#KB-1220",
+      "subscription/tier-usage-metering#KB-1222",
+      "subscription/tier-usage-metering#KB-1223",
+      "subscription/tier-usage-metering#KB-1235",
+      "subscription/tier-usage-metering#KB-1237"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5625 comment 56722 (Dev, Ready for QA, PR teeinblue-api#4231), 2026-11-09",
+      "authored_on": "2026-11-09",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-161"
+    }
+  },
+  {
+    "kb_id": "KB-1235",
+    "topic": "Tier usage tính theo customization, không theo order (TIB-5625)",
+    "statement": "Theo Jira TIB-5625 comment Solution 56145 của Dev (2026-10-31), tier usage của new pricing tính một lần cho mỗi customization, tạo khi design đầu tiên của customization đó được tạo; description của ticket (Dev) cũng ghi `tier_usages` tính một lần cho mỗi Customization. Vì vậy một order có 2 order item với 2 customization khác nhau (mỗi item product 2 printarea) tạo 2 tier usage và `unit_count` tăng 2: usage không gộp theo order. Test case TC-TIB-9035 PASS staging 2026-11-10: order 2 item tạo 2 dòng usage mới (mỗi dòng QUANTITY 1), Order items 2 → 4. Trường hợp quantity > 1 và cùng customization dùng lại ở order item khác chưa có nguồn.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "backend webhook order + portal (/subscriptions/shopify-tier, /platform-usages/shopify)",
+      "brand": null
+    },
+    "tags": [
+      "tier-usage",
+      "per-customization",
+      "unit-count",
+      "billing",
+      "TIB-5625",
+      "ccr:CBS-161"
+    ],
+    "related_kb_ids": [
+      "subscription/tier-usage-metering#KB-1234",
+      "subscription/tier-usage-metering#KB-1222",
+      "subscription/tier-usage-metering#KB-1223"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5625 comment 56145 (Dev, Solution, PR teeinblue-api#4231), 2026-10-31",
+      "authored_on": "2026-10-31",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-161"
+    }
+  },
+  {
+    "kb_id": "KB-1236",
+    "topic": "Order item 1 printarea tạo 1 tier usage (TIB-5625, regression)",
+    "statement": "Theo Jira TIB-5625 comment 56722 \"Ready for QA\" của Dev (2026-11-09, bước regression), order item của campaign product 1 printarea vẫn tạo 1 tier usage và cycle count tăng 1, như trước bản fix. Test case TC-TIB-9037 PASS staging 2026-11-10: 1 dòng usage mới; order này rơi vào cycle mới nên Order items của cycle mới là 0 → 1 (trước order trang vẫn hiện cycle cũ đã quá ngày reset, xem OQ về cycle).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "backend webhook order + portal (/subscriptions/shopify-tier, /platform-usages/shopify)",
+      "brand": null
+    },
+    "tags": [
+      "tier-usage",
+      "single-printarea",
+      "regression",
+      "billing",
+      "TIB-5625",
+      "ccr:CBS-161"
+    ],
+    "related_kb_ids": [
+      "subscription/tier-usage-metering#KB-1234",
+      "subscription/tier-usage-metering#KB-1221",
+      "subscription/tier-usage-metering#KB-1224"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5625 comment 56722 (Dev, Ready for QA, PR teeinblue-api#4231), 2026-11-09",
+      "authored_on": "2026-11-09",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-161"
+    }
+  },
+  {
+    "kb_id": "KB-1237",
+    "topic": "Re-generate design không tạo thêm tier usage",
+    "statement": "Theo rule spec-hub design-generation-usage (feature design-generation v1, sure green, đọc 2026-11-13), trên new pricing design đầu tiên của một personalization tính một usage unit (một lần cho mỗi personalization) và Re-generate không bao giờ thêm usage. Vì vậy re-generate design của order item, kể cả item 2 printarea re-generate từng printarea, không tạo thêm tier usage và không đổi `unit_count`. Test case TC-TIB-9038 PASS staging 2026-11-10: re-generate lần lượt design back rồi front của item 2 printarea, số dòng usage trên /platform-usages/shopify giữ nguyên (order vẫn đúng 1 dòng) và Order items giữ nguyên. Rule cùng nói Recover design có thể thêm usage cho item chưa từng có design; phần đó không thuộc claim nên chưa kiểm.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (order detail > Re-generate design; /subscriptions/shopify-tier, /platform-usages/shopify)",
+      "brand": null
+    },
+    "tags": [
+      "tier-usage",
+      "re-generate",
+      "unit-count",
+      "billing",
+      "TIB-5625",
+      "ccr:CBS-161"
+    ],
+    "related_kb_ids": [
+      "subscription/tier-usage-metering#KB-1234",
+      "subscription/tier-usage-metering#KB-1222"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "spec-hub teeinblue, feature design-generation v1, rule design-generation-usage (sure green, nguồn code, chưa người duyệt), ask log_id 259, đọc 2026-11-13",
+      "authored_on": "2026-11-13",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-161"
+    }
+  },
+  {
+    "kb_id": "KB-1238",
+    "topic": "Mốc gửi email chuyển tier (TierUp, TierTopReached, TierFreeExceeded)",
+    "statement": "Theo Jira TIB-5625 comment 56913 của Dev (2026-11-11, trả lời QA), email TierUp và TierTopReached bắn một count trước mốc tier, không phải lúc vào tier: điều kiện là `unit_count === nextTier->starting_from - 1`. Với tier staging 2 / 6 / 10: TierUp ở `unit_count` 5 (một count trước tier bắt đầu từ 6), TierTopReached ở `unit_count` 9 (một count trước tier bắt đầu từ 10). TierFreeExceeded chỉ bắn khi `starting_from` của tier đầu − 1 ≥ 2, nên không bao giờ bắn trên plan 2 / 6 / 10. Count đi 0 → 1 → 2 → 4 (không chạm 5 hay 9) thì không có email tier nào; Dev xác nhận staging có gửi email tier (mail driver và queue cấu hình đúng). Test case TC-TIB-9036 PASS staging 2026-11-11: count 4 → 5 nhận đúng 1 email TierUp. TierTopReached ở count 9 và TierFreeExceeded chưa test. Nội dung template email không thuộc item này.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "backend (email chuyển tier tới email account)",
+      "brand": null
+    },
+    "tags": [
+      "tier-email",
+      "tier-threshold",
+      "billing",
+      "TIB-5625",
+      "ccr:CBS-161"
+    ],
+    "related_kb_ids": [
+      "subscription/tier-usage-metering#KB-1220",
+      "subscription/tier-usage-metering#KB-1239",
+      "subscription/tier-usage-metering#KB-1240"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5625 comment 56913 (Dev, trả lời QA về mốc email tier), 2026-11-11",
+      "authored_on": "2026-11-11",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-161"
+    }
+  },
+  {
+    "kb_id": "KB-1239",
+    "topic": "Order multi-printarea qua mốc tier chỉ gửi đúng 1 email tier",
+    "statement": "Theo Jira TIB-5625 comment 56722 \"Ready for QA\" của Dev (2026-11-09, bước 3), một order multi-printarea (1 order item, 2 design) đưa cycle count qua mốc email tier gửi đúng một email tier, đúng count: không trùng, không gửi hai lần, không thiếu. Mốc email theo KB-1238. Test case TC-TIB-9036 PASS staging 2026-11-11: order 1 item 2 design đưa count 4 → 5, 1 dòng usage mới, inbox nhận đúng 1 email TierUp. Test case chỉ kiểm số email, không kiểm nội dung template.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "backend (email chuyển tier tới email account)",
+      "brand": null
+    },
+    "tags": [
+      "tier-email",
+      "multi-printarea",
+      "billing",
+      "TIB-5625",
+      "ccr:CBS-161"
+    ],
+    "related_kb_ids": [
+      "subscription/tier-usage-metering#KB-1238",
+      "subscription/tier-usage-metering#KB-1234"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5625 comment 56722 (Dev, Ready for QA, PR teeinblue-api#4231), 2026-11-09",
+      "authored_on": "2026-11-09",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-161"
+    }
+  },
+  {
+    "kb_id": "KB-1240",
+    "topic": "Email chuyển tier chỉ queue sau khi transaction tier usage commit",
+    "statement": "Theo Jira TIB-5625 comment Solution 56145 của Dev (2026-10-31, AC3), không email tier nào (TierUp, TierTopReached, TierFreeExceeded) được queue khi transaction tạo tier usage rollback; email được queue sau commit. Comment 56722 của Dev (2026-11-09) nói cùng ý: email chuyển tier giờ chỉ gửi sau khi transaction billing commit. Không kiểm được trên staging (không gây được rollback; TC-TIB-9040 skipped env-blocked); Dev phủ bằng unit test.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "backend (tier usage, email)",
+      "brand": null
+    },
+    "tags": [
+      "tier-email",
+      "after-commit",
+      "env-blocked",
+      "billing",
+      "TIB-5625",
+      "ccr:CBS-161"
+    ],
+    "related_kb_ids": [
+      "subscription/tier-usage-metering#KB-1238",
+      "subscription/tier-usage-metering#KB-1239"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5625 comment 56145 (Dev, Solution, PR teeinblue-api#4231), 2026-10-31",
+      "authored_on": "2026-10-31",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-161"
+    }
+  },
+  {
+    "kb_id": "KB-1241",
+    "topic": "Hai webhook job cùng customization chỉ tạo 1 tier usage",
+    "statement": "Theo Jira TIB-5625 comment Solution 56145 của Dev (2026-10-31, AC2), hai webhook job xử lý cùng một customization cùng lúc vẫn chỉ tạo 1 tier usage. Không kiểm được trên staging (không tạo được 2 job đồng thời; TC-TIB-9039 skipped env-blocked); Dev phủ bằng unit test.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "backend (tier usage, email)",
+      "brand": null
+    },
+    "tags": [
+      "tier-usage",
+      "concurrency",
+      "env-blocked",
+      "billing",
+      "TIB-5625",
+      "ccr:CBS-161"
+    ],
+    "related_kb_ids": [
+      "subscription/tier-usage-metering#KB-1234",
+      "subscription/tier-usage-metering#KB-1235"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5625 comment 56145 (Dev, Solution, PR teeinblue-api#4231), 2026-10-31",
+      "authored_on": "2026-10-31",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-161"
+    }
+  },
+  {
+    "kb_id": "KB-1242",
+    "topic": "environment_difference",
+    "statement": "[DIFFERENT_VALUE] Môi trường test: trên staging, order test của Shopify (Bogus gateway) trên dev store có tạo tier usage và tăng Order items (quan sát QA 2026-11-10, dòng usage xuất hiện khoảng 5 giây sau order; các test case TC-TIB-9034 đến 9038 dùng order loại này), dù trang Usages hiện lưu ý \"Shopify’s test orders will not be counted or charged\" (KB-1222); tier staging của plan Blue bắt đầu 2 / 6 / 10, free 1 order item; Production: chưa rõ, chưa quan sát; rule spec-hub usage-charges-old-free-orders (test order không dùng hết free order ở production) nói về plan cũ, không phải new pricing; Cách test: đặt order Bogus trên dev store staging, đọc Order items ở /subscriptions/shopify-tier và dòng usage ở /platform-usages/shopify; không suy hành vi production từ staging. Nguồn: dòng khối B của CBS-161 (QA, 2026-11-10).",
+    "knowledge_kind": "INFERRED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (/subscriptions/shopify-tier, /platform-usages/shopify) + storefront checkout Bogus",
+      "brand": null
+    },
+    "tags": [
+      "environment_difference",
+      "DIFFERENT_VALUE",
+      "test-order",
+      "billing",
+      "TIB-5625",
+      "ccr:CBS-161"
+    ],
+    "related_kb_ids": [
+      "subscription/tier-usage-metering#KB-1222",
+      "subscription/tier-usage-metering#KB-1234"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-161"
+    }
+  }
+]

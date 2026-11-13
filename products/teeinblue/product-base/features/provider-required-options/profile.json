@@ -1,0 +1,292 @@
+{
+  "feature_id": "FEAT-12-provider-required-options",
+  "feature_key": "provider-required-options",
+  "name": "Required options (default_options) theo fulfillment provider của Product Base",
+  "user_goal": "Merchant (owner) khai các option bắt buộc mà nhà in cần (Required options, lưu ở products.default_options, ví dụ preset_id/preset_back_id của CustomCat) trên Product Base của provider được hỗ trợ, lưu và xem lại được, để TIB gửi kèm khi fulfill đơn.",
+  "user_goal_kb_refs": [
+    "product-base/provider-required-options#KB-527",
+    "product-base/provider-required-options#KB-528",
+    "product-base/provider-required-options#KB-529"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner",
+      "permission_observed": "Owner mở Product Base > Edit và thao tác Advanced options; shard không có KB về role khác.",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-527",
+        "product-base/provider-required-options#KB-528"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Product Base > Edit > nút Advanced options > editor Required options",
+      "precondition": "Product Base thuộc provider được hỗ trợ (CustomCat hoặc merchOne trong KB) trên store của explorer ở staging; với Product Base CustomCat, cần provider CustomCat đã kết nối (ngoài feature này). Trên Product Base Gelato nút Advanced options có trạng thái khác giữa staging và production (KB-530): kiểm bằng sự vắng mặt của editor/label.",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-527",
+        "product-base/provider-required-options#KB-529",
+        "product-base/provider-required-options#KB-530"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Hiện editor Required options theo provider",
+      "description": "Product Base CustomCat (đã lưu): Advanced options enable, mở JSON editor Required options với label \"Required options (for merchOne, Printify, Printful, Myze, Printbelle and CustomCat)\" (KB-527, CONFIRMED_EXPECTED). Quan sát (LOW): vừa đổi provider sang CustomCat chưa Save cũng hiện editor (KB-532); merchOne vẫn hiện editor, Gelato không hiện (KB-529).",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-527",
+        "product-base/provider-required-options#KB-532",
+        "product-base/provider-required-options#KB-529"
+      ]
+    },
+    {
+      "name": "Lưu và tải lại Required options",
+      "description": "Quan sát (LOW): nhập JSON hợp lệ rồi Save thì lưu thành công, reload hiện lại đúng giá trị (KB-528).",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-528"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "Required options rỗng (default_options null)",
+      "to": "default_options lưu JSON đã nhập",
+      "trigger": "Nhập JSON vào editor rồi Save",
+      "condition": "Product Base CustomCat, JSON hợp lệ (KB-528)",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-528"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "rule": "Product Base CustomCat: Advanced options enable và mở editor Required options với label mới.",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-527"
+      ],
+      "confirmation_type": "po_dev_confirm"
+    }
+  ],
+  "observed_behavior": [
+    {
+      "behavior": "Vừa đổi provider sang CustomCat chưa Save: Advanced options enable, editor Required options hiện.",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-532"
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "behavior": "Lưu JSON vào Required options rồi Save: thành công, reload hiện đúng giá trị.",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-528"
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "behavior": "Editor Required options hiện cho Product Base merchOne, không có ở Product Base Gelato (staging và production).",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-529"
+      ],
+      "confidence": "LOW"
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      {
+        "item": "Product Base > Edit: nút Advanced options, JSON editor Required options (label liệt kê provider)",
+        "kb_refs": [
+          "product-base/provider-required-options#KB-527",
+          "product-base/provider-required-options#KB-529"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "item": "PUT /api/products/{id} mang default_options khi Save",
+        "kb_refs": [
+          "product-base/provider-required-options#KB-528"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "products.default_options",
+        "kb_refs": [
+          "product-base/provider-required-options#KB-527",
+          "product-base/provider-required-options#KB-528"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    "Giá trị preset_id/preset_back_id trong Required options của Product Base CustomCat được đọc khi gửi order item sang CustomCat: order/fulfillment-provider-request (KB-785).",
+    "Save của card Basic information gửi lại default_options: product-base/product-base-identity (KB-027, KB-531)."
+  ],
+  "risks": [
+    {
+      "risk": "Không có KB về validate JSON sai hoặc key không được provider nhận khi lưu; preset sai chỉ lộ ra lúc gửi đơn (order KB-787).",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-528",
+        "order/fulfillment-provider-request#KB-787"
+      ]
+    },
+    {
+      "risk": "Trạng thái nút Advanced options của Product Base Gelato khác giữa staging và production; assert theo trạng thái nút sẽ báo FAIL sai.",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-530"
+      ]
+    }
+  ],
+  "environment_differences": [
+    {
+      "type": "DIFFERENT_VALUE",
+      "test_env": "Product Base Gelato: nút Advanced options disabled",
+      "production": "Product Base Gelato: nút Advanced options enable, mở khối Design format (không có Required options); Product Base CustomCat có Design format phía trên Required options; nguyên nhân chưa rõ",
+      "how_to_test": "Kiểm 'Gelato không có Required options' bằng sự vắng mặt của editor và label, không dựa vào trạng thái disabled của nút",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-530"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-11-12"
+  },
+  "unknown_areas": [
+    {
+      "question": "Vì sao nút Advanced options của Product Base Gelato disabled trên staging nhưng enable (mở khối Design format) trên production; khối Design format do plan, feature flag hay cấu hình môi trường quyết định?",
+      "why_it_matters": "KB-530 INFERRED/LOW; check provider gating phải tránh dựa vào trạng thái nút.",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-530"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-product-base-114"
+    },
+    {
+      "question": "Editor Required options hiện cho Printify, Printful, Myze, Printbelle đúng như label không? Validate gì khi JSON sai?",
+      "why_it_matters": "Chỉ CustomCat, merchOne, Gelato có KB; label là dữ kiện duy nhất cho các provider khác.",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-527"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-product-base-115"
+    },
+    {
+      "question": "Editor Required options hiện ngay khi vừa đổi provider sang CustomCat mà chưa Save (TC-TIB-9012): có phải hành vi mong muốn?",
+      "why_it_matters": "KB-532 OBSERVED_CURRENT/LOW; CHK-12-002 chỉ BASELINE.",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-532"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-product-base-116"
+    },
+    {
+      "question": "Required options của Product Base CustomCat lưu và reload đúng giá trị (TC-TIB-9013, không ghi build): Dev xác nhận là hành vi mong muốn?",
+      "why_it_matters": "KB-528 OBSERVED_CURRENT/LOW; CHK-12-003 chỉ BASELINE.",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-528"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-product-base-117"
+    },
+    {
+      "question": "Editor Required options hiện cho merchOne và không có cho Gelato (TC-TIB-9020, không ghi build): Dev xác nhận?",
+      "why_it_matters": "KB-529 OBSERVED_CURRENT/LOW; CHK-12-004 chỉ BASELINE.",
+      "kb_refs": [
+        "product-base/provider-required-options#KB-529"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-product-base-118"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-148"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-12-provider-required-options",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Product Base CustomCat (đã lưu / vừa đổi provider)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "product-base/provider-required-options#KB-527",
+        "product-base/provider-required-options#KB-532"
+      ]
+    },
+    {
+      "feature_id": "FEAT-12-provider-required-options",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Lưu và reload Required options",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "product-base/provider-required-options#KB-528"
+      ]
+    },
+    {
+      "feature_id": "FEAT-12-provider-required-options",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Product Base merchOne / Gelato",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "product-base/provider-required-options#KB-529",
+        "product-base/provider-required-options#KB-530"
+      ]
+    },
+    {
+      "feature_id": "FEAT-12-provider-required-options",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Printify, Printful, Myze, Printbelle",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-12-provider-required-options",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "JSON sai / giá trị không hợp lệ khi Save",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-12-provider-required-options",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "mọi state",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": []
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "feature_key": "fulfillment-provider-request",
+      "object": "order",
+      "relation": "downstream: preset trong Required options được gửi kèm order item sang CustomCat"
+    },
+    {
+      "feature_key": "product-base-identity",
+      "object": "product-base",
+      "relation": "cùng card Basic information: Save gửi lại default_options"
+    },
+    {
+      "feature_key": "product-base-create",
+      "object": "product-base",
+      "relation": "KB-020 quan sát nút Advanced options khi tạo/sửa Product Base tay"
+    }
+  ]
+}

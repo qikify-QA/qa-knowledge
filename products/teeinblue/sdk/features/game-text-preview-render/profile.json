@@ -1,0 +1,362 @@
+{
+  "feature_id": "FEAT-18-game-text-preview-render",
+  "feature_key": "game-text-preview-render",
+  "name": "Render preview live của layer shape-text, spiral, warp-text",
+  "user_goal": "Là buyer trên storefront, khi gõ text vào layer shape-text, spiral hoặc warp-text, tôi thấy preview của đúng text đã gõ mà không bị trống layer, và server không bị dồn render thừa: mỗi lần dừng gõ một request, render cũ bị thay bởi render mới hơn của cùng layer.",
+  "user_goal_kb_refs": [
+    "sdk/game-text-preview-render#KB-552",
+    "sdk/game-text-preview-render#KB-553",
+    "sdk/game-text-preview-render#KB-554"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "buyer (guest, storefront)",
+      "permission_observed": "Gõ text vào layer game text trên trang product; request preview là route public games/{type}, không cần session.",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-552",
+        "sdk/game-text-preview-render#KB-554"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "storefront — trang product của campaign có layer shape-text, spiral hoặc warp-text (SDK mới); devtools Network lọc theo games/",
+      "precondition": "Test trên storefront, không trên portal editor (portal editor dùng SDK cũ tới khi submodule src/sdk được bump). Staging giới hạn route games theo IP: làm theo environment_differences[0] (gõ chậm hoặc nhờ Dev nâng MERCHANT_GAMES_GENERATE_RATE_LIMIT).",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-552",
+        "sdk/game-text-preview-render#KB-560"
+      ]
+    },
+    {
+      "path": "storefront — campaign có layer shape-text và bản duplicate của nó",
+      "precondition": "Duplicate layer trong artwork để có hai layer id khác nhau.",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-555"
+      ]
+    },
+    {
+      "path": "api public — GET games/{type}/{payload}.json, POST games/{type} (type shape-text, spiral, warp_text), query ?slot= tuỳ chọn",
+      "precondition": "Hai tab cùng sản phẩm (cùng client IP) để tạo hai request khác payload cùng slot.",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-554"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Gửi request preview theo nhịp dừng gõ",
+      "description": "Debounce trailing 1000 ms cho shape-text, spiral, warp-text; URL có ?slot=<layer id>.<n>; preview cuối là text đầy đủ.",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-552"
+      ]
+    },
+    {
+      "name": "Không để layer trống khi gõ",
+      "description": "Spinner khi request đang chạy (không phải blank); SDK giữ ảnh cũ khi nhận 409.",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-553",
+        "sdk/game-text-preview-render#KB-554"
+      ]
+    },
+    {
+      "name": "Thay render cũ bằng render mới hơn của cùng layer instance",
+      "description": "409 no-store cho render bị thay; payload giống hệt không thay nhau; mỗi layer duplicate có slot riêng.",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-554",
+        "sdk/game-text-preview-render#KB-555"
+      ]
+    },
+    {
+      "name": "Render preview layer shape-text cỡ lớn",
+      "description": "Shape cỡ 5952.98 × 7288.89 trả 200, preview scale về 1673 × 2048, đủ mọi từ.",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-556"
+      ]
+    },
+    {
+      "name": "Giữ nguyên hành vi ngoài phạm vi",
+      "description": "Cache CDN dùng chung cho text ngắn vẫn hoạt động; layer image-data khác không có slot; render design in không đổi.",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-557",
+        "sdk/game-text-preview-render#KB-558",
+        "sdk/game-text-preview-render#KB-559"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "layer đang hiện preview",
+      "to": "layer hiện spinner",
+      "trigger": "buyer dừng gõ khoảng 1 giây",
+      "condition": "layer shape-text, spiral, warp-text; SDK mới",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-552",
+        "sdk/game-text-preview-render#KB-553"
+      ]
+    },
+    {
+      "from": "render preview đang chạy",
+      "to": "409 no-store; layer giữ ảnh cũ",
+      "trigger": "request mới hơn cùng client, cùng slot, khác payload",
+      "condition": "payload khác nhau",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-554"
+      ]
+    },
+    {
+      "from": "layer hiện spinner",
+      "to": "layer hiện preview của text đầy đủ",
+      "trigger": "response 200 của request cuối",
+      "condition": "không bị 429 (staging)",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-552",
+        "sdk/game-text-preview-render#KB-553",
+        "sdk/game-text-preview-render#KB-560"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "rule": "Gõ text dài vào layer shape-text, spiral, warp-text: khoảng một request games/<type> cho mỗi lần dừng gõ khoảng một giây (debounce trailing 1000 ms), không phải một request mỗi từ; URL kết thúc bằng ?slot=<layer id>.0; request cũ còn chạy hiện cancelled hoặc 409; preview cuối là text đầy đủ.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, buyer, storefront; shipped SHIPPED (Jira Done), production verify NOT-RUN",
+      "caveats": "Một nguồn. Portal editor chưa áp dụng.",
+      "confirmation_ref": "Jira TIB-5666 comment #56294 QA plan bước 1-3 và comment #56230 Solution mục sdk (Dev, 2026-11-03)",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-552"
+      ]
+    },
+    {
+      "rule": "Spinner trong lúc request preview chạy không tính là blank; blank là layer trống (không ảnh, không spinner) sau khi request kết thúc; layer không blank khi gõ.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, buyer, storefront; shipped SHIPPED (Jira Done), production verify NOT-RUN",
+      "caveats": "Một nguồn.",
+      "confirmation_ref": "Jira TIB-5666 comment #56619 trả lời Q4 (Dev, 2026-11-06)",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-553"
+      ]
+    },
+    {
+      "rule": "Render bị payload mới hơn (cùng client, cùng slot, khác payload) thay thế trả 409 Cache-Control: no-store; mở lại URL đó không nhận 409 đã cache mà render preview; payload giống hệt không thay nhau; SDK mới giữ ảnh cũ khi 409, không báo lỗi.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, api public + storefront; production verify NOT-RUN",
+      "caveats": "Một nguồn. Staging rate limit có thể chặn trước khi thấy 409 (environment_differences[0]).",
+      "confirmation_ref": "Jira TIB-5666 comment #56294 QA plan bước 6 và comment #56230 Solution mục api, sdk, Architecture (Dev, 2026-11-03)",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-554"
+      ]
+    },
+    {
+      "rule": "Layer duplicate gửi slot riêng theo layer id; mỗi instance hiện preview riêng, không blank khi gõ; slot .1 chỉ khi cùng layer hiện hai lần trên trang (addon, cross-sell dùng chung artwork); shape-text không có dialog reposition.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, buyer, storefront; shipped SHIPPED (Jira Done), production verify NOT-RUN",
+      "caveats": "Một nguồn. Vế .1 chưa kiểm trên storefront (unknown_areas).",
+      "confirmation_ref": "Jira TIB-5666 comment #56619 trả lời Q3 và comment #56294 QA plan bước 4 (Dev, 2026-11-06)",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-555"
+      ]
+    },
+    {
+      "rule": "Layer shape-text 5952.98 × 7288.89 (text-path/master/guitar-portrait.svg, Roboto) render preview 200, scale về 1673 × 2048; 400 signal 6 là bug; ảnh đủ mọi từ; Dev nêu một order đã lưu print file mất từ trước bản sửa cần regenerate design (phạm vi production ở unknown_areas).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, buyer, storefront; shipped SHIPPED (Jira Done), production verify NOT-RUN",
+      "caveats": "Một nguồn. Không gửi request cỡ này lên production khi chưa được đồng ý (flow qa-rules).",
+      "confirmation_ref": "Jira TIB-5666 comment #56488 trả lời Q2 (Dev, 2026-11-05) và comment #56757 (Dev, 2026-11-10)",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-556"
+      ]
+    },
+    {
+      "rule": "Preview text ngắn của shape-text, spiral, warp-text nhìn giống trước fix; reload rồi nhập lại cùng text thì cf-cache-status: HIT (slot <layer id>.0 giống nhau cho mọi buyer).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, buyer, storefront; shipped SHIPPED (Jira Done), production verify NOT-RUN",
+      "caveats": "Một nguồn.",
+      "confirmation_ref": "Jira TIB-5666 comment #56294 QA plan bước 5 và comment #56230 Solution mục Cache key (Dev, 2026-11-03)",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-557"
+      ]
+    },
+    {
+      "rule": "Layer image-data khác (maps, clock, photo effects, word-cloud...) không gửi slot, URL request không đổi.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, buyer, storefront; shipped SHIPPED (Jira Done), production verify NOT-RUN",
+      "caveats": "Một nguồn.",
+      "confirmation_ref": "Jira TIB-5666 comment #56230 Solution mục sdk (Dev, 2026-11-03)",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-558"
+      ]
+    },
+    {
+      "rule": "Render design in (print), mockup, job dùng chung SVGDesignClient, VectorRenderer, DesignConverter không đổi hành vi do TIB-5666 (guard mặc định, không giới hạn tài nguyên preview).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, order design (print render); production verify NOT-RUN",
+      "caveats": "Một nguồn. Ranh giới regression; feature order không bị sửa trong run này.",
+      "confirmation_ref": "Jira TIB-5666 comment #56230 Solution mục Architecture (Dev, 2026-11-03)",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-559"
+      ]
+    }
+  ],
+  "observed_behavior": [],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [],
+    "storefront": [
+      "sdk/game-text-preview-render#KB-552",
+      "sdk/game-text-preview-render#KB-553",
+      "sdk/game-text-preview-render#KB-555",
+      "sdk/game-text-preview-render#KB-556",
+      "sdk/game-text-preview-render#KB-557",
+      "sdk/game-text-preview-render#KB-558"
+    ],
+    "api": [
+      "sdk/game-text-preview-render#KB-554",
+      "sdk/game-text-preview-render#KB-556",
+      "sdk/game-text-preview-render#KB-560"
+    ],
+    "data": [],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "feature_key": "storefront-buyer-facing",
+      "why": "Layer image-data và luồng cá nhân hoá của buyer trên storefront (KB-558 là ranh giới với các layer image-data khác)."
+    },
+    {
+      "feature_key": "artwork/layer-config-text",
+      "why": "Cấu hình layer shape-text, spiral, warp-text trong editor (ngoài phạm vi feature này)."
+    },
+    {
+      "feature_key": "order/place-personalized-order-storefront",
+      "why": "Design in của order có layer game text (KB-559 ranh giới regression)."
+    }
+  ],
+  "risks": [
+    {
+      "description": "Render dồn khi buyer gõ nhanh làm api/vectorize quá tải hoặc layer trống; lỗi mất từ cuối ở shape-text cỡ lớn đi vào print file; request preview cỡ lớn nặng cho api và vectorize (KB-556); mỗi rule một nguồn, production verify chưa chạy.",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-552",
+        "sdk/game-text-preview-render#KB-554",
+        "sdk/game-text-preview-render#KB-556",
+        "sdk/game-text-preview-render#KB-560"
+      ]
+    }
+  ],
+  "environment_differences": [
+    {
+      "type": "DIFFERENT_VALUE",
+      "test_env": "Staging giới hạn route games 3 request/phút/IP; gõ nhanh thì phần lớn request nhận 429 trước khi tới render, không thấy 409/supersede",
+      "production": "không rõ",
+      "how_to_test": "Gõ chậm (giãn lần dừng) hoặc nhờ Dev nâng MERCHANT_GAMES_GENERATE_RATE_LIMIT trên staging trong lúc test; 429 trên staging không tính là fail của case nhịp request",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-560"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-11-12"
+  },
+  "unknown_areas": [
+    {
+      "question": "Slot .1 (cùng layer shape-text hiện hai lần trên trang, vd addon hoặc cross-sell dùng chung artwork) chưa kiểm trên storefront, chỉ có unit test U17: cần setup staging để kiểm?",
+      "why_it_matters": "Vế .1 của KB-555 chưa có lượt chạy thật.",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-555"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-245"
+    },
+    {
+      "question": "Rate limit route games trên production là bao nhiêu? Request bị SDK huỷ có tính vào limit không?",
+      "why_it_matters": "Expected nhịp request trên production và cách đọc 429.",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-560"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-246"
+    },
+    {
+      "question": "Khi request preview nhận 429, layer rỗng hẳn (không ảnh, không spinner) và form không báo lỗi (quan sát QA staging): đúng hay lỗi?",
+      "why_it_matters": "Theo định nghĩa blank của Dev thì đây là blank; chưa có expected cho 429.",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-553",
+        "sdk/game-text-preview-render#KB-560"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-sdk-247"
+    },
+    {
+      "question": "Order production đã lưu print file mất từ cuối (shape-text cỡ lớn, trước bản sửa vectorize) có được rà và regenerate design không?",
+      "why_it_matters": "Bug có cả trên production trước bản sửa; print file sai đã nằm trong order.",
+      "kb_refs": [
+        "sdk/game-text-preview-render#KB-556"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-sdk-248"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-159"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-18-game-text-preview-render",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "gõ text dài vào shape-text/spiral/warp-text",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-18-game-text-preview-render",
+      "layer": "api",
+      "role": "buyer",
+      "state": "render bị thay (409)",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-18-game-text-preview-render",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "layer duplicate",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-18-game-text-preview-render",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "cùng layer hiện hai lần (slot .1)",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-18-game-text-preview-render",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "mọi trạng thái",
+      "environment": "production",
+      "covered": false
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from_feature_key": "game-text-preview-render",
+      "to_feature_key": "storefront-buyer-facing",
+      "relationship": "image_data_layer_boundary"
+    }
+  ]
+}

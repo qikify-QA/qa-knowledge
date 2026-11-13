@@ -14,8 +14,8 @@
     "artwork/populate-values#KB-866"
   ],
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-118"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-106"
   },
   "actors": [
     {
@@ -351,6 +351,15 @@
       "kb_refs": [
         "artwork/populate-values#KB-866"
       ]
+    },
+    {
+      "rule": "[MỚI, CBS-106] Khi ngày giờ của Star Map được populate sang text layer: token không format (vd {{time}}) dùng format đã chọn ở 'Display in date format' của Star Map; token có format riêng (vd {{time.yyyy/MM/dd}}) thì format trong token thắng.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "source": "Jira TIB-5609 description (2026-10-21), spec_doc, một nguồn, mục Solution",
+      "kb_refs": [
+        "artwork/populate-values#KB-1108"
+      ]
     }
   ],
   "observed_behavior": [
@@ -383,6 +392,15 @@
       "confidence": "LOW",
       "kb_refs": [
         "artwork/populate-values#KB-1027"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "[MỚI, CBS-106] Storefront staging (Testlane PASS 2026-11-10, không ghi build): Star Map dd.MM.yyyy HH:mm cho {{time}} = '21.10.2026 11:24', {{time.yyyy/MM/dd}} = '2026/10/21'; Star Map chưa set format thì ô giờ dạng ISO và {{time}} = 'yyyy-MM-dd HH:mm' (mặc định, ghi theo TIB-4913, chưa có nguồn trích); Moon Phase {{date}} và Route {{route_start_date}} không đổi; text layer đích Date picker populate từ Star Map hiện theo format của chính nó và lưu dạng ISO, không áp format Star Map. {{name}}/{{lat}} của Star Map chưa kiểm.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/populate-values#KB-1109"
       ],
       "observed_count": null
     }
@@ -510,6 +528,15 @@
         "artwork/populate-values#KB-859",
         "artwork/populate-values#KB-860"
       ]
+    },
+    {
+      "type": "cross_object",
+      "description": "[CBS-106] Format hiển thị của {{time}} phụ thuộc setting 'Display in date format' của layer Star Map (artwork/layer-config-maps-astronomy#KB-1104). Chỉ tham chiếu, không làm oracle ở đây.",
+      "kb_refs": [
+        "artwork/populate-values#KB-1108",
+        "artwork/layer-config-maps-astronomy#KB-1104",
+        "artwork/layer-config-maps-astronomy#KB-1111"
+      ]
     }
   ],
   "risks": [
@@ -578,6 +605,13 @@
       "kb_refs": [
         "artwork/populate-values#KB-1025",
         "artwork/populate-values#KB-1026"
+      ]
+    },
+    {
+      "risk": "[CBS-106] KB-1109 là OBSERVED_CURRENT/LOW (không ghi build, mặc định yyyy-MM-dd HH:mm chưa có nguồn trích); KB-1108 là một nguồn spec_doc MEDIUM. Request POST /api/merchant/shopify/customization không đọc được trong Network nên kiểm qua localStorage, cart property và design order.",
+      "kb_refs": [
+        "artwork/populate-values#KB-1108",
+        "artwork/populate-values#KB-1109"
       ]
     }
   ],
@@ -836,6 +870,15 @@
         "artwork/populate-values#KB-1027"
       ],
       "oq_id": "OQ-artwork-505"
+    },
+    {
+      "question": "[MỚI, CBS-106] Populate từ Star Map: Star Map chưa set format vẫn cho {{time}} = yyyy-MM-dd HH:mm (mặc định TIB-4913), Moon Phase {{date}} / Route {{route_start_date}} không đổi, text layer đích Date picker nhận ngày ISO theo format của chính nó — Dev xác nhận? {{name}}/{{lat}} của Star Map có đổi không (chưa kiểm)?",
+      "why_it_matters": "KB-1109 là OBSERVED_CURRENT/LOW; CHK-062 và CHK-063 không có oracle.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/populate-values#KB-1109"
+      ],
+      "oq_id": "OQ-artwork-574"
     }
   ],
   "coverage_matrix": [
@@ -1162,6 +1205,31 @@
         "artwork/populate-values#KB-1027"
       ],
       "basis": "change note dev, chưa quan sát"
+    },
+    {
+      "feature_id": "FEAT-11-populate-values",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[CBS-106] {{time}} và {{time.yyyy/MM/dd}} populate từ Star Map có Display in date format",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/populate-values#KB-1108",
+        "artwork/populate-values#KB-1109"
+      ],
+      "basis": "KB-1108 CONFIRMED_EXPECTED/MEDIUM; KB-1109 OBSERVED_CURRENT/LOW"
+    },
+    {
+      "feature_id": "FEAT-11-populate-values",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[CBS-106] {{name}}/{{lat}} của Star Map, {{time}} qua picker native, SDK v1",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/populate-values#KB-1109"
+      ],
+      "basis": "chưa kiểm"
     }
   ],
   "profile_conflicts": [

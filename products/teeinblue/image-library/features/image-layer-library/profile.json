@@ -159,6 +159,26 @@
         "image-library/image-layer-library#KB-040",
         "image-library/image-layer-library#KB-035"
       ]
+    },
+    {
+      "capability_id": "CAP-IMG-10",
+      "name": "[CBS-152] Giới hạn pixel 128 MP ở luồng upload của portal",
+      "description": "Theo Dev (TIB-5709): by-temporary-file từ chối raster lớn hơn 128 MP hoặc header không đọc được, trước khi tạo layer image; presign báo lỗi theo megapixel. Route /api/layer-images/file (dùng cho layer PSD) không bị cap (quan sát KB-069).",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-065",
+        "image-library/image-layer-library#KB-067",
+        "image-library/image-layer-library#KB-069"
+      ]
+    },
+    {
+      "capability_id": "CAP-IMG-11",
+      "name": "[CBS-163] Shape response của các route upload layer image (TIB-5689)",
+      "description": "Theo Dev (TIB-5689): by-temporary-file trả cùng 7 key như /file và /svg, không master, không timestamp (KB-071). Quan sát editor: cả 3 route trả id, name, url, thumbnail, width, height, layer_image_category_id (KB-072). Quan sát cũ KB-023 (master rỗng) có thể lỗi thời.",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-071",
+        "image-library/image-layer-library#KB-072",
+        "image-library/image-layer-library#KB-023"
+      ]
     }
   ],
   "state_transitions": [
@@ -260,8 +280,33 @@
       ]
     }
   ],
-  "confirmed_rules": [],
-  "confirmed_rules_note": "Run không có nguồn thẩm quyền (§3); không KB item nào là CONFIRMED_EXPECTED.",
+  "confirmed_rules": [
+    {
+      "statement": "Theo Jira TIB-5709 comment 56698 (Dev, 2026-11-09), POST /api/layer-images/by-temporary-file từ chối raster lớn hơn temporary_file_max_megapixel (mặc định 128 MP) hoặc có header không đọc được, trước khi layer image được tạo.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-065"
+      ]
+    },
+    {
+      "statement": "Theo Jira TIB-5709 comment 56698 (Dev, 2026-11-09), presign của portal vượt cap có message \"file is too large to upload, maximum 128 megapixels.\" (trước đây ghi số pixel).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-067"
+      ]
+    },
+    {
+      "statement": "[CBS-163] Theo Jira TIB-5689 comment 56714 mục 2 (Dev, 2026-11-09), POST /api/layer-images/by-temporary-file trả cùng 7 key như /file và /svg, không master, không timestamp.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-071"
+      ]
+    }
+  ],
+  "confirmed_rules_note": "Từ CBS-152: KB-065, KB-067 là CONFIRMED_EXPECTED/MEDIUM theo Dev trên Jira TIB-5709 (giới hạn 128 MP). Từ CBS-163: KB-071 là CONFIRMED_EXPECTED/MEDIUM theo Dev trên Jira TIB-5689 (shape response by-temporary-file). Các item khác vẫn OBSERVED_CURRENT hoặc INFERRED.",
   "observed_behavior": [
     {
       "statement": "Không có trang Image Library/Media độc lập trong sidebar hay router; thư viện chỉ mở từ artwork editor (và mockup library từ product base).",
@@ -629,6 +674,30 @@
         "cross-object-conflict"
       ],
       "oracle_eligible": false
+    },
+    {
+      "statement": "[CBS-152] POST /api/layer-images/file nhận PNG 144 MP: 201 sau khoảng 34 giây, width/height 12000x12000, url _large.webp, thumbnail (TC-TIB-8778, build e96975614).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-069"
+      ]
+    },
+    {
+      "statement": "[CBS-152] Raster dưới cap: by-temporary-file 201 url null rồi ready; /file 201 với id, name, url, thumbnail, width, height, layer_image_category_id (TC-TIB-8786, build không ghi).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-070"
+      ]
+    },
+    {
+      "statement": "[CBS-163] Upload layer image và SVG layer trong editor: /file, /svg, by-temporary-file đều trả id, name, url, thumbnail, width, height, layer_image_category_id, không master, không timestamp (TC-TIB-8596, build không ghi).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-072"
+      ]
     }
   ],
   "observed_validations": [
@@ -745,6 +814,28 @@
       "rule_confidence": "LOW",
       "kb_refs": [
         "image-library/image-layer-library#KB-026"
+      ]
+    },
+    {
+      "input": "POST /api/layer-images/by-temporary-file với PNG 12000x12000 (presign không gửi filewidth/fileheight)",
+      "condition": "422",
+      "message_verbatim": "The image is 12000x12000 px (144 MP), over the 128 MP limit. Resize it to at most 128 megapixels and upload again.",
+      "behavior": "Lỗi dưới errors.temporary_file_id, không có layer image mới",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-066"
+      ]
+    },
+    {
+      "input": "POST /api/users/<user>/temporary-files/upload-url với filewidth 12000, fileheight 12000",
+      "condition": "422",
+      "message_verbatim": "file is too large to upload, maximum 128 megapixels.",
+      "behavior": "Lỗi trên errors.filewidth và errors.fileheight",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-068"
       ]
     }
   ],
@@ -1010,6 +1101,15 @@
         "image-library/image-layer-library#KB-040",
         "image-library/image-layer-library#KB-041"
       ]
+    },
+    {
+      "type": "cross_object",
+      "description": "[CBS-152] Layer của PSD Single template / Group-to-template upload qua /api/layer-images/file nên không bị cap (artwork/psd-import KB-1113). Ranh giới 'lớn hơn' của cap theo open-api KB-057.",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-069",
+        "artwork/psd-import#KB-1113",
+        "open-api/open-api-asset-upload#KB-057"
+      ]
     }
   ],
   "risks": [
@@ -1105,6 +1205,25 @@
       "kb_refs": [
         "image-library/_object-level#KB-004",
         "image-library/image-layer-library#KB-042"
+      ]
+    },
+    {
+      "risk": "[CBS-152] Ghi nhận cũ 'không thấy giới hạn kích thước' (KB-028, 27 MB, 3000x3000) chỉ nói về dung lượng; nay có cap 128 MP theo pixel ở by-temporary-file. Message/status chỉ có một lượt quan sát; production chưa verify.",
+      "severity": "MEDIUM",
+      "category": "oracle-risk",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-028",
+        "image-library/image-layer-library#KB-065",
+        "image-library/image-layer-library#KB-066"
+      ]
+    },
+    {
+      "risk": "[CBS-163] KB-023 còn ghi response by-temporary-file có master; check dựa trên KB-023 có thể sai sau TIB-5689. Production chưa verify.",
+      "severity": "LOW",
+      "category": "oracle-risk",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-023",
+        "image-library/image-layer-library#KB-071"
       ]
     }
   ],
@@ -1452,11 +1571,78 @@
         "image-library/_object-level#KB-002"
       ],
       "oq_id": "OQ-image-library-025"
+    },
+    {
+      "question": "[CBS-152] by-temporary-file trên 128 MP trả 422 message cap dưới errors.temporary_file_id (KB-066) — đúng ý Dev? File tạm trên storage có bị xoá khi bị từ chối?",
+      "why_it_matters": "KB-066 là OBSERVED_CURRENT/LOW; liên quan KB-011 (file mồ côi).",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-066",
+        "image-library/_object-level#KB-011"
+      ],
+      "oq_id": "OQ-image-library-039"
+    },
+    {
+      "question": "[CBS-152] Presign portal vượt cap trả 422 với lỗi trên errors.filewidth / errors.fileheight (KB-068) — xác nhận?",
+      "why_it_matters": "KB-067 chỉ xác nhận message.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-068"
+      ],
+      "oq_id": "OQ-image-library-040"
+    },
+    {
+      "question": "[CBS-152] /api/layer-images/file không bị cap 128 MP (KB-069) là expected lâu dài, hay đổi khi TIB-5718 đưa layer PSD lên queue?",
+      "why_it_matters": "KB-069 là OBSERVED_CURRENT/LOW; câu Dev bỏ cap ở route này không được trích trong CCR.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-069"
+      ],
+      "oq_id": "OQ-image-library-041"
+    },
+    {
+      "question": "[CBS-152] Raster dưới cap qua by-temporary-file và /file (KB-070) vẫn như trước, và shape response của /file — xác nhận?",
+      "why_it_matters": "KB-070 là OBSERVED_CURRENT/LOW không ghi build.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-070"
+      ],
+      "oq_id": "OQ-image-library-042"
+    },
+    {
+      "question": "[CBS-152] Dropzone portal chặn ảnh > 128 MP ở trình duyệt (chưa quan sát) và message hiện trên dòng upload; ranh giới đúng 128 MP qua by-temporary-file; production.",
+      "why_it_matters": "Chỉ có ghi chú trong CCR; merchant đi qua UI có thể không tới được check server.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-065"
+      ],
+      "oq_id": "OQ-image-library-043"
+    },
+    {
+      "question": "[CBS-163] Danh sách 7 key id, name, url, thumbnail, width, height, layer_image_category_id của /file, /svg, by-temporary-file (KB-072) là expected?",
+      "why_it_matters": "KB-071 chỉ nói 'cùng 7 key', không liệt kê; KB-072 là OBSERVED_CURRENT/LOW.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-072"
+      ],
+      "draft_id": "OQ-image-library-044",
+      "oq_id": "OQ-image-library-044"
+    },
+    {
+      "question": "[CBS-163] KB-023 (by-temporary-file 201 với master rỗng) đã lỗi thời theo KB-071?",
+      "why_it_matters": "Hai item trái nhau về key master; base không sửa, oracle chỉ theo KB-071.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "image-library/image-layer-library#KB-023",
+        "image-library/image-layer-library#KB-071"
+      ],
+      "draft_id": "OQ-image-library-045",
+      "oq_id": "OQ-image-library-045"
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   },
   "coverage_matrix": [
     {
@@ -1787,6 +1973,52 @@
       "environment": "staging",
       "covered": false,
       "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-01-image-layer-library",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-152] raster > 128 MP qua by-temporary-file (gọi API trực tiếp)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "image-library/image-layer-library#KB-065",
+        "image-library/image-layer-library#KB-066"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-image-layer-library",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-152] dropzone với ảnh > 128 MP; production",
+      "environment": "staging+production",
+      "covered": false,
+      "kb_refs": [
+        "image-library/image-layer-library#KB-065"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-image-layer-library",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] shape response /file, /svg, by-temporary-file qua editor",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "image-library/image-layer-library#KB-071",
+        "image-library/image-layer-library#KB-072"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-image-layer-library",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] shape response upload layer image",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "image-library/image-layer-library#KB-071"
+      ]
     }
   ],
   "profile_conflicts": [

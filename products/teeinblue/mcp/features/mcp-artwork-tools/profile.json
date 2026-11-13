@@ -1,12 +1,12 @@
 {
-  "feature_id": "FEAT-33-mcp-artwork-tools",
+  "feature_id": "FEAT-03-mcp-artwork-tools",
   "feature_key": "mcp-artwork-tools",
   "name": "MCP tool của Artwork server: import-artwork-json-tool (cap mỗi lần gọi, quota theo ngày) và source của clipart category tạo qua MCP",
   "user_goal": "Là merchant (hoặc agent dùng token MCP của merchant), mình import một artwork kèm clipart category và global option inline bằng một definition JSON qua MCP, trong giới hạn mỗi lần gọi và quota theo ngày; category tạo qua MCP được đánh dấu source mcp.",
   "user_goal_kb_refs": [
-    "artwork/mcp-artwork-tools#KB-1003",
-    "artwork/mcp-artwork-tools#KB-1004",
-    "artwork/mcp-artwork-tools#KB-1005"
+    "mcp/mcp-artwork-tools#KB-1003",
+    "mcp/mcp-artwork-tools#KB-1004",
+    "mcp/mcp-artwork-tools#KB-1005"
   ],
   "stable_since_version": null,
   "actors": [
@@ -14,9 +14,9 @@
       "role": "merchant-owner (qua token MCP)",
       "permission_observed": "Gọi import-artwork-json-tool và create-clipart-category-tool trên MCP Artwork server; theo câu trả lời Dev TIB-5486 (2026-10-26), chưa quan sát trong run, tool chưa ship.",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1003",
-        "artwork/mcp-artwork-tools#KB-1004",
-        "artwork/mcp-artwork-tools#KB-1005"
+        "mcp/mcp-artwork-tools#KB-1003",
+        "mcp/mcp-artwork-tools#KB-1004",
+        "mcp/mcp-artwork-tools#KB-1005"
       ]
     }
   ],
@@ -25,16 +25,16 @@
       "path": "MCP Artwork server → tool import-artwork-json-tool (definition JSON: templates + assets.clipart_categories[] + assets.global_options[])",
       "precondition": "Build có TIB-5486 trên staging; token MCP của merchant test. Fixture tự dựng trên account/store test của explorer ở staging qua token MCP của explorer (không dùng store/campaign/artwork nêu trong CCR hay production).",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1003",
-        "artwork/mcp-artwork-tools#KB-1004",
-        "artwork/mcp-artwork-tools#KB-1005"
+        "mcp/mcp-artwork-tools#KB-1003",
+        "mcp/mcp-artwork-tools#KB-1004",
+        "mcp/mcp-artwork-tools#KB-1005"
       ]
     },
     {
       "path": "MCP Artwork server → tool create-clipart-category-tool",
       "precondition": "Token MCP của merchant test. Fixture tự dựng trên account/store test của explorer ở staging qua token MCP của explorer (không dùng store/campaign/artwork nêu trong CCR hay production).",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1005"
+        "mcp/mcp-artwork-tools#KB-1005"
       ]
     }
   ],
@@ -43,40 +43,68 @@
       "name": "Cap mỗi lần gọi của import-artwork-json-tool",
       "description": "Tối đa 20 clipart category, 20 global option inline; 50 item mỗi category, không vượt cap clipart của category (mặc định 300 hoặc users.config.clipart_max_per_category).",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1003"
+        "mcp/mcp-artwork-tools#KB-1003"
       ]
     },
     {
       "name": "Quota theo ngày của import-artwork-json-tool",
       "description": "clipart_category 1000/ngày, clipart 4000/ngày (24h, Redis); global_option không có quota ngày.",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1004"
+        "mcp/mcp-artwork-tools#KB-1004"
       ]
     },
     {
       "name": "source của clipart category tạo qua MCP",
       "description": "Cả import và create-clipart-category-tool đều ghi source = mcp.",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1005"
+        "mcp/mcp-artwork-tools#KB-1005"
       ]
     },
     {
       "name": "[MỚI, CBS-143] Kiểm tra artwork của MCP với layer ảnh không có ảnh",
       "description": "MCP chặn thêm clipart-category / group-clipart-categories No personalization không ảnh; vẫn chặn photo personalization thường không ảnh mặc định (theo change note dev, chưa quan sát).",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1023"
+        "mcp/mcp-artwork-tools#KB-1023"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-149] Layer schema và MCP write tool với stroke của curve / spiral / shape / warp text",
+      "description": "CONFIRMED_EXPECTED (Dev TIB-5699 comment 56557, 2026-11-05): get-layer-schema-tool không cung cấp stroke_layers cho 4 loại; update-artwork-layer-tool gửi stroke_layers lên curve / warp thì layer lưu không có stroke_layers, giữ cặp; Text giữ list (KB-1099).",
+      "kb_refs": [
+        "mcp/mcp-artwork-tools#KB-1099"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-149] Patch cặp stroke của curve text qua MCP",
+      "description": "OBSERVED_CURRENT/LOW (TC-TIB-8989): update-artwork-layer-tool patch cặp mới thì get-artwork-tool trả cặp mới, không stroke_layers; design và preview storefront theo cặp mới (KB-1100).",
+      "kb_refs": [
+        "mcp/mcp-artwork-tools#KB-1100"
       ]
     }
   ],
   "state_transitions": [],
-  "confirmed_rules": [],
+  "confirmed_rules": [
+    {
+      "rule": "MCP get-layer-schema-tool không cung cấp stroke_layers cho curve-text, spiral-text, shape-text, warp-text; MCP write tool (vd update-artwork-layer-tool) gửi stroke_layers lên layer curve / warp text thì layer lưu không có stroke_layers và giữ cặp stroke; trên layer Text thì list được giữ.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner (token MCP), api MCP Artwork server",
+      "shipped": "SHIPPED",
+      "caveats": "Một citation. stroke_enabled trong schema 4 loại và 'tối đa 3' của stroke_layers text / paragraph là quan sát test case, không nằm trong lời Dev.",
+      "confirmation_ref": "Jira TIB-5699 comment 56557 (Dev), 2026-11-05",
+      "kb_refs": [
+        "mcp/mcp-artwork-tools#KB-1099"
+      ]
+    }
+  ],
   "observed_behavior": [
     {
       "statement": "[MỚI, CBS-143] Theo change note dev TIB-5446 (chưa quan sát): kiểm tra artwork của MCP chặn thêm layer clipart-category / group-clipart-categories No personalization không có ảnh.",
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1023"
+        "mcp/mcp-artwork-tools#KB-1023"
       ],
       "observed_count": null
     },
@@ -85,7 +113,16 @@
       "knowledge_kind": "OBSERVED_CURRENT",
       "confidence": "LOW",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1054"
+        "mcp/mcp-artwork-tools#KB-1054"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "[MỚI, CBS-149] update-artwork-layer-tool patch cặp stroke mới cho curve text: get-artwork-tool trả cặp mới, không stroke_layers; design order và preview storefront vẽ theo cặp mới. Một test case staging (TC-TIB-8989), không ghi build.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "mcp/mcp-artwork-tools#KB-1100"
       ],
       "observed_count": null
     }
@@ -96,13 +133,16 @@
     "portal": [],
     "storefront": [],
     "api": [
-      "artwork/mcp-artwork-tools#KB-1003",
-      "artwork/mcp-artwork-tools#KB-1004",
-      "artwork/mcp-artwork-tools#KB-1005"
+      "mcp/mcp-artwork-tools#KB-1003",
+      "mcp/mcp-artwork-tools#KB-1004",
+      "mcp/mcp-artwork-tools#KB-1005",
+      "mcp/mcp-artwork-tools#KB-1099",
+      "mcp/mcp-artwork-tools#KB-1100"
     ],
     "data": [
-      "artwork/mcp-artwork-tools#KB-1004",
-      "artwork/mcp-artwork-tools#KB-1005"
+      "mcp/mcp-artwork-tools#KB-1004",
+      "mcp/mcp-artwork-tools#KB-1005",
+      "mcp/mcp-artwork-tools#KB-1099"
     ],
     "code": []
   },
@@ -114,34 +154,38 @@
     {
       "feature_key": "layer-config-image",
       "why": "Layer artwork tham chiếu clipart category / global option tạo inline qua @ref (change note Dev TIB-5486)."
+    },
+    {
+      "feature_key": "text-multi-stroke",
+      "why": "[CBS-149] Hook save xoá stroke_layers khỏi 4 loại layer 1 stroke áp cho cả MCP write tool (KB-1095); render theo cặp ở KB-1094."
     }
   ],
   "risks": [
     {
       "summary": "Tool chưa ship (TIB-5486 re-open 2026-10-28; QA-3423 2026-11-02 tool not found). Mọi item PROPOSED, không là oracle; số cap/quota là giá trị cấu hình trong code, có thể đổi.",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1003",
-        "artwork/mcp-artwork-tools#KB-1004",
-        "artwork/mcp-artwork-tools#KB-1005"
+        "mcp/mcp-artwork-tools#KB-1003",
+        "mcp/mcp-artwork-tools#KB-1004",
+        "mcp/mcp-artwork-tools#KB-1005"
       ]
     },
     {
       "summary": "Số quota trùng giới hạn REST (asset-category KB-035/KB-036); chưa biết bộ đếm chung hay riêng, nên test quota MCP và REST trên cùng account có thể ảnh hưởng nhau.",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1004"
+        "mcp/mcp-artwork-tools#KB-1004"
       ]
     },
     {
       "summary": "[CBS-122] KB-1052, KB-1053 thuộc đợt TIB-5488 chưa ship (QA Review, PR mở): enum status và hành vi update trên artwork Archived chỉ là đề xuất, không làm oracle. Giá trị 1 = Archived chỉ có ở lượt đo QA.",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1052",
-        "artwork/mcp-artwork-tools#KB-1053"
+        "mcp/mcp-artwork-tools#KB-1052",
+        "mcp/mcp-artwork-tools#KB-1053"
       ]
     },
     {
       "summary": "[CBS-108] KB-1079 (rule QA FACT-182, PROPOSED): khi dựng fixture Artwork 1.0 cho test convert bằng cách sửa field qua API, layer linked có thể không còn là linked trước lúc gọi dry_run của bulk-convert-artworks-tool, làm kết quả would-convert bị hiểu nhầm là dry_run không validate. Đọc lại layer qua GraphQL sau khi sửa fixture; không dùng làm oracle.",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1079"
+        "mcp/mcp-artwork-tools#KB-1079"
       ]
     }
   ],
@@ -153,22 +197,22 @@
     {
       "question": "Khi TIB-5486 ship, cap mỗi lần gọi của import-artwork-json-tool (20 category, 20 global option, 50 item mỗi category, cap clipart của category) có đúng như Dev nêu không, và message lỗi khi vượt là gì?",
       "why_it_matters": "Quyết định expected của CHK-001; hiện item PROPOSED, oracle NONE.",
-      "oq_id": "OQ-artwork-475"
+      "oq_id": "OQ-mcp-019"
     },
     {
       "question": "Khi TIB-5486 ship, quota theo ngày (clipart_category 1000, clipart 4000; global_option không có quota ngày) có đúng không?",
       "why_it_matters": "Quyết định expected của CHK-002.",
-      "oq_id": "OQ-artwork-476"
+      "oq_id": "OQ-mcp-020"
     },
     {
       "question": "Bộ đếm quota clipart/clipart_category của MCP import dùng chung limiter với REST (POST /api/cliparts/svg, POST /api/clipart-categories) hay riêng?",
       "why_it_matters": "Ảnh hưởng setup và kết quả của CHK-002 khi cùng account đã gọi REST trong 24h.",
-      "oq_id": "OQ-artwork-477"
+      "oq_id": "OQ-mcp-021"
     },
     {
       "question": "Field source = mcp của clipart category tạo qua MCP đọc ở đâu (DB, GraphQL, UI) khi response create-clipart-category-tool không trả field này?",
       "why_it_matters": "Quyết định observation point của CHK-003.",
-      "oq_id": "OQ-artwork-478"
+      "oq_id": "OQ-mcp-022"
     },
     {
       "question": "[MỚI, CBS-143] Kiểm tra artwork của MCP (KB-1023) có chặn layer static-photo và photo No personalization không có ảnh không (AC5 TIB-5446), và áp ở tool MCP nào?",
@@ -176,57 +220,67 @@
       "type": "NEEDS_CONFIRMATION",
       "knowledge_kind": "OBSERVED_CURRENT",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1023"
+        "mcp/mcp-artwork-tools#KB-1023"
       ],
-      "oq_id": "OQ-artwork-500"
+      "oq_id": "OQ-mcp-023"
     },
     {
       "question": "[MỚI, CBS-122] Giá trị status của artwork Archived khi đọc qua get-artwork-tool / archive-artwork-tool có đúng là 1 (\"Status Archive\") không? Dev mới nêu 0, 2, 3, 4.",
       "why_it_matters": "KB-1052 PROPOSED; CHK-005 chưa có oracle.",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1052"
+        "mcp/mcp-artwork-tools#KB-1052"
       ],
       "oq_type": "NEEDS_CONFIRMATION",
-      "oq_id": "OQ-artwork-524"
+      "oq_id": "OQ-mcp-024"
     },
     {
       "question": "[MỚI, CBS-122] Khi TIB-5488 ship (hoặc nếu hành vi đã live từ trước TIB-5488 như dòng Regression của Dev gợi ý), update-artwork-tool trên artwork Archived có giữ status 1 và trên Active giữ 0 không?",
       "why_it_matters": "KB-1052, KB-1053 PROPOSED vì chưa ship; CHK-006 chưa có oracle.",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1052",
-        "artwork/mcp-artwork-tools#KB-1053"
+        "mcp/mcp-artwork-tools#KB-1052",
+        "mcp/mcp-artwork-tools#KB-1053"
       ],
       "oq_type": "OPEN_ISSUE",
-      "oq_id": "OQ-artwork-525"
+      "oq_id": "OQ-mcp-025"
     },
     {
       "question": "[MỚI, CBS-122] Mã lỗi update-artwork-tool trả cho artwork schema_version 1 có đúng là artwork.schema_version.not_2 không, và message có nhắc convert tay trong portal không?",
       "why_it_matters": "KB-1055 PROPOSED; expected chi tiết của CHK-007 ngoài phần baseline KB-1054.",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1054",
-        "artwork/mcp-artwork-tools#KB-1055"
+        "mcp/mcp-artwork-tools#KB-1054",
+        "mcp/mcp-artwork-tools#KB-1055"
       ],
       "oq_type": "NEEDS_CONFIRMATION",
-      "oq_id": "OQ-artwork-526"
+      "oq_id": "OQ-mcp-026"
     },
     {
       "question": "[MỚI, CBS-108] Sửa field qua API (vd đổi font của layer linked có nguồn date) có tự đổi customization_type từ linked sang no_customization không, hay lượt would-convert là do converter map layer linked khác design nguồn sang populate? Layer linked nguồn date input nhưng khác design nguồn thì dry_run chặn hay cho convert?",
       "why_it_matters": "KB-1079 PROPOSED; CHK-008 chưa có oracle; quyết định cách dựng fixture và expected của test convert linked + date.",
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1079",
-        "artwork/mcp-artwork-tools#KB-1054"
+        "mcp/mcp-artwork-tools#KB-1079",
+        "mcp/mcp-artwork-tools#KB-1054"
       ],
       "oq_type": "NEEDS_CONFIRMATION",
-      "oq_id": "OQ-artwork-546"
+      "oq_id": "OQ-mcp-027"
+    },
+    {
+      "question": "[MỚI, CBS-149] MCP write guard (fieldLoss) không cảnh báo field bị mất khi stroke_layers bị bỏ trên curve / spiral / shape / warp text (Dev U13, ghi \"Not for QA\") — đúng là không có warning trong response của write tool không? QA chưa verify.",
+      "why_it_matters": "Client MCP gửi stroke_layers cho 4 loại sẽ mất dữ liệu im lặng; CHK-010 chưa có expected cho warning.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "mcp/mcp-artwork-tools#KB-1099"
+      ],
+      "oq_id": "OQ-mcp-029"
     }
   ],
   "last_updated": {
     "date": "2026-11-12",
-    "ccr_ref": "CBS-108"
+    "ccr_ref": "CBS-149"
   },
   "coverage_matrix": [
     {
-      "feature_id": "FEAT-33-mcp-artwork-tools",
+      "feature_id": "FEAT-03-mcp-artwork-tools",
       "layer": "api",
       "role": "merchant-owner",
       "state": "import definition có assets inline (chỉ đề xuất theo Dev, chưa quan sát; tool chưa ship)",
@@ -234,7 +288,7 @@
       "covered": false
     },
     {
-      "feature_id": "FEAT-33-mcp-artwork-tools",
+      "feature_id": "FEAT-03-mcp-artwork-tools",
       "layer": "data",
       "role": "merchant-owner",
       "state": "clipart category tạo qua MCP (chỉ đề xuất theo Dev, chưa quan sát; tool chưa ship)",
@@ -242,7 +296,7 @@
       "covered": false
     },
     {
-      "feature_id": "FEAT-33-mcp-artwork-tools",
+      "feature_id": "FEAT-03-mcp-artwork-tools",
       "layer": "portal",
       "role": "merchant-owner",
       "state": "mở artwork đã import trong editor (chỉ đề xuất theo Dev, chưa quan sát; tool chưa ship)",
@@ -250,48 +304,64 @@
       "covered": false
     },
     {
-      "feature_id": "FEAT-33-mcp-artwork-tools",
+      "feature_id": "FEAT-03-mcp-artwork-tools",
       "layer": "api",
       "role": "merchant-owner",
       "state": "[CBS-143] MCP gửi artwork có layer clipart-category / group-clipart-categories No personalization không ảnh",
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1023"
+        "mcp/mcp-artwork-tools#KB-1023"
       ],
       "basis": "change note dev, chưa quan sát"
     },
     {
-      "feature_id": "FEAT-33-mcp-artwork-tools",
+      "feature_id": "FEAT-03-mcp-artwork-tools",
       "layer": "api",
       "role": "merchant-owner",
       "state": "[CBS-122] archive rồi update artwork qua MCP; đọc status (đề xuất, TIB-5488 chưa ship)",
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1052",
-        "artwork/mcp-artwork-tools#KB-1053"
+        "mcp/mcp-artwork-tools#KB-1052",
+        "mcp/mcp-artwork-tools#KB-1053"
       ],
       "basis": "rule QA và change note dev, chưa ship"
     },
     {
-      "feature_id": "FEAT-33-mcp-artwork-tools",
+      "feature_id": "FEAT-03-mcp-artwork-tools",
       "layer": "api",
       "role": "merchant-owner",
       "state": "[CBS-122] update-artwork-tool trên artwork Artwork 1.0",
       "environment": "staging",
       "covered": false,
       "kb_refs": [
-        "artwork/mcp-artwork-tools#KB-1054",
-        "artwork/mcp-artwork-tools#KB-1055"
+        "mcp/mcp-artwork-tools#KB-1054",
+        "mcp/mcp-artwork-tools#KB-1055"
       ],
       "basis": "change note dev TIB-5572 và rule QA, chưa quan sát trong run"
     },
     {
-      "feature_id": "FEAT-33-mcp-artwork-tools",
+      "feature_id": "FEAT-03-mcp-artwork-tools",
       "layer": "api",
       "role": "merchant-owner",
       "state": "[CBS-108] fixture Artwork 1.0 có layer linked nguồn date, sửa field qua API rồi dry_run bulk-convert-artworks-tool (chỉ rule QA, chưa quan sát trong run)",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-03-mcp-artwork-tools",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-149] get-layer-schema-tool 4 loại vs text / paragraph; update-artwork-layer-tool gửi stroke_layers / patch cặp stroke",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-03-mcp-artwork-tools",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-149] write guard cảnh báo khi stroke_layers bị bỏ (U13)",
       "environment": "staging",
       "covered": false
     }
