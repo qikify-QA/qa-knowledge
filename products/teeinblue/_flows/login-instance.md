@@ -64,6 +64,15 @@ Agent dùng **`/login?staff=true`** (`.env` là email/password).
 - 2026-10-27 portal từng bắt 2FA sau email/password (`/login/two-factor`). Người dùng đã tắt 2026-10-28; login lại `POST /api/login` 200 không hỏi mã.
 - Nếu 2FA bật lại: agent không có TOTP/inbox → nhờ người dùng nhập mã trong browser Playwright rồi chạy tiếp.
 
+### Continue with Google (staff login)
+- Nút chỉ có ở `/login?staff=true` (href `<TIB_API_BASE>/api/auth/google/redirect`), không có ở `/login` (store domain) và `/register`.
+- `GET /api/auth/google/redirect` → 302 tới `accounts.google.com` (scope `openid profile email`, `redirect_uri` là `<TIB_API_BASE>/api/auth/google/callback`).
+- Google sign-in cần người dùng thao tác tay trong browser: env không có credential Google. Gmail dùng để test phải được Dev thêm làm test user của consent screen trước.
+- Màn "Choose an account" của Google không có nút Cancel. Muốn test Cancel: chọn account rồi bấm Cancel ở màn consent.
+- Kiểm toast của từng mã từ chối không cần qua Google: mở thẳng `/login?social_error=<no_account|invite_pending|email_unverified|oauth_failed>` (hiện view email/password + toast `.vue-notification`).
+- Query có thẻ HTML gây nguy hiểm (kiểu `<img onerror>`) bị Cloudflare chặn 403 trước khi tới portal. Muốn kiểm portal có render HTML trong `social_error` không thì dùng thẻ vô hại đã URL-encode (vd `%3Cb%3Ex%3C%2Fb%3E`).
+- Một lần Google login = 2 request vào bucket rate limit (redirect + callback). Test rate limit thì chạy cuối: sẽ khoá Google login của cả IP tới khi hết `retry-after`.
+
 ## Instance / store đang active
 
 - Account `TIB_STAGING_EMAIL` mặc định làm việc ở instance `TIB_STORE_INSTANCE_ID` `Enterprise (Test)`, store **`<TIB_STORE_URL>`** (sidebar dưới tên `<org của TIB_USER_A>`, và `Store Settings`). Đây là store đích khi publish.

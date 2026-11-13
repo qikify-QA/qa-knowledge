@@ -130,23 +130,26 @@
       "check_id": "CHK-005",
       "dimension": "STATE_DATA",
       "layer": "portal",
-      "title": "Kết quả sau khi click 'Mark as archive'",
+      "title": "Kết quả sau khi click 'Mark as archive' và Unarchive",
       "applicability": {
-        "role": "store owner / staff",
-        "state": "menu overflow đang mở",
-        "environment": "staging",
-        "theme_or_device": ""
+        "role": "merchant-owner",
+        "state": "artwork fixture active trên /artworks",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /artworks + portal API (Network)"
       },
-      "precondition": "Đã mở menu overflow của 1 artwork row.",
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Artwork fixture tự dựng trên store explorer, không dùng artwork, store hay id trong CCR/test case. Đọc response qua tab Network của portal (TIB_PORTAL_BASE). Dọn fixture sau khi chạy.",
       "steps": [
-        "Click 'Mark as archive'.",
-        "Quan sát trạng thái artwork trong list / API list."
+        "Trên /artworks, mở menu overflow của artwork fixture, click 'Mark as archive'.",
+        "Ghi status code và status trong response; kiểm tab Archived.",
+        "Unarchive artwork; ghi status code và status trong response; kiểm tab Active."
       ],
-      "observation_point": "Thay đổi trạng thái/label/filter trên list; thay đổi field trong GET /api/artworks (nếu có).",
-      "expected_result": null,
+      "observation_point": "Status code, status trong response; tab chứa artwork sau mỗi bước",
+      "expected_result": "Baseline theo quan sát: archive 200 với status 1, artwork hiện ở tab Archived; unarchive 200 với status 0.",
       "oracle": {
-        "kb_ids": [],
-        "oracle_strength": "NONE"
+        "kb_ids": [
+          "artwork/artwork-list-management#KB-1118"
+        ],
+        "oracle_strength": "BASELINE"
       },
       "status": "NEEDS_CONFIRMATION",
       "risk_refs": [],
@@ -154,7 +157,13 @@
       "automation_suitability": "HYBRID",
       "conflict_refs": [],
       "oq_ref": "OQ-artwork-014",
-      "oq_id": "OQ-artwork-349"
+      "oq_id": "OQ-artwork-349",
+      "open_question_draft": "Xác nhận archive 200 status 1 (tab Archived), unarchive 200 status 0 là expected (OQ-artwork-577).",
+      "related_kb_ids": [
+        "artwork/artwork-list-management#KB-047",
+        "artwork/artwork-list-management#KB-1116",
+        "artwork/artwork-list-management#KB-1118"
+      ]
     },
     {
       "check_id": "CHK-006",
@@ -556,6 +565,45 @@
       "priority": "P1",
       "automation_suitability": "HYBRID",
       "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-017",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-163] Response của duplicate, archive và unarchive artwork chỉ gồm attribute Artwork::$visible",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "phiên portal của account explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /artworks + portal API (Network)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Artwork fixture tự dựng trên store explorer, không dùng artwork, store hay id trong CCR/test case. Đọc response qua tab Network của portal (TIB_PORTAL_BASE). Dọn fixture sau khi chạy.",
+      "steps": [
+        "Duplicate artwork fixture (nút duplicate trên row); ghi body response.",
+        "Mark as archive bản copy; ghi body response.",
+        "Unarchive bản copy; ghi body response.",
+        "So key top-level của ba response với danh sách attribute."
+      ],
+      "observation_point": "Key top-level của response duplicate, archive, unarchive (ghi thêm status code)",
+      "expected_result": "Mọi key top-level của ba response thuộc danh sách id, name, description, width, height, template_settings, data, is_locked, current_version_id, status, design_format, thumbnail, artwork_version_used, schema_version; không có key nào ngoài danh sách.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-management#KB-1116"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/artwork-list-management#KB-1116",
+        "artwork/artwork-list-management#KB-1118"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Status 201/200 và tab Archived là quan sát (KB-1118, CHK-005)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -610,6 +658,15 @@
         "CHK-016"
       ],
       "oracle": "STRONG (KB-1028 po_dev_confirm spec-hub) cho CHK-013/014; STRONG (KB-1031) cho CHK-016; NONE cho CHK-015 (response API, OQ CONFLICT)"
+    },
+    {
+      "feature_id": "FEAT-01-artwork-list-management",
+      "item": "[CBS-163] Archive / unarchive artwork và response contract",
+      "check_ids": [
+        "CHK-005",
+        "CHK-017"
+      ],
+      "oracle": "STRONG (KB-1116) cho CHK-017; BASELINE + NEEDS_CONFIRMATION (KB-1118) cho CHK-005 (trước đây NONE)."
     }
   ],
   "excluded_dimensions": [
@@ -623,7 +680,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-12",
-    "ccr_ref": "CBS-107"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   }
 }

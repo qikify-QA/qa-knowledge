@@ -548,3 +548,63 @@ Mỗi mục có 1 `oq_id` ổn định và đúng 1 `type` (`NEEDS_CONFIRMATION`
 ```json
 {"oq_id": "OQ-campaign-095", "type": "NEEDS_CONFIRMATION", "feature_id": "create-campaign-by-product-base", "summary": "Theo spec-hub (rule campaigns-publish-guards; S2, KB-453, đọc từ code, chưa người review), campaign không publish được khi archived, không publish 2 lần vào cùng store, không Update được ở store chưa từng publish hoặc khi mockup còn đang publish ở store đó. Dev/PO xác nhận đây là hành vi mong muốn, và portal báo việc từ chối thế nào (thông báo lỗi, nút ẩn hay disable)? Liên quan OQ-campaign-029, OQ-campaign-069, OQ-campaign-089. Người trả lời: Dev/PO.", "kb_ids": ["KB-453"]}
 ```
+
+## OQ-campaign-096 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-096","type":"NEEDS_CONFIRMATION","feature_id":"mockup-preview-render-lifecycle","summary":"2 lần Save liên tiếp trên cùng campaign mockup khi render đầu chưa xong: mỗi lần vẫn ra đúng 1 dòng trashed_images giữ cặp preview ngay trước đó, không dòng nào giữ preview đang hiển thị, và preview cuối vẫn tải được sau cleanup? QA chạy TC-TIB-8413 PASS trên staging nhưng expected do QA suy từ bước 3 và bước 6 của Dev, Dev chưa nêu. Check CHK-010 ở NEEDS_CONFIRMATION. Người trả lời: Dev.","kb_ids":["KB-456"]}
+```
+
+## OQ-campaign-097 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-097","type":"NEEDS_CONFIRMATION","feature_id":"mockup-preview-render-lifecycle","summary":"Sau re-render rồi Update/sync campaign lên Shopify, gallery Shopify có phải dùng file preview mới, SDK preview vẫn tải, và sync không đổi preview_url của mockup? Mới là quan sát QA (TC-TIB-8408, kiểm trước cleanup), Dev chưa xác nhận. Check CHK-011 ở NEEDS_CONFIRMATION. Người trả lời: Dev.","kb_ids":["KB-459"]}
+```
+
+## OQ-campaign-098 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-098","type":"NEEDS_CONFIRMATION","feature_id":"mockup-preview-render-lifecycle","summary":"Sau khi job cleanup xoá, file preview cũ trên CDN trả mã gì? QA thấy 403 (kể cả khi thêm query cache-busting), preview đang dùng vẫn 200, và dòng trashed_images đã xử lý biến mất khỏi bảng; Dev không nêu mã hay hành vi của bảng. Đây có phải hành vi đúng? Check CHK-012 ở NEEDS_CONFIRMATION. Người trả lời: Dev.","kb_ids":["KB-460"]}
+```
+
+## OQ-campaign-099 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-099","type":"NEEDS_CONFIRMATION","feature_id":"mockup-preview-render-lifecycle","summary":"Nhánh hoãn (log Postponed trashed image ...) của job cleanup chưa từng chạy thật trên staging (lần chạy của QA có postponed 0). Cần cách dựng path còn mockup khác dùng để kiểm nhánh này, hoặc Dev nêu điều kiện postpone. Check CHK-013 ở NEEDS_CONFIRMATION. Người trả lời: Dev hoặc QA.","kb_ids":["KB-460"]}
+```
+
+## OQ-campaign-100 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id":"OQ-campaign-100","type":"NEEDS_CONFIRMATION","feature_id":"mockup-preview-render-lifecycle","summary":"Job đêm cleanup:expired-trashed-images chạy 01:00 theo múi giờ nào (giờ server, UTC hay giờ Việt Nam)? Cần để biết hạn query trashed_images trước khi dòng biến mất. Người trả lời: Dev.","kb_ids":["KB-462","KB-460"]}
+```
+
+## OQ-campaign-101 — OPEN_ISSUE
+
+```json
+{"oq_id":"OQ-campaign-101","type":"OPEN_ISSUE","feature_id":"mockup-preview-render-lifecycle","summary":"Coverage platform mockup mới có Shopify và Boundless; platform product Etsy chưa chạy riêng (Dev nói dùng chung code path RenderPlatformMockup). Production verify của cả feature chưa chạy.","kb_ids":["KB-457"]}
+```
+
+## OQ-campaign-102 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-campaign-102", "type": "NEEDS_CONFIRMATION", "feature_id": "campaign-list-browse", "kb_ids": ["KB-464"], "check_ids": ["CHK-008"], "owner": "Dev", "summary": "[CBS-163] Archive campaign chưa publish 200 với status 1 (tab Archived), unarchive 200 với status 0, và danh sách key response (KB-464, một lượt staging, build không ghi): Dev xác nhận là expected, và status 1 nghĩa là archived? Liên quan OQ-campaign-002, OQ-campaign-029."}
+```
+
+## OQ-campaign-103 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-campaign-103", "type": "NEEDS_CONFIRMATION", "feature_id": "campaign-list-browse", "kb_ids": ["KB-027", "KB-464"], "check_ids": ["CHK-017"], "owner": "Dev", "summary": "[CBS-163] Menu '...' của campaign đã publish không có mục Mark as archive (quan sát trong lượt TC-TIB-8589, KB-464), trong khi KB-027 liệt kê 6 mục không nói trạng thái publish: đây là chủ đích (campaign đã publish không archive được từ list)? Liên quan rule spec-hub KB-453 và OQ-campaign-095."}
+```
+
+## OQ-campaign-104 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-campaign-104", "type": "NEEDS_CONFIRMATION", "feature_id": "create-campaign-by-product-base", "kb_ids": ["KB-466"], "check_ids": ["CHK-041"], "owner": "Dev", "summary": "[CBS-163] Đổi featured image qua modal thư viện trả 200 với featured_image_url, featured_image_thumbnail và ảnh hiện ở Product Thumbnail; xoá trả 200 với hai trường null và UI về nút Upload image (KB-466, một lượt staging, build không ghi): Dev xác nhận là expected?"}
+```
+
+## OQ-campaign-105 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-campaign-105", "type": "NEEDS_CONFIRMATION", "feature_id": "campaign-list-browse", "kb_ids": ["KB-027"], "check_ids": ["CHK-005"], "owner": "QA", "summary": "[CBS-163] CHK-005 (icon row action trên /campaigns: rocket/link, pencil, menu '...' 6 mục) chỉ dựa trên KB-027 INFERRED/LOW nên không đủ làm oracle BASELINE; hạ xuống NONE khi feature được ghi lại theo schema hiện hành. Cần quan sát lại có ghi build, hoặc nguồn PO/Dev cho bộ icon và mục menu."}
+```

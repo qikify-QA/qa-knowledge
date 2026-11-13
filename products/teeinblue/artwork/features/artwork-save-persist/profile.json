@@ -100,6 +100,14 @@
       "kb_refs": [
         "artwork/artwork-save-persist#KB-1029"
       ]
+    },
+    {
+      "name": "[CBS-163] Khôi phục version artwork và response contract của tạo/lưu/khôi phục",
+      "description": "Theo Dev (TIB-5689): response của tạo artwork, lưu artwork và khôi phục version là PortalArtworkResource gồm các attribute Artwork::$visible. Quan sát staging: khôi phục version từ History trả data và schema_version, editor hiện design của version đã khôi phục (KB-1117, chưa xác nhận).",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1115",
+        "artwork/artwork-save-persist#KB-1117"
+      ]
     }
   ],
   "state_transitions": [
@@ -159,6 +167,15 @@
       "kb_refs": [
         "artwork/artwork-save-persist#KB-972"
       ]
+    },
+    {
+      "from": "editor hiện design của version hiện tại",
+      "to": "editor hiện design của version cũ đã khôi phục",
+      "trigger": "[CBS-163] History → Restore một version cũ",
+      "condition": "OBSERVED_CURRENT/LOW (KB-1117), một lượt staging",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1117"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -170,6 +187,16 @@
       "scope_note": "spec-hub feature artwork-editor v3, rule artwork-editor-save-rate-limit, đọc 2026-11-12; ngưỡng 60 ở production chưa xác nhận; rule không nói status/body khi bị từ chối",
       "kb_refs": [
         "artwork/artwork-save-persist#KB-1029"
+      ]
+    },
+    {
+      "statement": "[CBS-163] Theo Jira TIB-5689 comment 56448 (Dev, 2026-11-04), response của tạo artwork, lưu artwork và khôi phục version là PortalArtworkResource gồm các attribute Artwork::$visible: id, name, description, width, height, template_settings, data, is_locked, current_version_id, status, design_format, thumbnail, artwork_version_used, schema_version.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope_note": "staging; production chưa verify cho tạo và khôi phục; quote không nói status code",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1115"
       ]
     }
   ],
@@ -326,6 +353,15 @@
         "artwork/artwork-save-persist#KB-1021"
       ],
       "observed_count": null
+    },
+    {
+      "statement": "[CBS-163] Tạo 201, lưu 200, khôi phục version 200 có data và schema_version; không relation, không user_id; editor hiện design đã khôi phục (TC-TIB-8585, TC-TIB-8586, build không ghi).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1117"
+      ],
+      "observed_count": 1
     }
   ],
   "observed_validations": [
@@ -468,6 +504,12 @@
         "kb_refs": [
           "artwork/artwork-save-persist#KB-1019"
         ]
+      },
+      {
+        "item": "[CBS-163] POST artworks/{artwork}/versions/{version}/restore (khôi phục version) — response PortalArtworkResource; tạo và lưu artwork cũng trả PortalArtworkResource",
+        "kb_refs": [
+          "artwork/artwork-save-persist#KB-1115"
+        ]
       }
     ],
     "data": [
@@ -602,6 +644,13 @@
       "kb_refs": [
         "artwork/artwork-save-persist#KB-1029",
         "artwork/artwork-save-persist#KB-1030"
+      ]
+    },
+    {
+      "risk": "[CBS-163] Response tạo/lưu/khôi phục chỉ còn attribute Artwork::$visible. Khôi phục version và việc editor hiện đúng design chỉ có một lượt quan sát staging; production chưa verify cho tạo và khôi phục.",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1115",
+        "artwork/artwork-save-persist#KB-1117"
       ]
     }
   ],
@@ -779,11 +828,20 @@
         "artwork/artwork-save-persist#KB-1030"
       ],
       "oq_id": "OQ-artwork-507"
+    },
+    {
+      "question": "[CBS-163] Tạo 201, lưu 200, khôi phục version 200 với data và schema_version, không relation, không user_id, editor hiện design đã khôi phục (KB-1117) — Dev xác nhận là expected? (OQ-artwork-578)",
+      "why_it_matters": "KB-1117 là OBSERVED_CURRENT/LOW một lượt, build không ghi; CHK-037 đang BASELINE.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1117"
+      ],
+      "oq_id": "OQ-artwork-578"
     }
   ],
   "last_updated": {
-    "date": "2026-11-12",
-    "ccr_ref": "CBS-107"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   },
   "coverage_matrix": [
     {
@@ -1034,6 +1092,31 @@
         "artwork/artwork-save-persist#KB-1030"
       ],
       "basis": "spec-hub sure green cho ngưỡng 5; ngưỡng 60 và dạng response chờ Dev"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] response của tạo, lưu, khôi phục version",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1115",
+        "artwork/artwork-save-persist#KB-1117"
+      ],
+      "basis": "STRONG cho key set (KB-1115); status và editor sau khôi phục là quan sát"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] tạo và khôi phục version trên production",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "artwork/artwork-save-persist#KB-1115"
+      ],
+      "basis": "chưa verify"
     }
   ],
   "profile_conflicts": [

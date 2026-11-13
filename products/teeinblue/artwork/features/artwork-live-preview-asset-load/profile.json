@@ -1,0 +1,318 @@
+{
+  "feature_id": "FEAT-35-artwork-live-preview-asset-load",
+  "feature_key": "artwork-live-preview-asset-load",
+  "name": "Live preview của artwork tải ảnh clipart lớn kèm version của clipart category (?v=)",
+  "user_goal": "Là merchant, khi mở Live preview của artwork (trong Artwork editor hoặc từ Campaign editor), mình thấy layer clipart / group clipart / background clipart hiển thị bằng đúng bản ảnh hiện tại của category (không phải bản cũ còn nằm ở CDN), đúng kích thước, và đổi lựa chọn clipart vẫn hiển thị đúng ảnh.",
+  "user_goal_kb_refs": [
+    "artwork/artwork-live-preview-asset-load#KB-1087",
+    "artwork/artwork-live-preview-asset-load#KB-1088",
+    "artwork/artwork-live-preview-asset-load#KB-1090"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner",
+      "permission_observed": "Mở artwork trong Artwork editor hoặc qua Campaign editor → Edit artwork, bấm Live preview, đổi lựa chọn clipart trong panel preview (không lưu artwork).",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1087",
+        "artwork/artwork-live-preview-asset-load#KB-1089"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Portal /artworks → mở artwork trong Artwork editor → nút Live preview",
+      "precondition": "Store explorer trên staging (xác minh account theo explore playbook trước khi thao tác và sau mỗi lần login lại); fixture tự dựng trên store explorer, không dùng store/artwork/campaign/instance nêu trong CCR, Jira hay production. Artwork có layer Clipart Category (single) và/hoặc background clipart, category đã có version (v khác rỗng); đọc v của category qua GraphQL trước khi kiểm.",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1087",
+        "artwork/artwork-live-preview-asset-load#KB-1088",
+        "artwork/artwork-live-preview-asset-load#KB-1089"
+      ]
+    },
+    {
+      "path": "Portal Campaign editor (/campaigns/<id>/edit) → Edit artwork → Live preview",
+      "precondition": "Store explorer trên staging (xác minh account theo explore playbook trước khi thao tác và sau mỗi lần login lại); fixture tự dựng trên store explorer, không dùng store/artwork/campaign/instance nêu trong CCR, Jira hay production. Campaign trên store explorer dùng artwork có background clipart, category đã có version. Ảnh large có thể đã được preview của Campaign editor tải trước (cache trình duyệt) nên Live preview không phát request mới; khi đó đọc href của ảnh trên SVG Live preview.",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1087",
+        "artwork/artwork-live-preview-asset-load#KB-1088"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Tải ảnh clipart lớn kèm version của category",
+      "description": "Live preview tải `<hash>_large.webp` của layer clipart, group clipart, background clipart kèm `?v=<version của category>`, không còn luôn `?v=1` (CONFIRMED_EXPECTED, Dev TIB-5685).",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1087"
+      ]
+    },
+    {
+      "name": "Background clipart phủ kín printarea",
+      "description": "Background clipart cùng kích thước printarea được vẽ phủ kín printarea (OBSERVED_CURRENT/LOW, chưa có nguồn xác nhận được trích).",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1088"
+      ]
+    },
+    {
+      "name": "Đổi lựa chọn clipart trong Live preview",
+      "description": "Mỗi lần đổi, canvas hiện đúng clipart vừa chọn; mỗi URL ảnh large có đúng một tham số v (OBSERVED_CURRENT/LOW).",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1089"
+      ]
+    },
+    {
+      "name": "Group of clipart categories: version của sub-category",
+      "description": "Request ảnh large khi chọn clipart con (preload ô chọn) mang v của sub-category chứa clipart (CONFIRMED_EXPECTED); ảnh canvas cuối vẫn ?v=1 là known defect SDK (KB-1091).",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1090",
+        "artwork/artwork-live-preview-asset-load#KB-1091"
+      ]
+    },
+    {
+      "name": "Category chưa có version",
+      "description": "Category v rỗng/null: vẫn tải ảnh large `?v=1` (giới hạn đã biết theo Dev); ảnh hiển thị.",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1092"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "Artwork editor (edit mode)",
+      "to": "Live preview",
+      "trigger": "bấm Live preview",
+      "condition": "artwork có layer clipart dùng category",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1087"
+      ]
+    },
+    {
+      "from": "clipart A hiển thị trong Live preview",
+      "to": "clipart B hiển thị",
+      "trigger": "chọn clipart khác trong panel preview",
+      "condition": "không lưu artwork",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1089"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Live preview của artwork (layer clipart, group clipart, background clipart) tải ảnh clipart lớn kèm đúng version của category (?v=<version>), thay vì luôn là ?v=1.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "confirmation_ref": "Jira TIB-5685 comment 56626 (Dev), 2026-11-06",
+      "scope_note": "staging; mở từ /artworks và từ Campaign editor → Edit artwork",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1087"
+      ]
+    },
+    {
+      "statement": "Layer Group of clipart categories: ảnh clipart lớn phải mang v của sub-category chứa clipart, không phải của group cha (phần Portal: request preload khi chọn clipart con).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "confirmation_ref": "Jira TIB-5685 comment 56822 (Dev), 2026-11-10",
+      "scope_note": "staging; ảnh canvas cuối là known defect SDK (KB-1091), không thuộc rule",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1090"
+      ]
+    },
+    {
+      "statement": "Category chưa có version (v rỗng) vẫn tải ảnh với ?v=1 như trước — giới hạn đã biết.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "confirmation_ref": "Jira TIB-5685 comment 56626 (Dev, Known limitations), 2026-11-06",
+      "scope_note": "staging",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1092"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Background clipart cùng kích thước printarea được vẽ phủ kín printarea trong Live preview (mở từ /artworks và Campaign editor).",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1088"
+      ],
+      "observed_count": 2
+    },
+    {
+      "statement": "Đổi lựa chọn clipart nhiều lần: canvas đúng clipart, mỗi URL ảnh large có đúng một tham số v; chọn lại clipart đã tải thì dùng cache trình duyệt.",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1089"
+      ],
+      "observed_count": 2
+    },
+    {
+      "statement": "[KNOWN_DEFECT, SDK] Layer group không có grouped setting / grouped reposition: ảnh canvas cuối tải ?v=1 (cả storefront theo lời Dev).",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1091"
+      ],
+      "observed_count": 1
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      "artwork/artwork-live-preview-asset-load#KB-1087",
+      "artwork/artwork-live-preview-asset-load#KB-1088",
+      "artwork/artwork-live-preview-asset-load#KB-1089",
+      "artwork/artwork-live-preview-asset-load#KB-1090",
+      "artwork/artwork-live-preview-asset-load#KB-1091",
+      "artwork/artwork-live-preview-asset-load#KB-1092"
+    ],
+    "storefront": [
+      "artwork/artwork-live-preview-asset-load#KB-1091"
+    ],
+    "api": [],
+    "data": [],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "feature_key": "layer-config-image",
+      "why": "Layer Clipart Category / Group of clipart categories và 3 biến thể file (master, _large.webp, _thumbnail.webp; KB-090); thumbnail giữ ?v= (KB-1093).",
+      "kb_refs": [
+        "artwork/layer-config-image#KB-090",
+        "artwork/layer-config-image#KB-1093"
+      ]
+    },
+    {
+      "feature_key": "clipart-category-storefront-behavior",
+      "why": "Known defect KB-1091 theo Dev cũng xảy ra ở storefront (cùng transformer group clipart của SDK).",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1091"
+      ]
+    },
+    {
+      "feature_key": "global-option/global-option-instance-management",
+      "why": "Preview ở màn tạo/sửa Global Option Clipart Category dùng cùng cách tải ảnh large kèm version (global-option KB-733).",
+      "kb_refs": [
+        "global-option/global-option-instance-management#KB-733"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "summary": "Ảnh large tải sai version thì CDN có thể trả bản ảnh cũ khác kích thước, background co lại trong Live preview (lỗi gốc TIB-5685); trên staging không tái hiện được triệu chứng.",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1087",
+        "artwork/artwork-live-preview-asset-load#KB-1088"
+      ]
+    },
+    {
+      "summary": "Layer Group of clipart categories vẫn hiển thị ảnh canvas ?v=1 (known defect SDK, cả storefront); theo dõi bằng check watch, không coi là pass/fail của bản sửa portal.",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1091"
+      ]
+    },
+    {
+      "summary": "Không test case nào ghi build; TC group clipart, category v null chỉ chạy staging.",
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1090",
+        "artwork/artwork-live-preview-asset-load#KB-1092"
+      ]
+    }
+  ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-11-12"
+  },
+  "unknown_areas": [
+    {
+      "question": "Background clipart cùng kích thước printarea phải phủ kín printarea trong Live preview có phải hành vi đúng không (Expectation của ticket chưa được trích nguyên văn), và có cách nào tái hiện triệu chứng co lại do CDN giữ bản cũ trên staging không?",
+      "why_it_matters": "KB-1088 chỉ là quan sát; CHK-003 oracle BASELINE.",
+      "oq_id": "OQ-artwork-554"
+    },
+    {
+      "question": "Đổi lựa chọn clipart trong Live preview: mỗi URL ảnh large có đúng một tham số v có phải expected không (test case không ghi build, căn cứ expected chưa trích nguyên văn)?",
+      "why_it_matters": "KB-1089 chỉ là quan sát; CHK-004 oracle BASELINE.",
+      "oq_id": "OQ-artwork-555"
+    },
+    {
+      "question": "[KNOWN_DEFECT] Ảnh canvas của layer Group of clipart categories không có grouped setting / grouped reposition tải ?v=1 do transformer group clipart của SDK (cả storefront): có kế hoạch sửa không, ticket nào theo dõi?",
+      "why_it_matters": "KB-1091; CHK-006 là watch, không có expected.",
+      "oq_id": "OQ-artwork-556"
+    },
+    {
+      "question": "Ngoài claim: preview của trang Campaign editor (ngoài Live preview) tải ảnh large của layer có category v null với ?v=null (chuỗi \"null\") — lỗi hay chấp nhận được?",
+      "why_it_matters": "Chưa nạp KB; không có check.",
+      "oq_id": "OQ-artwork-557"
+    },
+    {
+      "question": "Ngoài claim: dropdown chọn sub-category của layer Group of clipart categories hiện thumbnail sub-category với data-src <cdn>/null?v=<v> (ảnh lỗi khi category không có thumbnail) — lỗi hay chủ ý?",
+      "why_it_matters": "Chưa nạp KB; không có check.",
+      "oq_id": "OQ-artwork-558"
+    }
+  ],
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-35-artwork-live-preview-asset-load",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Live preview từ /artworks, layer clipart/background, category có version",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1087",
+        "artwork/artwork-live-preview-asset-load#KB-1088"
+      ]
+    },
+    {
+      "feature_id": "FEAT-35-artwork-live-preview-asset-load",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Live preview từ Campaign editor → Edit artwork",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1087",
+        "artwork/artwork-live-preview-asset-load#KB-1088"
+      ]
+    },
+    {
+      "feature_id": "FEAT-35-artwork-live-preview-asset-load",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Group of clipart categories",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1090",
+        "artwork/artwork-live-preview-asset-load#KB-1091"
+      ]
+    },
+    {
+      "feature_id": "FEAT-35-artwork-live-preview-asset-load",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "category v null",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1092"
+      ]
+    },
+    {
+      "feature_id": "FEAT-35-artwork-live-preview-asset-load",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "Group of clipart categories (known defect theo lời Dev)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/artwork-live-preview-asset-load#KB-1091"
+      ]
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-150"
+  }
+}

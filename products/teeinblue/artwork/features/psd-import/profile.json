@@ -24,6 +24,13 @@
       "kb_refs": [
         "artwork/psd-import#KB-178"
       ]
+    },
+    {
+      "path": "[CBS-152] Portal → Artworks > Import > PSD Group-to-template",
+      "precondition": "File PSD (có hoặc không có group)",
+      "kb_refs": [
+        "artwork/psd-import#KB-1114"
+      ]
     }
   ],
   "capabilities": [
@@ -32,6 +39,14 @@
       "description": "Folder ẩn trong PSD thành Group visible=false; layer con giữ visible=true (kèm group_id), trong layer panel mắt con amber, dòng dimmed; layer ngoài folder bình thường; canvas Artwork Editor không vẽ nội dung Group.",
       "kb_refs": [
         "artwork/psd-import#KB-178"
+      ]
+    },
+    {
+      "name": "[CBS-152] Layer PSD không bị cap 128 MP",
+      "description": "Theo Dev (TIB-5709 comment 56721): layer import từ PSD không bị cap 128 MP, gồm PSD Single template và Group-to-template của portal và Bulk upload PSD. Quan sát staging: layer 144 MP lưu được qua hai luồng portal.",
+      "kb_refs": [
+        "artwork/psd-import#KB-1113",
+        "artwork/psd-import#KB-1114"
       ]
     }
   ],
@@ -55,9 +70,27 @@
       "kb_refs": [
         "artwork/psd-import#KB-178"
       ]
+    },
+    {
+      "statement": "Theo Jira TIB-5709 comment 56721 (Dev, 2026-11-09), layer import từ PSD không bị cap 128 MP: áp cho PSD Single template và PSD Group-to-template của portal, không chỉ Bulk upload PSD.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "kb_refs": [
+        "artwork/psd-import#KB-1113"
+      ]
     }
   ],
-  "observed_behavior": [],
+  "observed_behavior": [
+    {
+      "statement": "[CBS-152] PSD 12000x12000 có layer 144 MP: Single template và Group-to-template upload layer qua /api/layer-images/file 201, POST /api/artworks 201, toast 'Your artwork has been created', không toast cap (TC-TIB-8788, build e96975614). Bulk upload PSD chưa chạy.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/psd-import#KB-1114"
+      ]
+    }
+  ],
   "observed_validations": [],
   "observed_validations_note": "Không có KB item nào ghi message validation.",
   "limitations": [
@@ -118,6 +151,14 @@
       "kb_refs": [
         "artwork/psd-import#KB-178"
       ]
+    },
+    {
+      "statement": "[CBS-152] Layer PSD của portal upload qua image-library /api/layer-images/file (KB-069), route không bị cap; cap của các đường khác thuộc image-library KB-065.",
+      "kb_refs": [
+        "artwork/psd-import#KB-1113",
+        "image-library/image-layer-library#KB-069",
+        "image-library/image-layer-library#KB-065"
+      ]
     }
   ],
   "risks": [
@@ -150,11 +191,20 @@
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-artwork-151"
+    },
+    {
+      "question": "[CBS-152] PSD có layer 144 MP (KB-1114): toast và việc lưu artwork là expected? Bulk upload PSD (beta) với layer > 128 MP, production và ảnh hưởng của TIB-5718 chưa kiểm.",
+      "why_it_matters": "KB-1114 là OBSERVED_CURRENT/LOW; CHK-008 chỉ BASELINE.",
+      "kb_refs": [
+        "artwork/psd-import#KB-1114"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-576"
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-152"
   },
   "coverage_matrix": [
     {
@@ -210,6 +260,29 @@
       "covered": false,
       "kb_refs": [
         "artwork/psd-import#KB-178"
+      ]
+    },
+    {
+      "feature_id": "FEAT-23-psd-import",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "[CBS-152] PSD Single / Group-to-template có layer 144 MP",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/psd-import#KB-1113",
+        "artwork/psd-import#KB-1114"
+      ]
+    },
+    {
+      "feature_id": "FEAT-23-psd-import",
+      "layer": "portal",
+      "role": "merchant-owner (beta)",
+      "state": "[CBS-152] Bulk upload PSD có layer > 128 MP",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/psd-import#KB-1113"
       ]
     }
   ],

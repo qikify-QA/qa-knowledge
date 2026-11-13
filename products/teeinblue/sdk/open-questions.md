@@ -943,7 +943,7 @@
 ## OQ-sdk-110 — NEEDS_CONFIRMATION
 
 ```json
-{"oq_id":"OQ-sdk-110","type":"NEEDS_CONFIRMATION","feature_id":"required-addon-validation","summary":"Function kiểm add-on đối chiếu child line bằng property nào: _tib_customization_id (KB-416) và _customization_id (KB-009, quan sát 2026-09-12 trên sản phẩm không nêu add-on) là hai property khác nhau hay cùng một property bị lệch tên?","kb_ids":["KB-416","KB-009"]}
+{"oq_id":"OQ-sdk-110","type":"NEEDS_CONFIRMATION","feature_id":"required-addon-validation","summary":"Function kiểm add-on đối chiếu child line bằng property nào: _tib_customization_id (KB-416) và _customization_id (KB-009, quan sát 2026-09-12 trên sản phẩm không nêu add-on) là hai property khác nhau hay cùng một property bị lệch tên? QA đề xuất (KB-542, CBS-155, 2026-11-10): hai property trên hai line, line chính mang _customization_id, addon charge line mang _tib_customization_id cùng giá trị; Dev xác nhận?","kb_ids":["KB-416","KB-009","KB-542"]}
 ```
 
 ## OQ-sdk-111 — NEEDS_CONFIRMATION
@@ -962,12 +962,6 @@
 
 ```json
 {"oq_id":"OQ-sdk-113","type":"NEEDS_CONFIRMATION","feature_id":"form-artwork-navigation","summary":"Hàm xoá cache campaign dùng chung của KB-435 có xoá cache mà URL SDK ?v=1 đọc không, và có chạy với campaign có store liên kết đầy đủ không? KB-356 (2026-10-28) thấy URL này trả bản cũ sau sửa artwork + sync.","kb_ids":["KB-435","KB-356","KB-357"]}
-```
-
-## OQ-sdk-114 — OPEN_ISSUE
-
-```json
-{"oq_id":"OQ-sdk-114","type":"OPEN_ISSUE","feature_id":"required-addon-validation","summary":"Điều kiện để rule Checkout (Function kiểm add-on, Lớp 2) chạy là gì? Comment dev TIB-5510 #55071 ghi cần kích hoạt rule trong Settings > Checkout, nhưng điều này chưa có trong KB. Rule đó bật ở đâu, và có điều kiện nào khác không?","kb_ids":["KB-416","KB-417"]}
 ```
 
 ## OQ-sdk-115 — OPEN_ISSUE
@@ -1726,4 +1720,343 @@
   "feature_id": "sync-selection-between-templates",
   "summary": "Tiêu chí match khi sync selection giữa template có đúng là Option title cộng personalization type/settings (Layer name KHÔNG phải tiêu chí, Layer name khác nhau vẫn sync) không (CBS-130 CLAIM-01)? Không có test case kiểm riêng ca 'Layer name khác nhau vẫn sync' (ca âm Layer-name đã bị bỏ khỏi bộ TC); phát biểu trước đó (Layer name + Option title + type) đã bị QA đính chính 2026-08-25. Claim ở mức S0 (không nạp KB), chỉ ghi nhận làm unknown area. Người trả lời: Dev."
 }
+```
+
+## OQ-sdk-236 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-236",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "required-addon-validation",
+  "summary": "QA đề xuất (KB-538, CBS-155, 2026-11-10): cross-sell item không phải addon item, nên khi line chính bị xoá, line cross-sell còn lại không bị rule Teeinblue Required Addon Validation chặn; cross-sell line mang _parent_customization_id và _is_sub_item, không có _tib_customization_id. Dev xác nhận? Jira TIB-5715 không nói về cross-sell.",
+  "kb_ids": [
+    "KB-538"
+  ]
+}
+```
+
+## OQ-sdk-237 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-237",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "required-addon-validation",
+  "summary": "Vế accelerated checkout (Shop Pay, PayPal, Apple Pay, Google Pay) bị chặn khi cart có orphan addon chưa test được trên staging vì store dev chỉ có Bogus gateway (KB-541). Production đã verify vế này chưa? Người trả lời: QA hoặc PO.",
+  "kb_ids": [
+    "KB-541"
+  ]
+}
+```
+
+## OQ-sdk-238 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-238",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "required-addon-validation",
+  "summary": "Ngoài việc kích hoạt checkout rule Teeinblue Required Addon Validation ở Shopify Admin > Settings > Checkout > Checkout rules trên store đã deploy extension (KB-543), rule có điều kiện nào khác để chạy không (gói Shopify, loại checkout)? Nguồn Dev TIB-5715 không nêu. Người trả lời: Dev.",
+  "kb_ids": [
+    "KB-543"
+  ]
+}
+```
+
+## OQ-sdk-239 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-239",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "required-addon-validation",
+  "summary": "PO xác nhận ý định: rule chặn hoàn tất Checkout khi cart có addon item không còn line chính (KB-534), và khi rule Inactive thì đơn chỉ có addon line vẫn được đặt (KB-540)? Hai item chạm đơn hàng, nguồn là Dev và test case staging.",
+  "kb_ids": [
+    "KB-534",
+    "KB-540"
+  ]
+}
+```
+
+## OQ-sdk-240 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-240",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "cart-addon-autofixer",
+  "summary": "QA đề xuất (KB-549, CBS-156, 2026-11-09): khi buyer xoá addon line mà line chính vẫn còn, autofixer thêm lại addon (cart/add.js) với quantity khớp line chính. Dev xác nhận? Jira TIB-5665 không nói về trường hợp này. Người trả lời: Dev.",
+  "kb_ids": [
+    "KB-549"
+  ]
+}
+```
+
+## OQ-sdk-241 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-241",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "cart-addon-autofixer",
+  "summary": "QA ghi lời Dev do người dùng chuyển lại (KB-550, CBS-156, 2026-11-09): autofixer không ngăn buyer checkout ngay sau khi xoá line chính; vào checkout trước khi autofixer chạy (kể cả delay 0) thì checkout chỉ có addon line, việc chặn thuộc checkout rule Teeinblue Required Addon Validation (sdk/required-addon-validation KB-534). Dev hoặc PO xác nhận bằng nguyên văn? Người trả lời: Dev hoặc PO.",
+  "kb_ids": [
+    "KB-550"
+  ]
+}
+```
+
+## OQ-sdk-242 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-242",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "cart-addon-autofixer",
+  "summary": "Race giữa add to cart có addon charge và request đọc cart của app khác chỉ được mô phỏng trên staging bằng Playwright route, vì store staging không có app chiếm nút add to cart (KB-551, ALTERNATIVE_SETUP). Cách mô phỏng có tương đương app thật (Foxkit Upsell & Bundles) không, và production đã verify với app thật chưa? Người trả lời: Dev hoặc QA.",
+  "kb_ids": [
+    "KB-551"
+  ]
+}
+```
+
+## OQ-sdk-243 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-sdk-243",
+  "type": "OPEN_ISSUE",
+  "feature_id": "cart-addon-autofixer",
+  "summary": "Dev nêu trong QA plan TIB-5665 (#56269, 2026-11-03): nếu app thêm line chính bằng request không phải .js rồi redirect về /cart thì addon vẫn có thể bị autofixer xoá; đó là known open issue sdk #2181, không phải regression của TIB-5665 (KB-545). Issue đã được xử lý chưa? Người trả lời: Dev.",
+  "kb_ids": [
+    "KB-545"
+  ]
+}
+```
+
+## OQ-sdk-244 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-244",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "cart-addon-autofixer",
+  "summary": "Sau khi autofixer sửa cart (đổi quantity hoặc xoá line chính trong cart drawer, KB-547), cart drawer có phải render lại không? QA quan sát (CBS-156, 2026-11-05 và 2026-11-09): callback mặc định chỉ reload khi đang ở trang /cart nên drawer không cập nhật; store có option autofixerCallback chỉ render lại cart-drawer và cart-icon-bubble thì trang /cart hiện số cũ. Đây là hành vi đúng hay lỗi? Người trả lời: Dev.",
+  "kb_ids": [
+    "KB-547"
+  ]
+}
+```
+
+## OQ-sdk-245 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-245",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "game-text-preview-render",
+  "summary": "Slot .1 của layer shape-text (cùng một layer hiện hai lần trên trang cùng lúc, vd sản phẩm addon hoặc cross-sell dùng chung artwork với sản phẩm chính) chưa kiểm trên storefront; Dev cho bỏ vế này khỏi test staging vì unit test U17 phủ (TIB-5666 #56619, KB-555). Cần setup staging để kiểm mỗi instance gửi slot riêng (.0 và .1), có preview riêng và không blank khi gõ không? Người trả lời: Dev hoặc QA.",
+  "kb_ids": [
+    "KB-555"
+  ]
+}
+```
+
+## OQ-sdk-246 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-246",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "game-text-preview-render",
+  "summary": "Rate limit của route games trên production là bao nhiêu (staging: 3 request/phút/IP theo Dev, KB-560)? Request preview bị SDK huỷ có tính vào limit không (QA suy luận là có)? Người trả lời: Dev.",
+  "kb_ids": [
+    "KB-560"
+  ]
+}
+```
+
+## OQ-sdk-247 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-247",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "game-text-preview-render",
+  "summary": "QA quan sát trên staging (CBS-159, 2026-11-06): khi request preview của layer shape-text, spiral, warp-text nhận 429, layer rỗng hẳn (không ảnh, không spinner) và form không báo lỗi. Theo định nghĩa của Dev (KB-553) đây là blank. Đây là hành vi đúng khi bị rate limit hay lỗi cần sửa? Người trả lời: Dev hoặc PO.",
+  "kb_ids": [
+    "KB-553",
+    "KB-560"
+  ]
+}
+```
+
+## OQ-sdk-248 — OPEN_ISSUE
+
+```json
+{
+  "oq_id": "OQ-sdk-248",
+  "type": "OPEN_ISSUE",
+  "feature_id": "game-text-preview-render",
+  "summary": "Lỗi mất từ cuối của layer shape-text cỡ lớn là bug có từ trước trong vectorize và có cả trên production trước bản sửa (TIB-5666 #56757, KB-556). Order đã lưu print file bị mất từ trước bản sửa cần regenerate design: order production bị ảnh hưởng có được rà và regenerate không, ai làm? Người trả lời: Dev hoặc PO.",
+  "kb_ids": [
+    "KB-556"
+  ]
+}
+```
+
+## OQ-sdk-249 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-249",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "photo-genai-image-filter-runtime",
+  "summary": "Photo layer [Gemini] image filter có ref image rất lớn (12000x12000): effect hoàn tất (status 2), preview hiện kết quả, upload không kẹt Processing chỉ là quan sát một lượt staging (KB-562, CHK-001 BASELINE). Có phải expected không? QA plan TIB-5615 A.1 của Dev có ý này nhưng CCR không trích nguyên văn. Production mới chạy với ref 4000x5300.",
+  "kb_ids": [
+    "KB-562"
+  ],
+  "needs": "CCR sau trích nguyên văn QA plan A.1 (Dev) hoặc Dev/PO xác nhận; production với ref ≥ 8000 px."
+}
+```
+
+## OQ-sdk-250 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-250",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "photo-genai-image-filter-runtime",
+  "summary": "Tỉ lệ kết quả GenAI của Photo layer: rule Dev chuyển qua QA (KB-565, PROPOSED) nói Photo Direct luôn gửi size = kích thước layer nên kết quả theo khung layer (quan sát layer 420x420 → kết quả vuông); QA plan TIB-5615 A.2 của Dev lại viết kết quả \"keeps the photo's portrait orientation and ratio\". Tỉ lệ theo khung layer hay theo ảnh buyer? Image Placement / Image Cropper chỉ gửi size khi bật is_layer_output_size: chưa chạy. Spec-hub rule image-effects-keep-ratio (green) đọc 2026-11-12 nói cùng nghĩa với KB-565.",
+  "kb_ids": [
+    "KB-565",
+    "KB-563"
+  ],
+  "needs": "Dev/PO xác nhận trên nguồn dẫn được (Jira hoặc rule spec-hub trích nguyên văn); chạy Image Placement và Image Cropper có/không is_layer_output_size."
+}
+```
+
+## OQ-sdk-251 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-251",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "photo-genai-image-filter-runtime",
+  "summary": "Feature photo-genai-image-filter-runtime mới có nguồn cho Gemini image filter; transparency của ảnh kết quả và image filter của provider khác (gpt, flux, imagenhub) chưa có nguồn hay quan sát.",
+  "kb_ids": [],
+  "needs": "CCR hoặc explore cho image filter GPT/Flux/ImagenHub và ảnh có alpha."
+}
+```
+
+## OQ-sdk-252 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-252",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "genai-personalization-runtime",
+  "summary": "Text to Image và Multiple Uploads luôn gửi size = kích thước layer (KB-568, PROPOSED, rule Dev chuyển qua QA 2026-11-10; quan sát layer 315x420 → kết quả 3:4). Dev xác nhận trên nguồn dẫn được?",
+  "kb_ids": [
+    "KB-568"
+  ],
+  "needs": "Dev xác nhận nguyên văn có ngày (Jira) hoặc rule spec-hub green trích nguyên văn."
+}
+```
+
+## OQ-sdk-253 — NEEDS_CONFIRMATION
+
+```json
+{
+  
+  "oq_id": "OQ-sdk-253",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "genai-personalization-runtime",
+  "summary": "Gemini snap tỉ lệ gần nhất trong 21:9, 16:9, 9:16, 3:2, 2:3, 4:3, 3:4, 5:4, 4:5, 1:1 (không có 9:21), 512 chỉ cho nano_banana_31 (KB-569, PROPOSED, rule Dev chuyển qua QA; bổ sung KB-479). Vế mặc định trái nguồn: rule chuyển lại nói không có hoặc sai size thì 1:1, còn unit test U3 của Dev trên Jira TIB-5615 #56735 nói applyImageFilter() không có size thì lấy tỉ lệ ảnh buyer. Mặc định theo từng luồng (image filter, Multiple Uploads, Text to Image) là gì?",
+  "kb_ids": [
+    "KB-569"
+  ],
+  "needs": "Dev xác nhận nguyên văn có ngày cho danh sách tỉ lệ và mặc định theo từng luồng; quan sát request không có size."
+}
+```
+
+## OQ-sdk-254 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-254",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "genai-personalization-runtime",
+  "summary": "Resolution khi layer không lưu gemini_resolution: Photo image filter 2K; Multiple Uploads / Text to Image 1K với nano_banana_31 và nano_banana_21, 2K với nano_banana_pro (KB-570, PROPOSED). Dev (chuyển qua QA) nói 2K của nano_banana_pro là do nhầm lẫn trước đó, coi là lỗi hiếm gặp; KB-477 mô tả cùng hành vi như \"giữ 2K như trước\". 2K của pro là expected hay lỗi được chấp nhận? Vế nano_banana_pro / nano_banana_21 chưa chạy. Liên quan OQ-sdk-144.",
+  "kb_ids": [
+    "KB-570",
+    "KB-477"
+  ],
+  "needs": "PO/Dev chốt 2K của nano_banana_pro; chạy nano_banana_pro và nano_banana_21 không lưu resolution."
+}
+```
+
+## OQ-sdk-255 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-255",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "genai-personalization-runtime",
+  "summary": "Rule tỉ lệ/kích thước output của GPT, Flux Kontext, ImagenHub (KB-571, PROPOSED, rule Dev QA chuyển lại, ngoài scope TIB-5615, chưa verify). Diff không thấy trái KB-477, KB-478, KB-480. Dev xác nhận?",
+  "kb_ids": [
+    "KB-571"
+  ],
+  "needs": "Dev xác nhận nguyên văn có ngày; chạy GPT free-size, Flux không nhập WxH, ImagenHub use_template_default_size."
+}
+```
+
+## OQ-sdk-256 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-256",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "photo-genai-image-filter-runtime",
+  "summary": "Ảnh dọc, ngang, dọc EXIF 6 trên layer [Gemini] image filter có ref image lớn cho kết quả đúng hướng, không méo (KB-563) và ref nhỏ 200x200 vẫn hoàn tất như trước (KB-564) chỉ là quan sát: TC-TIB-8953/8954/8955/8957 PASS staging 2026-11-10 nhưng record không ghi build, không kiểm được bản đã test có chứa thay đổi TIB-5615. Expected tương ứng có ở QA plan A.2/A.3 của Dev (#56741) nhưng CCR không trích.",
+  "kb_ids": [
+    "KB-563",
+    "KB-564"
+  ],
+  "needs": "Chạy lại các test case trên build ghi rõ (chứa TIB-5615) và gửi CCR trích QA plan A.2/A.3 làm căn cứ expected."
+}
+```
+
+## OQ-sdk-257 — NEEDS_CONFIRMATION
+
+```json
+{
+  "oq_id": "OQ-sdk-257",
+  "type": "NEEDS_CONFIRMATION",
+  "feature_id": "genai-personalization-runtime",
+  "summary": "Multiple Uploads Gemini với 2 ảnh lớn, một ảnh EXIF 6: generate hoàn tất, không ảnh nào bị xoay ngang (KB-567) chỉ là quan sát: TC-TIB-8956 PASS staging 2026-11-10, record không ghi build. Expected có ở QA plan B.4 của Dev (#56741) nhưng CCR không trích.",
+  "kb_ids": [
+    "KB-567"
+  ],
+  "needs": "Chạy lại TC-TIB-8956 trên build ghi rõ và gửi CCR trích QA plan B.4."
+}
+```
+
+## OQ-sdk-258 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-258", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "kb_ids": ["KB-573"], "check_ids": ["CHK-127"], "owner": "Dev", "summary": "[CBS-163] 6 route upload public trả đúng 3 key, không wrapper data, không user_id/instance_id/ip/geo_location/user_agent/master/thumbnail/effects, 201/200 (KB-573, quan sát staging không ghi build; production 2026-11-11 một lượt cho 4 route upload) — Dev xác nhận là expected?"}
+```
+
+## OQ-sdk-259 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-sdk-259", "type": "NEEDS_CONFIRMATION", "feature_id": "storefront-buyer-facing", "kb_ids": ["KB-575"], "check_ids": ["CHK-129"], "owner": "Dev", "summary": "[CBS-163] Upload không effect/crop/remove background/AI filter/vector/PDF hiện trên preview; cart line mang ảnh upload và property origin của field (KB-575, quan sát staging không ghi build; production một lượt smoke) — Dev xác nhận là expected?"}
+```
+
+## OQ-sdk-260 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-sdk-260", "type": "OPEN_ISSUE", "feature_id": "storefront-buyer-facing", "kb_ids": ["KB-572", "KB-574"], "check_ids": [], "owner": "Dev", "summary": "[CBS-163] Theo Dev (comment 56448 Open questions), imageFilterStatus và các reply async 202 tới storefront vẫn gửi original, master, effects; Dev để cho một follow-up issue, ngoài contract của KB-572. Chưa có ticket follow-up và chưa có expected cho các reply này."}
 ```

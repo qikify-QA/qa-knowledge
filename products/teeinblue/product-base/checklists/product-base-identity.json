@@ -1,6 +1,7 @@
 {
   "feature_id": "FEAT-03-product-base-identity",
   "feature_key": "product-base-identity",
+  "object_id": "product-base",
   "checks": [
     {
       "check_id": "CHK-03-001",
@@ -282,10 +283,135 @@
       "risk_refs": [],
       "priority": "P3",
       "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-03-010",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-148] Sửa Internal tags rồi Save Basic information không làm mất Required options đã lưu",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base đã lưu Required options (vd {\"preset_id\": 4})",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Product Base > Edit > Basic information + network"
+      },
+      "precondition": "Product Base CustomCat trên store explorer đã lưu Required options khác null (dựng bằng CHK-12-003 của provider-required-options). Fixture tự dựng trên store của explorer ở staging (xác minh account theo playbook trước khi thao tác; không dùng store/campaign của merchant hay production). Ghi build và ngày chạy.",
+      "steps": [
+        "Sửa Internal tags trong Basic information, bấm Save.",
+        "Ghi default_options trong body PUT /api/products/{id}.",
+        "Reload, mở Advanced options, ghi giá trị editor Required options."
+      ],
+      "observation_point": "default_options trong body PUT; giá trị editor sau reload.",
+      "expected_result": "BASELINE (KB-531, OQ-product-base-119): PUT gửi lại default_options hiện tại; sau reload editor Required options vẫn hiện giá trị cũ. Lệch = cần điều tra (rủi ro mất dữ liệu P1), chờ PO xác nhận ý định.",
+      "oracle": {
+        "kb_ids": [
+          "product-base/product-base-identity#KB-531"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "product-base/product-base-identity#KB-531",
+        "product-base/product-base-identity#KB-027",
+        "product-base/provider-required-options#KB-528"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mất dữ liệu Required options khi Save Basic information (P1)."
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-product-base-119"
+    },
+    {
+      "check_id": "CHK-03-011",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-163] Response đổi/xoá thumbnail Product Base không có printareas, fulfillment, user_id, fulfillment_id; có internal_tags",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base fixture trên store explorer, phiên owner",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Product Base > Edit > Thumbnail + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Fixture tự dựng trên store explorer; không dùng store, category, Product Base, campaign hay id nêu trong CCR/test case; không gọi production. Dùng phiên owner của account explorer. Product Base fixture tự dựng trên store explorer (Duplicate một Product Base của explorer hoặc tạo mới), không ghi vào Product Base có sẵn; có ít nhất một ảnh trong thư viện ảnh của explorer. Mở tab network. Xoá thumbnail/Product Base fixture sau khi chạy.",
+      "steps": [
+        "Mở /products/{id}/edit của fixture, Upload thumbnail, chọn ảnh trong modal thư viện > Select; ghi body response.",
+        "Xoá thumbnail; ghi body response."
+      ],
+      "observation_point": "Key printareas, fulfillment, user_id, fulfillment_id, internal_tags trong hai response",
+      "expected_result": "Cả hai response không có printareas, fulfillment, user_id, fulfillment_id; có internal_tags.",
+      "oracle": {
+        "kb_ids": [
+          "product-base/product-base-identity#KB-533",
+          "product-base/product-base-identity#KB-534"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "product-base/product-base-identity#KB-533",
+        "product-base/product-base-identity#KB-534",
+        "product-base/product-base-identity#KB-535"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Tập key đầy đủ và fulfillment_linked_id là quan sát (KB-535, CHK-03-012)."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-03-012",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "[CBS-163] Tập 20 key của response thumbnail Product Base, gồm fulfillment_linked_id (quan sát)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base fixture trên store explorer, phiên owner",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Product Base > Edit > Thumbnail + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Fixture tự dựng trên store explorer; không dùng store, category, Product Base, campaign hay id nêu trong CCR/test case; không gọi production. Dùng phiên owner của account explorer. Product Base fixture tự dựng trên store explorer (Duplicate một Product Base của explorer hoặc tạo mới), không ghi vào Product Base có sẵn; có ít nhất một ảnh trong thư viện ảnh của explorer. Mở tab network. Xoá thumbnail/Product Base fixture sau khi chạy. Chạy cùng lượt CHK-03-011.",
+      "steps": [
+        "Với hai response ở CHK-03-011, ghi tập key và giá trị thumbnail sau khi xoá."
+      ],
+      "observation_point": "Tập key; thumbnail sau xoá",
+      "expected_result": "Baseline theo quan sát (TC-TIB-8592): 20 key id, title, description, had_back, variants_position, colors_position, sizes_position, fulfillment_linked_id, thumbnail, enable_custom_printarea, print_provider_id, design_format, color_display_type, size_display_type, color_custom_label, size_custom_label, status, label, internal_tags, product_options_position; xoá thì thumbnail null. Lệch thì điều tra, chưa phải bug.",
+      "oracle": {
+        "kb_ids": [
+          "product-base/product-base-identity#KB-535"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "product-base/product-base-identity#KB-535",
+        "product-base/product-base-identity#KB-533",
+        "product-base/product-base-identity#KB-534"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-product-base-120"
     }
   ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-03-product-base-identity",
+      "risk_ref": "[CBS-163] shape response thumbnail Product Base (KB-533, KB-534, KB-535)",
+      "check_ids": [
+        "CHK-03-011",
+        "CHK-03-012"
+      ],
+      "note": "CHK-03-011 STRONG; CHK-03-012 BASELINE (gồm fulfillment_linked_id). Production chưa có check."
+    }
+  ],
+  "excluded_dimensions": [],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   }
 }

@@ -1,0 +1,257 @@
+{
+  "feature_id": "FEAT-34-artwork-cross-store-clone",
+  "feature_key": "artwork-cross-store-clone",
+  "name": "Copy artwork sang store/account khác: remap/copy asset mà layer tham chiếu (clipart category, default value, ảnh gốc url, ảnh clipart dùng làm static photo)",
+  "user_goal": "Là merchant nhận một artwork copy từ store/account khác (duplicate campaign sang store khác, import từ TIB Library, admin import), mình mở artwork ở bên mình và thấy các layer ảnh hiển thị và render đúng như nguồn, layer clipart trỏ về category của mình, không lỗi clipart category, lưu được.",
+  "user_goal_kb_refs": [
+    "artwork/artwork-cross-store-clone#KB-1082",
+    "artwork/artwork-cross-store-clone#KB-1083",
+    "artwork/artwork-cross-store-clone#KB-1084"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner (account đích)",
+      "permission_observed": "Import artwork từ TIB Library bằng account của mình; mở, sửa, Save artwork nhận được. Admin import do người có quyền admin chạy (theo ghi nhận QA, KB-1086).",
+      "kb_refs": [
+        "artwork/artwork-cross-store-clone#KB-1082",
+        "artwork/artwork-cross-store-clone#KB-1086"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Portal /artworks → TIB Library → card → Import (POST /api/artworks/by-public), rồi mở artwork mới trong editor",
+      "precondition": "Không duplicate campaign sang account khác được từ portal trên staging (KB-1086, ALTERNATIVE_SETUP): copy artwork bằng import TIB Library bằng account đích (POST /api/artworks/by-public) hoặc nhờ người có quyền admin chạy admin import từ account nguồn sang account đích; cách thao tác ở _flows/artwork-editor.md mục Import artwork sang account khác. Artwork nguồn (public) có layer Clipart Category mà ảnh gốc là ảnh preview clipart trong chính category đó. Fixture tự dựng trên account/store test của explorer ở staging (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "kb_refs": [
+        "artwork/artwork-cross-store-clone#KB-1082",
+        "artwork/artwork-cross-store-clone#KB-1084",
+        "artwork/artwork-cross-store-clone#KB-1086"
+      ]
+    },
+    {
+      "path": "Admin import artwork từ account nguồn sang account đích (người có quyền admin chạy), rồi mở artwork ở account đích",
+      "precondition": "Không duplicate campaign sang account khác được từ portal trên staging (KB-1086, ALTERNATIVE_SETUP): copy artwork bằng import TIB Library bằng account đích (POST /api/artworks/by-public) hoặc nhờ người có quyền admin chạy admin import từ account nguồn sang account đích; cách thao tác ở _flows/artwork-editor.md mục Import artwork sang account khác. Fixture tự dựng trên account/store test của explorer ở staging (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "kb_refs": [
+        "artwork/artwork-cross-store-clone#KB-1082",
+        "artwork/artwork-cross-store-clone#KB-1083",
+        "artwork/artwork-cross-store-clone#KB-1085",
+        "artwork/artwork-cross-store-clone#KB-1086"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Remap ảnh gốc của layer Clipart Category",
+      "description": "url của layer dùng lại ảnh preview clipart được đổi sang clipart tương ứng trong category mới của bên đích, cùng clipart và default_value; editor hiển thị ảnh, thấy category bên đích, không lỗi.",
+      "kb_refs": [
+        "artwork/artwork-cross-store-clone#KB-1082"
+      ]
+    },
+    {
+      "name": "Copy file ảnh clipart dùng ngoài category (Static photo)",
+      "description": "File ảnh được copy sang bên đích, layer hiển thị đúng; đường dẫn vẫn mang id category nguồn (giới hạn đã biết).",
+      "kb_refs": [
+        "artwork/artwork-cross-store-clone#KB-1083"
+      ]
+    },
+    {
+      "name": "Layer ảnh từ Image library không đổi hành vi",
+      "description": "Đối chứng: vẫn hiển thị đúng như trước.",
+      "kb_refs": [
+        "artwork/artwork-cross-store-clone#KB-1084"
+      ]
+    },
+    {
+      "name": "Design preview của artwork bên đích",
+      "description": "Quan sát một lần: render từng template giống nguồn; chưa xác nhận.",
+      "kb_refs": [
+        "artwork/artwork-cross-store-clone#KB-1085"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "artwork ở account nguồn",
+      "to": "artwork mới ở account đích, layer trỏ asset của bên đích",
+      "trigger": "import TIB Library / admin import / duplicate campaign sang store khác",
+      "condition": "bản clone mới (sau bản sửa TIB-5619)",
+      "kb_refs": [
+        "artwork/artwork-cross-store-clone#KB-1082"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Copy artwork sang store/account khác: ảnh gốc của layer Clipart Category dùng lại ảnh preview clipart được đổi sang clipart tương ứng trong category mới của bên đích, cùng clipart category và default value; layer hiển thị ảnh, thấy category bên đích, không lỗi clipart category.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope_note": "staging 2026-11-03..04, artwork 2.0; production chưa verify",
+      "kb_refs": [
+        "artwork/artwork-cross-store-clone#KB-1082"
+      ]
+    },
+    {
+      "statement": "Layer dùng ảnh clipart không thuộc category của layer (vd Static photo) được copy file sang bên đích và hiển thị đúng; đường dẫn ảnh vẫn mang id category nguồn, chỉ đổi phần user.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope_note": "staging 2026-11-03..04, artwork 2.0; production chưa verify",
+      "kb_refs": [
+        "artwork/artwork-cross-store-clone#KB-1083"
+      ]
+    },
+    {
+      "statement": "Layer có ảnh gốc từ Image library vẫn hiển thị đúng như trước sau khi copy.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope_note": "staging 2026-11-03..04, artwork 2.0; production chưa verify",
+      "kb_refs": [
+        "artwork/artwork-cross-store-clone#KB-1084"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Sau admin import, design preview từng template của artwork bên đích render xong và giống nguồn (một lần chạy, expected do QA chốt).",
+      "kb_refs": [
+        "artwork/artwork-cross-store-clone#KB-1085"
+      ],
+      "observed_count": 1
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      "artwork/artwork-cross-store-clone#KB-1082",
+      "artwork/artwork-cross-store-clone#KB-1083",
+      "artwork/artwork-cross-store-clone#KB-1084"
+    ],
+    "storefront": [],
+    "api": [
+      "artwork/artwork-cross-store-clone#KB-1082",
+      "artwork/artwork-cross-store-clone#KB-1086"
+    ],
+    "data": [
+      "artwork/artwork-cross-store-clone#KB-1082",
+      "artwork/artwork-cross-store-clone#KB-1083"
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "feature_key": "layer-config-image",
+      "why": "Layer Clipart Category / Static photo và field clipart, default_value, url là cấu hình layer ảnh."
+    },
+    {
+      "feature_key": "artwork-list-management",
+      "why": "Duplicate artwork trong cùng account (không thuộc feature này); TIB Library nằm ở /artworks."
+    }
+  ],
+  "risks": [
+    {
+      "summary": "Layer clipart trỏ id category của bên nguồn thì không có file, layer trong suốt trong editor (lỗi gốc TIB-5619).",
+      "kb_refs": [
+        "artwork/artwork-cross-store-clone#KB-1082"
+      ]
+    },
+    {
+      "summary": "Chỉ verify trên staging, artwork 2.0; production chưa verify.",
+      "kb_refs": [
+        "artwork/artwork-cross-store-clone#KB-1082",
+        "artwork/artwork-cross-store-clone#KB-1083",
+        "artwork/artwork-cross-store-clone#KB-1084"
+      ]
+    }
+  ],
+  "environment_differences": [
+    {
+      "type": "ALTERNATIVE_SETUP",
+      "test_env": "Portal không có thao tác cho QA để duplicate campaign sang store của account khác.",
+      "production": "không rõ",
+      "how_to_test": "Import từ TIB Library bằng account đích (POST /api/artworks/by-public), hoặc admin import từ account nguồn sang account đích do người có quyền admin chạy.",
+      "kb_refs": [
+        "artwork/artwork-cross-store-clone#KB-1086"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-11-12"
+  },
+  "unknown_areas": [
+    {
+      "question": "Design preview của từng template sau admin import sang account khác phải giống template nguồn (ảnh clipart, static photo từ clipart hiện đủ) có phải expected không?",
+      "why_it_matters": "Quyết định oracle của CHK-005; hiện KB-1085 chỉ là quan sát một lần, expected do QA chốt.",
+      "oq_id": "OQ-artwork-549"
+    },
+    {
+      "question": "Trên staging có đường nào khác để duplicate campaign sang store của account khác không, và trên production đường này chạy thế nào?",
+      "why_it_matters": "KB-1086 là ghi nhận QA không artifact; quyết định precondition của mọi check.",
+      "oq_id": "OQ-artwork-550"
+    },
+    {
+      "question": "Remap ảnh gốc có áp cho layer Group of clipart categories, Vector Category và artwork 1.0 không (Dev nói áp cho cả 1.0 và 2.0; test case chỉ phủ layer Clipart Category của artwork 2.0)?",
+      "why_it_matters": "CHK-001, CHK-002 chỉ phủ artwork 2.0, layer Clipart Category tự giữ category.",
+      "oq_id": "OQ-artwork-551"
+    },
+    {
+      "question": "Layer lấy category từ Global Option (layer không tự giữ category) khi artwork được import qua TIB Library sang account khác: ảnh gốc có được remap không? Ghi nhận ngoài claim của QA (staging 2026-11-04): url vẫn giữ id category nguồn (403), layer trong suốt trên canvas; chưa có kết luận Dev/PO.",
+      "why_it_matters": "KB-1082 và CHK-001/CHK-002 chỉ phủ layer tự giữ category; layer Global Option chưa có expected.",
+      "oq_id": "OQ-artwork-552"
+    },
+    {
+      "question": "Khi copy ảnh clipart dùng làm Static photo sang bên đích, chỉ file _large được copy; file _thumbnail ở đường dẫn đích trả 403 nên dòng layer ở layer list hiện icon chung (ghi nhận ngoài claim của QA 2026-11-04, chưa có kết luận Dev). Đây là lỗi hay chủ ý?",
+      "why_it_matters": "Ảnh hưởng quan sát ở layer list khi chạy CHK-003; hiện không có expected.",
+      "oq_id": "OQ-artwork-553"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-157"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-34-artwork-cross-store-clone",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "artwork 2.0 nhận qua import TIB Library / admin import",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-34-artwork-cross-store-clone",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "artwork JSON bên đích (url, clipart, default_value)",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-34-artwork-cross-store-clone",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "artwork 1.0, Group of clipart categories, Vector Category",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-34-artwork-cross-store-clone",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "duplicate campaign sang store khác",
+      "environment": "production",
+      "covered": false
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from_feature_key": "artwork-cross-store-clone",
+      "to_feature_key": "layer-config-image",
+      "relationship": "depends_on"
+    }
+  ]
+}

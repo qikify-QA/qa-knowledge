@@ -59,11 +59,89 @@
       "kb_refs": [
         "artwork/layer-config-maps-astronomy#KB-027"
       ]
+    },
+    {
+      "name": "[MỚI, CBS-106] Star Map — setting 'Display in date format' (Artwork 2.0)",
+      "description": "Layer Star Map có setting 'Display in date format' giống setting của date picker, lưu trong layer nên mỗi design có format riêng (KB-1104); format phải gồm giờ, không giây (KB-1106). Setting chỉ áp cho date picker của Teeinblue (KB-1110). Layer Star Map không vẽ ngày lên design (KB-1112). Quan sát (LOW): preset, ô Custom, field lưu (KB-1105); ô giờ storefront (KB-1107); picker native (KB-1111).",
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1104",
+        "artwork/layer-config-maps-astronomy#KB-1106",
+        "artwork/layer-config-maps-astronomy#KB-1110",
+        "artwork/layer-config-maps-astronomy#KB-1112",
+        "artwork/layer-config-maps-astronomy#KB-1105",
+        "artwork/layer-config-maps-astronomy#KB-1107",
+        "artwork/layer-config-maps-astronomy#KB-1111"
+      ]
     }
   ],
   "state_transitions": [],
-  "confirmed_rules": [],
-  "observed_behavior": [],
+  "confirmed_rules": [
+    {
+      "rule": "[MỚI, CBS-106] Layer Star Map có setting 'Display in date format' giống setting của date picker, lưu trong chính layer nên mỗi design có thể chọn format khác nhau.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "source": "Jira TIB-5609 description (2026-10-21), spec_doc, một nguồn, mục Solution",
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1104"
+      ]
+    },
+    {
+      "rule": "[MỚI, CBS-106] Vì giá trị Star Map mang cả giờ, các lựa chọn format phải gồm cả giờ (vd hh:mm), không có giây.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "source": "Jira TIB-5609 description (2026-10-21), spec_doc, một nguồn, mục Solution",
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1106"
+      ]
+    },
+    {
+      "rule": "[MỚI, CBS-106] Setting 'Display in date format' chỉ áp cho date picker của Teeinblue; với date picker native của trình duyệt, ngôn ngữ và format theo trình duyệt của buyer.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "source": "Jira TIB-5609 description (2026-10-21), spec_doc, một nguồn, mục Solution (Scope)",
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1110"
+      ]
+    },
+    {
+      "rule": "[MỚI, CBS-106] Layer Star Map không vẽ ngày lên design; date picker chỉ chọn thời điểm dùng để load bản đồ sao, ngày thường được populate sang text layer riêng.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "source": "Jira TIB-5609 description (2026-10-21), spec_doc, một nguồn, mục Case",
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1112"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "[MỚI, CBS-106] Portal Artwork 2.0, Personalization Settings của Star Map: 'Display in date format' nằm dưới time label; dropdown 7 preset dạng 24h không giây + Custom (ô 'Custom date format'); save PUT /api/artworks/{id} = 200 với star_maps_date_format theo dạng date-fns, key star_maps_custom_date_format vắng khi chọn preset. Chưa có PO xác nhận preset 24h; Artwork 1.0 không kiểm.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1105"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "[MỚI, CBS-106] Storefront SDK v2, UI date picker Teeinblue bật: ô giờ Star Map hiện theo format đã chọn (kể cả Custom 12h AM/PM), input ẩn và giá trị lưu trong customization localStorage vẫn dạng máy 24h có chữ T. Chưa kiểm SDK v1.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1107"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "[MỚI, CBS-106] Storefront khi store tắt UI date picker của Teeinblue: ô giờ Star Map là input datetime-local của trình duyệt, không áp format Star Map; {{time}} populate vẫn theo format Star Map. Expected của vế populate chưa có (câu Scope đọc được theo hai cách).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1111"
+      ],
+      "observed_count": null
+    }
+  ],
   "observed_validations": [],
   "permissions": [
     {
@@ -101,6 +179,15 @@
         "artwork/_object-level#KB-011",
         "artwork/_object-level#KB-012"
       ]
+    },
+    {
+      "type": "cross_object",
+      "description": "[CBS-106] Giá trị ngày giờ Star Map được populate sang text layer; token {{time}} không format dùng format Star Map, token có format riêng thắng (artwork/populate-values#KB-1108). Chỉ tham chiếu, không làm oracle của feature này.",
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1104",
+        "artwork/populate-values#KB-1108",
+        "artwork/layer-config-maps-astronomy#KB-1111"
+      ]
     }
   ],
   "risks": [
@@ -130,6 +217,14 @@
       "kb_refs": [
         "artwork/layer-config-maps-astronomy#KB-419"
       ]
+    },
+    {
+      "risk": "[CBS-106] KB-1105, KB-1107, KB-1111 là OBSERVED_CURRENT/LOW (Testlane PASS 2026-11-10, không ghi build), không làm oracle STRONG; mọi expected còn lại trong CBS-106 đến từ một nguồn spec_doc (TIB-5609), MEDIUM.",
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1105",
+        "artwork/layer-config-maps-astronomy#KB-1107",
+        "artwork/layer-config-maps-astronomy#KB-1111"
+      ]
     }
   ],
   "environment_differences": [
@@ -150,8 +245,8 @@
     "observed_at": "2026-11-06"
   },
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-106"
   },
   "unknown_areas": [
     {
@@ -178,6 +273,43 @@
         "artwork/layer-config-maps-astronomy#KB-419"
       ],
       "oq_id": "OQ-artwork-190"
+    },
+    {
+      "question": "[MỚI, CBS-106] Preset 24h không giây của 'Display in date format' có đúng ý PO, và field star_maps_date_format / star_maps_custom_date_format cùng việc key custom vắng khi chọn preset có đúng ý không? Artwork 1.0 / Global Option Star Maps có setting này không (chưa kiểm)?",
+      "why_it_matters": "KB-1105 là OBSERVED_CURRENT/LOW; CHK-009 không có oracle.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1105"
+      ],
+      "oq_id": "OQ-artwork-571"
+    },
+    {
+      "question": "[MỚI, CBS-106] Ô giờ Star Map hiện theo format đã chọn và giá trị lưu vẫn dạng máy: Dev xác nhận? SDK v1 có giống SDK v2 không (chưa kiểm, thiếu store SDK v1)?",
+      "why_it_matters": "KB-1107 là OBSERVED_CURRENT/LOW; CHK-011 không có oracle.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1107"
+      ],
+      "oq_id": "OQ-artwork-572"
+    },
+    {
+      "question": "[MỚI, CBS-106] Với date picker native, text layer populate {{time}} từ Star Map có nên in theo 'Display in date format' không, hay câu Scope của TIB-5609 loại cả populate?",
+      "why_it_matters": "KB-1111 là OBSERVED_CURRENT/LOW; CHK-013 không có oracle.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1111",
+        "artwork/layer-config-maps-astronomy#KB-1110"
+      ],
+      "oq_id": "OQ-artwork-573"
+    },
+    {
+      "question": "[MỚI, CBS-106] Star Map không vẽ ngày lên design: mới kiểm print area front của design order; print area back (design back) chưa kiểm.",
+      "why_it_matters": "CHK-014 chỉ có chứng cứ cho print area front; vùng khác chưa có quan sát.",
+      "type": "COVERAGE_GAP",
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1112"
+      ],
+      "oq_id": "OQ-artwork-575"
     }
   ],
   "coverage_matrix": [
@@ -236,6 +368,59 @@
         "artwork/layer-config-maps-astronomy#KB-419"
       ],
       "basis": "phía production không rõ, shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-15-layer-config-maps-astronomy",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-106] Layer Star Map Artwork 2.0 có 'Display in date format' (setting, preset, Custom, field lưu)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1104",
+        "artwork/layer-config-maps-astronomy#KB-1105"
+      ],
+      "basis": "KB-1104 CONFIRMED_EXPECTED/MEDIUM; KB-1105 OBSERVED_CURRENT/LOW"
+    },
+    {
+      "feature_id": "FEAT-15-layer-config-maps-astronomy",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[CBS-106] Ô giờ Star Map: UI date picker Teeinblue bật (SDK v2) và tắt (picker native)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1106",
+        "artwork/layer-config-maps-astronomy#KB-1107",
+        "artwork/layer-config-maps-astronomy#KB-1110",
+        "artwork/layer-config-maps-astronomy#KB-1111"
+      ],
+      "basis": "một phần LOW; SDK v1 chưa kiểm"
+    },
+    {
+      "feature_id": "FEAT-15-layer-config-maps-astronomy",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[CBS-106] SDK v1 và Artwork 1.0 / Global Option Star Maps",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1105",
+        "artwork/layer-config-maps-astronomy#KB-1107"
+      ],
+      "basis": "chưa kiểm (thiếu store SDK v1)"
+    },
+    {
+      "feature_id": "FEAT-15-layer-config-maps-astronomy",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[CBS-106] Star Map không vẽ ngày lên design: print area back",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/layer-config-maps-astronomy#KB-1112"
+      ],
+      "basis": "chỉ print area front được kiểm"
     }
   ],
   "profile_conflicts": [

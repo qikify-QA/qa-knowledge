@@ -108,6 +108,79 @@
       "priority": "P3",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-product-base-106"
+    },
+    {
+      "check_id": "CHK-11-004",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-163] Import printarea từ provider trả 201, body là list",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base fixture có provider đã kết nối, trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Product Base > Edit > Import from <provider> + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Fixture tự dựng trên store explorer; không dùng store, category, Product Base, campaign hay id nêu trong CCR/test case; không gọi production. Product Base fixture tự dựng trên store explorer gắn một fulfillment provider đã kết nối trên store đó (Duplicate một Product Base của explorer có provider; không ghi vào Product Base có sẵn). Nếu store explorer chưa có provider kết nối thì dừng và hỏi operator. Mở tab network. Sau khi chạy, xoá printarea vừa import hoặc xoá Product Base fixture (xoá printarea không hoàn tác, chỉ làm trên fixture).",
+      "steps": [
+        "Mở /products/{id}/edit của fixture, bấm Import from <provider>.",
+        "Chọn 2 printarea trong popup, bấm Import.",
+        "Ghi status và body của request import printarea."
+      ],
+      "observation_point": "Status; body là list hay object",
+      "expected_result": "Response 201, body là một list (mỗi phần tử là các key Printarea::$visible).",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-catalog-import#KB-536"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "product-base/provider-catalog-import#KB-536",
+        "product-base/provider-catalog-import#KB-537"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Tập key cụ thể là quan sát (KB-537, CHK-11-005)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-11-005",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "[CBS-163] Key của printarea import và danh sách printarea sau import (quan sát)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Product Base fixture có provider đã kết nối, trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Product Base > Edit > Printareas + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Fixture tự dựng trên store explorer; không dùng store, category, Product Base, campaign hay id nêu trong CCR/test case; không gọi production. Product Base fixture tự dựng trên store explorer gắn một fulfillment provider đã kết nối trên store đó (Duplicate một Product Base của explorer có provider; không ghi vào Product Base có sẵn). Nếu store explorer chưa có provider kết nối thì dừng và hỏi operator. Mở tab network. Sau khi chạy, xoá printarea vừa import hoặc xoá Product Base fixture (xoá printarea không hoàn tác, chỉ làm trên fixture). Chạy cùng lượt CHK-11-004.",
+      "steps": [
+        "Với response ở CHK-11-004, ghi số phần tử, tập key của từng phần tử, có relation không.",
+        "Ghi danh sách printarea của fixture sau khi import."
+      ],
+      "observation_point": "Số phần tử, tập key, relation; bảng Printareas",
+      "expected_result": "Baseline theo quan sát (TC-TIB-8593): list 2 phần tử, mỗi phần tử key id, product_id, name, display_name, width, height, dpi, không relation; danh sách printarea tải lại và hiện 2 printarea mới. Lệch thì điều tra, chưa phải bug.",
+      "oracle": {
+        "kb_ids": [
+          "product-base/provider-catalog-import#KB-537"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "product-base/provider-catalog-import#KB-537",
+        "product-base/provider-catalog-import#KB-536"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-product-base-122"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -120,6 +193,15 @@
       "feature_id": "FEAT-11-provider-catalog-import",
       "dimension": "INTEGRATION",
       "count": 1
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "risk_ref": "[CBS-163] response import printarea từ provider (KB-536, KB-537)",
+      "check_ids": [
+        "CHK-11-004",
+        "CHK-11-005"
+      ],
+      "note": "CHK-11-004 STRONG; CHK-11-005 BASELINE. Production chưa có check."
     }
   ],
   "excluded_dimensions": [
@@ -145,7 +227,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-119"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   }
 }

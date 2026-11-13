@@ -1,0 +1,789 @@
+{
+  "feature_id": "FEAT-04-tier-usage-metering",
+  "feature_key": "tier-usage-metering",
+  "object_id": "subscription",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Card Plan hiện khối usage khi Order items 0",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0 trong chu kỳ",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở Home, ghi khối usage trên card Plan.",
+        "Mở /subscriptions/shopify-tier và /platform-usages/shopify, so card Plan.",
+        "Hover dòng Usages."
+      ],
+      "observation_point": "UI card Plan",
+      "expected_result": "Quan sát trên staging, plan Blue, Order items 0: \"Order items: 0\", \"Next tier: 2\", \"Usages: $0 ($0/item)\", \"$0.5/item\"; progressbar aria-valuenow 0, aria-valuemax 100, width 0%; hover Usages không có tooltip; card giống nhau ở 3 trang.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1220"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1214"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mọi baseline ở Order items 0"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-026"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Card Plan khớp /api/user cycle và bậc đầu trong tier-plans",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0 trong chu kỳ",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở DevTools tab Network.",
+        "Mở Home.",
+        "Mở response GET /api/user (cycle) và GET /api/platforms/shopify/tier-plans.",
+        "So Order items, Next tier, $/item trên card với cycle.unit_count, tiers[0].starting_from, tiers[0].unit_price."
+      ],
+      "observation_point": "Response và UI card",
+      "expected_result": "Quan sát trên staging, plan Blue, Order items 0: response cycle/usage cho \"Order items\" 0, \"Next tier\" 2 (trùng starting_from của bậc đầu tiên trong tiers tại trạng thái 0), đơn giá $0.5/item (trùng unit_price bậc đầu) và total_amount_usd 0 khớp Usages $0. Nguồn của số Order items chưa chốt (CONF-SUB-004).",
+      "oracle": {
+        "kb_ids": [
+          "KB-1220"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1214"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-026"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Trang Usages Shopify hiện heading, lưu ý, lọc, Export và cột bảng",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0 trong chu kỳ",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Bấm View usages trên Subscription Details.",
+        "Đọc heading, card Plan, ba dòng lưu ý, ô lọc Store, nút Export (không bấm), cột bảng, lựa chọn Show entries."
+      ],
+      "observation_point": "UI /platform-usages/shopify",
+      "expected_result": "Baseline: /platform-usages/shopify có heading \"Usages\", card Plan, lưu ý \"Shopify’s test orders will not be counted or charged\" (link bài test order), \"Order price excludes shipping fees and non-Teeinblue products.\", \"Once an extra order is created, its transaction fee will be charged and non-refundable.\"; ô \"Store: Any\"; nút \"Export\"; cột PLATFORM, DOMAIN, ORDER, QUANTITY, FEE (USD), FREE, CHARGED, CREATED AT; Show 20/50/100/250/500 entries.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1222"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1222"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-026"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Bảng Usages lấy dữ liệu từ tier_usages_connection",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0 trong chu kỳ",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở DevTools tab Network.",
+        "Mở /platform-usages/shopify.",
+        "Mở request POST /api/graphql/relay getData, đọc query và response.",
+        "So từng edge với dòng bảng."
+      ],
+      "observation_point": "Request graphql/relay và bảng",
+      "expected_result": "Baseline: query đọc tier_usages_connection(first 20, order_by id desc) với node id, amount_usd, tier_transaction_id, created_at, instance, order_item{order, quantity}; mẫu 1 edge amount_usd 0, tier_transaction_id null, quantity 1, hiện thành 1 dòng QUANTITY 1, FEE \"0 USD\".",
+      "oracle": {
+        "kb_ids": [
+          "KB-1223",
+          "KB-1222"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1223",
+        "KB-1222"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-026"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Dropdown Store liệt kê các store của account",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0 trong chu kỳ",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở /platform-usages/shopify.",
+        "Bấm ô Store: Any, ghi tiêu đề, placeholder và lựa chọn, không chọn."
+      ],
+      "observation_point": "UI dropdown",
+      "expected_result": "Baseline: dropdown tiêu đề \"Store:\", placeholder \"Select a value\", trên account đã quan sát (2 store) dropdown có 2 lựa chọn, mỗi lựa chọn hiện tên store và domain ngăn bởi \" | \". Hành vi lọc chưa quan sát nên không kiểm.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1225"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1225"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-026"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Trang usage của nền tảng không có plan",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account không có plan Etsy hoặc Boundless",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở trực tiếp /platform-usages/etsy.",
+        "Ghi khối No plan, lưu ý và bảng.",
+        "Mở trực tiếp /platform-usages/boundless, ghi lại.",
+        "Đọc request graphql/relay của mỗi trang."
+      ],
+      "observation_point": "UI hai trang, network",
+      "expected_result": "Baseline: Etsy hiện \"No plan\" và \"You have to active a plan to start selling\", ba dòng lưu ý như Shopify, bảng \"Empty data\"; Boundless không có khối No plan, bảng \"Empty data\"; cả hai gọi POST /api/graphql/relay với usages_connection trả edges [].",
+      "oracle": {
+        "kb_ids": [
+          "KB-1212"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1222"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-026"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Ngày reset chu kỳ nhất quán giữa UI, /api/user và tier-subscriptions",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0 trong chu kỳ",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở DevTools tab Network, mở Home.",
+        "Ghi ngày \"Current cycle (reset on ...)\" trên card.",
+        "Ghi cycle.reset_at, interval_days từ /api/user và currentPeriodStart/End từ /api/user/shopify/tier-subscriptions.",
+        "Đối chiếu ba nguồn và timezone hiển thị."
+      ],
+      "observation_point": "UI card và hai response",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1221"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mốc chu kỳ usage không thống nhất giữa các nguồn"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-017"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Order items trên card khớp danh sách usage trong chu kỳ",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0 trong chu kỳ",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở Home, ghi Order items và /api/user cycle.unit_count.",
+        "Mở /platform-usages/shopify, ghi các dòng usage (QUANTITY, CREATED AT).",
+        "So tổng quantity các dòng trong chu kỳ hiện tại với Order items."
+      ],
+      "observation_point": "Card Plan, bảng Usages, /api/user",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1224",
+        "KB-1220",
+        "KB-1223"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Đếm order items quyết định bậc tier và phí"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-018"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Card Plan khi Order items > 0: Next tier, progressbar, Usages",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Order items > 0 trong chu kỳ (cần fixture, chưa dựng)",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Cần account có Order items > 0 trong chu kỳ.",
+      "steps": [
+        "Mở Home.",
+        "Ghi Order items, Next tier, Usages, progressbar.",
+        "Lặp lại ở một giá trị trong mỗi bậc và ở bậc cao nhất (10+)."
+      ],
+      "observation_point": "UI card Plan",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1220"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chưa quan sát Order items > 0"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-019"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "PERMISSION",
+      "layer": "portal",
+      "title": "Role owner truy cập được trang usage",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0 trong chu kỳ",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Đăng nhập bằng account owner.",
+        "Mở /subscriptions/shopify-tier và /platform-usages/shopify."
+      ],
+      "observation_point": "UI trang",
+      "expected_result": "Baseline: owner truy cập được /subscriptions/shopify-tier và /platform-usages/<platform>. Role khác chưa quan sát nên không suy cho role khác.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1227"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1227"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Role khác owner chưa thử"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-subscription-026"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Xem Home và trang Usages không phát sinh request ghi subscription/billing",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã subscribe Blue TEST, Order items 0 trong chu kỳ",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner có gói Blue test (ACTIVE) trên dev store. Không bấm control ghi billing.",
+      "steps": [
+        "Mở DevTools tab Network, lọc non-GET.",
+        "Mở Home, /platform-usages/shopify, /platform-usages/etsy.",
+        "Liệt kê request non-GET."
+      ],
+      "observation_point": "Network log",
+      "expected_result": "Baseline: request non-GET gồm POST /api/assistant/session-token mỗi lần tải trang, POST /api/graphql và POST /api/graphql/relay là query đọc, và request analytics; không có request ghi subscription/billing.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1226"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1226"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Request ghi billing ngoài ý muốn khi chỉ xem"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-subscription-026"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-161] Order item 2 printarea tạo đúng 1 tier usage, Order items +1",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "gói Blue, order 1 item product 2 printarea",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner đã subscribe gói Blue trên store Shopify dev, account được phép đặt order test (guide chưa có biến env cho account này; nhóm TIB_ONBOARDING_* chỉ đọc). Store có campaign đã publish với product 2 printarea (front, back) có artwork ở cả hai. Order đặt qua Shopify Bogus gateway: trên staging order test có được đếm (KB-1242, chưa xác nhận, không suy production). Ngay trước khi đặt order, ghi baseline \"Order items\" ở /subscriptions/shopify-tier và số dòng ở /platform-usages/shopify (cycle hiển thị có thể là cycle cũ).",
+      "steps": [
+        "Ghi baseline Order items N và số dòng usage.",
+        "Storefront: personalize product 2 printarea, Add to cart quantity 1, checkout Bogus.",
+        "Portal: mở order, chờ item về Ready, đọc số design.",
+        "Đọc lại Order items ở /subscriptions/shopify-tier.",
+        "Đếm dòng usage của order ở /platform-usages/shopify."
+      ],
+      "observation_point": "Order detail, Subscription details, trang Usages",
+      "expected_result": "Item có 2 design (front, back). Trang Usages có đúng 1 dòng usage mới cho order item. Order items = N + 1.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1234"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1222",
+        "KB-1242"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Usage thừa theo printarea"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-161] Hai customization trong một order tạo 2 tier usage, Order items +2",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "gói Blue, order 2 item (2 customization), mỗi item 2 printarea",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner đã subscribe gói Blue trên store Shopify dev, account được phép đặt order test (guide chưa có biến env cho account này; nhóm TIB_ONBOARDING_* chỉ đọc). Store có campaign đã publish với product 2 printarea (front, back) có artwork ở cả hai. Order đặt qua Shopify Bogus gateway: trên staging order test có được đếm (KB-1242, chưa xác nhận, không suy production). Ngay trước khi đặt order, ghi baseline \"Order items\" ở /subscriptions/shopify-tier và số dòng ở /platform-usages/shopify (cycle hiển thị có thể là cycle cũ).",
+      "steps": [
+        "Ghi baseline Order items N và số dòng usage.",
+        "Storefront: personalize product 2 printarea với giá trị A, Add to cart.",
+        "Personalize lại với giá trị B, Add to cart (2 dòng cart, 2 customization).",
+        "Checkout Bogus.",
+        "Đọc Order items và đếm dòng usage của order."
+      ],
+      "observation_point": "Subscription details, trang Usages",
+      "expected_result": "Trang Usages có 2 dòng usage mới cho order (mỗi customization một dòng). Order items = N + 2.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1235"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1234",
+        "KB-1242"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Usage gộp theo order"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-161] Order item 1 printarea tạo 1 tier usage, Order items +1",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "gói Blue, order 1 item product 1 printarea",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner đã subscribe gói Blue trên store Shopify dev, account được phép đặt order test (guide chưa có biến env cho account này; nhóm TIB_ONBOARDING_* chỉ đọc). Store có campaign đã publish với product 1 printarea. Order đặt qua Shopify Bogus gateway: trên staging order test có được đếm (KB-1242, chưa xác nhận, không suy production). Ngay trước khi đặt order, ghi baseline \"Order items\" ở /subscriptions/shopify-tier và số dòng ở /platform-usages/shopify (cycle hiển thị có thể là cycle cũ).",
+      "steps": [
+        "Ghi baseline Order items N và số dòng usage.",
+        "Storefront: personalize product 1 printarea, Add to cart, checkout Bogus.",
+        "Đọc Order items và đếm dòng usage của order."
+      ],
+      "observation_point": "Subscription details, trang Usages",
+      "expected_result": "1 dòng usage mới cho order item. Order items = N + 1 (nếu order mở cycle mới thì so trên cycle mới).",
+      "oracle": {
+        "kb_ids": [
+          "KB-1236"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1234",
+        "KB-1242",
+        "KB-1221"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Regression single-printarea"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-015",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "[CBS-161] Re-generate design không tạo thêm tier usage",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "gói Blue, order item 2 printarea đã có 1 usage",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner đã subscribe gói Blue trên store Shopify dev, account được phép đặt order test (guide chưa có biến env cho account này; nhóm TIB_ONBOARDING_* chỉ đọc). Store có campaign đã publish với product 2 printarea (front, back) có artwork ở cả hai. Order đặt qua Shopify Bogus gateway: trên staging order test có được đếm (KB-1242, chưa xác nhận, không suy production). Dùng order item của CHK-012; trước khi re-generate, ghi baseline \"Order items\" ở /subscriptions/shopify-tier và số dòng ở /platform-usages/shopify (cycle hiển thị có thể là cycle cũ).",
+      "steps": [
+        "Ghi baseline Order items N và số dòng usage của order.",
+        "Order detail: bấm Re-generate design trên design back, chờ xong.",
+        "Bấm Re-generate design trên design front, chờ xong.",
+        "Đọc lại Order items và số dòng usage."
+      ],
+      "observation_point": "Subscription details, trang Usages",
+      "expected_result": "Order vẫn đúng 1 dòng usage; tổng số dòng usage và Order items = N không đổi.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1237"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1234"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Re-generate tính thêm phí"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-016",
+      "dimension": "INTEGRATION",
+      "layer": "any",
+      "title": "[CBS-161] Order 2 printarea đưa count tới mốc tier − 1 gửi đúng 1 email TierUp",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "gói Blue, count = starting_from của tier kế tiếp − 2 (staging 2/6/10: count 4)",
+        "environment": "staging",
+        "surface_or_device": "any"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner đã subscribe gói Blue trên store Shopify dev, account được phép đặt order test (guide chưa có biến env cho account này; nhóm TIB_ONBOARDING_* chỉ đọc). Store có campaign đã publish với product 2 printarea (front, back) có artwork ở cả hai. Order đặt qua Shopify Bogus gateway: trên staging order test có được đếm (KB-1242, chưa xác nhận, không suy production). Ngay trước khi đặt order, ghi baseline \"Order items\" ở /subscriptions/shopify-tier và số dòng ở /platform-usages/shopify (cycle hiển thị có thể là cycle cũ). Cần xem được inbox email của account (người dùng kiểm). Mốc tier đọc ở GET /api/platforms/shopify/tier-plans (starting_from).",
+      "steps": [
+        "Đẩy count tới starting_from của tier kế tiếp − 2 (staging: 4) bằng order thường, ghi giờ.",
+        "Đặt 1 order product 2 printarea quantity 1.",
+        "Đọc Order items và dòng usage.",
+        "Kiểm inbox email tier sau giờ order."
+      ],
+      "observation_point": "Subscription details, inbox email account",
+      "expected_result": "Order items tăng 1, tới starting_from của tier kế tiếp − 1 (staging: 5). 1 dòng usage mới. Inbox nhận đúng 1 email TierUp, không trùng, không thiếu. Chỉ kiểm số email, không kiểm nội dung.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1238",
+          "KB-1239"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1234",
+        "KB-1242"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Email tier sai count hoặc trùng"
+      ],
+      "priority": "P2",
+      "automation_suitability": "MANUAL"
+    },
+    {
+      "check_id": "CHK-017",
+      "dimension": "INTEGRATION",
+      "layer": "any",
+      "title": "[CBS-161] Count không chạm mốc tier − 1 thì không có email tier",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "gói Blue, tier staging 2/6/10, count từ 0 tới 4",
+        "environment": "staging",
+        "surface_or_device": "any"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner đã subscribe gói Blue trên store Shopify dev, account được phép đặt order test (guide chưa có biến env cho account này; nhóm TIB_ONBOARDING_* chỉ đọc). Store có campaign đã publish với product 1 printarea. Order đặt qua Shopify Bogus gateway: trên staging order test có được đếm (KB-1242, chưa xác nhận, không suy production). Ngay trước khi đặt order, ghi baseline \"Order items\" ở /subscriptions/shopify-tier và số dòng ở /platform-usages/shopify (cycle hiển thị có thể là cycle cũ). Cần xem được inbox email của account.",
+      "steps": [
+        "Từ đầu cycle, đặt order lần lượt để count đi 0 → 1 → 2 → 4.",
+        "Sau mỗi order kiểm inbox email tier."
+      ],
+      "observation_point": "Inbox email account",
+      "expected_result": "Không có email tier nào (TierUp, TierTopReached, TierFreeExceeded) ở các count 1, 2, 3, 4 trên plan 2/6/10.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1238"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1242"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Email gửi sai mốc"
+      ],
+      "priority": "P3",
+      "automation_suitability": "MANUAL"
+    },
+    {
+      "check_id": "CHK-018",
+      "dimension": "INTEGRATION",
+      "layer": "any",
+      "title": "[CBS-161] Count tới mốc tier cuối − 1 gửi đúng 1 email TierTopReached",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "gói Blue, count = starting_from của tier cuối − 2 (staging: 8)",
+        "environment": "staging",
+        "surface_or_device": "any"
+      },
+      "precondition": "Đăng nhập portal staging bằng account owner đã subscribe gói Blue trên store Shopify dev, account được phép đặt order test (guide chưa có biến env cho account này; nhóm TIB_ONBOARDING_* chỉ đọc). Store có campaign đã publish với product 1 printarea. Order đặt qua Shopify Bogus gateway: trên staging order test có được đếm (KB-1242, chưa xác nhận, không suy production). Ngay trước khi đặt order, ghi baseline \"Order items\" ở /subscriptions/shopify-tier và số dòng ở /platform-usages/shopify (cycle hiển thị có thể là cycle cũ). Cần xem được inbox email của account.",
+      "steps": [
+        "Đẩy count tới starting_from của tier cuối − 2 (staging: 8).",
+        "Đặt 1 order.",
+        "Kiểm inbox email tier sau giờ order."
+      ],
+      "observation_point": "Inbox email account",
+      "expected_result": "Count tới starting_from của tier cuối − 1 (staging: 9); inbox nhận đúng 1 email TierTopReached. Chưa test trên staging.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1238"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1239",
+        "KB-1242"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "TierTopReached chưa test"
+      ],
+      "priority": "P3",
+      "automation_suitability": "MANUAL"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "risk_or_gap_ref": "Capability: xem usage hiện tại trên card Plan (Order items 0)",
+      "covered_by_check_ids": [
+        "CHK-001",
+        "CHK-002"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "risk_or_gap_ref": "Capability: xem lịch sử usage trên trang Usages",
+      "covered_by_check_ids": [
+        "CHK-003",
+        "CHK-004",
+        "CHK-005"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "risk_or_gap_ref": "Capability: nền tảng không có plan",
+      "covered_by_check_ids": [
+        "CHK-006"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "risk_or_gap_ref": "Conflict CONF-SUB-002 mốc chu kỳ",
+      "covered_by_check_ids": [
+        "CHK-007"
+      ],
+      "coverage_status": "GAP_NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "risk_or_gap_ref": "Conflict CONF-SUB-004 đếm order items",
+      "covered_by_check_ids": [
+        "CHK-008"
+      ],
+      "coverage_status": "GAP_NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "risk_or_gap_ref": "Order items > 0 và chuyển tier",
+      "covered_by_check_ids": [
+        "CHK-009"
+      ],
+      "coverage_status": "GAP_NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "risk_or_gap_ref": "Permission owner; request ghi khi xem",
+      "covered_by_check_ids": [
+        "CHK-010",
+        "CHK-011"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "risk_or_gap_ref": "CBS-161: 1 tier usage cho mỗi customization (1/2 printarea, 2 customization)",
+      "covered_by_check_ids": [
+        "CHK-012",
+        "CHK-013",
+        "CHK-014"
+      ],
+      "coverage_status": "COVERED_STRONG"
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "risk_or_gap_ref": "CBS-161: re-generate không tính thêm usage",
+      "covered_by_check_ids": [
+        "CHK-015"
+      ],
+      "coverage_status": "COVERED_STRONG"
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "risk_or_gap_ref": "CBS-161: mốc email chuyển tier",
+      "covered_by_check_ids": [
+        "CHK-016",
+        "CHK-017",
+        "CHK-018"
+      ],
+      "coverage_status": "COVERED_STRONG"
+    },
+    {
+      "feature_id": "FEAT-04-tier-usage-metering",
+      "risk_or_gap_ref": "CBS-161: email sau commit, hai job đồng thời (KB-1240, KB-1241) không thực thi được trên staging",
+      "covered_by_check_ids": [],
+      "coverage_status": "NOT_COVERED"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Dimension áp dụng nhưng chưa có evidence: page-size selector không nhận giá trị khi thử, chưa quan sát giới hạn phân trang hay Export; gap ở unknown_areas."
+    },
+    {
+      "dimension": "INTEGRATION",
+      "reason": "Đã có CHK-002, CHK-004, CHK-011; email chuyển tier (TierUp, TierTopReached, TierFreeExceeded) không quan sát được qua portal, chưa có evidence nên không tạo check."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Không áp dụng: object chưa có base và feature không có item KNOWN_DEFECT; hai conflict là UNRESOLVED nên nằm ở check NONE, không phải regression watch."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-161"
+  }
+}

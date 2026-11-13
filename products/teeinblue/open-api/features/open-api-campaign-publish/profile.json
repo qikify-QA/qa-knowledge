@@ -1,0 +1,468 @@
+{
+  "feature_id": "FEAT-02-open-api-campaign-publish",
+  "feature_key": "open-api-campaign-publish",
+  "name": "Lấy user API token và publish campaign lên store qua Open API (/api/open, auth:public-api)",
+  "user_goal": "Là merchant hoặc integrator dùng token của merchant, mình lấy user API token của account (PUT /api/user/api-token, thay token hiện tại) rồi dùng nó làm bearer để publish một campaign lên store qua Open API; personal access token không dùng được ở route này.",
+  "user_goal_kb_refs": [
+    "open-api/open-api-campaign-publish#KB-062",
+    "open-api/open-api-campaign-publish#KB-064"
+  ],
+  "stable_since_version": null,
+  "scope_note": "[CBS-163] Operator duyệt 2026-11-13 mở rộng phạm vi object open-api ngoài /openapi/v1: gồm route Open /api/open/... (guard auth:public-api) và user API token mà route này nhận (PUT /api/user/api-token). Personal access token — token /openapi/v1 của open-api/open-api-asset-upload và token tạo ở trang /mcp (mcp/mcp-client-connection, cùng tạo qua POST /api/tokens) — không dùng được ở route này theo KB-064; token MCP chưa được gọi thử trên route publish.",
+  "actors": [
+    {
+      "role": "merchant-owner (phiên portal)",
+      "permission_observed": "[CBS-163] Gọi PUT /api/user/api-token bằng phiên owner sau confirm-password trên staging trong test case của CCR (TC-TIB-8588).",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-062",
+        "open-api/open-api-campaign-publish#KB-063"
+      ]
+    },
+    {
+      "role": "integrator dùng user API token của merchant",
+      "permission_observed": "[CBS-163] Bearer user API token publish được campaign (200); không bearer và PAT bị 401 (TC-TIB-8584, TC-TIB-8600).",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Portal API: POST /api/user/confirm-password → PUT /api/user/api-token",
+      "precondition": "[CBS-163] Account explorer của staging (TIB_STAGING_EMAIL, login {TIB_PORTAL_BASE}/login?staff=true); xác minh account theo playbook (GET /api/user đúng account_guard) trước khi thao tác và sau mỗi lần login lại. Cần operator đồng ý tường minh trước khi gọi PUT /api/user/api-token: lệnh này thay user API token hiện tại của account explorer, token cũ không khôi phục được và mọi tích hợp dùng token cũ sẽ hỏng; hỏi operator trước xem token hiện tại có đang được dùng không. Token mới chỉ giữ trong biến runtime, không in, không ghi file/.env/log. Không gọi trên production.",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-062",
+        "open-api/open-api-campaign-publish#KB-063"
+      ]
+    },
+    {
+      "path": "Open API: POST /api/open/instances/{instance}/campaigns/{campaign}/publish (Authorization: Bearer <user API token>)",
+      "precondition": "[CBS-163] Account explorer của staging (TIB_STAGING_EMAIL, login {TIB_PORTAL_BASE}/login?staff=true); xác minh account theo playbook (GET /api/user đúng account_guard) trước khi thao tác và sau mỗi lần login lại. Cần operator đồng ý tường minh trước khi publish: lệnh đưa một sản phẩm lên store. Fixture tự dựng trên store explorer (instance theo TIB_STORE_INSTANCE_ID): campaign tên tiền tố QA-, trạng thái Unpublished; không dùng store/campaign/id trong CCR hay test case. Bearer là user API token lấy theo CHK-001 (cùng đồng ý của operator). Gọi từ client ngoài trình duyệt, không gửi Origin (curl/Postman/request context của Playwright), base {TIB_API_BASE}. Dọn dẹp trong cùng lượt: gỡ sản phẩm khỏi store, unpublish rồi xoá campaign QA-. Không gọi trên production.",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Lấy user API token của account",
+      "description": "[CBS-163] CONFIRMED (KB-062): PUT /api/user/api-token bằng phiên owner sau xác nhận password trả chỉ plain token và thay token hiện tại. Quan sát (KB-063): lần đầu 423, confirm-password 201, PUT lại 200 với chuỗi token thuần, content-type text/html.",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-062",
+        "open-api/open-api-campaign-publish#KB-063"
+      ]
+    },
+    {
+      "name": "Publish campaign lên store qua Open API bằng user API token",
+      "description": "[CBS-163] CONFIRMED (KB-064): response chứa campaign với campaign_instances, không artworks, campaign_artworks, campaign_products. Quan sát (KB-065): 200, row theo instance_id có platform_linked_id/handle, sản phẩm mở được trên store.",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    },
+    {
+      "name": "Route auth:public-api từ chối bearer không hợp lệ",
+      "description": "[CBS-163] CONFIRMED (KB-064): personal access token không dùng được. Quan sát (KB-065): PAT 401 và campaign vẫn Unpublished; không bearer 401; gọi từ trang portal có Origin 419 CSRF.",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "account có user API token A",
+      "to": "account có user API token B (A bị thay)",
+      "trigger": "PUT /api/user/api-token",
+      "condition": "phiên owner đã xác nhận password",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-062"
+      ]
+    },
+    {
+      "from": "campaign Unpublished trên store",
+      "to": "campaign published, sản phẩm lên store",
+      "trigger": "POST /api/open/.../publish với bearer user API token",
+      "condition": "quan sát ở client không gửi Origin",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    },
+    {
+      "from": "campaign Unpublished",
+      "to": "vẫn Unpublished",
+      "trigger": "POST /api/open/.../publish với personal access token",
+      "condition": "PAT bị từ chối",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "[CBS-163] Theo Jira TIB-5689 comment 56491 QA plan bước 21 (Dev, 2026-11-05), PUT /api/user/api-token gọi bằng phiên owner sau bước xác nhận password trả chỉ plain token và thay token hiện tại của account.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-062"
+      ]
+    },
+    {
+      "statement": "[CBS-163] Theo Jira TIB-5689 comment 56491 QA plan bước 22 (Dev, 2026-11-05), POST /api/open/instances/{instance}/campaigns/{campaign}/publish dùng guard auth:public-api nên personal access token không dùng được; response chứa campaign với campaign_instances, không có artworks, campaign_artworks, campaign_products.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-064"
+      ]
+    }
+  ],
+  "confirmed_rules_note": "[CBS-163] 2 rule CONFIRMED_EXPECTED/MEDIUM từ QA plan của Dev (TIB-5689 comment 56491); production chưa verify.",
+  "observed_behavior": [
+    {
+      "statement": "[CBS-163] PUT /api/user/api-token lần đầu 423 'Password confirmation required.'; POST /api/user/confirm-password 201; PUT lại 200, body chuỗi token thuần, content-type text/html (TC-TIB-8588).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-063"
+      ]
+    },
+    {
+      "statement": "[CBS-163] Bearer user API token, client không Origin: 200, row campaign_instances theo instance_id có platform_linked_id/handle, sản phẩm mở được trên store (TC-TIB-8584).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    },
+    {
+      "statement": "[CBS-163] Không bearer 401 'Unauthenticated.'; PAT 401 'Unauthenticated.' và campaign vẫn Unpublished; gọi từ trang portal có Origin 419 CSRF token mismatch (TC-TIB-8584, TC-TIB-8600).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    }
+  ],
+  "observed_validations": [
+    {
+      "input": "PUT /api/user/api-token khi chưa xác nhận password",
+      "response_status": "423",
+      "message_verbatim": "Password confirmation required.",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-063"
+      ]
+    },
+    {
+      "input": "POST /api/open/.../publish không bearer, hoặc bearer là personal access token",
+      "response_status": "401",
+      "message_verbatim": "Unauthenticated.",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    },
+    {
+      "input": "POST /api/open/.../publish gọi bằng fetch trong trang portal (có Origin của portal)",
+      "response_status": "419",
+      "message_verbatim": "CSRF token mismatch",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "role": "merchant-owner (phiên portal đã confirm-password)",
+      "capability": "lấy user API token",
+      "observed": true,
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-063"
+      ]
+    },
+    {
+      "role": "bearer user API token",
+      "capability": "publish campaign qua /api/open",
+      "observed": true,
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    },
+    {
+      "role": "bearer personal access token / không bearer",
+      "capability": "publish campaign qua /api/open",
+      "observed": false,
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      {
+        "item": "Không có nút lấy user API token (statement CCR, chưa quan sát)",
+        "kb_refs": [
+          "open-api/open-api-campaign-publish#KB-063"
+        ]
+      }
+    ],
+    "storefront": [
+      {
+        "item": "Trang sản phẩm theo platform_linked_handle sau publish",
+        "kb_refs": [
+          "open-api/open-api-campaign-publish#KB-065"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "item": "POST /api/user/confirm-password, PUT /api/user/api-token",
+        "kb_refs": [
+          "open-api/open-api-campaign-publish#KB-062",
+          "open-api/open-api-campaign-publish#KB-063"
+        ]
+      },
+      {
+        "item": "POST /api/open/instances/{instance}/campaigns/{campaign}/publish (auth:public-api)",
+        "kb_refs": [
+          "open-api/open-api-campaign-publish#KB-064",
+          "open-api/open-api-campaign-publish#KB-065"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "campaign_instances: row theo instance_id có platform_linked_id, platform_linked_handle",
+        "kb_refs": [
+          "open-api/open-api-campaign-publish#KB-065"
+        ]
+      }
+    ],
+    "code": [
+      {
+        "item": "guard auth:public-api trên route /api/open/...",
+        "kb_refs": [
+          "open-api/open-api-campaign-publish#KB-064"
+        ]
+      }
+    ]
+  },
+  "dependencies": [
+    {
+      "description": "[CBS-163] Bearer cho route publish là user API token lấy ở capability đầu; lấy token mới thay token cũ của account.",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-062",
+        "open-api/open-api-campaign-publish#KB-064"
+      ]
+    },
+    {
+      "description": "[CBS-163] Personal access token của open-api/open-api-asset-upload (/openapi/v1) và token trang /mcp của mcp/mcp-client-connection không dùng được ở route này (KB-064); PAT /openapi/v1 đã quan sát bị 401 (KB-065).",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    },
+    {
+      "description": "[CBS-163] Campaign và store (instance) là dữ liệu của object campaign; publish từ portal thuộc object campaign, ngoài feature này.",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "description": "[CBS-163] Lấy user API token thay token hiện tại, không khôi phục: chạy test có thể làm hỏng tích hợp đang dùng token cũ của account.",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-062"
+      ]
+    },
+    {
+      "description": "[CBS-163] Integrator dùng personal access token (token /openapi/v1 hoặc token MCP) cho route publish sẽ bị từ chối; Dev từng ghi publish dùng PAT ở comment trước đó rồi sửa trong QA plan.",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    },
+    {
+      "description": "[CBS-163] Gọi route từ trình duyệt có Origin của portal nhận 419 CSRF thay vì đi đường bearer; chưa rõ có phải chủ đích (OQ-open-api-066).",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    },
+    {
+      "description": "[CBS-163] Publish đưa sản phẩm thật lên store; hành vi chỉ có một lượt quan sát không ghi build; production chưa verify.",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    }
+  ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-11-13",
+    "source_observed_on": "2026-11-09"
+  },
+  "unknown_areas": [
+    {
+      "question": "423 → confirm-password → 200 với chuỗi token thuần, content-type text/html; portal không có nút (KB-063) có phải expected?",
+      "why_it_matters": "KB-063 OBSERVED_CURRENT/LOW; CHK-002, CHK-008 BASELINE. Draft OQ-open-api-064.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-063"
+      ],
+      "oq_id": "OQ-open-api-064"
+    },
+    {
+      "question": "Status 200/401, row theo instance_id có platform_linked_id/handle, sản phẩm lên store, PAT 401 và campaign vẫn Unpublished (KB-065) có phải expected?",
+      "why_it_matters": "KB-065 OBSERVED_CURRENT/LOW; CHK-004, CHK-006 BASELINE. Draft OQ-open-api-065.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-065"
+      ],
+      "oq_id": "OQ-open-api-065"
+    },
+    {
+      "question": "Request có Origin của portal tới /api/open/.../publish trả 419 CSRF (KB-065): có phải chủ đích, integrator gọi từ trình duyệt có bị chặn?",
+      "why_it_matters": "KB-065 OBSERVED_CURRENT/LOW; CHK-007 BASELINE. Draft OQ-open-api-066.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-065"
+      ],
+      "oq_id": "OQ-open-api-066"
+    },
+    {
+      "question": "Chưa chạy: production, token cũ sau khi bị thay, token MCP làm bearer, instance/campaign của account khác, campaign đã published.",
+      "why_it_matters": "Không có KB cho các nhánh này; không suy từ KB-062/KB-064. Draft OQ-open-api-067.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-062",
+        "open-api/open-api-campaign-publish#KB-064"
+      ],
+      "oq_id": "OQ-open-api-067"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-02-open-api-campaign-publish",
+      "layer": "api",
+      "role": "merchant-owner (phiên portal)",
+      "state": "lấy user API token sau confirm-password",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-062",
+        "open-api/open-api-campaign-publish#KB-063"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-open-api-campaign-publish",
+      "layer": "api",
+      "role": "integrator (bearer user API token)",
+      "state": "campaign Unpublished → publish",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-open-api-campaign-publish",
+      "layer": "storefront",
+      "role": "khách xem store",
+      "state": "sản phẩm sau publish",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-open-api-campaign-publish",
+      "layer": "api",
+      "role": "không bearer / bearer personal access token",
+      "state": "publish bị từ chối",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-open-api-campaign-publish",
+      "layer": "api",
+      "role": "bearer token MCP, token cũ đã bị thay, account khác",
+      "state": "publish",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-02-open-api-campaign-publish",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "nút lấy user API token",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-063"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-open-api-campaign-publish",
+      "layer": "api",
+      "role": "mọi role",
+      "state": "mọi trạng thái",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-062",
+        "open-api/open-api-campaign-publish#KB-064"
+      ]
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from_feature_id": "FEAT-02-open-api-campaign-publish",
+      "to_feature_id": "FEAT-01-open-api-asset-upload",
+      "relationship": "scope boundary: cùng object open-api; route /openapi/v1 và personal access token thuộc feature kia, PAT không dùng được ở route publish",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-064",
+        "open-api/open-api-campaign-publish#KB-065"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-02-open-api-campaign-publish",
+      "to_feature_id": "FEAT-01-mcp-client-connection",
+      "relationship": "scope boundary: token trang /mcp là personal access token, không phải user API token",
+      "kb_refs": [
+        "open-api/open-api-campaign-publish#KB-064"
+      ]
+    }
+  ]
+}

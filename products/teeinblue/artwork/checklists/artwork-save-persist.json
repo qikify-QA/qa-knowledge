@@ -1186,6 +1186,118 @@
       "automation_suitability": "SUITABLE",
       "conflict_refs": [],
       "oq_id": "OQ-artwork-507"
+    },
+    {
+      "check_id": "CHK-035",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-163] Response của tạo và lưu artwork chỉ gồm attribute Artwork::$visible",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "phiên portal của account explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor + portal API (Network)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Artwork fixture tự dựng trên store explorer, không dùng artwork, store hay id trong CCR/test case. Đọc response qua tab Network của portal (TIB_PORTAL_BASE). Dọn fixture sau khi chạy.",
+      "steps": [
+        "Tạo artwork mới (New artwork, thêm một Single-line Text, Save & Close); ghi body response của request tạo.",
+        "Mở lại artwork, thêm một text layer, Save; ghi body response của request lưu.",
+        "So key top-level của hai response với danh sách attribute."
+      ],
+      "observation_point": "Key top-level của response tạo và lưu (ghi thêm status code)",
+      "expected_result": "Mọi key top-level của hai response thuộc danh sách id, name, description, width, height, template_settings, data, is_locked, current_version_id, status, design_format, thumbnail, artwork_version_used, schema_version; không có key nào ngoài danh sách.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-save-persist#KB-1115"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/artwork-save-persist#KB-1115",
+        "artwork/artwork-save-persist#KB-1117",
+        "artwork/artwork-save-persist#KB-054"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Status 201/200 là quan sát (KB-1117)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-036",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-163] Response của khôi phục version artwork chỉ gồm attribute Artwork::$visible",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "phiên portal của account explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor + portal API (Network)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Artwork fixture tự dựng trên store explorer, không dùng artwork, store hay id trong CCR/test case. Đọc response qua tab Network của portal (TIB_PORTAL_BASE). Dọn fixture sau khi chạy. Artwork fixture đã lưu ít nhất 2 version khác nhau (vd đổi label một field giữa các lần Save).",
+      "steps": [
+        "Mở artwork fixture trong editor → History.",
+        "Restore version cũ nhất.",
+        "Ghi body response của request khôi phục."
+      ],
+      "observation_point": "Key top-level của response khôi phục",
+      "expected_result": "Mọi key top-level của response thuộc danh sách id, name, description, width, height, template_settings, data, is_locked, current_version_id, status, design_format, thumbnail, artwork_version_used, schema_version; không có key nào ngoài danh sách.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-save-persist#KB-1115"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/artwork-save-persist#KB-1115",
+        "artwork/artwork-save-persist#KB-1117"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-037",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-163] Khôi phục version: editor hiện design của version đã khôi phục, response có data và schema_version (quan sát)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "phiên portal của account explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor + portal API (Network)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Artwork fixture tự dựng trên store explorer, không dùng artwork, store hay id trong CCR/test case. Đọc response qua tab Network của portal (TIB_PORTAL_BASE). Dọn fixture sau khi chạy. Artwork fixture đã lưu ít nhất 2 version khác nhau, ghi giá trị khác biệt của từng version.",
+      "steps": [
+        "Mở artwork fixture, ghi giá trị đang hiện của field khác biệt.",
+        "History → Restore version cũ nhất.",
+        "Ghi status, có data và schema_version trong response hay không, và giá trị field trong data.",
+        "Ghi giá trị field đang hiện trên editor sau khôi phục."
+      ],
+      "observation_point": "Status và body response khôi phục; nội dung editor sau khôi phục",
+      "expected_result": "Baseline theo quan sát: response 200 có data và schema_version, không relation, không user_id; editor hiện giá trị của version đã khôi phục.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-save-persist#KB-1117"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/artwork-save-persist#KB-1117",
+        "artwork/artwork-save-persist#KB-1115"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-578"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1285,6 +1397,16 @@
         "CHK-034"
       ],
       "covered": "STRONG (KB-1029) cho CHK-032; NONE + NEEDS_CONFIRMATION cho CHK-033 (ngưỡng 60 setting server) và CHK-034 (KB-1030 PROPOSED)"
+    },
+    {
+      "feature_id": "FEAT-07-artwork-save-persist",
+      "capability": "[CBS-163] Khôi phục version artwork và response contract của tạo/lưu/khôi phục",
+      "checks": [
+        "CHK-035",
+        "CHK-036",
+        "CHK-037"
+      ],
+      "covered": "STRONG (KB-1115) cho CHK-035, CHK-036; BASELINE + NEEDS_CONFIRMATION (KB-1117) cho CHK-037. Production chưa có check."
     }
   ],
   "excluded_dimensions": [
@@ -1298,7 +1420,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-12",
-    "ccr_ref": "CBS-107"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   }
 }

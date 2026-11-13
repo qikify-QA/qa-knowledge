@@ -2,7 +2,7 @@
   "feature_id": "FEAT-09-genai-personalization-runtime",
   "feature_key": "genai-personalization-runtime",
   "object_id": "sdk",
-  "checklist_version": "16",
+  "checklist_version": "17",
   "checks": [
     {
       "check_id": "CHK-001",
@@ -1943,6 +1943,185 @@
       },
       "automation_suitability": "NOT_SUITABLE",
       "oq_id": "OQ-sdk-148"
+    },
+    {
+      "check_id": "CHK-053",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "[CBS-153, BASELINE] Gemini Multiple Uploads với 2 ảnh lớn, một ảnh dọc EXIF Orientation 6: generate hoàn tất, không ảnh nào bị xoay ngang",
+      "applicability": {
+        "role": "buyer generate trên storefront hoặc Live Preview",
+        "state": "layer Multiple Uploads, Gemini single output",
+        "environment": "staging; ghi build, model Gemini và ngày chạy; production chưa kiểm",
+        "surface_or_device": "storefront/Live Preview, DevTools Network"
+      },
+      "precondition": "Store test có Gemini key ở Gen AI Effects; tính lượt rate limit AI-effect. Khác biệt môi trường KB-566 (NOT_TESTABLE): staging chạy image-effect-queue trên redis-long-running, retry_after 1800, job crash có thể làm upload kẹt tới khoảng 30 phút; quá 6 phút chưa có kết quả thì ghi failed kèm upload id vào báo cáo chạy, không chờ 30 phút. Ảnh test do QA tự chuẩn bị: một ảnh dọc lớn mang EXIF Orientation 6 và một ảnh ngang lớn.",
+      "steps": [
+        "Upload hai ảnh vào layer Multiple Uploads.",
+        "Bấm Generate; theo dõi generate-from-multiple-images và poll status; nếu quá 6 phút chưa có kết quả thì dừng, ghi failed kèm upload id.",
+        "Ghi hướng của từng chủ thể trong kết quả."
+      ],
+      "observation_point": "Network (generate-from-multiple-images, poll status); ảnh kết quả.",
+      "expected_result": "Hành vi hiện tại (baseline): generate hoàn tất; không ảnh nào bị xoay ngang trong kết quả. Lệch là cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/genai-personalization-runtime#KB-567"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk/genai-personalization-runtime#KB-567",
+        "sdk/genai-personalization-runtime#KB-045",
+        "sdk/photo-genai-image-filter-runtime#KB-563",
+        "sdk/photo-genai-image-filter-runtime#KB-566"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-257"
+    },
+    {
+      "check_id": "CHK-054",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-153, NEEDS_CONFIRMATION] Text to Image / Multiple Uploads: ghi size gửi đi so với kích thước layer và tỉ lệ kết quả",
+      "applicability": {
+        "role": "buyer generate trên storefront hoặc Live Preview",
+        "state": "layer Multiple Uploads và Text to Image, layer không vuông (vd 3:4)",
+        "environment": "staging; ghi build, model Gemini và ngày chạy; production chưa kiểm",
+        "surface_or_device": "storefront/Live Preview, DevTools Network"
+      },
+      "precondition": "Store test có Gemini key ở Gen AI Effects; tính lượt rate limit AI-effect. Khác biệt môi trường KB-566 (NOT_TESTABLE): staging chạy image-effect-queue trên redis-long-running, retry_after 1800, job crash có thể làm upload kẹt tới khoảng 30 phút; quá 6 phút chưa có kết quả thì ghi failed kèm upload id vào báo cáo chạy, không chờ 30 phút.",
+      "steps": [
+        "Generate trên layer Multiple Uploads không vuông; ghi size trong request và kích thước kết quả.",
+        "Lặp với layer Text to Image.",
+        "Ghi tỉ lệ kết quả; không phán pass hay fail."
+      ],
+      "observation_point": "Request generate (size); kích thước ảnh kết quả.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk/genai-personalization-runtime#KB-568",
+        "sdk/genai-personalization-runtime#KB-479"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-252"
+    },
+    {
+      "check_id": "CHK-055",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "[CBS-153, NEEDS_CONFIRMATION] Gemini: ghi tỉ lệ snap với layer lệch các tỉ lệ chuẩn và khi không có size",
+      "applicability": {
+        "role": "buyer generate trên storefront hoặc Live Preview",
+        "state": "account dùng Gemini; layer có tỉ lệ nằm giữa hai tỉ lệ chuẩn, layer 9:21",
+        "environment": "staging; ghi build, model Gemini và ngày chạy; production chưa kiểm",
+        "surface_or_device": "storefront/Live Preview, DevTools Network"
+      },
+      "precondition": "Store test có Gemini key ở Gen AI Effects; tính lượt rate limit AI-effect. Khác biệt môi trường KB-566 (NOT_TESTABLE): staging chạy image-effect-queue trên redis-long-running, retry_after 1800, job crash có thể làm upload kẹt tới khoảng 30 phút; quá 6 phút chưa có kết quả thì ghi failed kèm upload id vào báo cáo chạy, không chờ 30 phút.",
+      "steps": [
+        "Generate trên layer có tỉ lệ lệch (vd 7:5) và layer 9:21; ghi size gửi đi và tỉ lệ kết quả.",
+        "Nếu dựng được request không có size (nhờ Dev), ghi tỉ lệ kết quả: 1:1 hay tỉ lệ ảnh buyer (hai nguồn trái nhau, KB-569).",
+        "Ghi resolution đã chọn và kích thước kết quả; không phán pass hay fail."
+      ],
+      "observation_point": "Request (size, resolution); kích thước ảnh kết quả.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk/genai-personalization-runtime#KB-569",
+        "sdk/genai-personalization-runtime#KB-479",
+        "sdk/genai-personalization-runtime#KB-472"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-253"
+    },
+    {
+      "check_id": "CHK-056",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "[CBS-153, NEEDS_CONFIRMATION] Layer không lưu gemini_resolution: ghi resolution output theo model (nano_banana_31, nano_banana_21, nano_banana_pro) và Photo image filter",
+      "applicability": {
+        "role": "buyer generate trên storefront hoặc Live Preview",
+        "state": "layer Multiple Uploads / Text to Image và Photo [Gemini] image filter không lưu key gemini_resolution",
+        "environment": "staging; ghi build, model Gemini và ngày chạy; production chưa kiểm",
+        "surface_or_device": "storefront/Live Preview, DevTools Network"
+      },
+      "precondition": "Store test có Gemini key ở Gen AI Effects; tính lượt rate limit AI-effect. Khác biệt môi trường KB-566 (NOT_TESTABLE): staging chạy image-effect-queue trên redis-long-running, retry_after 1800, job crash có thể làm upload kẹt tới khoảng 30 phút; quá 6 phút chưa có kết quả thì ghi failed kèm upload id vào báo cáo chạy, không chờ 30 phút. Account đổi lần lượt model Gemini ở Gen AI Effects (khôi phục sau test).",
+      "steps": [
+        "Với mỗi model: generate trên layer Multiple Uploads hoặc Text to Image không lưu gemini_resolution; ghi kích thước kết quả.",
+        "Upload ảnh vào Photo layer [Gemini] image filter không lưu gemini_resolution; ghi kích thước kết quả.",
+        "Không phán pass hay fail."
+      ],
+      "observation_point": "Kích thước ảnh kết quả theo model.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk/genai-personalization-runtime#KB-570",
+        "sdk/genai-personalization-runtime#KB-477",
+        "sdk/genai-personalization-runtime#KB-481"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-254"
+    },
+    {
+      "check_id": "CHK-057",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[CBS-153, NEEDS_CONFIRMATION] GPT, Flux Kontext, ImagenHub: ghi tỉ lệ và kích thước output theo size layer",
+      "applicability": {
+        "role": "buyer generate trên storefront hoặc Live Preview",
+        "state": "account dùng lần lượt GPT, Flux Kontext, ImagenHub",
+        "environment": "staging; ghi build, provider, model và ngày chạy",
+        "surface_or_device": "storefront/Live Preview, DevTools Network"
+      },
+      "precondition": "Store test có key của từng provider; tính lượt rate limit AI-effect. Khác biệt môi trường KB-566 (NOT_TESTABLE): staging chạy image-effect-queue trên redis-long-running, retry_after 1800, job crash có thể làm upload kẹt tới khoảng 30 phút; quá 6 phút chưa có kết quả thì ghi failed kèm upload id vào báo cáo chạy, không chờ 30 phút.",
+      "steps": [
+        "GPT: generate trên layer vuông, 3:2 và rất dài (trên 3:1); ghi kích thước kết quả.",
+        "Flux Kontext: generate với và không điền WxH; ghi kích thước và tỉ lệ.",
+        "ImagenHub: generate với và không bật use_template_default_size; ghi request và kích thước.",
+        "Không phán pass hay fail."
+      ],
+      "observation_point": "Request generate; kích thước ảnh kết quả.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk/genai-personalization-runtime#KB-571",
+        "sdk/genai-personalization-runtime#KB-477",
+        "sdk/genai-personalization-runtime#KB-478",
+        "sdk/genai-personalization-runtime#KB-480"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-sdk-255"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -2155,6 +2334,25 @@
         "KB-487"
       ],
       "confidence": "STRONG theo dev (một nguồn), chưa quan sát runtime"
+    },
+    {
+      "feature_id": "FEAT-09-genai-personalization-runtime",
+      "risk": "[CBS-153] Ảnh EXIF bị xoay ngang trong kết quả Multiple Uploads",
+      "covered_by": [
+        "CHK-053"
+      ],
+      "confidence": "LOW (BASELINE, TC PASS không ghi build)"
+    },
+    {
+      "feature_id": "FEAT-09-genai-personalization-runtime",
+      "risk": "[CBS-153] Tỉ lệ/resolution output theo size layer và provider (đề xuất)",
+      "covered_by": [
+        "CHK-054",
+        "CHK-055",
+        "CHK-056",
+        "CHK-057"
+      ],
+      "confidence": "NONE (PROPOSED, chờ OQ)"
     }
   ],
   "excluded_dimensions": [
@@ -2192,7 +2390,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-153"
   }
 }

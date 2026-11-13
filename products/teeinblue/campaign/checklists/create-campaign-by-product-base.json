@@ -1347,6 +1347,82 @@
       "priority": "P3",
       "automation_suitability": "NOT_SUITABLE",
       "oq_id": "OQ-campaign-071"
+    },
+    {
+      "check_id": "CHK-040",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-163] Response đổi / xoá featured image có featured_image_url, featured_image_thumbnail, không platform_config, internal_tags",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "campaign fixture chưa publish; thư viện ảnh của store explorer có ít nhất một ảnh",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal campaign editor (Edit campaign info > Product Thumbnail) + portal API (Network)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Campaign fixture tự dựng trên store explorer, chưa publish và không publish lên store; không dùng campaign, store hay id trong CCR/test case. Đọc response qua tab Network của portal (TIB_PORTAL_BASE). Dọn fixture sau khi chạy. Ảnh trong thư viện là ảnh tự upload trên store explorer.",
+      "steps": [
+        "Mở campaign fixture → Edit campaign info → Product Thumbnail → Upload image; chọn ảnh trong modal thư viện → Select; ghi body response.",
+        "Xoá ảnh (nút X); ghi body response.",
+        "Kiểm key của hai response."
+      ],
+      "observation_point": "Key top-level của response đổi và xoá featured image",
+      "expected_result": "Hai response có featured_image_url và featured_image_thumbnail; không có platform_config, không có internal_tags.",
+      "oracle": {
+        "kb_ids": [
+          "campaign/create-campaign-by-product-base#KB-465"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "campaign/create-campaign-by-product-base#KB-465",
+        "campaign/create-campaign-by-product-base#KB-466",
+        "campaign/create-campaign-by-product-base#KB-009"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Giá trị hai trường sau đổi/xoá là quan sát (KB-466, CHK-041)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-041",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-163] Đổi featured image hiện ảnh ở Product Thumbnail; xoá thì về nút Upload image (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "campaign fixture chưa publish; thư viện ảnh của store explorer có ít nhất một ảnh",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal campaign editor (Edit campaign info > Product Thumbnail) + portal API (Network)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Campaign fixture tự dựng trên store explorer, chưa publish và không publish lên store; không dùng campaign, store hay id trong CCR/test case. Đọc response qua tab Network của portal (TIB_PORTAL_BASE). Dọn fixture sau khi chạy. Ảnh trong thư viện là ảnh tự upload trên store explorer.",
+      "steps": [
+        "Edit campaign info → Product Thumbnail → Upload image; chọn ảnh trong modal thư viện → Select.",
+        "Ghi status, featured_image_url, featured_image_thumbnail; ghi ô Product Thumbnail.",
+        "Xoá ảnh (nút X); ghi status, hai trường, và UI của ô."
+      ],
+      "observation_point": "Status, giá trị hai trường, ô Product Thumbnail sau mỗi bước",
+      "expected_result": "Baseline theo quan sát: đổi ảnh 200, hai trường có giá trị, ảnh hiện trong ô Product Thumbnail; xoá 200, hai trường null, ô quay về nút Upload image.",
+      "oracle": {
+        "kb_ids": [
+          "campaign/create-campaign-by-product-base#KB-466"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "campaign/create-campaign-by-product-base#KB-466",
+        "campaign/create-campaign-by-product-base#KB-465",
+        "campaign/create-campaign-by-product-base#KB-009"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-campaign-104"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1453,6 +1529,15 @@
         "CHK-039"
       ],
       "covered": "NONE + NEEDS_CONFIRMATION (KB-450 chỉ ở related_kb_ids, không làm oracle)"
+    },
+    {
+      "feature_id": "FEAT-01-create-campaign-by-product-base",
+      "risk": "[CBS-163] Đổi / xoá featured image và response contract (KB-465, KB-466)",
+      "checks": [
+        "CHK-040",
+        "CHK-041"
+      ],
+      "covered": "STRONG (KB-465) cho CHK-040; BASELINE + NEEDS_CONFIRMATION (KB-466) cho CHK-041. Production chưa có check."
     }
   ],
   "excluded_dimensions": [
@@ -1474,7 +1559,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-139"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   }
 }

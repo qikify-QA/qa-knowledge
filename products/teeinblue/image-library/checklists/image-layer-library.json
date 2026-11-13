@@ -1709,6 +1709,265 @@
       "coverage_status": "NOT_COVERED",
       "automation_suitability": "UNKNOWN",
       "oq_id": "OQ-image-library-020"
+    },
+    {
+      "check_id": "CHK-044",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "[CBS-152] by-temporary-file với raster trên 128 MP bị từ chối, không tạo layer image",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "phiên portal của account explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal API (gọi trực tiếp)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Gọi API portal trực tiếp từ phiên đã login; fixture ảnh tự sinh, không dùng file trong CCR; đếm layer image trước và sau. Fixture PNG 12000x12000 (144 MP). Presign không gửi filewidth/fileheight để vượt chặn ở client.",
+      "steps": [
+        "Đếm layer image của thư viện.",
+        "POST /api/users/<user>/temporary-files/upload-url (filename, filesize, type layer_image), không filewidth/fileheight.",
+        "PUT file lên signed URL.",
+        "POST /api/layer-images/by-temporary-file với temporary_file_id (kèm artwork_width, layer_width như portal gửi).",
+        "Đếm lại layer image."
+      ],
+      "observation_point": "Status, message, errors; số layer image trước/sau",
+      "expected_result": "Request bị từ chối; không có layer image mới.",
+      "oracle": {
+        "kb_ids": [
+          "image-library/image-layer-library#KB-065"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "image-library/image-layer-library#KB-065",
+        "image-library/image-layer-library#KB-066",
+        "image-library/_object-level#KB-006"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Message/field là quan sát (KB-066, CHK-045)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-045",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-152] Message và field lỗi khi by-temporary-file vượt cap (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "phiên portal của account explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal API (gọi trực tiếp)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Gọi API portal trực tiếp từ phiên đã login; fixture ảnh tự sinh, không dùng file trong CCR; đếm layer image trước và sau. Chạy cùng fixture CHK-044.",
+      "steps": [
+        "Ghi status, message và key trong errors của response từ chối ở CHK-044."
+      ],
+      "observation_point": "Status, message, key trong errors",
+      "expected_result": "Baseline theo quan sát: 422 với message \"The image is 12000x12000 px (144 MP), over the 128 MP limit. Resize it to at most 128 megapixels and upload again.\" dưới errors.temporary_file_id.",
+      "oracle": {
+        "kb_ids": [
+          "image-library/image-layer-library#KB-066"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "image-library/image-layer-library#KB-065",
+        "image-library/image-layer-library#KB-066"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-image-library-039"
+    },
+    {
+      "check_id": "CHK-046",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-152] Presign portal vượt cap báo lỗi theo megapixel",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "phiên portal của account explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal API (gọi trực tiếp)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Gọi API portal trực tiếp từ phiên đã login; fixture ảnh tự sinh, không dùng file trong CCR; đếm layer image trước và sau. Không cần file.",
+      "steps": [
+        "POST /api/users/<user>/temporary-files/upload-url với filename big.png, filesize 1000000, filewidth 12000, fileheight 12000.",
+        "Ghi status, message và errors."
+      ],
+      "observation_point": "Message lỗi về kích thước",
+      "expected_result": "Message lỗi là \"file is too large to upload, maximum 128 megapixels.\"; không có chuỗi 128000000.",
+      "oracle": {
+        "kb_ids": [
+          "image-library/image-layer-library#KB-067"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "image-library/image-layer-library#KB-067",
+        "image-library/image-layer-library#KB-068"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Status 422 và field errors.filewidth/fileheight là quan sát (KB-068)."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-047",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-152] /api/layer-images/file nhận raster 144 MP (route của layer PSD, không cap; quan sát)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "phiên portal của account explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal API (gọi trực tiếp)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Gọi API portal trực tiếp từ phiên đã login; fixture ảnh tự sinh, không dùng file trong CCR; đếm layer image trước và sau. Fixture PNG 12000x12000 (144 MP).",
+      "steps": [
+        "POST /api/layer-images/file multipart với file 144 MP, artwork_width và layer_width.",
+        "Ghi status, thời gian, body.",
+        "Đếm lại layer image; xoá layer image test."
+      ],
+      "observation_point": "Status, body (url, thumbnail, width, height), số layer image",
+      "expected_result": "Baseline theo quan sát: 201 với url _large.webp, thumbnail, width 12000, height 12000; số layer image tăng 1.",
+      "oracle": {
+        "kb_ids": [
+          "image-library/image-layer-library#KB-069"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "image-library/image-layer-library#KB-069",
+        "artwork/psd-import#KB-1113"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-image-library-041"
+    },
+    {
+      "check_id": "CHK-048",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "[CBS-152] Raster dưới cap qua by-temporary-file và /file vẫn upload như trước (quan sát)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "phiên portal của account explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal API (gọi trực tiếp)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Gọi API portal trực tiếp từ phiên đã login; fixture ảnh tự sinh, không dùng file trong CCR; đếm layer image trước và sau. Fixture PNG nhỏ (vd 200x200).",
+      "steps": [
+        "Presign → PUT → POST /api/layer-images/by-temporary-file; poll tới khi ready.",
+        "POST /api/layer-images/file multipart với cùng file.",
+        "Ghi body của hai response."
+      ],
+      "observation_point": "Status, url khi ready; field của response /file",
+      "expected_result": "Baseline theo quan sát: by-temporary-file 201 url null rồi ready với _large.webp và thumbnail; /file 201 với id, name, url, thumbnail, width, height, layer_image_category_id.",
+      "oracle": {
+        "kb_ids": [
+          "image-library/image-layer-library#KB-070"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "image-library/image-layer-library#KB-070",
+        "image-library/_object-level#KB-006"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-image-library-042"
+    },
+    {
+      "check_id": "CHK-049",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "[CBS-163] by-temporary-file trả cùng tập key như /file và /svg, không master, không timestamp",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "artwork tự dựng của account explorer mở trong editor",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor + DevTools Network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Fixture tự dựng trên store explorer, không dùng store/campaign/id trong CCR hay test case. Không gọi production. Fixture PNG và SVG tự sinh. Xoá layer image test sau khi chạy.",
+      "steps": [
+        "Trong editor: +Layer → Static Image → Upload an image, upload PNG; ghi response POST /api/layer-images/by-temporary-file.",
+        "+Layer → Static Vector, upload SVG; ghi response POST /api/layer-images/svg.",
+        "Gọi POST /api/layer-images/file (multipart) với PNG; ghi response.",
+        "So sánh tập key của 3 response."
+      ],
+      "observation_point": "Tập key của 3 response",
+      "expected_result": "Response by-temporary-file có cùng tập key với /file và /svg; không có master, không có key timestamp.",
+      "oracle": {
+        "kb_ids": [
+          "image-library/image-layer-library#KB-071"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "image-library/image-layer-library#KB-071",
+        "image-library/image-layer-library#KB-072",
+        "image-library/image-layer-library#KB-070",
+        "image-library/image-layer-library#KB-023"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-023 (master rỗng) có thể lỗi thời (OQ-image-library-045)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-050",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "[CBS-163] Danh sách 7 key của response upload layer image (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "artwork tự dựng của account explorer mở trong editor",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor + DevTools Network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Fixture tự dựng trên store explorer, không dùng store/campaign/id trong CCR hay test case. Không gọi production. Chạy cùng response của CHK-049.",
+      "steps": [
+        "Ghi tập key của response /file, /svg, by-temporary-file ở CHK-049."
+      ],
+      "observation_point": "Tập key của response",
+      "expected_result": "Baseline theo quan sát: id, name, url, thumbnail, width, height, layer_image_category_id; không master, không timestamp.",
+      "oracle": {
+        "kb_ids": [
+          "image-library/image-layer-library#KB-072"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "image-library/image-layer-library#KB-072",
+        "image-library/image-layer-library#KB-071"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-image-library-044"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1868,6 +2127,14 @@
     {
       "feature_id": "FEAT-01-image-layer-library",
       "risk_coverage": "Mọi risk R-IMG-01..08 có ≥1 check — xem risk_index."
+    },
+    {
+      "feature_id": "FEAT-01-image-layer-library",
+      "risk_coverage": "[CBS-152] CAP-IMG-10 (giới hạn pixel 128 MP ở luồng upload portal): CHK-044, CHK-046 STRONG; CHK-045, CHK-047, CHK-048 BASELINE. Dropzone UI và production chưa có check."
+    },
+    {
+      "feature_id": "FEAT-01-image-layer-library",
+      "risk_coverage": "[CBS-163] CAP-IMG-11 (shape response upload layer image): CHK-049 STRONG; CHK-050 BASELINE. KB-023 lỗi thời chờ Dev (OQ-image-library-045). Production chưa có check."
     }
   ],
   "excluded_dimensions": [
@@ -1877,7 +2144,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   }
 }

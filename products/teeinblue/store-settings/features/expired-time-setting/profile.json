@@ -1,0 +1,238 @@
+{
+  "feature_id": "FEAT-37",
+  "feature_key": "expired-time-setting",
+  "name": "Order storage time (expired time)",
+  "user_goal": "Merchant-owner chọn thời gian lưu order trong app (Default 2 năm, 30/90/180/365 ngày) ở card Order storage time của trang General Settings, theo từng store. Shape response index/update có nguồn Dev (KB-1656); lưu và giữ sau reload mới có một lượt quan sát trên account test (KB-1657); tác dụng xoá order chưa quan sát.",
+  "user_goal_kb_refs": [
+    "KB-1630",
+    "KB-1631",
+    "KB-1654"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner",
+      "permission_observed": "Xem được card và nhóm radio, thấy nút Save/Reset ở header trang (không bấm). Role khác chưa thử.",
+      "kb_refs": [
+        "KB-1631",
+        "KB-1655"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Portal /general-settings > card Order storage time",
+      "precondition": "Đã login portal bằng account explorer (đúng account guard); store hiện tại chưa đặt Order storage time để thấy trạng thái Default.",
+      "kb_refs": [
+        "KB-1630",
+        "KB-1634",
+        "KB-1654"
+      ]
+    },
+    {
+      "path": "GET /api/instances/{instance}/expired-time-setting",
+      "precondition": "Session portal hợp lệ (cookie + X-XSRF-TOKEN); store chưa đặt để thấy mảng rỗng.",
+      "kb_refs": [
+        "KB-1635"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Hiển thị card Order storage time",
+      "description": "Card heading \"Order storage time\", help text về thời gian lưu order (gồm order items, designs, customer info; không ảnh hưởng buyer photos tự xoá sau 90 ngày), label \"Delete orders after:\". Không tooltip, không nút Save riêng.",
+      "kb_refs": [
+        "KB-1630",
+        "KB-1633"
+      ]
+    },
+    {
+      "name": "Chọn thời hạn bằng nhóm radio",
+      "description": "Nhóm radio 5 lựa chọn theo thứ tự: Default (2 years), 30 days, 90 days, 180 days, 365 days; không có ô nhập hay select. Chọn/lưu chưa thao tác.",
+      "kb_refs": [
+        "KB-1631",
+        "KB-1632"
+      ]
+    },
+    {
+      "name": "Đọc giá trị hiện tại qua GET expired-time-setting",
+      "description": "Khi tải trang, portal gọi GET expired-time-setting, 200, mảng rỗng ở store chưa đặt; UI hiển thị Default checked cùng lúc.",
+      "kb_refs": [
+        "KB-1634",
+        "KB-1635",
+        "KB-1636"
+      ]
+    },
+    {
+      "name": "[CBS-163] Lưu Order storage time và đọc lại",
+      "description": "Theo Dev (TIB-5689 comment 56448 U15): response index và update có expired_time, không instance_id, [] khi chưa có giá trị (KB-1656). Quan sát một lượt: lưu rồi reload, giá trị còn giữ (KB-1657).",
+      "kb_refs": [
+        "store-settings/expired-time-setting#KB-1656",
+        "store-settings/expired-time-setting#KB-1657"
+      ]
+    }
+  ],
+  "state_transitions": [],
+  "confirmed_rules": [
+    {
+      "statement": "[CBS-163] Theo Jira TIB-5689 comment 56448 test case U15 (Dev, 2026-11-04), response của expired time setting (ExpiredTimeSettingController index và update) có expired_time, không có instance_id, và trả [] khi chưa có giá trị.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "store-settings/expired-time-setting#KB-1656"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    "Card Order storage time có heading, help text và label \"Delete orders after:\" (KB-1630).",
+    "Nhóm radio name expired_time có 5 option, value 0/30/90/180/365 (KB-1631, KB-1632).",
+    "Nhãn UI là \"Order storage time\" / \"Delete orders after:\" còn field và API là expired_time / expired-time-setting; chữ \"expired\" không hiện trong text UI (KB-1632).",
+    "Card không có tooltip, không có nút Save riêng; Save/Reset duy nhất ở header trang (KB-1633, KB-1655).",
+    "Store chưa đặt: Default (2 years) checked, 4 radio còn lại unchecked (KB-1634).",
+    "GET expired-time-setting trả 200 mảng rỗng ở lần tải trang và lần gọi lại cùng store, không độc lập (KB-1635).",
+    "UI Default checked trong khi GET trả mảng rỗng (KB-1636).",
+    "Trang hiển thị cài đặt theo store (instance) đang chọn, path /api/instances/{instance}/... (KB-1654).",
+    "[CBS-163] Lưu Order storage time rồi reload /general-settings: giá trị còn giữ; một lượt trên account test của người gửi CCR, build không ghi (KB-1657)."
+  ],
+  "observed_validations": [],
+  "permissions": [
+    "Chỉ quan sát merchant-owner; role staff khác và chưa đăng nhập chưa thử (KB-1631)."
+  ],
+  "surface_mapping": {
+    "portal": [
+      "/general-settings card Order storage time (KB-1630, KB-1631)"
+    ],
+    "storefront": [],
+    "api": [
+      "GET /api/instances/{instance}/expired-time-setting (KB-1635)",
+      "[CBS-163] ExpiredTimeSettingController index/update: expired_time, không instance_id, [] khi chưa có (KB-1656)"
+    ],
+    "data": [],
+    "code": []
+  },
+  "dependencies": [
+    "Trang General Settings, nút Save/Reset cấp trang (KB-1655)",
+    "Store (instance) đang chọn (KB-1654)"
+  ],
+  "risks": [
+    "Tác dụng xoá order chưa rõ: cấu hình sai có thể xoá dữ liệu order sớm (KB-1630).",
+    "Mapping Default với giá trị lưu chưa rõ (KB-1636).",
+    "Phạm vi lưu của Save cấp trang chưa rõ (KB-1655).",
+    "[CBS-163] Lưu setting là mutation trên store; tác dụng xoá order chưa rõ (OQ-store-settings-001), nên check lưu phải ghi giá trị gốc, cần operator đồng ý, và khôi phục ngay sau khi kiểm (KB-1657, KB-1630)."
+  ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-11-13"
+  },
+  "unknown_areas": [
+    {
+      "question": "Order storage time thực sự làm gì: xoá gì, khi nào, tính mốc từ đâu, áp lên order cũ khi rút ngắn không, ảnh hưởng storefront/customization/fulfillment không?",
+      "why_it_matters": "Liên quan mất dữ liệu order; chưa có expected (OQ-store-settings-001; KB-1630, KB-1631).",
+      "oq_id": "OQ-store-settings-001"
+    },
+    {
+      "question": "Default (2 years, value 0) tương ứng không có bản ghi hay bản ghi value 0; backend có giữ order 2 năm ở Default không?",
+      "why_it_matters": "UI Default checked trong khi GET trả mảng rỗng (OQ-store-settings-002; KB-1634, KB-1636).",
+      "oq_id": "OQ-store-settings-002"
+    },
+    {
+      "question": "GET expired-time-setting trả shape gì khi đã đặt giá trị; mảng rỗng có là dạng chung cho store chưa đặt; response lỗi, role khác, store khác? [CBS-163] KB-1656 (Dev) đã trả lời một phần: response có expired_time, không instance_id, [] khi chưa có giá trị; còn mở: các key khác của phần tử, response lỗi, role/store khác.",
+      "why_it_matters": "Chỉ có 2 mẫu cùng store (OQ-store-settings-003; KB-1635).",
+      "oq_id": "OQ-store-settings-003",
+      "kb_refs": [
+        "store-settings/expired-time-setting#KB-1635",
+        "store-settings/expired-time-setting#KB-1656"
+      ]
+    },
+    {
+      "question": "Lưu qua request nào, cần Save header hay click radio tự lưu, validation, thông báo, giữ sau reload? [CBS-163] KB-1657 quan sát một lượt (account test, build không ghi): lưu rồi reload giá trị còn giữ; vẫn cần Dev xác nhận.",
+      "why_it_matters": "Bị chặn bởi mutation policy (OQ-store-settings-004; KB-1631, KB-1633).",
+      "oq_id": "OQ-store-settings-004",
+      "kb_refs": [
+        "store-settings/expired-time-setting#KB-1657",
+        "store-settings/expired-time-setting#KB-1631",
+        "store-settings/expired-time-setting#KB-1633"
+      ]
+    },
+    {
+      "question": "Giá trị Order storage time có khác giữa các store của cùng account không?",
+      "why_it_matters": "Không bấm Switch store (coverage gap object-level; KB-1654).",
+      "oq_id": "OQ-store-settings-005"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-37",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "chưa đặt",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-37",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "chưa đặt",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-37",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "đã đặt giá trị",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "store-settings/expired-time-setting#KB-1657"
+      ],
+      "basis": "[CBS-163] một lượt quan sát trên account test, chưa trên account explorer"
+    },
+    {
+      "feature_id": "FEAT-37",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "đã đặt giá trị",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "store-settings/expired-time-setting#KB-1656",
+        "store-settings/expired-time-setting#KB-1657"
+      ],
+      "basis": "[CBS-163] KB-1656 (Dev) + một lượt quan sát"
+    },
+    {
+      "feature_id": "FEAT-37",
+      "layer": "portal",
+      "role": "role khác",
+      "state": "mọi state",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-37",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "mọi state",
+      "environment": "production",
+      "covered": false
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from": "expired-time-setting",
+      "to": "general-settings-page",
+      "relation": "nằm trong trang General Settings, dùng chung Save/Reset cấp trang",
+      "kb_refs": [
+        "KB-1655",
+        "KB-1654"
+      ]
+    }
+  ]
+}

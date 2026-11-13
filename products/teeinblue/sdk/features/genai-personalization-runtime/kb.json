@@ -783,5 +783,183 @@
     "related_kb_ids": [
       "sdk/genai-personalization-runtime#KB-477"
     ]
+  },
+  {
+    "kb_id": "KB-567",
+    "topic": "Gemini Multiple Uploads với ảnh lớn có EXIF Orientation 6: generate hoàn tất, không ảnh nào bị xoay ngang",
+    "statement": "Ở Testlane TC-TIB-8956 (task TIB-323, PASS staging 2026-11-10, build không ghi), quan sát thấy trên layer Gemini Multiple Uploads (single output) với 2 ảnh lớn, trong đó một ảnh dọc mang EXIF Orientation 6, generate hoàn tất và không ảnh nào bị xoay ngang trong kết quả. Expected tương ứng nằm ở QA plan B.4 của Dev trên Jira TIB-5615 (comment #56741, 2026-11-09) và AC#3, không được trích trong CCR; build đã test không kiểm được là bản có thay đổi.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page (layer Multiple Uploads / Text to Image, GenAI Gemini)",
+      "brand": null
+    },
+    "tags": [
+      "genai",
+      "gemini",
+      "multiple-uploads",
+      "orientation",
+      "exif",
+      "TIB-5615"
+    ],
+    "related_kb_ids": [
+      "sdk/genai-personalization-runtime#KB-045",
+      "sdk/photo-genai-image-filter-runtime#KB-563"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-153"
+    }
+  },
+  {
+    "kb_id": "KB-568",
+    "topic": "Đề xuất của QA theo lời Dev: Text to Image và Multiple Uploads gửi size bằng kích thước layer",
+    "statement": "Theo rule Dev do QA ghi trong CBS-153 (Testlane task TIB-323, 2026-11-10; dẫn src/use/useEffectsCollector.js:91), Text to Image và Multiple Uploads luôn gửi size bằng kích thước layer, nên tỉ lệ kết quả theo khung layer. Theo TC-TIB-8956 (staging 2026-11-10), layer 315x420 gửi size 315x420 và kết quả có tỉ lệ 3:4. Lời Dev đến qua người dùng, không có trên Jira TIB-5615; chưa có xác nhận của Dev hoặc PO trên nguồn có thể dẫn.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page (layer Multiple Uploads / Text to Image, GenAI Gemini)",
+      "brand": null
+    },
+    "tags": [
+      "genai",
+      "multiple-uploads",
+      "text-to-image",
+      "aspect-ratio",
+      "size",
+      "qa-rule",
+      "TIB-5615"
+    ],
+    "related_kb_ids": [
+      "sdk/genai-personalization-runtime#KB-477",
+      "sdk/genai-personalization-runtime#KB-479",
+      "sdk/photo-genai-image-filter-runtime#KB-565"
+    ],
+    "qa_rule_ref": {
+      "code": "TIB-5615-dev-rule-size-ratio",
+      "owner_role": "QA",
+      "recorded_on": "2026-11-10",
+      "locator": "CBS-153 (Testlane task TIB-323), rule Dev chuyển qua QA 2026-11-10, dẫn src/use/useEffectsCollector.js:91"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-153"
+    }
+  },
+  {
+    "kb_id": "KB-569",
+    "topic": "Đề xuất của QA theo lời Dev: danh sách tỉ lệ Gemini, mặc định 1:1, gemini_resolution riêng",
+    "statement": "Theo rule Dev do QA ghi trong CBS-153 (Testlane task TIB-323, 2026-11-10; app/Services/ImageGeneration/, resolveClosestRatio), Gemini snap về tỉ lệ gần nhất (nhỏ nhất |ratio − w/h|) trong 21:9, 16:9, 9:16, 3:2, 2:3, 4:3, 3:4, 5:4, 4:5, 1:1 (không có 9:21); theo rule chuyển lại này, không có hoặc sai size thì dùng 1:1. Nguồn khác: unit test U3 của Dev trong Jira TIB-5615 comment #56735 (2026-11-09) ghi applyImageFilter() không có size thì lấy tỉ lệ từ ảnh buyer (\"without one, from the buyer photo's own ratio\"), khác vế mặc định 1:1; hai nguồn chưa được đối chiếu, item này không chọn bên. Độ phân giải lấy từ gemini_resolution riêng; 512 chỉ áp cho nano_banana_31. Quan sát staging 2026-11-10 (nano_banana_31): Photo 420x420 ra 2048x2048; Run effects 630x420 ra 2528x1696 (3:2); Multiple Uploads 315x420 ra 896x1200 (3:4). Lời Dev đến qua người dùng, không có trên Jira TIB-5615.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront (Photo GenAI filter, Multiple Uploads, Text to Image); portal Run effects",
+      "brand": null
+    },
+    "tags": [
+      "genai",
+      "gemini",
+      "aspect-ratio",
+      "resolution",
+      "qa-rule",
+      "TIB-5615"
+    ],
+    "related_kb_ids": [
+      "sdk/genai-personalization-runtime#KB-479",
+      "sdk/genai-personalization-runtime#KB-472",
+      "sdk/genai-personalization-runtime#KB-568",
+      "sdk/photo-genai-image-filter-runtime#KB-565"
+    ],
+    "qa_rule_ref": {
+      "code": "TIB-5615-dev-rule-gemini-ratio",
+      "owner_role": "QA",
+      "recorded_on": "2026-11-10",
+      "locator": "CBS-153 (Testlane task TIB-323), rule Dev chuyển qua QA 2026-11-10 (app/Services/ImageGeneration/, resolveClosestRatio)"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-153"
+    }
+  },
+  {
+    "kb_id": "KB-570",
+    "topic": "Đề xuất của QA theo lời Dev: resolution mặc định khi layer không lưu gemini_resolution",
+    "statement": "Theo trả lời của Dev do QA ghi trong CBS-153 (Testlane task TIB-323, 2026-11-10), khi layer không lưu gemini_resolution: Gemini image filter (Photo) dùng 2K; Multiple Uploads và Text to Image dùng output mặc định của service, 1K với nano_banana_31 và nano_banana_21. Với nano_banana_pro output ra 2K; Dev nói đây là do nhầm lẫn trước đó, coi là lỗi hiếm gặp, không xử lý riêng, nên vế này không phải expected. Vế nano_banana_pro và nano_banana_21 chưa chạy. Lời Dev đến qua người dùng, không có trên Jira TIB-5615.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page (layer Multiple Uploads / Text to Image, GenAI Gemini)",
+      "brand": null
+    },
+    "tags": [
+      "genai",
+      "gemini",
+      "resolution",
+      "default",
+      "qa-rule",
+      "TIB-5615"
+    ],
+    "related_kb_ids": [
+      "sdk/genai-personalization-runtime#KB-477",
+      "sdk/genai-personalization-runtime#KB-481",
+      "sdk/genai-personalization-runtime#KB-489",
+      "sdk/photo-genai-image-filter-runtime#KB-561"
+    ],
+    "qa_rule_ref": {
+      "code": "TIB-5615-dev-rule-gemini-default-resolution",
+      "owner_role": "QA",
+      "recorded_on": "2026-11-10",
+      "locator": "CBS-153 (Testlane task TIB-323), trả lời Dev qua người dùng 2026-11-10 (decisions.md TIB-5615)"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-153"
+    }
+  },
+  {
+    "kb_id": "KB-571",
+    "topic": "Đề xuất của QA theo lời Dev: tỉ lệ và kích thước output của GPT, Flux Kontext, ImagenHub",
+    "statement": "Theo rule Dev do QA ghi trong CBS-153 (analysis.md BR10, Testlane task TIB-323, 2026-11-10), tỉ lệ và kích thước output theo provider khác Gemini: GPT dùng model cố định 3 size hoặc free-size tối đa 3:1, cạnh dài theo gpt_resolution (mặc định 1024), diện tích 655,360 tới 8,294,400 px, bội 16; Text to Image và Multiple Uploads chỉ free-size khi đủ 3 điều kiện của TIB-5561. Flux Kontext: nhập WxH thì dùng nguyên; không nhập thì snap về 11 tỉ lệ (có 9:21), khoảng 2,250,000 px; flux_version v1 chỉ gửi aspect_ratio. ImagenHub: không snap, gửi W/H từ size layer hoặc ảnh input; bật use_template_default_size thì không gửi. Ngoài scope TIB-5615, QA chưa verify trên staging hay production.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page (layer Multiple Uploads / Text to Image, GenAI Gemini)",
+      "brand": null
+    },
+    "tags": [
+      "genai",
+      "gpt",
+      "flux",
+      "imagenhub",
+      "aspect-ratio",
+      "resolution",
+      "qa-rule",
+      "relation-unknown"
+    ],
+    "related_kb_ids": [
+      "sdk/genai-personalization-runtime#KB-477",
+      "sdk/genai-personalization-runtime#KB-478",
+      "sdk/genai-personalization-runtime#KB-480"
+    ],
+    "qa_rule_ref": {
+      "code": "TIB-5615-BR10",
+      "owner_role": "QA",
+      "recorded_on": "2026-11-10",
+      "locator": "CBS-153 (Testlane task TIB-323), analysis.md BR10 của QA"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-153"
+    }
   }
 ]

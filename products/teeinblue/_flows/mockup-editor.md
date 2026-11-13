@@ -46,4 +46,5 @@ Dùng chung cấu trúc cho mockup của Product Base, campaign mockup (by PB), 
   - PB: `PUT /api/products/<pb>/mockups/<id>` 201, body `{width,height,color_as_variant,default_background_color,layers:[...]}` (layer mới append CUỐI).
   - Campaign PB: `PUT /api/campaign-products/<cp>/campaign-mockups/<id>` 200.
   - Platform: `PUT /api/platform-mockups/<id>` 200.
+- Ngoài `Save & Close` còn nút `Save` nằm trong dropdown cạnh `Save & Close`: lưu mà editor vẫn mở; mỗi lần lưu phải mở lại dropdown.
 - **Alt text** (chỗ "đặt tên" duy nhất của mockup — mockup không có field name): link `Alt text` cạnh tiêu đề `Mockup Editor` → modal `dialog-mockup-alt-text` → Save trong `.vm--container:has([data-modal="dialog-mockup-alt-text"])` (nút Save khác bị overlay che) ⇒ lưu ngay, toast `Saved alt text successfully`. GraphQL `mockups.alt`.

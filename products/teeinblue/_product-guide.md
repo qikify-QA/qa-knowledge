@@ -29,22 +29,26 @@ Teeinblue là app cá nhân hoá sản phẩm in theo yêu cầu (print-on-deman
 
 ## 2. Object và feature
 
-Từ khoá ticket sang object: `_registry.json`. Trạng thái, version, dùng làm oracle được không: `manifest.json`. Mỗi feature có `features/<key>/profile.json` (entry point, precondition, `environment_differences`) và `checklists/<key>.json`.
+Từ khoá ticket sang object: `_registry.json`. Feature của object: `<object>/feature-summary.md`. Trạng thái, version, oracle: `manifest.json`. Mỗi feature có `features/<key>/profile.json` (entry point, precondition, `environment_differences`) và `checklists/<key>.json`.
 
-| Object | Phạm vi | Không thuộc | Feature |
-|---|---|---|---|
-| `campaign` | Tạo, duyệt, xoá campaign, đồng bộ media Shopify | Phía storefront (`sdk`) | `campaign-artwork-mockup-reflection` `campaign-delete` `campaign-list-browse` `campaign-navigation` `campaign-publication-history` `campaign-security-permissions` `campaign-shopify-media-sync` `create-campaign-by-product-base` `create-campaign-by-shopify` |
-| `product-base` | Print area, variant, mockup, vòng đời, liên kết campaign | Thư viện ảnh mockup (`image-library`) | `mockup-attachment` `printarea-definition` `product-base-browse` `product-base-campaign-link` `product-base-create` `product-base-identity` `product-base-lifecycle` `variant-add-to-campaigns` `variant-catalog` |
-| `artwork` | Editor, layer, config, condition, populate, render | Form buyer trên storefront (`sdk`) | **Quản lý:** `artwork-list-management` `artwork-save-persist` `artwork-template-management` `editor-layer-workspace` `psd-import` · **Layer:** `layer-common-config` `layer-config-form-elements` `layer-config-image` `run-image-effects` `run-effects-fill-in-variables` `layer-config-maps-astronomy` `layer-config-others` `layer-config-puzzles` `layer-config-text` `layer-config-vector` `layer-duplicate-link-copy` `layer-bulk-edit` `layer-photo-border` `layer-print-effects` `text-multi-stroke` · **Logic:** `condition-cycle-validation` `conditional-setting-config` `layer-condition-value-binding` `populate-values` · **Group, render:** `group-layer-effective-visibility` `group-layer-order-design-render` `text-color-sequence-render` `svg-to-image-rendering` `no-personalization-photo-render` `clipart-category-storefront-behavior` |
-| `asset-category` | 6 loại category: Clipart, Vector, Color, Additional Option, Map Style, Font Category | Font (`font`) | `asset-category-bulk-upload` `asset-category-crud` `asset-category-item-management` `asset-category-route-entity-clarification` |
-| `font` | `/fonts` | Font category (`asset-category`) | `manage-uploaded-font` `upload-custom-font` `use-custom-font-in-artwork-editor` `view-and-configure-font-list` |
-| `image-library` | Thư viện ảnh của Image layer và Mockup layer, không có trang riêng | Clipart (`asset-category`) | `image-layer-library` `mockup-layer-library` |
-| `global-option` | Option dùng chung nhiều campaign | | `artwork-personalization-global-option-link` `global-option-additional-option-items` `global-option-instance-management` |
-| `translation` | Dynamic Translations, Product Page Content, chọn ngôn ngữ | | `dynamic-translations` `language-locale-switcher` `product-page-content-translation` |
-| `order` | Đặt order, review, fulfillment | | `place-personalized-order-storefront` `review-and-initiate-fulfillment-portal` `edit-customization-after-order` `shopify-order-import` `order-design-vector-render` |
-| `sdk` | Runtime personalization của buyer, Product Page Settings, cài đặt model GenAI, open platform | | `form-artwork-navigation` `genai-model-settings` `genai-personalization-runtime` `open-platform-customization-callback` `product-page-settings-config` `required-addon-validation` `storefront-buyer-facing` `template-switch-photo-sync` |
-| `account-security` | Login portal, trạng thái bảo mật staff, thao tác nhạy cảm | Quyền riêng của campaign (`campaign-security-permissions`) | `acting-user-organisation` `billing-webhook` `confirm-password-dialog` `hasura-permission` `portal-login-paths` `social-login` `staff-security-status` |
-| `open-api` | API cho merchant dưới `/openapi/v1`: token, tra cứu và upload asset | Route `/api` của portal | `open-api-asset-upload` |
+| Object | Phạm vi | Không thuộc |
+|---|---|---|
+| `campaign` | Tạo, duyệt, xoá campaign, đồng bộ media Shopify | Phía storefront (`sdk`) |
+| `product-base` | Print area, variant, mockup, vòng đời, liên kết campaign | Thư viện ảnh mockup (`image-library`) |
+| `artwork` | Editor, layer, config, condition, populate, render | Form buyer trên storefront (`sdk`) |
+| `asset-category` | 6 loại category: Clipart, Vector, Color, Additional Option, Map Style, Font Category | Font (`font`) |
+| `font` | `/fonts` | Font category (`asset-category`) |
+| `image-library` | Thư viện ảnh của Image layer và Mockup layer, không có trang riêng | Clipart (`asset-category`) |
+| `global-option` | Option dùng chung nhiều campaign |  |
+| `translation` | Dynamic Translations, Product Page Content, chọn ngôn ngữ |  |
+| `order` | Đặt order, review, fulfillment |  |
+| `sdk` | Runtime personalization của buyer, Product Page Settings, cài đặt model GenAI, open platform |  |
+| `account-security` | Login portal, trạng thái bảo mật staff, thao tác nhạy cảm | Quyền riêng của campaign (`campaign`) |
+| `open-api` | API token: `/openapi/v1` (asset), `/api/open` (publish campaign) | Route `/api` của portal |
+| `subscription` | Plan, pricing (plan cũ, gói Blue theo order item), chữ hiển thị plan/tier, usage, quota theo chu kỳ | Webhook billing (`account-security`), thanh toán thật |
+| `third-party-services` | Extras > 3rd-party Services: dịch vụ xoá nền, API key provider (`private_config` cấp account) | Chạy effect và warning thiếu key (`artwork`), upload của buyer (`sdk`) |
+| `mcp` | MCP server: endpoint `{TIB_API_BASE}/mcp`, Bearer token `mcp:access`, trang `/mcp`, nhóm tool (artwork, upload layer image) | Upload layer image trên portal (`image-library`), Open API (`open-api`) |
+| `store-settings` | General Settings của store (`/general-settings`), gồm Order storage time (`expired_time`) | Product Page Settings (`sdk`), 3rd-party Services, plan (`subscription`) |
 
 Ticket không khớp key nào: ghi knowledge gap, đề xuất key mới trong CCR.
 
@@ -67,20 +71,32 @@ Thấy host production thì dừng: `portal.teeinblue.com`, `api.teeinblue.com`,
 
 **Nhãn test case:** không test được cả case là `env-blocked`: không execute, Testlane `skipped` kèm lý do, verdict `NOT_APPLICABLE`. Không test được một vế: giữ case, ghi "vế X: skip — <lý do>", kết luận theo các vế còn lại.
 
-| Hạng mục | Feature | `type` | Mức | Cách xử lý |
-|---|---|---|---|---|
-| Generate test design trên dev store | `campaign/create-campaign-by-product-base` | `ALTERNATIVE_SETUP` | Vế | Đặt order test rồi lấy design của order |
-| Horizon (job failed, queued) | Nhiều feature | `NOT_TESTABLE` | Vế | Bỏ vế Horizon, verify UI và API |
-| Strava trong Route Maps | `artwork/layer-config-maps-astronomy` `sdk/storefront-buyer-facing` | `NOT_TESTABLE` | Vế | Bỏ dòng Strava |
-| Tracking từ provider | `order/review-and-initiate-fulfillment-portal` | `NOT_TESTABLE` | Case | `env-blocked`; fulfill tay đi đường khác, không thay được |
-| Size gốc của provider | `product-base/printarea-definition` | `NOT_TESTABLE` | Vế | Skip vế giảm size, vẫn verify DPI |
-| `photo_endpoint=snap` | `sdk/storefront-buyer-facing` | `DIFFERENT_VALUE` | Case hoặc vế | Chỉ Dev set được; staging chỉ verify HTML, preconnect |
-| Upload CORS, preconnect tới host production | `sdk/storefront-buyer-facing` | `NOT_TESTABLE` | Vế | Kiểm trên production |
-| Network timing | `sdk/storefront-buyer-facing` | `ALTERNATIVE_SETUP` | Vế | Kết luận theo Chrome thật, số headless chỉ tham khảo |
-| Browser chặn site data, ITP | `sdk/storefront-buyer-facing` | `ALTERNATIVE_SETUP` | Vế | Chỉ giả lập được, nêu rõ giới hạn |
-| Outage Nano Banana 2.1 | `sdk/genai-personalization-runtime` | `ALTERNATIVE_SETUP` | Vế | Nhờ Dev chuyển 2.1 sang down rồi trả lại |
+| Hạng mục | Feature | `type` | Mức |
+|---|---|---|---|
+| Generate test design trên dev store | `campaign/create-campaign-by-product-base` | `ALTERNATIVE_SETUP` | Vế |
+| Horizon (job failed, queued) | Nhiều feature | `NOT_TESTABLE` | Vế |
+| Strava trong Route Maps | `artwork/layer-config-maps-astronomy` `sdk/storefront-buyer-facing` | `NOT_TESTABLE` | Vế |
+| Tracking từ provider | `order/review-and-initiate-fulfillment-portal` | `NOT_TESTABLE` | Case |
+| Size gốc của provider | `product-base/printarea-definition` | `NOT_TESTABLE` | Vế |
+| `photo_endpoint=snap` | `sdk/storefront-buyer-facing` | `DIFFERENT_VALUE` | Case hoặc vế |
+| Upload CORS, preconnect tới host production | `sdk/storefront-buyer-facing` | `NOT_TESTABLE` | Vế |
+| Network timing | `sdk/storefront-buyer-facing` | `ALTERNATIVE_SETUP` | Vế |
+| Browser chặn site data, ITP | `sdk/storefront-buyer-facing` | `ALTERNATIVE_SETUP` | Vế |
+| Outage Nano Banana 2.1 | `sdk/genai-personalization-runtime` | `ALTERNATIVE_SETUP` | Vế |
+| Gửi item CustomCat | `order/fulfillment-provider-request` | `ALTERNATIVE_SETUP` | Vế |
+| Advanced options PB Gelato | `product-base/provider-required-options` | `DIFFERENT_VALUE` | Vế |
+| Accelerated checkout (Shop Pay, PayPal, Apple Pay, Google Pay) | `sdk/required-addon-validation` | `NOT_TESTABLE` | Vế |
+| App chiếm nút add to cart (race với autofixer) | `sdk/cart-addon-autofixer` | `ALTERNATIVE_SETUP` | Case |
+| Rate limit route games (preview game text) | `sdk/game-text-preview-render` | `DIFFERENT_VALUE` | Vế |
+| Retry window job image-effect (upload kẹt khi worker crash) | `sdk/photo-genai-image-filter-runtime` | `NOT_TESTABLE` | Vế |
+| Copy artwork sang account khác | `artwork/artwork-cross-store-clone` | `ALTERNATIVE_SETUP` | Vế |
+| Google consent screen Testing | `account-security/social-login` | `ALTERNATIVE_SETUP` | Case |
+| Rate limit Google login | `account-security/social-login` | `DIFFERENT_VALUE` | Vế |
+| Job cleanup `trashed_images` (đêm 01:00) | `campaign/mockup-preview-render-lifecycle` | `ALTERNATIVE_SETUP` | Vế |
+| Order test Bogus được đếm tier usage | `subscription/tier-usage-metering` | `DIFFERENT_VALUE` | Case |
+| Remove.BG sau mốc shutdown (ẩn provider, migration seller) | `third-party-services/remove-background-provider` | `ALTERNATIVE_SETUP` | Vế |
 
-Khác biệt riêng của feature còn nằm ở `environment_differences` trong profile.
+Cách xử lý từng khác biệt (`how_to_test`) chỉ nằm ở `environment_differences` trong `profile.json` của feature (contract §5b). Horizon không thuộc một feature nào: bỏ vế Horizon, verify UI và API.
 
 **Cần người hỗ trợ:**
 

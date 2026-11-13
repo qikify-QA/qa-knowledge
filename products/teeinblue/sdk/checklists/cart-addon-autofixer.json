@@ -1,0 +1,293 @@
+{
+  "feature_id": "FEAT-17-cart-addon-autofixer",
+  "feature_key": "cart-addon-autofixer",
+  "object_id": "sdk",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Orphan addon + request đọc /cart.js của app khác: addon được giữ, UI cart vẫn refresh",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "cart có orphan addon",
+        "environment": "staging, ghi build, script src SDK và ngày chạy; production chưa verify",
+        "surface_or_device": "storefront, desktop browser"
+      },
+      "precondition": "Store test được phép, vượt password-gate bằng TIB_STORE_PASSWORD; autofixer bật; đầu lượt đọc window.teeinblue (autofixerDelay, autofixerCallback) trên trang thật theo flow environment.md, case cần delay 0 thì ghi đè trong trang và ghi rõ. Dựng orphan addon theo flow storefront-sdk (mục Checkout & order). Không có request đổi cart nào trong cùng cửa sổ debounce với request đọc (nếu có thì autofixer vẫn chạy, KB-544).",
+      "steps": [
+        "Dựng cart có orphan addon (line chính đã xoá, addon line còn); đọc cart.js ghi lại các line.",
+        "Trong console trang, chạy fetch('/cart.js') thay cho app khác; lặp với fetch('/cart?view=ajax').",
+        "Chờ quá debounce 200 ms + autofixer delay + 1 lần đọc cart (flow troubleshooting.md mục Autofixer chạy trễ).",
+        "Đọc lại cart.js; xem network có cart/update.js không; xem thumbnail và dòng addon của UI cart."
+      ],
+      "observation_point": "cart.js sau thời gian chờ; network cart/update.js; UI cart (thumbnail, ẩn dòng addon).",
+      "expected_result": "Addon line vẫn còn trong cart.js; không có request cart/update.js của autofixer; thumbnail và ẩn dòng addon của UI cart vẫn refresh.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/cart-addon-autofixer#KB-544"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/cart-addon-autofixer#KB-544",
+        "sdk/cart-addon-autofixer#KB-548"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Addon bị xoá sai làm đơn thiếu tiền addon"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "ATC có addon charge qua nút theme, app khác đọc cart trong lúc line chính chưa vào: cart giữ đủ addon",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "race ATC với app khác (mô phỏng)",
+        "environment": "staging, ghi build, script src SDK và ngày chạy; production chưa verify",
+        "surface_or_device": "storefront, desktop browser"
+      },
+      "precondition": "Store test được phép, vượt password-gate bằng TIB_STORE_PASSWORD; autofixer bật; đầu lượt đọc window.teeinblue (autofixerDelay, autofixerCallback) trên trang thật theo flow environment.md, case cần delay 0 thì ghi đè trong trang và ghi rõ. Campaign có option addon charge, SDK dùng nút add to cart của theme. Staging không có app chiếm nút ATC: làm theo environment_differences[0] của profile (giữ request thêm line chính bằng Playwright route, trong lúc giữ gọi fetch('/cart.js') và fetch('/cart?view=ajax'), rồi thả request) và ghi rõ là mô phỏng.",
+      "steps": [
+        "Cá nhân hoá sản phẩm, chọn addon charge.",
+        "Bấm add to cart; giữ request thêm line chính; trong lúc giữ gọi fetch('/cart.js') và fetch('/cart?view=ajax').",
+        "Thả request; chờ quá debounce + delay.",
+        "Đọc cart.js; mở checkout xem tổng tiền."
+      ],
+      "observation_point": "cart.js (line chính, addon line, quantity); network cart/update.js; tổng tiền checkout.",
+      "expected_result": "Cart có line chính và đủ addon line với quantity khớp; tổng checkout gồm tiền addon.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/cart-addon-autofixer#KB-545"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/cart-addon-autofixer#KB-545",
+        "sdk/cart-addon-autofixer#KB-551",
+        "sdk/cart-addon-autofixer#KB-544"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Đơn thiếu addon khi store có app chiếm nút ATC"
+      ],
+      "priority": "P1",
+      "automation_suitability": "NOT_SUITABLE"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "ATC của Teeinblue không có app bên thứ ba: addon charge và cross-sell có quantity khớp",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "không có app bên thứ ba",
+        "environment": "staging, ghi build, script src SDK và ngày chạy; production chưa verify",
+        "surface_or_device": "storefront, desktop browser"
+      },
+      "precondition": "Store test được phép, vượt password-gate bằng TIB_STORE_PASSWORD; autofixer bật; đầu lượt đọc window.teeinblue (autofixerDelay, autofixerCallback) trên trang thật theo flow environment.md, case cần delay 0 thì ghi đè trong trang và ghi rõ. Campaign có option addon charge và campaign có cross-sell.",
+      "steps": [
+        "Add to cart sản phẩm với option addon charge; đọc cart.js.",
+        "Add to cart sản phẩm với cross-sell; đọc cart.js."
+      ],
+      "observation_point": "cart.js: line chính, addon line, sub item và quantity.",
+      "expected_result": "Cart có line chính, các addon line và sub item với quantity khớp.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/cart-addon-autofixer#KB-546"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/cart-addon-autofixer#KB-546"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Regression luồng ATC sau TIB-5665"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "Đổi quantity và xoá line chính trong cart drawer: addon theo trong dữ liệu cart",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "cart có line chính kèm addon line; theme có cart drawer",
+        "environment": "staging, ghi build, script src SDK và ngày chạy; production chưa verify",
+        "surface_or_device": "storefront, desktop browser"
+      },
+      "precondition": "Store test được phép, vượt password-gate bằng TIB_STORE_PASSWORD; autofixer bật; đầu lượt đọc window.teeinblue (autofixerDelay, autofixerCallback) trên trang thật theo flow environment.md, case cần delay 0 thì ghi đè trong trang và ghi rõ.",
+      "steps": [
+        "Mở cart drawer của theme; đổi quantity line chính; chờ quá debounce + delay; đọc cart.js.",
+        "Xoá line chính trong drawer; chờ; đọc cart.js.",
+        "Ghi riêng drawer có render lại không (không phán pass/fail phần hiển thị)."
+      ],
+      "observation_point": "cart.js sau mỗi bước; hiển thị drawer chỉ ghi nhận.",
+      "expected_result": "Sau đổi quantity, quantity addon line đổi theo line chính; sau xoá line chính, addon line của nó không còn trong cart.js.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/cart-addon-autofixer#KB-547"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/cart-addon-autofixer#KB-547",
+        "sdk/cart-addon-autofixer#KB-548"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Đơn sai addon khi buyer sửa cart"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Orphan addon bị dọn khi có cart/update.js và khi full page load /cart",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "cart có orphan addon",
+        "environment": "staging, ghi build, script src SDK và ngày chạy; production chưa verify",
+        "surface_or_device": "storefront, desktop browser"
+      },
+      "precondition": "Store test được phép, vượt password-gate bằng TIB_STORE_PASSWORD; autofixer bật; đầu lượt đọc window.teeinblue (autofixerDelay, autofixerCallback) trên trang thật theo flow environment.md, case cần delay 0 thì ghi đè trong trang và ghi rõ. Dựng orphan addon theo flow storefront-sdk (mục Checkout & order).",
+      "steps": [
+        "Dựng orphan addon; chạy fetch('/cart/update.js', {method:'POST', headers:{'Content-Type':'application/json'}, body:'{\"updates\":{}}'}); chờ; đọc cart.js.",
+        "Dựng lại orphan addon; mở /cart bằng full page load; chờ; đọc cart.js."
+      ],
+      "observation_point": "cart.js sau mỗi lượt; network cart/update.js của autofixer.",
+      "expected_result": "Cả hai lượt: addon orphan bị xoá; lượt cart/update.js sau debounce 200 ms rồi autofixer delay, lượt page load sau autofixer delay kể từ khi trang load.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/cart-addon-autofixer#KB-548"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/cart-addon-autofixer#KB-548",
+        "sdk/cart-addon-autofixer#KB-544"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Đơn chỉ có addon nếu orphan không bị dọn"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "Gap: buyer xoá addon line mà line chính còn",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "cart có line chính kèm addon line",
+        "environment": "staging, ghi build, script src SDK và ngày chạy; production chưa verify",
+        "surface_or_device": "storefront, desktop browser"
+      },
+      "precondition": "Store test được phép, vượt password-gate bằng TIB_STORE_PASSWORD; autofixer bật; đầu lượt đọc window.teeinblue (autofixerDelay, autofixerCallback) trên trang thật theo flow environment.md, case cần delay 0 thì ghi đè trong trang và ghi rõ.",
+      "steps": [
+        "Xoá addon line (drawer hoặc /cart), giữ line chính.",
+        "Chờ quá debounce + delay; đọc cart.js; ghi kết quả, không phán pass/fail."
+      ],
+      "observation_point": "cart.js; network cart/add.js của autofixer.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk/cart-addon-autofixer#KB-549",
+        "sdk/cart-addon-autofixer#KB-547"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chưa có oracle: addon có thể không được thêm lại"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-sdk-240"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "Gap: checkout ngay sau khi xoá line chính, trước khi autofixer chạy",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "cart có line chính kèm addon line",
+        "environment": "staging, ghi build, script src SDK và ngày chạy; production chưa verify",
+        "surface_or_device": "storefront, desktop browser"
+      },
+      "precondition": "Store test được phép, vượt password-gate bằng TIB_STORE_PASSWORD; autofixer bật; đầu lượt đọc window.teeinblue (autofixerDelay, autofixerCallback) trên trang thật theo flow environment.md, case cần delay 0 thì ghi đè trong trang và ghi rõ. Chỉ dùng phương thức thanh toán test, không đặt đơn thật; checkout rule xem sdk/required-addon-validation.",
+      "steps": [
+        "Xoá line chính rồi vào checkout ngay, trước khi autofixer chạy.",
+        "Ghi nội dung checkout (line, tổng tiền) và có bị chặn không; không phán pass/fail."
+      ],
+      "observation_point": "Line và tổng tiền ở checkout; banner của checkout rule nếu có.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "sdk/cart-addon-autofixer#KB-550",
+        "sdk/required-addon-validation#KB-534"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Đơn chỉ có addon nếu checkout rule không bật"
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-sdk-241"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-17-cart-addon-autofixer",
+      "core_covered": true,
+      "p1_covered": "CHK-001, CHK-002, CHK-004, CHK-005"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "PERMISSION",
+      "reason": "Autofixer chạy cho mọi buyer, không có khác biệt quyền trong nguồn."
+    },
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Nguồn không nêu giới hạn số lượng/kích thước."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Feature mới, chưa có base để so; không có KNOWN_DEFECT (issue sdk #2181 là OPEN_ISSUE ngoài phạm vi thay đổi, theo dõi qua OQ)."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-156"
+  }
+}

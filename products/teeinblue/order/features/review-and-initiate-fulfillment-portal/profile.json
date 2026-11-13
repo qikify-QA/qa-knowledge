@@ -48,6 +48,14 @@
         "order/review-and-initiate-fulfillment-portal#KB-014",
         "order/review-and-initiate-fulfillment-portal#KB-024"
       ]
+    },
+    {
+      "path": "[CBS-163] Portal /fulfills/unknown (mở trực tiếp bằng URL)",
+      "precondition": "Đã login portal bằng account explorer (đúng account guard).",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-794",
+        "order/review-and-initiate-fulfillment-portal#KB-796"
+      ]
     }
   ],
   "capabilities": [
@@ -119,6 +127,39 @@
       "kb_refs": [
         "order/review-and-initiate-fulfillment-portal#KB-392",
         "order/review-and-initiate-fulfillment-portal#KB-393"
+      ]
+    },
+    {
+      "name": "[CBS-163] Regenerate / cancel design của order item: response là design resource",
+      "description": "Theo Dev (TIB-5689 comment 56448): generate/cancel design của order item trả OrderItemArtworkDesignResource gồm id, url, thumbnail, width, height, error_message, is_processing, processing_at, processed_at, cancelled_at (KB-790). Quan sát (KB-791): cả hai trả 200, đúng 10 key, không customization/artwork/order_item, màn hình tải lại item; nút cancel chỉ hiện khi design đang processing. Hành vi regenerate xong design: KB-392.",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-790",
+        "order/review-and-initiate-fulfillment-portal#KB-791",
+        "order/review-and-initiate-fulfillment-portal#KB-392"
+      ]
+    },
+    {
+      "name": "[CBS-163] Upload ảnh trong Edit customization của order item (portal)",
+      "description": "Chỉ quan sát (KB-791): POST /api/instances/{instance}/customer-uploads trả 201 với đúng id, url, original, ảnh hiện trong field. Chưa có câu Dev xác nhận.",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-791"
+      ]
+    },
+    {
+      "name": "[CBS-163] Lưu và mở lại template export CSV tuỳ chỉnh",
+      "description": "Theo Dev (TIB-5689 comment 56448 U15): response store/show có template_name, template_fields, không user_id (KB-792). Quan sát: lưu rồi mở lại còn nguyên tên và field (KB-793).",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-792",
+        "order/review-and-initiate-fulfillment-portal#KB-793"
+      ]
+    },
+    {
+      "name": "[CBS-163] Mở trang Unknown Line Items (/fulfills/unknown)",
+      "description": "Theo Dev (TIB-5689 comment 56491): trang tải được thay vì lỗi, list dự kiến rỗng vì không luồng nào tạo row (KB-794); trước đây trả 500 trên dev, nay tải được (KB-795). Quan sát: tiêu đề \"Unknown Line Items\", bộ lọc, header, list rỗng, key paginator (KB-796). Mapped badge, title link fallback, Regenerate trên trang này: vấn đề mở, xem unknown_areas.",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-794",
+        "order/review-and-initiate-fulfillment-portal#KB-795",
+        "order/review-and-initiate-fulfillment-portal#KB-796"
       ]
     }
   ],
@@ -222,6 +263,50 @@
       "kb_refs": [
         "order/review-and-initiate-fulfillment-portal#KB-392"
       ]
+    },
+    {
+      "rule": "[CBS-163] Regenerate và cancel design của order item (OrderItemArtworkDesignController generate/cancel) trả OrderItemArtworkDesignResource gồm id, url, thumbnail, width, height, error_message, is_processing, processing_at, processed_at, cancelled_at.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner; SHIPPED (Jira Done); production chưa verify",
+      "caveats": "Câu Dev chỉ liệt kê key của resource; việc không có customization/artwork/order_item, status 200 và màn hình tải lại item chỉ là quan sát (KB-791).",
+      "confirmation_ref": "Jira TIB-5689 comment 56448 Solution, bảng Portal hàng OrderItemArtworkDesignController (Dev, 2026-11-04)",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-790"
+      ]
+    },
+    {
+      "rule": "[CBS-163] Response lưu (store) và mở lại (show) template export CSV tuỳ chỉnh có template_name, template_fields, không có user_id.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner; SHIPPED (Jira Done); production chưa verify",
+      "caveats": "Chỉ store/show; việc tên và field còn nguyên khi mở lại là quan sát (KB-793).",
+      "confirmation_ref": "Jira TIB-5689 comment 56448 Solution, test case U15 (Dev, 2026-11-04)",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-792"
+      ]
+    },
+    {
+      "rule": "[CBS-163] Trang /fulfills/unknown tải được thay vì hiện lỗi; danh sách dự kiến rỗng vì không luồng nào trong app tạo row loại này.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner; SHIPPED (Jira Done); production chưa verify",
+      "caveats": "Không phát biểu về Mapped badge, title link fallback, Regenerate trên trang này (vấn đề mở theo Dev, teeinblue-api#4179).",
+      "confirmation_ref": "Jira TIB-5689 comment 56491 QA plan, bước 14 (Dev, 2026-11-05)",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-794"
+      ]
+    },
+    {
+      "rule": "[CBS-163] Trang unknown line items trước TIB-5689 trả 500 trên dev, nay tải được (đi từ lỗi sang chạy, không phải \"không đổi\").",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner; SHIPPED (Jira Done); production chưa verify",
+      "caveats": "Trạng thái 500 trước đây là trên dev theo Dev, không phải quan sát của QA.",
+      "confirmation_ref": "Jira TIB-5689 comment 56491 QA plan, mục Exception (Dev, 2026-11-05)",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-795"
+      ]
     }
   ],
   "observed_behavior": [
@@ -279,6 +364,33 @@
       "kb_refs": [
         "order/review-and-initiate-fulfillment-portal#KB-393"
       ]
+    },
+    {
+      "statement": "[CBS-163] Generate và cancel design của order item trả 200, đúng 10 key, không customization/artwork/order_item, màn hình tải lại item; upload ảnh trong Edit customization của order (POST /api/instances/{instance}/customer-uploads) trả 201 đúng id, url, original, ảnh hiện trong field (TC-TIB-8594, TC-TIB-8595, build không ghi).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-791"
+      ]
+    },
+    {
+      "statement": "[CBS-163] Template export CSV lưu rồi mở lại còn nguyên tên và field (TC-TIB-8598, build không ghi).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-793"
+      ]
+    },
+    {
+      "statement": "[CBS-163] /fulfills/unknown tải với tiêu đề \"Unknown Line Items\", bộ lọc, header bảng, list rỗng, response giữ key paginator; key từng row chưa kiểm (TC-TIB-8601, build không ghi).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-796"
+      ]
     }
   ],
   "proposed_behavior": [
@@ -315,7 +427,10 @@
       "[MỚI, CBS-006] Order-details → tải order design (print file) PNG / PDF của order item (KB-182, KB-183)",
       "[MỚI, CBS-011] Order-details → View customization, preview customization, mockup và print file PNG của từng item theo điều kiện Hide (KB-239)",
       "[MỚI, CBS-015] Order-details → Regenerate (icon sync) design của order item; Item Activity logs ghi 'generated a new design' (KB-392); toast 'put your design in queue' (quan sát, KB-393)",
-      "[MỚI, CBS-096, PROPOSED chưa ship] Order details và Edit order → danh sách 'Options' của item hiện customization_id thô khi bật 'show line item properties', sau 'Show more' (KB-764)"
+      "[MỚI, CBS-096, PROPOSED chưa ship] Order details và Edit order → danh sách 'Options' của item hiện customization_id thô khi bật 'show line item properties', sau 'Show more' (KB-764)",
+      "[CBS-163] Order-details → Regenerate / cancel design (nút cancel chỉ hiện khi design đang processing) (KB-790, KB-791); Edit customization → upload ảnh (KB-791)",
+      "[CBS-163] CSV Export → template tuỳ chỉnh: tạo, lưu, mở lại (KB-792, KB-793)",
+      "[CBS-163] /fulfills/unknown (Unknown Line Items, mở trực tiếp) (KB-794, KB-795, KB-796)"
     ],
     "storefront": [],
     "api": [
@@ -326,7 +441,10 @@
       "GraphQL call observed at fulfill-click (read-only)",
       "[MỚI, CBS-006] Render order design (print file PNG / PDF; layout emboss / shape-cut chưa kiểm) theo effective visibility của Group (KB-182, KB-183)",
       "[MỚI, CBS-011] Render order design PNG, mockup và customization preview theo điều kiện Hide của layer (PDF / emboss / shape-cut chưa kiểm) (KB-239)",
-      "[MỚI, CBS-015] Regenerate order design của order item có artwork group ~250 layer (KB-392)"
+      "[MỚI, CBS-015] Regenerate order design của order item có artwork group ~250 layer (KB-392)",
+      "[CBS-163] OrderItemArtworkDesignController generate/cancel → OrderItemArtworkDesignResource (KB-790)",
+      "[CBS-163] POST /api/instances/{instance}/customer-uploads từ Edit customization của order (KB-791, quan sát)",
+      "[CBS-163] CSVTemplateCustomController store/show (KB-792)"
     ],
     "data": [],
     "code": []
@@ -414,6 +532,39 @@
       "kb_refs": [
         "order/review-and-initiate-fulfillment-portal#KB-764",
         "order/review-and-initiate-fulfillment-portal#KB-017"
+      ]
+    },
+    {
+      "risk": "[CBS-163] Mapped badge, title link fallback và Regenerate trên /fulfills/unknown không hoạt động theo Dev và không tính là bug của TIB-5689; trang dự kiến gỡ (teeinblue-api#4179).",
+      "detail": "Không viết check assert các control này, cũng không coi chúng hỏng là expected; đây là vấn đề mở (unknown_areas). Check của trang chỉ assert tải được và list rỗng.",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-794",
+        "order/review-and-initiate-fulfillment-portal#KB-795"
+      ]
+    },
+    {
+      "risk": "[CBS-163] Việc không có customization/artwork/order_item trong response generate/cancel, shape customer-uploads của portal, việc template CSV còn nguyên sau mở lại và key paginator của /fulfills/unknown chỉ là một lượt quan sát trên account test của người gửi CCR, build không ghi.",
+      "detail": "Check dựa trên các quan sát này là BASELINE, lệch cần điều tra chứ chưa phải bug. Key của từng row unknown line item chưa kiểm.",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-791",
+        "order/review-and-initiate-fulfillment-portal#KB-793",
+        "order/review-and-initiate-fulfillment-portal#KB-796"
+      ]
+    },
+    {
+      "risk": "[CBS-163] Fixture khó dựng: nút cancel design chỉ hiện khi design đang processing; regenerate/cancel cần order có item trên store explorer.",
+      "detail": "Đặt order cần campaign publish lên store explorer (cần operator đồng ý và dọn dẹp). Không bắt được trạng thái processing thì ghi blocked, không suy kết quả.",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-791"
+      ]
+    },
+    {
+      "risk": "[CBS-163] Quyền staff (manage-orders, editor) với regenerate/cancel design, upload trong Edit customization và template CSV chưa kiểm; mọi lượt chạy dùng phiên owner.",
+      "detail": "Không suy kết quả cho role staff.",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-790",
+        "order/review-and-initiate-fulfillment-portal#KB-791",
+        "order/review-and-initiate-fulfillment-portal#KB-792"
       ]
     }
   ],
@@ -555,11 +706,63 @@
         "order/review-and-initiate-fulfillment-portal#KB-393"
       ],
       "oq_id": "OQ-order-085"
+    },
+    {
+      "question": "[CBS-163] Generate/cancel trả 200 đúng 10 key, không customization/artwork/order_item, màn hình tải lại item; customer-uploads của portal trả 201 đúng id, url, original (KB-791) — Dev xác nhận là expected?",
+      "why_it_matters": "KB-791 là OBSERVED_CURRENT/LOW; câu Dev cho vế customer-uploads không được trích.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "open_question_draft": "OQ-order-091",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-791"
+      ],
+      "oq_id": "OQ-order-091"
+    },
+    {
+      "question": "[CBS-163] Template export CSV lưu rồi mở lại còn nguyên tên và field (KB-793) — xác nhận?",
+      "why_it_matters": "KB-793 là OBSERVED_CURRENT/LOW, một lượt.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "open_question_draft": "OQ-order-092",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-793"
+      ],
+      "oq_id": "OQ-order-092"
+    },
+    {
+      "question": "[CBS-163] /fulfills/unknown: tiêu đề, bộ lọc, header, key paginator (KB-796) — xác nhận; key của từng row là gì?",
+      "why_it_matters": "KB-796 là OBSERVED_CURRENT/LOW; staging không có row để kiểm key từng row.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "open_question_draft": "OQ-order-093",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-796"
+      ],
+      "oq_id": "OQ-order-093"
+    },
+    {
+      "question": "[CBS-163] Mapped badge, title link fallback, Regenerate trên /fulfills/unknown không hoạt động (Dev: không phải bug của TIB-5689, gỡ trang ở teeinblue-api#4179). Khi nào gỡ trang, và trong lúc còn trang QA xử lý các control này thế nào?",
+      "why_it_matters": "Không được coi là expected; tránh báo bug sai hoặc viết check assert control không hoạt động.",
+      "suggested_oq_type": "OPEN_ISSUE",
+      "open_question_draft": "OQ-order-094",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-794",
+        "order/review-and-initiate-fulfillment-portal#KB-795"
+      ],
+      "oq_id": "OQ-order-094"
+    },
+    {
+      "question": "[CBS-163] KB-024 ghi \"portal/fulfills không phải route riêng\"; /fulfills/unknown là trang mở trực tiếp được (KB-794). KB-024 đã lỗi thời hay chỉ đúng cho /fulfills gốc?",
+      "why_it_matters": "Item base có thể làm người đọc bỏ qua các trang dưới /fulfills.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "open_question_draft": "OQ-order-095",
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-024",
+        "order/review-and-initiate-fulfillment-portal#KB-794"
+      ],
+      "oq_id": "OQ-order-095"
     }
   ],
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-138"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   },
   "coverage_matrix": [
     {
@@ -811,6 +1014,94 @@
         "order/review-and-initiate-fulfillment-portal#KB-764"
       ],
       "basis": "NOT_SHIPPED"
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] regenerate / cancel design (design đang processing) của order item",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-790",
+        "order/review-and-initiate-fulfillment-portal#KB-791"
+      ]
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] upload ảnh trong Edit customization của order",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-791"
+      ],
+      "basis": "chỉ quan sát"
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-163] template export CSV tuỳ chỉnh lưu / mở lại",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-792",
+        "order/review-and-initiate-fulfillment-portal#KB-793"
+      ]
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-163] /fulfills/unknown, list rỗng",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-794",
+        "order/review-and-initiate-fulfillment-portal#KB-795",
+        "order/review-and-initiate-fulfillment-portal#KB-796"
+      ]
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] /fulfills/unknown có row (key từng row)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-796"
+      ],
+      "basis": "staging không có row"
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "layer": "portal",
+      "role": "staff (manage-orders, editor)",
+      "state": "[CBS-163] regenerate/cancel, upload, template CSV",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-790",
+        "order/review-and-initiate-fulfillment-portal#KB-792"
+      ],
+      "basis": "chưa kiểm"
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-163] mọi vế TIB-5689 của feature",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "order/review-and-initiate-fulfillment-portal#KB-790",
+        "order/review-and-initiate-fulfillment-portal#KB-792",
+        "order/review-and-initiate-fulfillment-portal#KB-794"
+      ],
+      "basis": "production verify NOT-RUN"
     }
   ],
   "profile_conflicts": [],

@@ -1,0 +1,447 @@
+{
+  "feature_id": "FEAT-37",
+  "feature_key": "expired-time-setting",
+  "object_id": "store-settings",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Card Order storage time hiện heading, help text và 5 radio",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "chưa đặt",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard); store chưa đặt Order storage time. Chỉ đọc, không click radio hay Save.",
+      "steps": [
+        "Mở /general-settings.",
+        "Tìm card \"Order storage time\".",
+        "Đọc heading, help text, label và các radio."
+      ],
+      "observation_point": "Card Order storage time trên /general-settings",
+      "expected_result": "Như đã quan sát một lần: heading \"Order storage time\"; help text về thời gian lưu order (order items, designs, customer info) và buyer photos tự xoá sau 90 ngày; label \"Delete orders after:\"; 5 radio theo thứ tự Default (2 years), 30 days, 90 days, 180 days, 365 days; không có ô nhập hay select.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1630",
+          "KB-1631"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1630",
+        "KB-1631"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Card hiển thị sai hoặc thiếu lựa chọn"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-store-settings-010"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Store chưa đặt hiển thị Default checked",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "chưa đặt",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard); store chưa đặt Order storage time. Chỉ đọc, không click radio hay Save.",
+      "steps": [
+        "Mở /general-settings.",
+        "Quan sát trạng thái checked của 5 radio trong card."
+      ],
+      "observation_point": "Trạng thái checked của nhóm radio expired_time",
+      "expected_result": "Như đã quan sát ở một store chưa đặt: \"Default (2 years)\" checked, 4 radio còn lại unchecked. Không suy ra rule chung cho mọi store chưa đặt.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1634"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1634",
+        "KB-1636"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Trạng thái mặc định hiển thị sai"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-store-settings-010"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "GET expired-time-setting khi tải trang ở store chưa đặt",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "chưa đặt",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Session portal hợp lệ của account explorer; store chưa đặt. Chỉ GET.",
+      "steps": [
+        "Mở DevTools Network, tải /general-settings.",
+        "Tìm GET /api/instances/{instance}/expired-time-setting.",
+        "Xem status và body; có thể gọi lại cùng GET bằng fetch trong trang với cookie + X-XSRF-TOKEN."
+      ],
+      "observation_point": "Status và body GET expired-time-setting",
+      "expected_result": "Như đã quan sát ở một store chưa đặt: status 200, body mảng JSON rỗng, cả ở lần tải trang và lần gọi lại (không độc lập). Shape khi có giá trị chưa biết.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1635"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1635",
+        "KB-1654",
+        "store-settings/expired-time-setting#KB-1656"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Đọc setting lỗi hoặc sai shape"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-store-settings-010"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Tên field và API của radio khớp quan sát (expired_time)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "chưa đặt",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard); store chưa đặt Order storage time. Chỉ đọc, không click radio hay Save.",
+      "steps": [
+        "Mở /general-settings, kiểm DOM nhóm radio bằng DevTools.",
+        "Đọc name, id, value của từng radio.",
+        "Đối chiếu path GET trong Network."
+      ],
+      "observation_point": "Thuộc tính DOM của radio và path request",
+      "expected_result": "Như đã quan sát: UI hiển thị \"Order storage time\"/\"Delete orders after:\" còn radio name expired_time, id expired_time-<value>, value 0/30/90/180/365, API path expired-time-setting; chữ \"expired\" không xuất hiện trong text UI.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1632"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1632"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lệch tên giữa UI và API gây hiểu nhầm khi test"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-store-settings-010"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Card không có tooltip và không có nút Save riêng",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "chưa đặt",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard); store chưa đặt Order storage time. Chỉ đọc, không click radio hay Save.",
+      "steps": [
+        "Mở /general-settings.",
+        "Tìm help icon/tooltip và nút Save/Reset trong card.",
+        "Tìm nút Save/Reset ở header trang."
+      ],
+      "observation_point": "Card Order storage time và header trang",
+      "expected_result": "Như đã quan sát một lần: card không có help icon hay tooltip, không có nút Save/Reset riêng; Save/Reset duy nhất ở header trang.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1633",
+          "KB-1655"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1633",
+        "KB-1655"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Điểm lưu hiển thị sai"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-store-settings-010"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Đồng bộ Default checked với dữ liệu lưu",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "chưa đặt / đã đặt",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Cần account test cho phép ghi và quyền dev xem dữ liệu; không chạy ở run read-only.",
+      "steps": [
+        "Đối chiếu UI Default checked với GET ở store chưa đặt.",
+        "Chọn một giá trị khác, lưu, rồi chọn lại Default và lưu, xem GET và dữ liệu."
+      ],
+      "observation_point": "UI Default, GET expired-time-setting, dữ liệu backend",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1636"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1634",
+        "KB-1636"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Default không tương ứng dữ liệu lưu"
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-store-settings-002"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Lưu Order storage time và giữ sau reload",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "chưa đặt",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Store explorer; cần operator đồng ý trước khi lưu vì tác dụng xoá order của setting chưa rõ (OQ-store-settings-001). Ghi giá trị gốc bằng GET expired-time-setting trước khi đổi; chọn 365 days (thời hạn dài nhất) để giảm rủi ro; khôi phục giá trị gốc ngay sau khi kiểm (store chưa đặt: chọn Default (2 years) rồi Save) và GET lại để xác nhận bằng giá trị gốc.",
+      "steps": [
+        "GET expired-time-setting, ghi giá trị gốc.",
+        "Chọn 365 days, bấm Save ở header trang; ghi request lưu và thông báo.",
+        "Reload trang, xem radio và GET.",
+        "Khôi phục giá trị gốc, Save, reload và GET để xác nhận bằng giá trị gốc."
+      ],
+      "observation_point": "Request lưu, thông báo, radio sau reload",
+      "expected_result": "Baseline theo quan sát (một lượt, account test): sau reload giá trị đã lưu còn giữ (radio và GET). Bước khôi phục phải đưa về giá trị gốc.",
+      "oracle": {
+        "kb_ids": [
+          "store-settings/expired-time-setting#KB-1657"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1631",
+        "KB-1633",
+        "KB-1655",
+        "store-settings/expired-time-setting#KB-1657",
+        "store-settings/expired-time-setting#KB-1656"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mất hoặc sai cài đặt khi lưu",
+        "[CBS-163] Mutation trên store explorer; phải khôi phục giá trị gốc."
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-store-settings-004",
+      "open_question_draft": "Thuộc OQ-store-settings-004 (lưu và giữ sau reload), không tạo OQ mới."
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Shape response index/update expired-time-setting khi đã đặt giá trị",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã đặt giá trị",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "api"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Store explorer; cần operator đồng ý trước khi lưu vì tác dụng xoá order của setting chưa rõ (OQ-store-settings-001). Ghi giá trị gốc bằng GET expired-time-setting trước khi đổi; chọn 365 days (thời hạn dài nhất) để giảm rủi ro; khôi phục giá trị gốc ngay sau khi kiểm (store chưa đặt: chọn Default (2 years) rồi Save) và GET lại để xác nhận bằng giá trị gốc. Chạy cùng CHK-007.",
+      "steps": [
+        "Trong CHK-007, ghi body response update (lưu 365 days).",
+        "GET expired-time-setting khi đã đặt; ghi phần tử, key, kiểu.",
+        "Sau khi khôi phục về chưa đặt, GET lại và ghi body."
+      ],
+      "observation_point": "Body response update và index khi đã đặt và sau khi khôi phục",
+      "expected_result": "Response update và index có expired_time, không có instance_id; khi chưa có giá trị, index trả []. Các key khác của phần tử chỉ ghi lại (OQ-store-settings-003 còn mở phần này).",
+      "oracle": {
+        "kb_ids": [
+          "store-settings/expired-time-setting#KB-1656"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1635",
+        "store-settings/expired-time-setting#KB-1656"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Sai shape response",
+        "[CBS-163] Mutation trên store explorer; phải khôi phục giá trị gốc."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "open_question_draft": null
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Tác dụng xoá order theo thời hạn đã chọn",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "đã đặt giá trị",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Cần Dev/PO xác nhận hành vi và môi trường dữ liệu order thử; không thể kiểm chứng trong run read-only.",
+      "steps": [
+        "Đặt 30 days ở store có order cũ.",
+        "Chờ job nền theo cơ chế Dev cung cấp.",
+        "Kiểm order, order items, designs, customer info và buyer photos."
+      ],
+      "observation_point": "Dữ liệu order sau thời hạn",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1630",
+          "KB-1631"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1630",
+        "KB-1631"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Xoá nhầm hoặc không xoá dữ liệu order"
+      ],
+      "priority": "P1",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-store-settings-001"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "PERMISSION",
+      "layer": "api",
+      "title": "GET expired-time-setting với role khác, chưa xác thực, store khác",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "mọi state",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Cần token role khác và store thứ hai; run này chỉ có merchant-owner một store.",
+      "steps": [
+        "Gọi GET expired-time-setting không cookie/token.",
+        "Gọi với role staff khác.",
+        "Gọi với instance của store khác."
+      ],
+      "observation_point": "Status và body response",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1635",
+          "KB-1654"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1635",
+        "KB-1654"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lộ hoặc cho sửa cài đặt cross-tenant"
+      ],
+      "priority": "P1",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-store-settings-003"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-37",
+      "risk": "mất dữ liệu order",
+      "checks": [
+        "CHK-007",
+        "CHK-009"
+      ]
+    },
+    {
+      "feature_id": "FEAT-37",
+      "risk": "permission/cross-store",
+      "checks": [
+        "CHK-010"
+      ]
+    },
+    {
+      "feature_id": "FEAT-37",
+      "risk": "hiển thị card và trạng thái mặc định",
+      "checks": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-003",
+        "CHK-004",
+        "CHK-005"
+      ]
+    },
+    {
+      "feature_id": "FEAT-37",
+      "risk": "[CBS-163] Shape response index/update (KB-1656) và giữ giá trị sau reload (KB-1657); mutation phải khôi phục",
+      "checks": [
+        "CHK-007",
+        "CHK-008"
+      ]
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Card chỉ có 5 radio cố định, không có ô nhập; giới hạn khác chưa quan sát (KB-1631)."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Không có base đã publish và không có item KNOWN_DEFECT."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  }
+}

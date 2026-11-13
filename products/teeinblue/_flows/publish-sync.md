@@ -29,7 +29,7 @@ Launch thêm store thứ 2 sau khi đã launch store 1: bấm `Update` ở heade
 
 ## Lỗi publish
 
-### `Call to undefined relationship [artworks] on model [App\Models\CampaignArtwork]` (tái phát 2026-11-05, trước đó 2026-10-09 → 10-12)
+### `Call to undefined relationship [artworks] on model [App\Models\CampaignArtwork]` (tái phát 2026-11-05 → hết trước 04:28 UTC 2026-11-06, trước đó 2026-10-09 → 10-12)
 - Dấu hiệu: `campaign_instances.status=2`, badge `Published error`, Shopify product vẫn tạo; `campaign_instance_histories.message` có câu trên. Mockup campaign có artwork không render (`preview_url` null), `render-mockup-tool` trả `RelationNotFoundException`. Render không artwork và platform mockup vẫn chạy.
 - Báo Dev, retry không hết (TIB-5629: publish 05:00:20, sync 05:08:09 đều lỗi; lần thành công cuối 04:50:59).
 

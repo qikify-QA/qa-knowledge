@@ -1,0 +1,765 @@
+{
+  "feature_id": "FEAT-01-mcp-client-connection",
+  "feature_key": "mcp-client-connection",
+  "name": "Kết nối MCP client tới MCP server Teeinblue",
+  "user_goal": "Merchant-owner kết nối một AI client (Claude Code, Claude Desktop, Codex) tới MCP server của Teeinblue: tìm endpoint, header Authorization và config theo từng client trên trang AI Assistant (MCP), dùng token mang ability mcp:access; server từ chối request thiếu hoặc sai token. Quan sát chỉ trên staging, một account, chưa có token MCP đã xác minh nên danh mục tool và response đã xác thực chưa biết.",
+  "user_goal_kb_refs": [
+    "KB-1601",
+    "KB-1602",
+    "KB-1603",
+    "KB-1605",
+    "KB-1606",
+    "KB-1607",
+    "KB-1608",
+    "KB-1614",
+    "KB-1615"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner",
+      "permission_observed": "Xem được trang /mcp và /api-keys, nút Generate MCP token và Create new key enabled (không bấm). Role staff khác chưa thử.",
+      "kb_refs": [
+        "KB-1601",
+        "KB-1603",
+        "KB-1610"
+      ]
+    },
+    {
+      "role": "client MCP không xác thực (gọi POST {TIB_API_BASE}/mcp ngoài trình duyệt)",
+      "permission_observed": "Không có Authorization hoặc Bearer giả đều nhận 401; token hợp lệ chưa được thử.",
+      "kb_refs": [
+        "KB-1605",
+        "KB-1614",
+        "KB-1615"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Sidebar > AI Assistant (MCP) (/mcp)",
+      "precondition": "Đã login portal staging ({TIB_PORTAL_BASE}) bằng account test (đúng account guard của product).",
+      "kb_refs": [
+        "KB-1601",
+        "KB-1602"
+      ]
+    },
+    {
+      "path": "/mcp > Manage all tokens (/api-keys)",
+      "precondition": "Đã login portal staging ({TIB_PORTAL_BASE}) bằng account test (đúng account guard của product). Cần ít nhất một token có ability mcp:access để thấy badge trên bảng.",
+      "kb_refs": [
+        "KB-1603",
+        "KB-1610",
+        "KB-1611"
+      ]
+    },
+    {
+      "path": "POST {TIB_API_BASE}/mcp (JSON-RPC initialize, tools/list)",
+      "precondition": "Client ngoài trình duyệt (curl hoặc Postman), header Content-Type: application/json và Accept: application/json, text/event-stream. Probe không token và token giả không cần credential; probe có xác thực cần token có ability mcp:access của account test (không ghi giá trị token).",
+      "kb_refs": [
+        "KB-1605",
+        "KB-1614",
+        "KB-1615"
+      ]
+    },
+    {
+      "path": "OPTIONS {TIB_API_BASE}/mcp với Origin là origin portal ({TIB_PORTAL_BASE})",
+      "precondition": "Client ngoài trình duyệt, không cần token.",
+      "kb_refs": [
+        "KB-1618"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Vào trang AI Assistant (MCP) và đọc hướng dẫn kết nối",
+      "description": "Mục sidebar \"AI Assistant (MCP)\" (badge beta, nằm ngay sau Extras và trước Organization, không lồng trong Extras, highlight active khi ở /mcp) dẫn tới /mcp với heading, link API Docs ra ngoài và câu giới thiệu kết nối Teeinblue với AI assistant qua Model Context Protocol.",
+      "kb_refs": [
+        "KB-1601",
+        "KB-1602"
+      ]
+    },
+    {
+      "name": "Lấy endpoint và header Authorization",
+      "description": "Card \"2. Add Teeinblue to your AI client\" hiện endpoint {TIB_API_BASE}/mcp và header Authorization: Bearer <YOUR_MCP_TOKEN>, mỗi ô có nút copy; yêu cầu client hỗ trợ remote HTTP MCP.",
+      "kb_refs": [
+        "KB-1605"
+      ]
+    },
+    {
+      "name": "Xem config theo từng client (Claude Code, Claude Desktop, Codex)",
+      "description": "Ba tab cho ba dạng config: lệnh claude mcp add và .mcp.json; claude_desktop_config.json bắc cầu stdio bằng npx mcp-remote, với bộ chọn Operating system (macOS / Linux mặc định, Windows chỉ khác dòng command là đường dẫn đầy đủ tới npx.cmd) và ghi chú Settings > Developer > Edit Config, Node.js, khởi động lại; ~/.codex/config.toml. Tab Claude Code là mặc định.",
+      "kb_refs": [
+        "KB-1606",
+        "KB-1607",
+        "KB-1608"
+      ]
+    },
+    {
+      "name": "Chuẩn bị token mang ability mcp:access",
+      "description": "Bước 1 trên /mcp có nút Generate MCP token (chưa bấm) và gợi ý tự điền token; /api-keys liệt kê token với ability, trong đó có mcp:access cùng danh sách với ability Open API. Generate và tự điền chưa được quan sát.",
+      "kb_refs": [
+        "KB-1603",
+        "KB-1604",
+        "KB-1609",
+        "KB-1610",
+        "KB-1611",
+        "KB-1613"
+      ]
+    },
+    {
+      "name": "Server từ chối request thiếu hoặc sai token",
+      "description": "POST /mcp không có Authorization hoặc có Bearer giả đều trả 401 với www-authenticate Bearer realm=\"mcp\", body {\"message\":\"Unauthenticated.\"}, không phải object lỗi JSON-RPC; 401 không kèm header rate limit hay mcp-session-id.",
+      "kb_refs": [
+        "KB-1614",
+        "KB-1615",
+        "KB-1616"
+      ]
+    },
+    {
+      "name": "Giới hạn khi gọi /mcp từ trang portal",
+      "description": "Fetch POST tới /mcp từ trang portal đã login thất bại với Failed to fetch; preflight OPTIONS trả 200, allow GET,HEAD,POST,DELETE, không có access-control-allow-origin. Nguyên nhân CORS chỉ là suy luận.",
+      "kb_refs": [
+        "KB-1617",
+        "KB-1618",
+        "KB-1619"
+      ]
+    },
+    {
+      "name": "[CBS-163] Tạo token ở /api-keys và Regenerate token ở /mcp (POST /api/tokens)",
+      "description": "CONFIRMED_EXPECTED/MEDIUM (KB-1658): response giữ accessToken (TokenResource: id, name, abilities, last_used_at, expires_at, created_at; không tokenable_id/tokenable_type) và plainTextToken. OBSERVED_CURRENT/LOW (KB-1659): 200, không key token, plain token hiện một lần, Regenerate xoá token MCP cũ. Bổ sung cho KB-1603, KB-1610 (nút chưa bấm ở bootstrap).",
+      "kb_refs": [
+        "mcp/mcp-client-connection#KB-1658",
+        "mcp/mcp-client-connection#KB-1659",
+        "mcp/mcp-client-connection#KB-1603",
+        "mcp/mcp-client-connection#KB-1610"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "Tab Claude Code (mặc định khi mở /mcp)",
+      "to": "Tab Claude Desktop hoặc Codex",
+      "trigger": "Chọn tab trong phần chọn AI client",
+      "condition": "Đã mở /mcp; nội dung config đổi theo tab. Chưa kiểm phát request khi đổi tab.",
+      "kb_refs": [
+        "KB-1606",
+        "KB-1607",
+        "KB-1608"
+      ]
+    },
+    {
+      "from": "Config hiển thị placeholder <YOUR_MCP_TOKEN>",
+      "to": "Config có token thật (chưa quan sát)",
+      "trigger": "Bấm Generate MCP token",
+      "condition": "Chưa bấm nên chưa biết placeholder có được thay, token hiện một lần hay có hạn dùng; chỉ có dòng gợi ý \"Generate a token above to fill this in automatically.\"",
+      "kb_refs": [
+        "KB-1603",
+        "KB-1609"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "[CBS-163] Theo Jira TIB-5689 comment 56448 Pinned readings AC3 (Dev, 2026-11-04), POST /api/tokens (ApiTokenController::store) giữ 2 key accessToken (TokenResource: id, name, abilities, last_used_at, expires_at, created_at; không tokenable_id/tokenable_type) và plainTextToken.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "mcp/mcp-client-connection#KB-1658"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Khi mở rộng sidebar portal (viewport rộng 1440) ở merchant-owner/staging/account explorer, quan sát thấy mục \"AI Assistant (MCP)\" có badge \"beta\", href /mcp, nằm ngay sau mục Extras và trước Organization, không lồng trong Extras; khi đang ở /mcp mục này được highlight active, còn ở trang Home thì không. Một phiên quan sát.",
+      "kb_refs": [
+        "KB-1601"
+      ]
+    },
+    {
+      "statement": "Khi mở \"AI Assistant (MCP)\" từ sidebar ở merchant-owner/staging/account explorer, quan sát thấy trang ở route /mcp với breadcrumb \"Home / Mcp\", heading \"AI Assistant (MCP)\", link \"API Docs\" trỏ ra một site tài liệu gitbook bên ngoài (không mở) và câu giới thiệu \"Connect Teeinblue to your AI assistant using the Model Context Protocol.\"",
+      "kb_refs": [
+        "KB-1602"
+      ]
+    },
+    {
+      "statement": "Khi xem trang /mcp ở merchant-owner/staging/account explorer, quan sát thấy card \"1. Generate your MCP token\" với chữ \"Create a token scoped to MCP access. Keep it secret — treat it like a password.\", nút \"Generate MCP token\" ở trạng thái enabled và link \"Manage all tokens →\" (href /api-keys). Nút không được bấm nên chưa biết token sinh ra mang ability nào, có hạn dùng hay hỏi tên không.",
+      "kb_refs": [
+        "KB-1603"
+      ]
+    },
+    {
+      "statement": "Khi mở trang /mcp ở merchant-owner/staging/account explorer, quan sát thấy portal gọi GET /api/tokens (200) tới API host khi tải trang (ngoài GET /api/user của app shell). Một lần tải trang; trang không hiển thị danh sách token nào trong phần nội dung đã quan sát.",
+      "kb_refs": [
+        "KB-1604"
+      ]
+    },
+    {
+      "statement": "Khi xem card \"2. Add Teeinblue to your AI client\" trên /mcp ở merchant-owner/staging/account explorer, quan sát thấy chữ \"Use the remote HTTP MCP endpoint below. Your client must support remote HTTP MCP servers.\", endpoint hiển thị là `{TIB_API_BASE}/mcp` (API host staging, path /mcp) và header hiển thị là `Authorization: Bearer <YOUR_MCP_TOKEN>` (placeholder nguyên văn); mỗi ô có nút copy (không kiểm nội dung clipboard).",
+      "kb_refs": [
+        "KB-1605"
+      ]
+    },
+    {
+      "statement": "Khi chọn tab \"Claude Code\" trong phần chọn AI client trên /mcp ở merchant-owner/staging/account explorer, quan sát thấy lệnh quick-add `claude mcp add --transport http teeinblue <endpoint> --header \"Authorization: Bearer <YOUR_MCP_TOKEN>\"`, một block .mcp.json với mcpServers.teeinblue gồm type \"http\", url và headers.Authorization, cùng câu \"Run /mcp inside Claude Code to confirm Teeinblue is connected.\" Tab này là tab mặc định khi mở trang.",
+      "kb_refs": [
+        "KB-1606"
+      ]
+    },
+    {
+      "statement": "Khi chọn tab \"Claude Desktop\" trên /mcp ở merchant-owner/staging/account explorer, quan sát thấy bộ chọn \"Operating system\" với hai lựa chọn \"macOS / Linux\" (mặc định) và \"Windows\". Với macOS / Linux, block claude_desktop_config.json là mcpServers.teeinblue với command \"npx\" và args [\"-y\", \"mcp-remote\", <endpoint>, \"--header\", \"Authorization: Bearer <YOUR_MCP_TOKEN>\"]; với Windows, block giống hệt trừ đúng một dòng command là đường dẫn đầy đủ tới npx.cmd (backslash nhân đôi trong JSON). Ghi chú hiển thị: mở Settings > Developer > Edit Config hoặc sửa file trực tiếp (có đường dẫn file cho macOS và Windows), Claude Desktop kết nối qua stdio nên config bắc cầu tới server remote bằng mcp-remote (cần Node.js), lưu ý Windows về đường dẫn đầy đủ tới npx.cmd và backslash nhân đôi, và khởi động lại Claude Desktop. Một lần xem mỗi lựa chọn hệ điều hành.",
+      "kb_refs": [
+        "KB-1607"
+      ]
+    },
+    {
+      "statement": "Khi chọn tab \"Codex\" trên /mcp ở merchant-owner/staging/account explorer, quan sát thấy block ~/.codex/config.toml dạng [mcp_servers.teeinblue] với url và http_headers = {Authorization = \"Bearer <YOUR_MCP_TOKEN>\"}.",
+      "kb_refs": [
+        "KB-1608"
+      ]
+    },
+    {
+      "statement": "Khi xem phần cấu hình client trên /mcp ở merchant-owner/staging/account explorer (chưa Generate token), quan sát thấy dòng \"Generate a token above to fill this in automatically.\" và config vẫn hiển thị placeholder <YOUR_MCP_TOKEN>. Việc placeholder được thay bằng token sau khi Generate chưa được thực hiện nên không quan sát được.",
+      "kb_refs": [
+        "KB-1609"
+      ]
+    },
+    {
+      "statement": "Khi bấm \"Manage all tokens →\" trên /mcp ở merchant-owner/staging/account explorer, quan sát thấy trang /api-keys với breadcrumb \"Home / Api keys\", heading \"API Keys\", link \"API Docs\", nút \"Create new key\" (enabled, không bấm), ô tìm kiếm, bảng cột NAME / ABILITIES / LAST USED / EXPIRES / CREATED / ACTION, select số dòng mỗi trang, footer \"Showing 1 to 1 of 1 entries\" và action dòng là icon thùng rác (không bấm). Khi tải trang, portal gọi GET /api/tokens/abilities và GET /api/tokens (cả hai 200).",
+      "kb_refs": [
+        "KB-1610"
+      ]
+    },
+    {
+      "statement": "Khi xem bảng /api-keys ở merchant-owner/staging/account explorer, quan sát thấy dòng token duy nhất hiện các badge ability orders:read, orders:write, campaigns:read, campaigns:write, products:read, customizations:read, assets:write, assets:read, mcp:access; cột EXPIRES hiện \"Never\"; giá trị token không hiển thị. Một dòng token: không suy ra số ability bắt buộc hay token nào cũng có đủ các ability này.",
+      "kb_refs": [
+        "KB-1611"
+      ]
+    },
+    {
+      "statement": "Khi portal tải /mcp và /api-keys ở merchant-owner/staging/account explorer, quan sát thấy GET /api/tokens trả {data:[{id, name, abilities[], last_used_at, expires_at, created_at}], links, meta} theo kiểu phân trang Laravel (expires_at null ở dòng quan sát, ứng với \"Never\" trên UI) và GET /api/tokens/abilities trả {abilities:[9 chuỗi]}. Hai mẫu /api/tokens cùng một trạng thái dữ liệu, một mẫu /abilities; không suy nullability hay luật phân trang.",
+      "kb_refs": [
+        "KB-1613"
+      ]
+    },
+    {
+      "statement": "Khi gửi POST `{TIB_API_BASE}/mcp` với JSON-RPC initialize và tools/list, header Content-Type: application/json và Accept: application/json, text/event-stream nhưng không có header Authorization, ở staging/client ngoài trình duyệt, quan sát thấy cả hai request trả HTTP 401, content-type application/json, header www-authenticate `Bearer realm=\"mcp\", error=\"invalid_token\"` và body {\"message\":\"Unauthenticated.\"} — không phải object lỗi JSON-RPC (không có key jsonrpc/id/error). Hai request.",
+      "kb_refs": [
+        "KB-1614"
+      ]
+    },
+    {
+      "statement": "Khi gửi cùng hai request initialize và tools/list tới `{TIB_API_BASE}/mcp` với header Authorization là Bearer một chuỗi giả rõ ràng, ở staging/client ngoài trình duyệt, quan sát thấy response giống hệt trường hợp không có Authorization (KB-1614): 401, cùng giá trị www-authenticate, cùng body {\"message\":\"Unauthenticated.\"}. Trong các mẫu này thiếu token và token sai không được phân biệt ở mức HTTP; chưa thử token hết hạn, token thiếu mcp:access hay token hợp lệ.",
+      "kb_refs": [
+        "KB-1615"
+      ]
+    },
+    {
+      "statement": "Khi /mcp trả 401 cho các probe không token và token giả ở staging, quan sát thấy trong các header của response không có header x-ratelimit-* nào và không có mcp-session-id. Chỉ nói cho response 401; response đã xác thực chưa được quan sát nên không kết luận về rate limit hay session của MCP.",
+      "kb_refs": [
+        "KB-1616"
+      ]
+    },
+    {
+      "statement": "Khi chạy fetch POST `{TIB_API_BASE}/mcp` từ trong trang portal đã login ở merchant-owner/staging/account explorer (credentials include, có và không có X-XSRF-TOKEN) với initialize, tools/list, resources/list, prompts/list, quan sát thấy mọi lần gọi thất bại trong trình duyệt với \"TypeError: Failed to fetch\", trang không thấy HTTP status nào. Không biết được server có nhận cookie session portal hay không.",
+      "kb_refs": [
+        "KB-1617"
+      ]
+    },
+    {
+      "statement": "Khi gửi OPTIONS `{TIB_API_BASE}/mcp` với Origin là origin portal, Access-Control-Request-Method POST và Access-Control-Request-Headers content-type,x-xsrf-token ở staging, quan sát thấy HTTP 200, header allow \"GET,HEAD,POST,DELETE\", content-type text/html, body rỗng và không có header access-control-allow-origin hay access-control-allow-headers. GET và DELETE trên /mcp chưa được thử.",
+      "kb_refs": [
+        "KB-1618"
+      ]
+    },
+    {
+      "statement": "[CBS-163] Create ở /api-keys và Regenerate ở /mcp: POST /api/tokens 200, không key token; plain token hiện một lần kèm cảnh báo, reload không còn; Regenerate xoá token MCP cũ (DELETE /api/tokens/{id} 204) (TC-TIB-8587, build không ghi).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "mcp/mcp-client-connection#KB-1659"
+      ]
+    }
+  ],
+  "observed_validations": [
+    {
+      "input": "POST /mcp không có header Authorization (initialize, tools/list)",
+      "message_verbatim": "Unauthenticated.",
+      "observed_count": 2,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "KB-1614"
+      ]
+    },
+    {
+      "input": "POST /mcp với Authorization là Bearer một chuỗi giả (initialize, tools/list)",
+      "message_verbatim": "Unauthenticated.",
+      "observed_count": 2,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "KB-1615"
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "statement": "Server trả 401 cho request không token và token giả; chưa quan sát token hết hạn, token thiếu mcp:access (401 hay 403) hay token hợp lệ.",
+      "kb_refs": [
+        "KB-1614",
+        "KB-1615"
+      ]
+    },
+    {
+      "statement": "Role merchant-owner xem được /mcp và /api-keys; role staff khác, account khác chưa quan sát.",
+      "kb_refs": [
+        "KB-1601",
+        "KB-1610"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      {
+        "path": "/mcp (sidebar AI Assistant (MCP))",
+        "note": "Card token, card endpoint/header, ba tab config client.",
+        "kb_refs": [
+          "KB-1601",
+          "KB-1602",
+          "KB-1603",
+          "KB-1605",
+          "KB-1606",
+          "KB-1607",
+          "KB-1608",
+          "KB-1609"
+        ]
+      },
+      {
+        "path": "/api-keys",
+        "note": "Bảng token với cột ABILITIES, EXPIRES; đích của Manage all tokens.",
+        "kb_refs": [
+          "KB-1610",
+          "KB-1611"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "method": "GET",
+        "path": "/api/tokens",
+        "note": "Portal gọi khi tải /mcp và /api-keys; shape {data[], links, meta}.",
+        "kb_refs": [
+          "KB-1604",
+          "KB-1613"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/api/tokens/abilities",
+        "note": "Portal gọi khi tải /api-keys; trả {abilities:[9 chuỗi]}.",
+        "kb_refs": [
+          "KB-1610",
+          "KB-1613"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/mcp",
+        "note": "401 cho request không token và token giả; response đã xác thực chưa quan sát.",
+        "kb_refs": [
+          "KB-1614",
+          "KB-1615",
+          "KB-1616"
+        ]
+      },
+      {
+        "method": "OPTIONS",
+        "path": "/mcp",
+        "note": "200, allow GET,HEAD,POST,DELETE, không có CORS header cho origin portal.",
+        "kb_refs": [
+          "KB-1618"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "entity": "token của account (name, abilities, last_used_at, expires_at, created_at)",
+        "note": "Chỉ shape; tên và ngày của token không ghi vào context.",
+        "kb_refs": [
+          "KB-1613",
+          "KB-1611"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "description": "Ranh giới phạm vi (không phải khẳng định hành vi): open-api/open-api-asset-upload thuộc object khác. Phần liên quan đã quan sát: mcp:access nằm cùng danh sách ability với các ability orders/campaigns/products/customizations/assets trên /api-keys; việc token dùng chung cho Open API và MCP chỉ là suy luận, server MCP có chỉ nhận mcp:access hay không chưa xác minh.",
+      "kb_refs": [
+        "KB-1611",
+        "KB-1612",
+        "KB-1613"
+      ]
+    },
+    {
+      "description": "Ranh giới phạm vi (không phải khẳng định hành vi): các tool của lớp artwork thuộc mcp/mcp-artwork-tools (FEAT-03), không thuộc profile này. Danh mục tool chưa quan sát nên không có thông tin về tool nào.",
+      "kb_refs": [
+        "KB-1614",
+        "KB-1615"
+      ]
+    },
+    {
+      "description": "Ranh giới phạm vi (không phải khẳng định hành vi): image-library/image-layer-library là feature riêng; profile này chưa có evidence nào về tool layer image.",
+      "kb_refs": [
+        "KB-1614"
+      ]
+    },
+    {
+      "description": "Trang /mcp phụ thuộc GET /api/tokens khi tải, và link Manage all tokens dẫn tới trang /api-keys có nút Create new key.",
+      "kb_refs": [
+        "KB-1603",
+        "KB-1604",
+        "KB-1610",
+        "KB-1613"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "description": "Lộ token: card cảnh báo coi token như mật khẩu; config chứa Bearer token đặt trong file .mcp.json, claude_desktop_config.json, config.toml. Chưa biết token Generate có hạn dùng hay giới hạn ability.",
+      "kb_refs": [
+        "KB-1603",
+        "KB-1606",
+        "KB-1607",
+        "KB-1608",
+        "KB-1611"
+      ]
+    },
+    {
+      "description": "Token mang cả ability Open API và mcp:access trên dòng quan sát; nếu một token dùng chung được cho cả hai bề mặt thì phạm vi quyền rộng hơn mục đích MCP (suy luận).",
+      "kb_refs": [
+        "KB-1611",
+        "KB-1612"
+      ]
+    },
+    {
+      "description": "Thiếu token và token sai trả response giống hệt ở mức HTTP; chưa biết token thiếu mcp:access hay hết hạn trả gì.",
+      "kb_refs": [
+        "KB-1614",
+        "KB-1615"
+      ]
+    },
+    {
+      "description": "Không kiểm được việc server nhận cookie session portal bằng fetch từ trình duyệt vì bị chặn; nguyên nhân CORS là suy luận.",
+      "kb_refs": [
+        "KB-1617",
+        "KB-1618",
+        "KB-1619"
+      ]
+    },
+    {
+      "description": "Chỉ một account, một trạng thái (1 token có sẵn), staging, chưa có token đã xác minh nên toàn bộ phía tool và response đã xác thực là khoảng trống.",
+      "kb_refs": [
+        "KB-1613",
+        "KB-1615"
+      ]
+    },
+    {
+      "description": "[CBS-163] Regenerate trên /mcp xoá token MCP cũ ngay: client đang dùng token cũ mất kết nối. Response tạo token không được lộ tokenable_id/tokenable_type/token hash.",
+      "kb_refs": [
+        "mcp/mcp-client-connection#KB-1658",
+        "mcp/mcp-client-connection#KB-1659"
+      ]
+    }
+  ],
+  "environment_differences": [],
+  "freshness": {
+    "observed_at": "2026-11-13"
+  },
+  "unknown_areas": [
+    {
+      "question": "Danh mục tool của MCP server (tools/list đã xác thực: tên, description, inputSchema, annotations), gồm nhóm layer image (upload/create/confirm/view/list) và nhóm artwork, là gì?",
+      "why_it_matters": "Không có danh mục thì không viết được check cho từng tool, không biết ranh giới với mcp/mcp-artwork-tools và không có oracle cho contract tool.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1614",
+        "KB-1615"
+      ],
+      "oq_id": "OQ-mcp-001"
+    },
+    {
+      "question": "initialize đã xác thực trả gì (protocolVersion, capabilities, serverInfo) và server có gửi instructions không?",
+      "why_it_matters": "Là bước đầu của mọi client; khác biệt protocolVersion hoặc instructions làm client lỗi kết nối mà không có expected để so.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1614"
+      ],
+      "oq_id": "OQ-mcp-002"
+    },
+    {
+      "question": "Khi request đã xác thực nhưng sai (method lạ, params sai, tool input sai), server trả lỗi JSON-RPC (jsonrpc/id/error) hay {message} như response 401?",
+      "why_it_matters": "Client MCP phân tích lỗi theo JSON-RPC; shape khác làm client hiển thị sai. 401 hiện không phải JSON-RPC nên chưa suy được.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1614",
+        "KB-1615"
+      ],
+      "oq_id": "OQ-mcp-003"
+    },
+    {
+      "question": "Token hết hạn, token đã xoá và token hợp lệ nhưng thiếu mcp:access trả status gì (401 hay 403, www-authenticate, body)?",
+      "why_it_matters": "Là ranh giới phân quyền của bề mặt; hai mẫu thiếu/giả đã giống hệt nên chưa biết server có phân biệt thiếu ability hay không. Rủi ro P1 về permission.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1615",
+        "KB-1612"
+      ],
+      "oq_id": "OQ-mcp-004"
+    },
+    {
+      "question": "MCP server có nhận cookie session portal (không Bearer) không, và việc không trả CORS header cho origin portal có chủ ý (MCP chỉ cho client ngoài trình duyệt) không?",
+      "why_it_matters": "Nếu nhận cookie thì có rủi ro CSRF/cross-origin; nếu chủ ý thì \"Failed to fetch\" từ portal là hành vi đúng, không phải bug.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1617",
+        "KB-1618",
+        "KB-1619"
+      ],
+      "oq_id": "OQ-mcp-005"
+    },
+    {
+      "question": "/mcp có rate limit không (giới hạn, header, response khi vượt)?",
+      "why_it_matters": "Response 401 không có header x-ratelimit-*; không biết giới hạn thì không thiết kế được check chống lạm dụng hay chịu tải cho tool tốn tài nguyên.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1616"
+      ],
+      "oq_id": "OQ-mcp-006"
+    },
+    {
+      "question": "Generate MCP token tạo token thế nào: chỉ ability mcp:access hay thêm ability khác, có hạn dùng, có hỏi tên, hiện một lần rồi tự điền vào config không? Mọi token có mcp:access (kể cả Create new key) có dùng được cho MCP không?",
+      "why_it_matters": "Quyết định phạm vi quyền của token và bước 1 của luồng kết nối; chưa bấm nên chưa có expected nào.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1603",
+        "KB-1609",
+        "KB-1611",
+        "KB-1612"
+      ],
+      "oq_id": "OQ-mcp-007"
+    },
+    {
+      "question": "Config Claude Desktop dùng npx mcp-remote (stdio bắc cầu) có phải cách kết nối chính thức không, khác biệt giữa macOS/Linux và Windows là gì, QA có cần kiểm kết nối thực từ Claude Desktop không?",
+      "why_it_matters": "Hai lựa chọn hệ điều hành chưa so sánh nội dung; cầu mcp-remote cần Node.js và là điểm lỗi riêng của client này.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1607"
+      ],
+      "oq_id": "OQ-mcp-008"
+    },
+    {
+      "question": "Role khác merchant-owner (staff, thành viên organization không phải owner) và account chưa có token nào: trang /mcp và /api-keys hiện gì (mục sidebar, nút Generate MCP token, Create new key, trạng thái rỗng)?",
+      "why_it_matters": "Mới quan sát merchant-owner trên account đã có sẵn một token mang mcp:access; quyền tạo token là ranh giới permission P1 và trạng thái rỗng chưa có expected.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1601",
+        "KB-1603",
+        "KB-1610"
+      ],
+      "oq_id": "OQ-mcp-010"
+    },
+    {
+      "question": "GET và DELETE trên /mcp (có trong header allow của preflight) dùng để làm gì (SSE stream, kết thúc session) và có thuộc phạm vi QA không?",
+      "why_it_matters": "Hai method chưa thử; nếu là kênh session/stream thì có hành vi xác thực và vòng đời riêng cần check.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1618"
+      ],
+      "oq_id": "OQ-mcp-009"
+    },
+    {
+      "question": "[CBS-163] POST /api/tokens 200 không key token, plain token hiện một lần, Regenerate xoá token MCP cũ (KB-1659) — Dev xác nhận là expected?",
+      "why_it_matters": "KB-1659 là OBSERVED_CURRENT/LOW; trả lời một phần OQ-mcp-007 (Generate chưa bấm ở bootstrap).",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "mcp/mcp-client-connection#KB-1659",
+        "mcp/mcp-client-connection#KB-1603"
+      ],
+      "draft_id": "OQ-mcp-030",
+      "oq_id": "OQ-mcp-030"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "account test, đã có sẵn 1 token mang mcp:access, chưa bấm Generate MCP token",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1601",
+        "KB-1602",
+        "KB-1603",
+        "KB-1605",
+        "KB-1606",
+        "KB-1607",
+        "KB-1608",
+        "KB-1609",
+        "KB-1610",
+        "KB-1611"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "account test, đã có sẵn 1 token mang mcp:access, chưa bấm Generate MCP token; GET /api/tokens, /api/tokens/abilities",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1604",
+        "KB-1613"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "layer": "api",
+      "role": "client MCP không xác thực",
+      "state": "không có token hợp lệ",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1614",
+        "KB-1615",
+        "KB-1616"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "layer": "api",
+      "role": "client ngoài trình duyệt, token mcp:access hợp lệ",
+      "state": "đã xác thực",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-1615"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "layer": "api",
+      "role": "token hết hạn hoặc thiếu mcp:access",
+      "state": "đã xác thực nhưng không đủ quyền",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-1615",
+        "KB-1612"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "sau khi Generate MCP token",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-1603",
+        "KB-1609"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "layer": "portal",
+      "role": "role staff khác merchant-owner",
+      "state": "chưa thử",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-1601"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "layer": "api",
+      "role": "client MCP không xác thực",
+      "state": "OPTIONS /mcp từ origin portal; fetch /mcp từ trang portal",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1617",
+        "KB-1618",
+        "KB-1619"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] tạo token ở /api-keys, Regenerate ở /mcp; response POST /api/tokens",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "mcp/mcp-client-connection#KB-1658",
+        "mcp/mcp-client-connection#KB-1659"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] tạo/regenerate token",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "mcp/mcp-client-connection#KB-1658"
+      ]
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from_feature_id": "FEAT-01-mcp-client-connection",
+      "to_feature_id": "mcp/mcp-artwork-tools (FEAT-03)",
+      "relationship": "scope boundary: tool của lớp artwork thuộc feature kia, không thuộc profile này",
+      "kb_refs": [
+        "KB-1614"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-mcp-client-connection",
+      "to_feature_id": "open-api/open-api-asset-upload",
+      "relationship": "scope boundary; liên quan đã quan sát: mcp:access cùng danh sách ability trên /api-keys (suy luận dùng chung token, chưa xác minh)",
+      "kb_refs": [
+        "KB-1611",
+        "KB-1612",
+        "KB-1613"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-mcp-client-connection",
+      "to_feature_id": "image-library/image-layer-library",
+      "relationship": "scope boundary: feature riêng, profile này chưa có evidence về tool layer image",
+      "kb_refs": [
+        "KB-1614"
+      ]
+    }
+  ]
+}

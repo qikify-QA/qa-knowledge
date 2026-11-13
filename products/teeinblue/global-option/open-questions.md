@@ -425,3 +425,18 @@ _Tổng hợp từ `kb.json` (conflicts, tagged qua `conflict_group`), `features
 ```json
 {"oq_id": "OQ-global-option-078", "type": "NEEDS_CONFIRMATION", "feature_id": "artwork-personalization-global-option-link", "summary": "Dev/PO xác nhận: một field/param duy nhất đặt giá trị cho mọi layer dùng chung Global Option, và khoá prefill khớp là title của layer (không phải tên quản lý GO)? CLAIM-12/KB-732 (TC-20 QA-3399, LOW): FACT-112 do AI suy từ FACT-111, chỉ kiểm GO Single-line Text, không trích được REQ-06 gốc; CHK-02-036. Người trả lời: Dev.", "kb_ids": ["KB-732"]}
 ```
+
+## CBS-141 — thumbnail item inline: chuột phải lấy ảnh và đổi thumbnail (TIB-5676)
+
+```json
+{"oq_id": "OQ-global-option-079", "type": "OPEN_ISSUE", "feature_id": "global-option-additional-option-items", "summary": "[CBS-141, KB-734] Chuột phải thumbnail item của Additional Option nguồn inline không bị lớp phủ \"Change thumbnail\" chặn thuộc TIB-5676, CCR khai chưa ship. Jira TIB-5676 đọc lại 2026-11-12 đã Done (resolution 2026-11-12, PR merged), nhưng mọi test case chạy 2026-11-11 trên bản trước khi PR merge, build hash không rõ. Cần CCR khai SHIPPED kèm lượt chạy trên bản đã ship để KB-734 lên expected; CHK-03-015 chưa có oracle. Người trả lời: QA; operator."}
+```
+```json
+{"oq_id": "OQ-global-option-080", "type": "NEEDS_CONFIRMATION", "feature_id": "global-option-additional-option-items", "summary": "[CBS-141, KB-734] PASS của TC-TIB-9010 là bằng chứng gián tiếp: chưa thấy menu native \"Save image as...\" và chưa mở file đã lưu cho thumbnail item inline; profile macOS là giả lập. Cần một lượt chạy tay trên Chrome, Edge, Firefox (Windows và Mac thật). Người trả lời: QA."}
+```
+```json
+{"oq_id": "OQ-global-option-081", "type": "OPEN_ISSUE", "feature_id": "global-option-additional-option-items", "summary": "[CBS-141, KB-734] Safari/macOS chưa kết luận: trên WebKit bản Windows giả lập Safari, chuột phải thumbnail item inline phát thêm click lên input của label và bật Library image picker (TC-TIB-9004). Nếu Safari thật cũng vậy, user Safari chuột phải sẽ bị bật picker. Cần kiểm trên Safari/Mac thật (CHK-03-016); nếu xảy ra thì Dev xác nhận có phải lỗi. Người trả lời: QA; Dev."}
+```
+```json
+{"oq_id": "OQ-global-option-082", "type": "NEEDS_CONFIRMATION", "feature_id": "global-option-additional-option-items", "summary": "[CBS-141, KB-735] Trên Additional Option nguồn inline, click trái \"Change thumbnail\" của item mở Library image picker (không mở hộp chọn file trực tiếp), ảnh phải upload vào Library rồi chọn, và thumbnail chỉ được lưu khi Save global option (PUT /api/global-options/{id}, item khác giữ nguyên) — đây có phải thiết kế không? Quan sát từ TC-TIB-9011 (Chrome/Windows, 2026-11-11), test case không có căn cứ expected và chính expected của case ghi chọn file trực tiếp. Liên quan OQ-global-option-033 (upload thumbnail cho item lẻ); quan sát này chưa đủ để đóng OQ đó. CHK-03-017 chỉ BASELINE. Người trả lời: Dev/PO."}
+```

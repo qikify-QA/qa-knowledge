@@ -556,6 +556,10 @@
       "surface": "storefront (photo upload có effect)",
       "brand": null
     },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-140"
+    },
     "tags": [
       "spec-hub:photo-upload-effect-rate-limit",
       "spec-hub:photo-upload-network-limit",
@@ -574,10 +578,6 @@
       "owner_role": "code (spec-hub reads teeinblue-api source)",
       "recorded_on": "2026-11-11",
       "locator": "spec-hub mcp__spec-hub__ask log_id=166 (re-ask log_id=199), rule id photo-upload-effect-rate-limit và photo-upload-network-limit (feature photo-upload)"
-    },
-    "last_updated": {
-      "date": "2026-11-11",
-      "ccr_ref": "CBS-140"
     }
   },
   {
@@ -591,6 +591,10 @@
       "role": "buyer (shopper upload ảnh); merchant-owner cấu hình remover/key ở Extra services",
       "surface": "storefront (xử lý ảnh shopper upload có effect)",
       "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-140"
     },
     "tags": [
       "spec-hub:image-effects-background-remover",
@@ -609,10 +613,107 @@
       "owner_role": "code (spec-hub reads teeinblue-api source)",
       "recorded_on": "2026-11-11",
       "locator": "spec-hub mcp__spec-hub__ask log_id=168 (re-ask log_id=197), rule id image-effects-background-remover và image-effects-needs-key (feature image-effects)"
+    }
+  },
+  {
+    "kb_id": "KB-1103",
+    "topic": "Đề xuất QA (TIB-5615-A3): Run effects với [Gemini] image filter có ref image rất lớn vẫn hoàn tất, layer được thay bằng ảnh đã lọc, đứng thẳng, giữ tỉ lệ",
+    "statement": "Theo đề xuất QA TIB-5615-A3 (QA, 2026-11-10; Testlane TC-TIB-8961 PASS staging 2026-11-10, build không ghi), khi merchant-owner bấm Run effects trong artwork editor trên Photo layer có effect [Gemini] image filter dùng ref image rất lớn (12000x12000), lượt chạy vẫn hoàn tất: POST /api/layer-images/effects trả 202, poll tới completed (khoảng 30 giây), layer được thay bằng layer image mới là kết quả đã lọc, đứng thẳng, giữ tỉ lệ; ảnh 6000x4000 trên box layer 630x420 cho kết quả 2528x1696 (tỉ lệ theo rule tỉ lệ Gemini sdk/genai-personalization-runtime#KB-569, PROPOSED). Expected là suy luận QA: QA plan Dev #56741 không có mục Run effects, comment #56735 chỉ liệt kê ApplyLayerImageEffectsJob trên image-effect-queue, không nói job này gọi applyImageFilter(). Chưa phải expected đã xác nhận.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal artwork editor, Photo layer, nút Run effects",
+      "brand": null
     },
     "last_updated": {
-      "date": "2026-11-11",
-      "ccr_ref": "CBS-140"
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-153"
+    },
+    "tags": [
+      "run-effects",
+      "gemini",
+      "ref-image",
+      "large-image",
+      "proposed",
+      "TIB-5615",
+      "ccr:CBS-153"
+    ],
+    "related_kb_ids": [
+      "artwork/run-image-effects#KB-803",
+      "artwork/run-image-effects#KB-804",
+      "artwork/run-image-effects#KB-807",
+      "artwork/run-image-effects#KB-809",
+      "sdk/genai-personalization-runtime#KB-569"
+    ],
+    "qa_rule_ref": {
+      "code": "TIB-5615-A3",
+      "owner_role": "QA",
+      "recorded_on": "2026-11-10",
+      "locator": "CBS-153 CLAIM-09 (Statement), Testlane TC-TIB-8961 task TIB-323; giả định A3 của QA"
+    }
+  },
+  {
+    "kb_id": "KB-1119",
+    "topic": "Response của lượt chạy effect trên layer ảnh: status, error_message, layer_image; bỏ user_id",
+    "statement": "Theo Jira TIB-5689 comment 56448 Solution, bảng Portal hàng LayerImageController::effectsRun (Dev, 2026-11-04), response của lượt chạy effect trên layer ảnh là danh sách tường minh: status, error_message, layer_image (id, url, thumbnail, width, height); user_id của lượt chạy bị bỏ.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (Artwork editor) + portal API",
+      "brand": null
+    },
+    "tags": [
+      "response-contract",
+      "run-effects",
+      "TIB-5689",
+      "ccr:CBS-163"
+    ],
+    "related_kb_ids": [
+      "artwork/run-image-effects#KB-803",
+      "artwork/run-image-effects#KB-1120"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5689 comment 56448 Solution, bảng Portal hàng LayerImageController::effectsRun (Dev, 2026-11-04)",
+      "authored_on": "2026-11-04",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-163"
+    }
+  },
+  {
+    "kb_id": "KB-1120",
+    "topic": "Quan sát: Run effects tới khi xong, layer nhận ảnh kết quả; response lượt chạy có status, layer_image, không user_id",
+    "statement": "Khi bấm Run effects trên một Photo layer trong artwork editor và chờ tới khi lượt chạy xong ở merchant-owner/staging (Testlane TC-TIB-8597 PASS 2026-11-07, build không ghi), quan sát thấy layer trên canvas nhận ảnh kết quả; response trạng thái của lượt chạy khi xong có status và layer_image (id, url, thumbnail, width, height), không có user_id. Một lượt chạy; chưa phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal (Artwork editor) + portal API",
+      "brand": null
+    },
+    "tags": [
+      "response-contract",
+      "run-effects",
+      "observed",
+      "single-sample",
+      "TIB-5689",
+      "ccr:CBS-163"
+    ],
+    "related_kb_ids": [
+      "artwork/run-image-effects#KB-1119",
+      "artwork/run-image-effects#KB-803"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "CBS-163"
     }
   }
 ]

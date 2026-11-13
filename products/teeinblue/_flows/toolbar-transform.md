@@ -95,6 +95,7 @@ Toolbar nằm trên canvas, mỗi item là `div.qte-field`, accessible name hầ
 ## HD
 
 - Static-photo, clipart-category: `.qte-field.qte-field--no-separator.ml-auto > button.hd-btn` (`span.hd-btn__label` "HD"). Chưa bật: class `hd-btn v-popper--has-tooltip`, không aria-pressed; JSON không có key hd. 2 bản trong DOM (1 ẩn) ⇒ lọc `offsetParent`.
+- Bật HD trên Static Image: editor gọi `POST /api/layer-images/create-master-large/batch {urls:[<_large.webp>]}` → trả `statuses{url: pending|ready}`, editor poll khoảng 2.4s/lần; toast `Converting to HD...` → `HD layer is ready.` Sau Save, layer `url` đổi sang `<hash>_master_large.webp` và `use_hd_layer: true`. File image-layer công khai đọc ở `https://cdn.ownego.com/teeinblue-staging/<key>` (cdnx-staging/r2 không dùng cho image-layers).
 
 ## Print Effects / Emboss
 

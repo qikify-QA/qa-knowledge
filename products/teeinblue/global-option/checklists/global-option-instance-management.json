@@ -1147,6 +1147,41 @@
       "automation_suitability": "UNKNOWN",
       "observation_guidance": "KB-729 (TC-49 QA-3345 2026-09-07, LOW) quan sat chan cung bang modal 'Caution: Option is in use' (chi View artworks/Close). Dang TRANH CHAP voi ghi chu tu-unlink cu; teeinblue khong auto-supersede -> oracle NONE, giu NEEDS_CONFIRMATION toi khi Dev quyet (OQ-global-option-075). Khong coi ten modal/N/nhan nut la text chuan.",
       "oq_id": "OQ-global-option-075"
+    },
+    {
+      "check_id": "CHK-01-033",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-150] Preview Global Option Clipart Category (màn tạo và màn sửa): chọn clipart thì ảnh large mang ?v=<version của category>",
+      "applicability": {
+        "role": "merchant-owner — account explorer, store explorer",
+        "state": "Global Option kiểu Clipart Category dùng category có version",
+        "environment": "staging; ghi build portal và ngày chạy",
+        "surface_or_device": "portal /global-options/create/clipart-category và /global-options/{id}/edit + DevTools Network, desktop browser"
+      },
+      "precondition": "Store explorer trên staging (xác minh account theo explore playbook trước khi thao tác và sau mỗi lần login lại); fixture tự dựng trên store explorer, không dùng store/artwork/campaign/instance nêu trong CCR, Jira hay production. Clipart category throwaway có version (ghi v qua GraphQL) và ≥3 clipart.",
+      "steps": [
+        "/global-options → tạo Global Option kiểu Clipart Category, chọn category → ở khối Preview chọn lần lượt từng clipart, ghi các request `_large.webp`.",
+        "Save, mở trang /global-options/{id}/edit của GO vừa tạo → khối Preview chọn lại từng clipart, ghi các request `_large.webp`.",
+        "Ghi thêm: thumbnail ở Preview có hiển thị không (ghi lại, không thuộc expected); DOM Preview không có ảnh large."
+      ],
+      "observation_point": "Query v của request ảnh large khi chọn clipart trong Preview ở màn tạo và màn sửa.",
+      "expected_result": "Ở cả màn tạo và màn sửa, request ảnh large khi chọn clipart mang `?v=<version của category>`, không phải `?v=1`. Lệch = bug.",
+      "oracle": {
+        "kb_ids": [
+          "global-option/global-option-instance-management#KB-733"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork/artwork-live-preview-asset-load#KB-1087"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1342,7 +1377,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-131"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-150"
   }
 }

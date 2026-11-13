@@ -519,6 +519,116 @@
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-global-option-036",
       "observation_guidance": "Không khẳng định (oracle NONE): ghi lại nguồn, category, Default value và item storefront. TC-003 bị skip, chưa có oracle."
+    },
+    {
+      "check_id": "CHK-03-015",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-141] Chuột phải thumbnail item inline: ghi menu trình duyệt và file lưu ra",
+      "applicability": {
+        "role": "owner (account explorer theo account_guard của product)",
+        "state": "Global Option Additional Option nguồn inline trên store explorer, các item có thumbnail",
+        "environment": "staging, bản đã ship TIB-5676; ghi build và ngày chạy",
+        "surface_or_device": "portal /global-options/<id>/edit; Chrome, Edge, Firefox trên Windows và macOS thật (Safari xem CHK-03-016)"
+      },
+      "precondition": "Đăng nhập account explorer, xác minh account theo account_guard của product trước khi thao tác. Fixture tự dựng trên store explorer ở staging: một Global Option loại Additional Option nguồn inline (\"Create new\") có vài item, mỗi item có thumbnail ảnh màu đặc khác nhau. Không dùng store/global option nêu trong CCR hay production.",
+      "steps": [
+        "Mở trang edit của global option fixture.",
+        "Hover thumbnail một item; ghi lớp phủ \"Change thumbnail\" có hiện không.",
+        "Chuột phải thumbnail; ghi menu có mục lưu ảnh không, Library image picker có bật không.",
+        "Lưu ảnh; mở file, ghi kích thước, màu; lặp với item khác để xem có đúng item được bấm không.",
+        "Ghi trình duyệt, hệ điều hành, build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Menu chuột phải native; Library image picker (bật hay không); file đã lưu.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-global-option-079",
+      "related_kb_ids": [
+        "global-option/global-option-additional-option-items#KB-734"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-global-option-079"
+    },
+    {
+      "check_id": "CHK-03-016",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[CBS-141] Safari/macOS: chuột phải và Control-click thumbnail item inline, ghi menu và Library image picker",
+      "applicability": {
+        "role": "owner (account explorer theo account_guard của product)",
+        "state": "Global Option Additional Option nguồn inline trên store explorer, các item có thumbnail",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "Safari trên macOS thật"
+      },
+      "precondition": "Đăng nhập account explorer, xác minh account theo account_guard của product trước khi thao tác. Fixture tự dựng trên store explorer ở staging: một Global Option loại Additional Option nguồn inline (\"Create new\") có vài item, mỗi item có thumbnail ảnh màu đặc khác nhau. Không dùng store/global option nêu trong CCR hay production.",
+      "steps": [
+        "Mở trang edit của global option fixture trên Safari (macOS thật).",
+        "Chuột phải (two-finger click) thumbnail item; ghi menu có \"Save Image As…\" không và Library image picker có bật không.",
+        "Lặp lại bằng Control-click.",
+        "Ghi phiên bản Safari, macOS, build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Menu chuột phải; Library image picker với mỗi cách bấm.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-global-option-081",
+      "related_kb_ids": [
+        "global-option/global-option-additional-option-items#KB-734"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-global-option-081"
+    },
+    {
+      "check_id": "CHK-03-017",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "[CBS-141] Đổi thumbnail một item inline qua Library image picker, chỉ lưu khi Save global option",
+      "applicability": {
+        "role": "owner (account explorer theo account_guard của product)",
+        "state": "Global Option Additional Option nguồn inline trên store explorer, các item có thumbnail",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /global-options/<id>/edit + network; Chrome"
+      },
+      "precondition": "Đăng nhập account explorer, xác minh account theo account_guard của product trước khi thao tác. Fixture tự dựng trên store explorer ở staging: một Global Option loại Additional Option nguồn inline (\"Create new\") có vài item, mỗi item có thumbnail ảnh màu đặc khác nhau. Không dùng store/global option nêu trong CCR hay production.",
+      "steps": [
+        "Hover thumbnail một item, click trái \"Change thumbnail\"; ghi cái gì mở ra (Library image picker hay hộp chọn file).",
+        "Upload một ảnh khác màu vào Library trong picker, chọn ảnh, bấm Select; ghi thumbnail item trên form.",
+        "Tải lại trang trước khi Save (trên một item khác hoặc lượt riêng); ghi thumbnail có giữ không.",
+        "Lặp lại rồi bấm Save; ghi request PUT /api/global-options/{id} (status, thumbnail của item đổi và các item khác).",
+        "Tải lại trang; ghi thumbnail các item."
+      ],
+      "observation_point": "Picker mở ra; network PUT /api/global-options/{id}; thumbnail các item trước/sau Save và reload.",
+      "expected_result": "Baseline theo test case QA chạy bằng AI (2026-11-11, chưa có nguồn expected): click trái mở Library image picker, không mở hộp chọn file trực tiếp; thumbnail chỉ được lưu khi Save global option, PUT /api/global-options/{id} trả 200 mang thumbnail mới của item đó, item khác giữ nguyên, thumbnail mới còn sau reload. Lệch thì điều tra, chưa phải bug.",
+      "oracle": {
+        "kb_ids": [
+          "global-option/global-option-additional-option-items#KB-735"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-global-option-082",
+      "related_kb_ids": [
+        "global-option/global-option-additional-option-items#KB-735",
+        "global-option/global-option-additional-option-items#KB-041"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-global-option-082"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -588,6 +698,16 @@
       "check_ids": [],
       "coverage_status": "GAP",
       "note": "Mọi check chỉ áp staging store non-Plus, layer portal/storefront (profile unknown_areas[1], OPEN_ISSUE). Khi có evidence, chạy lại trên store Plus/production và bổ sung check api."
+    },
+    {
+      "feature_id": "FEAT-03-global-option-additional-option-items",
+      "capability": "[CBS-141] Lấy ảnh và đổi thumbnail của một item inline",
+      "check_ids": [
+        "CHK-03-015",
+        "CHK-03-016",
+        "CHK-03-017"
+      ],
+      "coverage_status": "GAP_NEEDS_CONFIRMATION (CHK-03-017 BASELINE)"
     }
   ],
   "excluded_dimensions": [
@@ -605,7 +725,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-141"
   }
 }

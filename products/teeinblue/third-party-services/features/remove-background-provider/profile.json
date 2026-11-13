@@ -1,0 +1,765 @@
+{
+  "feature_id": "FEAT-01-choose-background-remover-provider",
+  "feature_key": "remove-background-provider",
+  "name": "Chọn dịch vụ xoá nền (background remover provider) và trạng thái deprecation Remove.BG",
+  "user_goal": "Merchant-owner chọn ở cấp account dịch vụ xoá nền sẽ xử lý photo effect Remove background, và nhìn thấy provider nào đang có, provider nào đang bị deprecate/ẩn (Remove.BG) trên tab Remove Background của trang 3rd-party Services.",
+  "user_goal_kb_refs": [
+    "KB-1501",
+    "KB-1502",
+    "KB-1506"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner",
+      "permission_observed": "Xem được /extras/extra-services và tab Remove Background; nút Save hiển thị enabled (không bấm). Role staff khác chưa thử.",
+      "kb_refs": [
+        "KB-1531",
+        "KB-1501",
+        "KB-1504"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Sidebar > Extras > 3rd-party Services (/extras/extra-services) > tab Remove Background",
+      "precondition": "Đã login portal staging bằng account explorer (merchant-owner) và đã xác minh account theo account_guard. Chỉ xem, không bấm radio/Save trên account này; kiểm thử ghi cần account test riêng. Hành vi trước/sau shutdown Remove.BG phụ thuộc mốc shutdown: trước mốc test bình thường nhưng staging hiện compile mốc đã qua; sau mốc chỉ dựng được khi Dev đặt mốc giả lập, rebuild portal, tạm dừng job hằng giờ và tự chạy migration (xem environment_differences[0], KB-1546); production trước 1 Dec 2026 9:00 CET không test được.",
+      "kb_refs": [
+        "KB-1519",
+        "KB-1520"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Xem danh sách provider xoá nền",
+      "description": "Tab Remove Background render heading \"Remove Background Service\", nhãn chọn remover và 4 radio background_remover_name: Removal.AI (badge Recommended), Cutout.pro, ImagenHub, Teeinblue; notice về remover built-in; không có tooltip trên badge/nhãn.",
+      "kb_refs": [
+        "KB-1501",
+        "KB-1503",
+        "KB-1505"
+      ]
+    },
+    {
+      "name": "Xem provider đang chọn ở cấp account",
+      "description": "Radio đang chọn khớp private_config.background_remover_name trong GET /api/user; lựa chọn là của account, áp dụng cho mọi store của account.",
+      "kb_refs": [
+        "KB-1502",
+        "KB-1519",
+        "KB-1522"
+      ]
+    },
+    {
+      "name": "Lưu lựa chọn provider (Save)",
+      "description": "Có một nút Save riêng dưới danh sách provider (enabled). Chỉ quan sát sự hiện diện; request lưu, phản hồi và validation chưa quan sát.",
+      "kb_refs": [
+        "KB-1504"
+      ]
+    },
+    {
+      "name": "Nhận biết trạng thái deprecation/vắng mặt của Remove.BG",
+      "description": "Trên staging sau mốc shutdown, Remove.BG không render (không radio, badge, notice, ô key). Bundle staging đang ship định nghĩa option Remove.BG disabled với badge \"Deprecate in Dec 1\", notice shutdown, ô key disabled và mốc VITE_REMOVE_BG_SHUTDOWN_AT; đây là quan sát mã đã build, không phải UI render.",
+      "kb_refs": [
+        "KB-1506",
+        "KB-1507",
+        "KB-1508",
+        "KB-1509"
+      ]
+    },
+    {
+      "name": "Option có trong bundle nhưng không render trên account explorer",
+      "description": "Bundle có option \"Teeinblue X Removal.AI\" (badge Premium & above) và hằng ngày HIDE_BACKGROUND_REMOVER_ACCOUNT (giá trị không đọc được); option không render trên account explorer. Toggle remove_bg_master_only có trong private_config và schema bundle nhưng không render ở tab này.",
+      "kb_refs": [
+        "KB-1511",
+        "KB-1512"
+      ]
+    },
+    {
+      "name": "Hành vi trước và sau shutdown Remove.BG (khoá option, chặn chuyển về, migration sang built-in)",
+      "description": "Trước mốc: Remove.BG badge Deprecate in Dec 1 và không click được (seller chưa dùng) hoặc đang chọn nhưng greyed out (seller đang ở Remove.BG), Save option kích thước gốc vẫn thành công, chuyển đi được nhưng không chuyển lại được, API từ chối chuyển sang Remove.BG. Từ mốc: Remove.BG biến mất khỏi danh sách và box key, upload dùng remover built-in, migration Dev chạy (dry-run rồi force) chuyển seller sang Teeinblue và xoá key Remove.bg. Hành vi sau mốc chỉ verify trên staging với mốc giả lập; production chưa tới mốc.",
+      "kb_refs": [
+        "KB-1533",
+        "KB-1534",
+        "KB-1535",
+        "KB-1536",
+        "KB-1537",
+        "KB-1538",
+        "KB-1539",
+        "KB-1540",
+        "KB-1541",
+        "KB-1542",
+        "KB-1543",
+        "KB-1544"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "Account đang dùng Remove.BG",
+      "to": "Account chuyển sang remover built-in Teeinblue",
+      "trigger": "Shutdown Remove.BG (theo notice: ngừng ngày 1 Dec 2026)",
+      "condition": "Notice trong bundle nêu ngừng 1 Dec 2026; Dev xác nhận (TIB-5399) migration do Dev chạy chuyển seller ở Remove.BG sang Teeinblue (KB-1542) và upload dùng remover built-in từ đúng mốc (KB-1540). Chỉ sau mốc; staging cần mốc giả lập, production chưa verify. Thời điểm/tần suất job hằng giờ và biến phía API chưa rõ.",
+      "kb_refs": [
+        "KB-1508",
+        "KB-1540",
+        "KB-1542"
+      ]
+    },
+    {
+      "from": "Seller đang ở Remove.BG (trước mốc shutdown)",
+      "to": "Seller ở provider khác",
+      "trigger": "Seller chọn provider khác và Save",
+      "condition": "Từ khi deploy, chuyển đi được bất kỳ lúc nào; không chuyển lại Remove.BG được, API từ chối cả yêu cầu ngoài portal (Dev).",
+      "kb_refs": [
+        "KB-1536",
+        "KB-1538"
+      ]
+    },
+    {
+      "from": "Seller đang ở Remove.BG hoặc ở Removal.AI còn key Remove.bg",
+      "to": "Teeinblue (từ Remove.BG) / giữ Removal.AI (key Remove.bg bị xoá)",
+      "trigger": "Migration chạy thật (force) do Dev chạy",
+      "condition": "Chỉ sau mốc shutdown; staging cần mốc giả lập, production chưa verify. Dry-run không đổi gì; chạy lại khi hết seller ở Remove.BG không đổi gì.",
+      "kb_refs": [
+        "KB-1541",
+        "KB-1542",
+        "KB-1544"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Trước mốc shutdown Remove.BG, với seller chưa từng dùng Remove.BG: option Remove.BG trên tab Remove Background hiển thị badge \"Deprecate in Dec 1\" và không click được (Dev, TIB-5399).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1533"
+      ]
+    },
+    {
+      "statement": "Trước mốc shutdown, với seller đang ở Remove.BG: option Remove.BG hiển thị đang được chọn nhưng greyed out (Dev, TIB-5399).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1534"
+      ]
+    },
+    {
+      "statement": "Trước mốc shutdown, seller đang ở Remove.BG bật/tắt option \"Use the photo's original size…\" rồi Save thì lưu thành công và provider vẫn là Remove.BG (Dev).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1535"
+      ]
+    },
+    {
+      "statement": "Từ khi deploy (trước 1 Dec), seller đang ở Remove.BG chuyển được sang provider khác bất kỳ lúc nào nhưng không chuyển lại Remove.BG được (Dev).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1536"
+      ]
+    },
+    {
+      "statement": "Trước mốc shutdown, buyer upload ảnh vào layer photo có Remove background trên store của seller đang ở Remove.BG: nền được xoá bởi remove.bg như trước (Dev).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1537"
+      ]
+    },
+    {
+      "statement": "Từ khi deploy (trước 1 Dec), API từ chối mọi yêu cầu chuyển seller sang Remove.BG, kể cả yêu cầu gửi ngoài portal (Dev). Mã HTTP/message từ chối chưa được xác nhận.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1538"
+      ]
+    },
+    {
+      "statement": "[Chỉ sau mốc shutdown; staging: mốc giả lập do Dev đặt, production chưa verify] Remove.BG không còn trong danh sách provider và box key Remove.bg không còn (Dev).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1539"
+      ]
+    },
+    {
+      "statement": "[Chỉ sau mốc shutdown; staging: mốc giả lập, production chưa verify] Upload có Remove background của seller còn ở Remove.BG dùng remover built-in Teeinblue ngay từ đúng mốc, không gián đoạn, seller không phải làm gì (Dev).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1540"
+      ]
+    },
+    {
+      "statement": "[Chỉ sau mốc shutdown; staging: mốc giả lập, production chưa verify] Migration seller khỏi Remove.BG (Dev chạy) ở dry-run liệt kê seller còn ở Remove.BG và seller ở provider khác còn lưu key Remove.bg, không thay đổi gì (Dev).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1541"
+      ]
+    },
+    {
+      "statement": "[Chỉ sau mốc shutdown; staging: mốc giả lập, production chưa verify] Migration chạy thật (force): seller ở Remove.BG chuyển thành Teeinblue và key Remove.bg bị xoá; seller ở Removal.AI còn key Remove.bg giữ Removal.AI và key Remove.bg bị xoá; seller chưa từng dùng Remove.BG không đổi (Dev).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1542"
+      ]
+    },
+    {
+      "statement": "[Chỉ sau mốc shutdown; staging: mốc giả lập, production chưa verify] Sau migration, seller từng ở Remove.BG thấy Teeinblue được chọn; option \"Use the photo's original size…\" không có cho remover built-in Teeinblue (Dev).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1543"
+      ]
+    },
+    {
+      "statement": "[Chỉ sau mốc shutdown; staging: mốc giả lập, production chưa verify] Chạy lại migration khi không còn seller nào ở Remove.BG: output \"No sellers left on remove.bg\", không thay đổi gì (Dev).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1544"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Khi mở tab Remove Background của trang 3rd-party Services ở merchant-owner/staging/account explorer (provider đã lưu teeinblue), quan sát thấy heading \"Remove Background Service\", nhãn \"Choose a background remover service:\" và đúng 4 radio name background_remover_name theo thứ tự: Removal.AI (value removal.ai, kèm badge \"Recommended\"), Cutout.pro (cutout.pro), ImagenHub (imagenhub), Teeinblue (teeinblue). Cả 4 radio đều enabled, Teeinblue đang được chọn. Không có radio Remove.BG trên trang render. Lặp lại nhất quán qua 4 lần xem tab trong cùng một trạng thái account; radio không được click.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1501"
+      ]
+    },
+    {
+      "statement": "Khi đọc GET /api/user ở merchant-owner/staging/account explorer, quan sát thấy private_config.background_remover_name = \"teeinblue\" (string), khớp với radio Teeinblue đang được chọn trên tab Remove Background; lựa chọn provider nằm ở cấp account (private_config của user), không theo store. Hai lần đọc /api/user cho cùng giá trị; chỉ một trạng thái account, chưa quan sát giá trị khác và chưa suy enum từ đây.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1502"
+      ]
+    },
+    {
+      "statement": "Khi xem tab Remove Background ở merchant-owner/staging/account explorer với provider đã lưu Teeinblue, quan sát thấy notice màu cam có icon cảnh báo dưới danh sách provider, nguyên văn: \"Teeinblue’s built-in background remover may not perform as accurately as paid services like Removal.AI.\" Notice lặp lại ở mọi lần xem tab; notice có đổi theo provider được chọn hay không chưa thử (radio không được click).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "KB-1503"
+      ]
+    },
+    {
+      "statement": "Khi xem tab Remove Background ở merchant-owner/staging/account explorer, quan sát thấy một nút Save (class promise-button btn-primary, enabled) ngay dưới danh sách provider, tách khỏi nút Save của ô key Removal.AI. Nút không được bấm (read-only policy), nên request lưu provider (dự kiến PUT /api/user/private-config theo phạm vi run) và phản hồi/validation khi lưu chưa được quan sát.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1504"
+      ]
+    },
+    {
+      "statement": "Khi hover badge \"Recommended\" và nhãn của từng provider (Removal.AI, Cutout.pro, ImagenHub, Teeinblue) ở merchant-owner/staging/account explorer, quan sát thấy không có tooltip/popover nào xuất hiện; cạnh notice Teeinblue không có icon info. Một lần hover.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1505"
+      ]
+    },
+    {
+      "statement": "Khi mở tab Remove Background ở merchant-owner/staging/account explorer ngày 2026-11-13, quan sát thấy không có radio Remove.BG, không có badge \"Deprecate in Dec 1\", không có notice shutdown, không có ô key Remove.bg; tìm (không phân biệt hoa thường) trong text tab và HTML trang các chuỗi Remove.BG, remove.bg, removebg, Deprecate, Dec 1, shutdown, original size, master đều không thấy. Một lần tìm chuỗi; khớp với KB-1501 ở các lần xem khác.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1506"
+      ]
+    },
+    {
+      "statement": "Khi đọc bundle JS portal staging đang ship (index.BFb_gCqw.js) ở merchant-owner/staging ngày 2026-11-13 — quan sát mã nguồn đã build, KHÔNG phải UI render — quan sát thấy danh sách option provider xoá nền gồm: Removal.AI (badge \"Recommended\"), Remove.BG (badge \"Deprecate in Dec 1\", disabled: true), Cutout.pro, \"Teeinblue X Removal.AI\" (badge \"Premium & above\"), ImagenHub, Teeinblue; và map provider → field key: remove.bg → remove_bg_api_key, removal.ai → removal_ai_api_key, cutout.pro → cutout_pro_api_key, imagenhub → imagenhub_api_key. Bundle cũng có danh sách giá trị removal.ai, remove.bg, cutout.pro gắn với phần hiển thị section key. Option Remove.BG disabled và badge chưa từng được thấy render (KB-1506).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1507"
+      ]
+    },
+    {
+      "statement": "Khi đọc bundle JS portal staging đang ship (index.BFb_gCqw.js) ngày 2026-11-13 — quan sát mã nguồn đã build, KHÔNG phải UI render — quan sát thấy chuỗi notice nguyên văn: \"Remove.BG is shutting down on 1 Dec 2026. It will keep working until then; after that, accounts still on it are automatically switched to the built-in Teeinblue remover. The API key below can no longer be added, edited, or removed.\", theo sau là một ô text disabled có tiêu đề \"Remove.bg API key\" (name remove_bg_api_key). Notice và ô key này chưa từng thấy render trên trang staging; việc tự chuyển account sang Teeinblue mà notice nêu chưa được quan sát.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1508"
+      ]
+    },
+    {
+      "statement": "Khi đọc bundle JS portal staging đang ship (index.BFb_gCqw.js) ngày 2026-11-13 — quan sát mã nguồn đã build, KHÔNG phải UI render — quan sát thấy hằng env compile VITE_REMOVE_BG_SHUTDOWN_AT = \"2026-11-01T00:00:00Z\", expose thành config REMOVE_BG_SHUTDOWN_AT. Giá trị staging 2026-11-01 khác với \"1 Dec 2026\" trong chuỗi notice (KB-1508) — đây là ghi nhận quan sát, không phải conflict. Mốc của production chưa quan sát. Cách code dùng hằng này để lọc option ở KB-1510 (suy luận).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1509"
+      ]
+    },
+    {
+      "statement": "Khi đọc bundle JS portal staging đang ship (index.BFb_gCqw.js) ngày 2026-11-13 — quan sát mã nguồn đã build, KHÔNG phải UI render — quan sát thấy option provider \"Teeinblue X Removal.AI\" (value teeinblue_x_removal.ai, badge \"Premium & above\") và một hằng ngày HIDE_BACKGROUND_REMOVER_ACCOUNT (giá trị không đọc chính xác được vì snippet bị che một phần). Trên trang render của account explorer, option \"Teeinblue X Removal.AI\" không xuất hiện (KB-1501). Cách code dùng hằng này ở KB-1532 (suy luận).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1511"
+      ]
+    },
+    {
+      "statement": "Khi đọc GET /api/user và xem tab Remove Background ở merchant-owner/staging/account explorer (provider đã lưu teeinblue), quan sát thấy private_config.remove_bg_master_only = false (boolean) nhưng tab Remove Background không có control hay chữ nào gắn với nó (không có option \"Use the photo's original size...\"). Bundle JS staging (quan sát mã nguồn đã build, KHÔNG phải UI render) định nghĩa trong schema Remove Background một toggle name remove_bg_master_only, heading \"Use the photo's original size for both Preview & Production file\", đặt sau radio provider; điều kiện render (ví dụ theo provider) chưa đọc được. Checkbox có chữ gần giống \"Use the photo's original size for both Preview & Production file (for FaceCutout)\" thuộc tab Cutout.Pro (xem item object-level), không phải toggle này.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1512"
+      ]
+    },
+    {
+      "statement": "Khi chạy test case TC-TIB-9033 ở merchant-owner (và buyer cho vế upload)/staging ngày 2026-11-10, trước mốc shutdown, không ghi build, quan sát (case PASS): Removal.AI, Cutout.pro, Teeinblue vẫn chọn được, Save và giữ lựa chọn sau reload; ô key Removal.AI và Cutout.pro sửa được; upload có Remove background với provider Teeinblue và Removal.AI vẫn xoá được nền. Chưa có PO/Dev xác nhận đây là expected.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "KB-1545"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "statement": "Role merchant-owner xem được trang và tab Remove Background; nút Save enabled (không bấm). Role staff khác, account/store khác chưa quan sát.",
+      "kb_refs": [
+        "KB-1531",
+        "KB-1504"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      {
+        "path": "/extras/extra-services > tab Remove Background",
+        "note": "Heading, 4 radio background_remover_name, notice Teeinblue built-in, nút Save riêng.",
+        "kb_refs": [
+          "KB-1519",
+          "KB-1501",
+          "KB-1503",
+          "KB-1504"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "method": "GET",
+        "path": "/api/user",
+        "note": "private_config.background_remover_name (string) và remove_bg_master_only (boolean); không có field shutdown/deprecation. Đổi tab không phát request.",
+        "kb_refs": [
+          "KB-1502",
+          "KB-1512",
+          "KB-1522",
+          "KB-1520"
+        ]
+      },
+      {
+        "method": "PUT",
+        "path": "/api/user/private-config (dự kiến theo phạm vi run, chưa quan sát)",
+        "note": "Request lưu provider không được quan sát vì không bấm Save.",
+        "kb_refs": [
+          "KB-1504"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "path": "private_config của user (cấp account)",
+        "note": "background_remover_name, remove_bg_master_only; một trạng thái account.",
+        "kb_refs": [
+          "KB-1502",
+          "KB-1522"
+        ]
+      }
+    ],
+    "code": [
+      {
+        "path": "portal staging bundle index.BFb_gCqw.js",
+        "note": "Danh sách option provider (Removal.AI, Remove.BG disabled, Cutout.pro, Teeinblue X Removal.AI, ImagenHub, Teeinblue), map provider -> field key, danh sách giá trị gắn section key, notice shutdown, hằng VITE_REMOVE_BG_SHUTDOWN_AT, hằng HIDE_BACKGROUND_REMOVER_ACCOUNT, toggle remove_bg_master_only. Quan sát mã build, không phải UI render.",
+        "kb_refs": [
+          "KB-1507",
+          "KB-1508",
+          "KB-1509",
+          "KB-1511",
+          "KB-1512"
+        ]
+      }
+    ]
+  },
+  "dependencies": [
+    {
+      "description": "Ranh giới: lựa chọn remover cấp account được image effects dùng. Việc chạy effect Remove background trong editor và warning thiếu key thuộc artwork/run-image-effects (KB-816, KB-985); gắn effect vào layer photo thuộc artwork/layer-config-image; upload và apply effect của buyer thuộc sdk/storefront-buyer-facing. Không kiểm các feature đó ở đây.",
+      "kb_refs": [
+        "KB-1513"
+      ]
+    },
+    {
+      "description": "Feature anh em provider-api-keys: ô key của Removal.AI/Cutout.pro/ImagenHub, field key trong private_config, Save/Check credits. Map provider -> field key đọc từ bundle.",
+      "kb_refs": [
+        "KB-1507",
+        "KB-1522"
+      ]
+    },
+    {
+      "description": "Suy luận chưa được Dev xác nhận: hàm kiểm tra mốc và getValidOptions trong bundle lọc Remove.BG khi thời điểm không trước REMOVE_BG_SHUTDOWN_AT (KB-1510), và lọc Teeinblue X Removal.AI theo ngày tạo account (KB-1532). Chưa dùng làm hành vi quan sát hay oracle.",
+      "kb_refs": [
+        "KB-1510",
+        "KB-1532"
+      ]
+    },
+    {
+      "description": "Phía API cho migration seller khỏi Remove.BG và biến env REMOVE_BG_SHUTDOWN_AT (chỉ tên biến) chưa quan sát; cần Dev.",
+      "kb_refs": [
+        "KB-1508"
+      ]
+    },
+    {
+      "description": "Ranh giới: upload của buyer với layer photo Remove background trước mốc dùng remove.bg (seller ở Remove.BG) và từ mốc dùng remover built-in (KB-1537, KB-1540); việc chạy effect thuộc artwork/run-image-effects (KB-816, KB-985), không kiểm sâu ở đây. Ô key Remove.bg và việc xoá key khi migration liên quan provider-api-keys.",
+      "kb_refs": [
+        "KB-1537",
+        "KB-1540",
+        "KB-1542"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "description": "Chỉ một account, một trạng thái (provider teeinblue, key Removal.AI/Cutout.pro rỗng) trên staging. Không dùng làm expected khi chưa có nguồn thẩm quyền.",
+      "kb_refs": [
+        "KB-1501",
+        "KB-1502"
+      ]
+    },
+    {
+      "description": "Account đang lưu Remove.BG có thể gặp hành vi chuyển provider sau shutdown; chưa quan sát nên không có oracle.",
+      "kb_refs": [
+        "KB-1508"
+      ]
+    },
+    {
+      "description": "Item từ bundle JS là mã đã build, không phải UI render, confidence LOW; render thật trước mốc shutdown chưa từng thấy.",
+      "kb_refs": [
+        "KB-1507",
+        "KB-1508",
+        "KB-1509"
+      ]
+    },
+    {
+      "description": "Migration chạy thật xoá key Remove.bg và đổi provider hàng loạt (P1 data); chỉ Dev chạy, chỉ verify trên staging với mốc giả lập, production chưa verify. Staging đang compile mốc quá khứ nên check trước-shutdown cần Dev đặt lại mốc.",
+      "kb_refs": [
+        "KB-1541",
+        "KB-1542",
+        "KB-1546",
+        "KB-1509"
+      ]
+    }
+  ],
+  "environment_differences": [
+    {
+      "type": "ALTERNATIVE_SETUP",
+      "test_env": "Mốc shutdown Remove.BG cấu hình bằng biến env REMOVE_BG_SHUTDOWN_AT (API) và VITE_REMOVE_BG_SHUTDOWN_AT (portal, cần rebuild). Trạng thái sau shutdown chỉ dựng được khi Dev đặt mốc về quá khứ.",
+      "production": "Hành vi sau shutdown chỉ có từ 1 Dec 2026, 9:00 CET; trước mốc không test được, không đổi env production; migration chỉ Dev chạy.",
+      "how_to_test": "Hành vi trước shutdown test bình thường (staging hiện compile mốc đã qua nên cần Dev đặt lại mốc). Hành vi sau shutdown: Dev đặt hai biến về quá khứ, rebuild portal, tạm dừng job hằng giờ, rồi Dev chạy migration (dry-run, rồi force) và đặt lại sau khi QA xong. Seller đang ở Remove.BG hoặc còn lưu key Remove.bg phải dựng qua DB vì UI khoá Remove.BG và API từ chối. Item INFERRED/LOW, chưa được Dev xác nhận.",
+      "kb_refs": [
+        "KB-1546",
+        "KB-1509",
+        "KB-1510"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-11-13"
+  },
+  "unknown_areas": [
+    {
+      "question": "Mốc shutdown: staging compile 2026-11-01 trong khi notice nói 1 Dec 2026. Staging có cố ý đặt mốc trong quá khứ không, mốc production là gì, và bundle có thật sự ẩn Remove.BG khi thời điểm không trước mốc (suy luận KB-1510) không? Trạng thái trước mốc không quan sát được trên staging hiện tại.",
+      "why_it_matters": "Không có oracle cho thời điểm Remove.BG bị ẩn/ngừng; check theo ngày không viết được expected.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1509",
+        "KB-1508",
+        "KB-1510"
+      ],
+      "oq_id": "OQ-third-party-services-001"
+    },
+    {
+      "question": "Trước mốc shutdown, Dev đã nêu trạng thái option Remove.BG cho seller chưa dùng (badge, không click được) và seller đang ở Remove.BG (greyed out) (KB-1533, KB-1534). Còn chưa rõ: notice shutdown và trạng thái ô key Remove.bg trước mốc render thế nào với từng nhóm account khi quan sát thật (chưa từng thấy trên staging hiện tại)?",
+      "why_it_matters": "Chưa từng thấy render; không biết điều kiện hiển thị.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1507",
+        "KB-1508",
+        "KB-1506",
+        "KB-1533",
+        "KB-1534"
+      ],
+      "oq_id": "OQ-third-party-services-002"
+    },
+    {
+      "question": "Migration seller khỏi Remove.BG (tự chuyển sang Teeinblue built-in): cơ chế, thời điểm chạy, endpoint và biến env REMOVE_BG_SHUTDOWN_AT phía API là gì?",
+      "why_it_matters": "Rủi ro đổi cấu hình account hàng loạt; không có quan sát nào.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1508"
+      ],
+      "oq_id": "OQ-third-party-services-003"
+    },
+    {
+      "question": "artwork/run-image-effects KB-816 và KB-985 liệt kê remove.bg là remover chọn được trong khi trang staging không render Remove.BG; hai item đó có cần giới hạn theo thời gian không?",
+      "why_it_matters": "Hai object mô tả khác nhau về danh sách remover; không dựng conflict.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1513",
+        "KB-1506"
+      ],
+      "oq_id": "OQ-third-party-services-004"
+    },
+    {
+      "question": "Toggle remove_bg_master_only (\"Use the photo's original size...\") có trong schema bundle và private_config nhưng không render ở tab này: điều kiện render là gì và nó có liên quan checkbox \"(for FaceCutout)\" ở tab Cutout.Pro không?",
+      "why_it_matters": "Không biết control nào điều khiển field này.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1512",
+        "KB-1529"
+      ],
+      "oq_id": "OQ-third-party-services-005"
+    },
+    {
+      "question": "Chọn provider khác rồi Save: request, phản hồi, toast/lỗi, validation khi chọn Removal.AI/Cutout.pro mà chưa có key, và notice có đổi theo provider không?",
+      "why_it_matters": "Read-only policy nên chưa quan sát ghi; không có oracle cho luồng chính của feature.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1504",
+        "KB-1503",
+        "KB-1501"
+      ],
+      "oq_id": "OQ-third-party-services-006"
+    },
+    {
+      "question": "Giá trị hằng HIDE_BACKGROUND_REMOVER_ACCOUNT, việc option \"Teeinblue X Removal.AI\" có bị ẩn theo ngày tạo account không (suy luận KB-1532) và điều kiện plan (badge Premium & above) là gì?",
+      "why_it_matters": "Không biết account nào thấy option này.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1511",
+        "KB-1532"
+      ],
+      "oq_id": "OQ-third-party-services-008"
+    },
+    {
+      "question": "Role staff khác, account có provider đã lưu khác (Removal.AI, Cutout.pro, ImagenHub) hoặc có key thì tab hiển thị/được lưu thế nào?",
+      "why_it_matters": "Mới có một account owner, một trạng thái.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1531",
+        "KB-1502"
+      ],
+      "oq_id": "OQ-third-party-services-009"
+    },
+    {
+      "question": "Job hằng giờ chạy khi nào và thật sự làm gì với seller ở Remove.BG; thời điểm migration production so với mốc 1 Dec 2026 9:00 CET?",
+      "why_it_matters": "Trích dẫn Dev chỉ nêu tạm dừng job khi mô phỏng; không có oracle về thời điểm chuyển seller thật.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1540",
+        "KB-1542",
+        "KB-1546"
+      ],
+      "oq_id": "OQ-third-party-services-003"
+    },
+    {
+      "question": "Khi API từ chối yêu cầu chuyển sang Remove.BG (KB-1538), mã HTTP và message trả về là gì?",
+      "why_it_matters": "Check API chỉ khẳng định được 'bị từ chối', không có mã/message để so.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1538",
+        "KB-1536"
+      ],
+      "oq_id": "OQ-third-party-services-020"
+    },
+    {
+      "question": "Hành vi của TC-TIB-9033 (provider khác chọn/Save/reload, key sửa được, upload) có phải expected được PO/Dev xác nhận không, và build nào? Seller ở Cutout.pro/ImagenHub còn key Remove.bg xử lý ra sao khi migration (KB-1542 chỉ nêu Removal.AI)?",
+      "why_it_matters": "KB-1545 chỉ là quan sát LOW không ghi build; phạm vi KB-1542 mới nêu Removal.AI.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1545",
+        "KB-1542"
+      ],
+      "oq_id": "OQ-third-party-services-023"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-151"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-01-choose-background-remover-provider",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "account explorer, provider đã lưu teeinblue, key Removal.AI/Cutout.pro rỗng, đọc ngày 2026-11-13 (sau mốc shutdown compile trong bundle staging)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1501",
+        "KB-1503",
+        "KB-1506"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-choose-background-remover-provider",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "account explorer, provider đã lưu teeinblue, key Removal.AI/Cutout.pro rỗng, đọc ngày 2026-11-13 (sau mốc shutdown compile trong bundle staging)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1502",
+        "KB-1512"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-choose-background-remover-provider",
+      "layer": "code",
+      "role": "merchant-owner",
+      "state": "bundle staging index.BFb_gCqw.js đọc 2026-11-13",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1507",
+        "KB-1508",
+        "KB-1509",
+        "KB-1511"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-choose-background-remover-provider",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "đổi provider và Save (account test riêng)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-1504"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-choose-background-remover-provider",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "trước mốc shutdown Remove.BG",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-1506",
+        "KB-1507"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-choose-background-remover-provider",
+      "layer": "portal",
+      "role": "staff khác",
+      "state": "mọi state",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-1531"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-choose-background-remover-provider",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "production",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "KB-1509"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-choose-background-remover-provider",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "sau mốc shutdown (mốc giả lập do Dev đặt), seller từng ở Remove.BG sau migration",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-1539",
+        "KB-1543",
+        "KB-1546"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-choose-background-remover-provider",
+      "layer": "api",
+      "role": "seller/operator (Dev chạy migration)",
+      "state": "sau mốc shutdown (mốc giả lập), dry-run và force",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "KB-1541",
+        "KB-1542",
+        "KB-1544",
+        "KB-1546"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-choose-background-remover-provider",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "sau mốc shutdown thật (từ 1 Dec 2026 9:00 CET)",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "KB-1539",
+        "KB-1540",
+        "KB-1546"
+      ]
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from_feature_id": "FEAT-01-choose-background-remover-provider",
+      "to_feature_id": "FEAT-02-manage-provider-api-keys",
+      "relationship": "sibling_key_fields_same_tab_group",
+      "kb_refs": [
+        "KB-1507",
+        "KB-1522"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-choose-background-remover-provider",
+      "to_feature_id": "artwork/run-image-effects",
+      "relationship": "account_level_choice_consumed_by_image_effects (ranh giới, không kiểm ở đây)",
+      "kb_refs": [
+        "KB-1513"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-choose-background-remover-provider",
+      "to_feature_id": "sdk/storefront-buyer-facing",
+      "relationship": "buyer_upload_and_apply_effect_boundary (ranh giới, không kiểm ở đây)",
+      "kb_refs": [
+        "KB-1513"
+      ]
+    }
+  ]
+}

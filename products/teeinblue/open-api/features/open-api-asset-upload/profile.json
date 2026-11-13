@@ -205,6 +205,15 @@
       "kb_refs": [
         "open-api/open-api-asset-upload#KB-046"
       ]
+    },
+    {
+      "name": "[CBS-152] Giới hạn pixel 128 MP khi upload layer image",
+      "description": "Theo Dev (TIB-5709): POST /layer-images với upload_id hoặc url từ chối raster lớn hơn 128 MP hoặc có header không đọc được, trước khi tạo layer image; ảnh bằng hoặc dưới cap không bị từ chối. Presign POST /uploads với filewidth x fileheight vượt cap báo lỗi theo megapixel.",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-055",
+        "open-api/open-api-asset-upload#KB-057",
+        "open-api/open-api-asset-upload#KB-059"
+      ]
     }
   ],
   "state_transitions": [
@@ -382,6 +391,30 @@
       "confidence": "MEDIUM",
       "kb_refs": [
         "open-api/open-api-asset-upload#KB-052"
+      ]
+    },
+    {
+      "statement": "Theo Jira TIB-5709 comment 56698 (Dev, 2026-11-09), POST /openapi/v1/layer-images với upload_id hoặc url từ chối raster lớn hơn temporary_file_max_megapixel (mặc định 128 MP) hoặc có header không đọc được, trước khi layer image được tạo.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-055"
+      ]
+    },
+    {
+      "statement": "Theo Jira TIB-5709 comment 56698 (Dev, 2026-11-09), bước kiểm pixel không trả lỗi khi ảnh bằng hoặc dưới cap: chỉ ảnh lớn hơn 128 MP bị từ chối.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-057"
+      ]
+    },
+    {
+      "statement": "Theo Jira TIB-5709 comment 56698 (Dev, 2026-11-09), presign vượt cap có message \"file is too large to upload, maximum 128 megapixels.\" (trước đây ghi số pixel); POST /openapi/v1/uploads dùng chung request này.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-059"
       ]
     }
   ],
@@ -738,6 +771,15 @@
       "kb_refs": [
         "open-api/open-api-asset-upload#KB-042"
       ]
+    },
+    {
+      "statement": "[CBS-152] Raster dưới cap qua url / upload_id vẫn 201 processing (url null) rồi ready với _large.webp và thumbnail_url (TC-TIB-8786, build không ghi).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-061"
+      ]
     }
   ],
   "observed_validations": [
@@ -884,6 +926,46 @@
       "rule_confidence": "LOW",
       "kb_refs": [
         "open-api/open-api-asset-upload#KB-042"
+      ]
+    },
+    {
+      "input": "POST /openapi/v1/layer-images với url hoặc upload_id của PNG 12000x12000 (144 MP)",
+      "response_status": 422,
+      "message_verbatim": "The image is 12000x12000 px (144 MP), over the 128 MP limit. Resize it to at most 128 megapixels and upload again.",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-056"
+      ]
+    },
+    {
+      "input": "Gửi lại upload_id đã bị từ chối vì vượt cap",
+      "response_status": 422,
+      "message_verbatim": "The upload was not found or has expired. Create a new one with POST /uploads.",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-056"
+      ]
+    },
+    {
+      "input": "POST /openapi/v1/layer-images với upload_id của PNG cắt còn 20 hoặc 24 byte",
+      "response_status": 422,
+      "message_verbatim": "The image's pixel size could not be read from its header; the file may be corrupt or truncated. Re-export it as PNG, JPEG, GIF or WebP and upload again.",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-058"
+      ]
+    },
+    {
+      "input": "POST /openapi/v1/uploads với filewidth 12000, fileheight 12000",
+      "response_status": 422,
+      "message_verbatim": "file is too large to upload, maximum 128 megapixels.",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-060"
       ]
     }
   ],
@@ -1110,6 +1192,13 @@
       "kb_refs": [
         "open-api/open-api-asset-upload#KB-046"
       ]
+    },
+    {
+      "description": "[CBS-152] Cùng cap 128 MP áp cho portal by-temporary-file (image-library KB-065).",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-055",
+        "image-library/image-layer-library#KB-065"
+      ]
     }
   ],
   "risks": [
@@ -1156,6 +1245,13 @@
       "kb_refs": [
         "open-api/open-api-asset-upload#KB-045",
         "open-api/open-api-asset-upload#KB-024"
+      ]
+    },
+    {
+      "description": "[CBS-152] Cap 128 MP mới (TIB-5709): fixture upload ảnh lớn hơn 128 MP trước đây được nhận, nay bị từ chối; message, status và field lỗi chỉ có một lượt quan sát không ghi build. Production chưa verify.",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-055",
+        "open-api/open-api-asset-upload#KB-056"
       ]
     }
   ],
@@ -1474,11 +1570,62 @@
         "open-api/open-api-asset-upload#KB-049"
       ],
       "oq_id": "OQ-open-api-058"
+    },
+    {
+      "question": "[CBS-152] Status 422, message cap và field errors.url / errors.upload_id (KB-056) có phải expected không? upload_id bị từ chối có luôn thành 'not found or has expired'?",
+      "why_it_matters": "KB-056 là OBSERVED_CURRENT/LOW, không ghi build; CHK-071 chỉ BASELINE.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-056"
+      ],
+      "oq_id": "OQ-open-api-059"
+    },
+    {
+      "question": "[CBS-152] Ảnh header hỏng qua upload_id trả 422 message unreadable (KB-058); nhánh url với file header hỏng trả gì?",
+      "why_it_matters": "KB-058 là OBSERVED_CURRENT/LOW; nhánh url chưa chạy.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-058"
+      ],
+      "oq_id": "OQ-open-api-060"
+    },
+    {
+      "question": "[CBS-152] Presign vượt cap trả 422 với lỗi trên errors.filewidth và errors.fileheight (KB-060) — đúng ý Dev?",
+      "why_it_matters": "KB-059 chỉ xác nhận message; status và field là quan sát.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-060"
+      ],
+      "oq_id": "OQ-open-api-061"
+    },
+    {
+      "question": "[CBS-152] Raster dưới cap qua url / upload_id vẫn như trước (KB-061) — xác nhận?",
+      "why_it_matters": "KB-061 là OBSERVED_CURRENT/LOW không ghi build; CHK-075 chỉ BASELINE.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-061"
+      ],
+      "oq_id": "OQ-open-api-062"
+    },
+    {
+      "question": "[CBS-152] Ranh giới đúng 128.000.000 px chưa chạy trên Open API; production chưa verify.",
+      "why_it_matters": "KB-057 là lời Dev; quan sát ranh giới trong CCR chạy qua tool MCP, ngoài object này.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-055",
+        "open-api/open-api-asset-upload#KB-057"
+      ],
+      "oq_id": "OQ-open-api-063"
     }
   ],
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-132"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-152"
   },
   "coverage_matrix": [
     {
@@ -1779,6 +1926,32 @@
       "note": "Chỉ có phát biểu của dev, chưa quan sát.",
       "kb_refs": [
         "open-api/open-api-asset-upload#KB-045"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-open-api-asset-upload",
+      "layer": "api",
+      "role": "unspecified",
+      "state": "[CBS-152] raster > 128 MP hoặc header hỏng qua url / upload_id",
+      "environment": "staging",
+      "covered": true,
+      "note": "KB-055 CONFIRMED_EXPECTED; quan sát KB-056, KB-058 không ghi build.",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-055",
+        "open-api/open-api-asset-upload#KB-056",
+        "open-api/open-api-asset-upload#KB-058"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-open-api-asset-upload",
+      "layer": "api",
+      "role": "unspecified",
+      "state": "[CBS-152] ranh giới đúng 128 MP; production",
+      "environment": "staging+production",
+      "covered": false,
+      "note": "Chưa chạy trên Open API.",
+      "kb_refs": [
+        "open-api/open-api-asset-upload#KB-057"
       ]
     }
   ],

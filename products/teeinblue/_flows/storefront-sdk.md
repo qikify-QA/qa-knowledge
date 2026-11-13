@@ -99,7 +99,7 @@ Hai wrapper fetch:
 
 Segment platform không đồng nhất: có `shopify` — `thumbmark`, upload routes, `customer-uploads/*`, `customization`; không có — `merchant/games/{type}/{base64}.json`, `merchant/gpx/*`, `merchant/campaigns/{id}.json`, `merchant/maps/tiles`, `merchant/maps/places`, `merchant/songs-search`.
 
-`merchant/games/{type}`: `word-search`, `crossword` (Scrabble ▸ Cross Word), `single_line` (gạch dưới), `word-cloud`; sub-endpoint `/image_effect`, `/photo-border`, `/elevation-profile`. Format `GET /api/merchant/games/{type}/{base64url-json-config}.json` — URL tự chứa input, không cần session; storefront phục vụ như ảnh cache lâu (Regenerate trúng cache browser).
+`merchant/games/{type}`: `word-search`, `crossword` (Scrabble ▸ Cross Word), `single_line` (gạch dưới), `word-cloud`; sub-endpoint `/image_effect`, `/photo-border`, `/elevation-profile`. Layer `shape-text`, `spiral`, `warp_text` cũng render qua `merchant/games/{type}` (shape-text đi qua service vectorize). Từ TIB-5666: debounce 1000ms; URL có `?slot=<layer id>.<n>`, id layer của SDK có dạng `layer-<số>` (xem expected ở KB của `sdk/game-text-preview-render`). Lọc Network theo `games/` để đếm nhịp request; request bị SDK huỷ hiện `net::ERR_ABORTED` và 2 lỗi console `AbortError` (không ảnh hưởng preview). Format `GET /api/merchant/games/{type}/{base64url-json-config}.json` — URL tự chứa input, không cần session; storefront phục vụ như ảnh cache lâu (Regenerate trúng cache browser).
 
 Thumbmark: `GET /api/merchant/shopify/thumbmark` (không auth, không `shop`) → `{"thumbmark": "<32>.<64 hex>"}` (97 ký tự, có dấu chấm), header `X-RateLimit-Limit: 30`. Fallback client = 32 ký tự không dấu chấm, 8 hex lặp 4 lần (`fallbackBrowserFingerprint()`, entropy 32 bit) ⇒ thấy dạng này là đang fallback. Cache `localStorage['teeinblue_signed_thumbmark']`, fetch LAZY (chỉ khi có route `Ll`; trang load / upload presigned không gọi). Test: xoá key rồi bấm Generate. Đã thấy 1 lần Generate bắn 2 GET (08-26) và 1 GET (08-28); reload có cache ⇒ 0 GET; dùng chung giữa tab. Endpoint thumbmark có rate limit riêng (~6-30, `Too Many Attempts.`, có lúc trả HTML).
 
@@ -109,6 +109,7 @@ Thumbmark: `GET /api/merchant/shopify/thumbmark` (không auth, không `shop`) �
 |---|---|
 | Photo upload (2026-08-28 → 10-09) | `POST upload-url` 200 → `PUT` storage (`s3.us-east-1.wasabisys.com/teeinblue-cdn-staging/wa/customers/uploads/<file>`) 200 → `POST customer-uploads/{id}/uploaded-at` 204; không thumbmark. Nhánh `photo-upload` chỉ khi `useDirectUpload` = false |
 | Photo upload (2026-10-23) | `upload-staging.teeinblue.com/v1/shopify/uploads?field_id=&campaign_id=` 201 (~67s); photo có GenAI effect đi `.../v1/shopify/genai-uploads` (fail) → fallback `upload-error-logs` + `upload-url` → `image-filter-effects/async` 202 → poll `status`. Multi upload cũng có lúc fail ~36s rồi fallback presigned |
+| Photo + [Gemini] image filter (2026-11-10) | `POST upload-staging…/v1/shopify/genai-uploads` 202 thành công trực tiếp, không đi nhánh fallback `image-filter-effects/async` (dòng 2026-10-23 ở trên là quan sát lịch sử). Poll `customer-uploads/{id}/image-filter-effects/status`: status 1 = processing, `url` = ảnh gốc (`original`); status 2 = completed, `master` = `_master.png`, `url` = `_large.webp` (kết quả). Không coi status 1 là xong. Ảnh original lưu đã áp EXIF (ảnh EXIF 6 lưu thành ảnh dọc). |
 | Vector upload | `POST vector-upload` 201 + CDN GET; rate limit 4/phút (lần 5 → 429, widget không vỡ, hiện "Cannot upload. Contact us for more information.: HTTP error!") |
 | PDF vào Vector Upload | `POST pdf-upload` 201 (`multiple_file_types`=true) |
 | GPX | `POST gpx-upload` 200 → dialog `Select & continue` → `gpx/parse` 200 (có shop parse inline) |
@@ -116,6 +117,7 @@ Thumbmark: `GET /api/merchant/shopify/thumbmark` (không auth, không `shop`) �
 | Populate `{{input}}` + effect | `customer-uploads/<id>/derive` 202 |
 | ATC (v1, campaign PB) | `POST customization?shop=&id=<shopifyProductId>` 201 body `{data:{<artworkId>:<templateId>, layer-<id>:<value>, artwork-<id>:<versionId>, platform_linked_id:<variantId>}, platform_variant_id}` → `/cart/add.js` → `PUT customization/<uuid>/cart-token` 204 `{cart_token}` → `GET /cart.js`. Không thumbmark; `x-ratelimit-limit: 4` |
 
+- Kết quả effect Remove background của một upload (TIB-5399): đọc response `POST /api/merchant/shopify/customer-uploads/<id>/apply-effects`, field url dạng `r2:customers/uploads/<…>_large.png`, tải file qua CDN của môi trường đang test. Kiểm nền đã xoá bằng kênh alpha của PNG (góc ảnh alpha 0), vì preview có thể không hiện ảnh buyer khi mockup không có printarea.
 - Photo Upload: file < 10 KB bị chặn client (`photo is too small (<10kb)`), không request. Upload bằng `setInputFiles` vào `.tee-field--layer-<id> input[type=file]`.
 - Customization rate limit 4/phút ⇒ ATC 4 item rồi chờ ~60s. Cùng variant + giá trị khác ⇒ mỗi ATC 1 line riêng.
 - Cart khi `show_in_cart` OFF: line chỉ có `_customization_id`, `customization_id`, `_customization_image`, `_customization_edit_link`, `_tib_design_link_1`, `_tib_fulfilled_sku`.
@@ -149,6 +151,7 @@ Là `.tee-field` đầu tiên (`select`, label = label template); ban đầu `Ch
 
 - Setup: các sản phẩm cross-sell gom vào 1 Shopify collection → Portal `Product Page settings` bật cross-sell (`Show Cross-sell Personalization`) → gắn metafield lên Shopify product của campaign chính. Có 2 metafield: collection và product (addon).
 - Campaign chính để test: catalog data của QA (mục Campaign / product).
+- (2026-11-10, TIB-5715) Gắn cross-sell cho 1 product: Shopify admin › product › Product metafields › `TIB cross-sell product` › Add › chọn product › Save. Storefront: khối "Add a matching customizable item", nút popup `Choose product`; popup mặc định chọn variant đầu tiên. Lần ATC sau khối nhớ lựa chọn cũ: card hiện "Edit design", popup có nút "Update" thay vì "Choose product", không cần chọn lại.
 
 ## Edit customization
 
@@ -174,6 +177,16 @@ Trang buyer điền personalization cho order Etsy; gọi `POST /api/merchant/or
 - Bogus credit card (market en-de, EUR): điền contact/address bằng role textbox (`Address` combobox → Esc), đợi Payment render (~5-8s); Payment **re-render sau khi nhập address** ⇒ nhập thẻ SAU khi shipping method hiện, lấy lại ref. Card: `browser_type` slowly vào textbox trong iframe (`Card number` "1", `Expiration date (MM / YY)` "1230", `Security code`); qua CDP dùng `page.locator('iframe[name^="card-fields-<n>"]').click()` + `keyboard.type` (`frameLocator(...).fill` dồn chữ vào Card number). Expiry hay nhập lẫn ⇒ đọc lại `12 / 30` trước `Pay now`; xoá bằng End + Backspace.
 - (2026-11-04, TIB-5608) Card iframe có honeypot: `input` đầu tiên trong mỗi `card-fields-*` là `data-honeypot-field`, gõ vào đó thì Pay now báo `Enter a card number`. Dùng `frameLocator('iframe[name^="card-fields-number"]').locator('input:not([data-honeypot-field])')`, `pressSequentially`, đọc lại rồi mới Pay now. Runner chưa có checkout: ghi cookie `cart` ở context runner, `addCookies` sang browser MCP rồi `/checkout`.
 - Portal order detail: mỗi item `Item ID: #-<id> <Status>` + `Latest log: ...`; `Item Activity logs` (nth theo item) mở modal `Line item #<id> (order )`, log mới trước. Item về Ready sau ~15s → ~3 phút.
+
+- (2026-11-10, TIB-5715) Banner validation của Shopify Function (checkout rule của Teeinblue) render trễ khoảng 0.2–1s sau khi form Checkout hiện. Script phải chờ banner theo regex; chỉ kết luận "không có banner" sau timeout (đã dùng 20s). Đọc text ngay khi form Checkout vừa hiện sẽ cho kết quả sai.
+- (2026-11-10, TIB-5715) Dựng orphan addon trước khi autofixer dọn: gọi `POST /cart/change.js` qty 0 cho line chính từ request context của Playwright (cùng cookie, không qua wrapper SDK), hoặc chuyển trang sang `about:blank` rồi gọi, sau đó mở thẳng `/checkout`. Xác nhận lại `cart.js` ngay trước khi mở Checkout.
+- (2026-11-10, TIB-5715) Theme Dawn ở <TIB_SDK_V2>: `input[name="updates[]"]` có ở cả trang `/cart` và cart drawer (ẩn), nên selector phải giới hạn trong `#main-cart-items`. Nút Checkout của trang `/cart` là `#main-cart-footer button[name="checkout"]`; `button[name="checkout"]` đầu tiên trên trang là của drawer.
+
+## Cart autofixer (TIB-5665)
+
+- Thứ tự request khi add to cart có addon charge: SDK v1 nút SDK: addon `POST /cart/add.js` trước, line chính `POST /cart/add.js` sau; SDK v2 nút theme: addon `POST /cart/add.js` trước, line chính `POST /cart/add` form-data sau. Cross-sell v1: line chính trước, sub item sau. Muốn chen request đọc cart vào giữa thì giữ request thêm line chính bằng Playwright route rồi thả.
+- Cách ép SDK đọc lại cart: xem `troubleshooting.md` mục Autofixer chạy trễ hơn config public (phần Giới hạn).
+- Sau khi autofixer sửa cart, SDK gọi `autofixerCallback` nếu option có; mặc định chỉ reload khi đang ở trang `/cart`, nên cart drawer có thể chưa render lại dù cart JSON đã đúng. Kết luận check autofixer trên `cart.js`, không trên hiển thị drawer.
 
 ## SDK v1 và v2
 

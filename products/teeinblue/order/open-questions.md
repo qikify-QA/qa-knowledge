@@ -7,8 +7,8 @@ _Regenerated from `kb.json` (object-level + per-feature) and `checklists/*.json`
 | Type | Count |
 |---|---|
 | CONFLICT | 1 |
-| NEEDS_CONFIRMATION | 26 |
-| OPEN_ISSUE | 17 |
+| NEEDS_CONFIRMATION | 30 |
+| OPEN_ISSUE | 18 |
 
 ## OQ-order-001 — CONFLICT
 
@@ -470,4 +470,52 @@ Root cause (claimed webhook configuration fix) has never been independently veri
 
 ```json
 {"oq_id": "OQ-order-087", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "Theo spec-hub (rule bulk-fulfill-grouping; S2, KB-784), Confirm & Send gom item theo print provider rồi theo order, hoặc theo shipping address khi store gộp đơn theo shipping address; mỗi nhóm một provider order. Dev xác nhận hành vi này, và tên setting thật của việc gộp đơn là gì: KB-776 và CHK-005 gọi là order_combine_by, spec-hub không nêu tên (CCR CBS-138 CLAIM-05, câu hỏi không nguồn); giá trị nào ứng với gộp theo order và theo shipping address? Liên quan OQ-order-080. Người trả lời: Dev.", "kb_ids": ["KB-784", "KB-776"]}
+```
+
+## OQ-order-088 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-088", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "[CBS-148] Quan sát staging sandbox (KB-786, TC-TIB-9014/9016, 2026-11-10): item gửi CustomCat gồm quantity, catalog_sku, design_url và preset_id/preset_back_id với giá trị như đã lưu; Product Base không có preset thì chỉ ba key đầu. Đây có phải shape mong muốn, và preset lưu dạng chuỗi có được gửi nguyên chuỗi không? Người trả lời: Dev.", "kb_ids": ["KB-786"]}
+```
+
+## OQ-order-089 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-089", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "[CBS-148] Quan sát staging sandbox (KB-788, TC-TIB-9017): item gửi CustomCat bị từ chối ở trạng thái Failed (nhóm Items Have Error); text lý do chỉ hiện ở Item Activity logs / Latest log của order detail, danh sách Items Have Error không hiện text lý do. Đây có phải thiết kế mong muốn? Người trả lời: PO.", "kb_ids": ["KB-788"]}
+```
+
+## OQ-order-090 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-090", "type": "NEEDS_CONFIRMATION", "feature_id": "fulfillment-provider-request", "summary": "[CBS-148] Khác biệt môi trường ALTERNATIVE_SETUP (KB-789, nguồn là lời kể QA; CCR khai NOT_TESTABLE): CustomCat trên staging chạy sandbox (request_data.sandbox: true), production không có sandbox nên gửi item là order thật có phí. Xác nhận cấu hình này, và có cách kiểm payload CustomCat trên production mà không tạo order thật không? Người trả lời: Dev.", "kb_ids": ["KB-789"]}
+```
+
+## OQ-order-091 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-091", "type": "NEEDS_CONFIRMATION", "feature_id": "review-and-initiate-fulfillment-portal", "kb_ids": ["KB-791"], "check_ids": ["CHK-P33", "CHK-P34"], "owner": "Dev", "summary": "[CBS-163] Quan sát KB-791: generate/cancel design của order item trả 200 với đúng 10 key, không customization/artwork/order_item, màn hình tải lại item; POST /api/instances/{instance}/customer-uploads (upload ảnh trong Edit customization của order) trả 201 đúng id, url, original. Dev xác nhận đây là expected, nhất là vế customer-uploads không có trong câu Dev được trích?"}
+```
+
+## OQ-order-092 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-092", "type": "NEEDS_CONFIRMATION", "feature_id": "review-and-initiate-fulfillment-portal", "kb_ids": ["KB-793"], "check_ids": ["CHK-P36"], "owner": "Dev", "summary": "[CBS-163] Quan sát KB-793: template export CSV tuỳ chỉnh lưu rồi mở lại còn nguyên tên và field đã chọn. Dev xác nhận là expected?"}
+```
+
+## OQ-order-093 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-093", "type": "NEEDS_CONFIRMATION", "feature_id": "review-and-initiate-fulfillment-portal", "kb_ids": ["KB-796"], "check_ids": ["CHK-P39"], "owner": "Dev", "summary": "[CBS-163] Quan sát KB-796: /fulfills/unknown tải với tiêu đề \"Unknown Line Items\", bộ lọc, header bảng, list rỗng, response giữ key paginator. Dev xác nhận, và key của từng row là gì (staging không có row để kiểm)?"}
+```
+
+## OQ-order-094 — OPEN_ISSUE
+
+```json
+{"oq_id": "OQ-order-094", "type": "OPEN_ISSUE", "feature_id": "review-and-initiate-fulfillment-portal", "kb_ids": ["KB-794", "KB-795"], "check_ids": [], "owner": "Dev", "summary": "[CBS-163] Theo Dev (TIB-5689 comment 56491 mục Exception), Mapped badge, title link fallback và Regenerate trên /fulfills/unknown sẽ không hoạt động và không tính là bug của TIB-5689; việc gỡ trang theo dõi ở teeinblue-api#4179. Đây là vấn đề mở, không phải expected: khi nào trang được gỡ, và trong lúc còn trang thì QA xử lý các control này thế nào?"}
+```
+
+## OQ-order-095 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-order-095", "type": "NEEDS_CONFIRMATION", "feature_id": "review-and-initiate-fulfillment-portal", "kb_ids": ["KB-024", "KB-794"], "check_ids": [], "owner": "Dev", "summary": "[CBS-163] KB-024 (base) ghi \"portal/fulfills không phải route riêng\" theo sidebar; KB-794 cho thấy /fulfills/unknown là trang mở trực tiếp được. Dev xác nhận KB-024 đã lỗi thời hay chỉ đúng cho route /fulfills gốc (sidebar không có link)?"}
 ```

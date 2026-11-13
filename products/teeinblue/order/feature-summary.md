@@ -1,7 +1,7 @@
 # Object: Order (product: teeinblue) — Feature Profile Summary
-**Published context version:** 12
+**Published context version:** 14
 
-- **Env:** staging. Bootstrap 2026-09-13; cập nhật CBS-006 (TIB-5584) và CBS-011 (TIB-5558, action Hide) 2026-10-30; CBS-074 (Edit Customization sau order, tracking từ provider) 2026-11-06; CBS-096 (import đơn Shopify với customization_id sai định dạng, order design ảnh AI, order design vector) 2026-11-07; CBS-112 (feature mới `fulfillment-provider-request`: request gửi nhà in qua API Myze/PosterFlow) 2026-11-10; CBS-114 (Re-generate design và Edit customization ở portal trên order đã đặt, vào `edit-customization-after-order`) 2026-11-10; CBS-138 (4 rule spec-hub S2: artwork version của order, trạng thái Ready sau khi lưu design, tìm personalization qua cart, gom request theo provider) 2026-11-11.
+- **Env:** staging. Bootstrap 2026-09-13; cập nhật CBS-006 (TIB-5584) và CBS-011 (TIB-5558, action Hide) 2026-10-30; CBS-074 (Edit Customization sau order, tracking từ provider) 2026-11-06; CBS-096 (import đơn Shopify với customization_id sai định dạng, order design ảnh AI, order design vector) 2026-11-07; CBS-112 (feature mới `fulfillment-provider-request`: request gửi nhà in qua API Myze/PosterFlow) 2026-11-10; CBS-114 (Re-generate design và Edit customization ở portal trên order đã đặt, vào `edit-customization-after-order`) 2026-11-10; CBS-138 (4 rule spec-hub S2: artwork version của order, trạng thái Ready sau khi lưu design, tìm personalization qua cart, gom request theo provider) 2026-11-11; CBS-148 (TIB-5724: preset CustomCat trong payload, CustomCat từ chối preset, vào `fulfillment-provider-request`) 2026-11-12.
 - **Nguồn:** phần lớn knowledge là `OBSERVED_CURRENT` từ bootstrap; item `CONFIRMED_EXPECTED` gồm KB-182, KB-238, KB-239, KB-392 từ test case Testlane PASS; KB-772, KB-774 từ test case ghi trên Jira QA-3348/QA-3365 PASS (kết quả AI); đều trên staging; KB-182 chờ PO xác nhận vì đổi đầu ra fulfillment (OQ-order-020)
 - **Actor coverage:** storefront = GUEST buyer only (no signed-in buyer tested); portal = owner (explorer (TIB_STAGING_EMAIL), sub=<explorer>) only (no non-owner/restricted role tested)
 - **Authoritative store: `store TIB_STORE_URL_2`** — NOT `store TIB_STORE_URL_1`. The latter has a known add-to-cart failure for this campaign that prevents completing a real order there; this KB should not be treated as verified for that store until its add-to-cart issue is investigated separately (see `OQ-order-013`).
@@ -46,6 +46,7 @@
 ---
 
 ## review-and-initiate-fulfillment-portal — Review and initiate fulfillment for an incoming order
+**Cập nhật CBS-163 (TIB-5689), `CONFIRMED_EXPECTED`/MEDIUM theo Dev:** regenerate/cancel design của order item trả 10 field của design, không relation (KB-790); template export CSV store/show có `template_name`, `template_fields`, không `user_id` (KB-792); `/fulfills/unknown` (mở trực tiếp) tải được thay vì lỗi 500 trước đây, list dự kiến rỗng (KB-794, KB-795). Quan sát test case KB-791 (gồm upload ảnh trong Edit customization của order trả `id`, `url`, `original`), KB-793, KB-796. Mapped badge, title link fallback, Regenerate trên `/fulfills/unknown` không hoạt động và không tính là bug (Dev; OQ-order-094). Check CHK-P31..P39.
 **Goal:** Merchant (owner) xem lại order đã sync (line item, campaign/variant, customization/design, customer/shipping/billing, status) và khởi tạo bước gửi fulfillment.
 **Cập nhật CBS-006 (TIB-5584, staging 2026-10-16):** print file PNG/PDF của order từ artwork có Group ẩn không chứa nội dung Group (KB-182, `CONFIRMED_EXPECTED`/MEDIUM). Layout emboss/shape-cut chưa verify (KB-183, OQ-order-018). Checklist CHK-P17..CHK-P20; OQ-order-018..020.
 **Entry point:** portal Orders list → order-details → nút "Confirm & Send to fulfill" (KHÔNG có route `/fulfills` riêng biệt)
@@ -138,7 +139,7 @@
 
 ---
 
-## fulfillment-provider-request — Request TIB gửi nhà in qua API (Myze, PosterFlow)
+## fulfillment-provider-request — Request TIB gửi nhà in qua API (Myze, PosterFlow, CustomCat)
 **Goal:** Khi đơn được gửi fulfill tới nhà in kết nối qua API, TIB dựng payload Create Order, tách hoặc gộp request theo provider và lưu response của provider.
 **Phạm vi:** payload và request gửi nhà in, lưu response, tách/gộp theo provider, URL webhook tracking. Không gồm kết nối/cấu hình provider ở trang Fulfillments (object `product-base`, chưa có feature này trong canon) và review/gửi fulfill ở portal (`review-and-initiate-fulfillment-portal`). Setup: store explorer đã kết nối Myze/PosterFlow trên staging.
 
@@ -150,8 +151,14 @@
 
 **Theo spec-hub (CBS-138, KB-784, PROPOSED/LOW, rule đọc từ code, chưa Dev xác nhận, không phải oracle):** Confirm & Send gom item theo print provider rồi theo order, hoặc theo shipping address khi store gộp đơn theo shipping address; mỗi nhóm một provider order. Tên setting `order_combine_by` chưa có nguồn xác nhận (OQ-order-087).
 
-**Risks/Unknowns:** 15 OQ mở (OQ-order-068..081, OQ-order-087), gồm 2 CONFLICT (OQ-order-077, OQ-order-078) về shape payload PosterFlow; payload Myze (country/state, phone/supplement), retry, header outbound, địa chỉ Shopify, text buyer attach, stub lỗi provider chưa có xác nhận nên chưa vào KB.
-**Coverage:** 8 KB item, 7 check (2 READY, 5 chờ xác nhận); chưa có RBAC, production, provider khác Myze/PosterFlow.
+**CustomCat (CBS-148, CONFIRMED_EXPECTED/MEDIUM, lời Dev 2026-11-10, test case PASS staging với CustomCat sandbox):**
+- Item gửi CustomCat chỉ mang `preset_id`/`preset_back_id` từ `default_options` của Product Base khi key có giá trị (không null, không chuỗi rỗng); không key nào khác của `default_options` được gửi (KB-785).
+- CustomCat từ chối preset không hợp lệ: order item hiện lần gửi thất bại kèm lý do của CustomCat (KB-787).
+- Quan sát (LOW): shape item quantity, catalog_sku, design_url (+ preset như đã lưu) (KB-786, OQ-order-088); item lỗi ở Failed / Items Have Error, lý do chỉ ở Item Activity logs / Latest log (KB-788, OQ-order-089).
+- Khác biệt môi trường ALTERNATIVE_SETUP (KB-789, OQ-order-090): test qua CustomCat sandbox trên staging; production không có sandbox, không gửi test. Cách đọc payload: `_flows/orders-fulfillment.md`.
+
+**Risks/Unknowns:** 18 OQ mở (OQ-order-068..081, OQ-order-087..090), gồm 2 CONFLICT (OQ-order-077, OQ-order-078) về shape payload PosterFlow; payload Myze (country/state, phone/supplement), retry, header outbound, địa chỉ Shopify, text buyer attach, stub lỗi provider chưa có xác nhận nên chưa vào KB.
+**Coverage:** 13 KB item, 10 check (5 READY, 5 chờ xác nhận); chưa có RBAC, production, provider khác Myze/PosterFlow/CustomCat.
 
 ---
 

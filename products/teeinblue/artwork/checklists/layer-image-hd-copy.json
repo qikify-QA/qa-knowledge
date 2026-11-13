@@ -1,0 +1,203 @@
+{
+  "feature_id": "FEAT-36-layer-image-hd-copy",
+  "feature_key": "layer-image-hd-copy",
+  "object_id": "artwork",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "regression_watch_kb_ids": [],
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Bật HD trên layer ảnh nguồn rất lớn (JPEG ngang, PNG): ghi kích thước bản _master_large.webp so với baseline cạnh dài 4096, giữ tỉ lệ",
+      "applicability": {
+        "role": "merchant-owner (account staging có quyền Manage Artwork)",
+        "state": "layer ảnh với ảnh nguồn JPEG ngang và PNG có cạnh dài trên 4096",
+        "environment": "staging; ghi build portal và ngày chạy; production verify chưa chạy",
+        "surface_or_device": "portal artwork editor, desktop browser"
+      },
+      "precondition": "Đăng nhập staging bằng account staging có quyền Manage Artwork (TIB_STAGING_EMAIL/TIB_STAGING_PASSWORD); ảnh layer nằm trong image library (không phải layer cũ trỏ thẳng vào clipart). Chuẩn bị ảnh JPEG ngang và PNG (không alpha) có cạnh dài trên 4096.",
+      "steps": [
+        "Tạo layer ảnh với ảnh JPEG ngang lớn, Save artwork.",
+        "Bật HD trên toolbar layer; trong Network theo dõi yêu cầu create-master-large/batch tới khi ready.",
+        "Tải bản _master_large.webp, ghi kích thước pixel.",
+        "Lặp với ảnh PNG lớn."
+      ],
+      "observation_point": "Network (trạng thái tạo bản HD); kích thước pixel của _master_large.webp.",
+      "expected_result": "Baseline quan sát (staging 2026-11-10, chưa có expected): bản HD ready, cạnh dài 4096, tỉ lệ giữ như ảnh nguồn (vd 18174x6900 → 4096x1555; 12000x5093 → 4096x1738). Lệch thì điều tra, chưa phải bug.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/layer-image-hd-copy#KB-1102"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/layer-image-hd-copy#KB-1102",
+        "artwork/layer-image-hd-copy#KB-1101",
+        "artwork/layer-config-image#KB-422"
+      ],
+      "risk_refs": [
+        "Bản HD sai tỉ lệ hoặc kích thước với ảnh nguồn rất lớn"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-568"
+    },
+    {
+      "regression_watch_kb_ids": [],
+      "check_id": "CHK-002",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "Bật HD trên layer ảnh JPEG có EXIF orientation 6: ghi hướng, kích thước và metadata EXIF của bản _master_large.webp",
+      "applicability": {
+        "role": "merchant-owner (account staging có quyền Manage Artwork)",
+        "state": "layer ảnh với ảnh nguồn JPEG có EXIF orientation 6 (hiển thị dọc)",
+        "environment": "staging; ghi build portal và ngày chạy; production verify chưa chạy",
+        "surface_or_device": "portal artwork editor, desktop browser"
+      },
+      "precondition": "Đăng nhập staging bằng account staging có quyền Manage Artwork (TIB_STAGING_EMAIL/TIB_STAGING_PASSWORD); ảnh layer nằm trong image library (không phải layer cũ trỏ thẳng vào clipart). Chuẩn bị JPEG lớn có EXIF orientation 6.",
+      "steps": [
+        "Tạo layer ảnh với ảnh JPEG EXIF 6, Save artwork.",
+        "Bật HD; chờ bản HD ready.",
+        "Tải _master_large.webp: ghi kích thước, hướng hiển thị và metadata EXIF còn hay không."
+      ],
+      "observation_point": "Kích thước, hướng và metadata EXIF của _master_large.webp.",
+      "expected_result": "Baseline quan sát (staging 2026-11-10, chưa có expected): ảnh dọc đứng thẳng, xoay đúng một lần, cạnh dài 4096 (5300x4000 EXIF 6 → 3091x4096), file không còn EXIF. Lệch thì điều tra, chưa phải bug.",
+      "oracle": {
+        "kb_ids": [
+          "artwork/layer-image-hd-copy#KB-1102"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/layer-image-hd-copy#KB-1102",
+        "artwork/layer-image-hd-copy#KB-1101"
+      ],
+      "risk_refs": [
+        "Bản HD sai hướng với ảnh có EXIF"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-568"
+    },
+    {
+      "regression_watch_kb_ids": [],
+      "check_id": "CHK-003",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "Gap: bật HD trên layer ảnh PNG có alpha, ghi bản HD có giữ transparency không",
+      "applicability": {
+        "role": "merchant-owner (account staging có quyền Manage Artwork)",
+        "state": "layer ảnh với ảnh nguồn PNG có kênh alpha",
+        "environment": "staging; ghi build portal và ngày chạy; production verify chưa chạy",
+        "surface_or_device": "portal artwork editor, desktop browser"
+      },
+      "precondition": "Đăng nhập staging bằng account staging có quyền Manage Artwork (TIB_STAGING_EMAIL/TIB_STAGING_PASSWORD); ảnh layer nằm trong image library (không phải layer cũ trỏ thẳng vào clipart). Chuẩn bị PNG lớn có vùng trong suốt.",
+      "steps": [
+        "Tạo layer ảnh với PNG có alpha, Save artwork.",
+        "Bật HD; chờ bản HD ready.",
+        "Tải _master_large.webp, ghi có kênh alpha và vùng trong suốt còn không."
+      ],
+      "observation_point": "Kênh alpha của _master_large.webp.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "artwork/layer-image-hd-copy#KB-1102",
+        "artwork/layer-image-hd-copy#KB-1101"
+      ],
+      "risk_refs": [
+        "Mất transparency ở bản HD"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-568"
+    },
+    {
+      "open_question_draft": null,
+      "regression_watch_kb_ids": [],
+      "check_id": "CHK-004",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "Bản HD sau TIB-5615 giống hệt từng byte bản HD trước thay đổi của cùng ảnh nguồn",
+      "applicability": {
+        "role": "merchant-owner (account staging có quyền Manage Artwork)",
+        "state": "layer ảnh đã có bản HD tạo trên build trước TIB-5615; cùng ảnh nguồn",
+        "environment": "staging; cần bản HD tạo trên build trước TIB-5615 (hoặc môi trường còn build cũ) để so; production verify chưa chạy",
+        "surface_or_device": "portal artwork editor, desktop browser"
+      },
+      "precondition": "Đăng nhập staging bằng account staging có quyền Manage Artwork (TIB_STAGING_EMAIL/TIB_STAGING_PASSWORD); ảnh layer nằm trong image library (không phải layer cũ trỏ thẳng vào clipart). Có một ảnh nguồn đã có bản _master_large.webp tạo trên build trước TIB-5615 (lưu lại file hoặc checksum).",
+      "steps": [
+        "Dùng đúng ảnh nguồn đó cho một layer ảnh mới trên build hiện tại, Save artwork.",
+        "Bật HD; chờ bản HD ready.",
+        "Tính sha256 của _master_large.webp mới và của bản trước thay đổi; so sánh."
+      ],
+      "observation_point": "Checksum hai file _master_large.webp.",
+      "expected_result": "Hai bản HD giống hệt từng byte (cùng checksum).",
+      "oracle": {
+        "kb_ids": [
+          "artwork/layer-image-hd-copy#KB-1101"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork/layer-image-hd-copy#KB-1101",
+        "artwork/layer-image-hd-copy#KB-1102"
+      ],
+      "risk_refs": [
+        "Đổi helper decode làm bản HD khác đi"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-36-layer-image-hd-copy",
+      "core_covered": true,
+      "p1_covered": "không có rủi ro P1 (không mất tiền, dữ liệu, quyền)",
+      "risk_checks": {
+        "kích thước/tỉ lệ": [
+          "CHK-001"
+        ],
+        "hướng EXIF": [
+          "CHK-002"
+        ],
+        "transparency": [
+          "CHK-003"
+        ],
+        "đổi helper decode": [
+          "CHK-004"
+        ]
+      }
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "PERMISSION",
+      "reason": "Nguồn không nêu khác biệt quyền khi bật HD."
+    },
+    {
+      "dimension": "NEGATIVE",
+      "reason": "Disable HD với layer clipart và vượt limit batch thuộc artwork/layer-config-image (KB-421..KB-423); không có nguồn cho lỗi tạo bản HD."
+    },
+    {
+      "dimension": "STATE_DATA",
+      "reason": "Nguồn không nêu persistence/reload của bản HD; toast/spinner trạng thái nằm ở unknown_areas."
+    },
+    {
+      "dimension": "INTEGRATION",
+      "reason": "Tạo bất đồng bộ qua create-master-large/batch đã nằm trong bước của CHK-001; API batch thuộc layer-config-image KB-422."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-153"
+  }
+}

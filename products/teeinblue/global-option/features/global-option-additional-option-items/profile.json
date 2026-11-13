@@ -75,6 +75,14 @@
         "global-option/global-option-additional-option-items#KB-042",
         "global-option/global-option-additional-option-items#KB-043"
       ]
+    },
+    {
+      "name": "[MỚI, CBS-141] Lấy ảnh và đổi thumbnail của một item inline",
+      "description": "Trên trang edit Global Option Additional Option nguồn inline, hover thumbnail item hiện lớp phủ \"Change thumbnail\"; chuột phải thumbnail để lấy ảnh qua menu trình duyệt (TIB-5676, chưa ship, đề xuất); click trái mở Library image picker, chọn ảnh rồi Save global option để lưu thumbnail mới của item (quan sát, chưa có nguồn expected).",
+      "kb_refs": [
+        "global-option/global-option-additional-option-items#KB-734",
+        "global-option/global-option-additional-option-items#KB-735"
+      ]
     }
   ],
   "state_transitions": [
@@ -131,6 +139,15 @@
       "kb_refs": [
         "global-option/global-option-additional-option-items#KB-043"
       ]
+    },
+    {
+      "from": "item inline có thumbnail cũ",
+      "to": "item inline có thumbnail mới (đã lưu)",
+      "trigger": "Change thumbnail → Library image picker → chọn ảnh → Select → Save global option",
+      "condition": "[CBS-141, quan sát] thumbnail chỉ được lưu khi bấm Save của global option; PUT /api/global-options/{id} 200",
+      "kb_refs": [
+        "global-option/global-option-additional-option-items#KB-735"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -175,7 +192,17 @@
       ]
     }
   ],
-  "observed_behavior": [],
+  "observed_behavior": [
+    {
+      "statement": "[MỚI, CBS-141] KB-735 (1 lượt test case QA chạy bằng AI 2026-11-11, Chrome/Windows): click trái \"Change thumbnail\" của item inline mở Library image picker (không mở hộp chọn file); ảnh mới upload vào Library rồi chọn; chỉ lưu khi Save global option (PUT /api/global-options/{id}), item khác giữ nguyên, còn sau reload.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "global-option/global-option-additional-option-items#KB-735"
+      ],
+      "observed_count": null
+    }
+  ],
   "observed_validations": [],
   "observed_validations_note": "Không có item OBSERVED_CURRENT nào trong shard; các dialog xác nhận (đổi nguồn, xoá item) và thông báo match thumbnail là một phần của confirmed_rules.",
   "limitations": [
@@ -312,6 +339,12 @@
       "kb_refs": [
         "global-option/global-option-additional-option-items#KB-040"
       ]
+    },
+    {
+      "risk": "[CBS-141] KB-734 thuộc TIB-5676, chưa ship lúc gửi CCR: chuột phải lấy ảnh thumbnail item inline chỉ là đề xuất, bằng chứng gián tiếp; trên WebKit giả lập Safari, chuột phải bật Library image picker. Chưa kết luận Safari thật.",
+      "kb_refs": [
+        "global-option/global-option-additional-option-items#KB-734"
+      ]
     }
   ],
   "freshness": {
@@ -367,11 +400,48 @@
       ],
       "oq_type": "OPEN_ISSUE",
       "oq_id": "OQ-global-option-034"
+    },
+    {
+      "question": "[MỚI, CBS-141] Khi TIB-5676 đã ship, chuột phải thumbnail item của Additional Option inline có ra menu ảnh \"Save image as...\" và lưu đúng ảnh item không?",
+      "why_it_matters": "KB-734 PROPOSED vì chưa ship; CHK-03-015 chưa có oracle.",
+      "kb_refs": [
+        "global-option/global-option-additional-option-items#KB-734"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-global-option-079"
+    },
+    {
+      "question": "[MỚI, CBS-141] Menu native \"Save image as...\" và file đã lưu trên thumbnail item inline chưa được xác nhận trên trình duyệt nào; macOS chỉ giả lập.",
+      "why_it_matters": "Mọi PASS của KB-734 là proxy; cần lượt chạy tay.",
+      "kb_refs": [
+        "global-option/global-option-additional-option-items#KB-734"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-global-option-080"
+    },
+    {
+      "question": "[MỚI, CBS-141] Trên Safari thật (macOS), chuột phải thumbnail item inline có ra menu ảnh không, và có bật Library image picker không?",
+      "why_it_matters": "WebKit bản Windows bật Library image picker sau chuột phải (TC-TIB-9004); CHK-03-016 không có oracle.",
+      "kb_refs": [
+        "global-option/global-option-additional-option-items#KB-734"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-global-option-081"
+    },
+    {
+      "question": "[MỚI, CBS-141] \"Change thumbnail\" của item inline mở Library image picker và chỉ lưu khi Save global option có phải thiết kế không?",
+      "why_it_matters": "KB-735 chỉ là quan sát; expected của chính test case ghi chọn file trực tiếp. Liên quan OQ-global-option-033 (upload thumbnail cho item lẻ); quan sát này chưa đủ để đóng OQ đó. CHK-03-017 chỉ BASELINE.",
+      "kb_refs": [
+        "global-option/global-option-additional-option-items#KB-735",
+        "global-option/global-option-additional-option-items#KB-041"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-global-option-082"
     }
   ],
   "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-141"
   },
   "coverage_matrix": [
     {
@@ -514,6 +584,28 @@
         "global-option/global-option-additional-option-items#KB-040"
       ],
       "basis": "mọi TC chạy trên staging"
+    },
+    {
+      "feature_id": "FEAT-03-global-option-additional-option-items",
+      "layer": "portal",
+      "role": "owner",
+      "state": "[CBS-141] chuột phải thumbnail item inline lấy ảnh (đề xuất, TIB-5676 chưa ship)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "global-option/global-option-additional-option-items#KB-734"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-global-option-additional-option-items",
+      "layer": "portal",
+      "role": "owner",
+      "state": "[CBS-141] đổi thumbnail một item inline qua Library image picker + Save",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "global-option/global-option-additional-option-items#KB-735"
+      ]
     }
   ],
   "profile_conflicts": [],

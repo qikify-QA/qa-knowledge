@@ -113,3 +113,13 @@ Panel trái có 2 hàng:
 - 🔴 `/artworks?id=<id>` tự MỞ editor (dialog chặn list) ⇒ muốn thao tác list thì mở `/artworks` trần.
 - Menu `...` của artwork có `Import to Translation` (`dynamic-translations.md`).
 - Đổi trang SPA không mất hook: click `a[href="/fonts"]` (2 link trùng trong sidebar, dùng phần tử đầu).
+
+## Import artwork sang account khác
+
+Dùng khi cần copy artwork sang account/store khác (portal không có thao tác duplicate campaign sang store của account khác trên staging). Nguồn: TIB-5619.
+
+1. **TIB Library:** ở `/artworks` bấm `TIB Library` → card → `Import` ⇒ `POST /api/artworks/by-public` body `{"artwork_id": <public artwork id>}`, trả 204, tạo artwork mới ở account đang đăng nhập. Mỗi lần import tạo bộ clipart category mới.
+2. **Admin import (khác account):** chỉ người có quyền admin chạy, theo artwork id nguồn + user id account đích do QA đưa. Lần import sau của cùng nguồn có thể dùng lại category đã tạo lần trước. Có lần job kẹt ở trạng thái importing (Dev: do data) ⇒ dùng bản rút gọn của artwork.
+3. **Data nguồn:** `url` / `default_value` của layer phải là đường dẫn tương đối (`users/<id>/cliparts/...`). Artwork do bản MCP cũ tạo có `url` dạng full URL CDN, không phải data chuẩn để test remap (đã thấy: `url` giữ nguyên, `default_value` thành null).
+4. **So sánh:** đọc JSON layer nguồn và đích (`url`, `clipart`, `default_value`), kiểm HTTP từng file trên CDN. File master `.png` trên CDN công khai trả 403 cả ở nguồn ⇒ không dùng để kết luận.
+5. **Login account đích:** dùng storageState riêng (`troubleshooting.md` mục "Cần login portal bằng account khác"), không dùng header acting.

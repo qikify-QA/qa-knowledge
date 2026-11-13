@@ -1,0 +1,803 @@
+{
+  "feature_id": "FEAT-38",
+  "feature_key": "general-settings-page",
+  "object_id": "store-settings",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Mở General Settings từ sidebar nhóm Store Settings",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc: không bấm Save, Reset, toggle, radio và không gõ vào ô nào.",
+      "steps": [
+        "Login portal bằng account explorer, mở sidebar.",
+        "Mở rộng nhóm Store Settings, đọc danh sách link.",
+        "Bấm link General Settings, đọc URL, breadcrumb và heading."
+      ],
+      "observation_point": "Sidebar nhóm Store Settings, URL, breadcrumb, heading",
+      "expected_result": "Baseline một lần: nhóm Store Settings mở rộng được; link đầu tiên là General Settings trỏ /general-settings; trang mở ở route /general-settings với breadcrumb \"Home / General settings\"; nhóm có 7 link theo thứ tự General Settings, Product Page Settings, Product Page Content, Customization Image, Shipping Methods, Inventory Locations, SKU Mapping.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1637",
+          "KB-1652"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1637",
+        "KB-1652"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không vào được trang cài đặt chung"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-store-settings-011"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Header: heading, Save, Reset và dòng For store khi tải trang",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc: không bấm Save, Reset, toggle, radio và không gõ vào ô nào.",
+      "steps": [
+        "Mở /general-settings, đọc header.",
+        "Ghi trạng thái disabled của Save và Reset (DevTools).",
+        "Đọc dòng For store và link Switch store; không bấm."
+      ],
+      "observation_point": "Heading h4, nút Save/Reset, dòng For store",
+      "expected_result": "Baseline một lần: heading \"General settings\"; hai nút Save và Reset hiển thị, không disabled; dòng \"For store: <tên store> | <domain store>\" kèm link \"(Switch store?)\"; chỉ một cặp Save/Reset ở header, không card nào có nút riêng.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1638",
+          "KB-1639",
+          "KB-1655"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1638",
+        "KB-1639",
+        "KB-1655"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mất nút lưu hoặc sai store hiển thị"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-store-settings-011"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Danh sách 10 card và không có panel ẩn",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc: không bấm Save, Reset, toggle, radio và không gõ vào ô nào.",
+      "steps": [
+        "Mở /general-settings, cuộn hết trang.",
+        "Ghi heading card theo thứ tự DOM.",
+        "Quét DOM tìm phần tử ẩn, section thu gọn, panel token/API key/MCP."
+      ],
+      "observation_point": "Heading h6 các card theo thứ tự; DOM ẩn",
+      "expected_result": "Baseline một lần: 10 card hai cột theo thứ tự Blacklisted Words; Sync Variant's SKU to platform; Bulk Fulfill: Show non-Teeinblue items; Bulk Fulfill: Combine orders by Shipping Address; Add Fulfillment ID to Shopify Order's tag; Order storage time; Add order design URL to Shopify Orders; Line Item Properties; Cart items; Assign Shopify product template; không tab, không modal khi tải, không phần tử ẩn chứa text, không panel API token/key/MCP.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1640",
+          "KB-1651"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1640",
+        "KB-1651"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Card thiếu hoặc lẫn panel không thuộc trang"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-store-settings-011"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Card Blacklisted Words: help text và control khi tải",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc: không bấm Save, Reset, toggle, radio và không gõ vào ô nào.",
+      "steps": [
+        "Mở /general-settings, tìm card Blacklisted Words.",
+        "Đọc help text, hai block rule, placeholder và aria-label của ô nhập.",
+        "Ghi trạng thái disabled của hai nút icon; không gõ vào ô."
+      ],
+      "observation_point": "Card Blacklisted Words",
+      "expected_result": "Baseline một lần: help text có hai block \"Not case-sensitive\" và \"Exact match only\" (ví dụ Teeinblue, Teeinblu, Teeinblue App); ô nhập aria-label \"Add words or phrases\", placeholder \"Press Enter to add value\", rỗng; hai nút icon disabled. Đây là text UI, chưa kiểm hành vi chặn.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1641"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1641"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Card hiển thị sai hoặc mất"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-store-settings-011"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Card Sync Variant's SKU to platform: toggle và ô prefix khi tải",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc: không bấm Save, Reset, toggle, radio và không gõ vào ô nào.",
+      "steps": [
+        "Mở /general-settings, tìm card Sync Variant's SKU to platform.",
+        "Đọc help text, trạng thái toggle Create unique SKU for variants in platform.",
+        "Đọc nhãn ô Change platform SKU prefix và xem ô có giá trị hay không (không ghi giá trị)."
+      ],
+      "observation_point": "Card Sync Variant's SKU to platform",
+      "expected_result": "Baseline một lần: help text mô tả SKU khác nhau mỗi campaign, Fulfilled SKU khi tắt, hữu ích cho Google Shopping; toggle đang bật; ô \"Change platform SKU prefix:\" có giá trị không rỗng.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1642"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1642"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hiển thị sai trạng thái SKU"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-store-settings-011"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "Ô SKU prefix: thuộc tính maxlength và bộ đếm",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc: không bấm Save, Reset, toggle, radio và không gõ vào ô nào.",
+      "steps": [
+        "Mở /general-settings, kiểm thuộc tính ô Change platform SKU prefix (name, maxlength) bằng DevTools.",
+        "Đọc hint và bộ đếm ký tự; không gõ vào ô."
+      ],
+      "observation_point": "Thuộc tính input sku_prefix, hint, bộ đếm",
+      "expected_result": "Baseline một lần: ô name sku_prefix có maxlength 10, hint \"Up to 10 characters\", bộ đếm dạng \"n/10\". Chưa kiểm hành vi khi nhập vượt 10.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1642"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1642"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Giới hạn độ dài prefix sai"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-store-settings-011"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Hai card Bulk Fulfill: help text và trạng thái toggle",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc: không bấm Save, Reset, toggle, radio và không gõ vào ô nào.",
+      "steps": [
+        "Mở /general-settings, tìm hai card Bulk Fulfill.",
+        "Đọc help text và trạng thái toggle show-non-tib-items-toggle, combine-shipping-toggle; không bấm."
+      ],
+      "observation_point": "Hai card Bulk Fulfill",
+      "expected_result": "Baseline một lần: Show non-Teeinblue items đang tắt; Combine with Shipping Address đang bật; help text như trên UI (gộp theo địa chỉ giao hàng, nếu tắt chỉ gộp cùng Order ID; có thể cần SKU Mapping).",
+      "oracle": {
+        "kb_ids": [
+          "KB-1643",
+          "KB-1644"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1643",
+        "KB-1644"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hiển thị sai trạng thái Bulk Fulfill"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-store-settings-011"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Ba card chỉ có một toggle (Fulfillment ID tag, Line Item Properties, Cart items) khi tải",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc: không bấm Save, Reset, toggle, radio và không gõ vào ô nào.",
+      "steps": [
+        "Mở /general-settings, tìm ba card.",
+        "Ghi nhãn toggle, id và trạng thái; xác nhận card Line Item Properties và Cart items không có help text riêng; không bấm."
+      ],
+      "observation_point": "Ba card toggle đơn",
+      "expected_result": "Baseline một lần: order-tag-toggle, line-item-properties-toggle, cart-edit-button-toggle đều tắt; card Fulfillment ID có help text về tag trong Shopify Order, hai card còn lại không có help text riêng.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1645",
+          "KB-1648",
+          "KB-1649"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1645",
+        "KB-1648",
+        "KB-1649"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hiển thị sai trạng thái toggle"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-store-settings-011"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Card Add order design URL to Shopify Orders: radio và cảnh báo",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc: không bấm Save, Reset, toggle, radio và không gõ vào ô nào.",
+      "steps": [
+        "Mở /general-settings, tìm card Add order design URL to Shopify Orders.",
+        "Ghi ba option radio add_design_links, option đang checked, hộp cảnh báo; không bấm radio."
+      ],
+      "observation_point": "Card Add order design URL to Shopify Orders",
+      "expected_result": "Baseline một lần: label \"Add to:\", ba radio value note, property (đang checked), both; mỗi option có một help icon; có hộp cảnh báo về line item property có thể hiện ở Cart page tuỳ theme.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1646"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1646"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lưu sai nơi ghi design URL"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-store-settings-011"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Card Assign Shopify product template: toggle tắt không có ô chọn template",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc: không bấm Save, Reset, toggle, radio và không gõ vào ô nào.",
+      "steps": [
+        "Mở /general-settings, tìm card Assign Shopify product template.",
+        "Đọc help text, trạng thái toggle product-template-toggle, tìm ô chọn template; không bấm."
+      ],
+      "observation_point": "Card Assign Shopify product template",
+      "expected_result": "Baseline một lần: help text \"Select a Shopify product template to automatically apply to all campaigns when publishing.\"; toggle tắt; không có ô chọn template nào render.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1650"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1650"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hiển thị sai trạng thái template"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-store-settings-011"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Tải trang chỉ phát GET expired-time-setting tới API host",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc: không bấm Save, Reset, toggle, radio và không gõ vào ô nào.",
+      "steps": [
+        "Mở DevTools Network, lọc API host.",
+        "Tải mới /general-settings, ghi mọi request tới API host.",
+        "Cuộn trang và đọc lại danh sách request; không tương tác control."
+      ],
+      "observation_point": "Danh sách request tới API host",
+      "expected_result": "Baseline một lần: request duy nhất tới API host trong cửa sổ tải trang là GET /api/instances/{instance}/expired-time-setting; không có request instance config và không có request ghi. Lưu ý chỉ bắt API host.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1653",
+          "KB-1654"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1653",
+        "KB-1654"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Gọi API ngoài ý muốn khi tải trang"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-store-settings-011"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Trang hiển thị store đang chọn khớp request theo instance",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc: không bấm Save, Reset, toggle, radio và không gõ vào ô nào.",
+      "steps": [
+        "Mở /general-settings, đọc dòng For store.",
+        "Đối chiếu tên/domain với store của account explorer và path request có /instances/{instance}.",
+        "Không bấm Switch store."
+      ],
+      "observation_point": "Dòng For store và path request",
+      "expected_result": "Baseline một lần: dòng For store hiển thị store của account explorer và request đọc có path /api/instances/{instance}/...; chưa kiểm khi đổi store.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1639",
+          "KB-1654"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1639",
+        "KB-1654",
+        "KB-1653"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hiển thị cài đặt của store sai"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-store-settings-011"
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Save và Reset ở header: phạm vi lưu, thông báo, persistence",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Cần store test riêng (không dùng store explorer thật) vì thao tác ghi; chưa có nguồn thẩm quyền.",
+      "steps": [
+        "Trên store test riêng, đổi một control ở hai card khác nhau.",
+        "Bấm Save, ghi thông báo và request; reload và đọc lại giá trị.",
+        "Đổi lại control rồi bấm Reset, ghi giá trị trả về."
+      ],
+      "observation_point": "Giá trị control và request sau Save/Reset; thông báo",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1638",
+          "KB-1655"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1638",
+        "KB-1655",
+        "KB-1653"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mất hoặc ghi đè cài đặt cả store"
+      ],
+      "priority": "P1",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-store-settings-006"
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Nguồn nạp giá trị các card ngoài Order storage time",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Cần bắt request từ lúc login; request login không được capture trong run trước.",
+      "steps": [
+        "Mở DevTools Network trước khi login, ghi cả request lúc login/khởi tạo app.",
+        "Tải /general-settings, đối chiếu giá trị card (toggle, prefix, radio) với response các request.",
+        "Ghi request nào mang giá trị nào."
+      ],
+      "observation_point": "Request/response mang giá trị các card",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1653"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1653"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Giá trị hiển thị không khớp dữ liệu đã lưu"
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-store-settings-007"
+    },
+    {
+      "check_id": "CHK-015",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Blacklisted Words: thêm từ, rule không phân biệt hoa thường và exact match",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Cần store test riêng; chưa quan sát hành vi nhập và chặn.",
+      "steps": [
+        "Trên store test riêng, gõ từ vào ô Add words or phrases, nhấn Enter.",
+        "Bấm Save, reload, ghi danh sách.",
+        "Nhập thử các từ theo ví dụ trong help text ở nơi buyer nhập liệu và ghi kết quả chặn."
+      ],
+      "observation_point": "Danh sách từ đã lưu; kết quả chặn input của buyer",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1641"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1641"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chặn sai hoặc không chặn từ nhạy cảm"
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-store-settings-008"
+    },
+    {
+      "check_id": "CHK-016",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Hiệu ứng của các toggle và template picker",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal+storefront"
+      },
+      "precondition": "Cần store test riêng; chưa quan sát hiệu ứng downstream.",
+      "steps": [
+        "Trên store test riêng, bật từng toggle (Show non-Teeinblue items, Combine with Shipping Address, fulfillment ID tag, Line Item Properties, edit design in cart, auto-assign template).",
+        "Bấm Save, kiểm hiệu ứng ở Bulk Fulfill, Shopify order, trang Order Details, cart storefront, khi publish campaign.",
+        "Khi bật auto-assign template, ghi ô chọn template xuất hiện."
+      ],
+      "observation_point": "Bulk Fulfill, Shopify order tag, Order Details, cart storefront, ô template",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1643",
+          "KB-1644",
+          "KB-1645",
+          "KB-1648",
+          "KB-1649",
+          "KB-1650"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1643",
+        "KB-1644",
+        "KB-1645",
+        "KB-1648",
+        "KB-1649",
+        "KB-1650"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Toggle không có hiệu ứng như mô tả"
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-store-settings-008"
+    },
+    {
+      "check_id": "CHK-017",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Switch store: giá trị setting theo store",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Cần account có nhiều store test; run trước chỉ có một store.",
+      "steps": [
+        "Với account có ít nhất hai store test, ghi giá trị các card ở store A.",
+        "Bấm (Switch store?), chọn store B, đọc lại card và dòng For store.",
+        "Quay lại store A, so sánh."
+      ],
+      "observation_point": "Dòng For store và giá trị các card sau khi đổi store",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1639",
+          "KB-1654"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1639",
+        "KB-1654"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Cài đặt lẫn giữa các store"
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-store-settings-009"
+    },
+    {
+      "check_id": "CHK-018",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Help icon của Add to: popover ảnh minh hoạ khi hover",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store của account explorer; Order storage time chưa đặt; chưa lưu gì",
+        "environment": "staging",
+        "surface_or_device": "portal"
+      },
+      "precondition": "Đã login portal bằng account explorer (xác minh account guard). Chỉ đọc: không bấm Save, Reset, toggle, radio và không gõ vào ô nào.",
+      "steps": [
+        "Mở /general-settings, tìm card Add order design URL to Shopify Orders.",
+        "Hover lần lượt ba help icon cạnh Order Notes, Line item property, Both; ghi popover xuất hiện (vị trí trong DOM, loại nội dung, alt của ảnh).",
+        "Kiểm title/aria-label của icon; không bấm radio."
+      ],
+      "observation_point": "Popover của ba help icon",
+      "expected_result": "Baseline một lần: mỗi icon hiện một popover tooltip chỉ chứa một ảnh, không có text; ảnh alt \"Order Notes\", \"Line item property\", \"Both\" minh hoạ vị trí design URL (Additional details, dưới line item, cả hai) bằng dữ liệu mẫu; icon không có title hay aria-label.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1647",
+          "KB-1646"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "KB-1647",
+        "KB-1646"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Người dùng không thấy minh hoạ option"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-store-settings-011"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-38",
+      "risk_or_gap_ref": "Capability: vào trang và gắn với store",
+      "covered_by_check_ids": [
+        "CHK-001",
+        "CHK-012"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-38",
+      "risk_or_gap_ref": "Capability: Save và Reset cấp trang",
+      "covered_by_check_ids": [
+        "CHK-002",
+        "CHK-013"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-38",
+      "risk_or_gap_ref": "Capability: Blacklisted Words",
+      "covered_by_check_ids": [
+        "CHK-004",
+        "CHK-015"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-38",
+      "risk_or_gap_ref": "Capability: SKU biến thể",
+      "covered_by_check_ids": [
+        "CHK-005",
+        "CHK-006"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-38",
+      "risk_or_gap_ref": "Capability: Bulk Fulfill, tag, Line Item Properties, cart, template",
+      "covered_by_check_ids": [
+        "CHK-007",
+        "CHK-008",
+        "CHK-010",
+        "CHK-016"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-38",
+      "risk_or_gap_ref": "Capability: design URL vào Shopify order",
+      "covered_by_check_ids": [
+        "CHK-009",
+        "CHK-018"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-38",
+      "risk_or_gap_ref": "Bố cục trang và request khi tải",
+      "covered_by_check_ids": [
+        "CHK-003",
+        "CHK-011"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-38",
+      "risk_or_gap_ref": "Risk P1: Save/Reset ghi đè cài đặt cả store",
+      "covered_by_check_ids": [
+        "CHK-013"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-38",
+      "risk_or_gap_ref": "Gap: nguồn giá trị card và khác biệt giữa store",
+      "covered_by_check_ids": [
+        "CHK-014",
+        "CHK-017"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "PERMISSION",
+      "reason": "Chỉ quan sát role merchant-owner; role khác, chưa đăng nhập, cross-tenant chưa có KB item nên chưa có check."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Không áp dụng: object mới, không base, không KNOWN_DEFECT."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "bootstrap"
+  }
+}

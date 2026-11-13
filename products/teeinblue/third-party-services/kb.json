@@ -1,0 +1,320 @@
+[
+  {
+    "kb_id": "KB-1519",
+    "topic": "Entry point và phạm vi account của trang 3rd-party Services",
+    "statement": "Khi bấm link \"3rd-party Services\" trong nhóm Extras của sidebar ở merchant-owner/staging/account explorer, quan sát thấy trang mở ở route /extras/extra-services với breadcrumb \"Home / Extras / 3rd-party Services\", heading \"3rd-party Services\" và mô tả nguyên văn \"Connect Teeinblue with your 3rd-party service's account (connection applies for all stores of this Teeinblue account).\"; trang mặc định mở tab Maps. Mô tả lặp lại ở mọi tab trong các lần xem.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "entry-point",
+      "route",
+      "account-level"
+    ],
+    "related_kb_ids": [
+      "KB-1520"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-1520",
+    "topic": "Tám tab chuyển phía client, không phát request",
+    "statement": "Khi mở /extras/extra-services ở merchant-owner/staging/account explorer, quan sát thấy 8 tab (link href javascript:;) theo thứ tự: Maps, Gen AI Effects, Remove Background, Cutout.Pro, ImagenHub, Emboss, Upload limit settings, Canva. Bấm từng tab sau khi tải trang mới không phát request nào tới API host (0 request cho mỗi tab) và không cửa sổ action đổi tab nào có request; dữ liệu trang lấy từ dữ liệu đã nạp lúc login.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal, network",
+      "brand": null
+    },
+    "tags": [
+      "tabs",
+      "client-side",
+      "network"
+    ],
+    "related_kb_ids": [
+      "KB-1519",
+      "KB-1521"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-1521",
+    "topic": "Request khi tải trang mới",
+    "statement": "Khi tải mới /extras/extra-services (page.goto) ở merchant-owner/staging/account explorer, quan sát thấy portal gọi GET /sanctum/csrf-cookie, GET /api/staff (2 lần), GET /api/user, GET /api/instances?trashed, POST /api/assistant/session-token (widget AI Assistant, không phải ghi setting), GET /api/instances/{id}/popup-messages, GET /api/settings, GET /api/assistant/access; không có request riêng của trang (không /api/user/credit, không private-config). Cả run không có request ghi setting nào; POST session-token là non-GET duy nhất. Một lần tải trang có capture.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "network",
+      "brand": null
+    },
+    "tags": [
+      "network",
+      "page-load",
+      "read-only"
+    ],
+    "related_kb_ids": [
+      "KB-1520",
+      "KB-1522"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-1522",
+    "topic": "Cấu hình dịch vụ của trang nằm ở private_config cấp account",
+    "statement": "Khi đọc GET /api/user ở merchant-owner/staging/account explorer, quan sát thấy cấu hình provider của trang nằm trong object private_config của user (cấp account, không theo store), gồm: background_remover_name (string), remove_bg_master_only (boolean), image_generation_name (string, \"gpt\"), gpt_model, gpt_quality, flux_version, flux_kontext_model, gemini_model (string) và các field API key (xem KB-1518). Không có field emboss_provider, khớp với Emboss đang \"Not configured\"; không có field nào về shutdown/deprecation. Hai lần đọc cho cùng tập key và kiểu; một trạng thái account.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "api",
+      "brand": null
+    },
+    "tags": [
+      "private_config",
+      "account-level",
+      "api-shape"
+    ],
+    "related_kb_ids": [
+      "KB-1502",
+      "KB-1518",
+      "KB-1527"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-1523",
+    "topic": "Tab Maps (cấu trúc)",
+    "statement": "Khi mở tab Maps ở merchant-owner/staging/account explorer, quan sát thấy heading \"Connect Mapbox account\", ô \"Mapbox Access token:\" (input text name maps_api_key, rỗng), radio maps_place_provider Mapbox (đang chọn) / Google, ghi chú giới hạn render 2056px của Mapbox static image và một nút Save. Chỉ ghi cấu trúc, không thao tác.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "maps",
+      "structure-only"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-1524",
+    "topic": "Tab Gen AI Effects (cấu trúc)",
+    "statement": "Khi mở tab Gen AI Effects ở merchant-owner/staging/account explorer, quan sát thấy heading \"Gen AI Effects Service\", radio image_generation_name OpenAI (GPT) Image (đang chọn), Flux Kontext, Gemini; checkbox \"Auto-switch to a backup model during temporary outages\" (chưa bật); các section OpenAI (GPT) Image (radio model và quality, Medium là default), FluxKontext (version, model, \"Prompt Upsampling: ON\"), Gemini (radio model). Mỗi provider có ô key (có giá trị, đã che), nút Save và \"Validate key\". Chỉ ghi cấu trúc, không thao tác.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "gen-ai-effects",
+      "structure-only"
+    ],
+    "related_kb_ids": [
+      "KB-1525"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-1525",
+    "topic": "Mẫu option deprecated trên trang: nhãn \"Deprecated\" + radio disabled",
+    "statement": "Khi mở tab Gen AI Effects ở merchant-owner/staging/account explorer, quan sát thấy hai model được render với nhãn \"Deprecated\" và radio disabled: gpt-image-1.5 (section OpenAI (GPT) Image) và Nano Banana (Gemini 2.5 Flash) (section Gemini). Đây là cách trang đang render option deprecated ở tab khác; option Remove.BG trong bundle dùng badge \"Deprecate in Dec 1\" + disabled (KB-1507) nhưng chưa thấy render. Một lần xem.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "deprecated-pattern",
+      "gen-ai-effects",
+      "disabled-radio"
+    ],
+    "related_kb_ids": [
+      "KB-1524",
+      "KB-1507"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-1526",
+    "topic": "Tab ImagenHub nằm riêng, ngoài tab Remove Background",
+    "statement": "Khi mở tab ImagenHub ở merchant-owner/staging/account explorer, quan sát thấy tab riêng chỉ chứa \"ImagenHub Service\" với một ô key và nút Save; ImagenHub đồng thời là một radio trong danh sách provider xoá nền (KB-1501) và một option của Emboss service (KB-1527). Chi tiết ô key ở KB-1517. Một lần xem.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "imagenhub",
+      "structure-only"
+    ],
+    "related_kb_ids": [
+      "KB-1517",
+      "KB-1501",
+      "KB-1527"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-1527",
+    "topic": "Tab Emboss (cấu trúc)",
+    "statement": "Khi mở tab Emboss ở merchant-owner/staging/account explorer, quan sát thấy heading \"Emboss layer generation\", select emboss_provider với placeholder disabled đang chọn \"Not configured — emboss layers will not render until you choose a service\", option \"ImagenHub\" (imagenhub) và \"TeeinBlue (black & white, no third-party call)\" (teeinblue), help text về layer 3D emboss bật qua nút Print Effects trong Artwork editor, và một nút Save. Chỉ ghi cấu trúc, không thao tác.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "emboss",
+      "structure-only"
+    ],
+    "related_kb_ids": [
+      "KB-1522"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-1528",
+    "topic": "Tab Upload limit settings (cấu trúc)",
+    "statement": "Khi mở tab Upload limit settings ở merchant-owner/staging/account explorer, quan sát thấy heading \"Rate limit for photo uploads using third-party services\", chữ \"To prevent spam and avoid excessive use of your 3rd-party credits, set a maximum number of uploads each buyer can make per option. This rate applies for all image effects.\", input số \"Max uploads per buyer per option (reset per hour)\" = 5 và một nút Save. Chỉ ghi cấu trúc, không thao tác.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "upload-limit",
+      "structure-only"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-1529",
+    "topic": "Tab Cutout.Pro: các control ngoài ô key",
+    "statement": "Khi mở tab Cutout.Pro ở merchant-owner/staging/account explorer, quan sát thấy heading \"Cutout.pro - Photo Effects service\", chữ \"Connect your Cutout.pro account here to use the Face Cutout or Cartoonize feature in Artwork.\", hai link referral, checkbox \"Use the photo's original size for both Preview & Production file (for FaceCutout)\" đang tắt kèm giải thích nguyên văn \"Process the original size from the start to ensure the same result for both preview and production (longer upload speed and higher cost). If disabled, a small size will be used for preview.\", input số \"Block rendering when preview and production file ratio mismatch exceeds (%)\" = 4, radio \"Apply Photo Enhancer on\": \"Mockup Preview & Order Design\" (đang chọn, mockup_order) / \"Order Design only\" (order). Ô key và Check credits ở KB-1516. Chỉ ghi cấu trúc, không thao tác.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "cutout-pro",
+      "original-size",
+      "structure-only"
+    ],
+    "related_kb_ids": [
+      "KB-1516",
+      "KB-1512"
+    ],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-1530",
+    "topic": "Tab Canva (cấu trúc)",
+    "statement": "Khi mở tab Canva ở merchant-owner/staging/account explorer, quan sát thấy heading \"Connect Canva account\", chữ \"Connect your Canva account to use Canva features in Artwork.\" và một nút \"Connect\" (không bấm). Chỉ ghi cấu trúc.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "canva",
+      "structure-only"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-1531",
+    "topic": "Quyền xem trang ở role owner",
+    "statement": "Khi đăng nhập role merchant-owner ở staging/account explorer, quan sát thấy xem được /extras/extra-services và cả 8 tab; mọi nút Save, Check credits, Validate key, Connect đều hiển thị enabled (không bấm). Role staff khác chưa thử.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "permission",
+      "role"
+    ],
+    "related_kb_ids": [],
+    "last_updated": {
+      "date": "2026-11-13",
+      "ccr_ref": "bootstrap"
+    }
+  }
+]

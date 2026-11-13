@@ -1,0 +1,505 @@
+{
+  "feature_id": "FEAT-02-manage-provider-api-keys",
+  "feature_key": "provider-api-keys",
+  "name": "Quản lý API key của dịch vụ bên thứ ba",
+  "user_goal": "Merchant-owner nhập, lưu và kiểm tra credit cho API key của dịch vụ bên thứ ba (Removal.AI, Cutout.pro, ImagenHub) ở trang 3rd-party Services, để Teeinblue gọi dịch vụ đó thay cho account. Quan sát chỉ đọc trên một account staging; Save, Check credits, đổi/xoá key chưa được thao tác. Giá trị key không được ghi vào context.",
+  "user_goal_kb_refs": [
+    "KB-1514",
+    "KB-1515",
+    "KB-1516",
+    "KB-1517",
+    "KB-1518"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "merchant-owner",
+      "permission_observed": "Xem được ô key và thấy nút Save, Check credits enabled ở tab Remove Background, Cutout.Pro (không bấm). Role staff khác chưa thử.",
+      "kb_refs": [
+        "KB-1514",
+        "KB-1515",
+        "KB-1516",
+        "KB-1531"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Sidebar Extras > 3rd-party Services (/extras/extra-services) > tab Remove Background (section Removal.ai)",
+      "precondition": "Đã login portal bằng account explorer (đúng account guard). Để thấy ô key rỗng cần account chưa lưu key Removal.AI.",
+      "kb_refs": [
+        "KB-1514",
+        "KB-1519"
+      ]
+    },
+    {
+      "path": "/extras/extra-services > tab Cutout.Pro",
+      "precondition": "Như trên; account chưa lưu key Cutout.pro.",
+      "kb_refs": [
+        "KB-1516",
+        "KB-1519"
+      ]
+    },
+    {
+      "path": "/extras/extra-services > tab ImagenHub",
+      "precondition": "Như trên; account đã có key ImagenHub.",
+      "kb_refs": [
+        "KB-1517",
+        "KB-1519"
+      ]
+    },
+    {
+      "path": "GET /api/user (private_config)",
+      "precondition": "Session portal hợp lệ; đọc response bằng DevTools Network, không sao chép giá trị key ra ngoài.",
+      "kb_refs": [
+        "KB-1518",
+        "KB-1522"
+      ]
+    },
+    {
+      "path": "Sidebar Extras > 3rd-party Services > tab Remove Background (ô key Remove.bg) — trạng thái trước mốc shutdown, seller đang ở Remove.BG",
+      "precondition": "Cần account test riêng đang chọn Remove.BG và mốc shutdown của môi trường test đặt ở tương lai. Staging hiện compile mốc quá khứ (remove-background-provider KB-1509) nên Dev phải đặt lại mốc; không dùng account explorer.",
+      "kb_refs": [
+        "KB-1547",
+        "third-party-services/remove-background-provider#KB-1509"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Nhập key Removal.AI",
+      "description": "Tab Remove Background có section Removal.ai với ô \"Removal.AI API key:\" (input text, name removal_ai_api_key, rỗng), help text JPG/PNG tới 12mb. Một lần kiểm thuộc tính.",
+      "kb_refs": [
+        "KB-1514"
+      ]
+    },
+    {
+      "name": "Save và Check credits cho key Removal.AI và Cutout.pro",
+      "description": "Hai tab có nút Save và Check credits enabled, không bấm. Chưa có request hay phản hồi.",
+      "kb_refs": [
+        "KB-1515",
+        "KB-1516"
+      ]
+    },
+    {
+      "name": "Nhập key Cutout.pro",
+      "description": "Tab Cutout.Pro có ô key name cutout_pro_api_key (input text, rỗng) và help text JPG/PNG, tối đa 4096x4096px, dưới 15mb.",
+      "kb_refs": [
+        "KB-1516"
+      ]
+    },
+    {
+      "name": "Nhập key ImagenHub khi đã có key",
+      "description": "Tab ImagenHub có ô key name imagenhub_api_key có giá trị hiển thị dạng mask (4 ký tự đầu, dãy dấu *, 4 ký tự cuối), là input text, có link lấy key, nút Save, không có Check credits. Một lần xem.",
+      "kb_refs": [
+        "KB-1517"
+      ]
+    },
+    {
+      "name": "Key provider nằm trong private_config của GET /api/user",
+      "description": "Trên account quan sát: field key (giá trị REDACTED) có mặt cho provider đã lưu key (gpt, gemini, imagenhub, flux_kontext); field Removal.AI, Cutout.pro, Mapbox vắng trong khi ô tương ứng rỗng. Hai lần đọc, một trạng thái; không suy rộng. API gửi key đầy đủ hay mask chưa đánh giá.",
+      "kb_refs": [
+        "KB-1518",
+        "KB-1522"
+      ]
+    },
+    {
+      "name": "Ô key Remove.bg read-only kèm notice shutdown (trước shutdown)",
+      "description": "Trước mốc shutdown, seller đang ở Remove.BG thấy ô key Remove.bg ở chế độ read-only kèm notice shutdown; không sửa được key. Chỉ đúng trước mốc, không áp dụng sau mốc.",
+      "kb_refs": [
+        "KB-1547"
+      ]
+    },
+    {
+      "name": "Xoá key Remove.bg đã lưu sau shutdown",
+      "description": "Từ mốc shutdown, key Remove.bg đã lưu bị xoá cho mọi seller, kể cả seller đã chuyển provider trước mốc. Chỉ verify trên staging với mốc giả lập; production chưa verify.",
+      "kb_refs": [
+        "KB-1548"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "Key Remove.bg đã lưu (trước mốc shutdown)",
+      "to": "Key Remove.bg bị xoá cho mọi seller (sau mốc shutdown)",
+      "trigger": "Đến mốc shutdown Remove.BG (production 1 Dec 2026, 9:00 CET theo Dev); staging cần Dev mô phỏng mốc và chạy migration",
+      "condition": "Áp dụng cho mọi seller, kể cả seller đã chuyển sang provider khác trước mốc",
+      "kb_refs": [
+        "KB-1548",
+        "third-party-services/remove-background-provider#KB-1542"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Trước mốc shutdown Remove.BG, với seller đang ở Remove.BG, ô key Remove.bg trên tab Remove Background ở chế độ read-only kèm notice shutdown (Dev, TIB-5399). Điều kiện chỉ đúng trước mốc shutdown; staging hiện compile mốc quá khứ nên Dev phải đặt mốc tương lai mới dựng được trạng thái này.",
+      "kb_refs": [
+        "KB-1547"
+      ]
+    },
+    {
+      "statement": "Từ mốc shutdown Remove.BG, key API Remove.bg đã lưu bị xoá cho mọi seller, kể cả seller đã tự chuyển sang provider khác trước mốc (Dev, TIB-5399). Chỉ áp dụng sau mốc shutdown; trên staging mới verify với mốc giả lập do Dev đặt, production chưa tới mốc và chưa verify.",
+      "kb_refs": [
+        "KB-1548"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Khi xem section \"Removal.ai - Remove background service\" của tab Remove Background ở merchant-owner/staging/account explorer (chưa có key Removal.AI), quan sát thấy banner khuyến mãi, chữ \"Create a Removal.AI and connect it here to use the Remove Background feature in Artwork. Read How to use Remove Background feature.\", nhãn \"Removal.AI API key:\" là input type text (name removal_ai_api_key; không phải password, không read-only, không disabled, rỗng, không placeholder) và help text nguyên văn \"This service only supports photos in JPG/PNG with up to 12mb.\" Section hiện cả khi provider đã lưu là Teeinblue. Một lần kiểm thuộc tính; không gõ vào ô.",
+      "kb_refs": [
+        "KB-1514"
+      ]
+    },
+    {
+      "statement": "Khi xem tab Remove Background ở merchant-owner/staging/account explorer, quan sát thấy dưới ô key Removal.AI một nút Save (promise-button btn-primary) và một nút \"Check credits\" (kiểu secondary), cả hai enabled. Không bấm (ô key rỗng, read-only policy): request Check credits (GET /api/user/credit theo phạm vi run) và Save key chưa được gọi, không có shape hay phản hồi nào được quan sát.",
+      "kb_refs": [
+        "KB-1515"
+      ]
+    },
+    {
+      "statement": "Khi mở tab Cutout.Pro ở merchant-owner/staging/account explorer (chưa có key Cutout.pro), quan sát thấy ô key name cutout_pro_api_key (input text, rỗng), chữ hỗ trợ nguyên văn \"This service only supports photos in JPG/PNG, max resolution 4096x4096px with less than 15mb.\", và hai nút Save và \"Check credits\" đều enabled, không bấm. Nút Check credits chỉ thấy ở tab Remove Background (Removal.AI) và Cutout.Pro; tab Gen AI Effects dùng nút \"Validate key\" thay thế. Một lần xem.",
+      "kb_refs": [
+        "KB-1516"
+      ]
+    },
+    {
+      "statement": "Khi mở tab ImagenHub ở merchant-owner/staging/account explorer (account đã có key ImagenHub), quan sát thấy heading \"ImagenHub Service\", nhãn \"ImagenHub API key:\" là input text name imagenhub_api_key có giá trị; ô hiển thị key đã lưu ở dạng mask ngay trong input: 4 ký tự đầu và 4 ký tự cuối hiện ra, phần giữa thay bằng một dãy dấu * (cùng dạng mask trong text/aria của trang). Có link \"Click here to get api key\" và một nút Save; tab này không có Check credits. Ô key là type text chứ không phải password. Một lần xem; ký tự key không được ghi trong evidence.",
+      "kb_refs": [
+        "KB-1517"
+      ]
+    },
+    {
+      "statement": "Khi đọc GET /api/user ở merchant-owner/staging/account explorer, quan sát thấy private_config chứa các field key dạng string không rỗng cho provider account đã cấu hình: gpt_api_key, gemini_api_key, imagenhub_api_key, flux_kontext_api_key (giá trị REDACTED trong capture). Không có field removal_ai_api_key, cutout_pro_api_key, maps_api_key hay bất kỳ field key Remove.BG nào — khớp với các ô key Removal.AI, Cutout.pro, Mapbox đang rỗng trên trang. Hai lần đọc cho cùng tập key và kiểu; giá trị trả về client là key đầy đủ hay đã mask chưa được đánh giá. Chưa suy từ một trạng thái rằng field key luôn vắng khi rỗng.",
+      "kb_refs": [
+        "KB-1518"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "statement": "Role merchant-owner xem được trang và các nút Save, Check credits, enabled. Role staff khác, account khác chưa quan sát.",
+      "kb_refs": [
+        "KB-1531",
+        "KB-1515"
+      ]
+    },
+    {
+      "statement": "Cấu hình provider nằm ở cấp account, áp dụng cho mọi store của account.",
+      "kb_refs": [
+        "KB-1519",
+        "KB-1522"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      {
+        "path": "/extras/extra-services (tab Remove Background, Cutout.Pro, ImagenHub)",
+        "note": "Ô key và nút Save/Check credits.",
+        "kb_refs": [
+          "KB-1514",
+          "KB-1515",
+          "KB-1516",
+          "KB-1517"
+        ]
+      },
+      {
+        "path": "/extras/extra-services (tab Remove Background, ô key Remove.bg)",
+        "note": "Trước mốc shutdown, seller đang ở Remove.BG: ô key read-only kèm notice shutdown.",
+        "kb_refs": [
+          "KB-1547"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "method": "GET",
+        "path": "/api/user",
+        "note": "private_config chứa field key (shape: string không rỗng, giá trị REDACTED).",
+        "kb_refs": [
+          "KB-1518",
+          "KB-1522"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/api/user/credit",
+        "note": "Check credits theo phạm vi run; chưa được gọi, chưa có shape.",
+        "kb_refs": [
+          "KB-1515"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "entity": "private_config (cấp account)",
+        "note": "Trên account quan sát, removal_ai_api_key, cutout_pro_api_key vắng khi ô tương ứng rỗng; field của provider đã lưu key có mặt (REDACTED). Một trạng thái, không suy rộng.",
+        "kb_refs": [
+          "KB-1518",
+          "KB-1522"
+        ]
+      },
+      {
+        "entity": "private_config (cấp account) — key Remove.bg",
+        "note": "Sau mốc shutdown key Remove.bg đã lưu bị xoá cho mọi seller; staging verify bằng mốc giả lập, production chưa verify.",
+        "kb_refs": [
+          "KB-1548",
+          "third-party-services/remove-background-provider#KB-1542"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "description": "Feature chọn provider xoá nền (remove-background-provider) dùng cùng key Removal.AI và Cutout.pro; ImagenHub còn là option của Emboss.",
+      "kb_refs": [
+        "KB-1515",
+        "KB-1517"
+      ]
+    },
+    {
+      "description": "Dữ liệu trang lấy từ nạp lúc login, đổi tab không phát request.",
+      "kb_refs": [
+        "KB-1520",
+        "KB-1521"
+      ]
+    },
+    {
+      "description": "Hành vi ô key Remove.bg và xoá key phụ thuộc mốc shutdown Remove.BG (biến env API và portal, portal cần rebuild) và migration của feature remove-background-provider.",
+      "kb_refs": [
+        "KB-1547",
+        "KB-1548",
+        "third-party-services/remove-background-provider#KB-1546",
+        "third-party-services/remove-background-provider#KB-1509"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "description": "Lộ key: ô ImagenHub đã quan sát hiển thị mask nhưng là input text; GET /api/user trả field key vào client và chưa biết giá trị đầy đủ hay mask.",
+      "kb_refs": [
+        "KB-1517",
+        "KB-1518",
+        "KB-1514"
+      ]
+    },
+    {
+      "description": "Save/đổi/xoá key có thể ảnh hưởng account thật hoặc credit trả phí; chưa quan sát, cần account test và key dùng một lần.",
+      "kb_refs": [
+        "KB-1515"
+      ]
+    },
+    {
+      "description": "Chỉ một account, một trạng thái, staging; không suy ra hành vi khi ô có key hoặc role khác.",
+      "kb_refs": [
+        "KB-1514",
+        "KB-1518"
+      ]
+    },
+    {
+      "description": "Xoá key Remove.bg hàng loạt cho mọi seller sau shutdown là mất dữ liệu không hoàn tác ở production; chỉ mới verify mô phỏng trên staging.",
+      "kb_refs": [
+        "KB-1548"
+      ]
+    }
+  ],
+  "environment_differences": [
+    {
+      "type": "ALTERNATIVE_SETUP",
+      "test_env": "Staging: portal đang compile mốc shutdown quá khứ nên trạng thái trước shutdown (ô key read-only) không dựng được nếu Dev chưa đặt mốc tương lai; trạng thái sau shutdown (xoá key) cần Dev mô phỏng mốc và chạy migration.",
+      "production": "Hành vi sau shutdown chỉ xảy ra từ mốc cutover production (1 Dec 2026, 9:00 CET theo Dev); chưa verify trên production.",
+      "how_to_test": "Nhờ Dev đặt mốc shutdown tương lai (trước shutdown) hoặc quá khứ cộng chạy migration (sau shutdown) trên staging; ghi rõ mốc và kết quả là mô phỏng, không coi là xác nhận production.",
+      "kb_refs": [
+        "KB-1547",
+        "KB-1548",
+        "third-party-services/remove-background-provider#KB-1546"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-11-13"
+  },
+  "unknown_areas": [
+    {
+      "question": "GET /api/user có gửi key đầy đủ về client không, và việc mask (chỉ ở UI hay cả API) có phải thiết kế có chủ đích?",
+      "why_it_matters": "Rủi ro lộ key qua API; UI đã quan sát hiển thị mask nhưng API chưa đánh giá.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1518",
+        "KB-1517"
+      ],
+      "oq_id": "OQ-third-party-services-011"
+    },
+    {
+      "question": "Nút Save gửi request gì, validate định dạng key ra sao, báo thành công/lỗi thế nào?",
+      "why_it_matters": "Không có shape hay thông báo; Save chưa được bấm.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1515"
+      ],
+      "oq_id": "OQ-third-party-services-012"
+    },
+    {
+      "question": "Check credits (GET /api/user/credit) trả gì với key hợp lệ, key sai, ô rỗng?",
+      "why_it_matters": "Chưa có request, response hay lỗi.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1515",
+        "KB-1516"
+      ],
+      "oq_id": "OQ-third-party-services-013"
+    },
+    {
+      "question": "Đổi hoặc xoá key: field private_config và ô key thay đổi thế nào sau reload; key cũ có bị vô hiệu?",
+      "why_it_matters": "Chưa thao tác thay/xoá key.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1518"
+      ],
+      "oq_id": "OQ-third-party-services-014"
+    },
+    {
+      "question": "Field key có luôn vắng khỏi private_config khi ô rỗng không?",
+      "why_it_matters": "Chỉ thấy ở một trạng thái.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1518"
+      ],
+      "oq_id": "OQ-third-party-services-014"
+    },
+    {
+      "question": "Role staff khác owner, hoặc account khác, có xem/sửa key được không?",
+      "why_it_matters": "Chưa thử role khác; liên quan permission.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1531"
+      ],
+      "oq_id": "OQ-third-party-services-015"
+    },
+    {
+      "question": "Trang hiển thị thế nào khi account đã có key Removal.AI hoặc Cutout.pro?",
+      "why_it_matters": "Account explorer không có key hai provider này.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1514",
+        "KB-1516"
+      ],
+      "oq_id": "OQ-third-party-services-016"
+    },
+    {
+      "question": "Hành vi ô key Remove.bg và xoá key trên production có đúng như đã mô phỏng trên staging không?",
+      "why_it_matters": "Production chưa tới mốc shutdown và chưa verify; staging chỉ mô phỏng.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1547",
+        "KB-1548"
+      ],
+      "oq_id": "OQ-third-party-services-026"
+    },
+    {
+      "question": "Khi nào staging được đặt lại mốc shutdown về tương lai, và job hằng giờ chạy khi nào thì key Remove.bg bị xoá?",
+      "why_it_matters": "Staging hiện compile mốc quá khứ nên trạng thái trước shutdown không dựng được; thời điểm job xoá chưa có trong nguồn.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "KB-1547",
+        "KB-1548"
+      ],
+      "oq_id": "OQ-third-party-services-001"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-151"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "account explorer, merchant-owner, staging; key Removal.AI và Cutout.pro rỗng, key ImagenHub/GPT/Flux Kontext/Gemini có",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1514",
+        "KB-1516",
+        "KB-1517"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "account explorer, merchant-owner, staging; key Removal.AI và Cutout.pro rỗng, key ImagenHub/GPT/Flux Kontext/Gemini có",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1518"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "layer": "db",
+      "role": "merchant-owner",
+      "state": "account explorer, merchant-owner, staging; key Removal.AI và Cutout.pro rỗng, key ImagenHub/GPT/Flux Kontext/Gemini có",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "seller đang ở Remove.BG, trước mốc shutdown",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1547"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "layer": "db",
+      "role": "dev (vận hành)",
+      "state": "sau mốc shutdown, mốc giả lập",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "KB-1548"
+      ]
+    },
+    {
+      "feature_id": "FEAT-02-manage-provider-api-keys",
+      "layer": "db",
+      "role": "dev (vận hành)",
+      "state": "sau mốc shutdown thật",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": []
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from_feature_id": "FEAT-02-manage-provider-api-keys",
+      "to_feature_id": "FEAT-01-choose-background-remover-provider",
+      "relationship": "supplies_keys_for_provider_options",
+      "kb_refs": [
+        "KB-1514",
+        "KB-1516"
+      ]
+    }
+  ]
+}

@@ -1,230 +1,303 @@
 {
-  "feature_profiles": [
+  "feature_id": "FEAT-03-campaign-list-browse",
+  "feature_key": "campaign-list-browse",
+  "name": "Browse & Manage Campaign Lists",
+  "user_goal": "Là owner, xem/lọc/tìm danh sách campaign (cả 2 loại: by Product Base và by Shopify Products) để theo dõi trạng thái và truy cập nhanh vào các action quản lý (edit, launch, delete, v.v.).",
+  "actors": [
     {
-      "feature_id": "FEAT-03-campaign-list-browse",
-      "feature_key": "campaign-list-browse",
-      "name": "Browse & Manage Campaign Lists",
-      "user_goal": "Là owner, xem/lọc/tìm danh sách campaign (cả 2 loại: by Product Base và by Shopify Products) để theo dõi trạng thái và truy cập nhanh vào các action quản lý (edit, launch, delete, v.v.).",
-      "actors": [
-        {
-          "role": "owner (explorer (TIB_STAGING_EMAIL), sub=<explorer>)",
-          "permission_observed": "Xem được cả 2 list, không gặp permission-denied",
-          "kb_refs": [
-            "campaign/campaign-list-browse#KB-025",
-            "campaign/campaign-list-browse#KB-026",
-            "campaign/campaign-security-permissions#KB-029"
-          ]
-        }
-      ],
-      "entry_points": [
-        {
-          "path": "/campaigns",
-          "precondition": "role owner đã đăng nhập",
-          "kb_refs": [
-            "campaign/campaign-list-browse#KB-025"
-          ]
-        },
-        {
-          "path": "/platform-products",
-          "precondition": "role owner đã đăng nhập",
-          "kb_refs": [
-            "campaign/campaign-list-browse#KB-026"
-          ]
-        }
-      ],
-      "capabilities": [
-        {
-          "name": "Xem danh sách campaign by-product-base với filter/tab",
-          "description": "/campaigns có filter tabs All/Published/Unpublished/Archived/Update required(N); filter row Search + Published on store + Internal Tags + Type + Vendor + Tags; cột CAMPAIGN MOCKUPS/NAME/INTERNAL TAGS/LISTING INFO/STATUS-CREATED/ACTION. Data fetch qua GraphQL getData{campaigns_aggregate, campaigns} — KHÔNG có REST GET /api/campaigns nào được quan sát trong 18 file capture. Entry points phụ 'Bulk creator' và 'New campaign'.",
-          "kb_refs": [
-            "campaign/campaign-list-browse#KB-025"
-          ]
-        },
-        {
-          "name": "Xem danh sách campaign by-shopify với filter/tab khác",
-          "description": "/platform-products có cột MOCKUP/NAME/INTERNAL TAGS/DOMAIN/STATUS-CREATED/ACTION (KHÔNG có LISTING INFO/TYPE/VENDOR như /campaigns); filter row chỉ Search + Internal Tags + Store; filter tabs chỉ All/Published/Unpublished (KHÔNG có Archived/Update required). Data fetch qua GraphQL getData{platform_products_aggregate, platform_products} — KHÔNG có REST GET /api/platform-products.",
-          "kb_refs": [
-            "campaign/campaign-list-browse#KB-026"
-          ]
-        },
-        {
-          "name": "Truy cập action theo row từ list by-product-base",
-          "description": "Mỗi row /campaigns có icon rocket/link (mở thẳng Multi-store launch dialog), icon bút chì (edit), và '...' overflow gồm: See campaign info, View campaign logs, Duplicate campaign, Mark as archive, Import to Translation, Delete campaign. Chỉ 'Delete campaign' được thực thi trong run này.",
-          "kb_refs": [
-            "campaign/campaign-list-browse#KB-027"
-          ]
-        }
-      ],
-      "state_transitions": [
-        {
-          "from": "campaigns list: 1 item (pre-existing 2592)",
-          "to": "3 item (sau khi tạo 2595, 2596 trong phiên)",
-          "trigger": "tạo campaign mới qua FEAT-01",
-          "condition": "n/a",
-          "kb_refs": [
-            "campaign/campaign-list-browse#KB-025"
-          ]
-        },
-        {
-          "from": "platform-products list: 0 item (empty state)",
-          "to": "1 item (sau khi tạo qua FEAT-02)",
-          "trigger": "tạo platform-product mới qua FEAT-02",
-          "condition": "n/a",
-          "kb_refs": [
-            "campaign/campaign-list-browse#KB-026"
-          ]
-        }
-      ],
-      "confirmed_rules": [],
-      "observed_behavior": [
-        {
-          "statement": "Cấu trúc cột/filter/tab của /campaigns quan sát nhất quán ở 2 thời điểm khác nhau (trước và sau khi thêm campaign).",
-          "kb_refs": [
-            "campaign/campaign-list-browse#KB-025"
-          ]
-        },
-        {
-          "statement": "Cấu trúc cột/filter/tab của /platform-products quan sát nhất quán ở 2 thời điểm khác nhau (rỗng và có data).",
-          "kb_refs": [
-            "campaign/campaign-list-browse#KB-026"
-          ]
-        },
-        {
-          "statement": "Mở menu '...' co-occur với 2 GraphQL query (instances, instances_aggregate) trong cùng capture window, nhưng causation CHƯA xác nhận (có thể do prefetch icon rocket) — giữ mức INFERRED, không khẳng định nhân-quả.",
-          "kb_refs": [
-            "campaign/campaign-list-browse#KB-027"
-          ]
-        }
-      ],
-      "observed_validations": [],
-      "permissions": [
-        {
-          "statement": "Role owner xem được cả 2 list đầy đủ; chưa test role khác hoặc cross-tenant (xem FEAT-06).",
-          "kb_refs": [
-            "campaign/campaign-security-permissions#KB-029"
-          ]
-        }
-      ],
-      "surface_mapping": {
-        "portal": [
-          {
-            "path": "/campaigns (list, filter tabs, filter row, table)",
-            "kb_refs": [
-              "campaign/campaign-list-browse#KB-025"
-            ]
-          },
-          {
-            "path": "/platform-products (list, filter tabs, filter row, table)",
-            "kb_refs": [
-              "campaign/campaign-list-browse#KB-026"
-            ]
-          },
-          {
-            "path": "Row action icons (rocket/link, edit, '...' overflow)",
-            "kb_refs": [
-              "campaign/campaign-list-browse#KB-027"
-            ]
-          }
-        ],
-        "storefront": [],
-        "api": [
-          {
-            "method": "GRAPHQL QUERY getData",
-            "path": "{ campaigns_aggregate, campaigns }",
-            "kb_refs": [
-              "campaign/campaign-list-browse#KB-025"
-            ]
-          },
-          {
-            "method": "GRAPHQL QUERY",
-            "path": "{ campaigns_aggregate } (count pending sync)",
-            "kb_refs": [
-              "campaign/campaign-list-browse#KB-025"
-            ]
-          },
-          {
-            "method": "GRAPHQL QUERY getData",
-            "path": "{ platform_products_aggregate, platform_products }",
-            "kb_refs": [
-              "campaign/campaign-list-browse#KB-026"
-            ]
-          },
-          {
-            "method": "GRAPHQL QUERY",
-            "path": "{ instances }",
-            "kb_refs": [
-              "campaign/campaign-list-browse#KB-027"
-            ],
-            "note": "INFERRED co-occurrence với mở menu '...', chưa xác nhận causation"
-          },
-          {
-            "method": "GRAPHQL QUERY getData",
-            "path": "{ instances_aggregate, instances }",
-            "kb_refs": [
-              "campaign/campaign-list-browse#KB-027"
-            ],
-            "note": "INFERRED co-occurrence với mở menu '...', chưa xác nhận causation"
-          }
-        ],
-        "data": [
-          "NOT_OBSERVED — DB layer chưa được khám phá (không có read-only DB access). Không có REST GET list endpoint nào tồn tại (chỉ GraphQL), nội dung field đến từ response GraphQL, không xác nhận qua DB thật."
-        ],
-        "code": []
-      },
-      "dependencies": [
-        {
-          "description": "Phụ thuộc campaign/platform-product đã được tạo qua FEAT-01/FEAT-02 để có dữ liệu hiển thị (trước đó là empty-state).",
-          "kb_refs": [
-            "campaign/create-campaign-by-shopify#KB-014",
-            "campaign/campaign-list-browse#KB-025"
-          ]
-        },
-        {
-          "description": "Icon rocket/link trên row mở thẳng Multi-store launch dialog — phụ thuộc capability publish của FEAT-01.",
-          "kb_refs": [
-            "campaign/campaign-list-browse#KB-027"
-          ]
-        }
-      ],
-      "risks": [
-        {
-          "description": "5/6 action-menu item (See campaign info, View campaign logs, Duplicate, Mark as archive, Import to Translation) chưa từng được thực thi — hoàn toàn không có coverage chức năng, chỉ biết UI tồn tại.",
-          "kb_refs": [
-            "campaign/campaign-list-browse#KB-027"
-          ]
-        },
-        {
-          "description": "Liên kết nhân-quả giữa mở menu '...' và 2 GraphQL query instances/instances_aggregate là INFERRED (proximity), không phải xác nhận — không nên dùng làm oracle 'menu mở => query chạy'.",
-          "kb_refs": [
-            "campaign/campaign-list-browse#KB-027"
-          ]
-        },
-        {
-          "description": "Filter/search 2 list page (Search, Published on store, Type, Vendor, Tags, Store) chưa test với giá trị thật; pagination/GraphQL filter ngoài offset=0 mặc định chưa test.",
-          "kb_refs": [
-            "campaign/campaign-list-browse#KB-025",
-            "campaign/campaign-list-browse#KB-026"
-          ]
-        }
-      ],
-      "last_updated": {
-        "date": "2026-09-12",
-        "ccr_ref": "bootstrap"
-      },
-      "unknown_areas": [
-        {
-          "question": "Filter/search 2 list page hoạt động thế nào với giá trị nhập thật (Search, Published on store, Type, Vendor, Tags, Store)?",
-          "why_it_matters": "Đây là capability browse cốt lõi nhưng chưa có test chức năng nào, chỉ biết UI tồn tại."
-        },
-        {
-          "question": "5 action-menu item chưa thực thi (See campaign info, View campaign logs, Duplicate, Mark as archive, Import to Translation) hoạt động ra sao?",
-          "why_it_matters": "Là action visible trên UI production nhưng zero coverage — rủi ro bug ẩn không ai từng kiểm tra trong run này."
-        },
-        {
-          "question": "Bulk creator (/campaigns/bulk-editor) và Bulk Fulfill hoạt động thế nào?",
-          "why_it_matters": "Entry point tồn tại trên list page nhưng ngoài phạm vi run, hoàn toàn chưa khám phá — gap lớn cho object Campaign."
-        }
+      "role": "owner (explorer (TIB_STAGING_EMAIL), sub=<explorer>)",
+      "permission_observed": "Xem được cả 2 list, không gặp permission-denied",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-025",
+        "campaign/campaign-list-browse#KB-026",
+        "campaign/campaign-security-permissions#KB-029"
       ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "/campaigns",
+      "precondition": "role owner đã đăng nhập",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-025"
+      ]
+    },
+    {
+      "path": "/platform-products",
+      "precondition": "role owner đã đăng nhập",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-026"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Xem danh sách campaign by-product-base với filter/tab",
+      "description": "/campaigns có filter tabs All/Published/Unpublished/Archived/Update required(N); filter row Search + Published on store + Internal Tags + Type + Vendor + Tags; cột CAMPAIGN MOCKUPS/NAME/INTERNAL TAGS/LISTING INFO/STATUS-CREATED/ACTION. Data fetch qua GraphQL getData{campaigns_aggregate, campaigns} — KHÔNG có REST GET /api/campaigns nào được quan sát trong 18 file capture. Entry points phụ 'Bulk creator' và 'New campaign'.",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-025"
+      ]
+    },
+    {
+      "name": "Xem danh sách campaign by-shopify với filter/tab khác",
+      "description": "/platform-products có cột MOCKUP/NAME/INTERNAL TAGS/DOMAIN/STATUS-CREATED/ACTION (KHÔNG có LISTING INFO/TYPE/VENDOR như /campaigns); filter row chỉ Search + Internal Tags + Store; filter tabs chỉ All/Published/Unpublished (KHÔNG có Archived/Update required). Data fetch qua GraphQL getData{platform_products_aggregate, platform_products} — KHÔNG có REST GET /api/platform-products.",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-026"
+      ]
+    },
+    {
+      "name": "Truy cập action theo row từ list by-product-base",
+      "description": "Mỗi row /campaigns có icon rocket/link (mở thẳng Multi-store launch dialog), icon bút chì (edit), và '...' overflow gồm: See campaign info, View campaign logs, Duplicate campaign, Mark as archive, Import to Translation, Delete campaign. Chỉ 'Delete campaign' được thực thi trong run này.",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-027"
+      ]
+    },
+    {
+      "name": "[CBS-163] Archive / unarchive campaign từ list và response contract",
+      "description": "Theo Dev (TIB-5689 U8): response archive/unarchive gồm key PortalCampaignResource kèm featured_image_url, featured_image_thumbnail, không platform_config, internal_tags. Quan sát staging trên campaign chưa publish: archive status 1 vào tab Archived, unarchive status 0; campaign đã publish không có mục Mark as archive (KB-464, chưa xác nhận).",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-463",
+        "campaign/campaign-list-browse#KB-464"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "campaigns list: 1 item (pre-existing 2592)",
+      "to": "3 item (sau khi tạo 2595, 2596 trong phiên)",
+      "trigger": "tạo campaign mới qua FEAT-01",
+      "condition": "n/a",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-025"
+      ]
+    },
+    {
+      "from": "platform-products list: 0 item (empty state)",
+      "to": "1 item (sau khi tạo qua FEAT-02)",
+      "trigger": "tạo platform-product mới qua FEAT-02",
+      "condition": "n/a",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-026"
+      ]
+    },
+    {
+      "from": "campaign chưa publish, active",
+      "to": "archived (status 1, hiện ở tab Archived)",
+      "trigger": "[CBS-163] menu '...' → 'Mark as archive'",
+      "condition": "OBSERVED_CURRENT/LOW (KB-464), một lượt staging",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-464"
+      ]
+    },
+    {
+      "from": "archived (status 1)",
+      "to": "active (status 0)",
+      "trigger": "[CBS-163] Unarchive",
+      "condition": "OBSERVED_CURRENT/LOW (KB-464), một lượt staging",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-464"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "[CBS-163] Theo Jira TIB-5689 comment 56448 test case U8 (Dev, 2026-11-04), response của archive và unarchive campaign gồm các key của PortalCampaignResource kèm featured_image_url và featured_image_thumbnail; không có platform_config, internal_tags.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope_note": "staging; quote không liệt kê đủ key của PortalCampaignResource, không nói status code",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-463"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Cấu trúc cột/filter/tab của /campaigns quan sát nhất quán ở 2 thời điểm khác nhau (trước và sau khi thêm campaign).",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-025"
+      ]
+    },
+    {
+      "statement": "Cấu trúc cột/filter/tab của /platform-products quan sát nhất quán ở 2 thời điểm khác nhau (rỗng và có data).",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-026"
+      ]
+    },
+    {
+      "statement": "Mở menu '...' co-occur với 2 GraphQL query (instances, instances_aggregate) trong cùng capture window, nhưng causation CHƯA xác nhận (có thể do prefetch icon rocket) — giữ mức INFERRED, không khẳng định nhân-quả.",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-027"
+      ]
+    },
+    {
+      "statement": "[CBS-163] Campaign chưa publish: archive 200 status 1, hiện ở tab Archived; unarchive 200 status 0; response 12 key (id, name, status, ..., featured_image_url, featured_image_thumbnail, show_first_campaign_mockup_id), không platform_config, internal_tags. Campaign đã publish: menu không có Mark as archive (TC-TIB-8589, build không ghi).",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-464"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "statement": "Role owner xem được cả 2 list đầy đủ; chưa test role khác hoặc cross-tenant (xem FEAT-06).",
+      "kb_refs": [
+        "campaign/campaign-security-permissions#KB-029"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      {
+        "path": "/campaigns (list, filter tabs, filter row, table)",
+        "kb_refs": [
+          "campaign/campaign-list-browse#KB-025"
+        ]
+      },
+      {
+        "path": "/platform-products (list, filter tabs, filter row, table)",
+        "kb_refs": [
+          "campaign/campaign-list-browse#KB-026"
+        ]
+      },
+      {
+        "path": "Row action icons (rocket/link, edit, '...' overflow)",
+        "kb_refs": [
+          "campaign/campaign-list-browse#KB-027"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "method": "GRAPHQL QUERY getData",
+        "path": "{ campaigns_aggregate, campaigns }",
+        "kb_refs": [
+          "campaign/campaign-list-browse#KB-025"
+        ]
+      },
+      {
+        "method": "GRAPHQL QUERY",
+        "path": "{ campaigns_aggregate } (count pending sync)",
+        "kb_refs": [
+          "campaign/campaign-list-browse#KB-025"
+        ]
+      },
+      {
+        "method": "GRAPHQL QUERY getData",
+        "path": "{ platform_products_aggregate, platform_products }",
+        "kb_refs": [
+          "campaign/campaign-list-browse#KB-026"
+        ]
+      },
+      {
+        "method": "GRAPHQL QUERY",
+        "path": "{ instances }",
+        "kb_refs": [
+          "campaign/campaign-list-browse#KB-027"
+        ],
+        "note": "INFERRED co-occurrence với mở menu '...', chưa xác nhận causation"
+      },
+      {
+        "method": "GRAPHQL QUERY getData",
+        "path": "{ instances_aggregate, instances }",
+        "kb_refs": [
+          "campaign/campaign-list-browse#KB-027"
+        ],
+        "note": "INFERRED co-occurrence với mở menu '...', chưa xác nhận causation"
+      },
+      {
+        "method": "POST",
+        "path": "[CBS-163] archive / unarchive campaign",
+        "note": "response key PortalCampaignResource kèm featured image, không platform_config, internal_tags (KB-463)",
+        "kb_refs": [
+          "campaign/campaign-list-browse#KB-463"
+        ]
+      }
+    ],
+    "data": [
+      "NOT_OBSERVED — DB layer chưa được khám phá (không có read-only DB access). Không có REST GET list endpoint nào tồn tại (chỉ GraphQL), nội dung field đến từ response GraphQL, không xác nhận qua DB thật."
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "description": "Phụ thuộc campaign/platform-product đã được tạo qua FEAT-01/FEAT-02 để có dữ liệu hiển thị (trước đó là empty-state).",
+      "kb_refs": [
+        "campaign/create-campaign-by-shopify#KB-014",
+        "campaign/campaign-list-browse#KB-025"
+      ]
+    },
+    {
+      "description": "Icon rocket/link trên row mở thẳng Multi-store launch dialog — phụ thuộc capability publish của FEAT-01.",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-027"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "description": "5/6 action-menu item (See campaign info, View campaign logs, Duplicate, Mark as archive, Import to Translation) chưa từng được thực thi — hoàn toàn không có coverage chức năng, chỉ biết UI tồn tại.",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-027"
+      ]
+    },
+    {
+      "description": "Liên kết nhân-quả giữa mở menu '...' và 2 GraphQL query instances/instances_aggregate là INFERRED (proximity), không phải xác nhận — không nên dùng làm oracle 'menu mở => query chạy'.",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-027"
+      ]
+    },
+    {
+      "description": "Filter/search 2 list page (Search, Published on store, Type, Vendor, Tags, Store) chưa test với giá trị thật; pagination/GraphQL filter ngoài offset=0 mặc định chưa test.",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-025",
+        "campaign/campaign-list-browse#KB-026"
+      ]
+    },
+    {
+      "description": "[CBS-163] Mark as archive nay đã được thực thi một lượt trên campaign chưa publish (KB-464); campaign đã publish không có mục này trong menu, khác với danh sách 6 mục ở KB-027 / CHK-005 (chưa rõ phụ thuộc trạng thái publish). Production chưa verify.",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-464",
+        "campaign/campaign-list-browse#KB-027"
+      ]
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  },
+  "unknown_areas": [
+    {
+      "question": "Filter/search 2 list page hoạt động thế nào với giá trị nhập thật (Search, Published on store, Type, Vendor, Tags, Store)?",
+      "why_it_matters": "Đây là capability browse cốt lõi nhưng chưa có test chức năng nào, chỉ biết UI tồn tại."
+    },
+    {
+      "question": "5 action-menu item chưa thực thi (See campaign info, View campaign logs, Duplicate, Mark as archive, Import to Translation) hoạt động ra sao?",
+      "why_it_matters": "Là action visible trên UI production nhưng zero coverage — rủi ro bug ẩn không ai từng kiểm tra trong run này."
+    },
+    {
+      "question": "Bulk creator (/campaigns/bulk-editor) và Bulk Fulfill hoạt động thế nào?",
+      "why_it_matters": "Entry point tồn tại trên list page nhưng ngoài phạm vi run, hoàn toàn chưa khám phá — gap lớn cho object Campaign."
+    },
+    {
+      "question": "[CBS-163] Archive 200 status 1 (tab Archived), unarchive 200 status 0, danh sách key response trên campaign chưa publish (KB-464) — Dev xác nhận là expected, status 1 = archived? (OQ-campaign-102)",
+      "why_it_matters": "KB-464 là OBSERVED_CURRENT/LOW; CHK-008 dùng làm BASELINE.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-464"
+      ],
+      "oq_id": "OQ-campaign-102"
+    },
+    {
+      "question": "[CBS-163] Menu '...' của campaign đã publish không có Mark as archive — có phải chủ đích? (OQ-campaign-103)",
+      "why_it_matters": "Ảnh hưởng CHK-005 (6 mục menu) và CHK-017; nối với rule spec-hub KB-453 (archived không publish được).",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-464",
+        "campaign/campaign-list-browse#KB-027"
+      ],
+      "oq_id": "OQ-campaign-103"
     }
   ],
   "profile_relationships": [
@@ -294,10 +367,30 @@
       "state": "any",
       "environment": "staging",
       "covered": false
+    },
+    {
+      "feature_id": "FEAT-03-campaign-list-browse",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] archive / unarchive campaign chưa publish",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-463",
+        "campaign/campaign-list-browse#KB-464"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-campaign-list-browse",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-163] archive campaign đã publish; production",
+      "environment": "staging+production",
+      "covered": false,
+      "kb_refs": [
+        "campaign/campaign-list-browse#KB-464"
+      ]
     }
   ],
-  "last_updated": {
-    "date": "2026-11-08",
-    "ccr_ref": "maintenance-2026-11-08"
-  }
+  "profile_conflicts": []
 }

@@ -1029,6 +1029,332 @@
       "priority": "P3",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-order-050"
+    },
+    {
+      "check_id": "CHK-P31",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-163] Regenerate design của order item trả OrderItemArtworkDesignResource",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "order test có item đã generate design",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal order-details + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Fixture tự dựng trên store explorer, không dùng store/campaign/order/id trong CCR hay test case: order test có item đã generate design (đặt order cần campaign publish lên store explorer; publish và đặt order cần operator đồng ý, ghi lại để dọn dẹp sau).",
+      "steps": [
+        "Mở order-details của order test, mở DevTools network.",
+        "Bấm Re-generate design của item.",
+        "Ghi status và key của body response generate."
+      ],
+      "observation_point": "Key của body response generate",
+      "expected_result": "Body có các key id, url, thumbnail, width, height, error_message, is_processing, processing_at, processed_at, cancelled_at.",
+      "oracle": {
+        "kb_ids": [
+          "order/review-and-initiate-fulfillment-portal#KB-790"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "order/review-and-initiate-fulfillment-portal#KB-790",
+        "order/review-and-initiate-fulfillment-portal#KB-791",
+        "order/review-and-initiate-fulfillment-portal#KB-392"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Status 200 và việc không có customization/artwork/order_item là quan sát (KB-791, CHK-P33)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-P32",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-163] Cancel design đang processing của order item trả OrderItemArtworkDesignResource",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "item có design đang processing",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal order-details + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Fixture tự dựng trên store explorer, không dùng store/campaign/order/id trong CCR hay test case: order test có item đã generate design (đặt order cần campaign publish lên store explorer; publish và đặt order cần operator đồng ý, ghi lại để dọn dẹp sau). Nút cancel design chỉ hiện khi design đang processing: cần item ở trạng thái processing (vd ngay sau khi bấm Re-generate); không bắt được trạng thái processing thì ghi blocked, không suy kết quả.",
+      "steps": [
+        "Mở order-details khi design của item đang processing, mở DevTools network.",
+        "Bấm nút cancel design của item.",
+        "Ghi status và key của body response cancel."
+      ],
+      "observation_point": "Key của body response cancel",
+      "expected_result": "Body có các key id, url, thumbnail, width, height, error_message, is_processing, processing_at, processed_at, cancelled_at.",
+      "oracle": {
+        "kb_ids": [
+          "order/review-and-initiate-fulfillment-portal#KB-790"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "order/review-and-initiate-fulfillment-portal#KB-790",
+        "order/review-and-initiate-fulfillment-portal#KB-791"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Fixture processing khó dựng."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-P33",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "[CBS-163] Generate/cancel design: 200, đúng 10 key, không customization/artwork/order_item, màn hình tải lại item (quan sát)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "như CHK-P31, CHK-P32",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal order-details + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Fixture tự dựng trên store explorer, không dùng store/campaign/order/id trong CCR hay test case: order test có item đã generate design (đặt order cần campaign publish lên store explorer; publish và đặt order cần operator đồng ý, ghi lại để dọn dẹp sau). Chạy cùng fixture CHK-P31 và CHK-P32.",
+      "steps": [
+        "Từ response của CHK-P31 và CHK-P32, ghi status và toàn bộ key top-level.",
+        "Ghi màn hình có tải lại item sau mỗi thao tác không."
+      ],
+      "observation_point": "Status, tập key, có key customization/artwork/order_item không, item có tải lại không",
+      "expected_result": "Baseline theo quan sát: cả hai trả 200, body đúng 10 key của KB-790, không có customization, artwork, order_item; màn hình tải lại item.",
+      "oracle": {
+        "kb_ids": [
+          "order/review-and-initiate-fulfillment-portal#KB-791"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "order/review-and-initiate-fulfillment-portal#KB-790",
+        "order/review-and-initiate-fulfillment-portal#KB-791"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-order-091"
+    },
+    {
+      "check_id": "CHK-P34",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-163] Upload ảnh trong Edit customization của order item (quan sát)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "order test có item có customization với field ảnh",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal order-details → Edit customization + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Fixture tự dựng trên store explorer, không dùng store/campaign/order/id trong CCR hay test case: order test có item đã generate design (đặt order cần campaign publish lên store explorer; publish và đặt order cần operator đồng ý, ghi lại để dọn dẹp sau). Item dùng artwork có field upload ảnh. Ảnh fixture tự chuẩn bị. Không bấm Save customization (đóng modal) để không đổi order.",
+      "steps": [
+        "Mở Edit customization của item, mở DevTools network.",
+        "Upload một ảnh vào field ảnh.",
+        "Ghi status và key của POST /api/instances/{instance}/customer-uploads; xem ảnh trong field.",
+        "Đóng modal, không Save."
+      ],
+      "observation_point": "Status, key body customer-uploads; ảnh trong field",
+      "expected_result": "Baseline theo quan sát: 201 với đúng id, url, original; ảnh hiện trong field.",
+      "oracle": {
+        "kb_ids": [
+          "order/review-and-initiate-fulfillment-portal#KB-791"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "order/review-and-initiate-fulfillment-portal#KB-791"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-order-091"
+    },
+    {
+      "check_id": "CHK-P35",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-163] Lưu và mở lại template export CSV: có template_name, template_fields, không user_id",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal CSV Export → custom template + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Tạo template mới tên có tiền tố test trên store explorer; xoá template sau khi chạy nếu UI cho phép, không thì ghi lại tên để dọn dẹp.",
+      "steps": [
+        "Mở CSV Export, tạo custom template: đặt tên, chọn vài field, lưu; ghi response lưu.",
+        "Chọn lại template đó, mở Edit template; ghi response mở lại."
+      ],
+      "observation_point": "Key của response lưu (store) và mở lại (show)",
+      "expected_result": "Cả hai response có template_name và template_fields, không có user_id.",
+      "oracle": {
+        "kb_ids": [
+          "order/review-and-initiate-fulfillment-portal#KB-792"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "order/review-and-initiate-fulfillment-portal#KB-792",
+        "order/review-and-initiate-fulfillment-portal#KB-793"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-P36",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-163] Template export CSV mở lại còn nguyên tên và field (quan sát)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "template vừa tạo ở CHK-P35",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal CSV Export → Edit template"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Chạy cùng fixture CHK-P35.",
+      "steps": [
+        "Sau khi lưu ở CHK-P35, reload trang, chọn lại template, mở Edit template.",
+        "So tên và field với lúc tạo."
+      ],
+      "observation_point": "Tên và field trong editor",
+      "expected_result": "Baseline theo quan sát: tên và các field đã chọn còn nguyên.",
+      "oracle": {
+        "kb_ids": [
+          "order/review-and-initiate-fulfillment-portal#KB-793"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "order/review-and-initiate-fulfillment-portal#KB-793",
+        "order/review-and-initiate-fulfillment-portal#KB-792"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-order-092"
+    },
+    {
+      "check_id": "CHK-P37",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-163] /fulfills/unknown tải được, list rỗng",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store explorer, không có unknown line item",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /fulfills/unknown (mở trực tiếp)"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Chỉ đọc.",
+      "steps": [
+        "Mở trực tiếp URL /fulfills/unknown trên portal.",
+        "Ghi trang có hiện lỗi không và nội dung danh sách."
+      ],
+      "observation_point": "Trang có tải được, có lỗi không; danh sách",
+      "expected_result": "Trang tải được, không hiện lỗi; danh sách rỗng. Không assert Mapped badge, title link fallback, Regenerate trên trang này.",
+      "oracle": {
+        "kb_ids": [
+          "order/review-and-initiate-fulfillment-portal#KB-794"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "order/review-and-initiate-fulfillment-portal#KB-794",
+        "order/review-and-initiate-fulfillment-portal#KB-795",
+        "order/review-and-initiate-fulfillment-portal#KB-796"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mapped badge, title link fallback, Regenerate không hoạt động là vấn đề mở (OQ-order-094), không phải expected và không báo bug theo TIB-5689."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-P38",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "[CBS-163] Trang unknown line items không còn trả 500",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /fulfills/unknown + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Chỉ đọc. Chạy cùng CHK-P37.",
+      "steps": [
+        "Mở /fulfills/unknown với DevTools network.",
+        "Ghi status của request tải danh sách."
+      ],
+      "observation_point": "Status của request tải danh sách",
+      "expected_result": "Không trả 500; trang tải được.",
+      "oracle": {
+        "kb_ids": [
+          "order/review-and-initiate-fulfillment-portal#KB-795"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "order/review-and-initiate-fulfillment-portal#KB-795",
+        "order/review-and-initiate-fulfillment-portal#KB-794"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-P39",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-163] /fulfills/unknown: tiêu đề, bộ lọc, header và key paginator của danh sách (quan sát)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "store explorer, không có unknown line item",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /fulfills/unknown + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Chỉ đọc. Chạy cùng CHK-P37.",
+      "steps": [
+        "Ghi tiêu đề, bộ lọc, header bảng của trang.",
+        "Ghi các key top-level của response danh sách."
+      ],
+      "observation_point": "Tiêu đề, bộ lọc, header; key response",
+      "expected_result": "Baseline theo quan sát: tiêu đề \"Unknown Line Items\", có bộ lọc và header bảng, danh sách rỗng, response giữ các key paginator. Key của từng row: không kiểm (không có row).",
+      "oracle": {
+        "kb_ids": [
+          "order/review-and-initiate-fulfillment-portal#KB-796"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "order/review-and-initiate-fulfillment-portal#KB-796",
+        "order/review-and-initiate-fulfillment-portal#KB-794"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-order-093"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1114,6 +1440,43 @@
         "CHK-P30"
       ],
       "coverage_status": "GAP_FLAGGED_NEEDS_CONFIRMATION (NONE; chờ TC PASS trên build có fix TIB-5563)"
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "risk": "[CBS-163] Response regenerate/cancel design của order item (KB-790, KB-791)",
+      "covered_by_checks": [
+        "CHK-P31",
+        "CHK-P32",
+        "CHK-P33"
+      ],
+      "coverage_status": "CHK-P31, CHK-P32 STRONG; CHK-P33 BASELINE NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "risk": "[CBS-163] Upload ảnh trong Edit customization của order (KB-791)",
+      "covered_by_checks": [
+        "CHK-P34"
+      ],
+      "coverage_status": "BASELINE NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "risk": "[CBS-163] Template export CSV tuỳ chỉnh (KB-792, KB-793)",
+      "covered_by_checks": [
+        "CHK-P35",
+        "CHK-P36"
+      ],
+      "coverage_status": "CHK-P35 STRONG; CHK-P36 BASELINE NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-ORDER-PORTAL-01",
+      "risk": "[CBS-163] /fulfills/unknown tải được, không còn 500, paginator (KB-794, KB-795, KB-796); control Mapped badge/title link/Regenerate là vấn đề mở",
+      "covered_by_checks": [
+        "CHK-P37",
+        "CHK-P38",
+        "CHK-P39"
+      ],
+      "coverage_status": "CHK-P37, CHK-P38 STRONG; CHK-P39 BASELINE NEEDS_CONFIRMATION; control trên trang: OPEN_ISSUE, không có check"
     }
   ],
   "excluded_dimensions": [
@@ -1123,7 +1486,7 @@
     },
     {
       "dimension": "OUT_OF_SCOPE: standalone 'portal/fulfills' route",
-      "reason": "No separate 'portal/fulfills' route was found in the explored sidebar navigation (KB-024) — fulfillment review is reached only via a specific order's detail page. No check is written for a route that was not confirmed to exist as an independent surface; absence of evidence in the explored sidebar is not proof of absence everywhere."
+      "reason": "No separate 'portal/fulfills' route was found in the explored sidebar navigation (KB-024) — fulfillment review is reached only via a specific order's detail page. No check is written for a route that was not confirmed to exist as an independent surface; absence of evidence in the explored sidebar is not proof of absence everywhere. [CBS-163] Trang /fulfills/unknown (mở trực tiếp) đã có nguồn Dev và check riêng CHK-P37..CHK-P39; ngoại lệ này chỉ còn áp cho route /fulfills gốc (xem OQ-order-095)."
     },
     {
       "dimension": "NEGATIVE / PERMISSION / STATE_DATA / INTEGRATION — phạm vi CBS-006 (KB-182, KB-183)",
@@ -1144,10 +1507,18 @@
     {
       "dimension": "BOUNDARY / PERMISSION / STATE_DATA / INTEGRATION / REGRESSION — phạm vi CBS-096 (KB-764)",
       "reason": "KB-764 chỉ là hiển thị customization_id thô trong 'Options' (CORE: CHK-P28; HTML-escape ở NEGATIVE: CHK-P29; trường hợp tắt setting / build trước fix ở NEGATIVE: CHK-P30). Không có evidence về độ dài/giới hạn giá trị, quyền khác owner, persistence hay contract API. Kết quả import của line sai định dạng (KB-761) thuộc checklist shopify-order-import, không lặp ở đây. KB-764 là ADD, không đổi hành vi item base (CHK-P05 giữ nguyên), không phải KNOWN_DEFECT nên không có REGRESSION/regression watch. Regenerate design sinh order design vector (KB-392 → KB-767) thuộc checklist order-design-vector-render."
+    },
+    {
+      "dimension": "OUT_OF_SCOPE [CBS-163]: Mapped badge, title link fallback, Regenerate trên /fulfills/unknown",
+      "reason": "Theo Dev (TIB-5689 comment 56491 mục Exception) các control này không hoạt động trên trang và không là bug của TIB-5689; gỡ trang ở teeinblue-api#4179. Vấn đề mở (OQ-order-094), không có expected nên không viết check."
+    },
+    {
+      "dimension": "PERMISSION [CBS-163]: staff (manage-orders, editor) với regenerate/cancel, upload, template CSV",
+      "reason": "Chưa có tri thức; mọi lượt chạy dùng phiên owner. Ghi ở risks và coverage_matrix (covered false), không viết check không có oracle."
     }
   ],
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-138"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   }
 }

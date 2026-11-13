@@ -162,6 +162,14 @@
       "kb_refs": [
         "campaign/create-campaign-by-product-base#KB-370"
       ]
+    },
+    {
+      "name": "[CBS-163] Đổi và xoá featured image của campaign (Product Thumbnail)",
+      "description": "Theo Dev (TIB-5689 U8): response đổi/xoá featured image gồm key PortalCampaignResource kèm featured_image_url, featured_image_thumbnail, không platform_config, internal_tags. Quan sát staging: chọn ảnh trong modal thư viện thì ảnh hiện ở Product Thumbnail; xoá thì hai trường null, UI về nút Upload image (KB-466, chưa xác nhận).",
+      "kb_refs": [
+        "campaign/create-campaign-by-product-base#KB-465",
+        "campaign/create-campaign-by-product-base#KB-466"
+      ]
     }
   ],
   "state_transitions": [
@@ -271,6 +279,24 @@
       "kb_refs": [
         "campaign/create-campaign-by-product-base#KB-370"
       ]
+    },
+    {
+      "from": "Product Thumbnail trống (nút Upload image)",
+      "to": "Product Thumbnail có ảnh (featured_image_url, featured_image_thumbnail có giá trị)",
+      "trigger": "[CBS-163] Upload image → chọn ảnh trong modal thư viện → Select",
+      "condition": "OBSERVED_CURRENT/LOW (KB-466), một lượt staging",
+      "kb_refs": [
+        "campaign/create-campaign-by-product-base#KB-466"
+      ]
+    },
+    {
+      "from": "Product Thumbnail có ảnh",
+      "to": "Product Thumbnail trống (hai trường null, nút Upload image)",
+      "trigger": "[CBS-163] nút X xoá ảnh",
+      "condition": "OBSERVED_CURRENT/LOW (KB-466), một lượt staging",
+      "kb_refs": [
+        "campaign/create-campaign-by-product-base#KB-466"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -349,6 +375,17 @@
       "confirmation_ref": "Testlane TC-TIB-6441, TC-TIB-6442 PASS (task TIB-221, Jira TIB-5428), chạy 2026-10-22",
       "kb_refs": [
         "campaign/create-campaign-by-product-base#KB-310"
+      ]
+    },
+    {
+      "rule": "[CBS-163] Response của đổi hoặc xoá featured image của campaign (POST campaigns/{id}/featured-image) gồm các key của PortalCampaignResource kèm featured_image_url và featured_image_thumbnail; không có platform_config, internal_tags.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "scope": "staging, merchant-owner, portal (campaign editor, Edit campaign info > Product Thumbnail) + portal API",
+      "caveats": "Quote không liệt kê đủ key, không nói status code hay hiển thị UI.",
+      "confirmation_ref": "Jira TIB-5689 comment 56448 Solution, test case U8 (Dev, 2026-11-04)",
+      "kb_refs": [
+        "campaign/create-campaign-by-product-base#KB-465"
       ]
     }
   ],
@@ -433,6 +470,16 @@
       "observed_count": null,
       "kb_refs": [
         "campaign/create-campaign-by-product-base#KB-370"
+      ]
+    },
+    {
+      "statement": "[CBS-163] Đổi featured image qua modal thư viện: 200, featured_image_url và featured_image_thumbnail có giá trị, ảnh hiện ở Product Thumbnail; xoá: 200, hai trường null, UI về nút Upload image (TC-TIB-8589, build không ghi).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging, merchant-owner, campaign editor",
+      "observed_count": 1,
+      "kb_refs": [
+        "campaign/create-campaign-by-product-base#KB-466"
       ]
     }
   ],
@@ -652,6 +699,13 @@
         "kb_refs": [
           "campaign/create-campaign-by-product-base#KB-370"
         ]
+      },
+      {
+        "method": "POST",
+        "path": "[CBS-163] campaigns/{id}/featured-image (đổi/xoá featured image) — response key PortalCampaignResource kèm featured image",
+        "kb_refs": [
+          "campaign/create-campaign-by-product-base#KB-465"
+        ]
       }
     ],
     "data": [
@@ -765,6 +819,13 @@
       "description": "[MỚI, CBS-013] Re-publish (Update trong Multi-store launch) chỉ có 1 lượt quan sát S1 trên build trước lần redeploy dev yêu cầu recheck (KB-370): không thấy toast xác nhận, và việc storefront phản ánh nội dung mới sau Update không được kiểm trong lượt này. Không dùng làm expected; check re-publish phải ghi rõ đã kiểm gì ở storefront.",
       "kb_refs": [
         "campaign/create-campaign-by-product-base#KB-370"
+      ]
+    },
+    {
+      "description": "[CBS-163] Đổi/xoá featured image chỉ có một lượt quan sát staging (KB-466); production chưa verify; việc featured image đi lên Shopify khi publish không thuộc vế này.",
+      "kb_refs": [
+        "campaign/create-campaign-by-product-base#KB-465",
+        "campaign/create-campaign-by-product-base#KB-466"
       ]
     }
   ],
@@ -928,11 +989,20 @@
         "campaign/create-campaign-by-product-base#KB-011"
       ],
       "oq_id": "OQ-campaign-095"
+    },
+    {
+      "question": "[CBS-163] Đổi featured image 200 với url/thumbnail, ảnh hiện ở Product Thumbnail; xoá 200 hai trường null, về nút Upload image (KB-466) — Dev xác nhận là expected? (OQ-campaign-104)",
+      "why_it_matters": "KB-466 là OBSERVED_CURRENT/LOW; CHK-041 dùng làm BASELINE.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "campaign/create-campaign-by-product-base#KB-466"
+      ],
+      "oq_id": "OQ-campaign-104"
     }
   ],
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-139"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   },
   "coverage_matrix": [
     {
@@ -1138,6 +1208,31 @@
         "campaign/create-campaign-by-product-base#KB-370"
       ],
       "basis": "chưa kiểm"
+    },
+    {
+      "feature_id": "FEAT-01-create-campaign-by-product-base",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] đổi / xoá featured image",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "campaign/create-campaign-by-product-base#KB-465",
+        "campaign/create-campaign-by-product-base#KB-466"
+      ],
+      "basis": "STRONG cho key (KB-465); UI là quan sát"
+    },
+    {
+      "feature_id": "FEAT-01-create-campaign-by-product-base",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-163] đổi / xoá featured image trên production",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "campaign/create-campaign-by-product-base#KB-465"
+      ],
+      "basis": "chưa verify"
     }
   ],
   "profile_conflicts": [],

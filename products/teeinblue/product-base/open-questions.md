@@ -551,3 +551,57 @@
 ```json
 {"oq_id":"OQ-product-base-113","type":"NEEDS_CONFIRMATION","feature_id":"variant-catalog","summary":"[CBS-121] Luồng setup custom printarea theo variant (Product base → bảng Variants → bật 'enable custom printarea' → sang Campaign gắn artwork vào printarea vừa bật, KHÔNG có bước map variant option ↔ layer) có đúng với build hiện tại không? Nguồn là QA sửa trực tiếp (FACT-180, 2026-10-29), không PO/Dev, không test case; phần 'bật toggle + click ô Custom Printareas' đã có canon KB-045/KB-080/CHK-05-011. Liên quan KB-526, CHK-05-018. Người trả lời: Dev."}
 ```
+
+## OQ-product-base-114 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-product-base-114", "type": "NEEDS_CONFIRMATION", "feature_id": "provider-required-options", "summary": "[CBS-148] Khác biệt môi trường DIFFERENT_VALUE (KB-530, nguồn chỉ là lời kể QA 2026-11-11): nút Advanced options của Product Base Gelato disabled trên staging nhưng enable trên production và mở khối Design format (không có Required options); Product Base CustomCat trên production có Design format phía trên Required options. Vì sao khác (plan, feature flag hay cấu hình môi trường), và khối Design format hiện theo điều kiện gì? Người trả lời: Dev.", "kb_ids": ["KB-530"]}
+```
+
+## OQ-product-base-115 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-product-base-115", "type": "NEEDS_CONFIRMATION", "feature_id": "provider-required-options", "summary": "[CBS-148] Label editor Required options liệt kê merchOne, Printify, Printful, Myze, Printbelle và CustomCat, nhưng KB chỉ có CustomCat, merchOne (hiện) và Gelato (không hiện). Editor có hiện đúng cho Printify, Printful, Myze, Printbelle không, và khi nhập JSON sai hoặc key provider không nhận thì Save xử lý thế nào? Người trả lời: Dev.", "kb_ids": ["KB-527"]}
+```
+
+## OQ-product-base-116 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-product-base-116", "type": "NEEDS_CONFIRMATION", "feature_id": "provider-required-options", "summary": "[CBS-148] Quan sát staging (KB-532, TC-TIB-9012 PASS 2026-11-10, CCR không ghi build): vừa đổi Fulfillment provider của Product Base sang CustomCat mà chưa Save, nút Advanced options đã enable và editor Required options hiện. Đây có phải hành vi mong muốn? Người trả lời: Dev.", "kb_ids": ["KB-532"]}
+```
+
+## OQ-product-base-117 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-product-base-117", "type": "NEEDS_CONFIRMATION", "feature_id": "provider-required-options", "summary": "[CBS-148] Quan sát staging (KB-528, TC-TIB-9013 PASS 2026-11-10, CCR không ghi build; CCR dẫn QA plan bước 2 của Dev): nhập JSON vào Required options của Product Base CustomCat rồi Save thì lưu thành công và reload hiện đúng giá trị. Dev xác nhận là hành vi mong muốn (hoặc QA gửi lại kèm build để thành test case đủ nguồn)? Người trả lời: Dev.", "kb_ids": ["KB-528"]}
+```
+
+## OQ-product-base-118 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-product-base-118", "type": "NEEDS_CONFIRMATION", "feature_id": "provider-required-options", "summary": "[CBS-148] Quan sát (KB-529, TC-TIB-9020 PASS staging 2026-11-10 không ghi build, spec production 2026-11-11; CCR dẫn unit test U5 của Dev): editor Required options hiện cho Product Base merchOne, không có cho Product Base Gelato. Dev xác nhận? Người trả lời: Dev.", "kb_ids": ["KB-529"]}
+```
+
+## OQ-product-base-119 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-product-base-119", "type": "NEEDS_CONFIRMATION", "feature_id": "product-base-identity", "summary": "[CBS-148] Quyết định của owner (requires_human_decision, chạm mất dữ liệu): quan sát staging (KB-531, TC-TIB-9019 PASS 2026-11-10, CCR không ghi build) cho thấy sửa field khác của Basic information rồi Save vẫn giữ Required options đã lưu (PUT gửi lại default_options hiện tại). QA ghi nhận 2026-11-11 đây là mong muốn; PO xác nhận ý định này? Liên quan KB-027, CHK-03-010 (P1). Người trả lời: PO.", "kb_ids": ["KB-531"]}
+```
+
+## OQ-product-base-120 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-product-base-120", "type": "NEEDS_CONFIRMATION", "feature_id": "product-base-identity", "kb_ids": ["KB-535"], "check_ids": ["CHK-03-012"], "owner": "Dev", "summary": "[CBS-163] Quan sát KB-535 (TC-TIB-8592, một lượt staging, phiên owner): đổi/xoá thumbnail Product Base 200, response 20 key, không printareas/fulfillment/user_id/fulfillment_id. Dev xác nhận 20 key này đúng là Product::$visible?"}
+```
+
+## OQ-product-base-121 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-product-base-121", "type": "NEEDS_CONFIRMATION", "feature_id": "product-base-identity", "kb_ids": ["KB-534", "KB-535"], "check_ids": [], "owner": "Dev", "summary": "[CBS-163] Response thumbnail Product Base vẫn có fulfillment_linked_id (KB-535), Dev chỉ nêu bỏ user_id, fulfillment_id và giữ internal_tags (KB-534). Giữ fulfillment_linked_id là có chủ đích?"}
+```
+
+## OQ-product-base-122 — NEEDS_CONFIRMATION
+
+```json
+{"oq_id": "OQ-product-base-122", "type": "NEEDS_CONFIRMATION", "feature_id": "provider-catalog-import", "kb_ids": ["KB-537"], "check_ids": ["CHK-11-005"], "owner": "Dev", "summary": "[CBS-163] Quan sát KB-537 (TC-TIB-8593, một lượt staging): Import from <provider> 2 printarea → POST /api/printareas 201, list 2 phần tử key id, product_id, name, display_name, width, height, dpi, không relation; danh sách printarea hiện 2 printarea mới. Dev xác nhận 7 key này đúng là Printarea::$visible?"}
+```

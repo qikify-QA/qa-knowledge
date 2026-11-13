@@ -1,11 +1,11 @@
 # Object: Account & Security (product: teeinblue) — Feature Profile Summary
-**Published context version:** 4
+**Published context version:** 5
 
 - **Object:** login portal gồm Google login, trạng thái bảo mật staff, thao tác nhạy cảm, header acting-user, quyền ghi qua Hasura, webhook giá của Paddle. Không gồm quyền riêng của campaign (`campaign/campaign-security-permissions`).
 - **Quan sát:** staging, role `merchant-owner`, một account owner đang 2FA off. Explorer không chủ động ghi gì ngoài một lần login hợp lệ; các POST tự phát sau login chưa xác định, xem OQ-account-security-015.
-- **Knowledge:** 40 KB item: 15 `OBSERVED_CURRENT`/`LOW` từ quan sát; 22 `CONFIRMED_EXPECTED`/`MEDIUM` (20 từ lời dev ở Jira, KB-039 và KB-040 từ rule spec-hub), chưa được quan sát đối chiếu; 2 `OBSERVED_CURRENT`/`LOW` với status `KNOWN_DEFECT` theo lời dev (KB-025, KB-038); 1 `PROPOSED`/`LOW` (KB-031). 57 check: 36 `STRONG`, 12 `BASELINE`, 9 `NONE`. Hành vi quan sát được không phải expected requirement.
+- **Knowledge:** 51 KB item: 15 `OBSERVED_CURRENT`/`LOW` từ quan sát; 31 `CONFIRMED_EXPECTED`/`MEDIUM` (29 từ lời dev ở Jira, KB-039 và KB-040 từ rule spec-hub), chưa được quan sát đối chiếu; 2 `INFERRED`/`LOW` về khác biệt môi trường (KB-049, KB-050), không làm oracle; 2 `OBSERVED_CURRENT`/`LOW` với status `KNOWN_DEFECT` theo lời dev (KB-025, KB-038); 1 `PROPOSED`/`LOW` (KB-031). 67 check: 46 `STRONG`, 12 `BASELINE`, 9 `NONE`. Hành vi quan sát được không phải expected requirement.
 - **Chưa rõ ở mức object:** role áp dụng của các item role unspecified (OQ-account-security-054), hành vi đã lên production chưa (OQ-account-security-055), ý định sản phẩm của các hành vi rủi ro cao (OQ-account-security-056).
-- **Open question:** 59 mục ở `open-questions.md`.
+- **Open question:** 61 mục ở `open-questions.md`.
 
 ---
 
@@ -63,15 +63,18 @@ Toàn bộ là lời dev, flow chưa quan sát (OQ-account-security-001).
 
 **Entry points:** nút "Continue with Google" ở view đăng nhập email/password của staff; `/auth/google/redirect` và `/callback`.
 
-**Theo lời dev (KB-022 đến KB-024, KB-026 đến KB-029):**
-1. Vào default org khi access đã approved, nếu không thì fallback sang org approved khác, hết org thì `oauth_failed`. `invite_pending` chỉ hiện khi staff chưa từng accept invite nào.
-2. Email so khớp chính xác sau khi lowercase, không chuẩn hoá dấu chấm và +alias của Gmail; không khớp thì `no_account`.
-3. Staff chưa verify email bị từ chối, về `/login?social_error=email_unverified`.
-4. Rate limit đặt bằng `GOOGLE_OAUTH_RATE_LIMIT`, theo IP, bucket riêng. Nút Google đã gỡ khỏi Register.
+**Theo lời dev (KB-022 đến KB-024, KB-026 đến KB-029, KB-041 đến KB-048, KB-051):**
+1. Vào default org khi access đã approved, nếu không thì fallback sang org approved khác, hết org thì `oauth_failed`. `invite_pending` chỉ hiện khi staff chưa từng accept invite nào; accept lời mời rồi thì Google login được. Staff bị owner xoá ở `/staffs` hoặc tự rời khỏi mọi org nhận `oauth_failed`.
+2. Chỉ là đăng nhập, không tự tạo account. Email so khớp chính xác sau khi lowercase, không chuẩn hoá dấu chấm và +alias của Gmail; không khớp hoặc không có Staff thì `no_account`.
+3. Staff chưa verify email bị từ chối, về `/login?social_error=email_unverified`. Mỗi mã từ chối về `/login?social_error=<code>` với toast và form email/password; text của `no_account`, `invite_pending`, `oauth_failed` ở KB-051. Cancel trên Google, đổi token lỗi, code Google đã dùng đều về `oauth_failed`.
+4. Staff bật TOTP hoặc email 2FA qua cùng màn 2FA như sau password; mã hand-off sau callback dùng một lần, hết hạn theo `AUTH_EXCHANGE_TTL` (mặc định 60 giây), đổi trước 2FA. Cancel hoặc reload ở màn 2FA thì phải làm lại từ "Continue with Google". Staff tạo từ Shopify install vào được bằng Google, 2FA vẫn áp dụng.
+5. Rate limit đặt bằng `GOOGLE_OAUTH_RATE_LIMIT`, theo IP, bucket riêng. Nút Google đã gỡ khỏi Register.
+
+**Khác biệt môi trường, chưa xác nhận (KB-049, KB-050, không làm oracle):** QA thấy staging limit 6 request/phút/IP và 429 khi vượt; OAuth consent screen trên staging ở chế độ Testing nên Gmail phải là test user mới đăng nhập được.
 
 **Known defect theo lời dev, không làm oracle:** KB-025 (tại 2026-10-27 callback chưa kiểm OAuth state, thay đổi kiểm state đang chờ, xem OQ-account-security-032), KB-038 (sau F5 toast hiện lại vì tham số social_error còn trên URL, xem OQ-account-security-047).
-**Chưa biết:** giá trị rate limit theo môi trường (OQ-account-security-045), text của các mã lỗi (OQ-account-security-046).
-**Checklist:** 14 check, 11 `STRONG`, 3 `NONE`. **KB:** KB-022 đến KB-029, KB-038.
+**Chưa biết:** giá trị rate limit theo môi trường (OQ-account-security-045), chế độ consent screen (OQ-account-security-060), `AUTH_EXCHANGE_TTL` của staging và route bước hand-off (OQ-account-security-061), ý định sản phẩm của các hành vi xác thực (OQ-account-security-062).
+**Checklist:** 24 check, 21 `STRONG`, 3 `NONE`. **KB:** KB-022 đến KB-029, KB-038, KB-041 đến KB-051.
 
 ## `hasura-permission` — Giới hạn ghi và đọc qua Hasura GraphQL
 

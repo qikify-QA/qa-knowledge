@@ -1,0 +1,936 @@
+{
+  "feature_id": "FEAT-01-mcp-client-connection",
+  "feature_key": "mcp-client-connection",
+  "object_id": "mcp",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Mục sidebar AI Assistant (MCP) có badge beta và dẫn tới /mcp",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account test, đã có 1 token mang mcp:access",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Đã login portal ({TIB_PORTAL_BASE}) bằng account test (đúng account guard). Chỉ đọc, không bấm Generate MCP token, Create new key hay xoá token.",
+      "steps": [
+        "Ở trang Home, mở rộng sidebar (viewport rộng 1440), tìm mục Extras và nhóm Organization.",
+        "Tìm mục \"AI Assistant (MCP)\", ghi badge, href và vị trí so với Extras và Organization; ghi mục có highlight active không.",
+        "Kiểm mục không lồng trong Extras.",
+        "Bấm mục, ghi route và kiểm mục highlight active khi ở /mcp."
+      ],
+      "observation_point": "Sidebar: vị trí, badge, href, trạng thái active của mục AI Assistant (MCP)",
+      "expected_result": "Baseline một lần (viewport 1440): mục \"AI Assistant (MCP)\" có badge \"beta\", href /mcp, nằm ngay sau mục Extras và trước Organization, không lồng trong Extras; highlight active khi ở /mcp, không highlight ở Home.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1601"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1601"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mục điều hướng MCP mất hoặc sai vị trí"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Trang /mcp hiện heading, link API Docs, câu giới thiệu và card token bước 1",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account test, đã có 1 token mang mcp:access",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Đã login portal ({TIB_PORTAL_BASE}) bằng account test (đúng account guard). Chỉ đọc, không bấm Generate MCP token, Create new key hay xoá token.",
+      "steps": [
+        "Mở /mcp từ sidebar.",
+        "Ghi breadcrumb, heading, link API Docs (chỉ đọc href, không mở), câu giới thiệu.",
+        "Đọc card \"1. Generate your MCP token\": chữ mô tả, nút Generate MCP token (enabled, không bấm), link Manage all tokens và href."
+      ],
+      "observation_point": "Khung trang /mcp và card bước 1",
+      "expected_result": "Baseline một lần: breadcrumb \"Home / Mcp\", heading \"AI Assistant (MCP)\", link API Docs ra site tài liệu ngoài, câu \"Connect Teeinblue to your AI assistant using the Model Context Protocol.\"; card 1 có chữ \"Create a token scoped to MCP access. Keep it secret — treat it like a password.\", nút Generate MCP token enabled, link \"Manage all tokens →\" href /api-keys.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1602",
+          "KB-1603"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1602",
+        "KB-1603"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hướng dẫn kết nối thiếu hoặc sai"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Card bước 2 hiện endpoint {TIB_API_BASE}/mcp và header Authorization Bearer với nút copy",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account test, đã có 1 token mang mcp:access",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Đã login portal ({TIB_PORTAL_BASE}) bằng account test (đúng account guard). Chỉ đọc, không bấm Generate MCP token, Create new key hay xoá token.",
+      "steps": [
+        "Mở /mcp, tìm card \"2. Add Teeinblue to your AI client\".",
+        "Đọc câu hướng dẫn, ô endpoint, ô header và nút copy mỗi ô.",
+        "So host của endpoint hiển thị với biến TIB_API_BASE của môi trường test."
+      ],
+      "observation_point": "Card 2: câu hướng dẫn, endpoint, header",
+      "expected_result": "Baseline một lần: câu \"Use the remote HTTP MCP endpoint below. Your client must support remote HTTP MCP servers.\"; endpoint là API host staging với path /mcp; header \"Authorization: Bearer <YOUR_MCP_TOKEN>\" (placeholder nguyên văn); mỗi ô có nút copy.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1605"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1605"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Endpoint hoặc header hiển thị sai làm client không kết nối được"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Tab Claude Code là mặc định, hiện lệnh claude mcp add và .mcp.json",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account test, đã có 1 token mang mcp:access",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Đã login portal ({TIB_PORTAL_BASE}) bằng account test (đúng account guard). Chỉ đọc, không bấm Generate MCP token, Create new key hay xoá token.",
+      "steps": [
+        "Mở /mcp mới (không đổi tab), ghi tab đang chọn.",
+        "Đọc lệnh quick-add, block .mcp.json và câu xác nhận /mcp."
+      ],
+      "observation_point": "Nội dung tab Claude Code",
+      "expected_result": "Baseline một lần: tab Claude Code đang chọn mặc định; lệnh `claude mcp add --transport http teeinblue <endpoint> --header \"Authorization: Bearer <YOUR_MCP_TOKEN>\"`; .mcp.json có mcpServers.teeinblue với type \"http\", url, headers.Authorization; câu \"Run /mcp inside Claude Code to confirm Teeinblue is connected.\"",
+      "oracle": {
+        "kb_ids": [
+          "KB-1606"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1606",
+        "KB-1609"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Config Claude Code sai làm client không kết nối được"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Tab Claude Desktop hiện bộ chọn hệ điều hành và config npx mcp-remote cho macOS/Linux và Windows",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account test, đã có 1 token mang mcp:access",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Đã login portal ({TIB_PORTAL_BASE}) bằng account test (đúng account guard). Chỉ đọc, không bấm Generate MCP token, Create new key hay xoá token.",
+      "steps": [
+        "Mở /mcp, chọn tab Claude Desktop.",
+        "Ghi bộ chọn Operating system, lựa chọn mặc định, block claude_desktop_config.json và các ghi chú.",
+        "Chọn Windows, ghi block và so từng dòng với macOS / Linux."
+      ],
+      "observation_point": "Nội dung tab Claude Desktop cho từng lựa chọn hệ điều hành",
+      "expected_result": "Baseline một lần mỗi lựa chọn: bộ chọn \"Operating system\" với \"macOS / Linux\" (mặc định) và \"Windows\"; macOS / Linux: mcpServers.teeinblue với command \"npx\" và args [\"-y\", \"mcp-remote\", <endpoint>, \"--header\", \"Authorization: Bearer <YOUR_MCP_TOKEN>\"]; Windows: block giống hệt trừ dòng command là đường dẫn đầy đủ tới npx.cmd (backslash nhân đôi trong JSON). Ghi chú: Settings > Developer > Edit Config hoặc sửa file trực tiếp (đường dẫn cho macOS và Windows), Claude Desktop kết nối qua stdio nên bắc cầu bằng mcp-remote (cần Node.js), lưu ý Windows về npx.cmd và backslash, khởi động lại Claude Desktop. Lệch cần điều tra, chưa là bug.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1607"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1607",
+        "KB-1609"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Config Claude Desktop sai, thiếu Node.js, sai đường dẫn npx.cmd trên Windows"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Tab Codex hiện config ~/.codex/config.toml",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account test, đã có 1 token mang mcp:access",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Đã login portal ({TIB_PORTAL_BASE}) bằng account test (đúng account guard). Chỉ đọc, không bấm Generate MCP token, Create new key hay xoá token.",
+      "steps": [
+        "Mở /mcp, chọn tab Codex.",
+        "Đọc block config."
+      ],
+      "observation_point": "Nội dung tab Codex",
+      "expected_result": "Baseline một lần: block ~/.codex/config.toml dạng [mcp_servers.teeinblue] với url và http_headers = {Authorization = \"Bearer <YOUR_MCP_TOKEN>\"}.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1608"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1608",
+        "KB-1609"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Config Codex sai làm client không kết nối được"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Tải /mcp gọi GET /api/tokens (200) với shape phân trang",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account test, đã có 1 token mang mcp:access",
+        "environment": "staging",
+        "surface_or_device": "portal desktop + DevTools Network"
+      },
+      "precondition": "Đã login portal ({TIB_PORTAL_BASE}) bằng account test (đúng account guard). Chỉ đọc, không bấm Generate MCP token, Create new key hay xoá token. Mở DevTools Network trước khi tải trang.",
+      "steps": [
+        "Tải lại /mcp với Network đang ghi.",
+        "Tìm GET /api/tokens trên API host, ghi status.",
+        "Mở response, đọc key cấp trên và key từng phần tử trong data (không ghi tên và ngày của token)."
+      ],
+      "observation_point": "Request GET /api/tokens khi tải /mcp và shape response",
+      "expected_result": "Baseline một lần: GET /api/tokens trả 200 với {data:[{id, name, abilities[], last_used_at, expires_at, created_at}], links, meta}; expires_at null ứng với \"Never\" trên UI; trang không hiện danh sách token trong nội dung đã quan sát.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1604",
+          "KB-1613"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1604",
+        "KB-1613"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Portal đổi contract danh sách token"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Manage all tokens dẫn tới /api-keys và token hiện ability mcp:access",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account test, đã có 1 token mang mcp:access",
+        "environment": "staging",
+        "surface_or_device": "portal desktop + DevTools Network"
+      },
+      "precondition": "Đã login portal ({TIB_PORTAL_BASE}) bằng account test (đúng account guard). Chỉ đọc, không bấm Generate MCP token, Create new key hay xoá token.",
+      "steps": [
+        "Ở /mcp bấm \"Manage all tokens →\".",
+        "Ghi breadcrumb, heading, nút Create new key (không bấm), cột bảng, footer, icon action dòng.",
+        "Ghi các badge ability của dòng token và cột EXPIRES; không ghi tên hay ngày của token.",
+        "Ghi request GET /api/tokens/abilities và GET /api/tokens khi tải trang."
+      ],
+      "observation_point": "Trang /api-keys: bảng token và ability",
+      "expected_result": "Baseline một lần: trang /api-keys với heading \"API Keys\", nút \"Create new key\" enabled, bảng NAME / ABILITIES / LAST USED / EXPIRES / CREATED / ACTION; dòng token quan sát có badge gồm mcp:access cùng orders:read, orders:write, campaigns:read, campaigns:write, products:read, customizations:read, assets:write, assets:read; EXPIRES \"Never\"; GET /api/tokens/abilities trả {abilities:[9 chuỗi]}. Số ability của token khác có thể khác.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1610",
+          "KB-1611",
+          "KB-1613"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1610",
+        "KB-1611",
+        "KB-1613"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Token không hiện ability mcp:access làm merchant không biết token dùng được cho MCP"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "PERMISSION",
+      "layer": "api",
+      "title": "POST /mcp không có Authorization trả 401 Unauthenticated",
+      "applicability": {
+        "role": "client MCP không xác thực",
+        "state": "không có token",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Client ngoài trình duyệt (curl/Postman) gọi {TIB_API_BASE}/mcp với Content-Type: application/json và Accept: application/json, text/event-stream. Không cần credential.",
+      "steps": [
+        "Gửi POST {TIB_API_BASE}/mcp với body JSON-RPC initialize, không có header Authorization.",
+        "Lặp với body tools/list.",
+        "Ghi status, content-type, www-authenticate, body, và có hay không header x-ratelimit-* và mcp-session-id."
+      ],
+      "observation_point": "Status, header và body của response 401",
+      "expected_result": "Baseline hai request: HTTP 401, content-type application/json, www-authenticate `Bearer realm=\"mcp\", error=\"invalid_token\"`, body {\"message\":\"Unauthenticated.\"} (không có key jsonrpc/id/error); không có header x-ratelimit-* và mcp-session-id.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1614",
+          "KB-1616"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1614",
+        "KB-1616"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Server MCP nhận request không xác thực"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "PERMISSION",
+      "layer": "api",
+      "title": "POST /mcp với Bearer giả cho response giống trường hợp không có token",
+      "applicability": {
+        "role": "client MCP không xác thực",
+        "state": "token giả",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Client ngoài trình duyệt (curl/Postman) gọi {TIB_API_BASE}/mcp với Content-Type: application/json và Accept: application/json, text/event-stream. Không cần credential. Dùng chuỗi giả rõ ràng làm Bearer, không dùng token thật.",
+      "steps": [
+        "Gửi POST {TIB_API_BASE}/mcp, header Authorization: Bearer <chuỗi giả>, body initialize.",
+        "Lặp với body tools/list.",
+        "So status, www-authenticate, body với check không token."
+      ],
+      "observation_point": "Status, header và body của response với token giả",
+      "expected_result": "Baseline hai request: giống hệt trường hợp không có Authorization (HTTP 401, cùng www-authenticate, body {\"message\":\"Unauthenticated.\"}).",
+      "oracle": {
+        "kb_ids": [
+          "KB-1615"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1615",
+        "KB-1614"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Server MCP nhận token sai"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "PERMISSION",
+      "layer": "api",
+      "title": "Token hợp lệ nhưng không có ability mcp:access gọi /mcp",
+      "applicability": {
+        "role": "client ngoài trình duyệt, token thiếu mcp:access",
+        "state": "token hợp lệ không có mcp:access",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Token Open API của account test KHÔNG có ability mcp:access (tạo ở /api-keys bằng account test, thu hồi sau khi test); gọi {TIB_API_BASE}/mcp từ client ngoài trình duyệt.",
+      "steps": [
+        "Gửi POST {TIB_API_BASE}/mcp với Bearer là token thiếu mcp:access, body initialize.",
+        "Ghi status, www-authenticate, body.",
+        "So với response của token giả (CHK-010)."
+      ],
+      "observation_point": "Status và body khi token thiếu ability mcp:access",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1612"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1612",
+        "KB-1615"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Token Open API dùng được cho MCP ngoài ý định"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-mcp-004"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "PERMISSION",
+      "layer": "api",
+      "title": "Token hết hạn hoặc đã bị xoá gọi /mcp",
+      "applicability": {
+        "role": "client ngoài trình duyệt, token hết hạn/đã xoá",
+        "state": "token mất hiệu lực",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Token có mcp:access của account test (tạo cho mục đích test, giá trị không ghi); sau khi xoá token ở /api-keys hoặc hết hạn thì dùng lại giá trị cũ.",
+      "steps": [
+        "Gọi POST {TIB_API_BASE}/mcp với token còn hiệu lực, ghi kết quả.",
+        "Xoá token ở /api-keys (hoặc chờ hết hạn).",
+        "Gọi lại với cùng giá trị, ghi status, www-authenticate, body."
+      ],
+      "observation_point": "Response sau khi token mất hiệu lực",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1615"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Token đã thu hồi vẫn dùng được"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-mcp-004"
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "CORE",
+      "layer": "api",
+      "title": "Token hợp lệ gọi initialize và tools/list trên /mcp",
+      "applicability": {
+        "role": "client ngoài trình duyệt, token mcp:access",
+        "state": "đã xác thực",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Có token ability mcp:access của account test (giá trị từ biến môi trường của operator, không ghi vào check hay evidence); gọi {TIB_API_BASE}/mcp từ client ngoài trình duyệt.",
+      "steps": [
+        "Gửi POST {TIB_API_BASE}/mcp với Bearer token, body JSON-RPC initialize.",
+        "Ghi status, header, body (protocolVersion, capabilities, serverInfo, instructions nếu có).",
+        "Gửi tools/list, ghi danh sách tool (tên, description, inputSchema)."
+      ],
+      "observation_point": "Response initialize và tools/list đã xác thực",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1614",
+        "KB-1615"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Client không kết nối được hoặc thấy sai danh mục tool"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-mcp-001"
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Generate MCP token tạo token và điền vào config client",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "chưa Generate",
+        "environment": "staging",
+        "surface_or_device": "portal desktop"
+      },
+      "precondition": "Đã login portal bằng account test; chấp nhận tạo một token mới và thu hồi sau khi test (token mới là dữ liệu của account test).",
+      "steps": [
+        "Mở /mcp, bấm Generate MCP token, ghi dialog/trường hỏi (tên, hạn dùng).",
+        "Ghi cách token hiện và config trước/sau (placeholder <YOUR_MCP_TOKEN> có được thay không).",
+        "Mở /api-keys, ghi ability và EXPIRES của token vừa tạo.",
+        "Thu hồi token vừa tạo."
+      ],
+      "observation_point": "Luồng Generate, config sau Generate và ability token mới",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1609"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1603",
+        "KB-1609",
+        "KB-1611"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Token sinh ra mang quyền rộng hơn mcp:access"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-mcp-007"
+    },
+    {
+      "check_id": "CHK-015",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Kết nối thật từ Claude Code, Claude Desktop (mcp-remote) và Codex bằng config trên /mcp",
+      "applicability": {
+        "role": "merchant-owner dùng AI client",
+        "state": "token mcp:access đã điền vào config",
+        "environment": "staging",
+        "surface_or_device": "AI client thật (Claude Code, Claude Desktop, Codex)"
+      },
+      "precondition": "Có token ability mcp:access của account test (giá trị từ biến môi trường của operator, không ghi vào check hay evidence); gọi {TIB_API_BASE}/mcp từ client ngoài trình duyệt. Client cài sẵn; Claude Desktop cần Node.js.",
+      "steps": [
+        "Điền token vào config của từng client theo tab trên /mcp (endpoint {TIB_API_BASE}/mcp).",
+        "Claude Code: chạy lệnh quick-add rồi /mcp; Claude Desktop: thêm claude_desktop_config.json, khởi động lại; Codex: thêm config.toml.",
+        "Ghi client có báo kết nối được và liệt kê tool không."
+      ],
+      "observation_point": "Trạng thái kết nối và danh sách tool trong từng client",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1606",
+        "KB-1607",
+        "KB-1608"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Config hiển thị trên /mcp không kết nối được trong client thật"
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-mcp-008"
+    },
+    {
+      "check_id": "CHK-016",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Lỗi đã xác thực nhưng sai (method lạ, params sai) có dạng JSON-RPC hay {message}",
+      "applicability": {
+        "role": "client ngoài trình duyệt, token mcp:access",
+        "state": "đã xác thực",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Có token ability mcp:access của account test (giá trị từ biến môi trường của operator, không ghi vào check hay evidence); gọi {TIB_API_BASE}/mcp từ client ngoài trình duyệt.",
+      "steps": [
+        "Gửi POST {TIB_API_BASE}/mcp với method không tồn tại, ghi status và body.",
+        "Gửi tools/call với tên tool không có hoặc input sai (chỉ trong môi trường test, không gọi tool ghi dữ liệu thật), ghi status và body."
+      ],
+      "observation_point": "Status và shape body lỗi đã xác thực",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1614"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1614",
+        "KB-1615"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Client không phân tích được lỗi"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-mcp-003"
+    },
+    {
+      "check_id": "CHK-017",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Preflight OPTIONS /mcp từ origin portal và fetch từ trang portal",
+      "applicability": {
+        "role": "client MCP không xác thực",
+        "state": "chưa có xác nhận thiết kế",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Client ngoài trình duyệt cho OPTIONS (không cần token); fetch thử từ DevTools console của trang portal đã login ({TIB_PORTAL_BASE}).",
+      "steps": [
+        "Gửi OPTIONS {TIB_API_BASE}/mcp với Origin là origin portal, Access-Control-Request-Method POST, Access-Control-Request-Headers content-type,x-xsrf-token; ghi status, allow, header access-control-*.",
+        "Từ console trang portal đã login, fetch POST {TIB_API_BASE}/mcp (credentials include) với body initialize; ghi kết quả."
+      ],
+      "observation_point": "Response preflight và kết quả fetch từ portal",
+      "expected_result": "Baseline một lần: preflight HTTP 200, allow \"GET,HEAD,POST,DELETE\", content-type text/html, body rỗng, không có access-control-allow-origin hay access-control-allow-headers; fetch từ trang portal thất bại với \"TypeError: Failed to fetch\" (không thấy status). Chưa biết đây là chủ ý; lệch cần điều tra, chưa là bug.",
+      "oracle": {
+        "kb_ids": [
+          "KB-1617",
+          "KB-1618"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "KB-1617",
+        "KB-1618",
+        "KB-1619"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hành vi CORS đổi ngoài ý định"
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-018",
+      "dimension": "PERMISSION",
+      "layer": "api",
+      "title": "MCP server có nhận cookie session portal thay cho Bearer không",
+      "applicability": {
+        "role": "trình duyệt, session portal",
+        "state": "đã login portal, không Bearer",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Cần probe same-origin hoặc server-side kèm cookie session của account test (fetch từ portal bị chặn trước khi thấy status).",
+      "steps": [
+        "Gửi POST {TIB_API_BASE}/mcp kèm cookie session portal nhưng không có Authorization, từ context được phép gọi.",
+        "Ghi status và body."
+      ],
+      "observation_point": "Response khi chỉ có cookie session",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1619"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1617",
+        "KB-1618",
+        "KB-1619"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Session cookie được chấp nhận trên /mcp gây rủi ro CSRF/cross-origin"
+      ],
+      "priority": "P1",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-mcp-005"
+    },
+    {
+      "check_id": "CHK-019",
+      "dimension": "BOUNDARY",
+      "layer": "api",
+      "title": "Rate limit trên /mcp",
+      "applicability": {
+        "role": "client ngoài trình duyệt, token mcp:access",
+        "state": "đã xác thực",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Có token ability mcp:access của account test (giá trị từ biến môi trường của operator, không ghi vào check hay evidence); gọi {TIB_API_BASE}/mcp từ client ngoài trình duyệt. Chỉ gửi số request nhỏ, không tạo tải.",
+      "steps": [
+        "Gửi vài request tools/list liên tiếp, ghi header x-ratelimit-* và status.",
+        "Nếu Dev cho biết giới hạn, gửi vượt giới hạn trên môi trường test và ghi response."
+      ],
+      "observation_point": "Header rate limit và response khi vượt",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1616"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1616"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lạm dụng /mcp không bị giới hạn"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-mcp-006"
+    },
+    {
+      "check_id": "CHK-020",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "GET và DELETE trên /mcp",
+      "applicability": {
+        "role": "client ngoài trình duyệt, token mcp:access",
+        "state": "đã xác thực",
+        "environment": "staging",
+        "surface_or_device": "api"
+      },
+      "precondition": "Có token ability mcp:access của account test (giá trị từ biến môi trường của operator, không ghi vào check hay evidence); gọi {TIB_API_BASE}/mcp từ client ngoài trình duyệt. DELETE có thể kết thúc session: chỉ thử trên account test.",
+      "steps": [
+        "Gửi GET {TIB_API_BASE}/mcp với Bearer token và Accept: text/event-stream, ghi status và header.",
+        "Gửi DELETE {TIB_API_BASE}/mcp (kèm mcp-session-id nếu server cấp), ghi status."
+      ],
+      "observation_point": "Response GET và DELETE /mcp",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "KB-1618"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "KB-1618"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Method chưa kiểm chứng trên /mcp"
+      ],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-mcp-009"
+    },
+    {
+      "check_id": "CHK-021",
+      "dimension": "PERMISSION",
+      "layer": "api",
+      "title": "[CBS-163] POST /api/tokens trả accessToken (TokenResource) và plainTextToken, không tokenable_id/tokenable_type",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "phiên portal của account explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /api-keys + DevTools Network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Fixture tự dựng trên store explorer, không dùng store/campaign/id trong CCR hay test case. Không gọi production. Token sinh ra không ghi giá trị vào check hay evidence (che khi chụp). Cần operator đồng ý trước khi tạo token; xoá token test sau khi chạy.",
+      "steps": [
+        "Mở /api-keys, bấm Create new key, nhập tên token test, tạo.",
+        "Ghi response POST /api/tokens: key top-level và key của accessToken.",
+        "Xoá token test."
+      ],
+      "observation_point": "Key top-level và key của accessToken",
+      "expected_result": "Top-level có accessToken và plainTextToken; accessToken có id, name, abilities, last_used_at, expires_at, created_at; không có tokenable_id, tokenable_type.",
+      "oracle": {
+        "kb_ids": [
+          "mcp/mcp-client-connection#KB-1658"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "mcp/mcp-client-connection#KB-1658",
+        "mcp/mcp-client-connection#KB-1659",
+        "mcp/mcp-client-connection#KB-1610"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lộ thông tin token trong response."
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-022",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-163] Plain token hiện một lần; Regenerate trên /mcp xoá token MCP cũ (quan sát, chưa xác nhận)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account explorer đã có token MCP",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal /api-keys, /mcp + DevTools Network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Fixture tự dựng trên store explorer, không dùng store/campaign/id trong CCR hay test case. Không gọi production. Token sinh ra không ghi giá trị vào check hay evidence (che khi chụp). Cần operator đồng ý trước khi tạo token; xoá token test sau khi chạy. Regenerate MCP token xoá token cũ, không hoàn tác: chỉ chạy khi operator đồng ý và báo trước client đang dùng token đó.",
+      "steps": [
+        "Ở /api-keys tạo token test; ghi status POST /api/tokens, key token trong response, cảnh báo trên trang; reload và ghi trang còn plain token không.",
+        "Ở /mcp bấm Regenerate token, xác nhận; ghi POST /api/tokens và DELETE /api/tokens/{id}; reload /mcp.",
+        "Xoá token test."
+      ],
+      "observation_point": "Status, key token trong response, cảnh báo, trạng thái sau reload, request DELETE",
+      "expected_result": "Baseline theo quan sát: POST /api/tokens 200, không key token; plain token hiện một lần kèm cảnh báo, reload không còn; Regenerate gọi DELETE /api/tokens/{id} 204 cho token MCP cũ.",
+      "oracle": {
+        "kb_ids": [
+          "mcp/mcp-client-connection#KB-1659"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "mcp/mcp-client-connection#KB-1659",
+        "mcp/mcp-client-connection#KB-1658",
+        "mcp/mcp-client-connection#KB-1603"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Regenerate không hoàn tác."
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-mcp-030"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "risk_or_gap_ref": "Capability: vào trang MCP và đọc hướng dẫn",
+      "covered_by_check_ids": [
+        "CHK-001",
+        "CHK-002"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "risk_or_gap_ref": "Capability: endpoint và header Authorization",
+      "covered_by_check_ids": [
+        "CHK-003"
+      ],
+      "coverage_status": "COVERED_BASELINE"
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "risk_or_gap_ref": "Capability: config theo client",
+      "covered_by_check_ids": [
+        "CHK-004",
+        "CHK-005",
+        "CHK-006",
+        "CHK-015"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "risk_or_gap_ref": "Capability: chuẩn bị token mcp:access",
+      "covered_by_check_ids": [
+        "CHK-007",
+        "CHK-008",
+        "CHK-014"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "risk_or_gap_ref": "Capability: server từ chối request thiếu/sai token",
+      "covered_by_check_ids": [
+        "CHK-009",
+        "CHK-010",
+        "CHK-011",
+        "CHK-012"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "risk_or_gap_ref": "Capability: gọi /mcp từ trang portal",
+      "covered_by_check_ids": [
+        "CHK-017",
+        "CHK-018"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "risk_or_gap_ref": "Gap: tool catalogue, initialize, shape lỗi, rate limit, GET/DELETE; role khác và account chưa có token (OQ-mcp-010, chưa có check riêng vì chưa có evidence)",
+      "covered_by_check_ids": [
+        "CHK-013",
+        "CHK-016",
+        "CHK-019",
+        "CHK-020"
+      ],
+      "coverage_status": "NEEDS_CONFIRMATION"
+    },
+    {
+      "feature_id": "FEAT-01-mcp-client-connection",
+      "risk_or_gap_ref": "[CBS-163] Response tạo token và hiển thị plain token một lần (KB-1658, KB-1659)",
+      "covered_by_check_ids": [
+        "CHK-021",
+        "CHK-022"
+      ],
+      "coverage_status": "CHK-021 STRONG; CHK-022 BASELINE NEEDS_CONFIRMATION; production chưa có check"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "STATE_DATA",
+      "reason": "Chưa có evidence về persistence hay dữ liệu cũ: Generate/xoá token chưa thao tác; phần placeholder thành token nằm ở CHK-014."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Không áp dụng: object mới, không base, không KNOWN_DEFECT."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  }
+}

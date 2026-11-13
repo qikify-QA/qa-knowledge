@@ -210,6 +210,24 @@
       "kb_refs": [
         "asset-category/asset-category-item-management#KB-640"
       ]
+    },
+    {
+      "name": "[MỚI, CBS-141] Lấy ảnh và đổi thumbnail của clipart trong danh sách clipart",
+      "description": "Trên danh sách clipart của một Clipart Category, hover thumbnail hiện lớp phủ \"Change thumbnail\"; chuột phải thumbnail để lấy ảnh qua menu của trình duyệt (TIB-5676, chưa ship, đề xuất); click trái mở hộp chọn file, upload ảnh mới đổi thumbnail qua POST /api/cliparts/{id}/thumbnail mà không đổi ảnh gốc (đề xuất theo lời Dev, chưa ship).",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-643",
+        "asset-category/asset-category-item-management#KB-644",
+        "asset-category/asset-category-item-management#KB-645",
+        "asset-category/asset-category-item-management#KB-646"
+      ]
+    },
+    {
+      "name": "[CBS-163] Shape response của request ghi clipart",
+      "description": "Theo Dev (TIB-5689), mọi request ghi clipart (POST /api/cliparts, /font, /svg, /by-temporary-file, PUT, thumbnail) trả cùng 5 key id, name, url, thumbnail, color, null khi clipart không có giá trị (KB-647). Một lượt quan sát staging khớp ở font, SVG, thumbnail, PUT, by-temporary-file (KB-648).",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-647",
+        "asset-category/asset-category-item-management#KB-648"
+      ]
     }
   ],
   "state_transitions": [
@@ -317,6 +335,14 @@
       "kb_refs": [
         "asset-category/asset-category-item-management#KB-565"
       ]
+    },
+    {
+      "statement": "[CBS-163] Theo Jira TIB-5689 comment 56714 mục 1 (Dev, 2026-11-09), mọi request ghi clipart (POST /api/cliparts, /font, /svg, /by-temporary-file, PUT, thumbnail) trả cùng 5 key id, name, url, thumbnail, color; null khi clipart không có giá trị (font/SVG không color; by-temporary-file chưa có url, thumbnail vì xử lý nền).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-647"
+      ]
     }
   ],
   "observed_behavior": [
@@ -397,6 +423,23 @@
       "statement": "KB-640 (OBSERVED_CURRENT, confidence LOW, S1, merchant-owner/staging, object_state: SVG có clip-path lồng qua nhiều <clipPath>): nguồn là mô tả dev tự sinh từ branch diff (TIB-5350, PR teeinblue-api #3836, 2026-09-23), không phải quan sát trên hệ thống. Theo mô tả, thumbnail của clipart SVG có clip-path lồng được tạo bằng cách rasterize qua resvg rồi mới qua pipeline Imagick, và test đề xuất (chưa tick) kỳ vọng thumbnail hiện đúng hình đã mask, không hiện outer bounding shape. Ghi chú QA-3395 TC-01, TC-02 không có id test case Testlane hay build nên không tính là quan sát. Không phải rule, không làm oracle STRONG.",
       "kb_refs": [
         "asset-category/asset-category-item-management#KB-640"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-141] KB-646 (1 lượt test case QA chạy bằng AI 2026-11-11, Chrome/Windows và Firefox giả lập macOS): chuột phải thumbnail clipart rồi Esc không mở hộp chọn file, không có request ghi, thumbnail giữ nguyên sau reload. Chưa có nguồn expected; không áp cho Safari.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-646"
+      ],
+      "observed_count": null
+    },
+    {
+      "statement": "[CBS-163] KB-648 (một lượt TC-TIB-8590, staging, build không ghi): font 201, SVG 201, đổi thumbnail 200, PUT 200, by-temporary-file 201 đều đủ 5 key, không category, không user_id; by-temporary-file có url/thumbnail sau xử lý nền. POST /api/cliparts chưa chạy.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-648"
       ]
     }
   ],
@@ -561,6 +604,31 @@
       "kb_refs": [
         "asset-category/asset-category-item-management#KB-640"
       ]
+    },
+    {
+      "risk": "[CBS-141] KB-643, KB-644, KB-645 thuộc TIB-5676, chưa ship lúc gửi CCR (test chạy 2026-11-11 trước khi PR merge; Jira Done 2026-11-12): hành vi chuột phải lưu ảnh và luồng đổi thumbnail chỉ là đề xuất, không làm oracle. Bằng chứng chuột phải là gián tiếp (chưa thấy menu native), macOS chỉ giả lập, Safari chưa kết luận.",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-643",
+        "asset-category/asset-category-item-management#KB-644",
+        "asset-category/asset-category-item-management#KB-645"
+      ]
+    },
+    {
+      "risk": "[CBS-141] Trên WebKit bản Windows (giả lập Safari), chuột phải thumbnail phát thêm click lên input file của label và mở hộp chọn file; nếu Safari thật trên macOS cũng vậy thì user Safari chuột phải sẽ bị bật hộp chọn file. Chưa kết luận.",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-643",
+        "asset-category/asset-category-item-management#KB-646"
+      ]
+    },
+    {
+      "risk": "[CBS-163] KB-015 và KB-031 (quan sát cũ) ghi response SVG/font 4 key không có color; check hoặc test dựa trên shape cũ sẽ báo lệch sai sau TIB-5689. Chưa có Dev xác nhận item cũ đã lỗi thời.",
+      "severity": "LOW",
+      "category": "oracle-risk",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-015",
+        "asset-category/asset-category-item-management#KB-031",
+        "asset-category/asset-category-item-management#KB-647"
+      ]
     }
   ],
   "environment_differences": [
@@ -582,8 +650,8 @@
     "note": "Run này không tự quan sát. Ngày là ngày nạp CCR CBS-099; KB-640 có nguồn ngày 2026-09-23. Item của base v2 (CBS-078) giữ freshness của nguồn tương ứng: KB-560, KB-569 ngày 2026-10-14, KB-568 ngày 2026-10-29, lời dev ngày 2026-10-28 và 2026-10-29; item bootstrap giữ freshness của các đợt quan sát 2026-09."
   },
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-135"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   },
   "unknown_areas": [
     {
@@ -670,6 +738,75 @@
         "asset-category/asset-category-item-management#KB-565"
       ],
       "oq_id": "OQ-asset-category-055"
+    },
+    {
+      "question": "[MỚI, CBS-141] Khi TIB-5676 đã ship, chuột phải thumbnail clipart có ra menu ảnh \"Save image as...\" và lưu được ảnh, và luồng hover/click trái đổi thumbnail có giữ như Dev mô tả không?",
+      "why_it_matters": "KB-643, KB-645 PROPOSED vì chưa ship; CHK-028, CHK-030 chưa có oracle.",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-643",
+        "asset-category/asset-category-item-management#KB-644",
+        "asset-category/asset-category-item-management#KB-645",
+        "asset-category/asset-category-item-management#KB-646"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-asset-category-056"
+    },
+    {
+      "question": "[MỚI, CBS-141] \"Save image as...\" trên thumbnail clipart nên lưu file thumbnail đang hiển thị hay ảnh clipart gốc?",
+      "why_it_matters": "Ticket nói \"saves the correct image\" nhưng không nói ảnh nào; hiện ảnh lấy ra là thumbnail webp 100x100 (KB-644). CHK-028 không phán được file lưu ra đúng hay sai.",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-644"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-asset-category-057"
+    },
+    {
+      "question": "[MỚI, CBS-141] Menu native \"Save image as...\" và file đã lưu chưa được xác nhận trên trình duyệt nào; macOS chỉ giả lập. Cần một lượt chạy tay trên Chrome, Edge, Firefox (Windows và Mac thật).",
+      "why_it_matters": "Mọi PASS của KB-643 là proxy (elementFromPoint, contextmenu không bị chặn); Dev ghi thao tác chuột phải thật cần QA test tay.",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-643"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-asset-category-058"
+    },
+    {
+      "question": "[MỚI, CBS-141] Trên Safari thật (macOS), chuột phải (two-finger) và Control-click lên thumbnail clipart có ra menu ảnh không, và có bật hộp chọn file không?",
+      "why_it_matters": "TC-TIB-9004 blocked: WebKit bản Windows mở hộp chọn file sau chuột phải (hành vi engine với label gắn input file); ticket yêu cầu Safari macOS. CHK-029 không có oracle.",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-643",
+        "asset-category/asset-category-item-management#KB-646"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-asset-category-059"
+    },
+    {
+      "question": "[MỚI, CBS-141] Chuột phải rồi Esc trên thumbnail clipart không mở hộp chọn file và không ghi gì có phải là expected không?",
+      "why_it_matters": "KB-646 chỉ là quan sát từ test case không có căn cứ expected; CHK-031 chỉ BASELINE.",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-646"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-asset-category-060"
+    },
+    {
+      "question": "[CBS-163] Font, SVG, thumbnail, PUT, by-temporary-file đủ 5 key, không category, không user_id, by-temporary-file có url/thumbnail sau xử lý nền (KB-648): đúng ý Dev? POST /api/cliparts (item không file) chưa chạy.",
+      "why_it_matters": "KB-648 là OBSERVED_CURRENT/LOW, một lượt chạy không ghi build.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-648"
+      ],
+      "oq_id": "OQ-asset-category-063"
+    },
+    {
+      "question": "[CBS-163] Phần shape response 4 key trong KB-015 (SVG) và KB-031 (font) đã lỗi thời sau TIB-5689 (KB-647 nói 5 key gồm color)?",
+      "why_it_matters": "Không sửa item base; cần Dev xác nhận để tránh oracle lẫn shape cũ và mới.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-015",
+        "asset-category/asset-category-item-management#KB-031",
+        "asset-category/asset-category-item-management#KB-647"
+      ],
+      "oq_id": "OQ-asset-category-064"
     }
   ],
   "coverage_matrix": [
@@ -901,6 +1038,74 @@
         "asset-category/asset-category-item-management#KB-640"
       ],
       "note": "Chỉ có mô tả dev tự sinh từ diff (S1), chưa quan sát, không làm oracle; phía layer image thuộc artwork, chưa có item"
+    },
+    {
+      "feature_id": "FEAT-03-asset-item-management",
+      "layer": "portal",
+      "role": "owner",
+      "state": "[CBS-141] chuột phải thumbnail clipart lấy ảnh (đề xuất, TIB-5676 chưa ship)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-643",
+        "asset-category/asset-category-item-management#KB-644"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-asset-item-management",
+      "layer": "api",
+      "role": "owner",
+      "state": "[CBS-141] hover / click trái đổi thumbnail clipart, POST /api/cliparts/{id}/thumbnail (đề xuất)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-645"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-asset-item-management",
+      "layer": "portal",
+      "role": "owner",
+      "state": "[CBS-141] chuột phải rồi Esc trên thumbnail clipart",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-646"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-asset-item-management",
+      "layer": "api",
+      "role": "owner",
+      "state": "[CBS-163] response của font, SVG, thumbnail, PUT, by-temporary-file clipart",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-647",
+        "asset-category/asset-category-item-management#KB-648"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-asset-item-management",
+      "layer": "api",
+      "role": "owner",
+      "state": "[CBS-163] response POST /api/cliparts (item không file)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-647"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-asset-item-management",
+      "layer": "api",
+      "role": "owner",
+      "state": "[CBS-163] response request ghi clipart",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-647"
+      ]
     }
   ],
   "profile_conflicts": [
@@ -942,6 +1147,17 @@
       "note": "Cap clipart áp cho từng category mới do zip bulk upload tạo, file thừa bị skip.",
       "kb_refs": [
         "asset-category/asset-category-item-management#KB-563"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-03-asset-item-management",
+      "to_feature_id": "FEAT-03-global-option-additional-option-items",
+      "relationship": "shares_ui_pattern",
+      "note": "[CBS-141] Thumbnail item của Additional Option nguồn inline dùng chung style lớp phủ \"Change thumbnail\" với thumbnail clipart (theo ticket TIB-5676); click trái khác nhau: clipart mở hộp chọn file, item inline mở Library image picker.",
+      "kb_refs": [
+        "asset-category/asset-category-item-management#KB-643",
+        "global-option/global-option-additional-option-items#KB-734",
+        "global-option/global-option-additional-option-items#KB-735"
       ]
     }
   ]

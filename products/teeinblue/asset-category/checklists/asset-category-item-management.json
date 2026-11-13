@@ -970,6 +970,233 @@
       "priority": "P3",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-asset-category-041"
+    },
+    {
+      "check_id": "CHK-028",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-141] Chuột phải thumbnail clipart: ghi menu trình duyệt và file lưu ra",
+      "applicability": {
+        "role": "merchant-owner (account explorer theo account_guard của product)",
+        "state": "danh sách clipart của Clipart Category trên store explorer",
+        "environment": "staging, bản đã ship TIB-5676; ghi build và ngày chạy",
+        "surface_or_device": "portal danh sách clipart; Chrome, Edge, Firefox trên Windows và macOS thật (Safari xem CHK-029)"
+      },
+      "precondition": "Đăng nhập account explorer, xác minh account theo account_guard của product trước khi thao tác. Fixture tự dựng trên store explorer ở staging: một Clipart Category có vài clipart PNG màu đặc khác nhau (không custom thumbnail). Không dùng store/category/campaign nêu trong CCR hay production.",
+      "steps": [
+        "Mở Assets > Clipart Categories > category fixture.",
+        "Hover thumbnail một clipart; ghi lớp phủ \"Change thumbnail\" có hiện không.",
+        "Chuột phải lên thumbnail; ghi menu hiện ra có mục lưu ảnh (\"Save image as...\" / \"Save Image As…\") không.",
+        "Chọn lưu ảnh; mở file đã lưu, ghi kích thước, định dạng, màu và đó là thumbnail hay ảnh gốc.",
+        "Lặp với clipart bên cạnh; ghi file có đúng clipart được bấm không.",
+        "Ghi trình duyệt, hệ điều hành, build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Menu chuột phải native; file đã lưu (kích thước, màu); có mở hộp chọn file hay không.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-asset-category-056",
+      "related_kb_ids": [
+        "asset-category/asset-category-item-management#KB-643",
+        "asset-category/asset-category-item-management#KB-644"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-asset-category-056"
+    },
+    {
+      "check_id": "CHK-029",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[CBS-141] Safari/macOS: chuột phải và Control-click thumbnail clipart, ghi menu và hộp chọn file",
+      "applicability": {
+        "role": "merchant-owner (account explorer theo account_guard của product)",
+        "state": "danh sách clipart của Clipart Category trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "Safari trên macOS thật"
+      },
+      "precondition": "Đăng nhập account explorer, xác minh account theo account_guard của product trước khi thao tác. Fixture tự dựng trên store explorer ở staging: một Clipart Category có vài clipart PNG màu đặc khác nhau (không custom thumbnail). Không dùng store/category/campaign nêu trong CCR hay production.",
+      "steps": [
+        "Mở category fixture trên Safari (macOS thật, không giả lập).",
+        "Chuột phải (two-finger click) lên thumbnail; ghi menu có \"Save Image As…\" không và hộp chọn file có bật không.",
+        "Lặp lại bằng Control-click.",
+        "Nếu có menu: lưu ảnh, mở file, ghi kích thước và màu.",
+        "Ghi phiên bản Safari, macOS, build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Menu chuột phải; hộp chọn file (bật hay không) với mỗi cách bấm; file đã lưu.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-asset-category-059",
+      "related_kb_ids": [
+        "asset-category/asset-category-item-management#KB-643",
+        "asset-category/asset-category-item-management#KB-646"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-asset-category-059"
+    },
+    {
+      "check_id": "CHK-030",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "[CBS-141] Hover và click trái thumbnail clipart: đổi thumbnail, ảnh gốc giữ nguyên sau reload",
+      "applicability": {
+        "role": "merchant-owner (account explorer theo account_guard của product)",
+        "state": "clipart fixture trên store explorer, đã có thumbnail",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal danh sách clipart + network"
+      },
+      "precondition": "Đăng nhập account explorer, xác minh account theo account_guard của product trước khi thao tác. Fixture tự dựng trên store explorer ở staging: một Clipart Category có vài clipart PNG màu đặc khác nhau (không custom thumbnail). Không dùng store/category/campaign nêu trong CCR hay production.",
+      "steps": [
+        "Hover thumbnail một clipart; ghi lớp phủ \"Change thumbnail\" hiện, rê ra thì ẩn không.",
+        "Click trái thumbnail; ghi có mở hộp chọn file không.",
+        "Chọn một ảnh khác màu; ghi request POST /api/cliparts/{id}/thumbnail (status, field url và thumbnail trong response).",
+        "Tải lại trang; ghi thumbnail hiển thị và ảnh gốc của clipart.",
+        "Ghi build và ngày chạy; không phán pass hay fail."
+      ],
+      "observation_point": "Lớp phủ khi hover; hộp chọn file; network POST /api/cliparts/{id}/thumbnail; thumbnail và ảnh gốc sau reload.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-asset-category-056",
+      "related_kb_ids": [
+        "asset-category/asset-category-item-management#KB-645"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-asset-category-056"
+    },
+    {
+      "check_id": "CHK-031",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-141] Chuột phải rồi Esc trên thumbnail clipart không mở hộp chọn file và không ghi gì",
+      "applicability": {
+        "role": "merchant-owner (account explorer theo account_guard của product)",
+        "state": "clipart fixture trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal danh sách clipart + network; Chrome, Firefox (không áp Safari, xem CHK-029)"
+      },
+      "precondition": "Đăng nhập account explorer, xác minh account theo account_guard của product trước khi thao tác. Fixture tự dựng trên store explorer ở staging: một Clipart Category có vài clipart PNG màu đặc khác nhau (không custom thumbnail). Không dùng store/category/campaign nêu trong CCR hay production.",
+      "steps": [
+        "Mở category fixture, mở tab network.",
+        "Chuột phải thumbnail một clipart, bấm Esc đóng menu.",
+        "Ghi có mở hộp chọn file không và có request ghi nào (POST/PUT liên quan clipart/thumbnail) không.",
+        "Tải lại trang; so src thumbnail trước và sau."
+      ],
+      "observation_point": "Hộp chọn file; network; src thumbnail trước/sau reload.",
+      "expected_result": "Baseline theo test case QA chạy bằng AI (2026-11-11, chưa có nguồn expected): không mở hộp chọn file, không có request ghi, src thumbnail giữ nguyên sau reload. Lệch thì điều tra, chưa phải bug.",
+      "oracle": {
+        "kb_ids": [
+          "asset-category/asset-category-item-management#KB-646"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-asset-category-060",
+      "related_kb_ids": [
+        "asset-category/asset-category-item-management#KB-646",
+        "asset-category/asset-category-item-management#KB-643"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-asset-category-060"
+    },
+    {
+      "check_id": "CHK-032",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[CBS-163] Request ghi clipart trả cùng 5 key id, name, url, thumbnail, color",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "category fixture trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Assets (clipart, vector, font) + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Fixture tự dựng trên store explorer; không dùng store, category, Product Base, campaign hay id nêu trong CCR/test case; không gọi production. Trên store explorer có sẵn hoặc tự tạo một Clipart Category, một Vector category và một Font category; font lấy từ Upload Fonts của explorer; ảnh PNG/SVG tự sinh. Mở tab network để đọc body response. Xoá clipart test sau khi chạy.",
+      "steps": [
+        "Font category: Add new, chọn một font, ghi body POST /api/cliparts/font.",
+        "Vector category: kéo file SVG vào dropzone, ghi body POST /api/cliparts/svg.",
+        "Đổi thumbnail clipart SVG vừa tạo, ghi body request thumbnail.",
+        "Sửa color của clipart đó, ghi body PUT /api/cliparts/{id}.",
+        "Clipart category: upload PNG, ghi body POST /api/cliparts/by-temporary-file."
+      ],
+      "observation_point": "Tập key và giá trị null trong body từng response",
+      "expected_result": "Mỗi response có cùng 5 key id, name, url, thumbnail, color; font và SVG có color null; by-temporary-file có url và thumbnail null.",
+      "oracle": {
+        "kb_ids": [
+          "asset-category/asset-category-item-management#KB-647"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "asset-category/asset-category-item-management#KB-647",
+        "asset-category/asset-category-item-management#KB-648",
+        "asset-category/asset-category-item-management#KB-015",
+        "asset-category/asset-category-item-management#KB-031"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "POST /api/cliparts (item không file) chưa có bước chạy (KB-648).",
+        "Shape cũ 4 key ở KB-015/KB-031 chờ Dev xác nhận lỗi thời."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-033",
+      "dimension": "REGRESSION",
+      "layer": "api",
+      "title": "[CBS-163] Response ghi clipart không còn category, user_id; by-temporary-file có url sau xử lý nền (quan sát)",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "category fixture trên store explorer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Assets (clipart, vector, font) + network"
+      },
+      "precondition": "Account explorer của staging (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại). Fixture tự dựng trên store explorer; không dùng store, category, Product Base, campaign hay id nêu trong CCR/test case; không gọi production. Trên store explorer có sẵn hoặc tự tạo một Clipart Category, một Vector category và một Font category; font lấy từ Upload Fonts của explorer; ảnh PNG/SVG tự sinh. Mở tab network để đọc body response. Xoá clipart test sau khi chạy. Chạy cùng lượt CHK-032.",
+      "steps": [
+        "Với 5 response ghi ở CHK-032, ghi có key category hay user_id không.",
+        "Chờ xử lý nền xong, tải lại category, ghi url và thumbnail của clipart tạo qua by-temporary-file."
+      ],
+      "observation_point": "Key category, user_id trong body; url/thumbnail của clipart sau xử lý nền",
+      "expected_result": "Baseline theo quan sát (TC-TIB-8590): không response nào có category hay user_id; clipart tạo qua by-temporary-file có url và thumbnail sau xử lý nền. Lệch thì điều tra, chưa phải bug.",
+      "oracle": {
+        "kb_ids": [
+          "asset-category/asset-category-item-management#KB-648"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "asset-category/asset-category-item-management#KB-648",
+        "asset-category/asset-category-item-management#KB-647"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-asset-category-063"
     }
   ],
   "coverage_by_feature_and_risk": [
@@ -1115,6 +1342,37 @@
         "CHK-027"
       ],
       "note": "Profile risks[7]. BASELINE, NEEDS_CONFIRMATION: nguồn chỉ là mô tả dev tự sinh từ diff. Phía layer image (artwork) và regression hình thumbnail của SVG không có clip-path chưa có check (không có oracle)."
+    },
+    {
+      "feature_id": "FEAT-03-asset-item-management",
+      "risk_ref": "OQ-asset-category-056",
+      "check_ids": [
+        "CHK-028",
+        "CHK-030"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-asset-item-management",
+      "risk_ref": "OQ-asset-category-059",
+      "check_ids": [
+        "CHK-029"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-asset-item-management",
+      "risk_ref": "OQ-asset-category-060",
+      "check_ids": [
+        "CHK-031"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-asset-item-management",
+      "risk_ref": "[CBS-163] shape response request ghi clipart (KB-647, KB-648)",
+      "check_ids": [
+        "CHK-032",
+        "CHK-033"
+      ],
+      "note": "CHK-032 STRONG; CHK-033 BASELINE. POST /api/cliparts (item không file) và production chưa có check chạy được."
     }
   ],
   "excluded_dimensions": [
@@ -1156,7 +1414,7 @@
     }
   ],
   "last_updated": {
-    "date": "2026-11-11",
-    "ccr_ref": "CBS-135"
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
   }
 }

@@ -43,7 +43,7 @@ Chưa ai trả lời, nên không dùng làm expected:
 - Toast là cách duy nhất biết validate Save fail ở artwork editor (console sạch) — đọc toast sau mỗi Save.
 - UI có thể nuốt lỗi (vd 429 tạo layer-image, `preview_thumbnail`) ⇒ check network/console sau bước quan trọng.
 - Re-test bug SDK: bust cache bundle trước (Rule 12, `storefront-sdk.md`); ghi bundle size + Last-Modified + đã bust hay chưa.
-
+- Không gửi request render nặng (layer cỡ lớn, vd shape-text 5952 × 7288) lên production để đối chứng nếu người dùng chưa đồng ý; lỗi thì dừng, không gửi lại.
 ## Kết luận check
 
 | Tình huống | Kết luận |

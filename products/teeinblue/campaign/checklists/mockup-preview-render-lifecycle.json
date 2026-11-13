@@ -1,0 +1,523 @@
+{
+  "feature_id": "FEAT-23-mockup-preview-render-lifecycle",
+  "feature_key": "mockup-preview-render-lifecycle",
+  "object_id": "campaign",
+  "checklist_version": "1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "db",
+      "title": "Re-render campaign mockup: preview mới, 1 dòng trashed_images giữ 2 path cũ, file cũ chưa bị xoá",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "campaign mockup ảnh đã có preview",
+        "environment": "staging, ghi build và ngày chạy; production verify NOT-RUN",
+        "surface_or_device": "portal Mockup Editor + DB read-only"
+      },
+      "precondition": "Đăng nhập portal bằng account explorer, chỉ dùng campaign/platform product trên store explorer (fixture dựng riêng, không dùng campaign trong CCR). Có quyền query DB read-only bảng trashed_images; query trong ngày, trước job đêm 01:00 và trước khi gọi cleanup.",
+      "steps": [
+        "Mở campaign trên store explorer, ghi preview_url và preview_thumbnail hiện tại của một mockup ảnh.",
+        "Mở Mockup Editor của mockup đó, sửa một layer (hoặc đổi width/height/background), Save.",
+        "Chờ render xong; ghi preview_url, preview_thumbnail mới.",
+        "Query trashed_images theo 2 path cũ và theo 2 path mới; ghi user_id, deletes_at.",
+        "Tải thử file preview cũ trước cleanup, chỉ ghi kết quả."
+      ],
+      "observation_point": "Preview của mockup trên portal; bảng trashed_images (path, user_id, deletes_at).",
+      "expected_result": "Mockup hiện preview mới; trashed_images có một dòng mới giữ 2 path cũ (preview_url, preview_thumbnail trước đó), user_id là chủ campaign, deletes_at là thời điểm re-render; file cũ chưa bị xoá lúc re-render.",
+      "oracle": {
+        "kb_ids": [
+          "campaign/mockup-preview-render-lifecycle#KB-454"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "campaign/mockup-preview-render-lifecycle#KB-454",
+        "campaign/mockup-preview-render-lifecycle#KB-460"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Rác file preview không được đưa vào hàng xoá"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "STATE_DATA",
+      "layer": "db",
+      "title": "Re-render 2 lần trên cùng mockup: mỗi lần một dòng giữ cặp ngay trước đó, không dòng nào giữ preview đang hiển thị",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "campaign mockup ảnh render lại 2 lần",
+        "environment": "staging, ghi build và ngày chạy; production verify NOT-RUN",
+        "surface_or_device": "portal Mockup Editor + DB read-only"
+      },
+      "precondition": "Đăng nhập portal bằng account explorer, chỉ dùng campaign/platform product trên store explorer (fixture dựng riêng, không dùng campaign trong CCR). Có quyền query DB read-only bảng trashed_images; query trong ngày, trước job đêm 01:00 và trước khi gọi cleanup.",
+      "steps": [
+        "Ghi cặp preview P0 của một mockup ảnh.",
+        "Sửa mockup, Save, chờ render xong; ghi cặp P1.",
+        "Sửa tiếp, Save, chờ render xong; ghi cặp P2 (đang hiển thị).",
+        "Query trashed_images theo P0, P1, P2."
+      ],
+      "observation_point": "Bảng trashed_images theo từng cặp path; preview đang hiển thị.",
+      "expected_result": "Có 2 dòng mới: một giữ cặp P0, một giữ cặp P1; không dòng nào giữ cặp P2 đang hiển thị.",
+      "oracle": {
+        "kb_ids": [
+          "campaign/mockup-preview-render-lifecycle#KB-456"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "campaign/mockup-preview-render-lifecycle#KB-456",
+        "campaign/mockup-preview-render-lifecycle#KB-454"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Preview đang dùng bị đưa vào hàng xoá làm mockup mất ảnh"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "CORE",
+      "layer": "db",
+      "title": "Render lần đầu và import mockup từ Product Base không tạo dòng trashed_images",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "mockup mới thêm hoặc vừa import từ Product Base",
+        "environment": "staging, ghi build và ngày chạy; production verify NOT-RUN",
+        "surface_or_device": "portal campaign by Product Base + DB read-only"
+      },
+      "precondition": "Đăng nhập portal bằng account explorer, chỉ dùng campaign/platform product trên store explorer (fixture dựng riêng, không dùng campaign trong CCR). Có quyền query DB read-only bảng trashed_images; query trong ngày, trước job đêm 01:00 và trước khi gọi cleanup. Campaign by Product Base trên store explorer.",
+      "steps": [
+        "Thêm một mockup mới vào campaign; chờ render; ghi preview_url.",
+        "Import một mockup From Product base vào campaign; ghi preview_url ngay sau import; chờ render đầu; ghi preview_url.",
+        "Query trashed_images theo các path vừa ghi và theo thời điểm thao tác."
+      ],
+      "observation_point": "preview_url ngay sau import và sau render đầu; trashed_images.",
+      "expected_result": "Mockup mới render được và không có dòng trashed_images; preview trống ngay sau import; render đầu ghi vào thư mục riêng của campaign mockup; không có dòng trashed_images cho lần render đầu.",
+      "oracle": {
+        "kb_ids": [
+          "campaign/mockup-preview-render-lifecycle#KB-455"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "campaign/mockup-preview-render-lifecycle#KB-455"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Render đầu tạo dòng xoá sai hoặc preview nằm ngoài thư mục riêng của mockup"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "INTEGRATION",
+      "layer": "db",
+      "title": "Re-render platform mockup (Shopify, Boundless): preview mới, dòng giữ cặp cũ; Save mockup mặc định có thể ra 2 dòng",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "platform product có mockup mặc định đã có preview",
+        "environment": "staging, ghi build và ngày chạy; production verify NOT-RUN",
+        "surface_or_device": "portal Mockup Editor của platform product + DB read-only"
+      },
+      "precondition": "Đăng nhập portal bằng account explorer, chỉ dùng campaign/platform product trên store explorer (fixture dựng riêng, không dùng campaign trong CCR). Có quyền query DB read-only bảng trashed_images; query trong ngày, trước job đêm 01:00 và trước khi gọi cleanup. Platform product Shopify và một Boundless listing trên store explorer. Etsy chưa chạy riêng (unknown_areas).",
+      "steps": [
+        "Ghi preview của mockup mặc định và preview tổng hợp của platform product.",
+        "Sửa mockup mặc định, Save; chờ render xong.",
+        "Query trashed_images theo các path cũ; ghi số dòng và thời điểm tạo.",
+        "Lặp với Boundless listing."
+      ],
+      "observation_point": "Preview mockup và preview tổng hợp; trashed_images.",
+      "expected_result": "Preview mới hiển thị; trashed_images có dòng giữ cặp preview cũ; với mockup mặc định có thể có thêm 1 dòng cho preview tổng hợp của platform product, lệch vài giây, đó không phải trùng lặp.",
+      "oracle": {
+        "kb_ids": [
+          "campaign/mockup-preview-render-lifecycle#KB-457"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "campaign/mockup-preview-render-lifecycle#KB-457",
+        "campaign/mockup-preview-render-lifecycle#KB-454"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Rác preview của platform product không được dọn"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "NEGATIVE",
+      "layer": "db",
+      "title": "Video mockup không render, không vào trashed_images",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "campaign có video mockup YouTube/Vimeo",
+        "environment": "staging, ghi build và ngày chạy; production verify NOT-RUN",
+        "surface_or_device": "portal campaign + DB read-only"
+      },
+      "precondition": "Đăng nhập portal bằng account explorer, chỉ dùng campaign/platform product trên store explorer (fixture dựng riêng, không dùng campaign trong CCR). Có quyền query DB read-only bảng trashed_images; query trong ngày, trước job đêm 01:00 và trước khi gọi cleanup. Campaign có ít nhất một video mockup.",
+      "steps": [
+        "Ghi link của video mockup.",
+        "Thực hiện thao tác kích hoạt render trên campaign (sửa và Save một mockup ảnh cùng campaign, hoặc Duplicate campaign).",
+        "Ghi lại link video; query trashed_images theo link video."
+      ],
+      "observation_point": "Link video mockup; trashed_images.",
+      "expected_result": "Link video không đổi; không có dòng trashed_images chứa link video.",
+      "oracle": {
+        "kb_ids": [
+          "campaign/mockup-preview-render-lifecycle#KB-458"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "campaign/mockup-preview-render-lifecycle#KB-458"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Link video bị đưa vào hàng xoá"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "Sau re-render preview mới hiển thị trên portal và storefront, không mockup nào mất ảnh",
+      "applicability": {
+        "role": "merchant-owner (portal), buyer (storefront)",
+        "state": "campaign có mockup vừa render lại",
+        "environment": "staging, ghi build và ngày chạy; production verify NOT-RUN",
+        "surface_or_device": "portal + storefront, desktop browser"
+      },
+      "precondition": "Đăng nhập portal bằng account explorer, chỉ dùng campaign/platform product trên store explorer (fixture dựng riêng, không dùng campaign trong CCR). Có quyền query DB read-only bảng trashed_images; query trong ngày, trước job đêm 01:00 và trước khi gọi cleanup. Campaign đã publish lên store explorer.",
+      "steps": [
+        "Sau CHK-001 (và CHK-004), mở campaign trên portal, xem mọi mockup.",
+        "Mở trang product của campaign trên storefront (vượt password-gate theo biến env của store test), xem mọi ảnh mockup."
+      ],
+      "observation_point": "Ảnh mockup trên portal và storefront.",
+      "expected_result": "Preview mới hiển thị; không mockup nào mất ảnh trên portal và storefront.",
+      "oracle": {
+        "kb_ids": [
+          "campaign/mockup-preview-render-lifecycle#KB-459"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "campaign/mockup-preview-render-lifecycle#KB-459",
+        "campaign/mockup-preview-render-lifecycle#KB-454",
+        "campaign/mockup-preview-render-lifecycle#KB-457"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mockup mất ảnh với buyer"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "INTEGRATION",
+      "layer": "db",
+      "title": "Cleanup xoá file trong trashed_images, preview đang dùng vẫn hiển thị",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "trashed_images có dòng đã đến hạn từ CHK-001/002",
+        "environment": "staging, ghi build và ngày chạy; production verify NOT-RUN",
+        "surface_or_device": "back-end cleanup (staging endpoint) + portal"
+      },
+      "precondition": "Đăng nhập portal bằng account explorer, chỉ dùng campaign/platform product trên store explorer (fixture dựng riêng, không dùng campaign trong CCR). Có quyền query DB read-only bảng trashed_images; query trong ngày, trước job đêm 01:00 và trước khi gọi cleanup. Chạy cleanup theo environment_differences[0] của profile: query trashed_images trước, gọi POST /api/internal/trashed-images/cleanup dry-run rồi body {\"force\": true} (chỉ staging).",
+      "steps": [
+        "Query trashed_images, ghi các dòng đã đến hạn và path của chúng.",
+        "Gọi cleanup force=true; ghi deleted, postponed và log.",
+        "Mở lại campaign trên portal và storefront, xem mockup.",
+        "Tải thử các path cũ đã xoá, chỉ ghi mã HTTP (mã chưa có expected, xem CHK-012)."
+      ],
+      "observation_point": "Response cleanup (deleted, postponed, log); ảnh mockup đang dùng.",
+      "expected_result": "Các file của dòng trashed_images đã đến hạn bị xoá; preview đang hiển thị vẫn hiển thị, không mockup nào mất ảnh.",
+      "oracle": {
+        "kb_ids": [
+          "campaign/mockup-preview-render-lifecycle#KB-460",
+          "campaign/mockup-preview-render-lifecycle#KB-459"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "campaign/mockup-preview-render-lifecycle#KB-460",
+        "campaign/mockup-preview-render-lifecycle#KB-459",
+        "campaign/mockup-preview-render-lifecycle#KB-462"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Cleanup xoá nhầm file đang dùng"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "STATE_DATA",
+      "layer": "db",
+      "title": "Duplicate campaign: bản copy tạm vào trashed_images mỗi mockup ảnh một dòng, không đụng file campaign gốc",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "campaign gốc có nhiều mockup ảnh",
+        "environment": "staging, ghi build và ngày chạy; production verify NOT-RUN",
+        "surface_or_device": "portal Duplicate campaign + DB read-only"
+      },
+      "precondition": "Đăng nhập portal bằng account explorer, chỉ dùng campaign/platform product trên store explorer (fixture dựng riêng, không dùng campaign trong CCR). Có quyền query DB read-only bảng trashed_images; query trong ngày, trước job đêm 01:00 và trước khi gọi cleanup. Campaign gốc trên store explorer có N mockup ảnh.",
+      "steps": [
+        "Ghi preview_url của mọi mockup trong campaign gốc.",
+        "Duplicate campaign; chờ render xong trên bản clone.",
+        "Query trashed_images theo thư mục của bản clone và theo path của campaign gốc.",
+        "Mở campaign gốc trên portal, xem mockup."
+      ],
+      "observation_point": "trashed_images; preview của bản clone và bản gốc.",
+      "expected_result": "Bản clone có preview render mới; trashed_images có N dòng (một mỗi mockup ảnh được clone) giữ bản copy tạm nằm trong thư mục của bản clone; không dòng nào chứa path của campaign gốc; file của campaign gốc không bị đụng.",
+      "oracle": {
+        "kb_ids": [
+          "campaign/mockup-preview-render-lifecycle#KB-461"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "campaign/mockup-preview-render-lifecycle#KB-461"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Clone làm mất file preview của campaign gốc"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Endpoint cleanup staging: dry-run không xoá, force=true xoá; response đủ số liệu",
+      "applicability": {
+        "role": "QA",
+        "state": "cần chạy cleanup ngay trên staging",
+        "environment": "staging, ghi build và ngày chạy; production verify NOT-RUN",
+        "surface_or_device": "staging API nội bộ"
+      },
+      "precondition": "Chạy cleanup theo environment_differences[0] của profile: query trashed_images trước, gọi POST /api/internal/trashed-images/cleanup dry-run rồi body {\"force\": true} (chỉ staging).",
+      "steps": [
+        "Query trashed_images, ghi số dòng.",
+        "Gọi endpoint không body (dry-run); query lại.",
+        "Gọi với body {\"force\": true}; query lại."
+      ],
+      "observation_point": "Response (số dòng trước/sau, deleted, postponed, log); trashed_images.",
+      "expected_result": "Dry-run chỉ báo số lượng, không xoá gì; force=true xoá thật; response có số dòng trước/sau, số đã xoá, số postponed và log của lần chạy.",
+      "oracle": {
+        "kb_ids": [
+          "campaign/mockup-preview-render-lifecycle#KB-462"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "campaign/mockup-preview-render-lifecycle#KB-462",
+        "campaign/mockup-preview-render-lifecycle#KB-460"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không có cách chạy cleanup để test trên staging"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "STATE_DATA",
+      "layer": "db",
+      "title": "Gap: 2 lần Save liên tiếp khi render đầu chưa xong",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "campaign mockup ảnh, Save lần 2 trước khi render lần 1 xong",
+        "environment": "staging, ghi build và ngày chạy; production verify NOT-RUN",
+        "surface_or_device": "portal Mockup Editor + DB read-only"
+      },
+      "precondition": "Đăng nhập portal bằng account explorer, chỉ dùng campaign/platform product trên store explorer (fixture dựng riêng, không dùng campaign trong CCR). Có quyền query DB read-only bảng trashed_images; query trong ngày, trước job đêm 01:00 và trước khi gọi cleanup.",
+      "steps": [
+        "Ghi cặp preview P0.",
+        "Sửa mockup, Save; ngay khi render chưa xong sửa tiếp và Save lần 2.",
+        "Chờ render xong; ghi cặp đang hiển thị; query trashed_images; ghi kết quả, không phán pass/fail."
+      ],
+      "observation_point": "trashed_images; preview đang hiển thị.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "campaign/mockup-preview-render-lifecycle#KB-456",
+        "campaign/mockup-preview-render-lifecycle#KB-454"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Race Save nhanh có thể đưa preview đang dùng vào hàng xoá"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-campaign-096"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "Gap: gallery Shopify sau re-render và Update/sync",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "campaign đã publish lên Shopify, mockup vừa render lại",
+        "environment": "staging, ghi build và ngày chạy; production verify NOT-RUN",
+        "surface_or_device": "portal Multi-store launch + Shopify storefront"
+      },
+      "precondition": "Đăng nhập portal bằng account explorer, chỉ dùng campaign/platform product trên store explorer (fixture dựng riêng, không dùng campaign trong CCR). Có quyền query DB read-only bảng trashed_images; query trong ngày, trước job đêm 01:00 và trước khi gọi cleanup. Campaign đã publish lên store Shopify của explorer.",
+      "steps": [
+        "Ghi preview_url sau re-render.",
+        "Update/sync campaign lên Shopify.",
+        "Ghi preview_url sau sync; xem gallery Shopify và SDK preview; ghi kết quả, không phán pass/fail."
+      ],
+      "observation_point": "preview_url trước/sau sync; ảnh gallery Shopify; SDK preview.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "campaign/mockup-preview-render-lifecycle#KB-459"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Gallery Shopify trỏ file cũ sẽ mất ảnh sau cleanup"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-campaign-097"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "STATE_DATA",
+      "layer": "api",
+      "title": "Gap: trạng thái file preview cũ trên CDN và dòng trashed_images sau cleanup",
+      "applicability": {
+        "role": "QA",
+        "state": "sau CHK-007",
+        "environment": "staging, ghi build và ngày chạy; production verify NOT-RUN",
+        "surface_or_device": "CDN + DB read-only"
+      },
+      "precondition": "Đăng nhập portal bằng account explorer, chỉ dùng campaign/platform product trên store explorer (fixture dựng riêng, không dùng campaign trong CCR). Có quyền query DB read-only bảng trashed_images; query trong ngày, trước job đêm 01:00 và trước khi gọi cleanup. Chạy cleanup theo environment_differences[0] của profile: query trashed_images trước, gọi POST /api/internal/trashed-images/cleanup dry-run rồi body {\"force\": true} (chỉ staging).",
+      "steps": [
+        "Sau cleanup force=true, tải các path cũ (có và không có query cache-busting), ghi mã HTTP.",
+        "Query trashed_images theo các dòng vừa xử lý; ghi kết quả, không phán pass/fail."
+      ],
+      "observation_point": "Mã HTTP các path cũ; trashed_images.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "campaign/mockup-preview-render-lifecycle#KB-460"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Kết luận sai \"file đã xoá\" khi không biết mã đúng"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-campaign-098"
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "STATE_DATA",
+      "layer": "db",
+      "title": "Cleanup hoãn path còn mockup khác dùng",
+      "applicability": {
+        "role": "QA",
+        "state": "trashed_images có path còn được mockup khác dùng",
+        "environment": "staging, ghi build và ngày chạy; production verify NOT-RUN",
+        "surface_or_device": "back-end cleanup (staging endpoint) + DB read-only"
+      },
+      "precondition": "Chạy cleanup theo environment_differences[0] của profile: query trashed_images trước, gọi POST /api/internal/trashed-images/cleanup dry-run rồi body {\"force\": true} (chỉ staging). Cách dựng path dùng chung chưa có (unknown_areas, OQ).",
+      "steps": [
+        "Dựng dòng trashed_images có path còn được một mockup khác dùng.",
+        "Gọi cleanup force=true; ghi postponed và log.",
+        "Kiểm mockup đang dùng path đó vẫn hiển thị."
+      ],
+      "observation_point": "Response cleanup (postponed, log); ảnh mockup dùng path.",
+      "expected_result": "Path còn mockup khác dùng được hoãn, log \"Postponed trashed image ...\"; file không bị xoá.",
+      "oracle": {
+        "kb_ids": [
+          "campaign/mockup-preview-render-lifecycle#KB-460"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "related_kb_ids": [
+        "campaign/mockup-preview-render-lifecycle#KB-460",
+        "campaign/mockup-preview-render-lifecycle#KB-462"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Cleanup xoá file đang được mockup khác dùng"
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-campaign-099"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-23-mockup-preview-render-lifecycle",
+      "core_covered": true,
+      "p1_covered": "CHK-002, CHK-006, CHK-007, CHK-008, CHK-010 (NONE), CHK-013 (NEEDS_CONFIRMATION)"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "PERMISSION",
+      "reason": "Nguồn không nêu khác biệt quyền; user_id = chủ campaign đã kiểm ở CHK-001."
+    },
+    {
+      "dimension": "BOUNDARY",
+      "reason": "Nguồn không nêu giới hạn số lượng/kích thước."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Feature mới, chưa có base để so; không có KNOWN_DEFECT. Regression hiển thị preview phủ bằng CHK-006 (INTEGRATION)."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-160"
+  }
+}
