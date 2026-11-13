@@ -1,10 +1,14 @@
 {
   "feature_id": "FEAT-11-provider-catalog-import",
   "feature_key": "provider-catalog-import",
-  "name": "Import product từ catalog nhà in (fulfillment provider)",
+  "name": "Kết nối provider, import catalog và option bắt buộc",
   "user_goal": "Merchant/owner tạo nhanh một Product Base bằng cách import một item từ catalog có sẵn của nhà in đã kết nối (fulfillment provider), kế thừa title/description/mockups/printareas/variants của catalog đó.",
   "user_goal_kb_refs": [
-    "product-base/provider-catalog-import#KB-519"
+    "product-base/provider-catalog-import#KB-519",
+    "product-base/provider-catalog-import#KB-527",
+    "product-base/provider-catalog-import#KB-528",
+    "product-base/provider-catalog-import#KB-529",
+    "product-base/provider-catalog-import#KB-522"
   ],
   "stable_since_version": null,
   "actors": [
@@ -14,6 +18,19 @@
       "kb_refs": [
         "product-base/provider-catalog-import#KB-519"
       ]
+    },
+    {
+      "role": "merchant-owner",
+      "permission_observed": "Owner mở Product Base > Edit và thao tác Advanced options; shard không có KB về role khác.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-527",
+        "product-base/provider-catalog-import#KB-528"
+      ]
+    },
+    {
+      "role": "merchant-owner",
+      "permission_observed": "Chưa có KB xác nhận permission/role gate riêng cho trang Fulfillments ngoài quyền chung staff/owner. CLAIM-03 (trang Fulfillments không có Disconnect/role gate riêng) là S0 — nguồn chỉ là lời Dev qua Slack theo ghi chú QA, không quote, TC-29 bị skip — KHÔNG được nạp KB và KHÔNG coi là đã xác nhận; xem unknown_areas.",
+      "kb_refs": []
     }
   ],
   "entry_points": [
@@ -31,6 +48,24 @@
       "kb_refs": [
         "product-base/provider-catalog-import#KB-536",
         "product-base/provider-catalog-import#KB-537"
+      ]
+    },
+    {
+      "path": "Product Base > Edit > nút Advanced options > editor Required options",
+      "precondition": "Product Base thuộc provider được hỗ trợ (CustomCat hoặc merchOne trong KB) trên store của explorer ở staging; với Product Base CustomCat, cần provider CustomCat đã kết nối (ngoài feature này). Trên Product Base Gelato nút Advanced options có trạng thái khác giữa staging và production (KB-530): kiểm bằng sự vắng mặt của editor/label.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-527",
+        "product-base/provider-catalog-import#KB-529",
+        "product-base/provider-catalog-import#KB-530"
+      ]
+    },
+    {
+      "path": "trang Fulfillments (quản lý kết nối provider, API key)",
+      "precondition": "đã đăng nhập với role staff/owner",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-522",
+        "product-base/provider-catalog-import#KB-523",
+        "product-base/provider-catalog-import#KB-524"
       ]
     }
   ],
@@ -63,6 +98,43 @@
         "product-base/provider-catalog-import#KB-536",
         "product-base/provider-catalog-import#KB-537"
       ]
+    },
+    {
+      "name": "Hiện editor Required options theo provider",
+      "description": "Product Base CustomCat (đã lưu): Advanced options enable, mở JSON editor Required options với label \"Required options (for merchOne, Printify, Printful, Myze, Printbelle and CustomCat)\" (KB-527, CONFIRMED_EXPECTED). Quan sát (LOW): vừa đổi provider sang CustomCat chưa Save cũng hiện editor (KB-532); merchOne vẫn hiện editor, Gelato không hiện (KB-529).",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-527",
+        "product-base/provider-catalog-import#KB-532",
+        "product-base/provider-catalog-import#KB-529"
+      ]
+    },
+    {
+      "name": "Lưu và tải lại Required options",
+      "description": "Quan sát (LOW): nhập JSON hợp lệ rồi Save thì lưu thành công, reload hiện lại đúng giá trị (KB-528).",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-528"
+      ]
+    },
+    {
+      "name": "Rotate (đổi) API key của provider",
+      "description": "Save key mới trên trang Fulfillments thì các request sau dùng key mới ngay (không cache key cũ); Save key sai bị từ chối bằng toast lỗi và field vẫn giữ key cũ sau reload.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-522"
+      ]
+    },
+    {
+      "name": "Hiển thị API key sau khi Save",
+      "description": "Field API key không mask giá trị sau khi Save, áp dụng cho mọi provider (customcat, printify, picanova, dreamship, printway, shirtee, posterflow) — GraphQL user_fulfillments { id api_key } qua portal proxy trả raw key cho tất cả.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-523"
+      ]
+    },
+    {
+      "name": "Báo lỗi khi key sai",
+      "description": "Khi Save API key không hợp lệ, toast lỗi chung xuất hiện, không echo lại giá trị key đã nhập; toast quan sát 'Something went wrong! Invalid API key'.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-524"
+      ]
     }
   ],
   "state_transitions": [
@@ -74,6 +146,34 @@
       "kb_refs": [
         "product-base/provider-catalog-import#KB-519"
       ]
+    },
+    {
+      "from": "Required options rỗng (default_options null)",
+      "to": "default_options lưu JSON đã nhập",
+      "trigger": "Nhập JSON vào editor rồi Save",
+      "condition": "Product Base CustomCat, JSON hợp lệ (KB-528)",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-528"
+      ]
+    },
+    {
+      "from": "API key A đang hoạt động",
+      "to": "API key B đang hoạt động (key A bị bỏ)",
+      "trigger": "Save key B hợp lệ trên trang Fulfillments",
+      "condition": "key B hợp lệ với provider",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-522"
+      ]
+    },
+    {
+      "from": "API key A đang hoạt động",
+      "to": "vẫn API key A (Save key B thất bại)",
+      "trigger": "Save key B không hợp lệ",
+      "condition": "key B bị provider từ chối",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-522",
+        "product-base/provider-catalog-import#KB-524"
+      ]
     }
   ],
   "confirmed_rules": [
@@ -84,6 +184,13 @@
       "kb_refs": [
         "product-base/provider-catalog-import#KB-536"
       ]
+    },
+    {
+      "rule": "Product Base CustomCat: Advanced options enable và mở editor Required options với label mới.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-527"
+      ],
+      "confirmation_type": "po_dev_confirm"
     }
   ],
   "observed_behavior": [
@@ -112,9 +219,58 @@
       "kb_refs": [
         "product-base/provider-catalog-import#KB-537"
       ]
+    },
+    {
+      "behavior": "Vừa đổi provider sang CustomCat chưa Save: Advanced options enable, editor Required options hiện.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-532"
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "behavior": "Lưu JSON vào Required options rồi Save: thành công, reload hiện đúng giá trị.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-528"
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "behavior": "Editor Required options hiện cho Product Base merchOne, không có ở Product Base Gelato (staging và production).",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-529"
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "topic": "Rotate key không cache key cũ, key sai bị từ chối rõ ràng",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-522"
+      ]
+    },
+    {
+      "topic": "API key không mask sau Save, áp dụng mọi provider — có thể là vấn đề bảo mật chưa được PO xác nhận chủ ý",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-523"
+      ]
+    },
+    {
+      "topic": "Toast lỗi key sai không echo giá trị nhập vào",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-524"
+      ]
     }
   ],
-  "observed_validations": [],
+  "observed_validations": [
+    {
+      "input": "API key sai/không hợp lệ",
+      "message_verbatim": "Something went wrong! Invalid API key",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-524"
+      ]
+    }
+  ],
   "permissions": [],
   "surface_mapping": {
     "portal": [
@@ -161,14 +317,42 @@
   },
   "dependencies": [
     "fulfillment-provider-connection (feature cùng object, cần kết nối provider trước khi import được)",
-    "[CBS-163] printarea-definition (cùng object): printarea sau import được sửa/xoá ở đó; DPI mặc định từ popup Import theo product-base/printarea-definition#KB-508."
+    "[CBS-163] printarea-definition (cùng object): printarea sau import được sửa/xoá ở đó; DPI mặc định từ popup Import theo product-base/printarea-definition#KB-508.",
+    "Giá trị preset_id/preset_back_id trong Required options của Product Base CustomCat được đọc khi gửi order item sang CustomCat: order/fulfillment-provider-request (KB-785).",
+    "Save của card Basic information gửi lại default_options: product-base/product-base-identity (KB-027, KB-531).",
+    "provider-catalog-import (feature cùng object, phụ thuộc vào kết nối provider ở đây)"
   ],
   "risks": [
     "Import lại một catalog đã import (CLAIM-06, S0, không nạp KB) có thể tạo duplicate câm — chưa xác nhận PO, xem unknown_areas",
     "Không nạp quyền/role gate riêng cho modal Import (chưa có KB xác nhận)",
-    "[CBS-163] Tập 7 key của response import printarea (KB-537) chỉ là một lượt quan sát; danh sách Printarea::$visible chưa đối chiếu source."
+    "[CBS-163] Tập 7 key của response import printarea (KB-537) chỉ là một lượt quan sát; danh sách Printarea::$visible chưa đối chiếu source.",
+    {
+      "risk": "Không có KB về validate JSON sai hoặc key không được provider nhận khi lưu; preset sai chỉ lộ ra lúc gửi đơn (order KB-787).",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-528",
+        "order/fulfillment-provider-request#KB-787"
+      ]
+    },
+    {
+      "risk": "Trạng thái nút Advanced options của Product Base Gelato khác giữa staging và production; assert theo trạng thái nút sẽ báo FAIL sai.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-530"
+      ]
+    },
+    "API key trả raw qua GraphQL (KB-523) là rủi ro bảo mật chưa được PO xác nhận chủ ý thiết kế (OPEN_ISSUE)",
+    "Không có KB xác nhận việc thiếu Disconnect/role gate (CLAIM-03, S0) là chủ ý — chỉ là lời Dev qua Slack, TC-29 bị skip"
   ],
-  "environment_differences": [],
+  "environment_differences": [
+    {
+      "type": "DIFFERENT_VALUE",
+      "test_env": "Product Base Gelato: nút Advanced options disabled",
+      "production": "Product Base Gelato: nút Advanced options enable, mở khối Design format (không có Required options); Product Base CustomCat có Design format phía trên Required options; nguyên nhân chưa rõ",
+      "how_to_test": "Kiểm 'Gelato không có Required options' bằng sự vắng mặt của editor và label, không dựa vào trạng thái disabled của nút",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-530"
+      ]
+    }
+  ],
   "freshness": {
     "observed_at": "2026-10-08"
   },
@@ -201,6 +385,71 @@
         "product-base/provider-catalog-import#KB-537"
       ],
       "oq_id": "OQ-product-base-122"
+    },
+    {
+      "question": "Vì sao nút Advanced options của Product Base Gelato disabled trên staging nhưng enable (mở khối Design format) trên production; khối Design format do plan, feature flag hay cấu hình môi trường quyết định?",
+      "why_it_matters": "KB-530 INFERRED/LOW; check provider gating phải tránh dựa vào trạng thái nút.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-530"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-product-base-114"
+    },
+    {
+      "question": "Editor Required options hiện cho Printify, Printful, Myze, Printbelle đúng như label không? Validate gì khi JSON sai?",
+      "why_it_matters": "Chỉ CustomCat, merchOne, Gelato có KB; label là dữ kiện duy nhất cho các provider khác.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-527"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-product-base-115"
+    },
+    {
+      "question": "Editor Required options hiện ngay khi vừa đổi provider sang CustomCat mà chưa Save (TC-TIB-9012): có phải hành vi mong muốn?",
+      "why_it_matters": "KB-532 OBSERVED_CURRENT/LOW; CHK-12-002 chỉ BASELINE.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-532"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-product-base-116"
+    },
+    {
+      "question": "Required options của Product Base CustomCat lưu và reload đúng giá trị (TC-TIB-9013, không ghi build): Dev xác nhận là hành vi mong muốn?",
+      "why_it_matters": "KB-528 OBSERVED_CURRENT/LOW; CHK-12-003 chỉ BASELINE.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-528"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-product-base-117"
+    },
+    {
+      "question": "Editor Required options hiện cho merchOne và không có cho Gelato (TC-TIB-9020, không ghi build): Dev xác nhận?",
+      "why_it_matters": "KB-529 OBSERVED_CURRENT/LOW; CHK-12-004 chỉ BASELINE.",
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-529"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-product-base-118"
+    },
+    {
+      "question": "Hành vi rotate API key (key mới có hiệu lực ngay, key sai bị từ chối, key cũ giữ nguyên) có phải contract chính thức không, hay chỉ quan sát qua test (QA-3365 TC-43)?",
+      "why_it_matters": "Ảnh hưởng tới mức độ tin cậy khi dùng checklist này để phát hiện regression.",
+      "oq_id": "OQ-product-base-108"
+    },
+    {
+      "question": "Dev/PO có chấp nhận api_key trả raw qua GraphQL user_fulfillments (không mask, mọi provider) là chủ ý thiết kế không? BUG-03 chỉ bị đóng vì ngoài scope, không phải vì được xác nhận đúng.",
+      "why_it_matters": "Nếu không được chấp nhận, đây là lỗ hổng bảo mật cần fix, không phải behavior ổn định để giữ nguyên.",
+      "oq_id": "OQ-product-base-109"
+    },
+    {
+      "question": "Nguyên văn toast lỗi key sai là 'Something went wrong! Invalid API key' hay 'Invalid key' (ghi trong product_facts nội bộ FACT-081)? Hai nguồn tự lệch nhau.",
+      "why_it_matters": "Checklist cần oracle chính xác cho expected_result nếu dùng string match.",
+      "oq_id": "OQ-product-base-110"
+    },
+    {
+      "question": "Trang Fulfillments có thật sự không có Disconnect và không có role/permission gate riêng không? Nguồn là Dev nói qua Slack (không quote), TC-29 bị skip vì thiếu store B độc lập.",
+      "why_it_matters": "Nếu có gate thực sự, thiếu nó trong checklist sẽ khiến bỏ sót regression về permission.",
+      "oq_id": "OQ-product-base-111"
     }
   ],
   "last_updated": {
@@ -254,6 +503,84 @@
       "kb_refs": [
         "product-base/provider-catalog-import#KB-536"
       ]
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Product Base CustomCat (đã lưu / vừa đổi provider)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-527",
+        "product-base/provider-catalog-import#KB-532"
+      ]
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Lưu và reload Required options",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-528"
+      ]
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Product Base merchOne / Gelato",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "product-base/provider-catalog-import#KB-529",
+        "product-base/provider-catalog-import#KB-530"
+      ]
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "Printify, Printful, Myze, Printbelle",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "JSON sai / giá trị không hợp lệ khi Save",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "mọi state",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": []
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "has_connected_provider",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-11-provider-catalog-import",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "has_connected_provider",
+      "environment": "staging",
+      "covered": true
     }
   ],
   "profile_conflicts": [],
@@ -263,6 +590,27 @@
       "related_feature_key": "fulfillment-provider-connection",
       "relationship": "depends_on",
       "note": "Import chỉ khả dụng sau khi provider đã kết nối với API key hợp lệ."
+    },
+    {
+      "feature_key": "fulfillment-provider-request",
+      "object": "order",
+      "relation": "downstream: preset trong Required options được gửi kèm order item sang CustomCat"
+    },
+    {
+      "feature_key": "product-base-identity",
+      "object": "product-base",
+      "relation": "cùng card Basic information: Save gửi lại default_options"
+    },
+    {
+      "feature_key": "product-base-create",
+      "object": "product-base",
+      "relation": "KB-020 quan sát nút Advanced options khi tạo/sửa Product Base tay"
+    },
+    {
+      "feature_key": "fulfillment-provider-connection",
+      "related_feature_key": "provider-catalog-import",
+      "relationship": "depended_on_by",
+      "note": "Import catalog chỉ khả dụng sau khi provider đã kết nối ở đây."
     }
   ]
 }

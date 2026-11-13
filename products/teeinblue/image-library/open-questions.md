@@ -38,7 +38,7 @@ _Mọi mục dưới đây chưa có nguồn thẩm quyền (spec/PO/Dev/test ca
 ## OQ-image-library-005 — CONFLICT
 
 ```json
-{"oq_id": "OQ-image-library-005", "type": "CONFLICT", "feature_id": "object-level (image-layer-library + mockup-layer-library)", "summary": "Popup '+ Layer' của artwork editor nay có nhóm DESIGN ELEMENTS (Rectangle) — knowledge artwork KB-001 ghi 7 nhóm/29 item. Layer type mới được thêm hay khác plan/store? Cần refresh artwork/editor-layer-workspace.", "side_a": "artwork/editor-layer-workspace KB-001 (2026-09-10): 29 item, 7 nhóm.", "side_b": "image-library 2026-10-26: có thêm nhóm DESIGN ELEMENTS (Rectangle); số item không đếm lại."}
+{"oq_id": "OQ-image-library-005", "type": "CONFLICT", "feature_id": "object-level (image-layer-library + mockup-layer-library)", "summary": "Popup '+ Layer' của artwork editor nay có nhóm DESIGN ELEMENTS (Rectangle) — knowledge artwork KB-001 ghi 7 nhóm/29 item. Layer type mới được thêm hay khác plan/store? Cần refresh artwork-editor/editor-layer-workspace.", "side_a": "artwork-editor/editor-layer-workspace KB-001 (2026-09-10): 29 item, 7 nhóm.", "side_b": "image-library 2026-10-26: có thêm nhóm DESIGN ELEMENTS (Rectangle); số item không đếm lại."}
 ```
 
 ## OQ-image-library-006 — OPEN_ISSUE

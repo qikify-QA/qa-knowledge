@@ -1,0 +1,414 @@
+{
+  "feature_id": "campaign-wizard-contents",
+  "feature_key": "campaign-wizard-contents",
+  "name": "Wizard campaign: bước Contents",
+  "user_goal": "Người dùng chọn, tạo hoặc reset email design cho campaign.",
+  "stable_since_version": "v1",
+  "actors": [],
+  "entry_points": [],
+  "capabilities": [
+    {
+      "name": "Bước 4 Contents: chọn hoặc tạo email",
+      "description": "Chọn email có sẵn (picker nạp tối đa 50 email sửa gần nhất) hoặc tạo mới (from scratch / Duplicate design); khi đã có email, bước Contents hiện preview kèm Subject / Preheader / From; đổi email chỉ qua `Reset design`; PO đã quyết đổi nhãn nút sang Templates nhưng staging 01/10 chưa deploy. Quan hệ copy-on-write giữa các Draft dùng chung email thuộc email-content.",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-076",
+        "campaigns/campaign-wizard-contents#KB-077",
+        "campaigns/campaign-wizard-contents#KB-078",
+        "campaigns/campaign-wizard-contents#KB-079",
+        "campaigns/campaign-wizard-contents#KB-080",
+        "campaigns/campaign-wizard-contents#KB-081",
+        "campaigns/campaign-wizard-contents#KB-082",
+        "campaigns/campaign-wizard-contents#KB-083",
+        "campaigns/campaign-wizard-contents#KB-084",
+        "campaigns/campaign-wizard-contents#KB-085",
+        "campaigns/campaign-wizard-contents#KB-201",
+        "campaigns/campaign-wizard-contents#KB-086"
+      ]
+    },
+    {
+      "name": "Merge tag trong nội dung campaign",
+      "description": "Cú pháp merge tag đang mâu thuẫn (hai ngoặc vs một ngoặc); iframe ở bước Contents hiện chuỗi merge tag thô. Quy tắc không migrate nội dung một ngoặc thuộc email-content / merge-tags.",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-087",
+        "campaigns/campaign-wizard-contents#KB-088"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "Contents chưa có design",
+      "to": "Contents đã có design",
+      "trigger": "Chọn email có sẵn hoặc tạo mới (Create from scratch / Duplicate design)",
+      "condition": "Bản sao từ Duplicate design có tên `{name} (copy)`",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-084",
+        "campaigns/campaign-wizard-contents#KB-085"
+      ]
+    },
+    {
+      "from": "Contents đã có design",
+      "to": "Contents chưa có design",
+      "trigger": "`Design actions` → `Reset design`",
+      "condition": "Đổi email chỉ có thể qua Reset design",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-086"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Theo quyết định PO 30/09/2026 (description và comment Jira MTRO-99), hai nút ở màn campaign đổi thành `Choose a template` / `Create new template`; Jira MTRO-99 còn In Progress và staging khảo sát 01/10/2026 chưa áp dụng.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-078"
+      ]
+    },
+    {
+      "statement": "Theo quyết định PO 11/08/2026 (comment Jira MTRO-29), ở bước Contents lựa chọn tạo mới mở ra hai cách: `Create from scratch` tạo email mới rồi mở builder, `Duplicate design` cho chọn một design có sẵn để duplicate rồi mở builder, bản sao có tên `{name} (copy)`; staging 01/10/2026 và i18n khớp phần tên bản sao.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-084"
+      ]
+    },
+    {
+      "statement": "Theo Jira MTRO-29 AC §Step 4 (tóm tắt trong QA business rule Mailtro, cập nhật 07/10/2026), khi đã chọn email, bước Contents hiện preview template kèm Subject / Preheader / From.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-085"
+      ]
+    },
+    {
+      "statement": "Theo quyết định PO 11/08/2026 (comment Jira MTRO-29), menu `Design actions` (`...`) cạnh nút `Edit design` có `Reset design` để quay về empty state và chọn design khác; đổi email chỉ có thể qua `Reset design`. Staging 25/08 và 01/10/2026 khớp.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-086"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), khi campaign chưa có design, bước Contents hiện \"Add email content to this campaign\" / \"Use an email you already have, or start a new one.\"",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-076"
+      ],
+      "status": "CURRENT_STATE"
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), hai nút ở bước Contents khi chưa có design có nhãn `Choose email library` và `Create email library` (không phải `Choose from existing` / `Create new`); quyết định đổi nhãn của PO 30/09/2026 chưa được deploy lên staging tại thời điểm khảo sát.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-077"
+      ],
+      "status": "CURRENT_STATE"
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), dialog `Choose email library` có mô tả \"Pick an existing email design to use for this campaign.\", hiện lưới thẻ gồm tên email và người tạo, nút `Cancel` / `Close`, không có ô search, không phân trang, không hiện ngày tạo; chọn một thẻ là dùng ngay.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-079"
+      ],
+      "status": "CURRENT_STATE"
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026, xác nhận qua network), mở builder campaign gọi một lần `GET mail-templates?per_page=50&sort=updated_at&direction=desc`, nên picker email ở bước Contents chỉ có tối đa 50 email được sửa gần nhất.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-080"
+      ],
+      "status": "CURRENT_STATE"
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026, mở dialog nhưng chưa chọn), dialog `Create email library` hỏi \"How do you want to start?\" với hai lựa chọn `Create from scratch` (\"Start with a blank canvas\") và `Duplicate design` (\"Start from an existing design and customize it\").",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-083"
+      ],
+      "status": "CURRENT_STATE"
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), iframe xem trước ở bước Contents hiện nguyên chuỗi merge tag, không thay bằng giá trị.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-087"
+      ],
+      "tags": [
+        "merge-tag-syntax"
+      ],
+      "status": "CURRENT_STATE"
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), bước Contents khi đã có design hiện tên design, nút `Edit design`, menu `Design actions` (có `Reset design`), `Subject`, `Preheader` (trống thì `(No preview text yet)`), iframe nội dung, `From` (trống thì `(No sender yet)`) và nút `Back`.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-201"
+      ],
+      "status": "CURRENT_STATE"
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      {
+        "item": "Header wizard (tên, badge Draft, Save, Preview & test, Send) và stepper `Campaign steps` (bước là link, bước xong có tick trên staging)",
+        "kb_refs": [
+          "campaigns/campaign-wizard#KB-038",
+          "campaigns/campaign-wizard#KB-196",
+          "campaigns/campaign-wizard#KB-043",
+          "campaigns/campaign-wizard#KB-045",
+          "campaigns/campaign-wizard#KB-047",
+          "campaigns/campaign-wizard#KB-198",
+          "campaigns/campaign-wizard#KB-048"
+        ]
+      },
+      {
+        "item": "Bước 1 `/details`: Campaign name *, Subject line *, Preview text, Back / Next: Sender",
+        "kb_refs": [
+          "campaigns/campaign-wizard#KB-049",
+          "campaigns/campaign-wizard#KB-052",
+          "campaigns/campaign-wizard#KB-054"
+        ]
+      },
+      {
+        "item": "Bước 2 `/sender`: From name, From email, Reply-to (optional), cảnh báo verified domain + link Manage sending domains",
+        "kb_refs": [
+          "campaigns/campaign-wizard#KB-057",
+          "campaigns/campaign-wizard#KB-199",
+          "campaigns/campaign-wizard#KB-058",
+          "campaigns/campaign-wizard#KB-200",
+          "campaigns/campaign-wizard#KB-059"
+        ]
+      },
+      {
+        "item": "Bước 3 `/recipients`: Send to, picker segment, estimated recipients, khối Email preferences",
+        "kb_refs": [
+          "campaigns/campaign-wizard-recipients#KB-062",
+          "campaigns/campaign-wizard-recipients#KB-065",
+          "campaigns/campaign-wizard-recipients#KB-067",
+          "campaigns/campaign-wizard-recipients#KB-071"
+        ]
+      },
+      {
+        "item": "Bước 4 `/content`: empty state, dialog chọn email, dialog tạo email, preview design, Reset design",
+        "kb_refs": [
+          "campaigns/campaign-wizard-contents#KB-076",
+          "campaigns/campaign-wizard-contents#KB-077",
+          "campaigns/campaign-wizard-contents#KB-079",
+          "campaigns/campaign-wizard-contents#KB-083",
+          "campaigns/campaign-wizard-contents#KB-085",
+          "campaigns/campaign-wizard-contents#KB-201",
+          "campaigns/campaign-wizard-contents#KB-086"
+        ]
+      },
+      {
+        "item": "Route `/campaigns/:id/design/:templateId` (chưa khảo sát)",
+        "kb_refs": [
+          "campaigns/campaign-wizard#KB-042"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "item": "Cập nhật campaign đã có dùng `PUT`",
+        "kb_refs": [
+          "campaigns/campaign-wizard#KB-091"
+        ]
+      },
+      {
+        "item": "Subject > 255 ký tự trả 422",
+        "kb_refs": [
+          "campaigns/campaign-wizard#KB-051"
+        ]
+      },
+      {
+        "item": "Mở builder gọi `GET mail-templates?per_page=50&sort=updated_at&direction=desc`",
+        "kb_refs": [
+          "campaigns/campaign-wizard-contents#KB-080"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "Campaign có đúng một segment; chỉ lưu `preference_page_id` cho phần Email preferences",
+        "kb_refs": [
+          "campaigns/campaign-wizard-recipients#KB-063",
+          "campaigns/campaign-wizard-recipients#KB-073"
+        ]
+      },
+      {
+        "item": "Merge tag trong nội dung (cú pháp đang tranh chấp)",
+        "kb_refs": [
+          "campaigns/campaign-wizard-contents#KB-088",
+          "_product-level#KB-P-018"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "target": "email-content / email-library",
+      "relation": "content_source",
+      "note": "Bước Contents chọn/tạo email từ thư viện; đổi tên sang Templates theo quyết định PO 30/09/2026 chưa deploy staging 01/10. Quy tắc copy-on-write giữa các Draft dùng chung email và giới hạn picker 50 email do email-content / email-library sở hữu.",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-077",
+        "campaigns/campaign-wizard-contents#KB-078",
+        "campaigns/campaign-wizard-contents#KB-080",
+        "campaigns/campaign-wizard-contents#KB-081",
+        "_product-level#KB-P-009"
+      ]
+    },
+    {
+      "target": "email-content / merge-tags",
+      "relation": "conflict_owner",
+      "note": "Cú pháp merge tag là conflict cross-object do email-content sở hữu; quy tắc không migrate nội dung một ngoặc cũng thuộc email-content.",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-088",
+        "campaigns/campaign-wizard-contents#KB-087"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "statement": "Theo bundle front-end 01/10/2026 và QA KB Mailtro \"Known issues\" v1 (ranh giới 50/51 chưa thử), workspace có hơn 50 email thì email cũ hơn không chọn được ở bước Contents hay ở `Duplicate design` (dùng cùng danh sách); QA đang hỏi Dev giới hạn 50 có chủ ý không và có định thêm tìm kiếm / phân trang không.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-081"
+      ],
+      "risk_type": "undecided_or_bundle_only"
+    },
+    {
+      "statement": "Theo chuỗi i18n trong bundle front-end 01/10/2026 (chưa thấy trên UI), picker email khi thư viện trống hiện `No emails in this workspace yet.`",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-082"
+      ],
+      "risk_type": "undecided_or_bundle_only"
+    },
+    {
+      "statement": "Theo quyết định PO 02/10/2026 (ghi trong QA KB Mailtro \"Campaigns\" v1, kèm task Testlane MTRO-009 BR-10) và Inventory staging Mailtro \"Campaigns\" (01/10/2026: draft tạo 01/10 dùng `{{contact.first_name}}`, `{{unsubscribe_url}}`), merge tag trong nội dung email dùng cú pháp hai ngoặc `{{…}}`; phát biểu này đang mâu thuẫn với Jira MTRO-92 §10 (cú pháp một ngoặc, `{{…}}` bị từ chối khi lưu) và chưa được PO/Dev phân xử.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-088"
+      ],
+      "tags": [
+        "merge-tag-syntax"
+      ],
+      "conflict_group": "CONF-MTRO-email-content-01",
+      "status": "UNRESOLVED",
+      "risk_type": "conflict_side"
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-07",
+    "basis": "AC Jira MTRO-29 tóm tắt trong QA business rule Mailtro (cập nhật 15/09 và 07/10/2026); quyết định PO 11/08, 30/09, 02/10/2026; khảo sát staging 25/08, 29/09, 01/10/2026."
+  },
+  "unknown_areas": [
+    {
+      "question": "Cú pháp merge tag đúng cho nội dung campaign là hai ngoặc `{{…}}` (quyết định PO 02/10/2026, staging 01/10/2026) hay một ngoặc như Jira MTRO-92 §10?",
+      "why_it_matters": "Conflict cross-object chưa phân xử (merge-tag-syntax); không có oracle cho lưu/gửi nội dung có merge tag.",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-088"
+      ],
+      "oq_id": "OQ-email-content-026"
+    },
+    {
+      "question": "Nhãn nút `Choose a template` / `Create new template` (quyết định PO 30/09/2026, Jira MTRO-99) đã được deploy lên staging chưa, từ build nào?",
+      "why_it_matters": "Staging 01/10/2026 vẫn hiện `Choose email library` / `Create email library`.",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-077",
+        "campaigns/campaign-wizard-contents#KB-078"
+      ],
+      "oq_id": "OQ-campaigns-009"
+    },
+    {
+      "question": "Giới hạn picker email ở bước Contents (nạp một lần 50 email sửa gần nhất, không search, không phân trang) có chủ ý không, và có định thêm tìm kiếm / phân trang không?",
+      "why_it_matters": "Workspace có hơn 50 email không chọn được email cũ; ranh giới 50/51 chưa thử.",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-080",
+        "campaigns/campaign-wizard-contents#KB-081"
+      ],
+      "oq_id": "OQ-campaigns-010"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "coverage_matrix": [
+    {
+      "layer": "portal",
+      "role": "unspecified",
+      "state": "bước 1 / 2 / 3 / 4",
+      "covered": true,
+      "kb_refs": [
+        "campaigns/campaign-wizard#KB-049",
+        "campaigns/campaign-wizard#KB-057",
+        "campaigns/campaign-wizard#KB-199",
+        "campaigns/campaign-wizard-recipients#KB-063",
+        "campaigns/campaign-wizard-contents#KB-085",
+        "campaigns/campaign-wizard-contents#KB-201"
+      ],
+      "feature_id": "campaign-wizard",
+      "environment": "documented"
+    },
+    {
+      "layer": "portal",
+      "role": "unspecified",
+      "state": "workspace chưa có segment / chưa có email / > 50 email",
+      "covered": true,
+      "note": "Segment rỗng: AC; email rỗng và > 50: bundle, chưa thử",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-066",
+        "campaigns/campaign-wizard-contents#KB-081",
+        "campaigns/campaign-wizard-contents#KB-082"
+      ],
+      "feature_id": "campaign-wizard",
+      "environment": "documented"
+    },
+    {
+      "layer": "data",
+      "role": "unspecified",
+      "state": "segment, preference page, template dùng chung, merge tag",
+      "covered": true,
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-063",
+        "campaigns/campaign-wizard-recipients#KB-073",
+        "campaigns/campaign-wizard-contents#KB-088"
+      ],
+      "feature_id": "campaign-wizard",
+      "environment": "documented"
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "conflict_group": "CONF-MTRO-email-content-01",
+      "topic": "Cú pháp merge tag hai ngoặc vs một ngoặc",
+      "resolution": "UNRESOLVED",
+      "owner": "email-content / merge-tags",
+      "note": "Phía campaign là item INFERRED/LOW; phía một ngoặc (Jira MTRO-92 §10) thuộc object email-content nên không có kb_id trong object campaigns. Không chọn bên.",
+      "kb_refs": [
+        "campaigns/campaign-wizard-contents#KB-088"
+      ]
+    }
+  ],
+  "profile_relationships": []
+}

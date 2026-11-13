@@ -1,0 +1,565 @@
+{
+  "feature_id": "FEAT-01-quantity-break-gifts-and-subscription",
+  "feature_key": "quantity-break-gifts-and-subscription",
+  "name": "Quantity Break: quà tặng và subscription",
+  "user_goal": "Merchant thêm quà tặng vào tier hoặc bật giá volume cho sản phẩm subscription.",
+  "user_goal_kb_refs": [],
+  "stable_since_version": "1",
+  "actors": [
+    {
+      "role": "merchant",
+      "permission_observed": "Tạo/sửa offer Quantity Break trong Portal: chọn template reward, cấu hình trigger scope, tier (quantity/discount/label/image), gift settings, subscription settings, display/appearance/combination/scheduling settings. Không có bằng chứng về phân cấp quyền (staff sub-role) trong tài liệu — xem unknown_areas.",
+      "kb_refs": [
+        "quantity-break/quantity-break-trigger-and-tiers#KB-001",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-003",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-004",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-012",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-013",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-014",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-030",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-041",
+        "quantity-break/quantity-break-display-and-schedule#KB-051",
+        "quantity-break/quantity-break-display-and-schedule#KB-053",
+        "quantity-break/quantity-break-display-and-schedule#KB-054",
+        "quantity-break/quantity-break-display-and-schedule#KB-055",
+        "quantity-break/quantity-break-display-and-schedule#KB-056"
+      ],
+      "observed_kb_refs": [
+        "KB-075",
+        "KB-076",
+        "KB-077",
+        "KB-078",
+        "KB-079",
+        "KB-080",
+        "KB-081",
+        "KB-082",
+        "KB-083",
+        "KB-084",
+        "object:KB-009",
+        "object:KB-015",
+        "object:KB-016",
+        "object:KB-017"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-18 (merchant, store development): mở form 3 template, tạo/lưu/sửa/xoá offer Quantity Break; quyền staff/cross-tenant không kiểm (không có account phụ)."
+    },
+    {
+      "role": "buyer",
+      "permission_observed": "Xem widget trên PDP, tăng/giảm quantity trong cart để đạt tier, nhận gift/subscription option; không có khả năng cấu hình. Chỉ tương tác qua storefront.",
+      "kb_refs": [
+        "quantity-break/quantity-break-trigger-and-tiers#KB-009",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-010",
+        "quantity-break/quantity-break-storefront-and-cart#KB-022",
+        "quantity-break/quantity-break-storefront-and-cart#KB-024",
+        "quantity-break/quantity-break-storefront-and-cart#KB-028",
+        "quantity-break/quantity-break-storefront-and-cart#KB-029",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-038",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-046",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-066"
+      ],
+      "observed_kb_refs": [
+        "KB-085",
+        "KB-086",
+        "KB-087",
+        "KB-088",
+        "KB-089",
+        "object:KB-023",
+        "object:KB-025"
+      ],
+      "refresh_note": "Quan sát staging 2026-10-18: buyer guest (không đăng nhập), desktop, US/en/USD; chọn tier trên widget, Add to cart của theme, đổi số lượng trong cart; không có checkout."
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Portal > Create offer > Volume discount for subscription (pre-enable sẵn toggle 'Subscriptions')",
+      "precondition": "Cùng màn hình offer-type list; card này mở cùng trang tier settings nhưng pre-fill khác ở phần reward.",
+      "kb_refs": [
+        "quantity-break/quantity-break-trigger-and-tiers#KB-001",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-011",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-041",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-042"
+      ],
+      "observed_kb_refs": [
+        "KB-077"
+      ],
+      "refresh_note": "Staging 2026-10-18: switch 'Subscriptions' BẬT sẵn trên template này (tắt trên 2 template còn lại)."
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Cấu hình free gift (reward: Buy X, get Y free)",
+      "description": "Dùng chung tier engine — gift gắn vào bất kỳ tier nào (không chỉ tier top) qua nút 'Add free gift'. Gift picker search-and-multi-select (search box hoặc 'Browse', cùng mở Gift Selection Modal). Selected gifts list hiển thị ảnh/tên/quantity (default 1, sửa được)/nút xoá. Field 'Promotion message' (free-text optional) và toggle 'Show gift's price'. Nút 'Remove' xoá hết gift của tier. Storefront hiển thị badge đếm gift + dòng giá gốc gạch ngang 'Free', subtitle tier tự nối thêm số gift.",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-030",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-031",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-032",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-035",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-036",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-037",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-038"
+      ],
+      "observed_kb_refs": [
+        "KB-078"
+      ],
+      "refresh_note": "Staging 2026-10-18 (chỉ form, chưa lưu): template 'Buy X, get Y free' giống form Quantity Break, tier 1 có sẵn khối 'Gifts' [Search products] [Browse], 'Promotion message' = '+ {gift_qty} FREE GIFT', [ ] 'Show gifts' price', [ ] 'Show quantity counter', nút 'Remove gift' (nhãn khác 'Remove' của base). Storefront gift NOT_COVERED."
+    },
+    {
+      "name": "Cấu hình subscription volume discount (reward: subscription overlay)",
+      "description": "UI chỉ hiện cho sản phẩm eligible subscription. Toggle 'Subscriptions' default OFF; bật lên hiện info banner (verbatim, live-confirmed) + card giới thiệu app 'Appstle(SM) Subscriptions App'. Field Purchase option title/subtitle/position (Above/Below volume tiers), 4 label field có default (Subscribe & save rỗng One time purchase rỗng). Checkbox 'Selected subscription plan by default' preselect Subscribe & Save khi load trang. Stacking: subscription discount áp trước, quantity-break áp sau (formula rõ).",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-041",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-042",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-043",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-044",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-046",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-047"
+      ],
+      "observed_kb_refs": [
+        "KB-077"
+      ],
+      "refresh_note": "Staging 2026-10-18 (form mới template subscription, không có app subscription): banner nguyên văn khớp; card 'Recommended app:' chỉ nhắc Appstle; 'Position' mặc định 'Above volume tiers'; [x] 'Selected subscription plan by default'. Storefront subscription NOT_COVERED (cài app bên thứ ba bị cấm)."
+    },
+    {
+      "name": "Hành vi edge-case & khả năng chịu lỗi (resilience)",
+      "description": "Gift hết hàng trước checkout → offer ẩn gift, KHÔNG block checkout/hiện lỗi. Nếu shopper đang mua qua subscription widget của app khác trên cùng sản phẩm, widget quantity-break tự ẩn, chỉ hiện lại ở path one-time purchase. Chuyển đổi Subscribe&Save <-> One-time purchase làm reset tier selection (không persist). Sản phẩm chỉ 1 variant hoặc theme không có variant selector gốc → widget graceful-degrade, bỏ qua variant dropdown, không lỗi/màn trắng.",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-040",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-065",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-066",
+        "quantity-break/quantity-break-storefront-and-cart#KB-068"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "tier không có gift",
+      "to": "tier có gift",
+      "trigger": "click 'Add free gift' → chọn qua Gift Selection Modal (search hoặc Browse)",
+      "condition": "áp dụng cho bất kỳ tier nào, không chỉ tier cao nhất",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-030",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-031"
+      ],
+      "observed_kb_refs": [
+        "KB-078"
+      ],
+      "refresh_note": "Staging: template Buy X get Y mở với khối Gifts có sẵn trên tier 1 (không cần bấm 'Add free gift')."
+    },
+    {
+      "from": "tier có gift",
+      "to": "tier không có gift",
+      "trigger": "click 'Remove'",
+      "condition": "xoá TẤT CẢ gift của tier đó, UI trả về nút 'Add free gift'",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-037"
+      ],
+      "observed_kb_refs": [
+        "KB-078"
+      ],
+      "refresh_note": "Staging: nút mang nhãn 'Remove gift'; không bấm thử."
+    },
+    {
+      "from": "Subscriptions toggle OFF",
+      "to": "Subscriptions toggle ON",
+      "trigger": "merchant bật toggle 'Subscriptions'",
+      "condition": "subscription widget/UI hiện trên storefront cho sản phẩm eligible; info banner + card Appstle xuất hiện",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-042"
+      ],
+      "observed_kb_refs": [
+        "KB-077"
+      ],
+      "refresh_note": "Staging: template subscription mở với toggle đã ON; phía storefront NOT_COVERED."
+    },
+    {
+      "from": "Subscribe & Save selected",
+      "to": "One-time purchase selected (hoặc ngược lại)",
+      "trigger": "shopper chuyển đổi purchase option",
+      "condition": "tier selection bị reset, không persist qua lần chuyển đổi",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-066"
+      ]
+    },
+    {
+      "from": "gift variant còn hàng",
+      "to": "gift bị ẩn",
+      "trigger": "gift product/variant hết hàng trước checkout",
+      "condition": "offer ẩn free gift, KHÔNG block checkout/hiện lỗi",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-040"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "rule": "Gift hết hàng trước checkout → offer ẩn gift, không block checkout/hiện lỗi.",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-040"
+      ]
+    },
+    {
+      "rule": "Gift multi-variant không chọn variant cụ thể: chỉ ĐÚNG 1 variant thực sự được add vào cart, default sang variant khả dụng đầu tiên (first available) của gift product đó; banner 'Details' trên storefront hiển thị đúng variant sẽ được add.",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-034"
+      ]
+    },
+    {
+      "rule": "Stacking formula khi có subscription: Final price = (Base price − Subscription discount) − Quantity break discount. Subscription discount luôn áp trước (priority cao hơn).",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-047"
+      ],
+      "refresh_kb_refs": [
+        "KB-077"
+      ],
+      "refresh_note": "Staging: banner form subscription vẫn nêu 'Subscription app discounts are applied first, followed by other discounts.'; tính giá storefront NOT_COVERED."
+    }
+  ],
+  "observed_behavior": [
+    {
+      "note": "[KNOWN DEFECT — không dùng làm oracle] Casing của label đếm gift ('1 gift' '2 Gifts' '3 gifts') không nhất quán giữa các tier trong ví dụ live — bug nhỏ copy-consistency, chỉ để regression-watch.",
+      "status": "KNOWN_DEFECT",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-039"
+      ]
+    },
+    {
+      "note": "[Hedge] Gift multi-variant không chọn variant cụ thể: chỉ tên sản phẩm hiển thị (không breakdown theo variant); mô tả 'quantity áp dụng đồng nhất cho variant nhận được' tự được tài liệu gắn cờ chưa chắc — xem KB-034 (confirmed_rules) cho phần ĐÃ xác nhận (chỉ 1 variant thực add, default first-available).",
+      "status": "UNCONFIRMED_HEDGED",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-033"
+      ]
+    },
+    {
+      "note": "[Hedge diễn giải] Banner + card Appstle xuất hiện khi bật Subscriptions là CONFIRMED (verbatim, live 2026-09-03); nhưng diễn giải 'app không có hạ tầng subscription riêng mà phụ thuộc đúng 1 app subscription cụ thể' là suy luận tự gắn cờ hedge của tài liệu, chưa chắc đúng cho mọi app subscription tương thích khác ngoài Appstle.",
+      "status": "UNCONFIRMED_HEDGED",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-043"
+      ],
+      "related_base_kb_refs": [
+        "KB-074"
+      ],
+      "observed_kb_refs": [
+        "KB-077"
+      ],
+      "refresh_note": "Staging: card 'Recommended app:' chỉ nhắc Appstle — không trả lời được câu hỏi tương thích app khác."
+    },
+    {
+      "note": "[Hedge, mâu thuẫn nguồn — xem unknown_areas GAP-QB-02] Ticket/draft nói default field 'Position' là 'Above volume tiers', nhưng ví dụ live duy nhất quan sát lại là 'Below' — default thật ngoài-hộp CHƯA được xác nhận chỉ từ 1 offer đã cấu hình.",
+      "status": "UNCONFIRMED_HEDGED",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-045"
+      ],
+      "observed_kb_refs": [
+        "KB-077"
+      ],
+      "refresh_note": "Staging: form subscription MỚI mặc định 'Above volume tiers' (1 lần quan sát)."
+    },
+    {
+      "note": "[Ghi chú tiến trình, không phải hành vi sản phẩm] Trạng thái Jira hiển thị không roll-up từ children — epic QVD-124 hiện 'To Do' dù 3/4 ticket con đã Done/shipped; QVD-148 cũng hiện 'To Do' dù đã Resolved/shipped (QA confirmed 2026-09-03). Không suy luận 'chưa ship' chỉ từ status epic.",
+      "status": "DOC_PROCESS_CAVEAT",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-048"
+      ]
+    },
+    {
+      "note": "[Hedge] Nếu discount của subscription app thay đổi/bị xoá giữa session, giá quantity-break được mô tả là KHÔNG tự recompute ngay — giữ stale cho tới khi shopper reload/điều hướng trang khác. Tài liệu tự gắn cờ chưa chắc.",
+      "status": "UNCONFIRMED_HEDGED",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-067"
+      ]
+    },
+    {
+      "behavior": "Template 'Volume discount for subscription': switch 'Subscriptions' BẬT sẵn (tắt trên 2 template khác); banner nguyên văn 'Subscription widget will only be shown in products that are eligible for subscription. Subscription app discounts are applied first, followed by other discounts. This may slightly affect the final price.'; card 'Recommended app:' chỉ Appstle; Position 'Above volume tiers'; 'Subscribe & save' / 'One time purchase'; [x] Selected subscription plan by default.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-077"
+      ]
+    },
+    {
+      "behavior": "Template 'Buy X, get Y free': giống form Quantity Break, tier 1 có sẵn khối Gifts, 'Promotion message' = '+ {gift_qty} FREE GIFT', [ ] Show gifts' price, [ ] Show quantity counter, 'Remove gift'.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-078"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "role": "merchant",
+      "scope": "portal",
+      "description": "Toàn quyền tạo/sửa mọi setting của offer Quantity Break (trigger, tier, gift, subscription, display/appearance/combination/scheduling/advanced). Không có bằng chứng tài liệu về phân cấp quyền staff (ví dụ staff-limited vs full-access) cho riêng feature này.",
+      "kb_refs": [
+        "quantity-break/quantity-break-trigger-and-tiers#KB-003",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-012",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-030",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-041"
+      ],
+      "observed_kb_refs": [
+        "object:KB-015",
+        "object:KB-017"
+      ],
+      "refresh_note": "Staging: account merchant (owner session) tạo/sửa/xoá được offer; không kiểm account staff hạn quyền hay cross-tenant."
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      "Create offer > 3 template card (Quantity breaks for same product Buy X, get Y free Volume discount for subscription)",
+      "Tier settings page: Trigger Settings (5 radio + Exclude link + Custom trigger modal)",
+      "Tier settings page: Discount type Discount value Quantity Label type Label text Image Selected by default (per tier), + Add new tier",
+      "Buy X get Y free: Add free gift Gift Selection Modal Selected gifts list Promotion message Show gift's price Remove",
+      "Volume discount for subscription: toggle Subscriptions info banner + Appstle card Purchase option title-subtitle-position 4 label field Selected subscription plan by default",
+      "Shared: Display settings (Variant display, Pricing display) Appearance & style (Layout, Color, Typography, Badge, Custom CSS) Discount combination Offer scheduling (start/end date, countdown timer) Advanced Settings (Custom CSS gated)",
+      {
+        "item": "Route form: /offers/setting/volume (?gift=true, ?subscription=true) → /offers/setting/volume/<id offer> sau khi lưu; save bar Shopify ngoài iframe — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-009",
+          "discount-offers/offer-create-and-manage#KB-010",
+          "discount-offers/offer-create-and-manage#KB-018"
+        ]
+      },
+      {
+        "item": "Form: Offer title, Discount method (Automatic + banner / Discount code + Generate), Discount title, Discount tags, Combination + dropdown best value wins — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-trigger-and-tiers#KB-075",
+          "quantity-break/quantity-break-display-and-schedule#KB-083",
+          "discount-offers/offer-create-and-manage#KB-011",
+          "discount-offers/offer-create-and-manage#KB-012"
+        ]
+      },
+      {
+        "item": "Manage offers: Search, filter Status (All/Running/Expired/Scheduled), filter Type, sort, cột Internal name/Extension type/Status/Trigger/Combination/Actions, modal 'Delete offer' — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-016",
+          "discount-offers/offer-create-and-manage#KB-017"
+        ]
+      },
+      {
+        "item": "Preview form (giá mẫu cố định; countdown khi bật end date) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-display-and-schedule#KB-086",
+          "quantity-break/quantity-break-display-and-schedule#KB-084"
+        ]
+      }
+    ],
+    "storefront": [
+      "PDP widget: tier cards tích hợp ATC gốc theme, slot indicator, variant selector (tự ẩn khi không có variant hoặc khi subscription widget app khác active)",
+      "PDP widget subscription: Subscribe & Save One-time purchase toggle + tier picker",
+      "Cart: automatic discount áp ngay, tính lại real-time theo quantity, gift banner + badge đếm gift",
+      {
+        "item": "PDP widget 'Buy more, save more' dưới giá theme (tier card radio, tổng giá gói, 'powered by qikify'), countdown đầu widget; không slot ở layout mặc định — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-087",
+          "quantity-break/quantity-break-display-and-schedule#KB-085"
+        ]
+      },
+      {
+        "item": "Cart: line property ẩn _qvl-volume-id (khi add qua widget), mã QIKIFY-xxxxxx allocation 'each' — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-088",
+          "quantity-break/quantity-break-storefront-and-cart#KB-089"
+        ]
+      },
+      {
+        "item": "Collection/search: badge 'UP TO 20% OFF' góc trên-trái card (top 10px, left 10px, radius 6px); product nhiều offer chỉ 1 badge — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-storefront-events#KB-031",
+          "discount-offers/offer-overlap-and-stacking#KB-025"
+        ]
+      },
+      {
+        "item": "HTML PDP nhúng JSON cấu hình offer (trigger_<id> gồm internal name; offer Scheduled thêm discount id + lịch) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-storefront-events#KB-029"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "item": "Backend app <QVL_API_BASE>: GET /api/offers (list), POST /api/offers (201), GET /api/offers/{id}, PUT /api/offers/{id} (200), DELETE /api/offers/{id} (204) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-015",
+          "discount-offers/offer-create-and-manage#KB-016",
+          "discount-offers/offer-create-and-manage#KB-017",
+          "discount-offers/offer-create-and-manage#KB-032",
+          "quantity-break/quantity-break-display-and-schedule#KB-084"
+        ]
+      },
+      {
+        "item": "Shopify Admin GraphQL qua app proxy: discountAutomaticAppCreate / discountAutomaticAppUpdate / discountAutomaticDelete (combinesWith, endsAt) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-015",
+          "quantity-break/quantity-break-display-and-schedule#KB-082",
+          "quantity-break/quantity-break-display-and-schedule#KB-084"
+        ]
+      },
+      {
+        "item": "Product search của picker qua app proxy: products(first:20, query) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-019"
+        ]
+      },
+      {
+        "item": "POST <QVL_API_BASE>/api/events (event view/add_to_cart từ widget; không thấy header auth, CORS '*') — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-087",
+          "discount-offers/offer-storefront-events#KB-023",
+          "discount-offers/offer-storefront-events#KB-024"
+        ]
+      },
+      {
+        "item": "Storefront cart: POST /cart/add.js?qvl-discount (có tier), POST /cart/add (form theme), đổi số lượng và đọc cart — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-088",
+          "quantity-break/quantity-break-storefront-and-cart#KB-089"
+        ]
+      },
+      {
+        "item": "POST <QVL_API_BASE>/api/completions/review trả 500 kèm stack trace mỗi lần mở form (bề mặt lỗi server, không oracle) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-storefront-events#KB-021"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "Offer lưu: enable_countdown_timer, ends_at, status (ACTIVE/SCHEDULED); shopify_connection_id kiểu chuỗi trong response POST/PUT, số nguyên trong GET — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-display-and-schedule#KB-084",
+          "discount-offers/offer-create-and-manage#KB-032",
+          "discount-offers/offer-create-and-manage#KB-016"
+        ]
+      },
+      {
+        "item": "Line item property _qvl-volume-id = id offer Quantity Break — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "quantity-break/quantity-break-storefront-and-cart#KB-088",
+          "discount-offers/offer-overlap-and-stacking#KB-026"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "type": "external_app_dependency",
+      "description": "Template 'Volume discount for subscription' phụ thuộc vào 1 app subscription bên ngoài (app được recommend trực tiếp trên UI là Appstle(SM) Subscriptions App) để có hạ tầng subscription — chưa xác nhận có tương thích app subscription khác ngoài Appstle hay không.",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-043"
+      ],
+      "observed_kb_refs": [
+        "KB-077"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "risk": "4 KNOWN_DEFECT (KB-039, KB-062 lịch sử, KB-063, KB-064) nếu bị checklist dùng làm expected result sẽ tạo oracle sai — chỉ dùng làm regression-watch.",
+      "severity": "MEDIUM",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-039",
+        "quantity-break/quantity-break-storefront-and-cart#KB-062",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-063",
+        "quantity-break/quantity-break-storefront-and-cart#KB-064"
+      ]
+    },
+    {
+      "risk": "Nhiều field UI (Position default, Display settings 'Content' group, accordion behavior, 2 field điều kiện Variant display, countdown timer/QVD-147) chỉ quan sát qua 1-3 ví dụ live hoặc accessibility-tree, chưa click-test trực tiếp — độ tin cậy LOW, không nên tổng quát hoá.",
+      "severity": "LOW",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-045",
+        "quantity-break/quantity-break-display-and-schedule#KB-049",
+        "quantity-break/quantity-break-display-and-schedule#KB-050",
+        "quantity-break/quantity-break-display-and-schedule#KB-052",
+        "quantity-break/quantity-break-display-and-schedule#KB-058"
+      ],
+      "observed_kb_refs": [
+        "KB-077",
+        "KB-079",
+        "KB-080",
+        "KB-084"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-18",
+    "base_observed_at": null
+  },
+  "unknown_areas": [
+    {
+      "question": "Widget subscription (Subscribe & save / One-time purchase) trên storefront render và tính giá thế nào khi có app subscription (Appstle) và product eligible?",
+      "why_it_matters": "Template subscription chỉ quan sát được form; stacking formula và reset tier selection không có quan sát storefront — cài app bên thứ ba bị cấm trong run.",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-077",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-041",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-046",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-047",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-066"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-quantity-break-027"
+    },
+    {
+      "question": "Offer Buy X get Y kèm gift trên storefront: badge đếm gift, dòng 'Free', nhiều gift khác product, gift hết hàng hiển thị thế nào trên store staging hiện tại?",
+      "why_it_matters": "Run chỉ mở form Buy X get Y, không tạo offer kèm gift — toàn bộ phía storefront gift chưa có quan sát staging.",
+      "kb_refs": [
+        "quantity-break/quantity-break-gifts-and-subscription#KB-078",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-030",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-034",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-038",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-040"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-016"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-quantity-break-013"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-04-quantity-break-trigger-and-tiers",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "form mặc định 3 template (chưa lưu)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "quantity-break/quantity-break-trigger-and-tiers#KB-075",
+        "quantity-break/quantity-break-trigger-and-tiers#KB-076",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-077",
+        "quantity-break/quantity-break-gifts-and-subscription#KB-078",
+        "quantity-break/quantity-break-display-and-schedule#KB-079",
+        "quantity-break/quantity-break-display-and-schedule#KB-081",
+        "quantity-break/quantity-break-display-and-schedule#KB-082"
+      ]
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": []
+}

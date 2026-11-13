@@ -423,36 +423,6 @@
       "automation_suitability": "SUITABLE"
     },
     {
-      "check_id": "CHK-014",
-      "dimension": "INTEGRATION",
-      "layer": "api",
-      "title": "Pre-flight check theme app-block-enabled chạy TRƯỚC publish khi launch multi-store (case enabled=true)",
-      "applicability": {
-        "role": "owner",
-        "state": "campaign 2595 sẵn sàng launch tới instance mới, theme app-block đã enable",
-        "environment": "staging",
-        "theme_or_device": "n/a"
-      },
-      "precondition": "Instance đích có theme app-block đã enable",
-      "steps": [
-        "Bắt đầu thao tác Launch campaign tới instance mới",
-        "Quan sát network request GET /api/instances/{instanceId}/themes/app-block-enabled",
-        "Quan sát thời điểm request này so với POST /api/campaigns/{id}/publish"
-      ],
-      "observation_point": "Thứ tự request và response body của app-block-enabled",
-      "expected_result": "GET .../themes/app-block-enabled trả {enabled:true} và request này chạy TRƯỚC call publish trong cùng thao tác Launch. 1 sample, chỉ case enabled=true — case enabled=false/lỗi CHƯA test, xem CHK-015.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-012"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "READY",
-      "risk_refs": [],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
       "check_id": "CHK-015",
       "dimension": "NEGATIVE",
       "layer": "api",
@@ -483,37 +453,6 @@
       "priority": "P2",
       "automation_suitability": "UNKNOWN",
       "oq_id": "OQ-sdk-206"
-    },
-    {
-      "check_id": "CHK-016",
-      "dimension": "PERMISSION",
-      "layer": "api",
-      "title": "Endpoint bootstrap config cá nhân hoá công khai, không yêu cầu authorization header",
-      "applicability": {
-        "role": "guest (unauthenticated)",
-        "state": "campaign đã publish, biết platform_product_id",
-        "environment": "staging",
-        "theme_or_device": "n/a"
-      },
-      "precondition": "Biết platform_product_id của campaign đã publish (cả 2 store)",
-      "steps": [
-        "Gọi GET https://staging-api.teeinblue.com/api/merchant/campaigns/{platformProductId}.json KHÔNG kèm authorization header nào",
-        "Quan sát status code và body trả về"
-      ],
-      "observation_point": "Status code, presence của authorization header trong request, nội dung body",
-      "expected_result": "Trả 200 không cần authorization header, chỉ cần platform_product_id + shop — quan sát nhất quán ở cả 2 sample (store1, store2). Đây là OBSERVATION về hành vi hiện tại, KHÔNG khẳng định là defect — có thể là thiết kế cố ý cho endpoint bootstrap public. Nếu team xác nhận đây là thiết kế sai, cần escalate riêng, không tự gắn nhãn bug ở đây.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-013"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "READY",
-      "risk_refs": [
-        "Public data exposure tiềm ẩn nếu platform_product_id đoán được/lộ ra — chưa xác nhận defect"
-      ],
-      "priority": "P1",
-      "automation_suitability": "SUITABLE"
     },
     {
       "check_id": "CHK-017",
@@ -706,230 +645,6 @@
       "oq_id": "OQ-sdk-212"
     },
     {
-      "check_id": "CHK-023",
-      "dimension": "STATE_DATA",
-      "layer": "storefront",
-      "title": "localStorage draft ('teeinblue-customizations'/'teeinblue-global-options') KHÔNG tồn tại lúc load ban đầu, chỉ được tạo ngay khi tương tác field đầu tiên; shape giống hệt nhau giữa SDK v1 và SDK v2",
-      "applicability": {
-        "role": "guest",
-        "state": "trang sản phẩm campaign 2595 mới load (chưa tương tác) VÀ ngay sau lần tương tác field cá nhân hoá đầu tiên — áp dụng CẢ store1 (SDK v1) và store2 (SDK v2)",
-        "environment": "staging",
-        "theme_or_device": "desktop, cả 2 store"
-      },
-      "precondition": "Đã vượt password-gate, ở trang sản phẩm, chưa tương tác field cá nhân hoá nào trong phiên hiện tại (hoặc đã clear localStorage trước đó)",
-      "steps": [
-        "Mở DevTools > Application > Local Storage ngay sau khi trang load; kiểm tra localStorage.getItem('teeinblue-customizations') và getItem('teeinblue-global-options')",
-        "Click 1 field cá nhân hoá đầu tiên (vd chọn 1 giá trị template)",
-        "Đọc lại 2 key trên, parse JSON, kiểm tra shape",
-        "Lặp lại toàn bộ trên cả store1 và store2"
-      ],
-      "observation_point": "Giá trị getItem trước và ngay sau tương tác đầu tiên; cấu trúc JSON đã parse của 2 key",
-      "expected_result": "Trước tương tác: cả 2 key trả về null trên cả 2 store. Ngay sau click field đầu tiên: 2 key xuất hiện đồng thời. 'teeinblue-customizations' là JSON array chứa đúng 1 object {productId, customization: {<field-id>: <value>,..., platform_linked_id}, timestamp}; 'teeinblue-global-options' là JSON object keyed theo global-option id, mỗi value {value, extra:{}, timestamp}. Cấu trúc (tên field/kiểu/thứ tự lồng) giống hệt nhau giữa 2 store cho cùng campaign 2595 — quan sát trong phiên test này, KHÔNG phải rule đã được nguồn thẩm quyền xác nhận.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-014",
-          "sdk/storefront-buyer-facing#KB-015"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "READY",
-      "risk_refs": [],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-024",
-      "dimension": "STATE_DATA",
-      "layer": "storefront",
-      "title": "Field dạng radio/template/clipart đơn (không lồng con) ghi vào localStorage ĐỒNG BỘ ngay khi click, không debounce (cả 2 store)",
-      "applicability": {
-        "role": "guest",
-        "state": "đã ở trang sản phẩm, tương tác field dạng template hoặc clipart đơn giản (không grouped_clipart)",
-        "environment": "staging",
-        "theme_or_device": "desktop, cả 2 store"
-      },
-      "precondition": "Đã ở trang sản phẩm sau password-gate",
-      "steps": [
-        "Mở DevTools, chuẩn bị đọc localStorage liên tục",
-        "Click 1 field dạng template hoặc clipart đơn (vd Choose Woman's Skin Tone)",
-        "Đọc localStorage ngay lập tức (<300ms) và đọc lại lần nữa sau khi settle (1.2-1.5s)",
-        "So sánh giá trị giữa 2 lần đọc"
-      ],
-      "observation_point": "Giá trị localStorage tại 2 mốc thời gian đọc",
-      "expected_result": "Giá trị mới xuất hiện NGAY trong lần đọc đầu tiên (<300ms sau click), KHÔNG thay đổi thêm ở lần đọc sau (1.2-1.5s) — xác nhận ghi đồng bộ, không debounce. Quan sát nhất quán trên field template (cả 2 store) và field clipart đơn (store2).",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-016"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "READY",
-      "risk_refs": [],
-      "priority": "P3",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-025",
-      "dimension": "STATE_DATA",
-      "layer": "storefront",
-      "title": "Field dạng text (free-text name) CHỈ ghi vào localStorage khi blur, KHÔNG ghi khi đang gõ hay còn focus (cả 2 store)",
-      "applicability": {
-        "role": "guest",
-        "state": "field text cá nhân hoá (vd Woman Name / Cat Name), đang focus và sau khi blur",
-        "environment": "staging",
-        "theme_or_device": "desktop, cả 2 store"
-      },
-      "precondition": "Đã ở trang sản phẩm, field text cá nhân hoá đang hiển thị",
-      "steps": [
-        "Focus vào field text, gõ từng phần giá trị, đọc localStorage khi vẫn còn focus",
-        "Blur field (click ra ngoài hoặc Tab)",
-        "Đọc lại localStorage ngay sau blur"
-      ],
-      "observation_point": "Giá trị 'teeinblue-customizations'/'teeinblue-global-options' trong lúc gõ, ngay trước blur, và ngay sau blur",
-      "expected_result": "Trong lúc gõ và ngay cả khi gõ xong nhưng field còn focus: giá trị KHÔNG xuất hiện/không cập nhật trong localStorage. Ngay sau blur: giá trị xuất hiện kèm timestamp cập nhật đúng thời điểm blur. Hành vi giống hệt nhau ở cả 2 store, khác hẳn field radio/clipart (CHK-024, ghi ngay khi click).",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-017"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "READY",
-      "risk_refs": [],
-      "priority": "P3",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-026",
-      "dimension": "CORE",
-      "layer": "storefront",
-      "title": "Field grouped_clipart (Hairstyle, Cat Breed #1/#2) yêu cầu ĐỦ 2 bước (click radio nhóm + click thumbnail con) mới có giá trị hợp lệ; ADD TO CART thất bại thật nếu thiếu bước con (SDK v2, store2, template 2)",
-      "applicability": {
-        "role": "guest",
-        "state": "trang sản phẩm store2, template 2, mọi field khác đã điền đủ, field grouped_clipart chỉ mới click radio nhóm (chưa click con)",
-        "environment": "staging",
-        "theme_or_device": "desktop"
-      },
-      "precondition": "Đã điền đủ toàn bộ field cá nhân hoá KHÁC ngoài grouped_clipart; đã click radio cấp NHÓM cho cả 3 field grouped_clipart (Hairstyle, Cat Breed #1, Cat Breed #2) nhưng CHƯA click thumbnail con lồng bên trong",
-      "steps": [
-        "Điền đủ mọi field khác của template 2",
-        "Với mỗi field grouped_clipart: chỉ click radio cấp nhóm, KHÔNG click thumbnail con lồng bên trong",
-        "Bấm ADD TO CART; quan sát banner lỗi, lỗi inline; gọi GET /cart.js kiểm tra item_count; kiểm tra network log có request tới API-OP-051 (POST /api/merchant/shopify/customization) hay không",
-        "Bổ sung click thumbnail con cho cả 3 field, bấm lại ADD TO CART, quan sát lại toàn bộ (banner, item_count, API-OP-051)"
-      ],
-      "observation_point": "Banner lỗi + vị trí lỗi inline; item_count trước/sau mỗi lần thử; presence/absence của request API-OP-051 trong network log",
-      "expected_result": "",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-018"
-        ],
-        "oracle_strength": "NONE"
-      },
-      "status": "NEEDS_CONFIRMATION",
-      "risk_refs": [
-        "Điều kiện bắt buộc P1 để ATC hợp lệ trên SDK v2: nếu automation/QA script chỉ click radio nhóm (bỏ sót bước con) khi build test ATC, sẽ tạo false-negative (báo ATC lỗi dù hệ thống đúng) hoặc che giấu bug thật nếu UI cho phép skip bước con ở phiên bản sau — đây chính là cơ chế gây ra CFL-003."
-      ],
-      "priority": "P1",
-      "automation_suitability": "HYBRID",
-      "observation_guidance": "Ở trạng thái CHỈ có radio nhóm (thiếu click con): ADD TO CART bị chặn — banner lỗi chung 'Error: Some fields are required or invalid data', lỗi inline 'This field is required!' dưới cả 3 field grouped_clipart, GET /cart.js xác nhận item_count=0, và ZERO request tới API-OP-051 (client-side validation chặn trước khi gửi). Sau khi bổ sung click con cho cả 3 field: ADD TO CART thành công, API-OP-051 fire đúng 1 lần ngay trước /cart/add, item_count 0->1. Quan sát này có confidence HIGH trong run này (3 field mẫu, corroborate cross-layer UI+network — theo KB-018). CHỈ xác nhận cho template 2/campaign 2595/store2 trong lần quan sát 2026-09-12 — KHÔNG khẳng định đây là rule tuyệt đối áp dụng cho template 1/3 hay cho mọi campaign có field grouped_clipart khác (xem gap template 1/3, CHK-018 v1). Kết quả check này cũng liên quan CFL-003 (xem CHK-032) về việc liệu framing 'ATC store2 known-working' từ 2026-09-12 có bỏ sót bước này hay không — bản thân yêu cầu 2-step KHÔNG bị nghi ngờ (well-observed trong run này), nhưng ý nghĩa của nó đối với baseline trước đó thì UNRESOLVED, KHÔNG được diễn giải check này như đã 'giải quyết' CFL-003.",
-      "oq_id": "OQ-sdk-213"
-    },
-    {
-      "check_id": "CHK-027",
-      "dimension": "STATE_DATA",
-      "layer": "storefront",
-      "title": "Reload trang: localStorage draft sống sót byte-identical NHƯNG DOM form KHÔNG tự khôi phục bất kỳ lựa chọn nào (full-page-load, cả 2 store)",
-      "applicability": {
-        "role": "guest",
-        "state": "đã điền field cá nhân hoá (store1: template + Woman Name; store2: đủ 8 field), ngay sau F5/page.reload",
-        "environment": "staging",
-        "theme_or_device": "desktop, cả 2 store"
-      },
-      "precondition": "Đã điền field cá nhân hoá, đã xác nhận localStorage có dữ liệu (xem CHK-023)",
-      "steps": [
-        "Điền field cá nhân hoá, ghi lại nội dung 2 key localStorage",
-        "Reload trang (F5 / page.reload)",
-        "Đọc lại localStorage, so sánh byte-for-byte với trước reload",
-        "Quan sát DOM: có thumbnail nào còn đánh dấu chọn không, field phụ thuộc có còn hiển thị không"
-      ],
-      "observation_point": "Nội dung localStorage trước/sau reload; trạng thái DOM (thumbnail selected, field phụ thuộc hiện/ẩn) sau reload",
-      "expected_result": "localStorage giữ nguyên byte-identical sau reload (không bị xoá/ghi lại) trên cả 2 store. DOM form reset hoàn toàn về mặc định — không thumbnail nào được đánh dấu chọn, field phụ thuộc (skin tone, hairstyle, tên, breed...) biến mất khỏi DOM, giống hệt lần truy cập hoàn toàn mới. Đây là hành vi 'lưu nhưng KHÔNG khôi phục' ở mức full-page-load — quan sát hiện tại (OBSERVED_CURRENT), KHÔNG tự suy đây là bug hay thiếu tính năng; nếu PO/Dev xác nhận cần bổ sung auto-restore, cần escalate riêng.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-019"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "READY",
-      "risk_refs": [
-        "Buyer vô tình reload giữa chừng sẽ mất toàn bộ tiến độ điền field trên UI dù dữ liệu vẫn còn trong localStorage — UX risk, chưa xác nhận là bug hay thiết kế cố ý."
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-028",
-      "dimension": "STATE_DATA",
-      "layer": "storefront",
-      "title": "Field text remount qua chọn lại field cha (sau reload) tự pre-fill giá trị đã lưu trong localStorage — refine riêng biệt của CHK-027, chỉ xác nhận field type text, store2, 1 sample",
-      "applicability": {
-        "role": "guest",
-        "state": "sau reload (đã qua CHK-027, localStorage vẫn giữ dữ liệu cũ nhưng DOM chưa khôi phục), chọn lại field cha (template) khiến field con text remount",
-        "environment": "staging",
-        "theme_or_device": "desktop, CHỈ store2 (SDK v2)"
-      },
-      "precondition": "Đã reload trang theo CHK-027 (localStorage giữ dữ liệu cũ, DOM chưa khôi phục)",
-      "steps": [
-        "Sau reload, chọn lại giá trị template cấp cha (kích hoạt remount field con)",
-        "Quan sát field text con (Woman Name) render với giá trị gì ngay sau remount"
-      ],
-      "observation_point": "Giá trị hiển thị trong field text ngay sau khi remount",
-      "expected_result": "Field text (Woman Name) tự pre-fill lại đúng giá trị đã lưu trước đó (đọc từ 'teeinblue-global-options') ngay khi remount qua chọn lại field cha — dù trang KHÔNG tự làm điều này khi chỉ load lại (xem CHK-027). Đây là restore ở mức FIELD-REMOUNT, hẹp hơn full-form-restore, CHỈ xác nhận cho field type text, store2, 1 sample (rule_confidence LOW trong KB-020) — CHƯA xác nhận có áp dụng cho field radio/clipart/grouped_clipart hay không. KHÔNG suy tổng quát hành vi này cho các field type khác.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-020"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "READY",
-      "risk_refs": [
-        "Nếu field-remount pre-fill chỉ áp dụng cho text mà không áp dụng cho radio/clipart, buyer chọn lại field cha sau reload có thể mất lựa chọn clipart trong khi vẫn giữ tên đã gõ — trải nghiệm không nhất quán, chưa xác nhận."
-      ],
-      "priority": "P3",
-      "automation_suitability": "HYBRID"
-    },
-    {
-      "check_id": "CHK-029",
-      "dimension": "STATE_DATA",
-      "layer": "storefront",
-      "title": "localStorage draft KHÔNG bị xoá sau Add-to-cart thành công lẫn sau cart clear",
-      "applicability": {
-        "role": "guest",
-        "state": "sau ATC thành công, SDK v2/store2 (chỉ áp dụng SDK v2 — xem CHK-030 cho gap SDK v1)",
-        "environment": "staging",
-        "theme_or_device": "desktop"
-      },
-      "precondition": "Đã Add-to-cart thành công trên store2 (2-step grouped_clipart đã hoàn tất theo CHK-026)",
-      "steps": [
-        "Ghi lại nội dung 2 key localStorage ngay trước ATC",
-        "Thực hiện ATC thành công",
-        "Đọc lại localStorage, so sánh byte-for-byte với trước ATC",
-        "Dọn cart qua POST /cart/clear.js, xác nhận item_count=0 qua GET /cart.js",
-        "Đọc lại localStorage lần nữa, so sánh với 2 mốc trước"
-      ],
-      "observation_point": "Nội dung localStorage tại 3 mốc: trước ATC, sau ATC, sau cart clear",
-      "expected_result": "localStorage ('teeinblue-customizations'/'teeinblue-global-options') GIỮ NGUYÊN byte-identical (cùng timestamp) qua cả 3 mốc — Add-to-cart thành công và cart clear đều KHÔNG xoá/reset draft phía client. CHỈ xác nhận trên SDK v2/store2 trong run này; KHÔNG suy diễn hành vi tương ứng cho SDK v1 (xem CHK-030).",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-021"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "READY",
-      "risk_refs": [],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
       "check_id": "CHK-030",
       "dimension": "STATE_DATA",
       "layer": "storefront",
@@ -956,71 +671,6 @@
       "priority": "P3",
       "automation_suitability": "UNKNOWN",
       "oq_id": "OQ-sdk-214"
-    },
-    {
-      "check_id": "CHK-031",
-      "dimension": "INTEGRATION",
-      "layer": "api",
-      "title": "Server sync (API-OP-051) chỉ gọi tại thời điểm Add-to-cart, KHÔNG gọi trong lúc điền field (0 XHR/fetch tới host teeinblue trong lúc field-fill, cả 2 store)",
-      "applicability": {
-        "role": "guest",
-        "state": "trong lúc điền field cá nhân hoá (cả 2 store) và tại thời điểm ATC (store2, cả lần thành công và lần thất bại)",
-        "environment": "staging",
-        "theme_or_device": "desktop"
-      },
-      "precondition": "Đã ở trang sản phẩm, network capture bật (toàn bộ request, không chỉ XHR filter)",
-      "steps": [
-        "Bắt đầu ghi network log từ lúc chọn template đến khi điền đủ toàn bộ field (chưa ATC)",
-        "Kiểm tra log: có request XHR/fetch nào tới host teeinblue-owned (staging-api.teeinblue.com, staging-sdk.teeinblue.com) không",
-        "Thực hiện ATC (thành công theo CHK-026), quan sát request teeinblue-owned đầu tiên trong toàn phiên và thời điểm nó fire so với /cart/add",
-        "Với lần ATC thất bại (thiếu click con grouped_clipart, theo CHK-026), kiểm tra log có request API-OP-051 không"
-      ],
-      "observation_point": "Danh sách request tới host teeinblue-owned tại từng mốc (field-fill, ATC thành công, ATC thất bại)",
-      "expected_result": "Trong suốt lúc điền field (cả 2 store): ZERO request XHR/fetch tới host teeinblue-owned nào. Request teeinblue-owned ĐẦU TIÊN trong toàn phiên chỉ xuất hiện tại ATC trên store2: POST .../api/merchant/shopify/customization (API-OP-051), ngay trước /cart/add gốc Shopify. Khi ATC thất bại do thiếu click con grouped_clipart: API-OP-051 KHÔNG xuất hiện — xác nhận validation client-side chặn trước khi gửi request server. Store1 chỉ có 1 sample ngắn (~1.2s quanh 1 click) xác nhận 0 request trong lúc field-fill; store1 CHƯA tới được ATC nên chưa biết endpoint tương ứng (nếu có) của SDK v1 tại ATC.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-022"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "READY",
-      "risk_refs": [],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-032",
-      "dimension": "CORE",
-      "layer": "storefront",
-      "title": "CFL-003 UNRESOLVED: liệu framing 'ATC store2/SDK v2 known-working' kế thừa từ 2026-09-12 có do automation bỏ sót bước click con của grouped_clipart, hay 2-step thực sự luôn là điều kiện đã tồn tại từ trước — chưa thể kết luận",
-      "applicability": {
-        "role": "guest",
-        "state": "so sánh giữa kết luận automation của 2026-09-12 ('ATC store2 known-working') và kết quả run này (lần thử ATC đầu tiên thất bại thật vì thiếu click con grouped_clipart, xem CHK-026)",
-        "environment": "staging",
-        "theme_or_device": "n/a"
-      },
-      "precondition": "Cần log/trace thao tác chi tiết của lần chạy 2026-09-12 để đối chiếu — CHƯA có trong scope run này",
-      "steps": [
-        "Lấy lại log/trace thao tác chi tiết của lần chạy 2026-09-12 đã dẫn tới kết luận 'ATC store2 known-working'",
-        "Đối chiếu xem thao tác click khi đó có bao gồm bước click thumbnail con của field grouped_clipart hay không (và dùng kỹ thuật click nào — toạ độ, label[for], force-check, dispatch event thủ công)",
-        "So sánh với hành vi 2-step đã xác nhận trong run này (KB-018, CHK-026)"
-      ],
-      "observation_point": "Nội dung log/trace automation của 2026-09-12, đối chiếu với hành vi 2-step hiện tại",
-      "expected_result": null,
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-018"
-        ],
-        "oracle_strength": "NONE"
-      },
-      "status": "NEEDS_CONFIRMATION",
-      "oq_ref": "OQ-sdk-010",
-      "risk_refs": [
-        "Nếu automation-artifact hypothesis đúng cho cả CFL-001 và CFL-003, mọi checklist ATC dựa trên automation log cũ (bao gồm cả các run trước run này) cần được review lại độ tin cậy của thao tác click — rủi ro mang tính hệ thống, lớn hơn phạm vi 1 field."
-      ],
-      "priority": "P1",
-      "automation_suitability": "NOT_SUITABLE",
-      "oq_id": "OQ-sdk-215"
     },
     {
       "check_id": "CHK-033",
@@ -1091,36 +741,6 @@
       "automation_suitability": "HYBRID"
     },
     {
-      "check_id": "CHK-035",
-      "dimension": "CORE",
-      "layer": "storefront",
-      "title": "Preview mo popup mockup dang img + overlay 'tee-printarea', ZERO phan tu [data-layer-id] -- co che MOI o template 1, CHUA doi chieu duoc voi lightbox tinh (CHK-011) hay SVG song (CHK-012)",
-      "applicability": {
-        "role": "guest",
-        "state": "trang san pham campaign 2595, template 1 (mac dinh), ca 2 store",
-        "environment": "staging",
-        "theme_or_device": "desktop"
-      },
-      "precondition": "Da o trang san pham sau password-gate, khong thieu field bat buoc (template mac dinh)",
-      "steps": [
-        "Bam nut 'Preview' o template mac dinh (khong thieu field bat buoc)",
-        "Quan sat cau truc DOM trong popup (class 'vm--modal'/'tee-dialog-inner'/'tee-gallery-content'/'tee-mockup-image', co [data-layer-id] hay khong)",
-        "Lap lai tren ca 2 store, so sanh cau truc"
-      ],
-      "observation_point": "Cau truc DOM popup Preview tren ca 2 store",
-      "expected_result": "Popup mo voi cau truc 'vm--modal' > 'tee-dialog-inner' > 'tee-gallery-content' > 'tee-mockup-image' (mockup dang <img> + div overlay 'tee-printarea', slider prev/next). ZERO phan tu [data-layer-id] trong popup o ca 2 store; cau truc DOM byte-identical giua 2 store. Quan sat nay KHONG khop verbatim voi CHK-011 (lightbox PhotoSwipe tinh, mo ta SDK v1 cu) lan CHK-012 (SVG song voi id artwork-layer--layer-<n>, mo ta SDK v2 cu) -- ghi nhan la 1 co che/quan sat rieng biet, KHONG duoc dung de sua noi dung CHK-011/CHK-012, va KHONG gan nhan v1/v2 cho quan sat nay cho toi khi doi chieu ro (lien quan CFL-004, xem CHK-038).",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-042"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "READY",
-      "risk_refs": [],
-      "priority": "P2",
-      "automation_suitability": "HYBRID"
-    },
-    {
       "check_id": "CHK-036",
       "dimension": "NEGATIVE",
       "layer": "storefront",
@@ -1152,37 +772,6 @@
         "Neu nham lan kich ban 'field de trong' (doi xung, da xac nhan o day) voi kich ban CFL-001 (field da dien du, UNRESOLVED), co the tao ket luan sai lech ve core ATC flow cua store1"
       ],
       "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-037",
-      "dimension": "STATE_DATA",
-      "layer": "storefront",
-      "title": "Re-verify campaign 2595/product identity va theme khong doi giua 2 lan chay (2026-09-12 vs 2026-09-21) -- loai tru gia thuyet 'campaign khac' la nguyen nhan cua CFL-004",
-      "applicability": {
-        "role": "guest",
-        "state": "campaign 2595 published, ca 2 store",
-        "environment": "staging",
-        "theme_or_device": "desktop"
-      },
-      "precondition": "Co TIB_STORE_PASSWORD hop le cho store tuong ung",
-      "steps": [
-        "Truy cap lai URL/handle 'qa-explore-campaign-pb-01' da dung cho baseline 2026-09-12",
-        "Ghi lai tieu de san pham va product id (platform_linked_id) cho ca 2 store",
-        "Ghi lai theme id/ten theme cho ca 2 store",
-        "So sanh voi baseline 2026-09-12"
-      ],
-      "observation_point": "Tieu de, product id, theme id tren ca 2 store, so voi baseline",
-      "expected_result": "Tieu de 'QA Explore Campaign PB 01' va product id khop CHINH XAC baseline 2026-09-12 (store1: 8138398629987, store2: 15280333291824) -- xac nhan day LA cung 1 campaign/object, khong phai campaign khac duoc tao lai. Theme khong doi: store1 = Dawn 16.0.0 (id 143116042339), store2 = 'test-data'/Generated Data Theme 1.0.0 (id 188105261360). Ket qua check nay KHONG resolve CFL-004 -- no chi loai tru 1 gia thuyet kha di ('campaign/doi tuong da bi thay doi'), KHONG giai thich tai sao SDK bundle marker cua store1 thay doi (xem CHK-033/CHK-038).",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-044"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "READY",
-      "risk_refs": [],
-      "priority": "P3",
       "automation_suitability": "SUITABLE"
     },
     {
@@ -1222,206 +811,6 @@
       "oq_id": "OQ-sdk-217"
     },
     {
-      "check_id": "CHK-039",
-      "dimension": "NEGATIVE",
-      "layer": "storefront",
-      "title": "[CBS-001] translations/<locale>.json không phản hồi trong 5 giây -> widget render bằng chữ gốc, trang và widget vẫn hoạt động, không crash",
-      "applicability": {
-        "role": "GUEST buyer",
-        "state": "locale vi đi đường API (1249 key); response translations/vi.json bị làm trễ > 5 giây (test dùng ~8 giây)",
-        "environment": "staging, build TIB-5352 (SDK app-v1.js Last-Modified 2026-10-07), chưa release production — KHÔNG dùng làm oracle production hay bundle app-v2.js",
-        "surface_or_device": "storefront desktop, shop staging non-Plus store TIB_USER_B_STORE_URL, campaign 2740, /vi-vn/"
-      },
-      "precondition": "Bundle SDK chứa 'translation_version'. Trình duyệt test có network interception (vd Playwright page.route) cho URL khớp '**/api/merchant/translations/vi.json*'. Nếu storefront bật password, vượt gate bằng credential từ biến môi trường TIB_STORE_PASSWORD.",
-      "steps": [
-        "Cài interception: giữ request translations/vi.json ~8 giây rồi mới trả response thật",
-        "Mở product page campaign 2740 dưới /vi-vn/; ghi thời điểm request translations/vi.json phát ra",
-        "Ở mốc 3 giây sau khi điều hướng, ghi nhãn các field của widget personalization",
-        "Ở mốc 6 giây và định kỳ tới ~20 giây, ghi nhãn các field; thao tác thử 1 field của widget",
-        "Ghi lại trang có crash/trắng hay không"
-      ],
-      "observation_point": "Nhãn field widget ở mốc 3s, 6s..20s; khả năng thao tác widget; trạng thái trang",
-      "expected_result": "Mốc 3s: widget chưa có nhãn của form. Từ mốc 6s trở đi: widget hiện chữ gốc 'QA5352 Your name', 'QA5352 Enter name', 'QA5352 Your photo'. Trang và widget vẫn hoạt động (thao tác được), không crash.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-053"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-053",
-        "sdk/storefront-buyer-facing#KB-055",
-        "sdk/storefront-buyer-facing#KB-056"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Chỉ verify trên staging build TIB-5352, chưa release production (OQ-sdk-050). pageerror khi timeout tách riêng ở CHK-041, không là tiêu chí pass/fail của check này."
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-040",
-      "dimension": "NEGATIVE",
-      "layer": "storefront",
-      "title": "[CBS-001] translations/<locale>.json trả 500 / 503 / network abort -> widget render chữ gốc, 1 request translations mỗi lần load (quan sát từ test case FAILED)",
-      "applicability": {
-        "role": "GUEST buyer",
-        "state": "locale vi đi đường API (1249 key); response translations/vi.json bị giả lập 500, 503 hoặc abort",
-        "environment": "staging, build TIB-5352, chưa release production",
-        "surface_or_device": "storefront desktop, shop staging non-Plus store TIB_USER_B_STORE_URL, campaign 2740, /vi-vn/"
-      },
-      "precondition": "Như CHK-039, interception cho '**/api/merchant/translations/vi.json*'.",
-      "steps": [
-        "Cài interception trả 500; mở /vi-vn/ product page campaign 2740; đếm request translations/vi.json và ghi nhãn widget sau khi trang ổn định",
-        "Lặp lại với 503",
-        "Lặp lại với network abort",
-        "Mỗi lần ghi thời điểm request phát ra so với lúc điều hướng"
-      ],
-      "observation_point": "Số request translations/vi.json mỗi lần load; nhãn widget",
-      "expected_result": "Baseline hiện tại (chưa xác nhận là thiết kế): cả 3 trường hợp chỉ có 1 request translations (~0,9 giây sau khi load) và widget render chữ gốc ('QA5352 Your name', 'QA5352 Enter name', 'QA5352 Your photo'). Lệch baseline là tín hiệu cần điều tra.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-054"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "NEEDS_CONFIRMATION",
-      "open_question_draft": "Khi translations API trả 500/503 hoặc bị abort, widget render chữ gốc có phải hành vi theo thiết kế không? Quan sát chỉ đến từ test case FAILED TC-TIB-4696 (fail ở kỳ vọng retry). (trùng OQ-sdk-051)",
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-054",
-        "sdk/storefront-buyer-facing#KB-053",
-        "sdk/storefront-buyer-facing#KB-057"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE",
-      "oq_id": "OQ-sdk-051"
-    },
-    {
-      "check_id": "CHK-041",
-      "dimension": "NEGATIVE",
-      "layer": "storefront",
-      "title": "[CBS-001] Console/pageerror khi translations API timeout: 1 pageerror 'signal is aborted without reason' (quan sát, CCR cấm coi là mong muốn)",
-      "applicability": {
-        "role": "GUEST buyer",
-        "state": "locale vi đi đường API; response translations/vi.json trễ > 5 giây",
-        "environment": "staging, build TIB-5352, chưa release production",
-        "surface_or_device": "storefront desktop, shop staging non-Plus store TIB_USER_B_STORE_URL, campaign 2740, /vi-vn/"
-      },
-      "precondition": "Như CHK-039; bật thu pageerror/console error của trình duyệt test.",
-      "steps": [
-        "Cài interception trễ ~8 giây cho translations/vi.json",
-        "Mở /vi-vn/ product page campaign 2740; chờ ~20 giây",
-        "Ghi lại toàn bộ pageerror và console error kèm nội dung"
-      ],
-      "observation_point": "Danh sách pageerror/console error trong lần load",
-      "expected_result": "Baseline hiện tại (KHÔNG phải hành vi mong muốn theo CCR 4.2): phát sinh đúng 1 pageerror 'signal is aborted without reason' trong khi trang/widget vẫn hoạt động. Ghi lại; không phán pass/fail cho tới khi Dev chốt.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-055"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "NEEDS_CONFIRMATION",
-      "open_question_draft": "pageerror 'signal is aborted without reason' khi translations API timeout là lỗi cần sửa hay chấp nhận được? Checklist có nên assert 'không có console error' cho nhánh timeout? (trùng OQ-sdk-052)",
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-055",
-        "sdk/storefront-buyer-facing#KB-053",
-        "sdk/storefront-buyer-facing#KB-056"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Nếu là lỗi: monitor lỗi JS của merchant ghi nhận lỗi giả mỗi khi API chậm."
-      ],
-      "priority": "P3",
-      "automation_suitability": "SUITABLE",
-      "oq_id": "OQ-sdk-052"
-    },
-    {
-      "check_id": "CHK-042",
-      "dimension": "BOUNDARY",
-      "layer": "storefront",
-      "title": "[CBS-001] Response translations/<locale>.json về ngay dưới mốc 5 giây (~4–4,5s) -> widget hiện bản dịch hay chữ gốc? Mốc 5s chỉ suy từ bundle (headersTimeout 5000 ms)",
-      "applicability": {
-        "role": "GUEST buyer",
-        "state": "locale vi đi đường API; response translations/vi.json trễ ~4–4,5 giây",
-        "environment": "staging, build TIB-5352, chưa release production",
-        "surface_or_device": "storefront desktop, shop staging non-Plus store TIB_USER_B_STORE_URL, campaign 2740, /vi-vn/"
-      },
-      "precondition": "Như CHK-039.",
-      "steps": [
-        "Cài interception trễ ~4 giây cho translations/vi.json",
-        "Mở /vi-vn/ product page campaign 2740; ghi nhãn widget ở mốc 3s, 5s, 8s",
-        "Lặp lại với trễ ~4,5 giây",
-        "Ghi lại pageerror nếu có"
-      ],
-      "observation_point": "Nhãn widget ở các mốc; pageerror",
-      "expected_result": "",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-056"
-        ],
-        "oracle_strength": "NONE"
-      },
-      "status": "NEEDS_CONFIRMATION",
-      "open_question_draft": "Mốc timeout 5s của fetch translations là headersTimeout (chờ header) như đọc từ bundle (KB-056, INFERRED)? Response về dưới 5s có luôn hiển thị bản dịch không, và header về trước 5s nhưng body chậm thì sao? Cần Dev xác nhận hoặc test PASS.",
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-056",
-        "sdk/storefront-buyer-facing#KB-053"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [],
-      "priority": "P3",
-      "automation_suitability": "SUITABLE",
-      "oq_id": "OQ-sdk-055"
-    },
-    {
-      "check_id": "CHK-043",
-      "dimension": "STATE_DATA",
-      "layer": "storefront",
-      "title": "[CBS-001] Retry fetch translations khi API lỗi: không retry trong một lần load trang; ở cart, 'Edit design' lần 1/2/3 cho tổng 1/2/2 request (retry lazy, tối đa 2 fetch mỗi page session — quan sát)",
-      "applicability": {
-        "role": "GUEST buyer",
-        "state": "locale vi đi đường API; response translations/vi.json bị giả lập 500; cart có 1 item cá nhân hoá của campaign 2740",
-        "environment": "staging, build TIB-5352 (SDK app-v1.js Last-Modified 2026-10-07 — bản có logic retry lazy), chưa release production",
-        "surface_or_device": "storefront desktop, shop staging non-Plus store TIB_USER_B_STORE_URL, /vi-vn/ product page và /vi-vn/cart"
-      },
-      "precondition": "Như CHK-039; đã add-to-cart 1 item cá nhân hoá campaign 2740 (trước khi bật mock 500).",
-      "steps": [
-        "Bật interception trả 500 cho translations/vi.json; mở /vi-vn/ product page; chờ trang ổn định; đếm request translations/vi.json",
-        "Mở /vi-vn/cart (page session mới); đặt bộ đếm request translations/vi.json về 0 tại thời điểm load cart",
-        "Bấm 'Edit design' lần 1, đóng modal; ghi tổng request",
-        "Bấm 'Edit design' lần 2, đóng modal; ghi tổng request",
-        "Bấm 'Edit design' lần 3; ghi tổng request"
-      ],
-      "observation_point": "Số request translations/vi.json trong lần load product page; tổng request sau mỗi lần 'Edit design' trong cùng page session cart",
-      "expected_result": "Baseline hiện tại (chưa xác nhận là thiết kế): load product page -> 1 request, không retry. Ở cart: sau 'Edit design' lần 1 tổng 1 request; lần 2 tổng 2; lần 3 vẫn 2. Lệch baseline là tín hiệu cần điều tra; không dùng 'retry đúng 1 lần khi load' làm expected.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-057"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "NEEDS_CONFIRMATION",
-      "open_question_draft": "Thiết kế retry mong muốn khi fetch translations lỗi: retry ngay khi load (như TC-TIB-4696 kỳ vọng, đang FAILED) hay lazy ở lần gọi kế tiếp, tối đa 2 fetch mỗi page session (như staging quan sát)? (trùng OQ-sdk-053)",
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-057",
-        "sdk/storefront-buyer-facing#KB-054",
-        "sdk/storefront-buyer-facing#KB-053"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Checklist viết theo một trong hai cách hiểu retry đều có thể cho kết quả sai cho tới khi Dev chốt."
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE",
-      "oq_id": "OQ-sdk-053"
-    },
-    {
       "check_id": "CHK-044",
       "dimension": "STATE_DATA",
       "layer": "storefront",
@@ -1448,89 +837,14 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Timeout > 5s kết hợp lần gọi thứ hai trong cùng page session cho kết quả gì (timeout có được đếm như lỗi để cho phép fetch lại, nhãn hiển thị gì)? Tổ hợp chưa chạy (TC-TIB-008); không suy được từ KB-053 và KB-057 riêng lẻ. Normalizer chưa có OQ draft riêng.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-053",
-        "sdk/storefront-buyer-facing#KB-057"
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-057"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [],
       "priority": "P3",
       "automation_suitability": "SUITABLE",
       "oq_id": "OQ-sdk-056"
-    },
-    {
-      "check_id": "CHK-045",
-      "dimension": "NEGATIVE",
-      "layer": "storefront",
-      "title": "[CBS-001] Nhãn widget không có trong dictionary ('Select a color' của color picker photo layer) hiển thị chữ gốc, không rỗng — API path, inline path, ngôn ngữ chính và modal 'Edit design' ở cart",
-      "applicability": {
-        "role": "GUEST buyer",
-        "state": "campaign 2740 có photo layer với color picker; dictionary vi (1249 key), zh-TW (50 key), en (18 key) đều không chứa chuỗi 'Select a color'",
-        "environment": "staging, build TIB-5352 (SDK app-v1.js 2026-10-06), chưa release production — KHÔNG dùng làm oracle production hay bundle app-v2.js",
-        "surface_or_device": "storefront desktop, shop staging non-Plus store TIB_USER_B_STORE_URL, /vi-vn/, /zh-zh/, /en-vn/ và /vi-vn/cart"
-      },
-      "precondition": "Bundle SDK chứa 'translation_version'. Xác nhận 'Select a color' không có trong dictionary: GET translations/vi.json, zh-TW.json, en.json (và window.teeinblueShopTranslations của /zh-zh/). Cart có 1 item cá nhân hoá campaign 2740 cho bước cart.",
-      "steps": [
-        "Mở product page campaign 2740 dưới /vi-vn/; mở color picker của photo layer; ghi nhãn",
-        "Lặp lại dưới /zh-zh/ và /en-vn/",
-        "Mở /vi-vn/cart, bấm 'Edit design'; ghi nhãn color picker trong modal"
-      ],
-      "observation_point": "Text nhãn color picker của photo layer ở từng locale và trong modal cart",
-      "expected_result": "Ở cả /vi-vn/ (API path), /zh-zh/ (inline path), /en-vn/ và modal 'Edit design' ở cart (vi): nhãn hiển thị 'Select a color' (chữ gốc), không rỗng.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-058"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-058"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Chỉ một chuỗi được test ('Select a color')."
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-046",
-      "dimension": "INTEGRATION",
-      "layer": "storefront",
-      "title": "[CBS-001] Raw HTML /zh-zh/ (inline path) chỉ in window.teeinblueShopTranslations 1 lần dù có dấu hiệu 2 khối teeinblue (app embed + theme script) — cấu hình theme chưa xác nhận",
-      "applicability": {
-        "role": "GUEST buyer",
-        "state": "/zh-zh/ zh-TW 50 key (inline path); cấu hình theme 'enable for all pages' chưa kiểm",
-        "environment": "staging, build TIB-5352, chưa release production",
-        "surface_or_device": "storefront desktop, shop staging non-Plus store TIB_USER_B_STORE_URL, product page campaign 2740 /zh-zh/"
-      },
-      "precondition": "Bundle SDK chứa 'translation_version'. Nếu có quyền, mở theme editor của shop ghi lại trạng thái app embed teeinblue và tuỳ chọn 'enable for all pages' (để xác nhận điều kiện 2 khối).",
-      "steps": [
-        "Tải raw HTML product page campaign 2740 dưới /zh-zh/",
-        "Đếm số lần 'window.teeinblueShopTranslations =' và số lần một key mẫu (vd 'QA5352 Your name') xuất hiện",
-        "Đếm số lần 'window.teeinblueShop =', khối app embed 'product-personalizer', và cụm comment 'teeinblue scripts'",
-        "Ghi lại cấu hình theme (nếu xem được)"
-      ],
-      "observation_point": "Số lần xuất hiện của các marker trong raw HTML; cấu hình theme",
-      "expected_result": "Baseline 1 lần quan sát: 'window.teeinblueShopTranslations =' xuất hiện đúng 1 lần, key mẫu 1 lần; cùng HTML có 2 lần 'window.teeinblueShop =', khối app embed 'product-personalizer' và 4 cụm comment 'teeinblue scripts'. Dictionary in hơn 1 lần là tín hiệu cần điều tra.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-059"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "NEEDS_CONFIRMATION",
-      "open_question_draft": "Trang /zh-zh/ có thật sự render cả theme app extension và theme script của teeinblue (KB-060 chỉ suy từ dấu hiệu HTML, chưa mở theme editor)? Cần owner chấp nhận dấu hiệu HTML hoặc chạy lại với cấu hình theme đã xác nhận. (trùng OQ-sdk-054)",
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-059",
-        "sdk/storefront-buyer-facing#KB-060"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [],
-      "priority": "P3",
-      "automation_suitability": "SUITABLE",
-      "oq_id": "OQ-sdk-054"
     },
     {
       "check_id": "CHK-047",
@@ -1558,9 +872,9 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Thay đổi TIB-5352 (giao dictionary qua API, fallback timeout/lỗi, retry, nhãn thiếu) đã có trên bundle app-v2.js chưa, và hành vi có giống app-v1.js không? Normalizer chưa có OQ draft riêng (profile ghi OPEN_ISSUE).",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-053",
-        "sdk/storefront-buyer-facing#KB-057",
-        "sdk/storefront-buyer-facing#KB-058",
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-057",
+        "sdk/storefront-translations#KB-058",
         "sdk/storefront-buyer-facing#KB-040"
       ],
       "regression_watch_kb_ids": [],
@@ -1597,9 +911,9 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Các hành vi SDK về translations (KB-053..KB-060) có giữ nguyên khi TIB-5352 release production không? Cần re-verify trước khi dùng làm oracle production. (trùng OQ-sdk-050)",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-053",
-        "sdk/storefront-buyer-facing#KB-057",
-        "sdk/storefront-buyer-facing#KB-058"
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-057",
+        "sdk/storefront-translations#KB-058"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -1651,48 +965,6 @@
       "oq_id": "OQ-sdk-062"
     },
     {
-      "check_id": "CHK-050",
-      "dimension": "BOUNDARY",
-      "layer": "storefront",
-      "title": "[CBS-008] Draft localStorage 'teeinblue-customizations' khi guest buyer personalize và Add-to-cart nhiều product khác nhau: số entry còn giữ, entry của product thao tác sớm bị đẩy ra, line item sau cùng product ghi đè entry (baseline ~10 entry, chưa đếm độc lập)",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "lần lượt personalize và Add-to-cart ≥ 12 product khác nhau trong cùng trình duyệt (lượt quan sát gốc: order 14 line item), rồi thêm 1 line item khác trên một product đã có entry",
-        "environment": "staging (store test store không thuộc explorer, quan sát 2026-10-22, build có Jira TIB-5606 chưa ship); bundle/SDK version của store không được ghi",
-        "surface_or_device": "storefront desktop — localStorage của trình duyệt (DevTools > Application > Local Storage)"
-      },
-      "precondition": "Store test staging có ≥ 12 product personalize được (campaign đã publish); localStorage của domain store đã được xoá trước khi bắt đầu; ghi script src SDK của store (app-v1.js hay app-v2.js).",
-      "steps": [
-        "Với lần lượt từng product khác nhau (≥ 12 product): personalize, Add-to-cart, rồi NGAY sau mỗi lần thêm đọc localStorage.getItem('teeinblue-customizations'), parse JSON, ghi số entry và danh sách productId theo thứ tự",
-        "Sau khi số entry ngừng tăng, ghi productId nào bị loại ở mỗi lần thêm mới (so với danh sách trước đó) và timestamp của các entry còn lại",
-        "Chọn một product đang có entry, personalize với giá trị khác và Add-to-cart thêm một line item; đọc lại entry của product đó",
-        "Ghi bundle SDK (script src) của store kèm kết quả"
-      ],
-      "observation_point": "Số entry và danh sách productId trong 'teeinblue-customizations' sau mỗi lần Add-to-cart; entry bị loại; giá trị entry của product được thêm line item lần hai",
-      "expected_result": "Baseline hiện tại (một lượt chạy trên staging 2026-10-22, store test store không thuộc explorer; chưa có dev/spec xác nhận): sau khi thêm nhiều product, 'teeinblue-customizations' chỉ còn khoảng 10 entry gần nhất theo ghi nhận của người chạy test (con số chưa được đếm độc lập — không dùng 10 làm ngưỡng); entry của product thao tác sớm bị đẩy ra. Thêm một line item khác trên cùng product thì entry của product đó mang giá trị mới (giá trị cũ bị ghi đè). Số entry tối đa và tiêu chí loại entry đo được ở lần chạy này cần ghi lại; lệch baseline là tín hiệu cần điều tra, không tự kết luận là bug.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-066"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "NEEDS_CONFIRMATION",
-      "open_question_draft": "'teeinblue-customizations' giữ tối đa bao nhiêu entry và entry bị loại theo tiêu chí nào (timestamp cũ nhất hay thứ tự thêm)? Đây có phải hành vi được thiết kế không?",
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-066",
-        "sdk/storefront-buyer-facing#KB-015",
-        "sdk/storefront-buyer-facing#KB-014"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Đọc localStorage sau Add-to-cart chỉ tin cậy nếu đọc ngay sau từng lần thêm — check/test đọc localStorage sau khi đã thêm nhiều product sẽ không thấy entry của product thao tác sớm.",
-        "Không suy giới hạn sang key 'teeinblue-global-options' hay sang bundle khác (xem CHK-051)."
-      ],
-      "priority": "P3",
-      "automation_suitability": "SUITABLE",
-      "oq_id": "OQ-sdk-066"
-    },
-    {
       "check_id": "CHK-051",
       "dimension": "BOUNDARY",
       "layer": "storefront",
@@ -1718,8 +990,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Giới hạn khoảng 10 entry có áp dụng cho key đồng hành 'teeinblue-global-options' và cho cả hai bundle app-v1.js / app-v2.js không?",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-066",
-        "sdk/storefront-buyer-facing#KB-015"
+        "sdk/storefront-customization-storage#KB-066",
+        "sdk/storefront-customization-storage#KB-015"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -1756,12 +1028,12 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Known defect BUG-321..324 (field required trong Group ẩn vẫn chặn Add to cart) đã được fix chưa, trên build nào? Hành vi đúng của form khi artwork có Group ẩn (form không có field của layer trong Group ẩn, required không chặn) — PO có xác nhận không? Cần chạy lại TC-TIB-6063/6064 có ngày + build.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-180",
+        "sdk/storefront-layer-visibility#KB-180",
         "sdk/storefront-buyer-facing#KB-004",
         "sdk/storefront-buyer-facing#KB-043"
       ],
       "regression_watch_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-179"
+        "sdk/storefront-customization-storage#KB-179"
       ],
       "risk_refs": [
         "Buyer không mua được sản phẩm có Group ẩn chứa field required (mất doanh thu)",
@@ -1799,11 +1071,11 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Known defect BUG-321 (field của layer con trong Group ẩn vẫn có trong form, kể cả khi condition buyer-side thoả) đã được fix chưa, hay chỉ do cache như ghi chú TC-TIB-6067? Condition trỏ vào layer ẩn hiệu dụng có phải không bao giờ pass (PO xác nhận)? Cần chạy lại TC-TIB-6065/6066/6067 có ngày + build.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-179",
+        "sdk/storefront-customization-storage#KB-179",
         "sdk/storefront-buyer-facing#KB-007"
       ],
       "regression_watch_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-180"
+        "sdk/storefront-layer-visibility#KB-180"
       ],
       "risk_refs": [
         "Buyer nhập dữ liệu cho layer không được in",
@@ -1812,46 +1084,6 @@
       "priority": "P2",
       "automation_suitability": "SUITABLE",
       "oq_id": "OQ-sdk-069"
-    },
-    {
-      "check_id": "CHK-054",
-      "dimension": "CORE",
-      "layer": "storefront",
-      "title": "[CBS-006] Buyer preview SDK theo effective visibility: artwork có Group ẩn (con giữ cờ ON) thì preview chỉ hiển thị layer ngoài Group, khớp canvas Artwork Editor",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "campaign đã publish dùng artwork có một Group ẩn, các layer con giữ cờ visible ON, và ít nhất một layer ngoài Group",
-        "environment": "staging, build có TIB-5584 (shipped UNKNOWN; lượt PASS gốc 2026-10-16 trước khi 3 PR cuối merge) — không dùng làm oracle production",
-        "surface_or_device": "storefront product page — buyer preview SDK, desktop browser; ghi script src SDK (bundle của store test gốc không được ghi)"
-      },
-      "precondition": "Dựng artwork fixture tương đương fixture gốc (vd Group 'Name' chứa LINE1/LINE2/ICON ẩn, layer OUTSIDE ngoài Group; qua API — xem Q11); chụp canvas Artwork Editor làm đối chiếu; vượt password-gate bằng TIB_STORE_PASSWORD.",
-      "steps": [
-        "Mở product page; ghi script src SDK.",
-        "Chụp buyer preview (trước khi điền field và sau khi điền các field ngoài Group); liệt kê layer nhìn thấy và vị trí.",
-        "So sánh với canvas Artwork Editor."
-      ],
-      "observation_point": "Layer có mặt trên buyer preview so với canvas Artwork Editor.",
-      "expected_result": "Buyer preview chỉ hiển thị layer ngoài Group (vd OUTSIDE ở cùng vị trí như canvas), không có layer con của Group ẩn (vd không có LINE1/LINE2/ICON); khớp canvas Artwork Editor. Lệch = bug trên staging build có TIB-5584.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-181"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-011",
-        "sdk/storefront-buyer-facing#KB-042"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Lượt PASS duy nhất (TC-TIB-6068, 2026-10-16) chạy trước khi 3 PR còn OPEN của TIB-5584 merge; bundle của store test không ghi — xem CHK-056",
-        "Fixture Group ẩn + con giữ cờ ON dựng qua MCP/API, chưa được PO/dev xác nhận hợp lệ (Q11)",
-        "Không ghép nhãn bundle với nhãn 'SDK v1/v2 (store1/2)' của các check base (CFL-004)"
-      ],
-      "priority": "P2",
-      "automation_suitability": "HYBRID"
     },
     {
       "check_id": "CHK-055",
@@ -1879,8 +1111,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Layer con bật 'Show this layer on first load' dưới Group ẩn, khi không gắn condition, phải hiện hay không ở lần load đầu, và có field trong form không? (lượt 2026-10-16 không hiện nhưng layer đó còn gắn condition nên chưa tách được hiệu ứng)",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-180",
-        "sdk/storefront-buyer-facing#KB-181"
+        "sdk/storefront-layer-visibility#KB-180",
+        "sdk/storefront-layer-visibility#KB-181"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -1916,7 +1148,7 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Buyer preview storefront theo effective visibility (TC-TIB-6068) có giữ nguyên trên build staging sau khi toàn bộ 6 PR của TIB-5584 merge, trên production khi TIB-5584 release, và trên cả hai bundle app-v1.js / app-v2.js không?",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-181",
+        "sdk/storefront-layer-visibility#KB-181",
         "sdk/storefront-buyer-facing#KB-040"
       ],
       "regression_watch_kb_ids": [],
@@ -1926,239 +1158,6 @@
       "priority": "P2",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-sdk-072"
-    },
-    {
-      "check_id": "CHK-057",
-      "dimension": "CORE",
-      "layer": "storefront",
-      "title": "[CBS-011] Layer action Hide với 1 điều kiện: giá trị nguồn khớp thì field và layer trên preview đều ẩn; không khớp thì cả hai hiện và chữ nhập vào hiển thị đúng trên preview",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "campaign đã publish dùng artwork 2.0 có layer text action Hide, 1 điều kiện trên option nguồn (fixture gốc: CP-HIDE-1 #3252 / artwork #5868, layer 'QUOTE DOG', điều kiện 'Pet 1 Type is any of: Cat')",
-        "environment": "staging; SDK app-v2.js bản Last-Modified ≥ 2026-10-28 03:01:11 GMT (lượt PASS gốc 2026-10-28, trước khi 6 PR của TIB-5558 merge 2026-10-29; shipped UNKNOWN) — không dùng làm oracle production / build sau merge / app-v1.js (xem CHK-068)",
-        "surface_or_device": "storefront product page — form cá nhân hoá + live preview SDK app-v2.js, desktop browser"
-      },
-      "precondition": "Dựng artwork/campaign tương đương fixture gốc trên store staging được phép; vượt password-gate bằng TIB_STORE_PASSWORD.",
-      "steps": [
-        "Mở product page; trong network ghi header Last-Modified của staging-sdk.teeinblue.com/shopify/app-v2.js. Nếu Last-Modified cũ hơn 2026-10-28 03:01:11 GMT: tải lại app-v2.js bỏ qua cache (DevTools 'Disable cache' hoặc fetch cache:'reload') rồi reload trang và ghi lại Last-Modified; không đánh giá kết quả trên bản cũ hơn.",
-        "Chọn giá trị nguồn khớp điều kiện (vd Pet 1 Type = Cat); ghi có/không phần tử #tee-field--layer-<id> trên form và node #artwork-layer--layer-<id> trên preview của layer Hide.",
-        "Chọn giá trị nguồn không khớp (vd Dog); ghi lại hai phần tử trên.",
-        "Nhập chữ (vd 'GOOD DOG') vào field của layer Hide; ghi chữ hiển thị trên preview."
-      ],
-      "observation_point": "Có/không field của layer Hide trên form và node layer trên preview theo từng giá trị nguồn; chữ hiển thị trên preview.",
-      "expected_result": "Nguồn khớp điều kiện: field của layer Hide và node layer trên preview đều không còn (form chỉ còn option nguồn). Nguồn không khớp: field và layer đều hiện; chữ nhập vào hiển thị đúng chuỗi đó trên preview. Lệch = bug trên staging SDK app-v2.js ≥ bản 2026-10-28 03:01:11 GMT.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-231"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-237",
-        "sdk/storefront-buyer-facing#KB-011"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Layer Hide hiển thị ngược chiều làm buyer nhập/không nhập sai dữ liệu in",
-        "Lượt PASS duy nhất (TC-TIB-7323/7324, 2026-10-28) trước khi 6 PR merge; build hash không rõ — xem CHK-068",
-        "Lần load đầu có thể nhận SDK cũ đã cache (BUG-429 đảo chiều trên bản cũ) — bước 1 bắt buộc; xem CHK-067"
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-058",
-      "dimension": "CORE",
-      "layer": "storefront",
-      "title": "[CBS-011] Layer action Hide với 2 điều kiện: match OR ẩn khi một điều kiện khớp; match AND chỉ ẩn khi mọi điều kiện khớp",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "campaign đã publish dùng artwork 2.0 có layer text action Hide, 2 điều kiện 'Pet 1 Type is any of: Cat' và 'Pet 2 Type is any of: Cat'; một campaign match OR (fixture gốc CP-HIDE-OR) và một campaign match AND (fixture gốc CP-HIDE-AND)",
-        "environment": "staging; SDK app-v2.js bản Last-Modified ≥ 2026-10-28 03:01:11 GMT (lượt PASS gốc 2026-10-28, trước khi 6 PR merge; shipped UNKNOWN)",
-        "surface_or_device": "storefront product page — form cá nhân hoá + live preview SDK app-v2.js, desktop browser"
-      },
-      "precondition": "Như CHK-057 (xác nhận Last-Modified của app-v2.js trước khi đánh giá).",
-      "steps": [
-        "Trên campaign OR: lần lượt chọn tổ hợp (Pet 1, Pet 2) = (Cat, Dog), (Dog, Cat), (Dog, Dog); với mỗi tổ hợp ghi có/không field và node preview của layer Hide.",
-        "Trên campaign AND: lần lượt chọn (Cat, Cat), (Cat, Dog), (Dog, Cat); ghi tương tự.",
-        "Ở tổ hợp layer hiện, nhập chữ vào field và ghi chữ trên preview."
-      ],
-      "observation_point": "Có/không field và layer của layer Hide theo từng tổ hợp nguồn, cho OR và AND.",
-      "expected_result": "OR: (Cat, Dog) và (Dog, Cat) → field và layer ẩn; (Dog, Dog) → hiện và chữ nhập vào hiển thị đúng trên preview. AND: (Cat, Cat) → field và layer ẩn; (Cat, Dog) và (Dog, Cat) → vẫn hiện, nhập được chữ. Lệch = bug trên staging SDK app-v2.js ≥ bản 2026-10-28 03:01:11 GMT.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-231"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Đảo nghĩa OR/AND làm layer ẩn/hiện sai trên nhiều tổ hợp",
-        "Chỉ kiểm 2 điều kiện cùng loại nguồn (option Pet Type); ≥ 3 điều kiện hoặc trộn loại nguồn chưa kiểm"
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-059",
-      "dimension": "STATE_DATA",
-      "layer": "storefront",
-      "title": "[CBS-011] Đổi giá trị nguồn qua lại (khớp → không khớp → khớp) cập nhật ẩn/hiện của layer Hide ngay trên cùng trang, không reload",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "fixture như CHK-057 (1 điều kiện)",
-        "environment": "staging; SDK app-v2.js bản Last-Modified ≥ 2026-10-28 03:01:11 GMT (lượt PASS gốc 2026-10-28; shipped UNKNOWN)",
-        "surface_or_device": "storefront product page — form + live preview SDK app-v2.js, desktop browser; DevTools Console"
-      },
-      "precondition": "Như CHK-057; mở Console và ghi các lỗi có sẵn của theme trước khi thao tác để phân biệt lỗi mới.",
-      "steps": [
-        "Chọn nguồn khớp (Cat); ghi trạng thái field/layer và URL.",
-        "Chọn nguồn không khớp (Dog); ghi trạng thái field/layer và URL.",
-        "Chọn lại nguồn khớp (Cat); ghi trạng thái field/layer, URL và lỗi JS mới trong Console (nếu có)."
-      ],
-      "observation_point": "Trạng thái field/layer sau mỗi lần đổi nguồn; URL; có reload trang hay không; lỗi JS mới.",
-      "expected_result": "Cat → field và layer ẩn; Dog → hiện; Cat → ẩn lại; mỗi lần cập nhật ngay trên cùng trang, không reload, URL không đổi. Lệch = bug trên staging SDK app-v2.js ≥ bản 2026-10-28 03:01:11 GMT.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-231"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-022"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Trạng thái ẩn/hiện bị kẹt sau khi đổi nguồn làm form/preview lệch dữ liệu sẽ gửi"
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-060",
-      "dimension": "CORE",
-      "layer": "storefront",
-      "title": "[CBS-011] Cùng điều kiện, layer action Hide và layer action Show cho kết quả ngược nhau ở cả hai giá trị nguồn",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "hai campaign đã publish dùng artwork giống nhau trừ action: một layer action Hide (fixture gốc CP-HIDE-1) và một layer action Show (fixture gốc CP-SHOW-1), cùng điều kiện 'Pet 1 Type is any of: Cat'",
-        "environment": "staging; SDK app-v2.js bản Last-Modified ≥ 2026-10-28 03:01:11 GMT (lượt PASS gốc 2026-10-28; shipped UNKNOWN)",
-        "surface_or_device": "storefront product page — form + live preview SDK app-v2.js, desktop browser"
-      },
-      "precondition": "Như CHK-057, trên cả hai campaign.",
-      "steps": [
-        "Trên campaign Hide: chọn Cat rồi Dog; ghi field/preview của layer.",
-        "Trên campaign Show: chọn Cat rồi Dog; ghi field/preview của layer.",
-        "Lập bảng so sánh (form/preview) cho 2 campaign × 2 giá trị nguồn."
-      ],
-      "observation_point": "Bảng ẩn/hiện của field và preview cho Hide vs Show theo từng giá trị nguồn.",
-      "expected_result": "Hide: Cat → ẩn/ẩn, Dog → hiện/hiện. Show: Cat → hiện/hiện, Dog → ẩn/ẩn. Hai action luôn cho kết quả ngược nhau ở cùng giá trị nguồn. Lệch = bug trên staging SDK app-v2.js ≥ bản 2026-10-28 03:01:11 GMT.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-231"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-236"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Thay đổi Hide làm đảo hành vi Show có sẵn của merchant",
-        "Hành vi Show/không điều kiện trên SDK có code Hide chưa có nguồn riêng ngoài lượt so sánh này — xem CHK-066"
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-061",
-      "dimension": "INTEGRATION",
-      "layer": "api",
-      "title": "[CBS-011] Payload POST /api/merchant/shopify/customization lúc Add to cart chỉ chứa layer đang hiện: layer action Hide đang ẩn không có key; layer đang hiện mang đúng giá trị đã nhập kèm giá trị nguồn (option / Toggle / Additional Option)",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "fixture CHK-057 (nguồn option), CHK-058 OR/AND, và CHK-064 (nguồn Toggle 'Add name', nguồn Additional Option 'Gift wrap'); trạng thái layer Hide đang ẩn và đang hiện",
-        "environment": "staging; SDK app-v2.js bản Last-Modified ≥ 2026-10-28 03:01:11 GMT (lượt PASS gốc 2026-10-28; shipped UNKNOWN)",
-        "surface_or_device": "storefront product page + network (POST /api/merchant/shopify/customization), desktop browser"
-      },
-      "precondition": "Như CHK-057; mở network monitor; xoá cart trước khi chạy.",
-      "steps": [
-        "Layer Hide đang ẩn (nguồn khớp, vd Cat): bấm Add to cart; ghi status và body của POST /api/merchant/shopify/customization.",
-        "Layer Hide đang hiện (nguồn không khớp, vd Dog), nhập chữ (vd 'GOOD DOG'): Add to cart; ghi body.",
-        "Trên fixture OR (Dog, Dog) và AND (1/2 khớp) với chữ nhập: Add to cart; ghi body.",
-        "Trên fixture nguồn Toggle (toggle tắt, nhập chữ) và Additional Option (giá trị không khớp, nhập chữ): Add to cart; ghi body."
-      ],
-      "observation_point": "Danh sách key và giá trị trong body payload customization ở từng trạng thái.",
-      "expected_result": "Layer đang ẩn: payload (201) chỉ có template, artwork và giá trị nguồn, không có key của layer Hide. Layer đang hiện: payload có key của layer với đúng chữ đã nhập, kèm giá trị nguồn (id option; false với Toggle tắt; id option của Additional Option). Lệch = bug trên staging SDK app-v2.js ≥ bản 2026-10-28 03:01:11 GMT.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-231",
-          "sdk/storefront-buyer-facing#KB-234"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-022",
-        "sdk/storefront-buyer-facing#KB-015"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Payload mang dữ liệu của layer đang ẩn hoặc mất dữ liệu layer đang hiện làm in sai sản phẩm (mất tiền)",
-        "Giá trị nhập trước khi layer bị Hide và hệ quả xuống cart/order/print file thuộc checklist place-personalized-order-storefront (CHK-019-ORDER01), không lặp ở đây"
-      ],
-      "priority": "P1",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-062",
-      "dimension": "STATE_DATA",
-      "layer": "storefront",
-      "title": "[CBS-011] First load, layer action Hide bật 'Hide this layer on first load', buyer chưa trả lời nguồn: layer không vẽ trên preview nhưng field vẫn hiện; OR còn ẩn tới khi mọi nguồn trả lời không khớp, AND hiện ngay khi một nguồn trả lời không khớp",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "campaign đã publish dùng artwork 2.0 có layer text action Hide bật 'Hide this layer on first load': (a) 1 điều kiện (fixture gốc CP-HIDE-FL / artwork #5890), (b) 2 điều kiện match OR (CP-HIDE-FL-OR), (c) 2 điều kiện match AND (CP-HIDE-FL-AND); phiên trình duyệt mới, chưa chọn gì",
-        "environment": "staging; SDK app-v2.js bản Last-Modified ≥ 2026-10-28 03:01:11 GMT (lượt PASS gốc 2026-10-28; shipped UNKNOWN)",
-        "surface_or_device": "storefront product page — form + live preview SDK app-v2.js, desktop browser"
-      },
-      "precondition": "Như CHK-057; dùng phiên trình duyệt mới (không localStorage 'teeinblue-customizations' cũ của product).",
-      "steps": [
-        "Fixture (a): mở product page, chưa chọn gì; ghi node layer trên preview và field của layer trên form.",
-        "Fixture (b) OR: first load ghi như trên; chọn Pet 1 = Dog (Pet 2 chưa chọn), ghi; chọn Pet 2 = Dog, ghi.",
-        "Fixture (c) AND: first load ghi như trên; chọn Pet 1 = Dog (Pet 2 chưa chọn), ghi.",
-        "Ở mọi bước ghi field của layer có trên form không."
-      ],
-      "observation_point": "Node layer trên preview và field của layer trên form ở first load và sau từng lần trả lời nguồn.",
-      "expected_result": "(a) First load: layer không được vẽ trên preview, field của layer vẫn hiện trên form. (b) OR: first load layer ẩn; Pet 1 = Dog, Pet 2 chưa trả lời → vẫn ẩn; Pet 2 = Dog → layer hiện. (c) AND: first load layer ẩn; Pet 1 = Dog, Pet 2 chưa trả lời → layer hiện ngay. Field của layer hiện xuyên suốt trên form ở cả 3 fixture. Lệch = bug trên staging SDK app-v2.js ≥ bản 2026-10-28 03:01:11 GMT.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-232"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-233",
-        "sdk/storefront-buyer-facing#KB-231"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Chỉ phủ nhánh toggle BẬT; nhánh toggle TẮT chỉ có tài liệu dev — xem CHK-063",
-        "Khác cơ chế với first load dưới Group ẩn (CHK-055); không suy kết quả sang nhau"
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
     },
     {
       "check_id": "CHK-063",
@@ -2186,8 +1185,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Với 'Hide this layer on first load' TẮT và nguồn chưa trả lời, layer action Hide có hiện trên artwork preview trên build đã merge không (tài liệu dev 2026-10-13 nói có, chưa test case nào kiểm)? PO xác nhận.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-233",
-        "sdk/storefront-buyer-facing#KB-232"
+        "sdk/storefront-layer-visibility#KB-233",
+        "sdk/storefront-layer-visibility#KB-232"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -2196,43 +1195,6 @@
       "priority": "P2",
       "automation_suitability": "SUITABLE",
       "oq_id": "OQ-sdk-073"
-    },
-    {
-      "check_id": "CHK-064",
-      "dimension": "CORE",
-      "layer": "storefront",
-      "title": "[CBS-011] Layer Toggle và Additional Option làm nguồn điều kiện cho layer action Hide, đúng chiều; form và preview khớp nhau",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "campaign đã publish dùng artwork 2.0 có layer text action Hide với điều kiện trên (a) layer Toggle (fixture gốc CP-HIDE-TOGGLE, toggle 'Add name' bật = khớp), (b) Additional Option (fixture gốc CP-HIDE-ADDOPT, 'Gift wrap' = Yes là khớp)",
-        "environment": "staging; SDK app-v2.js bản Last-Modified ≥ 2026-10-28 03:01:11 GMT (lượt PASS gốc 2026-10-28; shipped UNKNOWN)",
-        "surface_or_device": "storefront product page — form + live preview SDK app-v2.js, desktop browser"
-      },
-      "precondition": "Như CHK-057.",
-      "steps": [
-        "Fixture (a): bật toggle; ghi field và node preview của layer Hide. Tắt toggle; ghi lại.",
-        "Fixture (b): chọn Gift wrap = Yes; ghi. Chọn No; ghi.",
-        "Ở trạng thái layer hiện, nhập chữ và ghi chữ trên preview."
-      ],
-      "observation_point": "Có/không field và layer của layer Hide theo giá trị Toggle / Additional Option; sự khớp giữa form và preview.",
-      "expected_result": "Toggle bật → field và layer ẩn; tắt → hiện lại. Gift wrap = Yes → field và layer ẩn; No → hiện. Form và preview luôn khớp nhau. Lệch = bug trên staging SDK app-v2.js ≥ bản 2026-10-28 03:01:11 GMT.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-234"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-231"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Chỉ kiểm Toggle và Additional Option; các loại nguồn khác (vd clipart, image) thuộc danh sách nguồn ở artwork, chưa kiểm với Hide"
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
     },
     {
       "check_id": "CHK-065",
@@ -2261,9 +1223,9 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "PO xác nhận trên build đã merge: điều kiện có nguồn đang bị ẩn được tính là không khớp, linked layer đi theo hiển thị cuối của layer gốc, điều kiện 2 cấp lan theo — và 'nguồn bị ẩn' có bao gồm nguồn nằm trong Group ẩn không (vùng giao với known defect Group ẩn)?",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-235",
-        "sdk/storefront-buyer-facing#KB-231",
-        "sdk/storefront-buyer-facing#KB-180"
+        "sdk/storefront-layer-visibility#KB-235",
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-180"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -2300,8 +1262,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Layer không điều kiện và layer Show có giữ nguyên hành vi trên SDK đã có code Hide (≥ bản 2026-10-28 03:01:11 GMT hoặc build đã merge) không? TC-TIB-7344 mới chạy trên SDK cũ — cần chạy lại có ngày + build và PO xác nhận.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-236",
-        "sdk/storefront-buyer-facing#KB-231",
+        "sdk/storefront-customization-storage#KB-236",
+        "sdk/storefront-layer-visibility#KB-231",
         "sdk/storefront-buyer-facing#KB-004"
       ],
       "regression_watch_kb_ids": [],
@@ -2340,7 +1302,7 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Sau khi deploy production, storefront có thể chạy SDK cũ đã cache trong bao lâu (max-age=14400 = 4 giờ hay khác), trong thời gian đó layer Hide hiển thị thế nào, và có cần cảnh báo merchant không? PO/dev xác nhận.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-237",
+        "sdk/storefront-layer-visibility#KB-237",
         "sdk/storefront-buyer-facing#KB-040"
       ],
       "regression_watch_kb_ids": [],
@@ -2378,9 +1340,9 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Các rule Hide trên storefront (TC-TIB-7323..7333, 7336, 7337; staging 2026-10-28) có giữ nguyên trên build staging sau khi 6 PR của TIB-5558 merge (2026-10-29), trên production khi TIB-5558 release, và trên bundle app-v1.js không?",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-231",
-        "sdk/storefront-buyer-facing#KB-232",
-        "sdk/storefront-buyer-facing#KB-234"
+        "sdk/storefront-layer-visibility#KB-231",
+        "sdk/storefront-layer-visibility#KB-232",
+        "sdk/storefront-layer-visibility#KB-234"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -2389,251 +1351,6 @@
       "priority": "P1",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-sdk-077"
-    },
-    {
-      "check_id": "CHK-069",
-      "dimension": "CORE",
-      "layer": "storefront",
-      "title": "[CBS-009] Setting lọc media theo variant đang chọn BẬT: gallery chỉ hiện mockup và video đã gán cho variant đang chọn; media không gán hoặc gán variant khác bị ẩn; video đã gán phát được",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "campaign by Product Base đã publish, có 3 variant (A, B, C), 3 mockup, 2 video; assignment: mockup thứ nhất + video thứ nhất → A, mockup thứ hai → B, mockup thứ ba và video thứ hai không gán; setting lọc media theo variant đang chọn bật",
-        "environment": "staging — lượt PASS duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge 2026-10-27, build hash và bundle SDK không ghi, shipped UNKNOWN; build sau merge / production / bundle khác qua CHK-079",
-        "surface_or_device": "storefront product page — gallery SDK, desktop browser"
-      },
-      "precondition": "Dựng campaign tương đương trên store staging được phép. Bật setting lọc media theo variant đang chọn (Store Settings → Product Page Settings, mục Gallery & Mockup) và Save. Sau khi đổi assignment, bấm Update/Sync campaign trước khi mở storefront (thủ tục của lượt gốc — xem CHK-077). Vượt password-gate bằng TIB_STORE_PASSWORD; ghi script src SDK.",
-      "steps": [
-        "Mở product page, chọn variant A; duyệt hết gallery bằng nút next; ghi danh sách slide.",
-        "Bấm play trên slide video; ghi video có phát không.",
-        "Chọn variant B; duyệt hết gallery; ghi danh sách slide và có nút prev/next không."
-      ],
-      "observation_point": "Danh sách slide trong gallery cho từng variant; video phát được hay không.",
-      "expected_result": "Variant A: gallery chỉ có mockup thứ nhất và video thứ nhất; bấm play thì video phát. Variant B: gallery chỉ có mockup thứ hai. Không variant nào hiện mockup thứ ba hay video thứ hai (không gán) hoặc media gán cho variant khác. Lệch = bug theo lượt PASS staging 2026-10-22; build sau merge/production thì ghi build và báo qua CHK-079.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-320"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-321"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Buyer thấy media không thuộc variant đang chọn hoặc thiếu media đã gán",
-        "Chuỗi nhãn của setting đang conflict ở product-page-settings-config CHK-003 — check này không phụ thuộc chuỗi nhãn"
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-070",
-      "dimension": "STATE_DATA",
-      "layer": "storefront",
-      "title": "[CBS-009] Setting lọc media theo variant BẬT: đổi variant liên tục (A → B → C → A) thì gallery lọc lại đúng tập của từng variant, không sót item của variant trước",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "như CHK-069 nhưng video thứ hai gán cho variant C",
-        "environment": "staging — lượt PASS duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge, shipped UNKNOWN; build sau merge / production qua CHK-079",
-        "surface_or_device": "storefront product page — gallery SDK, desktop browser"
-      },
-      "precondition": "Như CHK-069 (Update/Sync sau khi đổi assignment).",
-      "steps": [
-        "Chọn lần lượt variant A, B, C rồi A, không reload trang; sau mỗi lần duyệt hết gallery và ghi danh sách slide."
-      ],
-      "observation_point": "Danh sách slide sau mỗi lần đổi variant.",
-      "expected_result": "A → {mockup thứ nhất, video thứ nhất}; B → {mockup thứ hai}; C → {video thứ hai}; chọn lại A → giống lần đầu. Mockup thứ ba (không gán) không xuất hiện lần nào; không còn item của variant trước sau khi đổi. Lệch = bug theo lượt PASS staging 2026-10-22.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-320"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Gallery giữ media của variant trước khi đổi variant"
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-071",
-      "dimension": "BOUNDARY",
-      "layer": "storefront",
-      "title": "[CBS-009] Setting lọc media theo variant BẬT, variant chỉ được gán video (0 mockup): gallery đúng bằng tập video đã gán, không kéo thêm mockup",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "campaign như CHK-069; variant C được gán cả hai video, không mockup nào; các mockup gán cho A/B hoặc không gán",
-        "environment": "staging — lượt PASS duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge, shipped UNKNOWN; build sau merge / production qua CHK-079",
-        "surface_or_device": "storefront product page — gallery SDK, desktop browser"
-      },
-      "precondition": "Như CHK-069.",
-      "steps": [
-        "Chọn variant C; duyệt hết gallery; ghi danh sách slide."
-      ],
-      "observation_point": "Danh sách slide của variant chỉ gán video.",
-      "expected_result": "Gallery có đúng hai video đã gán cho C, không có mockup nào (không áp fallback 'hiện tất cả mockup' khi variant không có mockup gán). Lệch = bug theo lượt PASS staging 2026-10-22.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-322"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-324"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Nhánh variant không gán gì (CHK-073) có fallback hiện toàn bộ — dễ nhầm hai nhánh khi viết automation"
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-072",
-      "dimension": "CORE",
-      "layer": "storefront",
-      "title": "[CBS-009] Setting lọc media theo variant BẬT, variant chỉ được gán một video: gallery chỉ có video đó; Preview không render ảnh preview cá nhân hoá và không lấy mockup không gán làm nguồn preview",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "campaign như CHK-069 có field cá nhân hoá (vd text); variant C chỉ gán video thứ nhất; mockup (có printarea) gán cho variant khác",
-        "environment": "staging — lượt PASS duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge, shipped UNKNOWN; build sau merge / production qua CHK-079",
-        "surface_or_device": "storefront product page — gallery SDK + popup Preview, desktop browser"
-      },
-      "precondition": "Như CHK-069.",
-      "steps": [
-        "Chọn variant C; duyệt hết gallery; ghi danh sách slide.",
-        "Nhập giá trị vào một field cá nhân hoá (vd 'HELLO').",
-        "Bấm Preview; ghi nội dung popup và có phần tử ảnh preview cá nhân hoá (printarea) nào được render không."
-      ],
-      "observation_point": "Slide trong gallery; nội dung popup Preview; phần tử ảnh preview cá nhân hoá.",
-      "expected_result": "Gallery chỉ có video thứ nhất, không có mockup nào của campaign; khu vực Preview không render ảnh preview cá nhân hoá nào và không dùng mockup không gán của campaign làm nguồn preview. Check không phát biểu về form cá nhân hoá hay design của đơn hàng (xem CHK-078). Lệch = bug theo lượt PASS staging 2026-10-22.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-323"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-322"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Variant chỉ-video không có preview cá nhân hoá — buyer không thấy design trước khi mua (hệ quả order ở CHK-078)"
-      ],
-      "priority": "P2",
-      "automation_suitability": "HYBRID"
-    },
-    {
-      "check_id": "CHK-073",
-      "dimension": "BOUNDARY",
-      "layer": "storefront",
-      "title": "[CBS-009] Setting lọc media theo variant BẬT, variant không được gán mockup lẫn video: gallery hiện toàn bộ mockup và video của campaign",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "campaign như CHK-069; variant C không có assignment nào",
-        "environment": "staging — lượt PASS duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge, shipped UNKNOWN; build sau merge / production qua CHK-079",
-        "surface_or_device": "storefront product page — gallery SDK, desktop browser"
-      },
-      "precondition": "Như CHK-069.",
-      "steps": [
-        "Chọn variant C; duyệt hết gallery; ghi danh sách slide."
-      ],
-      "observation_point": "Danh sách slide của variant không có assignment.",
-      "expected_result": "Gallery hiện toàn bộ media của campaign: cả 3 mockup và cả 2 video. Lệch = bug theo lượt PASS staging 2026-10-22.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-324"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-322"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-074",
-      "dimension": "CORE",
-      "layer": "storefront",
-      "title": "[CBS-009] Setting lọc media theo variant TẮT: mọi variant thấy toàn bộ mockup và video, giống nhau; assignment không có tác dụng lọc",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "campaign như CHK-069 với assignment giữ nguyên; setting lọc media theo variant đang chọn tắt",
-        "environment": "staging — lượt PASS duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge, shipped UNKNOWN; build sau merge / production qua CHK-079",
-        "surface_or_device": "storefront product page — gallery SDK, desktop browser"
-      },
-      "precondition": "Tắt setting lọc media theo variant đang chọn và Save; Update/Sync campaign nếu cần; phần còn lại như CHK-069.",
-      "steps": [
-        "Chọn lần lượt variant A, B, C; mỗi lần duyệt hết gallery và ghi danh sách slide."
-      ],
-      "observation_point": "Danh sách slide của từng variant khi setting tắt.",
-      "expected_result": "Với cả A, B, C, gallery đều hiện toàn bộ mockup và video của campaign, giống hệt nhau giữa các variant; video hiện như một mockup bình thường; assignment video ↔ variant không lọc gì. Lệch = bug theo lượt PASS staging 2026-10-22.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-325"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Merchant không bật setting nhưng gallery vẫn lọc (hoặc ngược lại)"
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-075",
-      "dimension": "CORE",
-      "layer": "storefront",
-      "title": "[CBS-009] Setting lọc media theo variant BẬT, video không bật 'Always load first': gallery xếp item đã gán theo thứ tự list media của campaign; video ở giữa list giữ đúng vị trí",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "campaign như CHK-069; list media xếp mockup thứ nhất → video thứ nhất → mockup thứ hai → ...; variant A được gán ba item đó; 'Always load first' của video tắt",
-        "environment": "staging — lượt PASS duy nhất 2026-10-22 trước khi 4 PR TIB-5428 merge, shipped UNKNOWN; build sau merge / production qua CHK-079",
-        "surface_or_device": "storefront product page — gallery SDK + portal list media, desktop browser"
-      },
-      "precondition": "Kéo video thứ nhất vào giữa list media trong campaign editor; Update/Sync; phần còn lại như CHK-069.",
-      "steps": [
-        "Ghi thứ tự list media trong campaign editor.",
-        "Mở storefront, chọn variant A; ghi thứ tự slide (và slide active đầu tiên)."
-      ],
-      "observation_point": "Thứ tự slide của variant A so với thứ tự list media.",
-      "expected_result": "Gallery của A theo đúng thứ tự mockup thứ nhất → video thứ nhất → mockup thứ hai; video không bị đẩy xuống cuối hay kéo lên đầu; list media trong campaign editor có cùng thứ tự. Lệch = bug theo lượt PASS staging 2026-10-22.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-326"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-327"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Nhánh 'Always load first' bật là known defect BUG-359 (CHK-076), không thuộc check này"
-      ],
-      "priority": "P3",
-      "automation_suitability": "SUITABLE"
     },
     {
       "check_id": "CHK-076",
@@ -2660,10 +1377,10 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Known defect BUG-359 (video bật 'Always load first' là item focus nhưng vẫn ở vị trí thứ 2 của gallery) đã fix/retest chưa, trên build nào? PO xác nhận hành vi mong đợi của 'Always load first' với video gán variant (đứng đầu gallery và focus?).",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-326"
+        "sdk/storefront-campaign-media-api#KB-326"
       ],
       "regression_watch_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-327"
+        "sdk/storefront-campaign-media-api#KB-327"
       ],
       "risk_refs": [
         "Thứ tự gallery khác kỳ vọng của merchant khi bật 'Always load first'"
@@ -2698,8 +1415,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Đổi assignment mockup/video ↔ variant có chủ ý cần Update/Sync campaign thì storefront (merchant JSON, gallery) mới phản ánh không? Quyết định này ảnh hưởng việc check gallery phải gồm bước Update/Sync hay coi việc chưa phản ánh là lỗi.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-321",
-        "sdk/storefront-buyer-facing#KB-320"
+        "sdk/storefront-campaign-media-api#KB-321",
+        "sdk/storefront-campaign-media-api#KB-320"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -2734,7 +1451,7 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Với variant chỉ được gán video (không có mockup để preview), form cá nhân hoá và design của đơn hàng được xử lý thế nào (vẫn có form? ảnh design gửi kèm order lấy từ đâu)? PO xác nhận.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-323"
+        "sdk/storefront-campaign-media-api#KB-323"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -2770,12 +1487,12 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Các rule gallery lọc theo variant có video (TC-TIB-6424..6431, 6447; staging 2026-10-22) có giữ nguyên trên build staging sau khi 4 PR TIB-5428 merge (2026-10-27), trên production khi release, và trên cả hai bundle app-v1.js / app-v2.js không?",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-320",
-        "sdk/storefront-buyer-facing#KB-322",
-        "sdk/storefront-buyer-facing#KB-323",
-        "sdk/storefront-buyer-facing#KB-324",
-        "sdk/storefront-buyer-facing#KB-325",
-        "sdk/storefront-buyer-facing#KB-326"
+        "sdk/storefront-campaign-media-api#KB-320",
+        "sdk/storefront-campaign-media-api#KB-322",
+        "sdk/storefront-campaign-media-api#KB-323",
+        "sdk/storefront-campaign-media-api#KB-324",
+        "sdk/storefront-campaign-media-api#KB-325",
+        "sdk/storefront-campaign-media-api#KB-326"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -2785,90 +1502,6 @@
       "priority": "P2",
       "automation_suitability": "HYBRID",
       "oq_id": "OQ-sdk-085"
-    },
-    {
-      "check_id": "CHK-080",
-      "dimension": "INTEGRATION",
-      "layer": "api",
-      "title": "[CBS-013] Response origin của campaigns/<shopify product id>.json gọi với tham số v chưa từng dùng (CF-Cache-Status: MISS) có các key resource_type, config, has_subscription, is_development, is_plus, sku_enabled, shop_name — cho campaign và platform product",
-      "applicability": {
-        "role": "guest (unauthenticated) — gọi API trực tiếp như SDK storefront",
-        "state": "campaign và platform product đã publish trên store staging; request gọi trực tiếp với giá trị v chưa từng dùng và response có CF-Cache-Status: MISS. KHÔNG áp cho URL ?v=1 mà SDK gọi khi render (xem CHK-084, CHK-086, CHK-087)",
-        "environment": "staging — chỉ build tại lượt PASS TC-TIB-7507 (2026-10-28 ~10:30 UTC, sau commit 8731f3a deploy staging, trước khi 2 PR TIB-5203 merge 2026-10-29; build hash không rõ, shipped UNKNOWN); build sau merge / production qua CHK-098",
-        "surface_or_device": "api — GET https://staging-api.teeinblue.com/api/merchant/campaigns/<shopify product id>.json?shop=<shop>.myshopify.com&v=<giá trị chưa từng dùng> (curl/HTTP client, không qua trang storefront)"
-      },
-      "precondition": "Có ít nhất 1 campaign và 1 platform product đã publish trên store staging được phép (fixture gốc: campaign #3279 trên store không thuộc explorer và store không thuộc explorer, campaign #3270 và platform product #602 trên store không thuộc explorer); biết shopify product id của từng cái. Chọn giá trị v chưa từng dùng (vd timestamp hiện tại). Ghi build/ngày chạy.",
-      "steps": [
-        "Gọi GET https://staging-api.teeinblue.com/api/merchant/campaigns/<shopify product id>.json?shop=<shop>.myshopify.com&v=<giá trị chưa từng dùng>; ghi status, header CF-Cache-Status và body.",
-        "Nếu CF-Cache-Status khác MISS: đổi sang một giá trị v khác chưa từng dùng và gọi lại; chỉ đánh giá response có CF-Cache-Status: MISS.",
-        "Kiểm tra body có từng key: resource_type, config, has_subscription, is_development, is_plus, sku_enabled, shop_name.",
-        "Lặp lại cho ít nhất 1 campaign và 1 platform product."
-      ],
-      "observation_point": "Header CF-Cache-Status và danh sách key trong body của response, cho từng campaign/platform product.",
-      "expected_result": "Mỗi response có CF-Cache-Status: MISS (gọi với v chưa từng dùng) có đủ 7 key resource_type, config, has_subscription, is_development, is_plus, sku_enabled, shop_name, cho cả campaign lẫn platform product. Check chỉ kiểm sự có mặt của 7 key — không kiểm giá trị của chúng (giá trị resource_type: CHK-082) và không kiểm các key còn lại. Không áp cho URL ?v=1 mà SDK gọi khi render. Lệch = bug trên staging tại build của lượt PASS 2026-10-28 ~10:30 UTC; build sau merge/production thì ghi build và báo qua CHK-098.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-350"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-013",
-        "sdk/storefront-buyer-facing#KB-351",
-        "sdk/storefront-buyer-facing#KB-353"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "SDK dựng form từ response này; thiếu key có thể làm form storefront không tải",
-        "Oracle hẹp: 1 lượt TC-TIB-7507 trước khi 2 PR merge, build hash không rõ, production chưa xác nhận — xem CHK-098",
-        "Response URL ?v=1 mà SDK gọi có thể vẫn là bản cũ đã cache ở lượt quan sát (CHK-084, CHK-086, CHK-087) — không dùng check này để đánh giá URL đó"
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
-    },
-    {
-      "check_id": "CHK-081",
-      "dimension": "INTEGRATION",
-      "layer": "api",
-      "title": "[CBS-013] Response origin của campaigns/<shopify product id>.json gọi với tham số v chưa từng dùng (CF-Cache-Status: MISS) không còn các field đã bỏ ở commit 8731f3a — cho campaign và platform product",
-      "applicability": {
-        "role": "guest (unauthenticated) — gọi API trực tiếp như SDK storefront",
-        "state": "campaign và platform product đã publish trên store staging; request gọi trực tiếp với giá trị v chưa từng dùng và response có CF-Cache-Status: MISS. KHÔNG áp cho URL ?v=1 mà SDK gọi khi render (xem CHK-084, CHK-086, CHK-087)",
-        "environment": "staging — chỉ build tại lượt PASS TC-TIB-7507 (2026-10-28 ~10:30 UTC, sau commit 8731f3a deploy staging, trước khi 2 PR TIB-5203 merge 2026-10-29; build hash không rõ, shipped UNKNOWN); build sau merge / production qua CHK-098",
-        "surface_or_device": "api — GET https://staging-api.teeinblue.com/api/merchant/campaigns/<shopify product id>.json?shop=<shop>.myshopify.com&v=<giá trị chưa từng dùng> (curl/HTTP client, không qua trang storefront)"
-      },
-      "precondition": "Như CHK-080 (campaign và platform product đã publish; giá trị v chưa từng dùng; chỉ đánh giá response CF-Cache-Status: MISS).",
-      "steps": [
-        "Gọi GET .../api/merchant/campaigns/<shopify product id>.json?shop=<shop>.myshopify.com&v=<giá trị chưa từng dùng>; ghi status, CF-Cache-Status và body (đổi v nếu không phải MISS).",
-        "Với mọi phần tử artworks[]: ghi có/không key description, is_locked, status.",
-        "Với mọi phần tử campaign_products[]: ghi có/không created_at, updated_at. Với product: ghi có/không internal_tags, status. Với mọi phần tử variants[]: ghi có/không created_at, updated_at, deleted_at.",
-        "Lặp lại cho ít nhất 1 campaign và 1 platform product."
-      ],
-      "observation_point": "Có/không từng field đã bỏ trong body response CF-Cache-Status: MISS, cho từng campaign/platform product.",
-      "expected_result": "Mỗi response có CF-Cache-Status: MISS (gọi với v chưa từng dùng) không có field nào trong: artworks[].description, artworks[].is_locked, artworks[].status; campaign_products[].created_at, campaign_products[].updated_at; product.internal_tags, product.status; variants[].created_at, variants[].updated_at, variants[].deleted_at — cho cả campaign lẫn platform product. Check chỉ kiểm các field này vắng mặt — không kiểm artworks[] chỉ còn những key nào (CHK-083) và không kiểm shape global_options/global_option_ids (CHK-084). Không áp cho URL ?v=1 mà SDK gọi khi render. Lệch = bug trên staging tại build của lượt PASS 2026-10-28 ~10:30 UTC; build sau merge/production thì ghi build và báo qua CHK-098.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-352"
-        ],
-        "oracle_strength": "STRONG"
-      },
-      "status": "READY",
-      "open_question_draft": null,
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-353",
-        "sdk/storefront-buyer-facing#KB-354",
-        "sdk/storefront-buyer-facing#KB-013"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Consumer khác (theme custom, renderer, public API) còn đọc field đã bỏ chưa ai kiểm — xem CHK-099",
-        "Oracle hẹp: 1 lượt TC-TIB-7507 trước khi 2 PR merge, build hash không rõ, production chưa xác nhận — xem CHK-098",
-        "URL ?v=1 mà SDK gọi có thể vẫn trả bản cũ còn các field này ở lượt quan sát — không dùng check này để đánh giá URL đó"
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE"
     },
     {
       "check_id": "CHK-082",
@@ -2895,8 +1528,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Dev xác nhận tập giá trị chính thức của resource_type trong campaigns/<id>.json (quan sát 'campaign' / 'platform_product') và chạy lại kiểm giá trị trên build đã merge TIB-5203.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-351",
-        "sdk/storefront-buyer-facing#KB-350"
+        "sdk/storefront-campaign-media-api#KB-351",
+        "sdk/storefront-campaign-media-api#KB-350"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -2931,8 +1564,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Dev xác nhận danh sách key artworks[] chính thức của payload platform product sau commit 8731f3a.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-353",
-        "sdk/storefront-buyer-facing#KB-352"
+        "sdk/storefront-campaign-media-api#KB-353",
+        "sdk/storefront-campaign-media-api#KB-352"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -2969,9 +1602,9 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Dev/PO xác nhận shape đúng của artworks[] (có/không còn global_options bên cạnh global_option_ids) và trạng thái BUG-437 (sửa/hoãn/chấp nhận); chạy lại trên URL SDK thật sau khi 2 PR TIB-5203 merge.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-354",
-        "sdk/storefront-buyer-facing#KB-352",
-        "sdk/storefront-buyer-facing#KB-013"
+        "sdk/storefront-campaign-media-api#KB-354",
+        "sdk/storefront-campaign-media-api#KB-352",
+        "sdk/storefront-campaign-media-api#KB-013"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -3007,9 +1640,9 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Dev xác nhận endpoint chính thức SDK dùng để tải platform product là campaigns/<shopify product id>.json hay platform-products/<uuid>.json; đường còn lại có còn được dùng ở trường hợp nào không.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-355",
-        "sdk/storefront-buyer-facing#KB-351",
-        "sdk/storefront-buyer-facing#KB-013"
+        "sdk/storefront-campaign-media-api#KB-355",
+        "sdk/storefront-campaign-media-api#KB-351",
+        "sdk/storefront-campaign-media-api#KB-013"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -3047,10 +1680,10 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "PO/Dev xác nhận: sau Save artwork + Update/Sync campaign, storefront phải hiện thay đổi ngay hay được phép trễ do cache (bao lâu)? BUG-446 được sửa, hoãn hay chấp nhận? Chạy lại TC-TIB-7402 trên build sau khi 2 PR TIB-5203 merge.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-356",
-        "sdk/storefront-buyer-facing#KB-321",
+        "sdk/storefront-campaign-media-api#KB-356",
+        "sdk/storefront-campaign-media-api#KB-321",
         "sdk/storefront-buyer-facing#KB-003",
-        "sdk/storefront-buyer-facing#KB-013"
+        "sdk/storefront-campaign-media-api#KB-013"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -3090,10 +1723,10 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "PO/Dev xác nhận hành vi đúng sau khi merchant sửa artwork và Publish platform product (storefront phải hiện thay đổi ngay hay được phép trễ do cache, bao lâu) và trạng thái BUG-439; chạy lại TC-TIB-7403 sau khi 2 PR TIB-5203 merge.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-357",
-        "sdk/storefront-buyer-facing#KB-354",
+        "sdk/storefront-campaign-media-api#KB-357",
+        "sdk/storefront-campaign-media-api#KB-354",
         "sdk/storefront-buyer-facing#KB-364",
-        "sdk/storefront-buyer-facing#KB-013"
+        "sdk/storefront-campaign-media-api#KB-013"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -3130,7 +1763,7 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Form campaign có Global Option tải đủ field và mockup (TC-TIB-7390, 1 lượt trước redeploy) có giữ nguyên trên build sau khi 2 PR TIB-5203 merge không, và PO/Dev xác nhận đây là hành vi đúng?",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-358",
+        "sdk/storefront-campaign-media-api#KB-358",
         "sdk/storefront-buyer-facing#KB-366",
         "sdk/storefront-buyer-facing#KB-364"
       ],
@@ -3170,7 +1803,7 @@
       "open_question_draft": "Cấu trúc form giống hệt sau nhiều lần reload (TC-TIB-7393, 1 lượt trước redeploy) có giữ nguyên trên build sau khi 2 PR TIB-5203 merge không, và PO/Dev xác nhận đây là hành vi đúng?",
       "related_kb_ids": [
         "sdk/storefront-buyer-facing#KB-359",
-        "sdk/storefront-buyer-facing#KB-358",
+        "sdk/storefront-campaign-media-api#KB-358",
         "sdk/storefront-buyer-facing#KB-365"
       ],
       "regression_watch_kb_ids": [],
@@ -3207,9 +1840,9 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Preview và payload customization khi nhập text/chọn clipart/chọn Global Option (TC-TIB-7392, 1 lượt trước redeploy) có giữ nguyên trên build sau khi 2 PR TIB-5203 merge không, và PO/Dev xác nhận đây là hành vi đúng?",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-360",
-        "sdk/storefront-buyer-facing#KB-358",
-        "sdk/storefront-buyer-facing#KB-022"
+        "sdk/storefront-customization-storage#KB-360",
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-customization-storage#KB-022"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -3245,7 +1878,7 @@
       "open_question_draft": "Hai layer dùng chung Global Option chỉ gửi một giá trị global-option-<id> (TC-TIB-7398, 1 lượt trước redeploy) có giữ nguyên trên build sau khi 2 PR TIB-5203 merge không, và PO/Dev xác nhận đây là hành vi đúng?",
       "related_kb_ids": [
         "sdk/storefront-buyer-facing#KB-361",
-        "sdk/storefront-buyer-facing#KB-360"
+        "sdk/storefront-customization-storage#KB-360"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -3282,8 +1915,8 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Global Option tự điền khi mở campaign khác cùng trình duyệt (TC-TIB-7399, 1 lượt trước redeploy) có giữ nguyên trên build sau khi 2 PR TIB-5203 merge không, và PO/Dev xác nhận đây là hành vi đúng?",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-362",
-        "sdk/storefront-buyer-facing#KB-015"
+        "sdk/storefront-customization-storage#KB-362",
+        "sdk/storefront-customization-storage#KB-015"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -3321,9 +1954,9 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Campaign không dùng Global Option (TC-TIB-7400, 1 lượt trước redeploy): form, shape response và payload có giữ nguyên trên build sau khi 2 PR TIB-5203 merge không? Giá trị buyer đã nhập có được giữ sau reload không, trong điều kiện nào (loại field, bản SDK) — PO/Dev xác nhận.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-363",
-        "sdk/storefront-buyer-facing#KB-019",
-        "sdk/storefront-buyer-facing#KB-020"
+        "sdk/storefront-campaign-media-api#KB-363",
+        "sdk/storefront-customization-storage#KB-019",
+        "sdk/storefront-customization-storage#KB-020"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -3361,7 +1994,7 @@
       "open_question_draft": "Known defect BUG-310 (trang storefront thật của platform product không render form khi tên category chứa <script> chưa escape) đã được sửa chưa, trên build nào? Nguyên nhân tester ghi có được dev xác nhận không? Sau khi sửa, chạy lại form platform product trên trang thật.",
       "related_kb_ids": [
         "sdk/storefront-buyer-facing#KB-365",
-        "sdk/storefront-buyer-facing#KB-357"
+        "sdk/storefront-campaign-media-api#KB-357"
       ],
       "regression_watch_kb_ids": [
         "sdk/storefront-buyer-facing#KB-364"
@@ -3403,7 +2036,7 @@
       "related_kb_ids": [
         "sdk/storefront-buyer-facing#KB-365",
         "sdk/storefront-buyer-facing#KB-364",
-        "sdk/storefront-buyer-facing#KB-358"
+        "sdk/storefront-campaign-media-api#KB-358"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -3439,7 +2072,7 @@
       "open_question_draft": "Dev xác nhận request /products/<id>.js là gì, có từ trước TIB-5203 không, và 404 có là lỗi cần theo dõi không.",
       "related_kb_ids": [
         "sdk/storefront-buyer-facing#KB-366",
-        "sdk/storefront-buyer-facing#KB-358"
+        "sdk/storefront-campaign-media-api#KB-358"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -3474,9 +2107,9 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Dev/PO xác nhận chính sách khoá trong response public của storefront: config.maps_api_key (Mapbox 'pk.') có được phép xuất hiện không, và có loại khoá nào khác bị cấm tuyệt đối không.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-367",
-        "sdk/storefront-buyer-facing#KB-013",
-        "sdk/storefront-buyer-facing#KB-350"
+        "sdk/storefront-campaign-media-api#KB-367",
+        "sdk/storefront-campaign-media-api#KB-013",
+        "sdk/storefront-campaign-media-api#KB-350"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -3514,9 +2147,9 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Response campaigns/<id>.json (có đủ key SDK cần, không còn field đã bỏ) có giữ nguyên trên build sau khi 2 PR TIB-5203 merge (2026-10-29) và trên production không? Dev có đẩy commit nào sau lượt TC-TIB-7507 ~10:30 UTC 2026-10-28 không?",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-350",
-        "sdk/storefront-buyer-facing#KB-352",
-        "sdk/storefront-buyer-facing#KB-354"
+        "sdk/storefront-campaign-media-api#KB-350",
+        "sdk/storefront-campaign-media-api#KB-352",
+        "sdk/storefront-campaign-media-api#KB-354"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -3552,7 +2185,7 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Dev/PO xác nhận không consumer nào khác (theme custom, renderer, public API) còn đọc các field đã bỏ khỏi campaigns/<id>.json ở commit 8731f3a.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-352"
+        "sdk/storefront-campaign-media-api#KB-352"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -3591,7 +2224,7 @@
       "related_kb_ids": [
         "sdk/storefront-buyer-facing#KB-394",
         "sdk/storefront-buyer-facing#KB-011",
-        "sdk/storefront-buyer-facing#KB-042"
+        "sdk/storefront-campaign-media-api#KB-042"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -3983,7 +2616,7 @@
         "sdk/storefront-buyer-facing#KB-447",
         "sdk/storefront-buyer-facing#KB-418",
         "sdk/storefront-buyer-facing#KB-448",
-        "sdk/genai-personalization-runtime#KB-046"
+        "sdk-genai/genai-personalization-runtime#KB-046"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [
@@ -4212,47 +2845,6 @@
       "oq_id": "OQ-sdk-106"
     },
     {
-      "check_id": "CHK-117",
-      "dimension": "STATE_DATA",
-      "layer": "storefront",
-      "title": "[CBS-098] Reload sau khi chỉnh position ảnh: template picker không khôi phục; chọn lại template thì ảnh và position đã giữ hiện lại, không warning (chỉ quan sát)",
-      "applicability": {
-        "role": "guest buyer",
-        "state": "product page có layer Upload Photo bật Photo reposition; đã upload và chỉnh position; localStorage còn template, ảnh và position",
-        "environment": "staging; ghi Last-Modified của app-v1.js và ngày chạy (build đã quan sát: app-v1.js Last-Modified 2026-10-21 05:56 GMT); production chưa kiểm",
-        "surface_or_device": "storefront product page, desktop browser, DevTools Application (localStorage)"
-      },
-      "precondition": "Campaign fixture trên store test được phép (store explorer), vượt password-gate bằng TIB_STORE_PASSWORD.",
-      "steps": [
-        "Chọn template, upload ảnh, chỉnh position; chụp preview, ghi localStorage.",
-        "Reload trang (F5); ghi trạng thái template picker và localStorage.",
-        "Chọn lại đúng template đó; chụp preview, ghi warning."
-      ],
-      "observation_point": "Template picker sau reload; ảnh, position và warning sau khi chọn lại template; localStorage trước và sau reload.",
-      "expected_result": "Baseline quan sát (Testlane TC-35, 2026-10-22; chưa phải expected xác nhận): sau reload picker hiện \"Choose an option\" dù localStorage còn template, ảnh và position; chọn lại template thì ảnh hiện lại ở đúng position đã giữ, không warning. Lệch = điều tra kèm build, không tự kết luận là bug.",
-      "oracle": {
-        "kb_ids": [
-          "sdk/storefront-buyer-facing#KB-506"
-        ],
-        "oracle_strength": "BASELINE"
-      },
-      "status": "NEEDS_CONFIRMATION",
-      "open_question_draft": "Dev/PO xác nhận nguyên văn hành vi sau reload: picker không khôi phục template, chọn lại template thì ảnh và position đã giữ hiện lại, không warning, có phải hành vi đúng không.",
-      "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-506",
-        "sdk/storefront-buyer-facing#KB-019",
-        "sdk/storefront-buyer-facing#KB-020"
-      ],
-      "regression_watch_kb_ids": [],
-      "risk_refs": [
-        "Buyer mất chỉnh sửa ảnh sau reload",
-        "Vế picker không khôi phục cùng chiều KB-019 (CHK-027 giữ nguyên)"
-      ],
-      "priority": "P2",
-      "automation_suitability": "SUITABLE",
-      "oq_id": "OQ-sdk-177"
-    },
-    {
       "check_id": "CHK-118",
       "dimension": "NEGATIVE",
       "layer": "api",
@@ -4280,9 +2872,9 @@
       "status": "NEEDS_CONFIRMATION",
       "open_question_draft": "Dev xác nhận position bị buyer sửa tay trong localStorage (âm, rất lớn, chuỗi chữ, null) là giới hạn chấp nhận hay bug cần sửa: client và/hoặc server có cần validate/clamp position không, và order design với các giá trị này phải ra sao.",
       "related_kb_ids": [
-        "sdk/storefront-buyer-facing#KB-507",
-        "sdk/storefront-buyer-facing#KB-022",
-        "sdk/storefront-buyer-facing#KB-015"
+        "sdk/storefront-customization-storage#KB-507",
+        "sdk/storefront-customization-storage#KB-022",
+        "sdk/storefront-customization-storage#KB-015"
       ],
       "regression_watch_kb_ids": [],
       "risk_refs": [

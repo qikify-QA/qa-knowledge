@@ -1,0 +1,941 @@
+{
+  "feature_id": "email-sender-and-routing",
+  "feature_key": "email-sender-and-routing",
+  "name": "Email gửi đi: sender/reply-to, Shopify Flow trigger và email transaction merchant",
+  "user_goal": "Merchant kiểm soát email app gửi đi: sender và reply-to của email buyer, tự route email qua Shopify Flow, và biết email transaction Qikify gửi merchant.",
+  "user_goal_kb_refs": [
+    "notifications/email-sender-and-routing#KB-032",
+    "notifications/email-sender-and-routing#KB-033",
+    "notifications/email-sender-and-routing#KB-034",
+    "notifications/email-sender-and-routing#KB-038",
+    "notifications/email-sender-and-routing#KB-039",
+    "notifications/email-sender-and-routing#KB-040",
+    "notifications/email-sender-and-routing#KB-036"
+  ],
+  "stable_since_version": "v1",
+  "actors": [
+    {
+      "role": "merchant",
+      "permission_observed": "Cấu hình sender email trong editor template email; trên staging 08/10/2026 (merchant staff, store Free plan) editor template \"Credit limit assigned to a company location\" có các field \"Sender name:\", \"Sender email:\", \"Reply to email:\", \"Email template subject:\". Tài liệu không nêu role merchant nào được sửa.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-033",
+        "notifications/email-sender-and-routing#KB-035"
+      ]
+    },
+    {
+      "role": "buyer (người nhận email)",
+      "permission_observed": "Nhận email có From là sender mặc định của app và reply-to là sender email của merchant (quyết định 01/04/2026); chưa có quan sát header email thật.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-032",
+        "notifications/email-sender-and-routing#KB-033"
+      ]
+    },
+    {
+      "role": "merchant (người nhận)",
+      "permission_observed": "Nhận email transaction theo các sự kiện install / uninstall, subscription change, cancel subscription, đổi Shopify plan (chỉ theo Jira DUOS-385, DUOS-386); người nhận cụ thể (store owner hay email nào) chưa được nêu.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-038",
+        "notifications/email-sender-and-routing#KB-039",
+        "notifications/email-sender-and-routing#KB-040"
+      ]
+    },
+    {
+      "role": "system",
+      "permission_observed": "App gửi email khi sự kiện xảy ra; email install / uninstall chia theo 2 nhóm Shopify plan (theo ticket).",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-038"
+      ]
+    },
+    {
+      "role": "merchant",
+      "permission_observed": "Dựng workflow Shopify Flow dùng trigger của app; với trigger \"Shopping list pending approval\" phải dùng loop action vì payload là danh sách customer. Chưa có quan sát trên Shopify Flow.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-036",
+        "notifications/email-sender-and-routing#KB-037",
+        "_product-level#KB-P-006"
+      ]
+    },
+    {
+      "role": "buyer-admin / buyer-senior",
+      "permission_observed": "Là các customer trong payload của trigger \"Shopping list pending approval\".",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-037"
+      ]
+    },
+    {
+      "role": "buyer-junior",
+      "permission_observed": "Gửi shopping list duyệt là sự kiện tương ứng của email pending approval trong app (theo ticket); liên hệ trực tiếp với trigger Flow chưa được mô tả.",
+      "kb_refs": [
+        "notifications/notification-settings-and-templates#KB-013"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Trang Notifications → \"Edit template\" của một thông báo phía Customer → các field sender trong editor template",
+      "precondition": "Thông báo có template trong app; trên staging mới khảo sát editor của \"Credit limit assigned to a company location\".",
+      "kb_refs": [
+        "notifications/notification-settings-and-templates#KB-025",
+        "notifications/email-sender-and-routing#KB-035"
+      ]
+    },
+    {
+      "path": "Sự kiện install / uninstall app trên Shopify",
+      "precondition": "Không.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-038"
+      ]
+    },
+    {
+      "path": "Sự kiện đổi hoặc huỷ subscription của app",
+      "precondition": "Merchant đang có subscription.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-039"
+      ]
+    },
+    {
+      "path": "Sự kiện merchant đổi Shopify plan",
+      "precondition": "Không rõ (trigger chưa được mô tả).",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-040"
+      ]
+    },
+    {
+      "path": "Shopify Flow (trong Shopify admin) → chọn trigger của app Duos",
+      "precondition": "Merchant đã cài app; Shopify Flow chưa được mở trên staging khi khảo sát 08/10/2026.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-036",
+        "_product-level#KB-P-006"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Email gửi buyer dùng sender mặc định của app làm From",
+      "description": "From không còn là email của merchant; thay rule cũ (Jira DUOS-311) bằng quyết định Dev BE 01/04/2026 được PO chốt (Jira DUOS-370).",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-032"
+      ]
+    },
+    {
+      "name": "Sender email của merchant thành reply-to",
+      "description": "Sender email do merchant cấu hình được đưa vào header reply-to để buyer trả lời về merchant; field \"reply to\" riêng bị bỏ theo quyết định, nhưng editor staging 08/10/2026 vẫn còn field \"Reply to email:\".",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-033",
+        "notifications/email-sender-and-routing#KB-034",
+        "notifications/email-sender-and-routing#KB-035"
+      ]
+    },
+    {
+      "name": "Email install / uninstall theo nhóm Shopify plan",
+      "description": "Email transaction khi Install và Uninstall, chia 2 nhóm Shopify plan: Advanced / Plus / Plus Sandbox và Basic / Grow / Partner test / Affiliate (theo ticket); nội dung template chưa có.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-038"
+      ]
+    },
+    {
+      "name": "Email đổi / huỷ subscription",
+      "description": "Email transaction khi Subscription change và Cancel subscription (theo ticket); nội dung chưa có.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-039"
+      ]
+    },
+    {
+      "name": "Email đổi Shopify plan",
+      "description": "Template \"[duos] shopify plan changes\" với param `{{store_owner}}`, `{{module_included}}`, `{{previous_plan}}`, `{{current_plan}}` (theo ticket); trigger và điều kiện gửi chưa có.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-040",
+        "notifications/email-sender-and-routing#KB-041"
+      ]
+    },
+    {
+      "name": "Bốn trigger email trong Shopify Flow",
+      "description": "App cung cấp 4 trigger để merchant tự route email: Member added to location, Role changes, Shopping list pending approval, Shopping list approved.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-036"
+      ]
+    },
+    {
+      "name": "Trigger pending approval gửi danh sách người duyệt",
+      "description": "Payload của trigger \"Shopping list pending approval\" là danh sách customer (Admin và Senior Buyer); workflow cần loop action để xử lý từng customer.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-037",
+        "notifications/notification-settings-and-templates#KB-013"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "merchant đã cấu hình sender email",
+      "to": "email gửi buyer có From = sender mặc định của app, Reply-To = sender email của merchant",
+      "trigger": "App gửi một email cho buyer",
+      "condition": "Theo quyết định Dev BE 01/04/2026, PO chốt (Jira DUOS-370); header thật chưa được quan sát",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-032",
+        "notifications/email-sender-and-routing#KB-033"
+      ]
+    },
+    {
+      "from": "chưa cài / đã cài app",
+      "to": "đã gửi email Install / Uninstall",
+      "trigger": "Merchant install hoặc uninstall app",
+      "condition": "Theo Jira DUOS-385 (chỉ ticket); nội dung theo nhóm Shopify plan",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-038"
+      ]
+    },
+    {
+      "from": "subscription hiện tại",
+      "to": "đã gửi email Subscription change / Cancel subscription",
+      "trigger": "Merchant đổi hoặc huỷ subscription",
+      "condition": "Theo Jira DUOS-385 (chỉ ticket)",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-039"
+      ]
+    },
+    {
+      "from": "Shopify plan cũ (`previous_plan`)",
+      "to": "đã gửi email \"[duos] shopify plan changes\" với `current_plan`",
+      "trigger": "Merchant đổi Shopify plan",
+      "condition": "Theo Jira DUOS-386 (chỉ ticket); webhook và tier áp dụng chưa rõ",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-040",
+        "notifications/email-sender-and-routing#KB-041"
+      ]
+    },
+    {
+      "from": "sự kiện member / role / shopping list xảy ra",
+      "to": "trigger Flow tương ứng được bắn cho workflow của merchant",
+      "trigger": "Member được thêm vào location, role thay đổi, shopping list chờ duyệt hoặc được duyệt",
+      "condition": "Theo Jira DUOS-371 + Dev 01/04/2026; chưa quan sát trên Shopify Flow",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-036"
+      ]
+    },
+    {
+      "from": "trigger \"Shopping list pending approval\"",
+      "to": "workflow lặp qua từng customer (Admin, Senior Buyer)",
+      "trigger": "Junior buyer gửi shopping list duyệt",
+      "condition": "Workflow có loop action",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-037",
+        "notifications/notification-settings-and-templates#KB-013"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Theo quyết định Dev BE ngày 01/04/2026 được PO chốt (Jira DUOS-370, thay rule cũ của Jira DUOS-311), email gửi buyer dùng sender mặc định của app làm địa chỉ From; From không còn là email của merchant.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-032"
+      ]
+    },
+    {
+      "statement": "Theo quyết định Dev BE ngày 01/04/2026 được PO chốt (Jira DUOS-370), sender email do merchant cấu hình được đưa vào header reply-to của email gửi buyer.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-033"
+      ]
+    },
+    {
+      "statement": "Theo quyết định Dev BE ngày 01/04/2026 được PO chốt (Jira DUOS-370), field \"reply to\" riêng trong cấu hình email bị bỏ (sender email của merchant đảm nhận vai trò reply-to).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-034"
+      ]
+    },
+    {
+      "statement": "Theo Jira DUOS-371 (description) và Dev ngày 01/04/2026 (comment Jira DUOS-371), app có 4 Shopify Flow trigger để merchant tự route email (ví dụ qua Klaviyo): Member added to location, Role changes, Shopping list pending approval, Shopping list approved.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-036"
+      ]
+    },
+    {
+      "statement": "Theo Jira DUOS-371 (description) và Dev ngày 01/04/2026 (comment Jira DUOS-371), payload của Shopify Flow trigger \"Shopping list pending approval\" là danh sách customer (Admin và Senior Buyer), nên workflow Flow của merchant cần dùng loop action để xử lý từng customer.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-037"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Trên staging (khảo sát 08/10/2026, store staging Plus (Free plan), merchant staff), editor template email \"Credit limit assigned to a company location\" có các field \"Sender name:\", \"Sender email:\", \"Reply to email:\", \"Email template subject:\" — tức vẫn còn field \"Reply to email:\" riêng, lệch với quyết định 01/04/2026 bỏ field reply-to riêng. Nguồn không gọi đây là lỗi; chưa xác định là UI chưa cập nhật hay rule sai.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-035",
+        "notifications/email-sender-and-routing#KB-034"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [
+    {
+      "statement": "Tài liệu không nêu role/quyền merchant nào được cấu hình sender email; staging chỉ khảo sát bằng một tài khoản merchant staff.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-035"
+      ]
+    },
+    {
+      "statement": "Tài liệu không nêu email transaction gửi tới địa chỉ nào của merchant (store owner hay email cấu hình); param `{{store_owner}}` chỉ cho thấy template đổi Shopify plan có tên chủ store.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-041",
+        "notifications/email-sender-and-routing#KB-038"
+      ]
+    },
+    {
+      "statement": "Payload trigger pending approval chỉ gồm customer có vai trò duyệt (Admin và Senior Buyer).",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-037"
+      ]
+    },
+    {
+      "statement": "Tài liệu không nêu role merchant nào được dựng workflow; Shopify Flow là công cụ của Shopify admin.",
+      "kb_refs": [
+        "_product-level#KB-P-006"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      {
+        "item": "Field \"Sender name:\", \"Sender email:\", \"Reply to email:\", \"Email template subject:\" trong editor template (staging 08/10/2026)",
+        "kb_refs": [
+          "notifications/email-sender-and-routing#KB-035",
+          "notifications/notification-settings-and-templates#KB-025"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [],
+    "data": [
+      {
+        "item": "Header From của email gửi buyer = sender mặc định của app",
+        "kb_refs": [
+          "notifications/email-sender-and-routing#KB-032"
+        ]
+      },
+      {
+        "item": "Header Reply-To của email gửi buyer = sender email merchant cấu hình",
+        "kb_refs": [
+          "notifications/email-sender-and-routing#KB-033"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "target": "notifications / notification-settings-and-templates",
+      "relation": "hosted_in",
+      "note": "Field sender nằm trong editor template của trang Notifications.",
+      "kb_refs": [
+        "notifications/notification-settings-and-templates#KB-025",
+        "notifications/email-sender-and-routing#KB-035"
+      ]
+    },
+    {
+      "target": "Dịch vụ gửi email của app",
+      "relation": "infrastructure",
+      "note": "Email của app gửi qua Mailgun; lỗi alias `@qikify` không nhận email member được nghi do domain From.",
+      "kb_refs": [
+        "_product-level#KB-P-038",
+        "notifications/notification-settings-and-templates#KB-031"
+      ]
+    },
+    {
+      "target": "pricing-subscription",
+      "relation": "event_source",
+      "note": "Sự kiện đổi / huỷ subscription và module trong gói thuộc object Pricing & Subscription.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-039",
+        "notifications/email-sender-and-routing#KB-041"
+      ]
+    },
+    {
+      "target": "auth-token / dead-token-detection-and-reconnect",
+      "relation": "owned_by_other_object",
+      "note": "Email reconnect / reopen gửi merchant khi token chết thuộc object Auth & Token lifecycle, không thuộc feature này.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-038"
+      ]
+    },
+    {
+      "target": "Dịch vụ gửi email của app",
+      "relation": "infrastructure",
+      "note": "Email của app gửi qua Mailgun (dự định đổi sang Amazon, chưa triển khai).",
+      "kb_refs": [
+        "_product-level#KB-P-038"
+      ]
+    },
+    {
+      "target": "roles-permissions / flow-assign-role-automation",
+      "relation": "owned_by_other_object",
+      "note": "Flow action assign role bắn trigger đổi role và gửi email đổi role, cùng giới hạn vòng lặp khi workflow nghe trigger này chứa assign-role — thuộc object Roles & permissions.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-036",
+        "notifications/notification-settings-and-templates#KB-011"
+      ]
+    },
+    {
+      "target": "notifications / notification-settings-and-templates",
+      "relation": "related",
+      "note": "Cùng sự kiện có email trong app với toggle/template (member, shopping list); quan hệ giữa toggle trong app và trigger Flow chưa được mô tả.",
+      "kb_refs": [
+        "notifications/notification-settings-and-templates#KB-013",
+        "notifications/notification-settings-and-templates#KB-007",
+        "notifications/notification-settings-and-templates#KB-011"
+      ]
+    },
+    {
+      "target": "shopping-list",
+      "relation": "event_source",
+      "note": "Sự kiện gửi duyệt / duyệt shopping list thuộc object Shopping list.",
+      "kb_refs": [
+        "notifications/notification-settings-and-templates#KB-013",
+        "notifications/email-sender-and-routing#KB-037"
+      ]
+    },
+    {
+      "target": "Shopify Flow",
+      "relation": "platform",
+      "note": "Merchant dùng trigger/action riêng của app trong Shopify Flow; chưa mở trên staging.",
+      "kb_refs": [
+        "_product-level#KB-P-006"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "statement": "Editor template trên staging 08/10/2026 vẫn còn field \"Reply to email:\" riêng, lệch quyết định 01/04/2026 bỏ field reply-to riêng; nguồn không gọi là lỗi, chưa rõ UI chưa cập nhật hay quyết định đã đổi, và header Reply-To thật đang lấy từ field nào.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-035",
+        "notifications/email-sender-and-routing#KB-034",
+        "notifications/email-sender-and-routing#KB-033"
+      ]
+    },
+    {
+      "statement": "Theo Known issues Duos (trạng thái open — chưa kết luận; nguồn là comment của PO và Dev BE trên Jira DUOS-309 ngày 25/03/2026): khi invite member bằng alias email `@qikify`, người nhận không nhận được mail dù log báo delivered, trong khi alias `@gmail` vẫn nhận được; nguồn chỉ suy đoán nguyên nhân có thể do domain From, chưa kết luận.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "status": "KNOWN_DEFECT",
+      "kb_refs": [
+        "notifications/notification-settings-and-templates#KB-031"
+      ],
+      "note": "Lỗi đang mở, nguồn nghi liên quan domain From; regression watch sau thay đổi From sang sender mặc định của app."
+    },
+    {
+      "statement": "Chưa có quan sát header From / Reply-To của email thật gửi buyer; quy tắc chỉ dựa trên quyết định đã ghi lại.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-032",
+        "notifications/email-sender-and-routing#KB-033"
+      ]
+    },
+    {
+      "statement": "Theo Jira DUOS-385 (Story Done, QA đọc 07/10/2026; chỉ có nguồn ticket), Qikify gửi email transaction cho merchant khi Install và Uninstall app, chia theo 2 nhóm Shopify plan: Advanced / Plus / Plus Sandbox và Basic / Grow / Partner test / Affiliate.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-038"
+      ],
+      "note": "Chỉ có nguồn ticket; không làm oracle."
+    },
+    {
+      "statement": "Theo Jira DUOS-385 (Story Done, QA đọc 07/10/2026; chỉ có nguồn ticket), Qikify gửi email transaction cho merchant khi Subscription change và khi Cancel subscription.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-039"
+      ],
+      "note": "Chỉ có nguồn ticket; không làm oracle."
+    },
+    {
+      "statement": "Theo Jira DUOS-386 (Story Done, QA đọc 07/10/2026; chỉ có nguồn ticket), email gửi merchant khi merchant đổi Shopify plan dùng template \"[duos] shopify plan changes\".",
+      "knowledge_kind": "INFERRED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-040"
+      ],
+      "note": "Chỉ có nguồn ticket; trigger chưa mô tả."
+    },
+    {
+      "statement": "Theo Jira DUOS-386 (Story Done, QA đọc 07/10/2026; chỉ có nguồn ticket), template email đổi Shopify plan dùng các param `{{store_owner}}`, `{{module_included}}`, `{{previous_plan}}`, `{{current_plan}}`.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-041"
+      ],
+      "note": "Chỉ có nguồn ticket; cú pháp hai cặp ngoặc chưa được đối chiếu với template thật."
+    },
+    {
+      "statement": "Không có nội dung template, người nhận hay điều kiện gửi cụ thể cho bất kỳ email transaction nào; chưa có quan sát email thật. Toàn bộ feature hiện không có kết quả mong đợi.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-038",
+        "notifications/email-sender-and-routing#KB-039",
+        "notifications/email-sender-and-routing#KB-040",
+        "notifications/email-sender-and-routing#KB-041"
+      ]
+    },
+    {
+      "statement": "Shopify Flow chưa được mở trên staging (khảo sát 08/10/2026): 4 trigger và payload chỉ có nguồn Jira DUOS-371 + Dev 01/04/2026, chưa có quan sát nào.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-036",
+        "notifications/email-sender-and-routing#KB-037",
+        "_product-level#KB-P-006"
+      ]
+    },
+    {
+      "statement": "Email đổi role có thể bị gửi lặp khi Flow action assign role chạy lần 2 cho cùng member và cùng role; tài liệu không trả lời tính idempotent.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "notifications/notification-settings-and-templates#KB-011",
+        "notifications/email-sender-and-routing#KB-036"
+      ]
+    }
+  ],
+  "unknown_areas": [
+    {
+      "question": "Field \"Reply to email:\" còn trong editor template trên staging (08/10/2026) là UI chưa cập nhật theo quyết định Dev BE 01/04/2026 (PO chốt, Jira DUOS-370) bỏ field reply-to riêng, hay quyết định đã thay đổi? Header Reply-To của email gửi buyer hiện lấy từ \"Sender email:\" hay \"Reply to email:\"?",
+      "why_it_matters": "Quy tắc và hiện trạng lệch nhau; check về field reply-to không có kết quả mong đợi thống nhất.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-034",
+        "notifications/email-sender-and-routing#KB-035",
+        "notifications/email-sender-and-routing#KB-033"
+      ],
+      "oq_id": "OQ-notifications-013"
+    },
+    {
+      "question": "Field sender có mặt ở mọi template phía Customer hay chỉ ở một số template, và sender mặc định của app cụ thể là địa chỉ nào?",
+      "why_it_matters": "Staging mới khảo sát một editor (credit-assigned); quyết định không nêu giá trị sender mặc định.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-032",
+        "notifications/email-sender-and-routing#KB-035"
+      ],
+      "oq_id": "OQ-notifications-023"
+    },
+    {
+      "question": "Khi merchant chưa cấu hình sender email, email gửi buyer có header Reply-To hay không, và trỏ về đâu?",
+      "why_it_matters": "Quyết định chỉ mô tả trường hợp merchant đã cấu hình sender email.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-033"
+      ],
+      "oq_id": "OQ-notifications-013"
+    },
+    {
+      "question": "Role/quyền merchant nào được cấu hình sender email trong editor template?",
+      "why_it_matters": "Không có expected result cho check phân quyền.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-035"
+      ],
+      "oq_id": "OQ-notifications-006"
+    },
+    {
+      "question": "Lỗi alias `@qikify` không nhận email member dù log báo delivered có còn tái hiện sau khi From chuyển sang sender mặc định của app không?",
+      "why_it_matters": "Nguồn nghi nguyên nhân là domain From; lỗi đang mở chưa kết luận.",
+      "kb_refs": [
+        "notifications/notification-settings-and-templates#KB-031",
+        "notifications/email-sender-and-routing#KB-032"
+      ],
+      "oq_id": "OQ-notifications-003"
+    },
+    {
+      "question": "Các mô tả của Jira DUOS-385 (email Install / Uninstall chia 2 nhóm Shopify plan, email Subscription change / Cancel subscription) và Jira DUOS-386 (template \"[duos] shopify plan changes\" với param store_owner, module_included, previous_plan, current_plan) có còn đúng với bản hiện tại để dùng làm kết quả mong đợi không?",
+      "why_it_matters": "Chỉ có nguồn ticket, không có quyết định PO/Dev hay test case PASS.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-038",
+        "notifications/email-sender-and-routing#KB-039",
+        "notifications/email-sender-and-routing#KB-040",
+        "notifications/email-sender-and-routing#KB-041"
+      ],
+      "oq_id": "OQ-notifications-016"
+    },
+    {
+      "question": "Nội dung template của các email Install, Uninstall, Subscription change và Cancel subscription là gì, và hai nhóm Shopify plan khác nhau ở điểm nào trong email?",
+      "why_it_matters": "Jira DUOS-385 không có template; không viết được check nội dung.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-038",
+        "notifications/email-sender-and-routing#KB-039"
+      ],
+      "oq_id": "OQ-notifications-016"
+    },
+    {
+      "question": "Email đổi Shopify plan được gửi khi nhận webhook nào và áp cho chuyển đổi giữa các Shopify plan nào?",
+      "why_it_matters": "Jira DUOS-386 chỉ có tên template và param, không có điều kiện gửi.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-040",
+        "notifications/email-sender-and-routing#KB-041"
+      ],
+      "oq_id": "OQ-notifications-016"
+    },
+    {
+      "question": "Email transaction gửi tới địa chỉ nào của merchant (email store owner hay email khác)?",
+      "why_it_matters": "Không có expected result cho người nhận.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-038",
+        "notifications/email-sender-and-routing#KB-041"
+      ],
+      "oq_id": "OQ-notifications-026"
+    },
+    {
+      "question": "Bốn trigger email (Member added to location, Role changes, Shopping list pending approval, Shopping list approved) có hiện đúng tên trong Shopify Flow và bắn đúng sự kiện không, khi chưa ai mở Shopify Flow trên staging?",
+      "why_it_matters": "Quy tắc chỉ có nguồn Jira + Dev; chưa có hiện trạng để làm baseline.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-036",
+        "notifications/email-sender-and-routing#KB-037",
+        "_product-level#KB-P-006"
+      ],
+      "oq_id": "OQ-notifications-014"
+    },
+    {
+      "question": "Payload của ba trigger Member added to location, Role changes và Shopping list approved gồm những field nào?",
+      "why_it_matters": "Chỉ trigger pending approval có mô tả payload; merchant cần field để dựng email.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-036"
+      ],
+      "oq_id": "OQ-notifications-014"
+    },
+    {
+      "question": "Trigger Flow có được bắn khi toggle thông báo tương ứng trong trang Notifications đang tắt không (hai cơ chế độc lập hay phụ thuộc)?",
+      "why_it_matters": "Quyết định case nào phải có email/trigger; tài liệu không nêu.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-036",
+        "notifications/notification-settings-and-templates#KB-008",
+        "notifications/notification-settings-and-templates#KB-015"
+      ],
+      "oq_id": "OQ-notifications-025"
+    },
+    {
+      "question": "Email báo đổi role có được gửi lặp khi Flow action assign role chạy lần 2 cho cùng member và cùng role không?",
+      "why_it_matters": "Rủi ro gửi trùng email; tài liệu chỉ trỏ tới danh sách câu hỏi mở không có trong bộ nguồn.",
+      "kb_refs": [
+        "notifications/notification-settings-and-templates#KB-011",
+        "notifications/email-sender-and-routing#KB-036"
+      ],
+      "oq_id": "OQ-notifications-015"
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-08",
+    "earliest_source_date": "2026-03-25",
+    "basis": "Ngày nguồn mới nhất trong các KB item được tham chiếu (ngày quyết định PO/Dev, ngày QA đọc Jira, ngày khảo sát staging); không có quan sát runtime trong lần chạy này."
+  },
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "editor template credit-assigned, field sender",
+      "environment": "documented",
+      "covered": true,
+      "note": "Hiện trạng staging, lệch quyết định"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "editor các template Customer khác",
+      "environment": "documented",
+      "covered": false,
+      "note": "Chưa khảo sát"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "data",
+      "role": "buyer",
+      "state": "email gửi buyer, merchant đã cấu hình sender",
+      "environment": "documented",
+      "covered": true,
+      "note": "Quyết định 01/04/2026; chưa quan sát header"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "data",
+      "role": "buyer",
+      "state": "merchant chưa cấu hình sender",
+      "environment": "documented",
+      "covered": false,
+      "note": "Không có nguồn"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "data",
+      "role": "buyer",
+      "state": "người nhận alias @qikify",
+      "environment": "documented",
+      "covered": true,
+      "note": "Lỗi đang mở"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "portal",
+      "role": "merchant staff giới hạn quyền",
+      "state": "any",
+      "environment": "documented",
+      "covered": false,
+      "note": "Ma trận quyền chưa có"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "code",
+      "role": "unspecified",
+      "state": "any",
+      "environment": "documented",
+      "covered": false,
+      "note": "Không có nguồn mã"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "api",
+      "role": "unspecified",
+      "state": "any",
+      "environment": "documented",
+      "covered": false,
+      "note": "Bộ tài liệu QA không có đặc tả API/data model cho feature này"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "db",
+      "role": "unspecified",
+      "state": "any",
+      "environment": "documented",
+      "covered": false,
+      "note": "Bộ tài liệu QA không có đặc tả API/data model cho feature này"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "data",
+      "role": "merchant",
+      "state": "install / uninstall, nhóm Advanced / Plus / Plus Sandbox",
+      "environment": "documented",
+      "covered": true,
+      "note": "Chỉ ticket, không có nội dung"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "data",
+      "role": "merchant",
+      "state": "install / uninstall, nhóm Basic / Grow / Partner test / Affiliate",
+      "environment": "documented",
+      "covered": true,
+      "note": "Chỉ ticket, không có nội dung"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "data",
+      "role": "merchant",
+      "state": "subscription change / cancel",
+      "environment": "documented",
+      "covered": true,
+      "note": "Chỉ ticket"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "data",
+      "role": "merchant",
+      "state": "đổi Shopify plan",
+      "environment": "documented",
+      "covered": true,
+      "note": "Chỉ ticket; trigger chưa rõ"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "data",
+      "role": "merchant",
+      "state": "email thật tới inbox",
+      "environment": "documented",
+      "covered": false,
+      "note": "Chưa quan sát"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "any",
+      "environment": "documented",
+      "covered": false,
+      "note": "Feature không có surface Portal"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "code",
+      "role": "unspecified",
+      "state": "any",
+      "environment": "documented",
+      "covered": false,
+      "note": "Không có nguồn mã"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "api",
+      "role": "unspecified",
+      "state": "any",
+      "environment": "documented",
+      "covered": false,
+      "note": "Bộ tài liệu QA không có đặc tả API/data model cho feature này"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "db",
+      "role": "unspecified",
+      "state": "any",
+      "environment": "documented",
+      "covered": false,
+      "note": "Bộ tài liệu QA không có đặc tả API/data model cho feature này"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "api",
+      "role": "merchant",
+      "state": "danh sách 4 trigger",
+      "environment": "documented",
+      "covered": true,
+      "note": "Jira + Dev; chưa quan sát"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "data",
+      "role": "buyer-admin / buyer-senior",
+      "state": "payload trigger pending approval",
+      "environment": "documented",
+      "covered": true,
+      "note": "Jira + Dev"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "data",
+      "role": "merchant",
+      "state": "payload 3 trigger còn lại",
+      "environment": "documented",
+      "covered": false,
+      "note": "Không có nguồn"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "api",
+      "role": "merchant",
+      "state": "toggle trong app tắt",
+      "environment": "documented",
+      "covered": false,
+      "note": "Không có nguồn"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "api",
+      "role": "system",
+      "state": "assign role chạy lần 2",
+      "environment": "documented",
+      "covered": false,
+      "note": "Câu hỏi mở"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "any",
+      "environment": "documented",
+      "covered": false,
+      "note": "Feature không có surface Portal riêng"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "code",
+      "role": "unspecified",
+      "state": "any",
+      "environment": "documented",
+      "covered": false,
+      "note": "Không có nguồn mã"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "api",
+      "role": "unspecified",
+      "state": "any",
+      "environment": "documented",
+      "covered": false,
+      "note": "Bộ tài liệu QA không có đặc tả API/data model cho feature này"
+    },
+    {
+      "feature_id": "email-sender-and-routing",
+      "layer": "db",
+      "role": "unspecified",
+      "state": "any",
+      "environment": "documented",
+      "covered": false,
+      "note": "Bộ tài liệu QA không có đặc tả API/data model cho feature này"
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "conflict_id": "DEV-DUOS-notifications-01",
+      "conflict_group": null,
+      "owner_feature": "email-sender-and-routing",
+      "topic": "Editor template có field reply-to riêng hay không",
+      "side_a": "Quyết định Dev BE 01/04/2026, PO chốt (Jira DUOS-370): field \"reply to\" riêng bị bỏ; sender email merchant đưa vào reply-to.",
+      "side_b": "Staging 08/10/2026, store Free plan: editor template vẫn có field \"Reply to email:\" bên cạnh \"Sender name:\" / \"Sender email:\".",
+      "resolution": "UNRESOLVED",
+      "impact": "Check theo quyết định giữ oracle; hiện trạng field reply-to chỉ là quan sát cần xác nhận.",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-034",
+        "notifications/email-sender-and-routing#KB-035"
+      ]
+    }
+  ],
+  "profile_relationships": [
+    {
+      "from": "email-sender-and-routing",
+      "to": "notification-settings-and-templates",
+      "relation": "SHARES_SURFACE",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-035",
+        "notifications/notification-settings-and-templates#KB-025"
+      ]
+    },
+    {
+      "from": "email-sender-and-routing",
+      "to": "pricing-subscription",
+      "relation": "TRIGGERED_BY",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-039"
+      ]
+    },
+    {
+      "from": "email-sender-and-routing",
+      "to": "notification-settings-and-templates",
+      "relation": "RELATED",
+      "kb_refs": [
+        "notifications/notification-settings-and-templates#KB-013",
+        "notifications/notification-settings-and-templates#KB-011"
+      ]
+    },
+    {
+      "from": "email-sender-and-routing",
+      "to": "roles-permissions/flow-assign-role-automation",
+      "relation": "RELATED",
+      "kb_refs": [
+        "notifications/email-sender-and-routing#KB-036"
+      ]
+    }
+  ]
+}

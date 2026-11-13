@@ -1,0 +1,2 @@
+# CHANGELOG — plan
+- 2026-11-13 (restructure-2026-11-13) — Đổi cấu trúc theo contract §5 "Độ hạt object/feature": plans-billing/plan-capacity-and-cycle → plan/plan-capacity-and-cycle; plans-billing/plan-upgrade-downgrade-cancel → plan/plan-upgrade-downgrade-cancel; plans-billing/plan-catalog-administration → plan/plan-catalog-administration. Giữ nguyên kb_id, statement, nguồn và test steps; OQ chuyển object được mint id mới kèm `supersedes`.

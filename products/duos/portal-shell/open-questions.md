@@ -75,7 +75,7 @@ Tổng: 21 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-portal-shell-003",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "portal-navigation",
+  "feature_id": "buyer-facing-content",
   "summary": "Ma trận quyền cho các màn dùng chung của Portal chưa được ghi: mọi khảo sát staging dùng một tài khoản merchant staff, tài liệu không nói staff Shopify bị giới hạn quyền có thấy Home, B2B extensions hub, Content & Translation hay không; banner cho khách không phải B2B ở Customer Account không nói rõ áp cho khách đã đăng nhập nhưng chưa thuộc company nào hay cho mọi khách; trong admin panel nội bộ, role nào (quản lý bằng Shield) được xem shop, sửa `users.config`, quản lý Plans / Discounts / Extensions chưa được ghi. Cần PO/Dev xác nhận ma trận quyền cho các màn này.",
   "kb_ids": [
     "KB-017",
@@ -93,8 +93,8 @@ Tổng: 21 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
   "related_feature_ids": [
     "home-onboarding",
     "portal-navigation",
-    "content-translations",
-    "dtc-access-banner",
+    "buyer-facing-content",
+    "buyer-facing-content",
     "internal-admin-panel"
   ],
   "related_questions": [
@@ -114,11 +114,11 @@ Tổng: 21 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
   ],
   "check_ids": [
     "portal-navigation:CHK-011",
-    "dtc-access-banner:CHK-003",
-    "dtc-access-banner:CHK-004",
-    "dtc-access-banner:CHK-005",
-    "dtc-access-banner:CHK-006",
-    "dtc-access-banner:CHK-002"
+    "buyer-facing-content:CHK-003",
+    "buyer-facing-content:CHK-004",
+    "buyer-facing-content:CHK-005",
+    "buyer-facing-content:CHK-006",
+    "buyer-facing-content:CHK-002"
   ]
 }
 ```
@@ -129,7 +129,7 @@ Tổng: 21 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-portal-shell-004",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "portal-navigation",
+  "feature_id": "buyer-facing-content",
   "summary": "Các hành vi sau của Portal chung chỉ có nguồn là mô tả Jira hoặc tài liệu sản phẩm Duos do QA tóm tắt lại, chưa có business rule hay PO/Dev xác nhận: card app embed và nút \"Check status\" theo Jira DUOS-49 (01/2025, tài liệu ghi \"có thể đã đổi\"); đặt lịch onboarding / demo call chỉ cho Shopify Plus và Advanced (DUOS-79, DUOS-387); Crisp live chat (DUOS-121); hỗ trợ tiếng Nhật (DUOS-108, DUOS-275); App Logo tuỳ chỉnh (DUOS-144); app tự phát hiện extension đã thêm vào Customer Account (DUOS-199); điều hướng tái cấu trúc 2 đợt (DUOS-168, DUOS-228); Translations có EN + JP (không rõ là ngôn ngữ giao diện Portal hay ngôn ngữ bản dịch nội dung cho buyer); banner cho khách không phải B2B (DUOS-340 kèm comment 26/02/2026); các mục bên trong admin panel nội bộ và JSON viewer sau Laravel 12 (DUOS-399, DUOS-429). Những hành vi này còn đúng ở bản hiện hành không? Cần PO xác nhận trước khi dùng làm kết quả mong đợi.",
   "kb_ids": [
     "KB-003",
@@ -154,8 +154,8 @@ Tổng: 21 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
   "related_feature_ids": [
     "home-onboarding",
     "portal-navigation",
-    "content-translations",
-    "dtc-access-banner",
+    "buyer-facing-content",
+    "buyer-facing-content",
     "internal-admin-panel"
   ],
   "related_questions": [
@@ -185,8 +185,8 @@ Tổng: 21 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
   "related_feature_ids": [
     "home-onboarding",
     "portal-navigation",
-    "content-translations",
-    "dtc-access-banner",
+    "buyer-facing-content",
+    "buyer-facing-content",
     "internal-admin-panel"
   ],
   "missing_area": "missing-linked-docs"
@@ -228,8 +228,8 @@ Tổng: 21 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
   "related_feature_ids": [
     "home-onboarding",
     "portal-navigation",
-    "content-translations",
-    "dtc-access-banner",
+    "buyer-facing-content",
+    "buyer-facing-content",
     "internal-admin-panel"
   ],
   "missing_area": "staging-build-and-context",
@@ -245,7 +245,7 @@ Tổng: 21 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-portal-shell-007",
   "type": "OPEN_ISSUE",
-  "feature_id": "content-translations",
+  "feature_id": "buyer-facing-content",
   "summary": "Trang \"Content & Translation\" chưa có business rule (Jira DUOS-58 không có mô tả) và khảo sát staging 08/10/2026 chưa mở nội dung từng tab: field nào dịch được, lưu thế nào, hành vi nút \"Add language\", và danh sách locale khi store có nhiều ngôn ngữ đều chưa được ghi. Cần business rule hoặc khảo sát bổ sung trước khi viết kết quả mong đợi cho trang này.",
   "kb_ids": [
     "KB-028",
@@ -265,7 +265,7 @@ Tổng: 21 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-portal-shell-008",
   "type": "OPEN_ISSUE",
-  "feature_id": "dtc-access-banner",
+  "feature_id": "buyer-facing-content",
   "summary": "Customer Account chưa được quan sát trên staging (không có tài khoản buyer; store khảo sát có 8 extension Inactive), nên banner cho khách không phải B2B chỉ có nguồn Jira DUOS-340, chưa đối chiếu được trên giao diện thật. Cần tài khoản khách và extension Customer Account đang bật để khảo sát.",
   "kb_ids": [
     "KB-032",
@@ -278,7 +278,7 @@ Tổng: 21 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
     "Trên staging, banner có hiển thị đúng như Jira DUOS-340 không (cần tài khoản khách và extension Customer Account đang bật)?"
   ],
   "check_ids": [
-    "dtc-access-banner:CHK-001"
+    "buyer-facing-content:CHK-001"
   ]
 }
 ```
@@ -455,13 +455,13 @@ Tổng: 21 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-portal-shell-017",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "content-translations",
+  "feature_id": "buyer-facing-content",
   "summary": "Nút \"Add language\" trên trang Content & Translation làm gì (thêm locale từ ngôn ngữ đã publish của store Shopify hay tạo mới), và câu \"Translations có EN + JP\" nghĩa là chỉ dịch được nội dung sang EN và JP hay chỉ là ngôn ngữ giao diện Portal?",
   "kb_ids": [
     "KB-031"
   ],
   "check_ids": [
-    "content-translations:CHK-004"
+    "buyer-facing-content:CHK-004"
   ],
   "related_questions": [
     "Bấm \"Add language\" làm gì (thêm locale từ ngôn ngữ đã publish của store Shopify hay tạo mới), và vì sao store chỉ có English hiển thị \"No locale found\"?",
@@ -476,10 +476,10 @@ Tổng: 21 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-portal-shell-018",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "content-translations",
+  "feature_id": "buyer-facing-content",
   "summary": "Mỗi tab của trang Content & Translation cho dịch những field nào và lưu thế nào (nút Save hay tự lưu)? Bản dịch có được giữ theo từng locale sau khi tải lại không?",
   "check_ids": [
-    "content-translations:CHK-005"
+    "buyer-facing-content:CHK-005"
   ]
 }
 ```
@@ -490,10 +490,10 @@ Tổng: 21 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-portal-shell-019",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "content-translations",
+  "feature_id": "buyer-facing-content",
   "summary": "Bản dịch lưu ở trang Content & Translation hiển thị cho buyer ở surface nào (storefront, Customer Account, PDF báo giá), và chọn locale theo ngôn ngữ storefront / Customer Account của buyer hay theo thiết lập khác?",
   "check_ids": [
-    "content-translations:CHK-006"
+    "buyer-facing-content:CHK-006"
   ]
 }
 ```
@@ -519,12 +519,12 @@ Tổng: 21 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
   "oq_id": "OQ-portal-shell-021",
   "type": "OPEN_ISSUE",
   "feature_id": null,
-  "summary": "Bộ tài liệu nguồn (QA business rule, QA KB Duos, inventory staging) không có đặc tả API / data model cho các feature: home-onboarding, portal-navigation, content-translations, dtc-access-banner, internal-admin-panel. Cần Dev cung cấp endpoint, payload và dữ liệu lưu trữ liên quan nếu QA cần kiểm ở tầng API/DB.",
+  "summary": "Bộ tài liệu nguồn (QA business rule, QA KB Duos, inventory staging) không có đặc tả API / data model cho các feature: home-onboarding, portal-navigation, buyer-facing-content, buyer-facing-content, internal-admin-panel. Cần Dev cung cấp endpoint, payload và dữ liệu lưu trữ liên quan nếu QA cần kiểm ở tầng API/DB.",
   "related_feature_ids": [
     "home-onboarding",
     "portal-navigation",
-    "content-translations",
-    "dtc-access-banner",
+    "buyer-facing-content",
+    "buyer-facing-content",
     "internal-admin-panel"
   ]
 }

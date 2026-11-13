@@ -1,0 +1,484 @@
+{
+  "feature_id": "FEAT-01-multibuy-discount-calculation",
+  "feature_key": "multibuy-discount-calculation",
+  "object_id": "multibuy",
+  "checklist_version": "v2",
+  "checks": [
+    {
+      "check_id": "CHK-015",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "Không có nudge message cho 1 leftover unit sau khi 1 set đã hoàn thành (Percentage + Apply per combo)",
+      "applicability": {
+        "role": "buyer",
+        "state": "cart có 1 set hoàn chỉnh + 1 leftover item",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Discount type = Percentage, \"How discount is applied\" = Apply per combo product.",
+      "steps": [
+        "Thêm số lượng item = (quantity 1 tier) + 1 (ví dụ tier 3-item, thêm 4 item).",
+        "Quan sát khu vực message/nudge của widget cho item leftover."
+      ],
+      "observation_point": "Có/không có message nudge cho leftover item.",
+      "expected_result": "Chỉ có itemized price breakdown; KHÔNG có nudge message nào (vd \"buy 1 more to save\") cho leftover item.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-appearance-and-schedule#KB-031",
+          "multibuy/multibuy-discount-calculation#KB-073"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-016",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Pooling quantity across nhiều sản phẩm khác nhau dưới trigger \"All products\"",
+      "applicability": {
+        "role": "buyer",
+        "state": "cart có nhiều SKU eligible khác nhau",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Trigger = All products, tier yêu cầu quantity N.",
+      "steps": [
+        "Thêm N item vào cart, chia trên ≥2 sản phẩm khác nhau (không phải cùng 1 SKU).",
+        "Kiểm tra discount có áp dụng không."
+      ],
+      "observation_point": "Trạng thái qualify của tier khi quantity được pool từ nhiều SKU.",
+      "expected_result": "Discount áp dụng dù quantity đến từ nhiều sản phẩm/variant khác nhau — đây là điểm khác biệt chính với Quantity Break (không pool cross-product).",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-calculation#KB-032"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-017",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "Remainder handling — set được fill bằng unit giá cao nhất trước (Fixed total price)",
+      "applicability": {
+        "role": "buyer",
+        "state": "pooled quantity vượt tier với remainder không đạt tier kế",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Tier Fixed total price, cart có nhiều SKU giá khác nhau, tổng quantity có remainder.",
+      "steps": [
+        "Thêm cart sao cho tổng quantity = (tier threshold) + remainder nhỏ, dùng ≥2 SKU giá khác nhau.",
+        "Kiểm tra SKU nào được tính vào discounted set, SKU nào là remainder full price."
+      ],
+      "observation_point": "Phân bổ unit vào discounted set vs remainder.",
+      "expected_result": "Discounted set được fill bằng các unit giá CAO NHẤT trước; remainder là unit(s) giá rẻ nhất, tính full price.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-calculation#KB-033"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "multibuy/multibuy-discount-calculation#KB-095"
+      ],
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-018",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "Exact-match case — Fixed total price phân bổ theo TỶ LỆ giá gốc, không chia đều, không highest-first",
+      "applicability": {
+        "role": "buyer",
+        "state": "pooled quantity đúng bằng tier threshold (không remainder)",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Tier Fixed total price, cart có đúng N item (N = tier quantity) trên ≥2 SKU giá khác nhau.",
+      "steps": [
+        "Thêm cart với tổng quantity đúng bằng tier threshold, dùng ≥2 SKU giá khác nhau (vd 2 SKU $60 + 1 SKU $75 cho tier 3→$20).",
+        "Kiểm tra giá discount phân bổ cho từng SKU trong order breakdown."
+      ],
+      "observation_point": "Giá trị phân bổ (allocated amount) trên từng SKU trong breakdown.",
+      "expected_result": "Mọi unit trong set được discount; fixed total price của tier phân bổ theo TỶ LỆ giá gốc của mỗi SKU — KHÔNG chia đều, KHÔNG dùng rule highest-priced-first (rule đó chỉ áp dụng khi có remainder).",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-calculation#KB-080"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "multibuy/multibuy-discount-calculation#KB-095"
+      ],
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-020",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "\"How discount is applied\" chỉ hiển thị khi discount type = Percentage",
+      "applicability": {
+        "role": "merchant",
+        "state": "discount type = Fixed total price Percentage",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Offer đang edit, có ≥1 tier.",
+      "steps": [
+        "Đặt discount type = Fixed total price, quan sát khu vực dưới Discount type.",
+        "Đổi discount type = Percentage, quan sát lại."
+      ],
+      "observation_point": "Sự xuất hiện/ẩn của setting \"How discount is applied\".",
+      "expected_result": "Setting chỉ hiển thị khi discount type = Percentage, nằm ngay dưới Discount type, trên tier list.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-calculation#KB-035"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-021",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "\"Apply per combo product\" (default) — nhóm set cố định, remainder full price",
+      "applicability": {
+        "role": "buyer",
+        "state": "discount type=Percentage, How discount is applied=Apply per combo product",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Tier Percentage 2→10%, 3→20%, 4→30%; setting = Apply per combo product (default).",
+      "steps": [
+        "Thêm 4 item eligible vào cart.",
+        "Kiểm tra giá discount trên từng item."
+      ],
+      "observation_point": "Số item được discount và mức discount áp dụng.",
+      "expected_result": "3 item được discount 20% (set khớp tier 3), 1 item còn lại full price (remainder không đủ set đầy).",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-calculation#KB-036",
+          "multibuy/multibuy-discount-calculation#KB-037"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-022",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "\"Apply highest tier to entire quantity\" — áp rate tier cao nhất cho toàn bộ quantity",
+      "applicability": {
+        "role": "buyer",
+        "state": "discount type=Percentage, How discount is applied=Apply highest tier to entire quantity",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Tier Percentage 2→10%, 3→20%, 4→30%; setting = Apply highest tier to entire quantity.",
+      "steps": [
+        "Cùng cart 4 item eligible như CHK-021, nhưng đổi setting sang \"Apply highest tier to entire quantity\".",
+        "Kiểm tra giá discount trên từng item."
+      ],
+      "observation_point": "Mức discount áp dụng trên toàn bộ 4 item.",
+      "expected_result": "Toàn bộ 4 item đều được 30% off (tier cao nhất mà quantity đáp ứng) — không set grouping, không remainder.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-calculation#KB-038"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-023",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "Dưới lowest tier threshold — không có discount, ở cả 2 mode",
+      "applicability": {
+        "role": "buyer",
+        "state": "quantity < lowest tier threshold",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Tier thấp nhất yêu cầu quantity N.",
+      "steps": [
+        "Thêm N-1 item eligible vào cart.",
+        "Lặp lại với cả 2 giá trị của \"How discount is applied\"."
+      ],
+      "observation_point": "Discount áp dụng (hoặc không) trên cart.",
+      "expected_result": "Không có discount nào được áp dụng, ở cả 2 mode của \"How discount is applied\".",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-calculation#KB-040"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-024",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "\"How discount is applied\" ẩn hoàn toàn khi discount type = Fixed total price",
+      "applicability": {
+        "role": "merchant",
+        "state": "discount type = Fixed total price",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Offer đang ở discount type Percentage với setting đã chọn.",
+      "steps": [
+        "Đổi discount type sang Fixed total price.",
+        "Quan sát khu vực setting \"How discount is applied\"."
+      ],
+      "observation_point": "Sự hiện diện của setting trong form.",
+      "expected_result": "Setting biến mất hoàn toàn khỏi form khi discount type = Fixed total price.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-calculation#KB-041"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-025",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Switching Percentage→Fixed sau khi chọn \"Apply highest tier\" — setting reset về default khi Save",
+      "applicability": {
+        "role": "merchant",
+        "state": "đã chọn Apply highest tier to entire quantity, rồi đổi discount type",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Discount type = Percentage, \"How discount is applied\" = Apply highest tier to entire quantity.",
+      "steps": [
+        "Đổi discount type sang Fixed total price và Save.",
+        "Đổi lại discount type sang Percentage.",
+        "Kiểm tra giá trị hiện tại của \"How discount is applied\"."
+      ],
+      "observation_point": "Giá trị setting sau khi quay lại Percentage.",
+      "expected_result": "Setting đã reset về default \"Apply per combo product\" sau lần Save ở Fixed total price — không giữ lại giá trị cũ \"Apply highest tier\".",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-calculation#KB-042"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-026",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Backend lưu \"How discount is applied\" dưới field tier_application_method, xử lý trong multibuy-discount Function",
+      "applicability": {
+        "role": "",
+        "state": "sau khi Save setting",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Có quyền đọc discount config backend (API/DB) của offer.",
+      "steps": [
+        "Save offer với \"Apply per combo product\" — kiểm tra field tier_application_method trong discount config = `per_group`.",
+        "Save offer với \"Apply highest tier to entire quantity\" — kiểm tra field = `highest_tier_all`.",
+        "Xác nhận tier-matching step của Function `multibuy-discount` đọc đúng field này."
+      ],
+      "observation_point": "Giá trị field tier_application_method trong discount config backend.",
+      "expected_result": "Field tồn tại với đúng 2 giá trị `per_group`/`highest_tier_all`, khớp UI setting đã chọn.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-calculation#KB-043"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Phanh derivation: oracle duy nhất KB-043 có derivation code_artifact (suy từ cách dữ liệu tổ chức trong code). Tên field tier_application_method và 2 giá trị per_group/highest_tier_all có đúng với backend hiện hành không? Lưu ý staging 2026-10-18 thấy offer lưu giá trị ẩn discount_apply_type 'per_combo' (KB-086) — cần Dev xác nhận tên field/giá trị thật.",
+      "related_kb_ids": [
+        "multibuy/multibuy-discount-setup#KB-086"
+      ],
+      "risk_refs": [
+        "RISK-code-artifact-derivation"
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-025"
+    },
+    {
+      "check_id": "CHK-027",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Switching discount type Fixed↔Percentage nhiều lần không làm mất/corrupt tier values",
+      "applicability": {
+        "role": "merchant",
+        "state": "offer có nhiều tier với giá trị đã nhập",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Offer có ≥2 tier với quantity/reward đã điền cụ thể.",
+      "steps": [
+        "Đổi discount type Fixed→Percentage→Fixed→Percentage (≥4 lần) không Save giữa các lần đổi.",
+        "Kiểm tra giá trị tier (quantity, title, badge) sau cùng."
+      ],
+      "observation_point": "Giá trị các field tier sau nhiều lần switch.",
+      "expected_result": "Tier values (ngoại trừ setting \"Apply highest tier\" tự reset) được preserve hoàn toàn — không mất, không corrupt.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-calculation#KB-075"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-047",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "\"Apply highest tier to entire quantity\" và \"Discount combination\" không conflict với nhau",
+      "applicability": {
+        "role": "merchant",
+        "state": "cả 2 setting đã được cấu hình",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Offer có discount type Percentage, setting = Apply highest tier to entire quantity, VÀ ≥1 checkbox Discount combination enabled.",
+      "steps": [
+        "Cấu hình cả 2 setting cùng lúc.",
+        "Lưu offer, kiểm tra không có lỗi/cảnh báo xung đột.",
+        "Verify discount áp dụng đúng theo \"How discount is applied\" VÀ vẫn stack theo Discount combination đã chọn."
+      ],
+      "observation_point": "Behavior khi cả 2 setting cùng active.",
+      "expected_result": "2 setting không conflict theo construction — \"Apply highest tier\" chỉ kiểm soát cách tính discount amount của offer này; \"Discount combination\" chỉ kiểm soát việc stack với discount khác.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-calculation#KB-074"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-053",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Compare-at-Price — % discount tính trên compare_at_price khi > 0",
+      "applicability": {
+        "role": "buyer",
+        "state": "sản phẩm có compare_at_price > 0",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Sản phẩm eligible có compare_at_price > price hiện tại; tier Percentage áp dụng.",
+      "steps": [
+        "Thêm sản phẩm vào cart để đạt tier Percentage X%.",
+        "Tính final price kỳ vọng dựa trên compare_at_price × (1-X%).",
+        "So sánh với final price hiển thị trên cart."
+      ],
+      "observation_point": "Final price hiển thị trên cart/checkout.",
+      "expected_result": "% discount được tính trên compare_at_price (giá gốc), KHÔNG phải price đang bán.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-calculation#KB-067",
+          "multibuy/multibuy-discount-calculation#KB-068"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-054",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "Fallback về price khi sản phẩm KHÔNG có compare_at_price",
+      "applicability": {
+        "role": "buyer",
+        "state": "sản phẩm không có compare_at_price",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Sản phẩm eligible KHÔNG có compare_at_price (hoặc = 0).",
+      "steps": [
+        "Thêm sản phẩm vào cart để đạt tier Percentage X%.",
+        "Tính final price kỳ vọng dựa trên price × (1-X%).",
+        "So sánh với final price hiển thị."
+      ],
+      "observation_point": "Final price hiển thị.",
+      "expected_result": "% discount tính theo price tiêu chuẩn (fallback), không có lỗi/giá trị bất thường khi compare_at_price không tồn tại.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-calculation#KB-068"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    }
+  ],
+  "coverage_by_feature_and_risk": [],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
+}

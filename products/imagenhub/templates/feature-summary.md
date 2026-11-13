@@ -1,32 +1,27 @@
 # Templates — recipe tái sử dụng (model + prompt/variables + default inputs + post-processing + fallback), quản lý trên portal và gọi qua template_id
-**Published context version:** 2
+**Published context version:** 3
 
-**Product:** ImagenHub · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-08
+**Product:** imagenhub · **Object:** `templates` · **Cập nhật cấu trúc:** 2026-11-13
 
 ## Features
 
-- **template-library** — Duyệt & tổ chức thư viện template (list/search/filter, category, public vs private, import public template): 19 KB item; checklist 20 check (STRONG 5 / BASELINE 10 / NONE 5)
-- **template-authoring** — Tạo / sửa / xoá template: 30 KB item; checklist 21 check (STRONG 5 / BASELINE 11 / NONE 5)
-- **template-post-processing** — Cấu hình post-processing steps và hành vi chain khi 1 step lỗi: 17 KB item; checklist 11 check (STRONG 0 / BASELINE 10 / NONE 1)
-- **template-variables** — Biến {{variables}} trong prompt template: 19 KB item; checklist 8 check (STRONG 0 / BASELINE 7 / NONE 1)
-- **template-run-history** — Chạy template từ portal và xem Run history (lightbox, phân trang, nguồn URL ảnh): 25 KB item; checklist 13 check (STRONG 2 / BASELINE 9 / NONE 2)
-- **fallback-template** — Fallback template (IGH-226): 32 KB item; checklist 22 check (STRONG 18 / BASELINE 1 / NONE 3)
-- **dynamic-upload-ratio** — Dynamic Upload Ratio (Aspect Ratio = Auto): 17 KB item; checklist 11 check (STRONG 6 / BASELINE 2 / NONE 3)
+| Feature | User goal | KB | Check | OQ | Known defect |
+|---|---|---|---|---|---|
+| `dynamic-upload-ratio` — Dynamic Upload Ratio (Aspect Ratio = Auto) | Người cấu hình đặt ratio của template là Auto để một template dùng được cho ảnh input nhiều shape: mỗi lần gọi, output được snap về ratio khả dụng gần nhất m… | 17 | 11 | 4 | 0 |
+| `fallback-template` — Fallback template (IGH-226) | Người cấu hình gắn một template dự phòng (B) vào template chính (A) để khi A fail vì một trong các loại lỗi đã chốt, hệ thống tự động chạy B mà không cần xác… | 32 | 22 | 13 | 3 |
+| `template-authoring` — Tạo, sửa và xoá template | Người cấu hình template tạo template mới từ một model (tên, mô tả, category, prompt và các param của model), cập nhật model/param của template có sẵn, thử te… | 30 | 21 | 10 | 2 |
+| `template-library` — Thư viện template — duyệt, tìm kiếm, lọc, category và template public | Người dùng tìm được template cần dùng — template riêng hoặc template public do hệ thống cung cấp — qua trang Templates của portal (danh sách, tìm kiếm, lọc t… | 19 | 20 | 5 | 0 |
+| `template-post-processing` — Post-processing của template — cấu hình chuỗi bước xử lý sau generate | Người cấu hình template nối thêm các bước xử lý ảnh (upscale, remove background, resize, face cutout...) chạy sau bước generate của template, biết trước chi … | 17 | 11 | 4 | 0 |
+| `template-run-history` — Chạy template từ trang chi tiết và xem Run history | Người dùng chạy thử template ngay trên trang chi tiết (Run, Run in Batch) và xem lại các lần chạy trước của chính template đó — danh sách run, lightbox ảnh f… | 25 | 13 | 5 | 0 |
+| `template-variables` — Biến {{variables}} trong prompt template | Người cấu hình khai báo biến {{...}} trong prompt của template để cùng một template sinh nội dung khác nhau theo giá trị được truyền vào lúc chạy — từ portal… | 19 | 8 | 4 | 0 |
+| `teeinblue-ai-effect-setup` — Teeinblue AI Effect — kết nối ImagenHub vào Teeinblue | Người cấu hình store Teeinblue kết nối ImagenHub và gắn template ImagenHub vào Photo Upload Layer, để ảnh khách upload trên product Teeinblue được áp hiệu ứn… | 11 | 14 | 5 | 0 |
 
-## Knowledge
+KB object-level: 3 (`kb.json`).
 
-- KB item: 162 (object-level 3) — CONFIRMED_EXPECTED 42 (spec_doc 40, test_case 2), OBSERVED_CURRENT 102, INFERRED 18.
-- Checklist: STRONG 36 · BASELINE 50 · NONE/NEEDS_CONFIRMATION 20.
-- Open questions: CONFLICT 0 · NEEDS_CONFIRMATION 24 · OPEN_ISSUE 22 — chi tiết trong `open-questions.md` của object này.
+## Open questions
 
-## Nguồn & cách đọc độ tin cậy
+CONFLICT 0 · NEEDS_CONFIRMATION 27 · OPEN_ISSUE 24 — chi tiết trong `open-questions.md`.
 
-- Nguồn là bộ tài liệu QA tự biên soạn trên Testlane (project IGH, bản v1, upload 2026-10-02): một bản tóm tắt docs chính thức docs.imagenhub.ai (đọc 2026-08-27) và các ghi chép khảo sát/test thật trên portal staging (2026-08-30 → 2026-10-01). Không có quan sát runtime nào của lần publish này.
-- `CONFIRMED_EXPECTED` + `spec_doc`: từ docs chính thức, hoặc rule PO/Dev đã chốt (ghi rõ trong `confirmation_source.ref`). `test_case`: test case Testlane đã PASS (không ghi build).
-- `OBSERVED_CURRENT`: hiện trạng trên staging tại ngày khảo sát — không phải expected requirement; lệch = cần điều tra. `status: KNOWN_DEFECT` là lỗi đã biết, chỉ dùng làm regression watch.
-- `scope.environment` luôn là `documented`; phạm vi docs/prod vs staging vs preview được nêu ngay trong statement.
+## Tên cũ (alias)
 
-## Giới hạn đã biết
-
-- Một số tài liệu chi tiết được tham chiếu trong bộ nguồn nhưng không có trên Testlane (API/Provider keys, Organization, Webhooks & Alerts, Subscription & pricing, MCP setup, Known bugs, Staging API endpoints) — các mảng đó chỉ có thông tin ở mức tóm tắt, phần còn lại ghi là open question.
-- Role thực hiện thao tác chưa được tài liệu nêu rõ cho hầu hết object; xem open question về role.
+`teeinblue-ai-effect-setup` · `teeinblue-integration`

@@ -1,5 +1,5 @@
 # MCP server
-**Published context version:** 4
+**Published context version:** 5
 
 **Product:** teeinblue · **Object:** `mcp` · **Cập nhật cấu trúc:** 2026-11-13
 

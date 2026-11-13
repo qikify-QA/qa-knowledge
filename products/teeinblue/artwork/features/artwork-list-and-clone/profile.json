@@ -1,0 +1,716 @@
+{
+  "feature_id": "FEAT-37-artwork-list-and-clone",
+  "feature_key": "artwork-list-and-clone",
+  "name": "Danh sách artwork và clone sang store khác",
+  "user_goal": "Store owner/staff xem và thao tác nhanh trên các artwork đã tạo (preview, sửa chi tiết, nhân bản, gửi dịch, archive, xoá) từ trang danh sách /artworks.",
+  "user_goal_kb_refs": [
+    "artwork/artwork-list-and-clone#KB-047",
+    "artwork/artwork-list-and-clone#KB-229",
+    "artwork/artwork-list-and-clone#KB-1082",
+    "artwork/artwork-list-and-clone#KB-1083",
+    "artwork/artwork-list-and-clone#KB-1084"
+  ],
+  "actors": [
+    {
+      "role": "store owner / staff (sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "permission_observed": "Truy cập đầy đủ 4 action + menu trên mỗi artwork row",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-047"
+      ]
+    },
+    {
+      "role": "merchant-owner (store owner/staff, instance 520 store không thuộc explorer)",
+      "permission_observed": "Duplicate artwork có layer đặt Conditional Setting; dùng bản copy cho campaign",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229"
+      ]
+    },
+    {
+      "role": "merchant-owner (account đích)",
+      "permission_observed": "Import artwork từ TIB Library bằng account của mình; mở, sửa, Save artwork nhận được. Admin import do người có quyền admin chạy (theo ghi nhận QA, KB-1086).",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1082",
+        "artwork/artwork-list-and-clone#KB-1086"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "/artworks (trang danh sách artwork trong portal)",
+      "precondition": "đã đăng nhập role owner/staff, có ít nhất 1 artwork trong store",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-047",
+        "artwork/artwork-list-and-clone#KB-229"
+      ]
+    },
+    {
+      "path": "Portal /artworks → TIB Library → card → Import (POST /api/artworks/by-public), rồi mở artwork mới trong editor",
+      "precondition": "Không duplicate campaign sang account khác được từ portal trên staging (KB-1086, ALTERNATIVE_SETUP): copy artwork bằng import TIB Library bằng account đích (POST /api/artworks/by-public) hoặc nhờ người có quyền admin chạy admin import từ account nguồn sang account đích; cách thao tác ở _flows/artwork-editor.md mục Import artwork sang account khác. Artwork nguồn (public) có layer Clipart Category mà ảnh gốc là ảnh preview clipart trong chính category đó. Fixture tự dựng trên account/store test của explorer ở staging (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1082",
+        "artwork/artwork-list-and-clone#KB-1084",
+        "artwork/artwork-list-and-clone#KB-1086"
+      ]
+    },
+    {
+      "path": "Admin import artwork từ account nguồn sang account đích (người có quyền admin chạy), rồi mở artwork ở account đích",
+      "precondition": "Không duplicate campaign sang account khác được từ portal trên staging (KB-1086, ALTERNATIVE_SETUP): copy artwork bằng import TIB Library bằng account đích (POST /api/artworks/by-public) hoặc nhờ người có quyền admin chạy admin import từ account nguồn sang account đích; cách thao tác ở _flows/artwork-editor.md mục Import artwork sang account khác. Fixture tự dựng trên account/store test của explorer ở staging (không dùng store/campaign/artwork nêu trong CCR hay production).",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1082",
+        "artwork/artwork-list-and-clone#KB-1083",
+        "artwork/artwork-list-and-clone#KB-1085",
+        "artwork/artwork-list-and-clone#KB-1086"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Row quick actions",
+      "description": "Mỗi.artwork-item có 4 nút: preview (la-search-plus), edit details (la-pencil), duplicate (la-copy), menu (la-ellipsis-h).",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-047"
+      ]
+    },
+    {
+      "name": "Overflow menu 3 mục",
+      "description": "Menu la-ellipsis-h chứa đúng 3 mục: 'Import to Translation' / 'Mark as archive' / 'Delete artwork'.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-047"
+      ]
+    },
+    {
+      "name": "Duplicate artwork giữ cấu hình Conditional Setting (action Show/Hide)",
+      "description": "Duplicate artwork có layer đặt Conditional Setting: bản copy giữ action của layer — editor của bản copy từ artwork dùng Hide hiển thị action Hide, của bản copy từ artwork dùng Show hiển thị action Show (kiểm qua editor); campaign dùng bản copy của artwork Hide ẩn/hiện đúng chiều Hide trên storefront (khớp → ẩn field và layer; không khớp → hiện).",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-107] Xoá artwork bị chặn khi artwork đang được dùng; xoá artwork không dùng chuyển vào trash",
+      "description": "Artwork đang dùng trong campaign qua product base, bởi platform product, đã dùng cho order design hoặc có bản duplicate thì không xoá được, lỗi nêu lý do (duplicate: liệt kê tên); artwork trong campaign thì portal yêu cầu gỡ khỏi mọi campaign trước và có 'View campaigns list'. Xoá artwork chuyển nó vào trash, không xoá hẳn (spec-hub, sure green).",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1028",
+        "artwork/artwork-list-and-clone#KB-1031"
+      ]
+    },
+    {
+      "name": "[CBS-163] Archive / unarchive artwork và response contract của duplicate/archive/unarchive",
+      "description": "Theo Dev (TIB-5689): response của duplicate, archive, unarchive artwork là PortalArtworkResource gồm các attribute Artwork::$visible. Quan sát staging: archive đưa artwork vào tab Archived với status 1, unarchive trả status 0 (KB-1118, chưa xác nhận).",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1116",
+        "artwork/artwork-list-and-clone#KB-1118"
+      ]
+    },
+    {
+      "name": "Remap ảnh gốc của layer Clipart Category",
+      "description": "url của layer dùng lại ảnh preview clipart được đổi sang clipart tương ứng trong category mới của bên đích, cùng clipart và default_value; editor hiển thị ảnh, thấy category bên đích, không lỗi.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1082"
+      ]
+    },
+    {
+      "name": "Copy file ảnh clipart dùng ngoài category (Static photo)",
+      "description": "File ảnh được copy sang bên đích, layer hiển thị đúng; đường dẫn vẫn mang id category nguồn (giới hạn đã biết).",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1083"
+      ]
+    },
+    {
+      "name": "Layer ảnh từ Image library không đổi hành vi",
+      "description": "Đối chứng: vẫn hiển thị đúng như trước.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1084"
+      ]
+    },
+    {
+      "name": "Design preview của artwork bên đích",
+      "description": "Quan sát một lần: render từng template giống nguồn; chưa xác nhận.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1085"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "artwork item hiển thị trong list",
+      "to": "dialog confirm xoá hiển thị",
+      "trigger": "click 'Delete artwork' trong menu overflow",
+      "condition": "",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-047"
+      ]
+    },
+    {
+      "from": "artwork có layer đặt Conditional Setting (action Show hoặc Hide)",
+      "to": "artwork mới (bản copy) với layer giữ nguyên action",
+      "trigger": "Duplicate artwork từ danh sách Artworks",
+      "condition": "",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229",
+        "artwork/artwork-list-and-clone#KB-047"
+      ]
+    },
+    {
+      "from": "artwork active, không bị chặn xoá",
+      "to": "artwork trong trash (chưa bị xoá hẳn)",
+      "trigger": "[MỚI, CBS-107] Delete artwork",
+      "condition": "artwork không dùng ở campaign/platform product/order design và không có bản duplicate",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1031",
+        "artwork/artwork-list-and-clone#KB-1028"
+      ]
+    },
+    {
+      "from": "artwork active (status 0)",
+      "to": "artwork archived (status 1, hiện ở tab Archived)",
+      "trigger": "[CBS-163] menu row → 'Mark as archive'",
+      "condition": "OBSERVED_CURRENT/LOW (KB-1118), một lượt staging",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1118"
+      ]
+    },
+    {
+      "from": "artwork archived (status 1)",
+      "to": "artwork active (status 0)",
+      "trigger": "[CBS-163] Unarchive",
+      "condition": "OBSERVED_CURRENT/LOW (KB-1118), một lượt staging",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1118"
+      ]
+    },
+    {
+      "from": "artwork ở account nguồn",
+      "to": "artwork mới ở account đích, layer trỏ asset của bên đích",
+      "trigger": "import TIB Library / admin import / duplicate campaign sang store khác",
+      "condition": "bản clone mới (sau bản sửa TIB-5619)",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1082"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Duplicate artwork giữ action Show/Hide của layer; campaign dùng bản copy của artwork Hide ẩn/hiện đúng chiều Hide trên storefront.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "test_case",
+      "scope_note": "staging, test chạy 2026-10-28 (editor lượt đầu, storefront ở lượt retest) trước khi PR merge; production chưa xác nhận",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-107] Artwork đang dùng trong campaign qua product base, bởi platform product, đã dùng cho order design hoặc có bản duplicate thì không xoá được; lỗi nêu lý do, trường hợp duplicate liệt kê tên các bản duplicate.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope_note": "spec-hub feature artwork-editor v3, rule artwork-editor-delete-blocked-when-used, đọc 2026-11-12; rule không nói status code/body của API",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1028"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-107] Xoá artwork chuyển nó vào trash, không xoá hẳn.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope_note": "spec-hub feature artwork-editor v3, rule artwork-editor-delete-to-trash, đọc 2026-11-12; cơ chế lưu và thời hạn xoá hẳn chưa có trong rule",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1031"
+      ]
+    },
+    {
+      "statement": "[CBS-163] Theo Jira TIB-5689 comment 56448 (Dev, 2026-11-04), response của duplicate artwork (clone), archive và unarchive là PortalArtworkResource gồm các attribute Artwork::$visible: id, name, description, width, height, template_settings, data, is_locked, current_version_id, status, design_format, thumbnail, artwork_version_used, schema_version.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope_note": "staging; quote không nói status code hay tab hiển thị",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1116"
+      ]
+    },
+    {
+      "statement": "Copy artwork sang store/account khác: ảnh gốc của layer Clipart Category dùng lại ảnh preview clipart được đổi sang clipart tương ứng trong category mới của bên đích, cùng clipart category và default value; layer hiển thị ảnh, thấy category bên đích, không lỗi clipart category.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope_note": "staging 2026-11-03..04, artwork 2.0; production chưa verify",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1082"
+      ]
+    },
+    {
+      "statement": "Layer dùng ảnh clipart không thuộc category của layer (vd Static photo) được copy file sang bên đích và hiển thị đúng; đường dẫn ảnh vẫn mang id category nguồn, chỉ đổi phần user.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope_note": "staging 2026-11-03..04, artwork 2.0; production chưa verify",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1083"
+      ]
+    },
+    {
+      "statement": "Layer có ảnh gốc từ Image library vẫn hiển thị đúng như trước sau khi copy.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope_note": "staging 2026-11-03..04, artwork 2.0; production chưa verify",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1084"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Trang /artworks: mỗi artwork row có đúng 4 nút thao tác nhanh cố định (preview/edit/duplicate/menu), không đổi theo trạng thái artwork trong sample quan sát.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-047"
+      ],
+      "observed_count": 1
+    },
+    {
+      "statement": "[CBS-163] Duplicate 201 trả bản copy; archive 200 status 1, artwork ở tab Archived; unarchive 200 status 0; không relation, không user_id (TC-TIB-8585, build không ghi).",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1118"
+      ],
+      "observed_count": 1
+    },
+    {
+      "statement": "Sau admin import, design preview từng template của artwork bên đích render xong và giống nguồn (một lần chạy, expected do QA chốt).",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1085"
+      ],
+      "observed_count": 1
+    }
+  ],
+  "observed_validations": [
+    {
+      "input": "Click 'Delete artwork'",
+      "message_verbatim": "Are you sure to remove <name>?",
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-047"
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "role": "store owner/staff",
+      "capability": "full access tới 4 action + 3 menu item trên mọi artwork row đã quan sát",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-047"
+      ]
+    },
+    {
+      "role": "merchant-owner",
+      "capability": "duplicate artwork có Conditional Setting",
+      "observed": true,
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      "/artworks —.artwork-item row actions + menu la-ellipsis-h",
+      {
+        "item": "Artworks list → duplicate; editor của bản copy (Conditional Setting giữ action)",
+        "kb_refs": [
+          "artwork/artwork-list-and-clone#KB-229"
+        ]
+      }
+    ],
+    "storefront": [
+      {
+        "item": "Campaign dùng bản copy: field và layer action Hide ẩn/hiện theo điều kiện",
+        "kb_refs": [
+          "artwork/artwork-list-and-clone#KB-229"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "item": "[CBS-163] duplicate (clone), archive, unarchive artwork — response PortalArtworkResource",
+        "kb_refs": [
+          "artwork/artwork-list-and-clone#KB-1116"
+        ]
+      }
+    ],
+    "data": [],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "type": "feature",
+      "description": "Action Show/Hide được cấu hình ở FEAT-08-conditional-setting-config và lưu trong dependency của layer (FEAT-10, shape đang tranh chấp).",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229",
+        "artwork-layer-config/conditional-setting-config#KB-221",
+        "artwork-layer-config/conditional-setting-config#KB-227"
+      ]
+    },
+    {
+      "type": "cross_object_feature",
+      "description": "Hành vi ẩn/hiện của layer Hide trên storefront thuộc object sdk, FEAT-07-storefront-buyer-facing.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229",
+        "sdk/storefront-layer-visibility#KB-231"
+      ]
+    },
+    {
+      "feature_key": "layer-config-image",
+      "why": "Layer Clipart Category / Static photo và field clipart, default_value, url là cấu hình layer ảnh."
+    },
+    {
+      "feature_key": "artwork-list-management",
+      "why": "Duplicate artwork trong cùng account (không thuộc feature này); TIB Library nằm ở /artworks."
+    }
+  ],
+  "risks": [
+    {
+      "risk": "Delete artwork chưa có evidence xác nhận soft-delete hay hard-delete, và có phục hồi được không — rủi ro mất dữ liệu nếu test mutation này trên account thật.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-047"
+      ]
+    },
+    {
+      "risk": "observed_count=1, confidence LOW cho toàn bộ feature — mọi control chỉ quan sát đúng 1 lần, chưa lặp lại độc lập.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-047"
+      ]
+    },
+    {
+      "risk": "KB-229 dựa trên một lượt test staging 2026-10-28 trước khi PR merge; tiêu chí editor và tiêu chí storefront chạy ở hai lượt khác nhau; production chưa xác nhận.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229"
+      ]
+    },
+    {
+      "risk": "KB-229 không kiểm action của bản copy ở tầng API; nếu checklist kiểm ở tầng API thì oracle phụ thuộc shape dependency đang tranh chấp (CONF-artwork-dependency-action-01) và chờ PO chốt. Oracle tầng editor và storefront dùng được.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229",
+        "artwork-layer-config/conditional-setting-config#KB-227",
+        "artwork-layer-config/conditional-setting-config#KB-067"
+      ],
+      "conflict_id": "CONF-artwork-dependency-action-01"
+    },
+    {
+      "risk": "[MỚI, CBS-107] Xoá artwork là thao tác P1 (mất dữ liệu). QA từng đo DELETE /api/artworks/{id} cho artwork gắn campaign nhận 403 trang HTML Laravel trần, trong khi spec-hub nói lỗi nêu lý do: oracle tầng API chưa có, chỉ dùng oracle tầng portal.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1028"
+      ]
+    },
+    {
+      "risk": "[CBS-163] Kết quả Mark as archive (status 1, tab Archived) và unarchive chỉ có một lượt quan sát staging (KB-1118); chưa có expected cho trạng thái/tab.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1118"
+      ]
+    },
+    {
+      "summary": "Layer clipart trỏ id category của bên nguồn thì không có file, layer trong suốt trong editor (lỗi gốc TIB-5619).",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1082"
+      ]
+    },
+    {
+      "summary": "Chỉ verify trên staging, artwork 2.0; production chưa verify.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1082",
+        "artwork/artwork-list-and-clone#KB-1083",
+        "artwork/artwork-list-and-clone#KB-1084"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-30",
+    "source_observed_on": "2026-10-28"
+  },
+  "unknown_areas": [
+    {
+      "question": "'Import to Translation' dẫn tới đâu / làm gì — chưa quan sát kết quả sau click.",
+      "why_it_matters": "Không biết luồng dịch thuật artwork hoạt động thế nào để viết checklist."
+    },
+    {
+      "question": "'Mark as archive' thay đổi trạng thái gì trên list/API — chưa quan sát trước/sau.",
+      "why_it_matters": "Cần biết để phân biệt trạng thái archived vs active khi chuẩn bị test data."
+    },
+    {
+      "question": "Delete artwork là soft hay hard delete, có khôi phục được không?",
+      "why_it_matters": "Ảnh hưởng trực tiếp tới policy mutation an toàn khi viết test case xoá."
+    },
+    {
+      "question": "Luồng tạo mới / import artwork hoàn toàn không có KB item nào hỗ trợ (README liệt kê nhưng KB 49 item không chạm tới).",
+      "why_it_matters": "'Quản lý artwork' theo tài liệu tham khảo gồm cả tạo/import — thiếu mảng này sẽ khiến checklist quản lý artwork không đầy đủ nếu không note rõ giới hạn."
+    },
+    {
+      "question": "Publish/sync artwork vào campaign — 0 evidence trong toàn bộ 49 KB item.",
+      "why_it_matters": "Đây là nhánh lớn của object Artwork nhưng KB hiện tại hoàn toàn chưa khám phá."
+    },
+    {
+      "question": "Hành vi runtime trên storefront khi artwork bị archive/delete — 0 evidence storefront trong cả 3 run nguồn.",
+      "why_it_matters": "coverage_gaps #1 của KB gốc: mọi feature Artwork đều thiếu evidence storefront."
+    },
+    {
+      "question": "Hành vi list management với role khác owner (staff quyền hạn chế, hoặc cross-tenant) chưa test — chỉ có TIB_USER_A (owner) trong cả 3 run.",
+      "why_it_matters": "coverage_gaps #3 của KB gốc."
+    },
+    {
+      "question": "Khi duplicate artwork có điều kiện, element trong dependencies của bản copy có được map sang layer id của chính bản copy (không trỏ về layer của artwork gốc) không?",
+      "why_it_matters": "Test case duplicate không ghi tường minh việc map element; nếu element còn trỏ layer gốc, điều kiện của bản copy có thể không chạy khi artwork gốc thay đổi.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-artwork-160"
+    },
+    {
+      "question": "[MỚI, CBS-107] Gọi thẳng DELETE /api/artworks/{id} cho artwork đang gắn campaign thì response đúng thiết kế là gì (status code, body JSON có nêu lý do không)? Trang HTML 'Forbidden' 403 QA đo 2026-09-07 có phải lỗi không?",
+      "why_it_matters": "Spec-hub nói lỗi nêu lý do, QA đo được 403 HTML trần; check tầng API không có oracle tới khi Dev trả lời.",
+      "type": "CONFLICT",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1028"
+      ],
+      "oq_id": "OQ-artwork-506"
+    },
+    {
+      "question": "[CBS-107] Xoá vào trash (KB-1031) được lưu bằng cột deleted_at trên bảng artworks không (GraphQL vẫn trả row nếu query không lọc deleted_at), và artwork bị xoá hẳn khỏi DB sau 365 ngày (spec-hub trash-permanent-cleanup) không?",
+      "why_it_matters": "Ảnh hưởng cách query dọn fixture và cách kiểm hậu quả xoá ở tầng API/DB.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1031"
+      ],
+      "oq_id": "OQ-artwork-016"
+    },
+    {
+      "question": "[MỚI, CBS-107] PO xác nhận hai luật xoá artwork đọc từ code (spec-hub) là hành vi chủ đích: artwork đang dùng (campaign, platform product, order design, có duplicate) không xoá được, artwork đã dùng cho order design chỉ archive được; xoá artwork chuyển vào trash.",
+      "why_it_matters": "Thao tác xoá là P1 (mất dữ liệu); KB-1028/KB-1031 làm oracle STRONG cho CHK-013/014/016 dựa trên rule đọc từ code, chưa có PO chốt.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1028",
+        "artwork/artwork-list-and-clone#KB-1031"
+      ],
+      "oq_id": "OQ-artwork-508"
+    },
+    {
+      "question": "[CBS-163] Duplicate 201 trả bản copy, archive 200 status 1 (tab Archived), unarchive 200 status 0, không relation, không user_id (KB-1118) — Dev xác nhận là expected? (OQ-artwork-577)",
+      "why_it_matters": "KB-1118 là OBSERVED_CURRENT/LOW; CHK-005 dùng làm BASELINE; liên quan OQ-artwork-014, OQ-artwork-349.",
+      "suggested_oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1118"
+      ],
+      "oq_id": "OQ-artwork-577"
+    },
+    {
+      "question": "Design preview của từng template sau admin import sang account khác phải giống template nguồn (ảnh clipart, static photo từ clipart hiện đủ) có phải expected không?",
+      "why_it_matters": "Quyết định oracle của CHK-005; hiện KB-1085 chỉ là quan sát một lần, expected do QA chốt.",
+      "oq_id": "OQ-artwork-549"
+    },
+    {
+      "question": "Trên staging có đường nào khác để duplicate campaign sang store của account khác không, và trên production đường này chạy thế nào?",
+      "why_it_matters": "KB-1086 là ghi nhận QA không artifact; quyết định precondition của mọi check.",
+      "oq_id": "OQ-artwork-550"
+    },
+    {
+      "question": "Remap ảnh gốc có áp cho layer Group of clipart categories, Vector Category và artwork 1.0 không (Dev nói áp cho cả 1.0 và 2.0; test case chỉ phủ layer Clipart Category của artwork 2.0)?",
+      "why_it_matters": "CHK-001, CHK-002 chỉ phủ artwork 2.0, layer Clipart Category tự giữ category.",
+      "oq_id": "OQ-artwork-551"
+    },
+    {
+      "question": "Layer lấy category từ Global Option (layer không tự giữ category) khi artwork được import qua TIB Library sang account khác: ảnh gốc có được remap không? Ghi nhận ngoài claim của QA (staging 2026-11-04): url vẫn giữ id category nguồn (403), layer trong suốt trên canvas; chưa có kết luận Dev/PO.",
+      "why_it_matters": "KB-1082 và CHK-001/CHK-002 chỉ phủ layer tự giữ category; layer Global Option chưa có expected.",
+      "oq_id": "OQ-artwork-552"
+    },
+    {
+      "question": "Khi copy ảnh clipart dùng làm Static photo sang bên đích, chỉ file _large được copy; file _thumbnail ở đường dẫn đích trả 403 nên dòng layer ở layer list hiện icon chung (ghi nhận ngoài claim của QA 2026-11-04, chưa có kết luận Dev). Đây là lỗi hay chủ ý?",
+      "why_it_matters": "Ảnh hưởng quan sát ở layer list khi chạy CHK-003; hiện không có expected.",
+      "oq_id": "OQ-artwork-553"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "layer": "portal",
+      "role": "owner",
+      "state": "list page",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "layer": "api",
+      "role": "owner",
+      "state": "list page",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "layer": "data",
+      "role": "owner",
+      "state": "list page",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "layer": "storefront",
+      "role": "owner",
+      "state": "list page",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "duplicate artwork có layer action Hide / Show",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229"
+      ]
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "layer": "storefront",
+      "role": "guest-buyer",
+      "state": "campaign dùng bản copy của artwork Hide",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229"
+      ]
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "layer": "data",
+      "role": "merchant-owner",
+      "state": "element của bản copy map sang layer của bản copy",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229"
+      ]
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[CBS-107] xoá artwork đang dùng (campaign / có duplicate) và artwork không dùng",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1028",
+        "artwork/artwork-list-and-clone#KB-1031"
+      ],
+      "basis": "spec-hub sure green (po_dev_confirm), chưa chạy"
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-107] DELETE /api/artworks/{id} cho artwork đang gắn campaign",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1028"
+      ],
+      "basis": "chưa có oracle response API (OQ CONFLICT)"
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] response duplicate, archive, unarchive",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1116",
+        "artwork/artwork-list-and-clone#KB-1118"
+      ],
+      "basis": "STRONG cho key set (KB-1116); status/tab là quan sát"
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[CBS-163] duplicate trên production",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-1116"
+      ],
+      "basis": "chưa verify"
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "artwork 2.0 nhận qua import TIB Library / admin import",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "artwork JSON bên đích (url, clipart, default_value)",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "artwork 1.0, Group of clipart categories, Vector Category",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-37-artwork-list-and-clone",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "duplicate campaign sang store khác",
+      "environment": "production",
+      "covered": false
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from_feature_id": "FEAT-37-artwork-list-and-clone",
+      "to_feature_id": "FEAT-02-artwork-template-management",
+      "relation": "possible_data_source (INFERRED, chưa xác nhận)",
+      "note": "Template bar có menu 'Import from artwork' (KB-046) — có thể lấy nguồn từ danh sách /artworks nhưng chưa có evidence trực tiếp liên kết 2 luồng này."
+    },
+    {
+      "from_feature_id": "FEAT-37-artwork-list-and-clone",
+      "to_feature_id": "FEAT-08-conditional-setting-config",
+      "relation": "preserves_config_of",
+      "note": "Duplicate artwork giữ action Show/Hide cấu hình ở FEAT-08.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-37-artwork-list-and-clone",
+      "to_feature_id": "FEAT-07-storefront-buyer-facing",
+      "to_object": "sdk",
+      "relation": "displayed_in",
+      "note": "Campaign dùng bản copy ẩn/hiện layer Hide trên storefront.",
+      "kb_refs": [
+        "artwork/artwork-list-and-clone#KB-229"
+      ]
+    },
+    {
+      "from_feature_key": "artwork-cross-store-clone",
+      "to_feature_key": "layer-config-image",
+      "relationship": "depends_on"
+    }
+  ]
+}

@@ -521,7 +521,7 @@ Tổng: 43 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
   "check_ids": [
     "module-entitlement-gating:CHK-006",
     "portal-navigation:CHK-010",
-    "content-translations:CHK-007"
+    "buyer-facing-content:CHK-007"
   ],
   "also_affects": [
     {

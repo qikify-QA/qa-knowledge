@@ -1,0 +1,386 @@
+{
+  "feature_id": "FEAT-19-storefront-customization-storage",
+  "feature_key": "storefront-customization-storage",
+  "object_id": "sdk",
+  "checklist_version": "17",
+  "checks": [
+    {
+      "check_id": "CHK-023",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "localStorage draft ('teeinblue-customizations'/'teeinblue-global-options') KHÔNG tồn tại lúc load ban đầu, chỉ được tạo ngay khi tương tác field đầu tiên; shape giống hệt nhau giữa SDK v1 và SDK v2",
+      "applicability": {
+        "role": "guest",
+        "state": "trang sản phẩm campaign 2595 mới load (chưa tương tác) VÀ ngay sau lần tương tác field cá nhân hoá đầu tiên — áp dụng CẢ store1 (SDK v1) và store2 (SDK v2)",
+        "environment": "staging",
+        "theme_or_device": "desktop, cả 2 store"
+      },
+      "precondition": "Đã vượt password-gate, ở trang sản phẩm, chưa tương tác field cá nhân hoá nào trong phiên hiện tại (hoặc đã clear localStorage trước đó)",
+      "steps": [
+        "Mở DevTools > Application > Local Storage ngay sau khi trang load; kiểm tra localStorage.getItem('teeinblue-customizations') và getItem('teeinblue-global-options')",
+        "Click 1 field cá nhân hoá đầu tiên (vd chọn 1 giá trị template)",
+        "Đọc lại 2 key trên, parse JSON, kiểm tra shape",
+        "Lặp lại toàn bộ trên cả store1 và store2"
+      ],
+      "observation_point": "Giá trị getItem trước và ngay sau tương tác đầu tiên; cấu trúc JSON đã parse của 2 key",
+      "expected_result": "Trước tương tác: cả 2 key trả về null trên cả 2 store. Ngay sau click field đầu tiên: 2 key xuất hiện đồng thời. 'teeinblue-customizations' là JSON array chứa đúng 1 object {productId, customization: {<field-id>: <value>,..., platform_linked_id}, timestamp}; 'teeinblue-global-options' là JSON object keyed theo global-option id, mỗi value {value, extra:{}, timestamp}. Cấu trúc (tên field/kiểu/thứ tự lồng) giống hệt nhau giữa 2 store cho cùng campaign 2595 — quan sát trong phiên test này, KHÔNG phải rule đã được nguồn thẩm quyền xác nhận.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-customization-storage#KB-014",
+          "sdk/storefront-customization-storage#KB-015"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-024",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "Field dạng radio/template/clipart đơn (không lồng con) ghi vào localStorage ĐỒNG BỘ ngay khi click, không debounce (cả 2 store)",
+      "applicability": {
+        "role": "guest",
+        "state": "đã ở trang sản phẩm, tương tác field dạng template hoặc clipart đơn giản (không grouped_clipart)",
+        "environment": "staging",
+        "theme_or_device": "desktop, cả 2 store"
+      },
+      "precondition": "Đã ở trang sản phẩm sau password-gate",
+      "steps": [
+        "Mở DevTools, chuẩn bị đọc localStorage liên tục",
+        "Click 1 field dạng template hoặc clipart đơn (vd Choose Woman's Skin Tone)",
+        "Đọc localStorage ngay lập tức (<300ms) và đọc lại lần nữa sau khi settle (1.2-1.5s)",
+        "So sánh giá trị giữa 2 lần đọc"
+      ],
+      "observation_point": "Giá trị localStorage tại 2 mốc thời gian đọc",
+      "expected_result": "Giá trị mới xuất hiện NGAY trong lần đọc đầu tiên (<300ms sau click), KHÔNG thay đổi thêm ở lần đọc sau (1.2-1.5s) — xác nhận ghi đồng bộ, không debounce. Quan sát nhất quán trên field template (cả 2 store) và field clipart đơn (store2).",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-customization-storage#KB-016"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-025",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "Field dạng text (free-text name) CHỈ ghi vào localStorage khi blur, KHÔNG ghi khi đang gõ hay còn focus (cả 2 store)",
+      "applicability": {
+        "role": "guest",
+        "state": "field text cá nhân hoá (vd Woman Name / Cat Name), đang focus và sau khi blur",
+        "environment": "staging",
+        "theme_or_device": "desktop, cả 2 store"
+      },
+      "precondition": "Đã ở trang sản phẩm, field text cá nhân hoá đang hiển thị",
+      "steps": [
+        "Focus vào field text, gõ từng phần giá trị, đọc localStorage khi vẫn còn focus",
+        "Blur field (click ra ngoài hoặc Tab)",
+        "Đọc lại localStorage ngay sau blur"
+      ],
+      "observation_point": "Giá trị 'teeinblue-customizations'/'teeinblue-global-options' trong lúc gõ, ngay trước blur, và ngay sau blur",
+      "expected_result": "Trong lúc gõ và ngay cả khi gõ xong nhưng field còn focus: giá trị KHÔNG xuất hiện/không cập nhật trong localStorage. Ngay sau blur: giá trị xuất hiện kèm timestamp cập nhật đúng thời điểm blur. Hành vi giống hệt nhau ở cả 2 store, khác hẳn field radio/clipart (CHK-024, ghi ngay khi click).",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-customization-storage#KB-017"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-026",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Field grouped_clipart (Hairstyle, Cat Breed #1/#2) yêu cầu ĐỦ 2 bước (click radio nhóm + click thumbnail con) mới có giá trị hợp lệ; ADD TO CART thất bại thật nếu thiếu bước con (SDK v2, store2, template 2)",
+      "applicability": {
+        "role": "guest",
+        "state": "trang sản phẩm store2, template 2, mọi field khác đã điền đủ, field grouped_clipart chỉ mới click radio nhóm (chưa click con)",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "Đã điền đủ toàn bộ field cá nhân hoá KHÁC ngoài grouped_clipart; đã click radio cấp NHÓM cho cả 3 field grouped_clipart (Hairstyle, Cat Breed #1, Cat Breed #2) nhưng CHƯA click thumbnail con lồng bên trong",
+      "steps": [
+        "Điền đủ mọi field khác của template 2",
+        "Với mỗi field grouped_clipart: chỉ click radio cấp nhóm, KHÔNG click thumbnail con lồng bên trong",
+        "Bấm ADD TO CART; quan sát banner lỗi, lỗi inline; gọi GET /cart.js kiểm tra item_count; kiểm tra network log có request tới API-OP-051 (POST /api/merchant/shopify/customization) hay không",
+        "Bổ sung click thumbnail con cho cả 3 field, bấm lại ADD TO CART, quan sát lại toàn bộ (banner, item_count, API-OP-051)"
+      ],
+      "observation_point": "Banner lỗi + vị trí lỗi inline; item_count trước/sau mỗi lần thử; presence/absence của request API-OP-051 trong network log",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-customization-storage#KB-018"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [
+        "Điều kiện bắt buộc P1 để ATC hợp lệ trên SDK v2: nếu automation/QA script chỉ click radio nhóm (bỏ sót bước con) khi build test ATC, sẽ tạo false-negative (báo ATC lỗi dù hệ thống đúng) hoặc che giấu bug thật nếu UI cho phép skip bước con ở phiên bản sau — đây chính là cơ chế gây ra CFL-003."
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "observation_guidance": "Ở trạng thái CHỈ có radio nhóm (thiếu click con): ADD TO CART bị chặn — banner lỗi chung 'Error: Some fields are required or invalid data', lỗi inline 'This field is required!' dưới cả 3 field grouped_clipart, GET /cart.js xác nhận item_count=0, và ZERO request tới API-OP-051 (client-side validation chặn trước khi gửi). Sau khi bổ sung click con cho cả 3 field: ADD TO CART thành công, API-OP-051 fire đúng 1 lần ngay trước /cart/add, item_count 0->1. Quan sát này có confidence HIGH trong run này (3 field mẫu, corroborate cross-layer UI+network — theo KB-018). CHỈ xác nhận cho template 2/campaign 2595/store2 trong lần quan sát 2026-09-12 — KHÔNG khẳng định đây là rule tuyệt đối áp dụng cho template 1/3 hay cho mọi campaign có field grouped_clipart khác (xem gap template 1/3, CHK-018 v1). Kết quả check này cũng liên quan CFL-003 (xem CHK-032) về việc liệu framing 'ATC store2 known-working' từ 2026-09-12 có bỏ sót bước này hay không — bản thân yêu cầu 2-step KHÔNG bị nghi ngờ (well-observed trong run này), nhưng ý nghĩa của nó đối với baseline trước đó thì UNRESOLVED, KHÔNG được diễn giải check này như đã 'giải quyết' CFL-003.",
+      "oq_id": "OQ-sdk-213"
+    },
+    {
+      "check_id": "CHK-027",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "Reload trang: localStorage draft sống sót byte-identical NHƯNG DOM form KHÔNG tự khôi phục bất kỳ lựa chọn nào (full-page-load, cả 2 store)",
+      "applicability": {
+        "role": "guest",
+        "state": "đã điền field cá nhân hoá (store1: template + Woman Name; store2: đủ 8 field), ngay sau F5/page.reload",
+        "environment": "staging",
+        "theme_or_device": "desktop, cả 2 store"
+      },
+      "precondition": "Đã điền field cá nhân hoá, đã xác nhận localStorage có dữ liệu (xem CHK-023)",
+      "steps": [
+        "Điền field cá nhân hoá, ghi lại nội dung 2 key localStorage",
+        "Reload trang (F5 / page.reload)",
+        "Đọc lại localStorage, so sánh byte-for-byte với trước reload",
+        "Quan sát DOM: có thumbnail nào còn đánh dấu chọn không, field phụ thuộc có còn hiển thị không"
+      ],
+      "observation_point": "Nội dung localStorage trước/sau reload; trạng thái DOM (thumbnail selected, field phụ thuộc hiện/ẩn) sau reload",
+      "expected_result": "localStorage giữ nguyên byte-identical sau reload (không bị xoá/ghi lại) trên cả 2 store. DOM form reset hoàn toàn về mặc định — không thumbnail nào được đánh dấu chọn, field phụ thuộc (skin tone, hairstyle, tên, breed...) biến mất khỏi DOM, giống hệt lần truy cập hoàn toàn mới. Đây là hành vi 'lưu nhưng KHÔNG khôi phục' ở mức full-page-load — quan sát hiện tại (OBSERVED_CURRENT), KHÔNG tự suy đây là bug hay thiếu tính năng; nếu PO/Dev xác nhận cần bổ sung auto-restore, cần escalate riêng.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-customization-storage#KB-019"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [
+        "Buyer vô tình reload giữa chừng sẽ mất toàn bộ tiến độ điền field trên UI dù dữ liệu vẫn còn trong localStorage — UX risk, chưa xác nhận là bug hay thiết kế cố ý."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-028",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "Field text remount qua chọn lại field cha (sau reload) tự pre-fill giá trị đã lưu trong localStorage — refine riêng biệt của CHK-027, chỉ xác nhận field type text, store2, 1 sample",
+      "applicability": {
+        "role": "guest",
+        "state": "sau reload (đã qua CHK-027, localStorage vẫn giữ dữ liệu cũ nhưng DOM chưa khôi phục), chọn lại field cha (template) khiến field con text remount",
+        "environment": "staging",
+        "theme_or_device": "desktop, CHỈ store2 (SDK v2)"
+      },
+      "precondition": "Đã reload trang theo CHK-027 (localStorage giữ dữ liệu cũ, DOM chưa khôi phục)",
+      "steps": [
+        "Sau reload, chọn lại giá trị template cấp cha (kích hoạt remount field con)",
+        "Quan sát field text con (Woman Name) render với giá trị gì ngay sau remount"
+      ],
+      "observation_point": "Giá trị hiển thị trong field text ngay sau khi remount",
+      "expected_result": "Field text (Woman Name) tự pre-fill lại đúng giá trị đã lưu trước đó (đọc từ 'teeinblue-global-options') ngay khi remount qua chọn lại field cha — dù trang KHÔNG tự làm điều này khi chỉ load lại (xem CHK-027). Đây là restore ở mức FIELD-REMOUNT, hẹp hơn full-form-restore, CHỈ xác nhận cho field type text, store2, 1 sample (rule_confidence LOW trong KB-020) — CHƯA xác nhận có áp dụng cho field radio/clipart/grouped_clipart hay không. KHÔNG suy tổng quát hành vi này cho các field type khác.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-customization-storage#KB-020"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [
+        "Nếu field-remount pre-fill chỉ áp dụng cho text mà không áp dụng cho radio/clipart, buyer chọn lại field cha sau reload có thể mất lựa chọn clipart trong khi vẫn giữ tên đã gõ — trải nghiệm không nhất quán, chưa xác nhận."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-029",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "localStorage draft KHÔNG bị xoá sau Add-to-cart thành công lẫn sau cart clear",
+      "applicability": {
+        "role": "guest",
+        "state": "sau ATC thành công, SDK v2/store2 (chỉ áp dụng SDK v2 — xem CHK-030 cho gap SDK v1)",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "Đã Add-to-cart thành công trên store2 (2-step grouped_clipart đã hoàn tất theo CHK-026)",
+      "steps": [
+        "Ghi lại nội dung 2 key localStorage ngay trước ATC",
+        "Thực hiện ATC thành công",
+        "Đọc lại localStorage, so sánh byte-for-byte với trước ATC",
+        "Dọn cart qua POST /cart/clear.js, xác nhận item_count=0 qua GET /cart.js",
+        "Đọc lại localStorage lần nữa, so sánh với 2 mốc trước"
+      ],
+      "observation_point": "Nội dung localStorage tại 3 mốc: trước ATC, sau ATC, sau cart clear",
+      "expected_result": "localStorage ('teeinblue-customizations'/'teeinblue-global-options') GIỮ NGUYÊN byte-identical (cùng timestamp) qua cả 3 mốc — Add-to-cart thành công và cart clear đều KHÔNG xoá/reset draft phía client. CHỈ xác nhận trên SDK v2/store2 trong run này; KHÔNG suy diễn hành vi tương ứng cho SDK v1 (xem CHK-030).",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-customization-storage#KB-021"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-031",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Server sync (API-OP-051) chỉ gọi tại thời điểm Add-to-cart, KHÔNG gọi trong lúc điền field (0 XHR/fetch tới host teeinblue trong lúc field-fill, cả 2 store)",
+      "applicability": {
+        "role": "guest",
+        "state": "trong lúc điền field cá nhân hoá (cả 2 store) và tại thời điểm ATC (store2, cả lần thành công và lần thất bại)",
+        "environment": "staging",
+        "theme_or_device": "desktop"
+      },
+      "precondition": "Đã ở trang sản phẩm, network capture bật (toàn bộ request, không chỉ XHR filter)",
+      "steps": [
+        "Bắt đầu ghi network log từ lúc chọn template đến khi điền đủ toàn bộ field (chưa ATC)",
+        "Kiểm tra log: có request XHR/fetch nào tới host teeinblue-owned (staging-api.teeinblue.com, staging-sdk.teeinblue.com) không",
+        "Thực hiện ATC (thành công theo CHK-026), quan sát request teeinblue-owned đầu tiên trong toàn phiên và thời điểm nó fire so với /cart/add",
+        "Với lần ATC thất bại (thiếu click con grouped_clipart, theo CHK-026), kiểm tra log có request API-OP-051 không"
+      ],
+      "observation_point": "Danh sách request tới host teeinblue-owned tại từng mốc (field-fill, ATC thành công, ATC thất bại)",
+      "expected_result": "Trong suốt lúc điền field (cả 2 store): ZERO request XHR/fetch tới host teeinblue-owned nào. Request teeinblue-owned ĐẦU TIÊN trong toàn phiên chỉ xuất hiện tại ATC trên store2: POST .../api/merchant/shopify/customization (API-OP-051), ngay trước /cart/add gốc Shopify. Khi ATC thất bại do thiếu click con grouped_clipart: API-OP-051 KHÔNG xuất hiện — xác nhận validation client-side chặn trước khi gửi request server. Store1 chỉ có 1 sample ngắn (~1.2s quanh 1 click) xác nhận 0 request trong lúc field-fill; store1 CHƯA tới được ATC nên chưa biết endpoint tương ứng (nếu có) của SDK v1 tại ATC.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-customization-storage#KB-022"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-032",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "CFL-003 UNRESOLVED: liệu framing 'ATC store2/SDK v2 known-working' kế thừa từ 2026-09-12 có do automation bỏ sót bước click con của grouped_clipart, hay 2-step thực sự luôn là điều kiện đã tồn tại từ trước — chưa thể kết luận",
+      "applicability": {
+        "role": "guest",
+        "state": "so sánh giữa kết luận automation của 2026-09-12 ('ATC store2 known-working') và kết quả run này (lần thử ATC đầu tiên thất bại thật vì thiếu click con grouped_clipart, xem CHK-026)",
+        "environment": "staging",
+        "theme_or_device": "n/a"
+      },
+      "precondition": "Cần log/trace thao tác chi tiết của lần chạy 2026-09-12 để đối chiếu — CHƯA có trong scope run này",
+      "steps": [
+        "Lấy lại log/trace thao tác chi tiết của lần chạy 2026-09-12 đã dẫn tới kết luận 'ATC store2 known-working'",
+        "Đối chiếu xem thao tác click khi đó có bao gồm bước click thumbnail con của field grouped_clipart hay không (và dùng kỹ thuật click nào — toạ độ, label[for], force-check, dispatch event thủ công)",
+        "So sánh với hành vi 2-step đã xác nhận trong run này (KB-018, CHK-026)"
+      ],
+      "observation_point": "Nội dung log/trace automation của 2026-09-12, đối chiếu với hành vi 2-step hiện tại",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-customization-storage#KB-018"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "oq_ref": "OQ-sdk-010",
+      "risk_refs": [
+        "Nếu automation-artifact hypothesis đúng cho cả CFL-001 và CFL-003, mọi checklist ATC dựa trên automation log cũ (bao gồm cả các run trước run này) cần được review lại độ tin cậy của thao tác click — rủi ro mang tính hệ thống, lớn hơn phạm vi 1 field."
+      ],
+      "priority": "P1",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-sdk-215"
+    },
+    {
+      "check_id": "CHK-050",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "[CBS-008] Draft localStorage 'teeinblue-customizations' khi guest buyer personalize và Add-to-cart nhiều product khác nhau: số entry còn giữ, entry của product thao tác sớm bị đẩy ra, line item sau cùng product ghi đè entry (baseline ~10 entry, chưa đếm độc lập)",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "lần lượt personalize và Add-to-cart ≥ 12 product khác nhau trong cùng trình duyệt (lượt quan sát gốc: order 14 line item), rồi thêm 1 line item khác trên một product đã có entry",
+        "environment": "staging (store test store không thuộc explorer, quan sát 2026-10-22, build có Jira TIB-5606 chưa ship); bundle/SDK version của store không được ghi",
+        "surface_or_device": "storefront desktop — localStorage của trình duyệt (DevTools > Application > Local Storage)"
+      },
+      "precondition": "Store test staging có ≥ 12 product personalize được (campaign đã publish); localStorage của domain store đã được xoá trước khi bắt đầu; ghi script src SDK của store (app-v1.js hay app-v2.js).",
+      "steps": [
+        "Với lần lượt từng product khác nhau (≥ 12 product): personalize, Add-to-cart, rồi NGAY sau mỗi lần thêm đọc localStorage.getItem('teeinblue-customizations'), parse JSON, ghi số entry và danh sách productId theo thứ tự",
+        "Sau khi số entry ngừng tăng, ghi productId nào bị loại ở mỗi lần thêm mới (so với danh sách trước đó) và timestamp của các entry còn lại",
+        "Chọn một product đang có entry, personalize với giá trị khác và Add-to-cart thêm một line item; đọc lại entry của product đó",
+        "Ghi bundle SDK (script src) của store kèm kết quả"
+      ],
+      "observation_point": "Số entry và danh sách productId trong 'teeinblue-customizations' sau mỗi lần Add-to-cart; entry bị loại; giá trị entry của product được thêm line item lần hai",
+      "expected_result": "Baseline hiện tại (một lượt chạy trên staging 2026-10-22, store test store không thuộc explorer; chưa có dev/spec xác nhận): sau khi thêm nhiều product, 'teeinblue-customizations' chỉ còn khoảng 10 entry gần nhất theo ghi nhận của người chạy test (con số chưa được đếm độc lập — không dùng 10 làm ngưỡng); entry của product thao tác sớm bị đẩy ra. Thêm một line item khác trên cùng product thì entry của product đó mang giá trị mới (giá trị cũ bị ghi đè). Số entry tối đa và tiêu chí loại entry đo được ở lần chạy này cần ghi lại; lệch baseline là tín hiệu cần điều tra, không tự kết luận là bug.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-customization-storage#KB-066"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "'teeinblue-customizations' giữ tối đa bao nhiêu entry và entry bị loại theo tiêu chí nào (timestamp cũ nhất hay thứ tự thêm)? Đây có phải hành vi được thiết kế không?",
+      "related_kb_ids": [
+        "sdk/storefront-customization-storage#KB-066",
+        "sdk/storefront-customization-storage#KB-015",
+        "sdk/storefront-customization-storage#KB-014"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Đọc localStorage sau Add-to-cart chỉ tin cậy nếu đọc ngay sau từng lần thêm — check/test đọc localStorage sau khi đã thêm nhiều product sẽ không thấy entry của product thao tác sớm.",
+        "Không suy giới hạn sang key 'teeinblue-global-options' hay sang bundle khác (xem CHK-051)."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-sdk-066"
+    },
+    {
+      "check_id": "CHK-117",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "[CBS-098] Reload sau khi chỉnh position ảnh: template picker không khôi phục; chọn lại template thì ảnh và position đã giữ hiện lại, không warning (chỉ quan sát)",
+      "applicability": {
+        "role": "guest buyer",
+        "state": "product page có layer Upload Photo bật Photo reposition; đã upload và chỉnh position; localStorage còn template, ảnh và position",
+        "environment": "staging; ghi Last-Modified của app-v1.js và ngày chạy (build đã quan sát: app-v1.js Last-Modified 2026-10-21 05:56 GMT); production chưa kiểm",
+        "surface_or_device": "storefront product page, desktop browser, DevTools Application (localStorage)"
+      },
+      "precondition": "Campaign fixture trên store test được phép (store explorer), vượt password-gate bằng TIB_STORE_PASSWORD.",
+      "steps": [
+        "Chọn template, upload ảnh, chỉnh position; chụp preview, ghi localStorage.",
+        "Reload trang (F5); ghi trạng thái template picker và localStorage.",
+        "Chọn lại đúng template đó; chụp preview, ghi warning."
+      ],
+      "observation_point": "Template picker sau reload; ảnh, position và warning sau khi chọn lại template; localStorage trước và sau reload.",
+      "expected_result": "Baseline quan sát (Testlane TC-35, 2026-10-22; chưa phải expected xác nhận): sau reload picker hiện \"Choose an option\" dù localStorage còn template, ảnh và position; chọn lại template thì ảnh hiện lại ở đúng position đã giữ, không warning. Lệch = điều tra kèm build, không tự kết luận là bug.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-customization-storage#KB-506"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Dev/PO xác nhận nguyên văn hành vi sau reload: picker không khôi phục template, chọn lại template thì ảnh và position đã giữ hiện lại, không warning, có phải hành vi đúng không.",
+      "related_kb_ids": [
+        "sdk/storefront-customization-storage#KB-506",
+        "sdk/storefront-customization-storage#KB-019",
+        "sdk/storefront-customization-storage#KB-020"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Buyer mất chỉnh sửa ảnh sau reload",
+        "Vế picker không khôi phục cùng chiều KB-019 (CHK-027 giữ nguyên)"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-sdk-177"
+    }
+  ],
+  "coverage_by_feature_and_risk": [],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  }
+}

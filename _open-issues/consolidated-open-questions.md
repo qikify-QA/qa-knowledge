@@ -2,7 +2,7 @@
 
 File này được SINH TỰ ĐỘNG bởi `scripts/generate-manifest.mjs` từ `open-questions.md` của từng object (§5a) — KHÔNG sửa tay. Nội dung từng câu hỏi nằm ở file của object (link ở cột Object); thêm/sửa/resolve ở đó rồi chạy lại script.
 
-Tổng: 4366 open question đang mở trên 76 object (202 conflict · 3017 cần xác nhận · 1147 open issue).
+Tổng: 4366 open question đang mở trên 87 object (202 conflict · 3017 cần xác nhận · 1147 open issue).
 
 ## Duos B2B QA context
 
@@ -30,8 +30,7 @@ Tổng: 4366 open question đang mở trên 76 object (202 conflict · 3017 cầ
 | [models](../products/imagenhub/models/open-questions.md) | 0 | 10 | 8 | 18 |
 | [organization-billing](../products/imagenhub/organization-billing/open-questions.md) | 1 | 26 | 17 | 44 |
 | [tasks](../products/imagenhub/tasks/open-questions.md) | 1 | 15 | 10 | 26 |
-| [teeinblue-integration](../products/imagenhub/teeinblue-integration/open-questions.md) | 0 | 3 | 2 | 5 |
-| [templates](../products/imagenhub/templates/open-questions.md) | 0 | 24 | 22 | 46 |
+| [templates](../products/imagenhub/templates/open-questions.md) | 0 | 27 | 24 | 51 |
 
 ## Mailtro QA context
 
@@ -52,16 +51,21 @@ Tổng: 4366 open question đang mở trên 76 object (202 conflict · 3017 cầ
 
 | Object | Conflict | Cần xác nhận | Open issue | Tổng |
 |---|---:|---:|---:|---:|
-| [admin-panel](../products/mysbox/admin-panel/open-questions.md) | 2 | 37 | 60 | 99 |
-| [automation-growth](../products/mysbox/automation-growth/open-questions.md) | 12 | 55 | 36 | 103 |
-| [box](../products/mysbox/box/open-questions.md) | 9 | 60 | 61 | 130 |
-| [integrations](../products/mysbox/integrations/open-questions.md) | 1 | 14 | 19 | 34 |
-| [merchant-app](../products/mysbox/merchant-app/open-questions.md) | 8 | 58 | 51 | 117 |
-| [order-draw](../products/mysbox/order-draw/open-questions.md) | 6 | 40 | 33 | 79 |
-| [plans-billing](../products/mysbox/plans-billing/open-questions.md) | 16 | 59 | 71 | 146 |
+| [admin-ops](../products/mysbox/admin-ops/open-questions.md) | 1 | 22 | 24 | 47 |
+| [analytics](../products/mysbox/analytics/open-questions.md) | 2 | 17 | 19 | 38 |
+| [box](../products/mysbox/box/open-questions.md) | 4 | 35 | 40 | 79 |
+| [box-inventory](../products/mysbox/box-inventory/open-questions.md) | 5 | 28 | 30 | 63 |
+| [integrations](../products/mysbox/integrations/open-questions.md) | 3 | 37 | 36 | 76 |
+| [notification](../products/mysbox/notification/open-questions.md) | 4 | 7 | 5 | 16 |
+| [order-draw](../products/mysbox/order-draw/open-questions.md) | 6 | 46 | 43 | 95 |
+| [plan](../products/mysbox/plan/open-questions.md) | 10 | 22 | 28 | 60 |
+| [promo-code](../products/mysbox/promo-code/open-questions.md) | 3 | 18 | 17 | 38 |
 | [resell-refund-credit](../products/mysbox/resell-refund-credit/open-questions.md) | 4 | 39 | 59 | 102 |
 | [reveal](../products/mysbox/reveal/open-questions.md) | 5 | 37 | 32 | 74 |
-| [storefront-widget](../products/mysbox/storefront-widget/open-questions.md) | 7 | 33 | 27 | 67 |
+| [shop](../products/mysbox/shop/open-questions.md) | 5 | 35 | 39 | 79 |
+| [shop-settings](../products/mysbox/shop-settings/open-questions.md) | 9 | 45 | 37 | 91 |
+| [unbox-sharing](../products/mysbox/unbox-sharing/open-questions.md) | 6 | 25 | 14 | 45 |
+| [usage-billing](../products/mysbox/usage-billing/open-questions.md) | 3 | 19 | 26 | 48 |
 
 ## Qikify Volume Discounts QA context
 
@@ -70,11 +74,14 @@ Tổng: 4366 open question đang mở trên 76 object (202 conflict · 3017 cầ
 | [ai-offer-creation](../products/qik-volume/ai-offer-creation/open-questions.md) | 0 | 12 | 0 | 12 |
 | [analytics](../products/qik-volume/analytics/open-questions.md) | 0 | 9 | 0 | 9 |
 | [ask-for-review](../products/qik-volume/ask-for-review/open-questions.md) | 0 | 12 | 0 | 12 |
-| [discount-offers](../products/qik-volume/discount-offers/open-questions.md) | 12 | 71 | 24 | 107 |
+| [discount-offers](../products/qik-volume/discount-offers/open-questions.md) | 1 | 11 | 5 | 17 |
+| [multibuy](../products/qik-volume/multibuy/open-questions.md) | 3 | 24 | 5 | 32 |
 | [onboarding-dashboard](../products/qik-volume/onboarding-dashboard/open-questions.md) | 2 | 8 | 3 | 13 |
+| [quantity-break](../products/qik-volume/quantity-break/open-questions.md) | 6 | 20 | 6 | 32 |
 | [translate-offers](../products/qik-volume/translate-offers/open-questions.md) | 0 | 21 | 0 | 21 |
 | [translate-portal](../products/qik-volume/translate-portal/open-questions.md) | 0 | 26 | 0 | 26 |
 | [variant-swatches](../products/qik-volume/variant-swatches/open-questions.md) | 0 | 30 | 0 | 30 |
+| [wholesale-pricing](../products/qik-volume/wholesale-pricing/open-questions.md) | 2 | 16 | 8 | 26 |
 
 ## Qikfiliate QA context
 
@@ -99,7 +106,10 @@ Tổng: 4366 open question đang mở trên 76 object (202 conflict · 3017 cầ
 | Object | Conflict | Cần xác nhận | Open issue | Tổng |
 |---|---:|---:|---:|---:|
 | [account-security](../products/teeinblue/account-security/open-questions.md) | 1 | 36 | 24 | 61 |
-| [artwork](../products/teeinblue/artwork/open-questions.md) | 39 | 447 | 82 | 568 |
+| [artwork](../products/teeinblue/artwork/open-questions.md) | 5 | 53 | 14 | 72 |
+| [artwork-editor](../products/teeinblue/artwork-editor/open-questions.md) | 20 | 90 | 9 | 119 |
+| [artwork-layer-config](../products/teeinblue/artwork-layer-config/open-questions.md) | 6 | 178 | 24 | 208 |
+| [artwork-render](../products/teeinblue/artwork-render/open-questions.md) | 8 | 126 | 35 | 169 |
 | [asset-category](../products/teeinblue/asset-category/open-questions.md) | 4 | 45 | 15 | 64 |
 | [campaign](../products/teeinblue/campaign/open-questions.md) | 0 | 81 | 24 | 105 |
 | [font](../products/teeinblue/font/open-questions.md) | 2 | 43 | 3 | 48 |
@@ -109,7 +119,8 @@ Tổng: 4366 open question đang mở trên 76 object (202 conflict · 3017 cầ
 | [open-api](../products/teeinblue/open-api/open-questions.md) | 1 | 57 | 9 | 67 |
 | [order](../products/teeinblue/order/open-questions.md) | 3 | 68 | 24 | 95 |
 | [product-base](../products/teeinblue/product-base/open-questions.md) | 2 | 101 | 19 | 122 |
-| [sdk](../products/teeinblue/sdk/open-questions.md) | 10 | 188 | 61 | 259 |
+| [sdk](../products/teeinblue/sdk/open-questions.md) | 9 | 147 | 40 | 196 |
+| [sdk-genai](../products/teeinblue/sdk-genai/open-questions.md) | 1 | 41 | 21 | 63 |
 | [store-settings](../products/teeinblue/store-settings/open-questions.md) | 0 | 11 | 0 | 11 |
 | [subscription](../products/teeinblue/subscription/open-questions.md) | 4 | 22 | 10 | 36 |
 | [third-party-services](../products/teeinblue/third-party-services/open-questions.md) | 0 | 26 | 0 | 26 |

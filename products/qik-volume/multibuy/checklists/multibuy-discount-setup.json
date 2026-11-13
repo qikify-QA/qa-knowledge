@@ -1,0 +1,1305 @@
+{
+  "feature_id": "FEAT-04-multibuy-discount-setup",
+  "feature_key": "multibuy-discount-setup",
+  "object_id": "multibuy",
+  "checklist_version": "v2",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Trigger \"All products\" — không có exclude option, là default",
+      "applicability": {
+        "role": "merchant",
+        "state": "offer mới chưa chọn trigger",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Merchant đang ở bước Trigger settings của 1 Multibuy offer.",
+      "steps": [
+        "Mở Create/Edit Multibuy offer.",
+        "Ở Trigger settings, không đổi gì — quan sát trigger type được chọn sẵn.",
+        "Chọn trigger \"All products\" (nếu chưa phải default) và lưu."
+      ],
+      "observation_point": "Trigger type được chọn và option hiển thị trong form Trigger settings.",
+      "expected_result": "\"All products\" là radio default; không có bất kỳ field/checkbox \"exclude\" nào xuất hiện cho trigger type này.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-setup#KB-009"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [
+        "RISK-ticket-only-business-rules"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Trigger \"Collection\" — chỉ chọn được đúng 1 collection, không có exclude option",
+      "applicability": {
+        "role": "merchant",
+        "state": "trigger type = Collection",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Merchant đang cấu hình Trigger settings, đã có ≥2 collection trong store.",
+      "steps": [
+        "Chọn trigger type \"Collection\".",
+        "Thử chọn 1 collection, quan sát picker.",
+        "Thử chọn collection thứ 2 (kỳ vọng thay thế, không cộng thêm)."
+      ],
+      "observation_point": "Hành vi của collection picker khi chọn collection thứ 2.",
+      "expected_result": "Picker chỉ cho chọn 1 collection tại 1 thời điểm (không phải multi-select); không có field exclude nào xuất hiện.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-setup#KB-010",
+          "multibuy/multibuy-discount-setup#KB-011"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [
+        "RISK-ticket-only-business-rules"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Trigger \"Specific products\" — chọn được cả product và individual variant",
+      "applicability": {
+        "role": "merchant",
+        "state": "trigger type = Specific products",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Store có ≥1 product có nhiều variant.",
+      "steps": [
+        "Chọn trigger type \"Specific products\".",
+        "Mở picker, chọn 1 product nguyên (không chỉ định variant).",
+        "Chọn thêm 1 variant cụ thể của product khác."
+      ],
+      "observation_point": "Kết quả selection trong picker, lưu offer.",
+      "expected_result": "Picker cho phép chọn cả cấp product và cấp variant; không có exclude option.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-setup#KB-012",
+          "multibuy/multibuy-discount-setup#KB-013"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [
+        "RISK-ticket-only-business-rules"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Không trigger type nào của Multibuy có \"Select excluded products\" (khác Quantity Break)",
+      "applicability": {
+        "role": "merchant",
+        "state": "mọi trigger type",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Merchant đã từng thấy Trigger Settings của Quantity Break (7-option, có exclude) để so sánh.",
+      "steps": [
+        "Lần lượt chọn All products Collection Specific products trong Trigger settings của Multibuy.",
+        "Ở mỗi trigger type, tìm field \"Select excluded products\" hoặc tương đương.",
+        "Xác nhận không có \"Product tags\" hay \"Custom trigger\" condition builder nào."
+      ],
+      "observation_point": "Toàn bộ field hiển thị dưới mỗi trigger type.",
+      "expected_result": "Không trigger type nào có exclude option product tags custom trigger builder — đây là correction so với ticket QVD-104 cũ.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-setup#KB-014",
+          "multibuy/multibuy-discount-setup#KB-015"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [
+        "RISK-ticket-only-business-rules"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Widget Multibuy chỉ hiển thị khi trigger condition được đáp ứng",
+      "applicability": {
+        "role": "buyer",
+        "state": "product thoả không thoả trigger",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Có 1 Multibuy offer active với trigger = Specific products (danh sách xác định).",
+      "steps": [
+        "Truy cập product page của 1 sản phẩm TRONG trigger scope.",
+        "Quan sát widget Multibuy.",
+        "Truy cập product page của 1 sản phẩm NGOÀI trigger scope."
+      ],
+      "observation_point": "Sự xuất hiện của widget discount trên product/cart/checkout page.",
+      "expected_result": "Widget chỉ hiển thị trên sản phẩm trong trigger scope; không hiển thị trên sản phẩm ngoài scope.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-setup#KB-008"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Thêm nhiều tier, mỗi tier có Title/min quantity/reward/Badge",
+      "applicability": {
+        "role": "merchant",
+        "state": "đang edit offer",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Offer đã có ≥1 tier mặc định.",
+      "steps": [
+        "Bấm \"+ Add new tier\" để thêm tier thứ 2.",
+        "Kiểm tra tier mới có đủ 4 field: Title, Quantity of product required (numeric), reward, Badge."
+      ],
+      "observation_point": "Cấu trúc field của tier mới tạo.",
+      "expected_result": "Mỗi tier có đúng 4 thành phần: Title, min quantity numeric, reward, Badge.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-setup#KB-017",
+          "multibuy/multibuy-discount-setup#KB-018"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Reward của tier chọn được 2 giá trị: Fixed total price hoặc Percentage off",
+      "applicability": {
+        "role": "merchant",
+        "state": "đang edit 1 tier",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "1 tier đang expanded.",
+      "steps": [
+        "Mở dropdown/switch loại reward của tier.",
+        "Chọn \"Fixed total price\", lưu.",
+        "Đổi sang \"Percentage off\", lưu."
+      ],
+      "observation_point": "Giá trị reward type khả dụng và lưu đúng.",
+      "expected_result": "Đúng 2 giá trị khả dụng: Fixed total price, Percentage off — không có giá trị thứ 3.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-setup#KB-019"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Default template Title/Badge của tier dùng single curly braces",
+      "applicability": {
+        "role": "merchant",
+        "state": "tier mới tạo, chưa chỉnh template",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Tạo 1 tier mới, chưa chỉnh Title/Badge field.",
+      "steps": [
+        "Tạo tier mới.",
+        "Đọc giá trị default của Title field.",
+        "Đọc giá trị default của Badge field."
+      ],
+      "observation_point": "Giá trị literal default trong 2 field Title/Badge.",
+      "expected_result": "Title default = `{quantity} for {tier_price}`; Badge default = `Saved {saved_price}` — single braces, KHÔNG phải `{{double}}` như ticket QVD-103 mô tả.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-setup#KB-020",
+          "multibuy/multibuy-discount-setup#KB-021"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [
+        "RISK-ticket-only-business-rules"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Default state khi tạo offer mới — số tier pre-populated và giá trị của chúng",
+      "applicability": {
+        "role": "merchant",
+        "state": "offer mới chưa lưu",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Bắt đầu tạo 1 Multibuy offer mới.",
+      "steps": [
+        "Mở form Create Multibuy offer lần đầu.",
+        "Quan sát tier section trước khi chỉnh gì: số tier, quantity, giá, title, badge, discount type mặc định."
+      ],
+      "observation_point": "Số tier và giá trị pre-populated.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Conflict CONF-discount-offers-R1018-04 — Tier mặc định khi tạo offer Multibuy mới là gì? Tài liệu (KB-022): 1 tier pre-populate — quantity 1, $10 total, badge 'Saved {saved_price}'. Staging 2026-10-18 (KB-086): Discount type mặc định 'Fixed total price' và 3 tier '2 for $10', '3 for $20', '4 for $30' (title '{quantity} for {tier_price}', badge 'Saved {saved_price}'). Cần owner chọn phía trước khi check này dùng lại được làm oracle.",
+      "related_kb_ids": [
+        "multibuy/multibuy-discount-setup#KB-022",
+        "multibuy/multibuy-discount-setup#KB-086"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "CONF-discount-offers-R1018-04"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-multibuy-021"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Guardrail — không xoá được tier cuối cùng còn lại; 0 tier = 0 discount",
+      "applicability": {
+        "role": "merchant",
+        "state": "offer chỉ còn 1 tier",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Offer hiện chỉ có đúng 1 tier.",
+      "steps": [
+        "Bấm Delete trên tier cuối cùng còn lại.",
+        "Quan sát kết quả (block error tier vẫn còn).",
+        "(Nếu bằng cách nào đó đạt được 0 tier) Lưu offer và kiểm tra storefront."
+      ],
+      "observation_point": "Hành vi nút Delete khi chỉ còn 1 tier; discount áp dụng khi 0 tier.",
+      "expected_result": "Không thể xoá tier cuối cùng — luôn còn ≥1 tier. Nếu bằng cách khác không có tier nào được configure, không có discount nào được áp dụng.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-setup#KB-023",
+          "multibuy/multibuy-discount-setup#KB-024"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Expand/collapse tier — chỉ 1 tier expand tại 1 thời điểm; Add new tier tự renumber",
+      "applicability": {
+        "role": "merchant",
+        "state": "offer có ≥2 tier",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Offer có ít nhất 2 tier.",
+      "steps": [
+        "Mở (expand) tier 1, quan sát trạng thái tier 2.",
+        "Bấm Edit trên tier 2.",
+        "Bấm \"+ Add new tier\"."
+      ],
+      "observation_point": "Trạng thái expand/collapse của các tier, số tier mới được gán.",
+      "expected_result": "Tier 1 expanded by default; chỉ 1 tier expand cùng lúc — mở tier khác tự collapse tier đang mở; \"+ Add new tier\" auto-expand tier mới, collapse tier cũ, và tự gán số kế tiếp.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-setup#KB-025",
+          "multibuy/multibuy-discount-setup#KB-026"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Real-time validation khi vi phạm rule tier, success toast khi Save",
+      "applicability": {
+        "role": "merchant",
+        "state": "đang chỉnh tier",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Đang edit 1 tier.",
+      "steps": [
+        "Nhập giá trị vi phạm rule (ví dụ quantity = 0 hoặc để trống field required).",
+        "Quan sát validation message xuất hiện.",
+        "Sửa lại hợp lệ và bấm Save."
+      ],
+      "observation_point": "Validation message tại thời điểm nhập; toast/inline message sau Save.",
+      "expected_result": "Validation hiện ngay (real-time) khi vi phạm; Save thành công hiện success toast/inline message.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-setup#KB-027"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "\"Allow to apply multiplier discounts per order\" — áp dụng cho mỗi pack đạt tier",
+      "applicability": {
+        "role": "buyer",
+        "state": "cart có đủ item cho nhiều pack của cùng tier",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Offer có tier \"3 for $20\", checkbox multiplier đang ENABLED.",
+      "steps": [
+        "Thêm 6 item eligible vào cart (2 pack đủ điều kiện tier \"3 for $20\").",
+        "Kiểm tra tổng giá tại cart."
+      ],
+      "observation_point": "Tổng giá discount áp dụng trên cart.",
+      "expected_result": "Discount áp dụng 2 lần (2 pack) → total $40, không phải $20 + full price cho 3 item còn lại.",
+      "oracle": {
+        "kb_ids": [
+          "multibuy/multibuy-discount-setup#KB-028",
+          "multibuy/multibuy-discount-setup#KB-029"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "multibuy/multibuy-discount-setup#KB-087"
+      ],
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-019",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "NEEDS_CONFIRMATION — Pooling across different products có áp dụng cho trigger Collection/Specific products không?",
+      "applicability": {
+        "role": "buyer",
+        "state": "trigger = Collection hoặc Specific products",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Chưa có evidence nào xác nhận pooling cho 2 trigger type này (chỉ confirm cho \"All products\").",
+      "steps": [
+        "Tạo offer trigger = Collection, thêm quantity pool từ ≥2 SKU trong collection đó.",
+        "Tạo offer trigger = Specific products, thêm quantity pool từ ≥2 SKU đã chọn.",
+        "So sánh kết quả với hành vi đã confirm của \"All products\"."
+      ],
+      "observation_point": "Kết quả pooling ở 2 trigger type chưa được test.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Quantity pooling across different products (đã confirm cho trigger 'All products', KB-032) có áp dụng nhất quán cho trigger 'Collection' và 'Specific products' không? Cơ chế pooling là core mechanic của Multibuy; nếu khác nhau giữa trigger type thì coverage hiện tại (chỉ test All products) không đủ.",
+      "related_kb_ids": [
+        "multibuy/multibuy-discount-calculation#KB-095"
+      ],
+      "risk_refs": [
+        "RISK-ticket-only-business-rules"
+      ],
+      "priority": "P1",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-003",
+      "observation_guidance": "KHÔNG xác định — cần PO/Dev hoặc 1 lần test riêng xác nhận pooling có nhất quán qua mọi trigger type hay chỉ riêng \"All products\"."
+    },
+    {
+      "check_id": "CHK-028",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION — Customer product selection behavior: radio Popup (default) vs Redirect",
+      "applicability": {
+        "role": "merchant",
+        "state": "đang cấu hình selection behavior",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Claim nguồn gốc 100% từ ticket QVD-106, chưa QA re-confirm.",
+      "steps": [
+        "Mở section Customer product selection behavior.",
+        "Quan sát radio default và field \"Destination URL\" khi chọn Redirect."
+      ],
+      "observation_point": "Radio default và field hiển thị theo lựa chọn.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Customer product selection behavior có đúng là radio 2 option (Open selection popup [default] Redirect to a specific page/URL) như ticket QVD-106 mô tả không? Cần QA re-confirm live trước khi dùng làm oracle, vì tài liệu này đã phát hiện ≥3 case khác nơi ticket không khớp hành vi live.",
+      "related_kb_ids": [
+        "multibuy/multibuy-product-selection#KB-088"
+      ],
+      "risk_refs": [
+        "RISK-ticket-only-business-rules"
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-004",
+      "observation_guidance": "KHÔNG xác định làm expected result cho tới khi QA re-confirm — ticket mô tả \"Open selection popup\" là default, nhưng chưa được verify lại trên live."
+    },
+    {
+      "check_id": "CHK-029",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "NEEDS_CONFIRMATION — Popup mode detail (variant picker slide-up, overlay, no-variant instant add)",
+      "applicability": {
+        "role": "buyer",
+        "state": "selection mode = popup",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Claim nguồn gốc 100% từ ticket QVD-121, chưa QA re-confirm.",
+      "steps": [
+        "Bấm \"+\" trên 1 product có variant trong popup.",
+        "Bấm \"+\" trên 1 product không có variant."
+      ],
+      "observation_point": "Hành vi UI chi tiết (variant picker, overlay, icon state) ở cả 2 case.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Popup mode detail (variant picker slide-up từ đáy card + overlay semi-transparent cho product có variant; instant add-to-cart + icon đổi state cho product không variant) theo ticket QVD-121 còn khớp hành vi live hiện tại không?",
+      "related_kb_ids": [
+        "multibuy/multibuy-product-selection#KB-094"
+      ],
+      "risk_refs": [
+        "RISK-ticket-only-business-rules"
+      ],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-005",
+      "observation_guidance": "KHÔNG xác định làm expected result cho tới khi QA re-confirm — ticket mô tả variant picker trượt lên + overlay semi-transparent (có variant) và instant add-to-cart (không variant), nhưng chưa verify lại."
+    },
+    {
+      "check_id": "CHK-043",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION — Badge border radius true default: 6px (live-observed) hay 10px (ticket QVD-132)?",
+      "applicability": {
+        "role": "merchant",
+        "state": "offer mới, chưa chỉnh badge border radius",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "2 nguồn trong CÙNG tài liệu mâu thuẫn nhau (CONF-DOC04-001), chưa resolve.",
+      "steps": [
+        "Tạo offer mới, mở Badge section.",
+        "Đọc giá trị default của Badge border radius slider.",
+        "So sánh với cả 2 giá trị đã ghi nhận (6px 10px)."
+      ],
+      "observation_point": "Giá trị thật của slider trên 1 store sạch (chưa từng chỉnh).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "True out-of-the-box default của Multibuy discount badge border radius là 6px (live-observed, KB-081) hay 10px (ticket QVD-132, KB-082)? Hai giá trị khác nhau trong cùng 1 tài liệu, chưa resolve — không dùng được làm expected default cho test case badge appearance.",
+      "related_kb_ids": [
+        "multibuy/multibuy-appearance-and-schedule#KB-090"
+      ],
+      "risk_refs": [
+        "RISK-badge-appearance-conflict"
+      ],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-006",
+      "observation_guidance": "KHÔNG xác định — ghi nhận giá trị quan sát được và báo cáo cho PO/Dev; KHÔNG dùng 6px hay 10px làm expected default cho tới khi được xác nhận."
+    },
+    {
+      "check_id": "CHK-044",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION — Badge text true default: \"MULTIBUY\" (live example) hay \"Multi buy\" (ticket QVD-132)?",
+      "applicability": {
+        "role": "merchant",
+        "state": "offer mới, chưa chỉnh badge text",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "2 nguồn trong CÙNG tài liệu mâu thuẫn nhau (CONF-DOC04-002), chưa resolve.",
+      "steps": [
+        "Tạo offer mới, mở Badge section.",
+        "Đọc giá trị default của Badge text field.",
+        "So sánh với cả 2 giá trị đã ghi nhận (\"MULTIBUY\" \"Multi buy\")."
+      ],
+      "observation_point": "Giá trị thật của text field trên 1 store sạch (chưa từng chỉnh).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "True out-of-the-box default của Multibuy discount badge text là \"MULTIBUY\" (live example, KB-083) hay \"Multi buy\" (ticket, KB-084), hoặc liệu giá trị live đã bị merchant chỉnh? Không dùng được làm expected default cho test case badge text cho tới khi xác nhận.",
+      "related_kb_ids": [
+        "multibuy/multibuy-appearance-and-schedule#KB-091",
+        "discount-offers/offer-storefront-events#KB-031"
+      ],
+      "risk_refs": [
+        "RISK-badge-appearance-conflict"
+      ],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-007",
+      "observation_guidance": "KHÔNG xác định — ghi nhận giá trị quan sát được và báo cáo cho PO/Dev; KHÔNG dùng \"MULTIBUY\" hay \"Multi buy\" làm expected default cho tới khi được xác nhận. Cũng cần làm rõ liệu để trống có ẩn badge như ticket mô tả."
+    },
+    {
+      "check_id": "CHK-046",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION — Discount combination checkboxes (Order/Product/Shipping), default off",
+      "applicability": {
+        "role": "merchant",
+        "state": "offer mới, chưa chỉnh Discount combination",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Claim nguồn gốc 100% từ ticket QVD-108, chưa QA re-confirm.",
+      "steps": [
+        "Mở section Discount combination.",
+        "Đọc trạng thái default của 3 checkbox (Order/Product/Shipping)."
+      ],
+      "observation_point": "Trạng thái checked/unchecked của 3 checkbox.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Discount combination section (checkbox combine Order/Product/Shipping discount, theo ticket QVD-108) có đúng cả 3 default off như tài liệu mô tả không? Cần QA re-confirm live.",
+      "related_kb_ids": [
+        "discount-offers/offer-create-and-manage#KB-012"
+      ],
+      "risk_refs": [
+        "RISK-ticket-only-business-rules"
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-008",
+      "observation_guidance": "KHÔNG xác định làm expected result cho tới khi QA re-confirm — ticket mô tả cả 3 checkbox default off."
+    },
+    {
+      "check_id": "CHK-048",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION — Offer scheduling: start date required/not-past, end date optional toggle",
+      "applicability": {
+        "role": "merchant",
+        "state": "offer mới, chưa chỉnh scheduling",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Claim nguồn gốc 100% từ ticket QVD-109, chưa QA re-confirm.",
+      "steps": [
+        "Thử để trống start date và Save.",
+        "Thử nhập start date trong quá khứ.",
+        "Kiểm tra end date mặc định (toggle Enable end date) default off."
+      ],
+      "observation_point": "Validation message và default state của 2 field.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Offer scheduling base rule (start date required, default = creation time, không thể là ngày quá khứ, dùng store timezone; end date optional sau toggle 'Enable end date', default off = chạy vô thời hạn) theo ticket QVD-109 còn khớp hành vi live không?",
+      "related_kb_ids": [
+        "discount-offers/offer-create-and-manage#KB-013",
+        "quantity-break/quantity-break-display-and-schedule#KB-084"
+      ],
+      "risk_refs": [
+        "RISK-ticket-only-business-rules"
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-009",
+      "observation_guidance": "KHÔNG xác định làm expected result cho tới khi QA re-confirm — ticket mô tả start date required/không-quá-khứ, end date optional default off (chạy vô thời hạn)."
+    },
+    {
+      "check_id": "CHK-050",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION — Internal name auto-default \"Offer #N\", merchant-only",
+      "applicability": {
+        "role": "merchant",
+        "state": "offer mới tạo",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Claim nguồn gốc 100% từ ticket QVD-103, chưa QA re-confirm.",
+      "steps": [
+        "Tạo offer mới.",
+        "Đọc giá trị default của Internal name.",
+        "Xác nhận field không hiển thị cho customer (storefront)."
+      ],
+      "observation_point": "Giá trị default và phạm vi hiển thị.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Internal name có đúng auto-default theo pattern \"Offer #N\" và chỉ merchant thấy (không hiển thị customer) như ticket QVD-103 mô tả không? Cần QA re-confirm live.",
+      "related_kb_ids": [
+        "discount-offers/offer-create-and-manage#KB-010",
+        "discount-offers/offer-storefront-events#KB-029"
+      ],
+      "risk_refs": [
+        "RISK-ticket-only-business-rules"
+      ],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-010",
+      "observation_guidance": "KHÔNG xác định làm expected result cho tới khi QA re-confirm — ticket mô tả auto-default \"Offer #1\"/\"Offer #2\"..., merchant-only."
+    },
+    {
+      "check_id": "CHK-051",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION — Offer title default template {{quantity_tier}} for {{total_price}}",
+      "applicability": {
+        "role": "merchant",
+        "state": "offer mới tạo",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Claim nguồn gốc 100% từ ticket QVD-103, chưa QA re-confirm.",
+      "steps": [
+        "Tạo offer mới.",
+        "Đọc giá trị default của Offer title field.",
+        "Kiểm tra nút {} variable picker."
+      ],
+      "observation_point": "Giá trị template default và sự tồn tại variable picker.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Offer title default template có đúng là {{quantity_tier}} for {{total_price}} (double braces, theo ticket QVD-103) hay dùng single-brace notation như đã confirm cho Tier Title/Badge (KB-020/021)? Notation đã bị phát hiện sai ở phần Tier settings — rủi ro drift tương tự ở đây chưa loại trừ.",
+      "related_kb_ids": [
+        "multibuy/multibuy-appearance-and-schedule#KB-085"
+      ],
+      "risk_refs": [
+        "RISK-ticket-only-business-rules"
+      ],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-011",
+      "observation_guidance": "KHÔNG xác định làm expected result cho tới khi QA re-confirm — ticket mô tả default template {{quantity_tier}} for {{total_price}} (double braces — lưu ý notation này có thể khác với single-brace đã confirm ở Tier Title/Badge, KB-020/021)."
+    },
+    {
+      "check_id": "CHK-052",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION — Discount method default automatic; limit 25/code → contact support",
+      "applicability": {
+        "role": "merchant",
+        "state": "offer mới tạo",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Claim nguồn gốc 100% từ ticket QVD-103, chưa QA re-confirm.",
+      "steps": [
+        "Tạo offer mới.",
+        "Đọc discount method default.",
+        "Tìm hướng dẫn khi muốn dùng discount code hoặc khi chạm limit 25 automatic discount."
+      ],
+      "observation_point": "Giá trị default và message hướng dẫn liên hệ support (nếu có).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Discount method default có đúng là automatic discount, và hành vi khi chạm giới hạn 25/muốn dùng discount code (hướng dẫn liên hệ support, không self-serve) theo ticket QVD-103 còn khớp hành vi live không?",
+      "related_kb_ids": [
+        "discount-offers/offer-create-and-manage#KB-011"
+      ],
+      "risk_refs": [
+        "RISK-ticket-only-business-rules"
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-012",
+      "observation_guidance": "KHÔNG xác định làm expected result cho tới khi QA re-confirm — ticket mô tả automatic discount là default, và hướng dẫn liên hệ support khi chạm limit 25 hoặc muốn dùng code."
+    },
+    {
+      "check_id": "CHK-055",
+      "dimension": "REGRESSION",
+      "layer": "storefront",
+      "title": "[Regression-watch, KNOWN_DEFECT/limitation — KHÔNG dùng làm oracle] Đổi quantity trực tiếp trong cart có thể hiện discount/compare price inconsistent",
+      "applicability": {
+        "role": "buyer",
+        "state": "đã add item từ product page, sau đó đổi quantity ngay trong cart",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Sản phẩm có compare_at_price đang được discount, đã nằm trong cart.",
+      "steps": [
+        "Đổi quantity của item trực tiếp trong cart page (không re-add từ product page).",
+        "Quan sát displayed discount/compare price."
+      ],
+      "observation_point": "Tính nhất quán của giá hiển thị sau khi đổi quantity trong cart.",
+      "current_defect_behavior": "KNOWN_DEFECT/limitation đã documented và accept (Shopify cart-display constraint): sau khi đổi quantity trực tiếp trong cart có thể thấy discount/compare price hiển thị KHÔNG nhất quán. Không tự động coi là FAIL/bug mới; nếu khác mô tả (đã được fix, hoặc tệ hơn) cần điều tra, không tự kết luận.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Known limitation KB-069: đổi quantity trực tiếp trong cart có thể hiện discount/compare price không nhất quán (ràng buộc hiển thị cart của Shopify, đã được accept). Limitation này còn được chấp nhận không, và mức lệch nào thì coi là regression?",
+      "related_kb_ids": [
+        "multibuy/multibuy-discount-calculation#KB-067",
+        "multibuy/multibuy-discount-calculation#KB-068"
+      ],
+      "regression_watch_kb_ids": [
+        "multibuy/multibuy-discount-calculation#KB-069"
+      ],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-multibuy-024"
+    },
+    {
+      "check_id": "CHK-056",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION — \"Silent\" mode (discount tự áp dụng, widget UI ẩn qua custom CSS)",
+      "applicability": {
+        "role": "merchant",
+        "state": "muốn ẩn widget UI nhưng vẫn giữ discount",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Claim mô tả 'feasible' nhưng chưa có evidence verify thật, kèm giới hạn 25 automatic discount.",
+      "steps": [
+        "Cấu hình Custom CSS để ẩn widget UI (display:none hoặc tương đương).",
+        "Kiểm tra discount vẫn tự áp dụng ở cart mà không hiện widget."
+      ],
+      "observation_point": "Trạng thái discount áp dụng vs hiển thị widget.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Compare-at-Price logic có thực sự hỗ trợ 1 \"silent\" mode (discount tự áp dụng, widget UI ẩn qua custom CSS) như tài liệu mô tả (feasible, chưa verify) không? Nếu có, giới hạn 25-automatic-discount của Shopify có cần cảnh báo riêng cho merchant khi dùng mode này?",
+      "risk_refs": [
+        "RISK-ticket-only-business-rules"
+      ],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-013",
+      "observation_guidance": "KHÔNG xác định — tài liệu mô tả đây là feasible nhưng chưa verify thật; cần PO/Dev xác nhận \"silent\" mode có hoạt động đúng không và giới hạn 25-automatic-discount có áp dụng."
+    },
+    {
+      "check_id": "CHK-058",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Trigger overlap với offer khác (Quantity Break) hiện cảnh báo non-blocking liệt kê tên offer",
+      "applicability": {
+        "role": "merchant",
+        "state": "tạo/sửa Multibuy offer có trigger overlap offer khác",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Đã có 1 Quantity Break offer active trên sản phẩm X.",
+      "steps": [
+        "Tạo Multibuy offer mới với trigger bao gồm sản phẩm X.",
+        "Quan sát cảnh báo xuất hiện trong form.",
+        "Xác nhận offer vẫn Save được."
+      ],
+      "observation_point": "Nội dung cảnh báo, khả năng Save.",
+      "expected_result": "Hiện cảnh báo non-blocking \"This trigger overlaps with offer(s): <name>.\" liệt kê đúng tên offer Quantity Break đang overlap; offer vẫn Save được (không chặn).",
+      "oracle": {
+        "kb_ids": [
+          "discount-offers/offer-overlap-and-stacking#KB-003"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "discount-offers/offer-create-and-manage#KB-014"
+      ],
+      "risk_refs": [
+        "RISK-confirmation-source-heuristic"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-059",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "Khi 2 offer type overlap trigger: số discount áp lên cart (một hay nhiều, có chia giữa các line không)",
+      "applicability": {
+        "role": "buyer",
+        "state": "cart qualify cho cả Multibuy và 1 offer type khác overlap trigger",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Multibuy và Quantity Break (hoặc Wholesale Pricing) cùng active, cùng trigger 1 sản phẩm, cart qualify cho cả 2.",
+      "steps": [
+        "Thêm cart sao cho qualify đồng thời cho cả 2 offer (thử cả đường add qua widget và add trực tiếp, số lượng nhỏ và lớn).",
+        "Kiểm tra số line, mã discount trên từng line và tổng discount ở cart/checkout."
+      ],
+      "observation_point": "Số lượng discount áp dụng trên cart (1 hay 2, hay split giữa các line).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Conflict CONF-discount-offers-R1018-05 — Khi Multibuy overlap trigger với Quantity Break trên cùng product, cart có thể mang 2 discount (2 mã trên 2 line cùng product) không? Tài liệu (object:KB-005): đúng một discount áp, không bao giờ cả hai, không bao giờ chia. Staging 2026-10-18: giỏ 3 đơn vị mỗi lần chỉ một mã (object:KB-026), nhưng giỏ 11 đơn vị add không property tách 2 line với mã Multibuy (4 món) + mã Quantity Break (7 món) (object:KB-028). Offer nào thắng vẫn chưa xác định — xem CHK-060/061.",
+      "related_kb_ids": [
+        "discount-offers/offer-overlap-and-stacking#KB-005",
+        "discount-offers/offer-overlap-and-stacking#KB-026",
+        "discount-offers/offer-overlap-and-stacking#KB-028"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "RISK-offer-priority-unresolved",
+        "RISK-confirmation-source-heuristic",
+        "CONF-discount-offers-R1018-05"
+      ],
+      "priority": "P1",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-discount-offers-053"
+    },
+    {
+      "check_id": "CHK-060",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "NEEDS_CONFIRMATION — Offer nào thắng khi Multibuy overlap trigger với Quantity Break (2-way)?",
+      "applicability": {
+        "role": "buyer",
+        "state": "cart qualify đồng thời cho Multibuy và Quantity Break overlap",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Kết quả đã từng 'flip' giữa 2 lần test live trên cùng 1 cặp offer — biến quyết định CHƯA xác định.",
+      "steps": [
+        "Tái tạo scenario 2-way overlap đã test trước (cùng cặp offer, cùng cart setup).",
+        "Ghi lại offer nào thắng VÀ mọi biến có thể liên quan (thứ tự tạo offer, rank trong Shopify admin, thứ tự add-to-cart)."
+      ],
+      "observation_point": "Offer thắng và các biến ngữ cảnh đi kèm.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Biến nào quyết định offer nào thắng khi trigger của Multibuy overlap với Quantity Break (2-way)? Kết quả đã bị 'flip' giữa 2 lần test live trên cùng 1 cặp offer, không biến nào được xác định. Cần PO/Dev confirm trước khi viết được regression test case xác định cho trigger-overlap.",
+      "related_kb_ids": [
+        "discount-offers/offer-overlap-and-stacking#KB-026",
+        "discount-offers/offer-overlap-and-stacking#KB-028",
+        "discount-offers/offer-create-and-manage#KB-012"
+      ],
+      "risk_refs": [
+        "RISK-offer-priority-unresolved"
+      ],
+      "priority": "P1",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-014",
+      "observation_guidance": "KHÔNG xác định — không viết được test oracle xác định cho tới khi PO/Dev xác nhận biến quyết định priority (rank/order trong Shopify admin? function evaluate sau? thứ tự add-to-cart?)."
+    },
+    {
+      "check_id": "CHK-061",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "NEEDS_CONFIRMATION — Offer nào thắng khi cả 3 offer type (Multibuy, Quantity Break, Wholesale Pricing) cùng trigger và ≥2 discount đang active (3-way)?",
+      "applicability": {
+        "role": "buyer",
+        "state": "cart qualify cho ≥2 offer type đang active cùng lúc, cả 3 cùng trigger",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Test 3-way hiện có (qty=3) KHÔNG phải test priority sạch vì Wholesale's Tier 1 là 0% ở mức quantity đó.",
+      "steps": [
+        "Chọn quantity sao cho Wholesale Pricing's tier tại mức đó có discount NONZERO (khác test cũ qty=3).",
+        "Tạo cart qualify đồng thời cho ≥2 trong 3 offer type.",
+        "Ghi lại offer nào thắng."
+      ],
+      "observation_point": "Offer thắng khi có ≥2 discount thực sự active cùng lúc.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Khi Wholesale Pricing's own tier có discount nonzero và đồng thời qualify cho tier của Quantity Break/Multibuy, offer nào thắng trong 3-way overlap? Test 3-way hiện có (qty=3) không phải test priority sạch; chưa có dữ liệu trả lời priority thật khi 2 discount active cùng lúc.",
+      "related_kb_ids": [
+        "discount-offers/offer-overlap-and-stacking#KB-028",
+        "discount-offers/offer-overlap-and-stacking#KB-026"
+      ],
+      "risk_refs": [
+        "RISK-offer-priority-unresolved"
+      ],
+      "priority": "P1",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-015",
+      "observation_guidance": "KHÔNG xác định — chưa có dữ liệu trả lời priority thật khi 2 discount active cùng lúc trong 3-way overlap. Cần 1 test riêng với quantity mà Wholesale có discount nonzero, và cần PO/Dev confirm biến quyết định."
+    },
+    {
+      "check_id": "CHK-062",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "Khi cả 3 offer type cùng trigger 1 sản phẩm, cả 3 widget render đồng thời trên PDP",
+      "applicability": {
+        "role": "buyer",
+        "state": "3 offer type cùng active, cùng trigger 1 sản phẩm",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Multibuy, Quantity Break, Wholesale Pricing cùng active và trigger trên cùng 1 sản phẩm.",
+      "steps": [
+        "Truy cập product page của sản phẩm đó.",
+        "Đếm số widget hiển thị."
+      ],
+      "observation_point": "Số lượng và loại widget hiển thị trên PDP.",
+      "expected_result": "Cả 3 widget (Quantity Break tier cards, Multibuy combo picker, Wholesale TIER PRICING table) render đồng thời — không widget nào bị ẩn/loại trừ lẫn nhau ở tầng hiển thị (dù chỉ 1 discount thực sự áp dụng ở cart, xem CHK-059).",
+      "oracle": {
+        "kb_ids": [
+          "discount-offers/offer-overlap-and-stacking#KB-007"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "discount-offers/offer-overlap-and-stacking#KB-025"
+      ],
+      "risk_refs": [
+        "RISK-confirmation-source-heuristic"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-064",
+      "dimension": "PERMISSION",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION — Có permission/role boundary chi tiết hơn (sub-role, plan/feature-flag) kiểm soát quyền cấu hình Multibuy không?",
+      "applicability": {
+        "role": "merchant",
+        "state": "mọi role/plan",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Profile chỉ phân biệt ở mức merchant (Portal) vs buyer (storefront); không có authorization model chi tiết hơn được tài liệu hoá.",
+      "steps": [
+        "Thử truy cập Multibuy config với các loại Portal staff account khác nhau (nếu store có multi-staff).",
+        "Thử trên các plan/tier khác nhau của app (nếu áp dụng feature-flag theo plan)."
+      ],
+      "observation_point": "Sự khác biệt quyền truy cập (nếu có) giữa các loại account/plan.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Có permission/role boundary nào (vd Portal staff sub-role, plan/feature-flag gating) kiểm soát việc ai được cấu hình Multibuy không? permissions[] hiện chỉ phân biệt ở mức merchant (Portal) vs buyer (storefront) — không phải 1 authorization model.",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-016",
+      "observation_guidance": "KHÔNG xác định — chưa biết có permission boundary chi tiết hơn (sub-role Portal staff, plan/feature-flag gating) hay không."
+    },
+    {
+      "check_id": "CHK-065",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "NEEDS_CONFIRMATION — Hành vi khi checkbox \"Allow to apply multiplier discounts per order\" bị UNCHECK",
+      "applicability": {
+        "role": "buyer",
+        "state": "cart có đủ item cho nhiều pack, multiplier checkbox UNCHECKED",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Chỉ có evidence cho trạng thái CHECKED (KB-029); trạng thái unchecked chưa được tài liệu hoá rõ.",
+      "steps": [
+        "Uncheck \"Allow to apply multiplier discounts per order\".",
+        "Thêm 6 item eligible (2 pack đủ điều kiện tier \"3 for $20\").",
+        "Kiểm tra tổng giá — áp dụng 1 lần hay 0 lần?",
+        "Lặp lại test với discount type = Percentage để xem setting có ảnh hưởng cross-mode với QVD-178 không."
+      ],
+      "observation_point": "Số lần discount áp dụng khi checkbox unchecked, ở cả Fixed và Percentage mode.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Khi checkbox \"Allow to apply multiplier discounts per order\" (Maximum discount uses) bị UNCHECK, hành vi chính xác là gì? Setting này chỉ áp dụng cho Fixed-price mode hay cũng ảnh hưởng Percentage mode cùng với toggle riêng của QVD-178?",
+      "related_kb_ids": [
+        "multibuy/multibuy-discount-setup#KB-087"
+      ],
+      "risk_refs": [],
+      "priority": "P1",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-017",
+      "observation_guidance": "KHÔNG xác định — chưa có hành vi confirmed cho trạng thái unchecked, và chưa rõ setting này chỉ áp dụng Fixed-price mode hay cũng ảnh hưởng Percentage mode cùng toggle QVD-178."
+    },
+    {
+      "check_id": "CHK-066",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "NEEDS_CONFIRMATION — Tie-break rule khi nhiều unit cùng giá 'cheapest' trong remainder calculation",
+      "applicability": {
+        "role": "buyer",
+        "state": "pooled quantity có remainder, ≥2 SKU cùng giá thấp nhất",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Rule 'highest-priced-first' (KB-033) không nêu cách xử lý khi có tie ở mức giá thấp nhất.",
+      "steps": [
+        "Thêm cart với remainder case, trong đó ≥2 SKU khác nhau có CÙNG giá thấp nhất.",
+        "Quan sát SKU nào bị chọn làm remainder full price."
+      ],
+      "observation_point": "SKU được chọn làm remainder khi có tie về giá.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Khi nhiều unit cùng share giá 'cheapest' trong remainder calculation của Fixed total price tier (pooled quantity có remainder), quy tắc tie-break chọn unit nào bị để lại full price là gì — cart order, product ID, hay yếu tố khác?",
+      "related_kb_ids": [
+        "multibuy/multibuy-discount-calculation#KB-095"
+      ],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-018",
+      "observation_guidance": "KHÔNG xác định — chưa có tie-break rule rõ (cart order? product ID? yếu tố khác?); test case với nhiều SKU cùng giá thấp nhất chưa có expected result xác định."
+    },
+    {
+      "check_id": "CHK-067",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "NEEDS_CONFIRMATION — Discount-combination checkboxes là component UI chung hay per-offer-type riêng?",
+      "applicability": {
+        "role": "merchant",
+        "state": "so sánh field Discount combination giữa Multibuy/Quantity Break/Wholesale Pricing",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "KB-061 chỉ xác nhận cấu trúc field giống nhau ('identical structure'), không xác nhận có phải cùng 1 component instance hay không.",
+      "steps": [
+        "Mở Discount combination của Multibuy offer, bật 1 checkbox.",
+        "Mở Discount combination của Quantity Break hoặc Wholesale Pricing offer KHÁC trên cùng store.",
+        "Kiểm tra trạng thái checkbox ở offer type khác có bị ảnh hưởng không."
+      ],
+      "observation_point": "Có/không có cross-offer-type side-effect khi đổi 1 checkbox.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Discount-combination checkboxes (Order/Product/Shipping, QVD-108) có phải là 1 UI component chung dùng lại across cả 3 offer type (Quantity Break/Multibuy/Wholesale), hay mỗi offer type có bản copy riêng? Ảnh hưởng tới phạm vi regression.",
+      "related_kb_ids": [
+        "discount-offers/offer-create-and-manage#KB-012"
+      ],
+      "risk_refs": [
+        "RISK-ticket-only-business-rules"
+      ],
+      "priority": "P2",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-019",
+      "observation_guidance": "KHÔNG xác định — chưa biết đây là 1 UI component chung dùng lại hay mỗi offer type có bản copy độc lập; ảnh hưởng tới phạm vi regression (1 thay đổi ở 1 offer type có thể ảnh hưởng offer type khác hay không)."
+    },
+    {
+      "check_id": "CHK-068",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "NEEDS_CONFIRMATION — Hành vi/placement thật của \"Enable countdown timer\" trên storefront",
+      "applicability": {
+        "role": "buyer",
+        "state": "offer có checkbox Enable countdown timer đã bật",
+        "environment": "documented",
+        "theme_or_device": ""
+      },
+      "precondition": "Chỉ xác nhận SỰ TỒN TẠI checkbox (CHK-049); hành vi khi enable chưa được tài liệu hoá.",
+      "steps": [
+        "Enable checkbox \"Enable countdown timer\" và lưu offer.",
+        "Truy cập storefront widget, tìm countdown timer.",
+        "So sánh với QVD-147 \"Countdown timer to offer\" (nếu có liên quan)."
+      ],
+      "observation_point": "Sự xuất hiện và hành vi của countdown timer trên storefront.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "\"Enable countdown timer\" checkbox (Offer scheduling) có hành vi/placement chính xác là gì trên storefront, và quan hệ của nó với QVD-147 \"Countdown timer to offer\" ra sao?",
+      "related_kb_ids": [
+        "quantity-break/quantity-break-display-and-schedule#KB-085",
+        "discount-offers/offer-create-and-manage#KB-013"
+      ],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "UNKNOWN",
+      "oq_id": "OQ-multibuy-020",
+      "observation_guidance": "KHÔNG xác định — chỉ xác nhận được sự tồn tại của checkbox, chưa biết nó hiển thị gì/làm gì, và quan hệ với QVD-147 ra sao."
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "risk": "RISK-offer-priority-unresolved",
+      "checks": [
+        "CHK-059",
+        "CHK-060",
+        "CHK-061"
+      ],
+      "coverage": "NEEDS_CONFIRMATION toàn bộ từ v2 — invariant 'đúng 1 offer thắng, không split' (object:KB-005) nay UNRESOLVED (CONF-discount-offers-R1018-05) nên CHK-059 hạ NONE; biến quyết định offer nào thắng vẫn NEEDS_CONFIRMATION."
+    },
+    {
+      "risk": "RISK-badge-appearance-conflict",
+      "checks": [
+        "CHK-043",
+        "CHK-044"
+      ],
+      "coverage": "NEEDS_CONFIRMATION — cả 2 default (border radius, text) có check riêng, không pick 1 phía làm STRONG; staging nghiêng 6px / 'MULTIBUY' nhưng conflict vẫn mở."
+    },
+    {
+      "risk": "RISK-code-artifact-derivation",
+      "checks": [
+        "CHK-026",
+        "CHK-032"
+      ],
+      "coverage": "CAPPED tại BASELINE + NEEDS_CONFIRMATION (v2 sửa status theo phanh derivation)."
+    },
+    {
+      "risk": "RISK-ticket-only-business-rules",
+      "checks": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-003",
+        "CHK-004",
+        "CHK-008",
+        "CHK-019",
+        "CHK-028",
+        "CHK-029",
+        "CHK-046",
+        "CHK-048",
+        "CHK-050",
+        "CHK-051",
+        "CHK-052",
+        "CHK-056",
+        "CHK-067"
+      ],
+      "coverage": "PARTIAL — phần đã confirm live giữ STRONG; 7 Business Rules section hoàn toàn ticket-only đều là NEEDS_CONFIRMATION, không dùng làm expected result. Staging 2026-10-18 có quan sát cho nhiều câu (related_kb_ids), OQ vẫn mở."
+    },
+    {
+      "risk": "RISK-confirmation-source-heuristic",
+      "checks": [
+        "CHK-058",
+        "CHK-059",
+        "CHK-062"
+      ],
+      "coverage": "CHK-058/CHK-062 giữ STRONG; CHK-059 hạ NONE do conflict mới."
+    },
+    {
+      "risk": "known_defect accepted limitation (compare-at-price cart display)",
+      "checks": [
+        "CHK-055"
+      ],
+      "coverage": "REGRESSION watch từ v2 — KB-069 ở regression_watch_kb_ids, không còn là oracle."
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-discount-setup",
+      "risk": "CONF-discount-offers-R1018-04 — tier mặc định form",
+      "checks": [
+        "CHK-009"
+      ],
+      "coverage": "NEEDS_CONFIRMATION — oracle NONE."
+    },
+    {
+      "feature_id": "FEAT-04-multibuy-discount-setup",
+      "risk": "Staging: buyer kẹt khi URL redirect rỗng; badge 'Saved' lệch discount thực; popup Pick/Done",
+      "checks": [
+        "CHK-071",
+        "CHK-070",
+        "CHK-072",
+        "CHK-069"
+      ],
+      "coverage": "BASELINE + NEEDS_CONFIRMATION."
+    }
+  ],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
+}

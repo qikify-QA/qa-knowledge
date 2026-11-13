@@ -1,0 +1,419 @@
+{
+  "feature_id": "campaign-wizard-recipients",
+  "feature_key": "campaign-wizard-recipients",
+  "name": "Wizard campaign: bước Recipients",
+  "user_goal": "Người dùng chọn segment người nhận và khối Email preferences cho campaign.",
+  "stable_since_version": "v1",
+  "actors": [],
+  "entry_points": [],
+  "capabilities": [
+    {
+      "name": "Bước 3 Recipients: chọn đúng một segment",
+      "description": "Heading `Send to`, picker single-select chỉ hiện tên segment, empty state khi chưa có segment, dòng `N estimated recipients`; người nhận chỉ gồm contact Subscribed. Picker không phân biệt segment trùng tên là lỗi đã biết.",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-062",
+        "campaigns/campaign-wizard-recipients#KB-063",
+        "campaigns/campaign-wizard-recipients#KB-064",
+        "campaigns/campaign-wizard-recipients#KB-065",
+        "campaigns/campaign-wizard-recipients#KB-066",
+        "campaigns/campaign-wizard-recipients#KB-067",
+        "campaigns/campaign-wizard-recipients#KB-068",
+        "campaigns/campaign-wizard-recipients#KB-069",
+        "campaigns/campaign-wizard-recipients#KB-070"
+      ]
+    },
+    {
+      "name": "Gắn preferences page cho campaign",
+      "description": "Khối `Email preferences` ở bước Recipients chọn preferences page cho link unsubscribe của campaign; không có ô tick lựa chọn; cách loại người đã bỏ tick một lựa chọn chưa chốt.",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-071",
+        "campaigns/campaign-wizard-recipients#KB-072",
+        "campaigns/campaign-wizard-recipients#KB-073",
+        "campaigns/campaign-wizard-recipients#KB-074",
+        "campaigns/campaign-wizard-recipients#KB-075"
+      ]
+    }
+  ],
+  "state_transitions": [],
+  "confirmed_rules": [
+    {
+      "statement": "Theo quyết định PO 11/08/2026 (comment Jira MTRO-29), heading của bước Recipients đổi từ \"Segment\" thành \"Send to\"; Jira MTRO-29 AC §Step 3 và staging 01/10/2026 khớp.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-062"
+      ]
+    },
+    {
+      "statement": "Theo quyết định PO 11/08/2026 (comment Jira MTRO-29, đổi multi-select sang single-select), picker Recipients chỉ chọn được đúng 1 segment, tức một campaign là một email gửi tới đúng một segment; Dev BE 18/09/2026 (PO đồng ý) cũng nêu campaign chỉ có một segment. Description Jira MTRO-29 vẫn ghi multi-select (bản cũ).",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-063"
+      ]
+    },
+    {
+      "statement": "Theo quyết định PO 11/08/2026 (comment Jira MTRO-29), danh sách segment ở bước Recipients chỉ hiện tên, bỏ helptext \"X contacts\" (không đếm được ngay); staging 01/10/2026 khớp.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-064"
+      ]
+    },
+    {
+      "statement": "Theo Jira MTRO-29 AC §Step 3 (tóm tắt trong QA business rule Mailtro, cập nhật 15/09/2026), khi chưa có segment nào, bước Recipients hiện empty state \"There are no segments yet. Add a new segment to this folder to better manage your contacts.\" kèm nút \"Create segment\" điều hướng sang tạo segment; staging 01/10/2026 khớp.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-066"
+      ]
+    },
+    {
+      "statement": "Theo quyết định PO 02/10/2026 (ghi trong QA KB Mailtro \"Campaigns\" v1), segment dùng làm người nhận campaign chỉ gồm contact ở trạng thái Subscribed.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-068"
+      ],
+      "tags": [
+        "unsubscribe-consent",
+        "suppression"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Trên staging (khảo sát 29/09 và 01/10/2026), picker segment là popover `Select a segment…` có ô `Search segments…`; segment đã chọn hiện dạng chip tên kèm nút `Remove {name}`; tìm không khớp hiện `No segments match your search.`",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-065"
+      ],
+      "status": "CURRENT_STATE"
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), sau khi chọn segment, bước Recipients hiện dòng `N estimated recipients` với N bằng cột Contacts của segment đó (lượt 29/09 dòng này còn trống). QA KB Mailtro \"Feature map\" v1 nêu cùng quy tắc nhưng không gắn nguồn PO/Dev riêng cho vế này.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-067"
+      ],
+      "status": "CURRENT_STATE"
+    },
+    {
+      "statement": "Lỗi đã biết BUG-69 / BUG-CS-16 (mở 14/09/2026): tên segment không unique nên picker Recipients của campaign không phân biệt được 2 segment trùng tên; QA ghi rủi ro gửi campaign hoặc export cho sai tập khách hàng. Đây là hành vi sai đang tồn tại, không phải hành vi đúng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-069"
+      ],
+      "status": "KNOWN_DEFECT"
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), bước Recipients có khối `Email preferences` (\"Let people tell you which emails they want. Each choice is saved onto the contact, so a segment can read it.\") với combobox `Preferences page` có hint \"The page people reach from this campaign's unsubscribe link.\" và link `Manage pages` tới `/preferences`; khi workspace chưa có preferences page, combobox chỉ có lựa chọn `None — people can only unsubscribe from everything`.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-071"
+      ],
+      "tags": [
+        "unsubscribe-consent"
+      ],
+      "status": "CURRENT_STATE"
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026, workspace chưa có preferences page), khối Email preferences ở bước Recipients không có ô tick choice nào, và chuỗi i18n của phần này cũng không có chuỗi nào cho việc tick choice; cơ chế thật là lọc bằng segment.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-072"
+      ],
+      "tags": [
+        "unsubscribe-consent"
+      ],
+      "status": "CURRENT_STATE"
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      {
+        "item": "Header wizard (tên, badge Draft, Save, Preview & test, Send) và stepper `Campaign steps` (bước là link, bước xong có tick trên staging)",
+        "kb_refs": [
+          "campaigns/campaign-wizard#KB-038",
+          "campaigns/campaign-wizard#KB-196",
+          "campaigns/campaign-wizard#KB-043",
+          "campaigns/campaign-wizard#KB-045",
+          "campaigns/campaign-wizard#KB-047",
+          "campaigns/campaign-wizard#KB-198",
+          "campaigns/campaign-wizard#KB-048"
+        ]
+      },
+      {
+        "item": "Bước 1 `/details`: Campaign name *, Subject line *, Preview text, Back / Next: Sender",
+        "kb_refs": [
+          "campaigns/campaign-wizard#KB-049",
+          "campaigns/campaign-wizard#KB-052",
+          "campaigns/campaign-wizard#KB-054"
+        ]
+      },
+      {
+        "item": "Bước 2 `/sender`: From name, From email, Reply-to (optional), cảnh báo verified domain + link Manage sending domains",
+        "kb_refs": [
+          "campaigns/campaign-wizard#KB-057",
+          "campaigns/campaign-wizard#KB-199",
+          "campaigns/campaign-wizard#KB-058",
+          "campaigns/campaign-wizard#KB-200",
+          "campaigns/campaign-wizard#KB-059"
+        ]
+      },
+      {
+        "item": "Bước 3 `/recipients`: Send to, picker segment, estimated recipients, khối Email preferences",
+        "kb_refs": [
+          "campaigns/campaign-wizard-recipients#KB-062",
+          "campaigns/campaign-wizard-recipients#KB-065",
+          "campaigns/campaign-wizard-recipients#KB-067",
+          "campaigns/campaign-wizard-recipients#KB-071"
+        ]
+      },
+      {
+        "item": "Bước 4 `/content`: empty state, dialog chọn email, dialog tạo email, preview design, Reset design",
+        "kb_refs": [
+          "campaigns/campaign-wizard-contents#KB-076",
+          "campaigns/campaign-wizard-contents#KB-077",
+          "campaigns/campaign-wizard-contents#KB-079",
+          "campaigns/campaign-wizard-contents#KB-083",
+          "campaigns/campaign-wizard-contents#KB-085",
+          "campaigns/campaign-wizard-contents#KB-201",
+          "campaigns/campaign-wizard-contents#KB-086"
+        ]
+      },
+      {
+        "item": "Route `/campaigns/:id/design/:templateId` (chưa khảo sát)",
+        "kb_refs": [
+          "campaigns/campaign-wizard#KB-042"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "item": "Cập nhật campaign đã có dùng `PUT`",
+        "kb_refs": [
+          "campaigns/campaign-wizard#KB-091"
+        ]
+      },
+      {
+        "item": "Subject > 255 ký tự trả 422",
+        "kb_refs": [
+          "campaigns/campaign-wizard#KB-051"
+        ]
+      },
+      {
+        "item": "Mở builder gọi `GET mail-templates?per_page=50&sort=updated_at&direction=desc`",
+        "kb_refs": [
+          "campaigns/campaign-wizard-contents#KB-080"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "Campaign có đúng một segment; chỉ lưu `preference_page_id` cho phần Email preferences",
+        "kb_refs": [
+          "campaigns/campaign-wizard-recipients#KB-063",
+          "campaigns/campaign-wizard-recipients#KB-073"
+        ]
+      },
+      {
+        "item": "Merge tag trong nội dung (cú pháp đang tranh chấp)",
+        "kb_refs": [
+          "campaigns/campaign-wizard-contents#KB-088",
+          "_product-level#KB-P-018"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "target": "segments / segment-audience-evaluation",
+      "relation": "audience_source",
+      "note": "Campaign gửi tới đúng một segment, chỉ contact Subscribed; estimated recipients theo cột Contacts của segment.",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-063",
+        "campaigns/campaign-wizard-recipients#KB-067",
+        "campaigns/campaign-wizard-recipients#KB-068",
+        "_product-level#KB-P-015",
+        "_product-level#KB-P-016"
+      ]
+    },
+    {
+      "target": "email-preferences / preference-page-in-sends",
+      "relation": "unsubscribe_page",
+      "note": "Preferences page gắn với link unsubscribe của campaign.",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-071",
+        "campaigns/campaign-wizard-recipients#KB-075"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "statement": "Theo QA business rule Mailtro và QA KB Mailtro \"Known issues\" v1, cách phân biệt segment trùng tên trong picker Recipients chưa chốt; đang chờ PO quyết picker phải hiện thêm thông tin gì (GAP-19).",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-070"
+      ],
+      "risk_type": "undecided_or_bundle_only"
+    },
+    {
+      "statement": "Theo bundle front-end 01/10/2026, campaign chỉ lưu `preference_page_id` cho phần Email preferences, không có state lựa chọn riêng của campaign.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-073"
+      ],
+      "tags": [
+        "unsubscribe-consent"
+      ],
+      "risk_type": "undecided_or_bundle_only"
+    },
+    {
+      "statement": "Theo chuỗi i18n trong bundle front-end 01/10/2026 (chưa đối chiếu UI), bước Recipients có cảnh báo `Your email offers choices but has no page` khi design dùng tag lựa chọn mà campaign chưa gắn preferences page (người bấm rơi vào trang unsubscribe thường), và cảnh báo `Your segment ignores some of the page's choices` nói người đã tắt lựa chọn vẫn nhận campaign nếu segment không lọc theo field đó (khuyên thêm điều kiện loại giá trị false).",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-074"
+      ],
+      "tags": [
+        "unsubscribe-consent"
+      ],
+      "risk_type": "undecided_or_bundle_only"
+    },
+    {
+      "statement": "Theo Inventory staging Mailtro \"Campaigns\" (01/10/2026), chưa rõ hướng dẫn \"tick the choices this campaign is about\" là copy cũ hay wizard còn thiếu ô chọn, và người bỏ tick một lựa chọn bị loại tự động khỏi campaign hay chỉ bị loại khi segment lọc theo field đó; cần hỏi PO.",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-075"
+      ],
+      "tags": [
+        "unsubscribe-consent"
+      ],
+      "risk_type": "undecided_or_bundle_only"
+    },
+    {
+      "statement": "Theo dõi hồi quy các lỗi đã biết của wizard (không dùng làm expected result): BUG-WIZ-01 (P0) Save nuốt lỗi 422 khiến người dùng tưởng đã lưu; BUG-WIZ-02 (P1) rời wizard chưa lưu mất thay đổi; Next không validate field bắt buộc; sender bị đổi sang host chung nhưng UI vẫn hiện địa chỉ đã gõ; BUG-69 picker không phân biệt segment trùng tên (rủi ro gửi sai tập khách hàng).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "status": "KNOWN_DEFECT",
+      "risk_type": "known_defect_regression_watch",
+      "kb_refs": [
+        "campaigns/campaign-wizard#KB-092",
+        "campaigns/campaign-wizard#KB-093",
+        "campaigns/campaign-wizard#KB-056",
+        "campaigns/campaign-wizard#KB-060",
+        "campaigns/campaign-wizard-recipients#KB-069"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-07",
+    "basis": "AC Jira MTRO-29 tóm tắt trong QA business rule Mailtro (cập nhật 15/09 và 07/10/2026); quyết định PO 11/08, 30/09, 02/10/2026; khảo sát staging 25/08, 29/09, 01/10/2026."
+  },
+  "unknown_areas": [
+    {
+      "question": "Picker Recipients phải hiện thêm thông tin gì (số contact, ngày tạo, người tạo) để phân biệt hai segment trùng tên?",
+      "why_it_matters": "Rủi ro gửi campaign cho sai tập khách hàng (BUG-69).",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-069",
+        "campaigns/campaign-wizard-recipients#KB-070"
+      ],
+      "oq_id": "OQ-campaigns-011"
+    },
+    {
+      "question": "Người bỏ tick một lựa chọn trên preferences page có bị loại tự động khỏi campaign liên quan không, hay chỉ bị loại khi segment lọc theo field đó? Hướng dẫn \"tick the choices this campaign is about\" là copy cũ hay wizard còn thiếu ô chọn?",
+      "why_it_matters": "Liên quan unsubscribe-consent; bước Recipients trên staging không có ô tick nào.",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-071",
+        "campaigns/campaign-wizard-recipients#KB-072",
+        "campaigns/campaign-wizard-recipients#KB-074",
+        "campaigns/campaign-wizard-recipients#KB-075"
+      ],
+      "oq_id": "OQ-campaigns-012"
+    },
+    {
+      "question": "PO xác nhận `N estimated recipients` ở bước Recipients phải bằng cột Contacts của segment?",
+      "why_it_matters": "Quy tắc chỉ có từ quan sát staging, không gắn quyết định PO/Dev riêng.",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-064",
+        "campaigns/campaign-wizard-recipients#KB-067"
+      ],
+      "oq_id": "OQ-campaigns-014"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "coverage_matrix": [
+    {
+      "layer": "portal",
+      "role": "unspecified",
+      "state": "bước 1 / 2 / 3 / 4",
+      "covered": true,
+      "kb_refs": [
+        "campaigns/campaign-wizard#KB-049",
+        "campaigns/campaign-wizard#KB-057",
+        "campaigns/campaign-wizard#KB-199",
+        "campaigns/campaign-wizard-recipients#KB-063",
+        "campaigns/campaign-wizard-contents#KB-085",
+        "campaigns/campaign-wizard-contents#KB-201"
+      ],
+      "feature_id": "campaign-wizard",
+      "environment": "documented"
+    },
+    {
+      "layer": "portal",
+      "role": "unspecified",
+      "state": "workspace chưa có segment / chưa có email / > 50 email",
+      "covered": true,
+      "note": "Segment rỗng: AC; email rỗng và > 50: bundle, chưa thử",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-066",
+        "campaigns/campaign-wizard-contents#KB-081",
+        "campaigns/campaign-wizard-contents#KB-082"
+      ],
+      "feature_id": "campaign-wizard",
+      "environment": "documented"
+    },
+    {
+      "layer": "portal",
+      "role": "unspecified",
+      "state": "workspace có preferences page",
+      "covered": false,
+      "note": "Staging chỉ có workspace 0 preferences page",
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-072"
+      ],
+      "feature_id": "campaign-wizard",
+      "environment": "documented"
+    },
+    {
+      "layer": "data",
+      "role": "unspecified",
+      "state": "segment, preference page, template dùng chung, merge tag",
+      "covered": true,
+      "kb_refs": [
+        "campaigns/campaign-wizard-recipients#KB-063",
+        "campaigns/campaign-wizard-recipients#KB-073",
+        "campaigns/campaign-wizard-contents#KB-088"
+      ],
+      "feature_id": "campaign-wizard",
+      "environment": "documented"
+    }
+  ],
+  "profile_conflicts": [],
+  "profile_relationships": []
+}

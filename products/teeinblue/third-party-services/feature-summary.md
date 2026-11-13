@@ -1,8 +1,8 @@
 # Object: Third-party Services (product: teeinblue) — Feature Profile Summary
-**Published context version:** 2
+**Published context version:** 3
 
 - **Object:** trang cấu hình dịch vụ bên thứ ba cấp account của merchant, Extras > 3rd-party Services (`/extras/extra-services`): chọn dịch vụ xoá nền, API key của từng provider, các tab dịch vụ khác (Maps, Gen AI Effects, Cutout.Pro, ImagenHub, Emboss, Upload limit settings, Canva). Cấu hình lưu ở `private_config` của `GET /api/user`, áp cho mọi store của account. Gồm cả việc ngừng Remove.BG (TIB-5399) và migration seller khỏi Remove.BG.
-- **Không thuộc:** chạy effect trong editor và warning thiếu key (`artwork/run-image-effects`, KB-816, KB-985; chưa giới hạn theo mốc shutdown, OQ-third-party-services-004); cách gắn effect Remove background vào layer photo (`artwork/layer-config-image`); upload và apply effect của buyer (`sdk/storefront-buyer-facing`, chỉ là đường chạy); chất lượng ảnh của từng provider.
+- **Không thuộc:** chạy effect trong editor và warning thiếu key (`artwork-render/image-effects-run`, KB-816, KB-985; chưa giới hạn theo mốc shutdown, OQ-third-party-services-004); cách gắn effect Remove background vào layer photo (`artwork-layer-config/photo-upload-layer-config`); upload và apply effect của buyer (`sdk/storefront-buyer-facing`, chỉ là đường chạy); chất lượng ảnh của từng provider.
 - **Nguồn:** quan sát staging khi bootstrap (role `merchant-owner`, chỉ xem trang và đọc bundle portal) và nguồn Dev của TIB-5399 (Jira comment, 2026-10-12) nạp qua CCR.
 - **Mốc shutdown Remove.BG:** production là 1 Dec 2026 9:00 CET, chưa tới mốc và chưa verify production. Hành vi sau mốc chỉ được verify trên staging bằng mốc giả lập do Dev đặt; không dùng làm expected cho production trước mốc. Bundle staging ngày 2026-11-13 vẫn compile mốc giả lập trong quá khứ (KB-1509, OQ-third-party-services-001), nên check trước mốc cần Dev đặt lại mốc.
 - **Knowledge:** 48 KB item: 14 `CONFIRMED_EXPECTED`/`MEDIUM` (nguồn Dev), 30 `OBSERVED_CURRENT` (6 `MEDIUM`, 24 `LOW`), 4 `INFERRED`/`LOW`. 48 check: 15 `STRONG`, 18 `BASELINE`, 15 `NONE`. Không có conflict, không supersede.

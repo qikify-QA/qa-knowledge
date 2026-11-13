@@ -1,30 +1,24 @@
 # Campaigns — list & folder, wizard 4 bước, preview & test, gửi/lên lịch, report & Analytics API
-**Published context version:** 2
+**Published context version:** 3
 
-**Product:** Mailtro · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-08
+**Product:** mailtro · **Object:** `campaigns` · **Cập nhật cấu trúc:** 2026-11-13
 
 ## Features
 
-- **campaign-list-and-folders** — Danh sách campaign, filter/search, folder, duplicate và xoá: 41 KB item; checklist 30 check (STRONG 10 / BASELINE 12 / NONE 8)
-- **campaign-wizard** — Soạn campaign qua wizard 4 bước (Details → Sender → Recipients → Contents): 61 KB item; checklist 43 check (STRONG 18 / BASELINE 15 / NONE 10)
-- **campaign-preview-and-test** — Preview & test send campaign: 6 KB item; checklist 8 check (STRONG 0 / BASELINE 6 / NONE 2)
-- **campaign-send-and-schedule** — Gửi ngay / lên lịch campaign và điều kiện được gửi: 19 KB item; checklist 17 check (STRONG 7 / BASELINE 6 / NONE 4)
-- **campaign-report** — Campaign report và Analytics API (định nghĩa số liệu delivery/open/click/unsubscribe): 72 KB item; checklist 37 check (STRONG 17 / BASELINE 9 / NONE 11)
+| Feature | User goal | KB | Check | OQ | Known defect |
+|---|---|---|---|---|---|
+| `campaign-list-and-folders` — Danh sách campaign: tìm, lọc, folder, nhân bản và xoá | Người dùng workspace tìm và tổ chức campaign theo trạng thái và folder, mở đúng màn theo trạng thái của campaign (wizard cho bản nháp, report cho campaign đã… | 41 | 30 | 8 | 4 |
+| `campaign-preview-and-test` — Preview & test send campaign | Người dùng xem email của campaign hiển thị thế nào trên desktop/mobile và gửi bản test cho mình hoặc đồng đội trước khi gửi thật. | 6 | 8 | 4 | 0 |
+| `campaign-send-and-schedule` — Gửi ngay / lên lịch campaign và điều kiện được gửi | Người dùng gửi campaign tới segment ngay lập tức hoặc theo lịch, và campaign chỉ được gửi khi đủ điều kiện (đủ 4 bước, segment và email hợp lệ, workspace khô… | 19 | 17 | 5 | 3 |
+| `campaign-report-metrics` — Định nghĩa metric của campaign report và analytics | Người dùng hiểu đúng cách tính sent/open/click/complaint/unsubscribe và rate trong report và analytics. | 22 | 15 | 3 | 0 |
+| `analytics-api` — Analytics API cho campaign report và analytics toàn cục | Hệ thống ngoài/MCP đọc số liệu campaign và global qua analytics API với scope và định dạng đúng. | 10 | 7 | 4 | 0 |
+| `campaign-report` — Report của campaign: các tab, trạng thái chưa gửi và lỗi route | Người dùng mở report của campaign và đọc đúng số liệu, tab, audience, preview ở mọi trạng thái campaign. | 40 | 15 | 12 | 6 |
+| `campaign-wizard-recipients` — Wizard campaign: bước Recipients | Người dùng chọn segment người nhận và khối Email preferences cho campaign. | 14 | 8 | 3 | 1 |
+| `campaign-wizard-contents` — Wizard campaign: bước Contents | Người dùng chọn, tạo hoặc reset email design cho campaign. | 14 | 12 | 3 | 0 |
+| `campaign-wizard` — Wizard campaign: stepper, lưu, bước Campaign details và Sender | Người dùng đi qua stepper wizard, lưu draft và điền Campaign details, Sender. | 33 | 23 | 5 | 4 |
 
-## Knowledge
+KB object-level: 0 (`kb.json`).
 
-- KB item: 199 (object-level 0) — CONFIRMED_EXPECTED 67 (spec_doc 67, test_case 0), OBSERVED_CURRENT 89, INFERRED 43.
-- Checklist: STRONG 52 · BASELINE 48 · NONE/NEEDS_CONFIRMATION 35.
-- Open questions: CONFLICT 1 · NEEDS_CONFIRMATION 32 · OPEN_ISSUE 14 — chi tiết trong `open-questions.md` của object này.
+## Open questions
 
-## Nguồn & cách đọc độ tin cậy
-
-- Nguồn là bộ tài liệu QA tự biên soạn trên Testlane (project MTRO, snapshot v1 ngày 2026-10-08): QA business rule Mailtro (rule có nguồn Jira AC / quyết định PO-Dev / QA lead, có ngày), Decision log, bộ QA KB Mailtro theo feature, known issues và inventory khảo sát staging (29/09 và 01/10/2026, role Owner). Không có quan sát runtime nào của lần publish này.
-- `CONFIRMED_EXPECTED` + `spec_doc`: Jira AC hoặc quyết định PO/BA/Dev có ngày, do QA tóm tắt (ghi rõ trong `confirmation_source.ref`). `test_case`: test case Testlane đã PASS (không ghi build). Quyết định do QA lead tự chốt theo bản dựng staging KHÔNG được coi là expected — ghi `OBSERVED_CURRENT` kèm open question.
-- `OBSERVED_CURRENT`: hiện trạng trên staging tại ngày khảo sát — không phải expected requirement; lệch = cần điều tra. `status: KNOWN_DEFECT` là lỗi đã biết, chỉ dùng làm regression watch.
-- `scope.environment` luôn là `documented`; phạm vi Jira AC / quyết định PO-Dev / staging / bundle / production được nêu ngay trong statement. Item `status: UNRESOLVED` thuộc một `conflict_group` chưa phân xử — không dùng làm oracle.
-
-## Giới hạn đã biết
-
-- Tài liệu câu hỏi mở của QA, bản đầy đủ business rule / inventory, references và bug log không có trong bộ nguồn — những câu hỏi được tham chiếu tới đó chỉ có ở dạng câu hỏi tại chỗ, ghi là open question; không suy diễn nội dung.
-- Role thực hiện thao tác chưa được tài liệu nêu rõ cho hầu hết object; xem open question về role.
+CONFLICT 1 · NEEDS_CONFIRMATION 32 · OPEN_ISSUE 14 — chi tiết trong `open-questions.md`.

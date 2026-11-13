@@ -75,21 +75,21 @@ Thấy host production thì dừng: `portal.teeinblue.com`, `api.teeinblue.com`,
 |---|---|---|---|
 | Generate test design trên dev store | `campaign/create-campaign-by-product-base` | `ALTERNATIVE_SETUP` | Vế |
 | Horizon (job failed, queued) | Nhiều feature | `NOT_TESTABLE` | Vế |
-| Strava trong Route Maps | `artwork/layer-config-maps-astronomy` `sdk/storefront-buyer-facing` | `NOT_TESTABLE` | Vế |
+| Strava trong Route Maps | `artwork-layer-config/special-layer-config` `sdk/storefront-buyer-facing` | `NOT_TESTABLE` | Vế |
 | Tracking từ provider | `order/review-and-initiate-fulfillment-portal` | `NOT_TESTABLE` | Case |
 | Size gốc của provider | `product-base/printarea-definition` | `NOT_TESTABLE` | Vế |
 | `photo_endpoint=snap` | `sdk/storefront-buyer-facing` | `DIFFERENT_VALUE` | Case hoặc vế |
 | Upload CORS, preconnect tới host production | `sdk/storefront-buyer-facing` | `NOT_TESTABLE` | Vế |
 | Network timing | `sdk/storefront-buyer-facing` | `ALTERNATIVE_SETUP` | Vế |
 | Browser chặn site data, ITP | `sdk/storefront-buyer-facing` | `ALTERNATIVE_SETUP` | Vế |
-| Outage Nano Banana 2.1 | `sdk/genai-personalization-runtime` | `ALTERNATIVE_SETUP` | Vế |
+| Outage Nano Banana 2.1 | `sdk-genai/genai-personalization-runtime` | `ALTERNATIVE_SETUP` | Vế |
 | Gửi item CustomCat | `order/fulfillment-provider-request` | `ALTERNATIVE_SETUP` | Vế |
-| Advanced options PB Gelato | `product-base/provider-required-options` | `DIFFERENT_VALUE` | Vế |
+| Advanced options PB Gelato | `product-base/provider-catalog-import` | `DIFFERENT_VALUE` | Vế |
 | Accelerated checkout (Shop Pay, PayPal, Apple Pay, Google Pay) | `sdk/required-addon-validation` | `NOT_TESTABLE` | Vế |
-| App chiếm nút add to cart (race với autofixer) | `sdk/cart-addon-autofixer` | `ALTERNATIVE_SETUP` | Case |
+| App chiếm nút add to cart (race với autofixer) | `sdk/required-addon-validation` | `ALTERNATIVE_SETUP` | Case |
 | Rate limit route games (preview game text) | `sdk/game-text-preview-render` | `DIFFERENT_VALUE` | Vế |
-| Retry window job image-effect (upload kẹt khi worker crash) | `sdk/photo-genai-image-filter-runtime` | `NOT_TESTABLE` | Vế |
-| Copy artwork sang account khác | `artwork/artwork-cross-store-clone` | `ALTERNATIVE_SETUP` | Vế |
+| Retry window job image-effect (upload kẹt khi worker crash) | `sdk-genai/photo-genai-image-filter-runtime` | `NOT_TESTABLE` | Vế |
+| Copy artwork sang account khác | `artwork/artwork-list-and-clone` | `ALTERNATIVE_SETUP` | Vế |
 | Google consent screen Testing | `account-security/social-login` | `ALTERNATIVE_SETUP` | Case |
 | Rate limit Google login | `account-security/social-login` | `DIFFERENT_VALUE` | Vế |
 | Job cleanup `trashed_images` (đêm 01:00) | `campaign/mockup-preview-render-lifecycle` | `ALTERNATIVE_SETUP` | Vế |

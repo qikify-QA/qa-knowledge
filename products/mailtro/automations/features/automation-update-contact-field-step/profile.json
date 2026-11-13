@@ -1,0 +1,378 @@
+{
+  "feature_id": "automation-update-contact-field-step",
+  "feature_key": "automation-update-contact-field-step",
+  "name": "Step Update contact field",
+  "user_goal": "Người dùng cấu hình action ghi custom field của contact trong automation.",
+  "stable_since_version": "v1",
+  "actors": [],
+  "entry_points": [
+    {
+      "path": "Click node step trên canvas → panel cấu hình của step",
+      "precondition": "Step đã được chèn; split và Update contact field cần chọn trigger trước.",
+      "kb_refs": [
+        "automations/automation-builder#KB-028",
+        "automations/automation-wait-and-split-steps#KB-117",
+        "automations/automation-update-contact-field-step#KB-128"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Cấu hình Update contact field",
+      "description": "Chọn Contact field (First name, Last name, Country code, Address, SMS, key thô custom field; không có Email address, Created at) và New value (text tự do có Add variable; SMS dùng ô số điện thoại). Configured khi đủ field + New value (QA lead chốt). New value không validate theo kiểu field — giới hạn có chủ ý (PO/BA 02/10).",
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-123",
+        "automations/automation-update-contact-field-step#KB-124",
+        "automations/automation-update-contact-field-step#KB-125",
+        "automations/automation-update-contact-field-step#KB-126",
+        "automations/automation-update-contact-field-step#KB-127",
+        "automations/automation-update-contact-field-step#KB-128",
+        "automations/automation-update-contact-field-step#KB-129",
+        "automations/automation-update-contact-field-step#KB-130",
+        "automations/automation-update-contact-field-step#KB-131",
+        "automations/automation-update-contact-field-step#KB-132",
+        "automations/automation-update-contact-field-step#KB-133",
+        "automations/automation-update-contact-field-step#KB-134",
+        "automations/automation-update-contact-field-step#KB-135",
+        "automations/automation-update-contact-field-step#KB-136"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "step Not configured",
+      "to": "step Configured",
+      "trigger": "Điền đủ trường bắt buộc của step",
+      "condition": "Send email: template + Subject + From email; Update contact field: field + New value (QA lead chốt); Wait 0 vẫn hiện Configured là lỗi",
+      "kb_refs": [
+        "automations/automation-steps#KB-088",
+        "automations/automation-update-contact-field-step#KB-129",
+        "automations/automation-steps#KB-095",
+        "automations/automation-wait-and-split-steps#KB-104"
+      ]
+    },
+    {
+      "from": "step Configured",
+      "to": "step Not configured (sau reload)",
+      "trigger": "Lưu New value toàn khoảng trắng rồi reload",
+      "condition": "Lỗi quan sát, trái rule QA lead 18/09 (giữ nguyên khoảng trắng)",
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-133",
+        "automations/automation-update-contact-field-step#KB-134"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "statement": "Theo quyết định PO/BA 02/10/2026 (task Testlane MTRO-018 BR-32), `New value` của Update contact field không được validate theo kiểu của field — số điện thoại sai hay giá trị Boolean ngoài true/false vẫn được nhận và step vẫn Configured; đây là giới hạn có chủ ý.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-130"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), action ghi field contact có tên `Update contact field` (palette \"Set a contact field\", ô chọn `Contact field`), sau hai lần đổi tên: `Update property` (rule 18/09) → `Update custom field` (staging 29/09) → `Update contact field` (01/10); hành vi giữ nguyên, chỉ đổi tên.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-123"
+      ]
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), ô `Contact field` (`Choose a contact field`) của Update contact field cho chọn First name · Last name · Country code · Address · SMS và key thô của custom field; không có Email address và Created at.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-124"
+      ]
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), `New value` của Update contact field là ô text tự do (placeholder \"e.g. vip\") có nút `Add variable`.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-125"
+      ]
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), chọn field `SMS` thì `New value` đổi thành ô số điện thoại có chọn quốc gia, kèm nút `Use a variable` (chuyển sang ô text có `Add variable`) và `Type a number` để quay lại.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-126"
+      ]
+    },
+    {
+      "statement": "Lỗi quan sát trên staging (01/10/2026; tài liệu đề xuất báo Dev): chọn field `SMS` ở Update contact field thì ô số điện thoại mặc định quốc gia Afghanistan +93.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "KNOWN_DEFECT",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-127"
+      ]
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), khi flow chưa có trigger thì Update contact field thay ô chọn field bằng thông báo \"Choose a trigger first. Which contact fields you can pick depends on what starts the flow.\"",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-128"
+      ]
+    },
+    {
+      "statement": "QA lead chốt 18/09/2026 theo bản dựng staging (TC-MTRO-782), chưa có xác nhận PO/Dev: step Update contact field được tính Configured khi đã chọn Contact field và có New value.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-129"
+      ]
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026, trước quyết định PO/BA 02/10 BR-32), đổi Contact field sang SMS mà New value giữ giá trị cũ không phải số điện thoại thì step vẫn `Configured` và không hiện lỗi \"Phone is invalid\" khi rời ô (dù i18n có chuỗi này); field Boolean vẫn là ô text tự do và nhận giá trị không phải true/false. Inventory ghi đây là nghi lỗi và hỏi PO; phần \"không validate theo kiểu\" sau đó được BR-32 chốt là chủ ý.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "status": "KNOWN_DEFECT",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-131"
+      ]
+    },
+    {
+      "statement": "QA lead chốt 18/09/2026 theo bản dựng staging, chưa có xác nhận PO/Dev: giá trị toàn khoảng trắng ở `New value` được chấp nhận — lưu nguyên, không trim, không cảnh báo, badge vẫn `Configured`, node hiện `{field} =` với phần giá trị trắng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-133"
+      ]
+    },
+    {
+      "statement": "Lỗi quan sát trên staging (test-run 27/09/2026, TC-MTRO-1052, còn mở): New value toàn khoảng trắng sau Save và reload trở thành trống, badge `Not configured` — trái rule QA lead chốt 18/09.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "KNOWN_DEFECT",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-134"
+      ]
+    },
+    {
+      "statement": "Trên staging (khảo sát 01/10/2026), node Update contact field trên canvas hiển thị dạng `{field} = {value}`.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "status": "CURRENT_STATE",
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-135"
+      ]
+    },
+    {
+      "statement": "Lỗi quan sát trên staging (06/10/2026): custom field đang được step Update contact field dùng vẫn xoá được, không bị chặn; rule chặn xoá field đang dùng nằm ở phía Custom fields (quyết định PO/Dev 01/10/2026, BR-19).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "status": "KNOWN_DEFECT",
+      "tags": [
+        "data-deletion"
+      ],
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-136"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      {
+        "item": "Panel Wait / delay: Duration, Unit, helper",
+        "kb_refs": [
+          "automations/automation-wait-and-split-steps#KB-102",
+          "automations/automation-wait-and-split-steps#KB-103"
+        ]
+      },
+      {
+        "item": "Panel Conditional split: dòng điều kiện (biến, Operator, Value), Add condition, Match, nhánh True / False",
+        "kb_refs": [
+          "automations/automation-wait-and-split-steps#KB-109",
+          "automations/automation-wait-and-split-steps#KB-110",
+          "automations/automation-wait-and-split-steps#KB-111",
+          "automations/automation-wait-and-split-steps#KB-112",
+          "automations/automation-wait-and-split-steps#KB-116",
+          "automations/automation-wait-and-split-steps#KB-119"
+        ]
+      },
+      {
+        "item": "Panel Send email: Choose an email, Subject line *, Preview text, From name, From email * (helper + Manage domains), Reply-to, Email preferences page, Add variable",
+        "kb_refs": [
+          "automations/automation-steps#KB-087",
+          "automations/automation-steps#KB-090",
+          "automations/automation-steps#KB-093",
+          "automations/automation-steps#KB-094",
+          "automations/automation-steps#KB-096"
+        ]
+      },
+      {
+        "item": "Panel Update contact field: Contact field, New value (text hoặc ô số điện thoại cho SMS)",
+        "kb_refs": [
+          "automations/automation-update-contact-field-step#KB-124",
+          "automations/automation-update-contact-field-step#KB-125",
+          "automations/automation-update-contact-field-step#KB-126"
+        ]
+      },
+      {
+        "item": "Nhãn node: Wait \"{duration} {unit}\", Send email tên template + subject, Update contact field \"{field} = {value}\"",
+        "kb_refs": [
+          "automations/automation-steps#KB-095",
+          "automations/automation-wait-and-split-steps#KB-106",
+          "automations/automation-update-contact-field-step#KB-135"
+        ]
+      }
+    ],
+    "storefront": [],
+    "api": [
+      {
+        "item": "`PUT` lưu flow trả 422 khi From email / Reply-to sai định dạng (chỉ toast)",
+        "kb_refs": [
+          "automations/automation-steps#KB-099"
+        ]
+      },
+      {
+        "item": "`GET automations/variables?trigger=` lấy danh sách biến theo trigger (từ bundle)",
+        "kb_refs": [
+          "automations/automation-steps#KB-098"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "Biến dạng `{{contact.<field>}}` trong dữ liệu đã lưu (ví dụ mẫu); cú pháp chính thức đang mâu thuẫn",
+        "kb_refs": [
+          "automations/automation-steps#KB-141",
+          "automations/automation-steps#KB-144",
+          "automations/automation-steps#KB-145"
+        ]
+      },
+      {
+        "item": "preference_page của step Send email (lựa chọn mặc định None)",
+        "kb_refs": [
+          "automations/automation-steps#KB-094"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "target": "contacts / custom-fields",
+      "relation": "data_source",
+      "note": "Key custom field dùng ở biến, split và Update contact field; custom field đang được step dùng vẫn xoá được (lỗi).",
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-124",
+        "automations/automation-update-contact-field-step#KB-136"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "statement": "Lỗi đang mở ở các step (helper From email lệch BR-27, From email / Reply-to sai định dạng chỉ toast, Wait 0 vẫn Configured, Wait rỗng / chữ không lỗi inline, nhãn \"1 days\", New value khoảng trắng mất sau reload, SMS mặc định Afghanistan, custom field đang dùng vẫn xoá được, BUG-54 cần retest) là regression watch.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "status": "KNOWN_DEFECT",
+      "kb_refs": [
+        "automations/automation-steps#KB-087",
+        "automations/automation-steps#KB-099",
+        "automations/automation-wait-and-split-steps#KB-104",
+        "automations/automation-wait-and-split-steps#KB-105",
+        "automations/automation-wait-and-split-steps#KB-106",
+        "automations/automation-update-contact-field-step#KB-134",
+        "automations/automation-update-contact-field-step#KB-127",
+        "automations/automation-update-contact-field-step#KB-136",
+        "automations/automation-wait-and-split-steps#KB-121",
+        "automations/automation-update-contact-field-step#KB-131"
+      ]
+    },
+    {
+      "statement": "Tiêu chí Configured của Send email / Update contact field, ô sender tự nhập, Reply-to / Email preferences page và quy tắc giữ khoảng trắng ở New value là QA lead chốt 18/09 chưa có PO/Dev — baseline, không phải rule.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "MEDIUM",
+      "kb_refs": [
+        "automations/automation-steps#KB-088",
+        "automations/automation-steps#KB-089",
+        "automations/automation-steps#KB-094",
+        "automations/automation-steps#KB-095",
+        "automations/automation-update-contact-field-step#KB-129",
+        "automations/automation-update-contact-field-step#KB-133"
+      ]
+    },
+    {
+      "statement": "Theo QA KB Mailtro \"Automations — list & builder\" v1, engine xử lý thế nào khi ghi giá trị sai kiểu vào contact (hệ quả của BR-32) chưa được chốt (GAP-38, mức Major).",
+      "knowledge_kind": "INFERRED",
+      "confidence": "LOW",
+      "conflict_group": null,
+      "tags": [],
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-132"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-07",
+    "basis": "Jira AC tóm tắt trong QA business rule Mailtro (07/10/2026), QA lead chốt 18/09/2026, quyết định PO/BA và Dev 02/10/2026, test-run 23/09–27/09, khảo sát staging 01/10 và 06/10/2026"
+  },
+  "unknown_areas": [
+    {
+      "question": "Engine làm gì khi Update contact field ghi giá trị sai kiểu vào contact (ghi nguyên, bỏ qua hay run Failed)?",
+      "why_it_matters": "BR-32 chốt không validate ở UI nhưng hệ quả runtime chưa chốt (GAP-38 Major).",
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-132",
+        "automations/automation-update-contact-field-step#KB-130"
+      ],
+      "oq_id": "OQ-automations-019"
+    },
+    {
+      "question": "Có còn phần lỗi trong việc không hiện \"Phone is invalid\" khi đổi field sang SMS với giá trị không phải số, hay toàn bộ được BR-32 chốt là chủ ý?",
+      "why_it_matters": "Quan sát 01/10 được ghi nghi lỗi trước khi có BR-32.",
+      "kb_refs": [
+        "automations/automation-update-contact-field-step#KB-131",
+        "automations/automation-update-contact-field-step#KB-130"
+      ],
+      "oq_id": "OQ-automations-018"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "coverage_matrix": [],
+  "profile_conflicts": [],
+  "profile_relationships": [
+    {
+      "from": "automation-steps",
+      "to": "automation-triggers-and-entry",
+      "relation": "DEPENDS_ON",
+      "kb_refs": [
+        "automations/automation-wait-and-split-steps#KB-117",
+        "automations/automation-update-contact-field-step#KB-128",
+        "automations/automation-steps#KB-098"
+      ]
+    }
+  ]
+}

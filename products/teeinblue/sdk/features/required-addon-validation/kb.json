@@ -770,5 +770,268 @@
       "date": "2026-11-12",
       "ccr_ref": "CBS-155"
     }
+  },
+  {
+    "kb_id": "KB-544",
+    "topic": "Request đọc cart của theme hoặc app khác (/cart, /cart.js) chỉ refresh UI cart của Teeinblue, không chạy autofixer",
+    "statement": "Theo Jira TIB-5665 comment #56262 Solution và comment #56269 QA plan mục 4 (Dev, 2026-11-03), request tới /cart hoặc /cart.js không phải của Teeinblue (của theme hoặc app khác; mọi query, kể cả ?view=ajax và ?view=ajax-page; URL tuyệt đối, tương đối hoặc có prefix locale như /en/cart.js) chỉ refresh UI cart của Teeinblue (thumbnail, nút edit và preview, ảnh customization, ẩn dòng addon) và không chạy autofixer. Khi cart có orphan addon (addon line còn mà line chính đã mất) và một request như fetch('/cart.js') chạy, addon line được giữ nguyên, autofixer không gọi cart/update.js để xoá nó. Ngoại lệ do Dev nêu: event cart ajax không mang URL (Event thường do code của merchant hoặc theme dispatch) vẫn chạy autofixer như trước; một request đổi cart và một request đọc cart của app khác rơi cùng cửa sổ debounce thì vẫn chạy autofixer một lần.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront cart (request đọc cart của theme/app khác)",
+      "brand": null
+    },
+    "tags": [
+      "autofixer",
+      "cart-read",
+      "TIB-5665",
+      "orphan-addon"
+    ],
+    "related_kb_ids": [
+      "sdk/required-addon-validation#KB-548",
+      "sdk/required-addon-validation#KB-545"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5665 comment #56262 Solution và comment #56269 QA plan mục 4 (Dev, 2026-11-03)",
+      "authored_on": "2026-11-03",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-156"
+    }
+  },
+  {
+    "kb_id": "KB-545",
+    "topic": "ATC có addon charge qua nút theme khi app khác đọc cart giữa chừng: addon không còn bị autofixer xoá",
+    "statement": "Theo Jira TIB-5665 comment #56269 QA plan mục 1 và comment #56262 Solution (Dev, 2026-11-03), ở luồng add to cart qua nút của theme, Teeinblue thêm addon line trước rồi mới click nút add to cart của theme để thêm line chính. Nếu trong khoảng đó app khác (ví dụ app chiếm nút add to cart như Foxkit Upsell & Bundles) đọc /cart.js hoặc /cart?view=..., autofixer không còn xoá addon: sau khi line chính vào, cart có line chính và đủ addon line với quantity khớp, tổng checkout gồm tiền addon. Giới hạn do Dev nêu: nếu app thêm line chính bằng request không phải .js rồi redirect về /cart thì addon vẫn có thể bị xoá; đó là known open issue sdk #2181, không phải regression của TIB-5665.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page → cart (ATC qua nút theme có app khác trên trang)",
+      "brand": null
+    },
+    "tags": [
+      "autofixer",
+      "race",
+      "add-to-cart",
+      "addon-charge",
+      "TIB-5665"
+    ],
+    "related_kb_ids": [
+      "sdk/required-addon-validation#KB-544",
+      "sdk/required-addon-validation#KB-551",
+      "sdk/required-addon-validation#KB-546"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5665 comment #56269 QA plan mục 1 và comment #56262 Solution (Dev, 2026-11-03)",
+      "authored_on": "2026-11-03",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-156"
+    }
+  },
+  {
+    "kb_id": "KB-546",
+    "topic": "ATC của Teeinblue (không có app bên thứ ba): line chính, addon line và sub item cross-sell vào cart với quantity khớp",
+    "statement": "Theo Jira TIB-5665 comment #56269 QA plan mục 2 (Dev, 2026-11-03), add to cart bằng luồng của Teeinblue khi không có app bên thứ ba, một lần với option addon charge và một lần với sản phẩm cross-sell: cart có line chính, các addon line và sub item với quantity khớp, như trước TIB-5665.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page → cart (ATC của Teeinblue)",
+      "brand": null
+    },
+    "tags": [
+      "autofixer",
+      "add-to-cart",
+      "addon-charge",
+      "cross-sell",
+      "TIB-5665"
+    ],
+    "related_kb_ids": [
+      "sdk/required-addon-validation#KB-545"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5665 comment #56269 QA plan mục 2 (Dev, 2026-11-03)",
+      "authored_on": "2026-11-03",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-156"
+    }
+  },
+  {
+    "kb_id": "KB-547",
+    "topic": "Sửa cart trong cart drawer của theme vẫn chạy autofixer: quantity addon theo line chính, xoá line chính thì xoá addon",
+    "statement": "Theo Jira TIB-5665 comment #56269 QA plan mục 3 và comment #56262 Solution (Dev, 2026-11-03), request đổi cart (cart/add, cart/change, cart/update, cart/clear) của theme, cart drawer hoặc app khác vẫn chạy autofixer như trước. Trong cart drawer của theme, đổi quantity của line chính thì quantity của addon line đổi theo; xoá line chính trong drawer thì các addon line của nó cũng bị xoá. Statement nói về dữ liệu cart; việc drawer render lại sau khi autofixer sửa cart chưa có kết luận Dev (xem open-questions).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront cart drawer (theme Dawn, Cart type Drawer)",
+      "brand": null
+    },
+    "tags": [
+      "autofixer",
+      "cart-drawer",
+      "cart-change",
+      "TIB-5665"
+    ],
+    "related_kb_ids": [
+      "sdk/required-addon-validation#KB-548"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5665 comment #56269 QA plan mục 3 và comment #56262 Solution (Dev, 2026-11-03)",
+      "authored_on": "2026-11-03",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-156"
+    }
+  },
+  {
+    "kb_id": "KB-548",
+    "topic": "Orphan addon bị autofixer xoá khi có cart/update.js hoặc khi full page load /cart",
+    "statement": "Theo Jira TIB-5665 comment #56269 QA plan mục 4, 5 và comment #56262 Solution (Dev, 2026-11-03), khi cart có orphan addon: gọi POST /cart/update.js (ví dụ body {\"updates\":{}}) thì autofixer xoá addon; mở /cart bằng full page load thì addon bị xoá khi trang load, như trước TIB-5665. Ở đường request (cart/update.js), SDK chạy lại sau debounce 200 ms; ở page load, init() chạy trực tiếp khi trang load. Ở cả hai đường, autofixer chờ autofixerDelay (option window.teeinblue) hoặc autofixer_delay (setting) trước khi validate và fix.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront cart / trang /cart",
+      "brand": null
+    },
+    "tags": [
+      "autofixer",
+      "orphan-addon",
+      "cart-update",
+      "page-load",
+      "delay",
+      "TIB-5665"
+    ],
+    "related_kb_ids": [
+      "sdk/required-addon-validation#KB-544",
+      "sdk/required-addon-validation#KB-547"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5665 comment #56269 QA plan mục 4, 5 và comment #56262 Solution (Dev, 2026-11-03)",
+      "authored_on": "2026-11-03",
+      "derivation": "prose"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-156"
+    }
+  },
+  {
+    "kb_id": "KB-549",
+    "topic": "Đề xuất của QA: buyer xoá addon line mà line chính còn thì autofixer thêm lại addon",
+    "statement": "Theo rule QA ghi trong CBS-156 (quyết định A1 của TIB-5665, 2026-11-09; TC-TIB-8401 PASS staging 2026-11-05), khi buyer xoá addon line mà line chính vẫn còn trong cart, autofixer thêm lại addon (cart/add.js) với quantity khớp line chính. Chưa có xác nhận của Dev/PO; Jira TIB-5665 không nói về trường hợp này.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront cart / cart drawer",
+      "brand": null
+    },
+    "tags": [
+      "autofixer",
+      "re-add-addon",
+      "TIB-5665",
+      "qa-rule"
+    ],
+    "related_kb_ids": [
+      "sdk/required-addon-validation#KB-547"
+    ],
+    "qa_rule_ref": {
+      "code": "TIB-5665-decision-A1",
+      "owner_role": "QA",
+      "recorded_on": "2026-11-09",
+      "locator": "CBS-156 (Testlane TIB-295), quyết định A1 của TIB-5665; TC-TIB-8401 PASS staging 2026-11-05"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-156"
+    }
+  },
+  {
+    "kb_id": "KB-550",
+    "topic": "Đề xuất của QA: autofixer không ngăn buyer checkout ngay sau khi xoá line chính",
+    "statement": "Theo rule QA ghi trong CBS-156 (quyết định Q3 của TIB-5665, 2026-11-09, lời Dev do người dùng chuyển lại, không có nguyên văn Dev; TC-TIB-8400 skipped), autofixer có giới hạn: nếu buyer vào checkout ngay sau khi xoá line chính, trước khi autofixer chạy (kể cả delay 0), checkout chỉ có addon line. Việc chặn đơn sai thuộc checkout rule Teeinblue Required Addon Validation (TIB-5510 cho line chính thiếu addon, TIB-5715 cho addon không có line chính; xem sdk/required-addon-validation KB-534, KB-540). Chưa có xác nhận Dev/PO bằng nguyên văn.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront cart page / cart drawer → checkout",
+      "brand": null
+    },
+    "tags": [
+      "autofixer",
+      "limitation",
+      "checkout",
+      "orphan-addon",
+      "TIB-5665",
+      "qa-rule"
+    ],
+    "related_kb_ids": [
+      "sdk/required-addon-validation#KB-548",
+      "sdk/required-addon-validation#KB-534",
+      "sdk/required-addon-validation#KB-540"
+    ],
+    "qa_rule_ref": {
+      "code": "TIB-5665-decision-Q3",
+      "owner_role": "QA",
+      "recorded_on": "2026-11-09",
+      "locator": "CBS-156 (Testlane TIB-295), quyết định Q3 của TIB-5665; TC-TIB-8400 skipped"
+    },
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-156"
+    }
+  },
+  {
+    "kb_id": "KB-551",
+    "topic": "environment_difference",
+    "statement": "[ALTERNATIVE_SETUP] Môi trường test: store staging không cài app chiếm nút add to cart (Foxkit Upsell & Bundles hay tương tự), nên không tái hiện race bằng app thật; Production: không rõ; Cách test: mô phỏng bằng Playwright route giữ request thêm line chính, trong lúc giữ gọi fetch('/cart.js') và fetch('/cart?view=ajax') trong trang, rồi thả request. Nguồn: dòng khối B của CBS-156 (QA, 2026-11-05), chưa có artifact; Dev chưa xác nhận cách mô phỏng tương đương app thật (test setup Dev ở Jira TIB-5665 #56269 yêu cầu app thật).",
+    "knowledge_kind": "INFERRED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer",
+      "surface": "storefront product page → cart (race với app khác)",
+      "brand": null
+    },
+    "tags": [
+      "autofixer",
+      "race",
+      "environment_difference",
+      "ALTERNATIVE_SETUP",
+      "TIB-5665"
+    ],
+    "related_kb_ids": [
+      "sdk/required-addon-validation#KB-545"
+    ],
+    "last_updated": {
+      "date": "2026-11-12",
+      "ccr_ref": "CBS-156"
+    }
   }
 ]

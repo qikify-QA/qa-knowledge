@@ -1,0 +1,1341 @@
+{
+  "feature_id": "FEAT-19-storefront-customization-storage",
+  "feature_key": "storefront-customization-storage",
+  "name": "Lưu customization của buyer (localStorage, sync server)",
+  "user_goal": "Buyer giữ lại lựa chọn personalization qua reload và đến lúc Add to cart.",
+  "user_goal_kb_refs": [
+    "sdk/storefront-customization-storage#KB-014"
+  ],
+  "stable_since_version": null,
+  "actors": [
+    {
+      "role": "guest (storefront, không login) — buyer",
+      "permission_observed": "Vượt qua password-gate ngay lần thử đầu với credential hợp lệ (cả 2 store); sau đó xem trang sản phẩm, thao tác personalize (bao gồm draft được lưu tạm ở localStorage phía client), preview, add-to-cart như 1 buyer chưa đăng nhập bình thường. Chưa quan sát permission/behavior khi ĐÃ login.",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-001",
+        "sdk/storefront-buyer-facing#KB-002",
+        "sdk/storefront-customization-storage#KB-014"
+      ]
+    },
+    {
+      "role": "[MỚI, CBS-013] guest-buyer trên storefront store không thuộc explorer (instance 520) — campaign có / không có Global Option và platform product",
+      "permission_observed": "Mở product page, nhập text, chọn clipart/Global Option, reload, Add to cart mà không đăng nhập trong lượt test 2026-10-28; không có khác biệt quyền nào được quan sát; không thử buyer đã đăng nhập.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-customization-storage#KB-360",
+        "sdk/storefront-buyer-facing#KB-361",
+        "sdk/storefront-customization-storage#KB-362",
+        "sdk/storefront-campaign-media-api#KB-363"
+      ]
+    },
+    {
+      "role": "[MỚI, CBS-098] buyer trên storefront staging (SDK app-v1.js Last-Modified 2026-10-21 05:56 GMT) — photo layer có reposition, upload file",
+      "permission_observed": "Reload, chọn lại template, upload file có tên/nội dung bất thường, Add to cart trong lượt test 2026-10-21/22 (Testlane task TIB-223). Chỉ quan sát.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-506",
+        "sdk/storefront-buyer-facing#KB-508"
+      ]
+    },
+    {
+      "role": "[MỚI, CBS-098] buyer tự sửa localStorage của mình",
+      "permission_observed": "Sửa giá trị position trong localStorage rồi Add to cart; request customization trả 201 và gửi nguyên giá trị (quan sát TC-30, không phải expected).",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-507"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "[MỚI, CBS-098] Product page có photo layer reposition: chỉnh position, reload trang, chọn lại template",
+      "precondition": "Staging SDK app-v1.js Last-Modified 2026-10-21 05:56 GMT; localStorage còn template, ảnh và position.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-506"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-098] DevTools của buyer: sửa giá trị position trong localStorage rồi Add to cart",
+      "precondition": "Buyer tự sửa localStorage của mình (giá trị âm, rất lớn, chuỗi chữ, null).",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-507"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Client-side personalization draft persistence (localStorage)",
+      "description": "MỚI (2026-09-12). Trang product sử dụng 2 key localStorage — 'teeinblue-customizations' (array, 1 object {productId, customization: {<field-id>: <value>,..., platform_linked_id}, timestamp}) và 'teeinblue-global-options' (object keyed theo global-option id, mỗi value {value, extra:{}, timestamp}) — làm buffer/draft thuần client-side. Cả 2 key KHÔNG tồn tại lúc load trang ban đầu (getItem trả null), chỉ được tạo ngay khi tương tác field cá nhân hoá đầu tiên. Write timing khác nhau theo field type: field radio/template/clipart đơn (không lồng con) ghi ĐỒNG BỘ ngay khi click (dưới 300ms, không debounce); field text (vd Woman Name) CHỈ ghi khi blur, KHÔNG ghi khi đang gõ hay khi còn focus. ĐIỂM ĐẶC BIỆT: đây là 1 trong số ít capability của profile này KHÔNG tách SDK v1/v2 — shape, timing, và hành vi tồn tại/khởi tạo key GIỐNG HỆT NHAU (byte-for-byte structure) trên cả store1 (SDK v1) và store2 (SDK v2), khác hẳn các capability khác trong profile (personalization dependency, artwork preview, add-to-cart, cart handoff) vốn đã phải tách riêng v1/v2 vì có khác biệt hành vi rõ rệt. Lý do KHÔNG tách ở đây: bằng chứng cụ thể (KB-014, KB-015, KB-016, KB-017) đều ghi nhận 'giống hệt nhau' qua so sánh trực tiếp trên cùng campaign 2595, không phải suy đoán mặc định.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-014",
+        "sdk/storefront-customization-storage#KB-015",
+        "sdk/storefront-customization-storage#KB-016",
+        "sdk/storefront-customization-storage#KB-017"
+      ]
+    },
+    {
+      "name": "Personalization: grouped_clipart field cần 2-step (radio nhóm + click con) mới thực sự hợp lệ (SDK v2, store2) — bổ sung chi tiết mới, liên quan CFL-003",
+      "description": "MỚI (2026-09-12), làm rõ hơn capability 'dependency cha-con' đã có ở v1. Với field dạng grouped_clipart (Hairstyle, Cat Breed #1/#2): click radio cấp NHÓM check=true và lộ field con bắt buộc (grid ~9-12 thumbnail), nhưng giá trị field trong localStorage KHÔNG ổn định ở giá trị nhóm thô — chỉ có giá trị thật (asset path thumbnail con) sau khi thumbnail con CŨNG được click. Nếu điền đủ chuỗi field còn lại nhưng CHỈ click radio nhóm cho field grouped_clipart (bỏ qua click con), Add-to-cart THẤT BẠI THẬT: banner lỗi chung, lỗi inline dưới đúng các field đó, GET /cart.js xác nhận item_count=0, và ZERO request tới API-OP-051 (client-side validation chặn trước khi gửi). Đây chính là nguyên nhân của lần ATC ĐẦU TIÊN thất bại trong run này trên store2 — xem CFL-003.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-018"
+      ]
+    },
+    {
+      "name": "Add-to-cart — hoàn tất thành công toàn trình, NHƯNG lần thử đầu tiên có thể fail thật nếu bỏ sót bước con của grouped_clipart (SDK v2, store2)",
+      "description": "CẬP NHẬT (2026-09-12). Sau khi điền đủ mọi field VÀ đã click cả radio nhóm lẫn thumbnail con của mọi field grouped_clipart, POST /cart/add trả 200, cart.item_count 0->1, giá khớp hiển thị; tăng quantity qua /cart/change.js tăng tuyến tính; cleanup (set quantity 0) thành công. Tuy nhiên run này ghi nhận: lần thử ATC ĐẦU TIÊN trong phiên (chỉ click radio nhóm, chưa click con của 3 field grouped_clipart) THẤT BẠI THẬT — không phải automation artifact — với banner lỗi, lỗi inline, item_count=0, và 0 request tới API-OP-051. ATC chỉ thành công ở lần thử THỨ HAI sau khi bổ sung click con. Đây là CFL-003 (mới) vì mâu thuẫn với khung nhìn 'ATC store2 đã là đường known-working' kế thừa từ 2026-09-12.",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-008",
+        "sdk/storefront-customization-storage#KB-018",
+        "sdk/storefront-customization-storage#KB-022"
+      ]
+    },
+    {
+      "name": "Post-ATC persistence của localStorage draft (SDK v2, store2) — MỚI",
+      "description": "MỚI (2026-09-12). Sau Add-to-cart thành công trên store2, 'teeinblue-customizations'/'teeinblue-global-options' GIỮ NGUYÊN byte-identical (cùng timestamp) — ATC KHÔNG xoá/reset draft phía client. Sau khi dọn cart (POST /cart/clear.js, xác nhận item_count=0), localStorage vẫn GIỮ NGUYÊN không đổi. CHỈ xác nhận trên SDK v2 (store2); SDK v1 (store1) CHƯA xác nhận vì run này (và mọi run tới nay) dừng trước ATC trên store1 theo chủ đích (tránh re-trigger CFL-001) — hành vi tương ứng trên SDK v1 KHÔNG được suy diễn là giống nhau.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-021"
+      ]
+    },
+    {
+      "name": "Server sync tại thời điểm Add-to-cart (API-OP-051) — MỚI",
+      "description": "MỚI (2026-09-12). Trong suốt quá trình điền field cá nhân hoá (cả 2 store), ZERO request XHR/fetch tới host teeinblue-owned nào được ghi nhận — localStorage hoạt động thuần như buffer client-side. Request teeinblue-owned ĐẦU TIÊN trong phiên chỉ xuất hiện tại thời điểm Add-to-cart trên store2: POST https://staging-api.teeinblue.com/api/merchant/shopify/customization (API-OP-051), ngay trước /cart/add gốc của Shopify. Khi lần thử ATC thất bại (thiếu click con grouped_clipart), API-OP-051 KHÔNG xuất hiện — xác nhận validation client-side chặn trước khi gửi request server. Store1/SDK v1 CHƯA xác nhận có gọi API-OP-051 hay endpoint tương đương tại ATC hay không vì chưa từng tới được bước ATC.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-022"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-008] Giới hạn số entry của draft 'teeinblue-customizations' khi personalize nhiều product",
+      "description": "OBSERVED_CURRENT/LOW (KB-066, staging store test store không thuộc explorer, 2026-10-22, 1 lượt chạy). Khi guest buyer lần lượt personalize và thêm vào giỏ nhiều product khác nhau (order 14 line item), 'teeinblue-customizations' không còn giữ entry của các product thao tác sớm: người chạy test ghi nhận chỉ còn khoảng 10 entry gần nhất (con số chưa được đếm độc lập), entry cũ bị đẩy ra. Thêm một line item khác trên cùng product thì entry của product đó bị ghi đè bằng giá trị mới. Hệ quả cho việc kiểm: đọc localStorage sau Add-to-cart chỉ tin cậy nếu đọc ngay sau từng lần thêm. Không mâu thuẫn KB-015 ('mảng chứa đúng 1 object' — trạng thái sau khi tương tác 1 product). Không dùng làm oracle; giới hạn chính xác và cách loại entry chưa xác nhận.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-066",
+        "sdk/storefront-customization-storage#KB-015"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-006] Form cá nhân hoá và Add to cart khi artwork có Group ẩn — KNOWN_DEFECT (BUG-321..324), chưa có expected xác nhận",
+      "description": "OBSERVED_CURRENT/LOW, status KNOWN_DEFECT (KB-179, KB-180; lượt chạy test của agent 2026-10-16 trên staging, shipped UNKNOWN). Field required nằm trong Group ẩn vẫn chặn Add to cart ('FT2 * This field is required!' + 'Error: Some fields are required or invalid data', giỏ trống, không có request lưu customization). Field của layer con trong Group ẩn vẫn có trong form — kể cả khi condition buyer-side của layer con được thoả. Layer con bật 'Show this layer on first load' dưới Group ẩn không hiện ở lần load đầu, nhưng layer đó còn gắn condition nên chưa tách được hiệu ứng. Hành vi mong đợi theo QA plan/ticket của dev (form không có field, required không chặn, condition không pass) KHÔNG được nạp làm expected. Không dùng làm oracle.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-011] Phiên bản SDK storefront nhận được khi rollout thay đổi Hide — quan sát cache, chưa xác nhận",
+      "description": "OBSERVED_CURRENT/LOW (KB-237, KB-236; 1 lượt chạy test 2026-10-28, S1). SDK app-v2.js bản 2026-10-28 03:01:11 GMT trả Cache-Control max-age=14400; lần load trang đầu trước khi xoá cache trình duyệt vẫn nhận bản cũ (Last-Modified 2026-10-14, chưa có code Hide) và trên bản cũ đó chiều ẩn/hiện layer Hide bị đảo (BUG-429), không tái hiện sau khi nhận bản mới. Trên bản SDK cũ, layer không điều kiện luôn hiện và layer Show giữ đúng chiều; chưa chạy lại trên SDK có code Hide (KB-236). Không phải quy tắc thời gian cache; không dùng làm oracle.",
+      "kb_refs": [
+        "sdk/storefront-layer-visibility#KB-237",
+        "sdk/storefront-customization-storage#KB-236"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-013] Personalize campaign có Global Option trên storefront — form, preview, payload customization, tự điền Global Option giữa các campaign — quan sát, chưa xác nhận",
+      "description": "OBSERVED_CURRENT/LOW (KB-358..KB-362; 1 lượt staging 2026-10-28 ~06:00 UTC, trước lần redeploy dev yêu cầu recheck, chưa chạy lại). Campaign #3270 (store không thuộc explorer): form hiện Name (text), Dog (clipart 4 item), Color A1 (dropdown Red/Blue/Green, default Red) và mockup (KB-358); reload 4 lần chữ ký form giống hệt lần đầu (KB-359); nhập text + chọn clipart thì preview cập nhật, dropdown Global Option là additional-option nên preview không đổi hình, POST /api/merchant/shopify/customization 201 có layer-<id> và global-option-1125, localStorage teeinblue-customizations khớp, cart/add 200 (KB-360); 2 layer dùng chung GO #1125 thì đổi lựa chọn hiện giá trị mới và payload chỉ có một giá trị global-option-1125 (KB-361); chọn GO-A ở #3270 rồi mở #3271 trong cùng trình duyệt thì GO-A tự điền, GO-B giữ default, không có request ghi (KB-362, tester ghi trạng thái lấy từ localStorage). Không dùng làm oracle.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-buyer-facing#KB-359",
+        "sdk/storefront-customization-storage#KB-360",
+        "sdk/storefront-buyer-facing#KB-361",
+        "sdk/storefront-customization-storage#KB-362"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-013] Personalize campaign không dùng Global Option — quan sát, chưa xác nhận",
+      "description": "OBSERVED_CURRENT/LOW (KB-363; 1 lượt staging 2026-10-28 ~06:00 UTC, trước redeploy, chưa chạy lại). Campaign #3272 (CP-NOGO, store không thuộc explorer): form chỉ có 1 input Text, không có dropdown Global Option; response campaigns/{id}.json có resource_type='campaign', global_options=[] và artworks[0].global_option_ids=[]; nhập 'NOGO' thì preview hiện, reload trang vẫn giữ 'NOGO'; payload customization chứa layer-520331='NOGO'. Quan sát 'reload vẫn giữ giá trị' đang căng thẳng chưa phân xử với KB-019 (sau reload DOM form reset dù localStorage còn) — có thể khác scope (input cấp đầu vs field phụ thuộc template) hoặc khác bản SDK; xem profile_conflicts. Không dùng làm oracle.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-363",
+        "sdk/storefront-customization-storage#KB-019"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-098] Khôi phục ảnh và position đã giữ sau reload khi buyer chọn lại template — chỉ quan sát",
+      "description": "OBSERVED_CURRENT/LOW (KB-506; Testlane TC-TIB-6373 TC-35, PASS 2026-10-22, staging SDK app-v1.js Last-Modified 2026-10-21 05:56 GMT; căn cứ expected không có). Sau reload, template picker không được khôi phục (hiện \"Choose an option\") dù localStorage vẫn giữ template, ảnh và position; buyer chọn lại template thì ảnh và position đã giữ hiện lại đúng, không warning. Vế picker không khôi phục cùng chiều KB-019 (không thay KB-019); vế position là mới. Không dùng làm oracle.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-506",
+        "sdk/storefront-customization-storage#KB-019"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-098] Position bị buyer sửa tay trong localStorage — chỉ quan sát, không phải expected",
+      "description": "OBSERVED_CURRENT/LOW (KB-507; Testlane TC-TIB-6368 TC-30, kết quả ❌ ở 2 lần, 2026-10-21; chưa ai xác nhận; bug draft BUG-09 chưa file). Position sửa tay với giá trị âm, rất lớn, chuỗi chữ hoặc null không bị clamp hay bỏ qua; request customization lúc Add to cart trả 201 và gửi nguyên giá trị; chuỗi chữ làm transform của preview thành NaN và sinh lỗi console; thumbnail cart mất ảnh (âm, rất lớn) hoặc ảnh ở x=0 (chuỗi chữ, null); không có lỗi 500; key position của campaign khác không có trong payload. Order design với các giá trị này chưa kiểm. Không check nào assert server nhận nguyên giá trị.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-507"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "trang sản phẩm (chưa tương tác)",
+      "to": "localStorage 'teeinblue-customizations'/'teeinblue-global-options' được tạo lần đầu",
+      "trigger": "click field cá nhân hoá đầu tiên (bất kỳ, cả 2 store)",
+      "condition": "(SDK v1 và SDK v2 — GIỐNG NHAU) key không tồn tại (null) trước tương tác này",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-014"
+      ]
+    },
+    {
+      "from": "radio nhóm grouped_clipart đã check, field con chưa chọn",
+      "to": "field grouped_clipart vẫn CHƯA có giá trị thật hợp lệ trong localStorage/validation",
+      "trigger": "chỉ click radio nhóm, KHÔNG click thumbnail con",
+      "condition": "(SDK v2, store2) — nếu tiến thẳng tới ADD TO CART ở trạng thái này, ATC THẤT BẠI THẬT (xem CFL-003)",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-018"
+      ]
+    },
+    {
+      "from": "field grouped_clipart chỉ có radio nhóm được click (chưa click con)",
+      "to": "ADD TO CART thất bại thật, banner lỗi chung, lỗi inline dưới field grouped_clipart, item_count=0, 0 request API-OP-051",
+      "trigger": "click ADD TO CART khi field grouped_clipart còn thiếu bước click con",
+      "condition": "(SDK v2, store2) — quan sát ở lần thử ĐẦU TIÊN trong lần quan sát 2026-09-12, xem CFL-003",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-018"
+      ]
+    },
+    {
+      "from": "mọi field cá nhân hoá đã điền đủ (bao gồm cả bước click con của grouped_clipart)",
+      "to": "cart.item_count 0 -> 1, giá khớp hiển thị, POST API-OP-051 fire đúng 1 lần ngay trước /cart/add",
+      "trigger": "click Add to cart -> POST /cart/add 200",
+      "condition": "(SDK v2, store2) — lần thử THỨ HAI trong run này",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-008",
+        "sdk/storefront-customization-storage#KB-018",
+        "sdk/storefront-customization-storage#KB-022"
+      ]
+    },
+    {
+      "from": "cart có 1 item",
+      "to": "cart có 2 item cùng SKU (total_price tăng tuyến tính) -> cart rỗng lại (cleanup)",
+      "trigger": "POST /cart/change.js tăng qty -> set qty 0 hoặc /cart/clear.js",
+      "condition": "(SDK v2, store2) — 1 sample, không suy tổng quát bulk discount; localStorage draft GIỮ NGUYÊN xuyên suốt chuỗi này (KB-021)",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-008",
+        "sdk/storefront-customization-storage#KB-021"
+      ]
+    },
+    {
+      "from": "trang đã có draft localStorage (đã điền field trước đó)",
+      "to": "DOM form reset về mặc định (full page reload) NHƯNG localStorage vẫn giữ nguyên byte-identical",
+      "trigger": "reload trang (F5 / page.reload)",
+      "condition": "(SDK v1 và SDK v2 — GIỐNG NHAU) 'lưu nhưng không tự khôi phục' ở mức full-page-load",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-019"
+      ]
+    },
+    {
+      "from": "sau reload, DOM chưa khôi phục field text",
+      "to": "field text (Woman Name) tự pre-fill lại giá trị đã lưu",
+      "trigger": "chọn lại field cha (template) khiến field con text remount",
+      "condition": "(SDK v2, store2) — REFINE của KB-019, không mâu thuẫn; chỉ xác nhận field type text, 1 sample; CHƯA test field radio/clipart",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-020"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-008] 'teeinblue-customizations' đang giữ khoảng 10 entry (nhiều product đã personalize)",
+      "to": "entry của product thao tác sớm nhất không còn trong danh sách",
+      "trigger": "guest buyer personalize và thêm vào giỏ thêm một product khác",
+      "condition": "OBSERVED_CURRENT/LOW, 1 lượt chạy (store test store không thuộc explorer, 2026-10-22); con số ~10 chưa đếm độc lập, cách chọn entry bị loại (theo thời gian hay thứ tự thêm) chưa xác nhận",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-066"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-008] 'teeinblue-customizations' có entry của một product",
+      "to": "entry của product đó mang giá trị của line item mới (giá trị cũ bị ghi đè)",
+      "trigger": "đặt thêm một line item khác trên cùng product",
+      "condition": "OBSERVED_CURRENT/LOW, 1 lượt chạy (store test store không thuộc explorer, 2026-10-22)",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-066"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-006] form cá nhân hoá của artwork có Group ẩn chứa layer có field required; field ngoài Group đã nhập",
+      "to": "Add to cart bị chặn: 'FT2 * This field is required!' + banner 'Error: Some fields are required or invalid data', giỏ hàng trống, không có request lưu customization",
+      "trigger": "bấm Add to cart",
+      "condition": "OBSERVED_CURRENT/LOW, KNOWN_DEFECT (BUG-321..324), lượt chạy staging 2026-10-16; hành vi mong đợi của dev ngược lại, chưa xác nhận",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-013] buyer đã chọn GO-A trên campaign #3270",
+      "to": "GO-A tự điền đúng giá trị đã chọn trên campaign #3271 (và platform product #602) dùng cùng GO; GO-B giữ default",
+      "trigger": "mở campaign khác dùng cùng Global Option trong cùng trình duyệt",
+      "condition": "OBSERVED_CURRENT/LOW, 1 lượt 2026-10-28 trước redeploy; không có request ghi; tester ghi trạng thái lấy từ localStorage",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-362"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-098] product page đã chỉnh position ảnh, localStorage có template/ảnh/position",
+      "to": "template picker hiện \"Choose an option\"; sau khi chọn lại template, ảnh và position đã giữ hiện lại, không warning",
+      "trigger": "reload trang, rồi chọn lại template",
+      "condition": "chỉ quan sát (OBSERVED_CURRENT/LOW, TC-35), không có căn cứ expected",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-506"
+      ]
+    }
+  ],
+  "confirmed_rules": [],
+  "observed_behavior": [
+    {
+      "statement": "(SDK v1 và SDK v2 — GIỐNG NHAU) trong lúc điền field, KHÔNG có bất kỳ request XHR/fetch nào tới host teeinblue-owned; toàn bộ tương tác chỉ ghi vào localStorage phía client. Request teeinblue-owned đầu tiên trong phiên chỉ xuất hiện tại ATC (API-OP-051, store2).",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-022"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-008] Sau khi guest buyer personalize và thêm vào giỏ nhiều product khác nhau (order 14 line item), 'teeinblue-customizations' chỉ còn khoảng 10 entry gần nhất theo ghi nhận của người chạy test (chưa đếm độc lập); entry của product thao tác sớm bị đẩy ra. Line item sau trên cùng product ghi đè entry của product đó. Đọc localStorage sau Add-to-cart chỉ tin cậy nếu đọc ngay sau từng lần thêm.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging, guest buyer, store test store không thuộc explorer, 2026-10-22, 1 lượt chạy (Jira TIB-5606 chưa ship)",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-066"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-006] Trên form cá nhân hoá SDK của storefront với artwork có Group ẩn chứa một layer có field required: nhập field ngoài Group rồi bấm Add to cart thì hiện 'FT2 * This field is required!' và 'Error: Some fields are required or invalid data', giỏ hàng trống và không có request lưu customization. QA plan của dev và ticket mô tả hành vi ngược lại (không nạp làm expected). BUG-321..324 đã tạo. TC-TIB-6064 hiện ghi 'passed' trên Testlane trong khi actualResult ghi Fail, không có lần chạy lại có ngày; TC-TIB-6063 actualResult rỗng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "status": "KNOWN_DEFECT",
+      "scope": "staging (instance 520 / store không thuộc explorer), guest buyer, lượt chạy 2026-10-16, build hash không rõ, shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-011] Lượt chạy test đầu ngày 2026-10-28 (TC-TIB-7344) trên SDK app-v2.js bản cũ (Last-Modified 2026-10-14, chưa có code Hide): layer không có điều kiện hiện trên form và preview ở mọi giá trị nguồn (chưa chọn, Cat, Dog); layer action Show điều kiện 'Pet 1 Type is Cat' hiện khi Cat và ẩn khi Dog; payload POST /api/merchant/shopify/customization và localStorage teeinblue-customizations chỉ chứa giá trị của các layer đang hiện. Chưa chạy lại trên SDK có code Hide.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging (instance 520 / store không thuộc explorer), guest buyer, SDK app-v2.js bản 2026-10-14, 1 lượt, shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-236"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-013] Quan sát staging 2026-10-28 (1 lượt ~06:00 UTC trước redeploy, TC-TIB-7392; chưa có nguồn xác nhận): trên campaign #3270, nhập 'HELLO 5203', chọn Color A1 = Blue và clipart #2 thì preview hiện 'HELLO 5203' và clipart đã chọn; dropdown Global Option là additional-option nên chỉ thể hiện trên form, preview không đổi hình. POST /api/merchant/shopify/customization?shop=…&id=<shopify product id> → 201 với layer-520311='HELLO 5203', layer-520312=<đường dẫn clipart>, global-option-1125='blue'; localStorage teeinblue-customizations khớp; cart/add → 200.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging store không thuộc explorer, storefront + api, 1 lượt; shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-360"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-013] Quan sát staging 2026-10-28 (1 lượt ~06:00 UTC trước redeploy, TC-TIB-7399; chưa có nguồn xác nhận): chọn GO-A trên campaign #3270 rồi mở campaign #3271 (store không thuộc explorer) trong cùng trình duyệt thì GO-A tự điền đúng giá trị đã chọn (kiểm với 'Blue', vẫn còn khi mở platform product #602, và 'Green' tự điền ở #3271); GO-B giữ default 'Small'. Không có request ghi nào; tester ghi trạng thái lấy từ localStorage. Cùng chiều với rule personalize 1 lần áp mọi nơi dùng Global Option ở global-option.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging store không thuộc explorer, storefront, cùng trình duyệt, 1 lượt; shipped UNKNOWN",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-362"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-098] Ở Testlane TC-TIB-6373 (TC-35, PASS 2026-10-22, staging SDK app-v1.js Last-Modified 2026-10-21 05:56 GMT): sau reload trang, template picker không được khôi phục (hiện \"Choose an option\") dù localStorage vẫn giữ template, ảnh và position; buyer chọn lại template thì ảnh và position đã giữ hiện lại đúng, không warning. Căn cứ expected không có.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging, buyer, storefront",
+      "observed_count": null,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-506"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-098] Ở Testlane TC-TIB-6368 (TC-30, ❌ ở 2 lần, 2026-10-21), quan sát (không phải expected, chưa ai xác nhận; chỉ khi buyer tự sửa localStorage của mình): position sửa tay với giá trị âm, rất lớn, chuỗi chữ hoặc null không bị clamp hay bỏ qua; request customization lúc Add to cart trả 201 và gửi nguyên giá trị; chuỗi chữ làm transform của preview thành NaN và sinh lỗi console; thumbnail cart mất ảnh (âm, rất lớn) hoặc ảnh ở x=0 (chuỗi chữ, null); không có lỗi 500; key position của campaign khác không có trong payload. Order design với các giá trị này chưa kiểm.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging, buyer tự sửa localStorage, storefront, api",
+      "observed_count": 2,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-507"
+      ]
+    }
+  ],
+  "observed_validations": [
+    {
+      "input": "(SDK v2, store2) click ADD TO CART khi đã điền đủ 8 field nhưng field grouped_clipart (Hairstyle, Cat Breed #1, Cat Breed #2) chỉ click radio nhóm, CHƯA click thumbnail con",
+      "message_verbatim": "Error: Some fields are required or invalid data (banner) + This field is required! (inline, dưới 3 field grouped_clipart)",
+      "observed_count": 3,
+      "rule_confidence": "MEDIUM",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-018"
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "statement": "Guest (chưa login) truy cập được đầy đủ product page, personalize (bao gồm draft localStorage), preview, add-to-cart (v2) sau khi vượt password-gate — chưa quan sát khác biệt permission khi buyer đã login.",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-001",
+        "sdk/storefront-buyer-facing#KB-002",
+        "sdk/storefront-customization-storage#KB-014"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      {
+        "path": "Launch dialog multi-store (chọn thêm store2) + link 'Campaign link' hiển thị URL storefront thật cho từng store",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-002"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Block General error messages của product page content: request_rate_limited, request_rate_limited_retry_after",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-449"
+        ]
+      }
+    ],
+    "storefront": [
+      {
+        "path": "store TIB_STORE_URL_1 -> /password -> product page (store1, SDK v1)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-001",
+          "sdk/storefront-buyer-facing#KB-004",
+          "sdk/storefront-buyer-facing#KB-005",
+          "sdk/storefront-buyer-facing#KB-010",
+          "sdk/storefront-customization-storage#KB-014",
+          "sdk/storefront-customization-storage#KB-016",
+          "sdk/storefront-customization-storage#KB-017",
+          "sdk/storefront-customization-storage#KB-019",
+          "sdk/storefront-customization-storage#KB-022"
+        ]
+      },
+      {
+        "path": "store TIB_STORE_URL_2 -> /password -> product page (store2, SDK v2)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-001",
+          "sdk/storefront-buyer-facing#KB-007",
+          "sdk/storefront-buyer-facing#KB-008",
+          "sdk/storefront-buyer-facing#KB-009",
+          "sdk/storefront-buyer-facing#KB-011",
+          "sdk/storefront-customization-storage#KB-014",
+          "sdk/storefront-customization-storage#KB-015",
+          "sdk/storefront-customization-storage#KB-016",
+          "sdk/storefront-customization-storage#KB-017",
+          "sdk/storefront-customization-storage#KB-018",
+          "sdk/storefront-customization-storage#KB-019",
+          "sdk/storefront-customization-storage#KB-020",
+          "sdk/storefront-customization-storage#KB-021",
+          "sdk/storefront-customization-storage#KB-022"
+        ]
+      },
+      {
+        "path": "/cart, cart-drawer (store2 only — store1 chưa từng có item trong cart)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-009",
+          "sdk/storefront-buyer-facing#KB-005",
+          "sdk/storefront-customization-storage#KB-021"
+        ]
+      },
+      {
+        "path": "localStorage 'teeinblue-customizations' / 'teeinblue-global-options' (client-side draft, cả 2 store)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-014",
+          "sdk/storefront-customization-storage#KB-015",
+          "sdk/storefront-customization-storage#KB-016",
+          "sdk/storefront-customization-storage#KB-017",
+          "sdk/storefront-customization-storage#KB-019",
+          "sdk/storefront-customization-storage#KB-020",
+          "sdk/storefront-customization-storage#KB-021"
+        ]
+      },
+      {
+        "path": "Storefront re-verification pass 2026-09-21 (2026-09-21) tren CHINH campaign 2595 da dung lam baseline 2026-09-12 -- ca 2 store, bao gom SDK bundle marker check, template option 2 dependency shape, preview mechanism, ATC-block khi field de trong, campaign identity re-verify",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-040",
+          "sdk/storefront-buyer-facing#KB-041",
+          "sdk/storefront-campaign-media-api#KB-042",
+          "sdk/storefront-buyer-facing#KB-043",
+          "sdk/storefront-campaign-media-api#KB-044"
+        ]
+      },
+      {
+        "path": "[MỚI] Product page campaign 2740 /vi-vn/ (API path), /zh-zh/ (inline path), /en-vn/ — widget personalization theo locale, staging SDK app-v1.js build TIB-5352",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-053",
+          "sdk/storefront-translations#KB-054",
+          "sdk/storefront-translations#KB-055",
+          "sdk/storefront-translations#KB-058",
+          "sdk/storefront-translations#KB-059",
+          "sdk/storefront-translations#KB-060"
+        ]
+      },
+      {
+        "path": "[MỚI] Cart → modal 'Edit design' (vi) — lần gọi dictionary kế tiếp trong cùng page session; nhãn thiếu trong dictionary hiển thị chữ gốc",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-057",
+          "sdk/storefront-translations#KB-058"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-008] localStorage 'teeinblue-customizations' sau khi personalize và Add-to-cart nhiều product (store test store không thuộc explorer, order 14 line item)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-066"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-006] Product page campaign #3043 (artwork #5046, Group ẩn), store test instance 520 store không thuộc explorer — buyer preview SDK theo effective visibility của Group",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-181"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-006] Form cá nhân hoá SDK + Add to cart với artwork có Group ẩn (field required trong Group, condition buyer-side của layer con, 'Show this layer on first load') — KNOWN_DEFECT",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-179",
+          "sdk/storefront-layer-visibility#KB-180"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] Product page các campaign fixture TIB-5558 (store test instance 520 store không thuộc explorer) — form cá nhân hoá + live preview SDK app-v2.js với layer action Hide: 1 điều kiện, OR, AND, first load, nguồn Toggle / Additional Option, so sánh với layer Show",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-231",
+          "sdk/storefront-layer-visibility#KB-232",
+          "sdk/storefront-layer-visibility#KB-233",
+          "sdk/storefront-layer-visibility#KB-234",
+          "sdk/storefront-layer-visibility#KB-235",
+          "sdk/storefront-customization-storage#KB-236"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] Cache trình duyệt của SDK app-v2.js (lần load đầu nhận bản cũ, xoá cache để nhận bản mới) — OBSERVED_CURRENT/LOW",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-237"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-009] Product page store test store không thuộc explorer (instance 520) — gallery SDK lọc mockup + video theo variant (setting bật / tắt), đổi variant, play video, thứ tự gallery, video 'Always load first' (BUG-359), khu vực preview khi variant chỉ gán video",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-320",
+          "sdk/storefront-campaign-media-api#KB-322",
+          "sdk/storefront-campaign-media-api#KB-323",
+          "sdk/storefront-campaign-media-api#KB-324",
+          "sdk/storefront-campaign-media-api#KB-325",
+          "sdk/storefront-campaign-media-api#KB-326",
+          "sdk/storefront-campaign-media-api#KB-327"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Product page store không thuộc explorer campaign #3270 (có Global Option), #3271 (dùng cùng GO), #3272 (không GO) — form, preview, reload, tự điền Global Option giữa campaign (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-358",
+          "sdk/storefront-buyer-facing#KB-359",
+          "sdk/storefront-customization-storage#KB-360",
+          "sdk/storefront-buyer-facing#KB-361",
+          "sdk/storefront-customization-storage#KB-362",
+          "sdk/storefront-campaign-media-api#KB-363"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Product page platform product #602 (/products/the-complete-snowboard, store không thuộc explorer) — trang thật không render form (lỗi đã biết BUG-310); form chỉ render khi HTML đã patch (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-364",
+          "sdk/storefront-buyer-facing#KB-365",
+          "sdk/storefront-campaign-media-api#KB-355"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Reload storefront sau thay đổi phía merchant (Save artwork + Update campaign; sửa + Publish platform product) — URL SDK ?v=1 vẫn trả bản cũ (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-356",
+          "sdk/storefront-campaign-media-api#KB-357"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-015] Product page store không thuộc explorer sản phẩm có artwork group ~250 layer ảnh → bấm Preview (popup preview) — quan sát, đếm DOM toàn trang",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-394"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Popup cross-sell: variant picker, giá, CTA \"Sold out\"",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-408",
+          "sdk/storefront-buyer-facing#KB-420",
+          "sdk/storefront-buyer-facing#KB-421",
+          "sdk/storefront-buyer-facing#KB-452",
+          "sdk/storefront-buyer-facing#KB-453"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Thông báo 429 ở upload và add-to-cart",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-418",
+          "sdk/storefront-buyer-facing#KB-419",
+          "sdk/storefront-buyer-facing#KB-450",
+          "sdk/storefront-buyer-facing#KB-451"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Product page sau reload: template picker \"Choose an option\", chọn lại template hiện lại ảnh và position (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-506"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Preview và thumbnail cart khi position bị sửa tay (NaN, lỗi console, mất ảnh / x=0) (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-507"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Field upload ảnh: tên file payload, SVG có script, HTML đổi đuôi .jpg; text layer sync hiển thị payload literal (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-508"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Preview vector layer: SVG inline với id prefix svg-<chuỗi>-<id gốc> khi áp màu, <image href=…svg> khi chưa áp màu, tham chiếu url()/href/xlink:href/marker-*/<style>",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-509",
+          "sdk/storefront-buyer-facing#KB-510",
+          "sdk/storefront-buyer-facing#KB-511",
+          "sdk/storefront-buyer-facing#KB-512"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "path": "POST /password (cả 2 store, form authenticity_token/password redacted)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-001"
+        ]
+      },
+      {
+        "path": "GET /api/instances/{instanceId}/themes/app-block-enabled (portal pre-flight, owner)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-012"
+        ]
+      },
+      {
+        "path": "GET /api/merchant/campaigns/{platformProductId}.json (public, no auth, cả 2 store)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-013"
+        ]
+      },
+      {
+        "path": "POST /cart/add, POST /cart/change.js, POST /cart/clear.js (SDK v2, store2 — thành công ở lần thử thứ hai); KHÔNG có request nào tương ứng ở SDK v1/store1",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-008",
+          "sdk/storefront-buyer-facing#KB-005",
+          "sdk/storefront-customization-storage#KB-021"
+        ]
+      },
+      {
+        "path": "POST https://staging-api.teeinblue.com/api/merchant/shopify/customization (API-OP-051) — chỉ fire tại thời điểm ATC (SDK v2, store2), 0 lần khi field-fill, absent khi ATC thất bại do thiếu click con grouped_clipart",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-018",
+          "sdk/storefront-customization-storage#KB-022"
+        ]
+      },
+      {
+        "path": "GET /cart.json (implicit, khong phai APIOP rieng) -- xac nhan item_count=0 ngay sau khi ADD TO CART bi chan client-side do field bat buoc de trong (KB-043), ca 2 store",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-043"
+        ]
+      },
+      {
+        "path": "[MỚI] GET /api/merchant/translations/<locale>.json?shop=<domain>&v=<translation_version> — do SDK gọi (API path); timeout 5s, fallback chữ gốc, retry lazy tối đa 2 fetch/page session; staging build TIB-5352",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-053",
+          "sdk/storefront-translations#KB-054",
+          "sdk/storefront-translations#KB-056",
+          "sdk/storefront-translations#KB-057"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] POST /api/merchant/shopify/customization lúc Add to cart — payload chỉ chứa layer đang hiện (layer action Hide đang ẩn không có key), kèm giá trị nguồn (option / Toggle / Additional Option)",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-231",
+          "sdk/storefront-layer-visibility#KB-234",
+          "sdk/storefront-customization-storage#KB-236"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-009] GET /api/merchant/campaigns/<id>.json — merchant JSON chỉ mang assignment media ↔ variant mới sau POST /api/campaigns/<id>/sync (quan sát 1 lượt, ngoài oracle)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-321"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] GET /api/merchant/campaigns/{shopify product id}.json?shop=…&v=<v chưa từng dùng> — có đủ key SDK cần, không còn field đã bỏ (CONFIRMED_EXPECTED/MEDIUM, TC-TIB-7507, chỉ cho v mới)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-350",
+          "sdk/storefront-campaign-media-api#KB-352"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] GET /api/merchant/campaigns/{shopify product id}.json?shop=…&v=1 (URL SDK gọi khi render) so với link preload v=<version> — v=1 trả bản cũ sau sửa phía merchant, còn artworks[].global_options (quan sát; BUG-437/446/439)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-354",
+          "sdk/storefront-campaign-media-api#KB-356",
+          "sdk/storefront-campaign-media-api#KB-357"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Giá trị resource_type ('campaign' / 'platform_product'), danh sách key artworks[] của platform product, campaigns/{shopify product id}.json là đường SDK dùng cho platform product (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-351",
+          "sdk/storefront-campaign-media-api#KB-353",
+          "sdk/storefront-campaign-media-api#KB-355"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] POST /api/merchant/shopify/customization → 201 với key layer-<id> và global-option-<id> (một giá trị cho GO dùng chung nhiều layer) (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-360",
+          "sdk/storefront-buyer-facing#KB-361",
+          "sdk/storefront-campaign-media-api#KB-363"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] GET /products/<shopify product id>.js → 404 mỗi lần load campaign (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-366"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-013] Response public campaigns/{id}.json: không thấy access_token/token/secret/password; có config.maps_api_key (Mapbox 'pk.') (quan sát)",
+        "kb_refs": [
+          "sdk/storefront-campaign-media-api#KB-367"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Route single upload: edge, edge GenAI (genai-uploads), presigned (upload-url), photo-upload",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-447"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Poll upload: HTTP 200 với error_message = rate_limit_exceeded",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-448"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-098] Request customization lúc Add to cart → 201, gửi nguyên giá trị position sửa tay, không có key position của campaign khác (quan sát TC-30)",
+        "kb_refs": [
+          "sdk/storefront-customization-storage#KB-507"
+        ]
+      }
+    ],
+    "data": [
+      "platform_linked_id độc lập theo store (store1: 8138398629987, store2: 15280333291824) — quan sát qua GraphQL campaign_instances, KHÔNG có DB-level verification.",
+      "localStorage key 'teeinblue-customizations' (array 1 object {productId, customization, timestamp}) và 'teeinblue-global-options' (object keyed theo global-option id) — client-side only, không phải DB, cùng shape trên cả 2 store.",
+      "[MỚI, KB-059] window.teeinblueShopTranslations (dictionary inline trong HTML, in 1 lần trên /zh-zh/) — client-side, staging build TIB-5352.",
+      "[MỚI, CBS-008, KB-066] localStorage 'teeinblue-customizations' khi đã thao tác nhiều product: chỉ còn khoảng 10 entry gần nhất (chưa đếm độc lập), entry cùng product bị ghi đè — client-side, OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-011, KB-236] localStorage 'teeinblue-customizations' chỉ chứa giá trị của layer đang hiện — quan sát trên SDK bản cũ (2026-10-14), OBSERVED_CURRENT/LOW; phần cart/order của layer bị Hide thuộc object order.",
+      "[MỚI, CBS-013, KB-362] Lựa chọn Global Option tự điền khi mở campaign khác dùng cùng GO trong cùng trình duyệt — tester ghi trạng thái lấy từ localStorage; OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-013, KB-360] localStorage 'teeinblue-customizations' khớp payload customization có key global-option-<id> — OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-098, KB-506] localStorage vẫn giữ template, ảnh và position sau reload (picker không khôi phục) — OBSERVED_CURRENT/LOW.",
+      "[MỚI, CBS-098, KB-507] Giá trị position trong localStorage do buyer sửa tay không bị clamp hay bỏ qua — OBSERVED_CURRENT/LOW."
+    ],
+    "code": [
+      {
+        "path": "staging-sdk.teeinblue.com/shopify/app-v1.js (SDK v1, store1) — chưa review, là 1 hướng điều tra đề xuất cho CFL-001",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-006"
+        ]
+      },
+      {
+        "path": "#teeinblue-wrapper (Vue3 app, SDK v2, store2) — chỉ quan sát qua DOM/SVG layer id, chưa review source",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-011"
+        ]
+      },
+      {
+        "path": "[MỚI] staging SDK app-v1.js build TIB-5352 — hàm fetch merchant/translations/<locale>.json: headersTimeout 5000 ms, bắt lỗi về null (INFERRED), cache promise theo 'shop|locale', cho gọi lại khi số lỗi < 2 (đọc bundle, người gửi CCR)",
+        "kb_refs": [
+          "sdk/storefront-translations#KB-056",
+          "sdk/storefront-translations#KB-057"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-003] staging-sdk.teeinblue.com/shopify/app-v1.js (bundle theme-embed tải 2026-10-07) — theo grep do người gửi CCR tự thực hiện: không có generateDesignLinks/design_urls/onCustomizationCreated/notifyParentIFrame/window.parent.postMessage; EVENT_CUSTOMIZATION_CREATED định nghĩa nhưng không dispatch. Chỉ app-v1.js; app-v2.js chưa kiểm (OQ-sdk-063).",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-065"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-011] staging-sdk.teeinblue.com/shopify/app-v2.js — bản Last-Modified 2026-10-28 03:01:11 GMT (Cache-Control max-age=14400) có đánh giá action Hide; bản 2026-10-14 chưa có. Chỉ quan sát header/hành vi, chưa review source.",
+        "kb_refs": [
+          "sdk/storefront-layer-visibility#KB-231",
+          "sdk/storefront-layer-visibility#KB-237"
+        ]
+      },
+      {
+        "path": "[MỚI, CBS-081] Component của Cross-sell chứa thay đổi variant picker; CampaignForm không bị ảnh hưởng",
+        "kb_refs": [
+          "sdk/storefront-buyer-facing#KB-408",
+          "sdk/storefront-buyer-facing#KB-454"
+        ]
+      }
+    ]
+  },
+  "dependencies": [
+    {
+      "description": "MỚI (2026-09-12): capability Add-to-cart trên SDK v2 phụ thuộc trực tiếp vào việc field grouped_clipart hoàn tất ĐỦ 2-step (radio nhóm + click con); thiếu bước con làm ATC thất bại thật dù các field khác đã điền đủ — dependency nội bộ giữa 2 capability 'personalization dependency' và 'add-to-cart' rõ ràng hơn so với v1.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-018"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-006] Buyer preview và form cá nhân hoá với artwork có Group ẩn phụ thuộc quy tắc effective visibility của Group do object artwork sở hữu (feature group-layer-effective-visibility: layer chỉ render khi cờ của nó và mọi Group tổ tiên đều ON) và condition buyer-side cấu hình ở artwork (feature conditional-setting-config). Preview (KB-181) đã theo quy tắc; form (KB-179, KB-180) chưa theo — known defect.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180",
+        "sdk/storefront-layer-visibility#KB-181"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-013] Form và payload của field Global Option trên storefront phụ thuộc liên kết layer ↔ Global Option do object global-option sở hữu (feature artwork-personalization-global-option-link); quan sát dedupe một giá trị cho GO dùng chung và tự điền giữa campaign cùng chiều với rule share-value ở đó (KB-361, KB-362, quan sát).",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-customization-storage#KB-360",
+        "sdk/storefront-buyer-facing#KB-361",
+        "sdk/storefront-customization-storage#KB-362"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-098] Ảnh và position trong localStorage / payload customization (KB-506, KB-507) do feature template-switch-photo-sync (FEAT-14) tạo khi đổi template; profile này chỉ mô tả khôi phục sau reload và payload khi buyer sửa tay.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-506",
+        "sdk/storefront-customization-storage#KB-507"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "description": "MỚI — CFL-003 UNRESOLVED: mâu thuẫn giữa khung task-input (coi ATC store2/SDK v2 là đường đi 'known-working' có thể tái dùng nguyên trạng từ 2026-09-12) và bằng chứng thực tế trong run này rằng lần thử ATC ĐẦU TIÊN thất bại THẬT (banner lỗi, item_count=0, 0 request API-OP-051) vì thiếu bước click thumbnail con của 3 field grouped_clipart; ATC chỉ thành công ở lần thử thứ hai. Hai khả năng KHÔNG kết luận, đều là INFERRED: (a) tooling automation của 2026-09-12 có thể đã vô tình bao gồm bước click con như một phần thao tác click nhóm bình thường, không ghi chú tách riêng trong log gốc; (b) synthetic/scripted click (label[for], .check({force:true}), dispatch event thủ công) có thể khác pointer click thật về số lần re-render DOM, dẫn tới kết quả khác nhau giữa các lần chạy. Ghi chú thêm (KHÔNG merge, CHƯA XÁC NHẬN): dạng 'cần thao tác thêm mới thoả điều kiện' ở đây CÓ THỂ liên hệ với hypothesis 'automation-interaction gap' của CFL-001 (KB-006), nhưng đây là 2 field/2 SDK version khác nhau (store2 grouped_clipart vs store1 toàn bộ chuỗi ATC) — mối liên hệ này CHƯA được xác nhận, để orchestrator/reviewer tự quyết.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-018"
+      ]
+    },
+    {
+      "description": "Coverage gap cụ thể còn lại: template 1/3 chưa test (cả 2 store, bao gồm cả việc chưa xác định template 1/3 có field grouped_clipart cần 2-step tương tự template 2 hay không), buyer state logged-in chưa test, market/locale/currency khác mặc định chưa test, mobile/tablet viewport chưa test, đường 'edit personalization từ cart' trên SDK v2 chưa xác định tồn tại hay không, TTL/expiry localStorage chưa xác định, và toàn bộ hành vi post-ATC/server-sync/grouped_clipart-2-step trên SDK v1 chưa xác nhận vì chưa từng tới ATC.",
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-004",
+        "sdk/storefront-buyer-facing#KB-007",
+        "sdk/storefront-buyer-facing#KB-009",
+        "sdk/storefront-customization-storage#KB-014",
+        "sdk/storefront-customization-storage#KB-018",
+        "sdk/storefront-customization-storage#KB-021"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-008] Check đọc 'teeinblue-customizations' sau nhiều lần Add-to-cart (nhiều product hoặc nhiều line item cùng product) có thể cho kết quả sai: entry cũ bị đẩy ra khi vượt khoảng 10 entry và entry cùng product bị ghi đè. Đọc localStorage ngay sau từng lần thêm; không viết check với con số giới hạn chính xác (chưa đếm độc lập, chưa có nguồn dev/spec).",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-066",
+        "sdk/storefront-customization-storage#KB-015"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-006] KNOWN_DEFECT BUG-321..324: buyer không Add to cart được khi artwork có Group ẩn chứa field required (field không thấy/không cần nhưng vẫn chặn), và field của layer con trong Group ẩn vẫn hiện trong form. Status Testlane của TC-TIB-6064 / TC-TIB-6067 ghi 'passed' trong khi actualResult ghi Fail, không có lần chạy lại có ngày (ghi chú '=>> Do bị cache') — không dùng status Testlane làm bằng chứng bug đã fix.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-006] Preview storefront đã theo effective visibility (KB-181) trong khi form cá nhân hoá chưa (KB-179, KB-180): buyer có thể bị yêu cầu nhập field cho layer không hiện trên preview. Không được suy rule preview sang form, và không viết check form theo kỳ vọng của QA plan dev khi chưa có xác nhận.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180",
+        "sdk/storefront-layer-visibility#KB-181"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-006] Mọi quan sát CBS-006 trên storefront đến từ 1 lượt chạy test của agent trên staging 2026-10-16, trước khi 3 PR của TIB-5584 còn OPEN lúc đó merge; build hash không rõ, production chưa xác nhận (shipped UNKNOWN); fixture 'Group ẩn + con visible ON' dựng qua MCP/API chưa được PO/dev xác nhận hợp lệ (repair command đã chạy trên dữ liệu thật). Bundle/SDK version của store test không ghi — không ghép với nhãn SDK v1/v2 của capability base.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180",
+        "sdk/storefront-layer-visibility#KB-181"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-011] Regression layer không điều kiện / layer Show (KB-236) chỉ quan sát trên SDK bản cũ chưa có code Hide — chưa có bằng chứng hành vi Show không đổi trên SDK có code Hide.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-236"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-013] Căng thẳng quan sát chưa phân xử: KB-019 (sau reload DOM form reset dù localStorage còn, 2026-09, store1/store2) vs KB-363 (campaign #3272 input text cấp đầu, reload vẫn giữ 'NOGO', 2026-10-28 store không thuộc explorer). Có thể khác scope hoặc khác bản SDK. Không viết check 'reload giữ / không giữ giá trị' theo phía nào tới khi được phân xử.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-019",
+        "sdk/storefront-campaign-media-api#KB-363"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-013] Các quan sát form/preview/payload/GO/platform product/404 (KB-351, KB-355, KB-358..KB-366) đến từ lượt ~06:00 UTC 2026-10-28, trước lần redeploy (fix bug + commit 8731f3a) mà dev yêu cầu recheck, chưa chạy lại — khác build với lượt TC-TIB-7507 (~10:30 UTC). Không gộp hai lượt khi viết check; không dùng làm expected cho build sau khi 2 PR merge.",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-351",
+        "sdk/storefront-campaign-media-api#KB-355",
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-customization-storage#KB-360",
+        "sdk/storefront-campaign-media-api#KB-363",
+        "sdk/storefront-buyer-facing#KB-366"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-098] KB-507: position sửa tay không bị validate, server nhận nguyên giá trị, preview NaN, thumbnail cart mất ảnh hoặc lệch — quan sát TC-30 ❌, bug draft BUG-09 chưa file, dev chưa trả lời. Không xác định là giới hạn chấp nhận hay bug; không viết check assert server nhận nguyên giá trị.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-507"
+      ]
+    },
+    {
+      "description": "[MỚI, CBS-098] KB-506 (khôi phục position sau reload) chỉ là quan sát; vế picker không khôi phục cùng chiều KB-019, không thay KB-019.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-506",
+        "sdk/storefront-customization-storage#KB-019"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-29",
+    "source_observed_on": "2026-10-29"
+  },
+  "unknown_areas": [
+    {
+      "question": "[MỚI, CBS-008] 'teeinblue-customizations' giữ tối đa bao nhiêu entry (người chạy test ghi khoảng 10, chưa đếm độc lập) và entry bị loại theo tiêu chí nào — timestamp cũ nhất hay thứ tự thêm?",
+      "why_it_matters": "Check về draft localStorage khi buyer thao tác nhiều product cần biết giới hạn và thứ tự loại chính xác; hiện chỉ có 1 lượt quan sát, chưa có nguồn dev/spec.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-066"
+      ],
+      "oq_id": "OQ-sdk-066"
+    },
+    {
+      "question": "[MỚI, CBS-008] Giới hạn khoảng 10 entry có áp dụng cho key đồng hành 'teeinblue-global-options' và cho cả hai bundle app-v1.js / app-v2.js không?",
+      "why_it_matters": "Quan sát KB-066 không ghi bundle/SDK version của store test và chỉ nói về 'teeinblue-customizations'; không được suy giới hạn sang key hay bundle khác khi viết check.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-066",
+        "sdk/storefront-customization-storage#KB-015"
+      ],
+      "oq_id": "OQ-sdk-067"
+    },
+    {
+      "question": "[MỚI, CBS-006] Known defect BUG-321..324 (field required trong Group ẩn vẫn chặn Add to cart) đã được fix chưa, trên build nào? Testlane hiện ghi TC-TIB-6064 'passed' nhưng không có lần chạy lại có ngày; TC-TIB-6063 actualResult rỗng.",
+      "why_it_matters": "Buyer không mua được sản phẩm có Group ẩn chứa field required; checklist cần biết bug còn hay đã fix để đặt expected và chạy lại TC-TIB-6063/6064 có ngày + build.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179"
+      ],
+      "oq_id": "OQ-sdk-068"
+    },
+    {
+      "question": "[MỚI, CBS-006] Hành vi đúng của form cá nhân hoá storefront khi artwork có Group ẩn là gì — form không có field của layer trong Group ẩn, required của các field đó không chặn Add to cart, condition trỏ vào layer ẩn hiệu dụng không bao giờ pass (như QA plan/ticket của dev mô tả) — PO có xác nhận không?",
+      "why_it_matters": "Kỳ vọng này chỉ nằm trong QA plan/ticket của dev, CCR không cho nạp làm expected; check form với Group ẩn không có oracle cho tới khi PO xác nhận.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180"
+      ],
+      "oq_id": "OQ-sdk-070"
+    },
+    {
+      "question": "[MỚI, CBS-011] Layer không điều kiện và layer Show có giữ nguyên hành vi trên SDK đã có code Hide (≥ bản 2026-10-28 03:01:11 GMT hoặc build đã merge) không? TC-TIB-7344 mới chạy trên SDK cũ.",
+      "why_it_matters": "Regression của hành vi Show có sẵn chưa được kiểm trên SDK mới; checklist regression Show không có nền xác nhận cho build hiện tại.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-236"
+      ],
+      "oq_id": "OQ-sdk-075"
+    },
+    {
+      "question": "[MỚI, CBS-013] Trên build sau khi 2 PR TIB-5203 merge, campaign có Global Option có còn: form tải đủ field GO, chữ ký form giống hệt sau reload, preview/payload customization có global-option-<id>, một giá trị cho GO dùng chung nhiều layer, và tự điền GO khi mở campaign khác cùng trình duyệt — và PO/Dev có xác nhận đây là hành vi đúng không?",
+      "why_it_matters": "KB-358..KB-362 chỉ là 1 lượt quan sát trên build trước lần redeploy dev yêu cầu recheck, chưa chạy lại; check personalize với Global Option không có oracle tới khi chạy lại và được xác nhận.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-buyer-facing#KB-359",
+        "sdk/storefront-customization-storage#KB-360",
+        "sdk/storefront-buyer-facing#KB-361",
+        "sdk/storefront-customization-storage#KB-362"
+      ],
+      "oq_id": "OQ-sdk-094"
+    },
+    {
+      "question": "[MỚI, CBS-013] Giá trị buyer đã nhập có được giữ sau reload trang không, và trong điều kiện nào? KB-363 (input text cấp đầu, campaign không GO, store không thuộc explorer, 2026-10-28) thấy giữ 'NOGO', trong khi KB-019 (store1/store2, 2026-09) thấy DOM form reset — khác loại field, khác bản SDK, hay một trong hai đã lỗi thời?",
+      "why_it_matters": "Hai quan sát đang căng thẳng chưa phân xử (diff analyzer quyết); check 'reload giữ / không giữ giá trị' không có oracle tới khi phân xử và có xác nhận.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-363",
+        "sdk/storefront-customization-storage#KB-019"
+      ],
+      "oq_id": "OQ-sdk-095"
+    },
+    {
+      "question": "[MỚI, CBS-098] Field status Testlane của task TIB-223 không phản ánh kết quả (mọi TC \"passed\", kể cả TC-30 ❌ và TC chưa chạy). Có record nào phản ánh đúng trạng thái không?",
+      "why_it_matters": "Đọc nhầm status sẽ coi TC-30 ❌ hoặc TC chưa chạy là pass; kết quả phải đọc ở actualResult.",
+      "type": "OPEN_ISSUE",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-506",
+        "sdk/storefront-customization-storage#KB-507",
+        "sdk/storefront-buyer-facing#KB-508"
+      ],
+      "shard_unknown_refs": [
+        1
+      ],
+      "oq_id": "OQ-sdk-183"
+    },
+    {
+      "question": "[MỚI, CBS-098] Order design / file in khi position bị buyer sửa tay (giá trị âm, rất lớn, chuỗi chữ, null) ra sao? Đây là giới hạn chấp nhận hay bug (BUG-09 chưa file)?",
+      "why_it_matters": "KB-507 dừng ở cart; order design chưa kiểm, dev chưa trả lời.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-507"
+      ],
+      "shard_unknown_refs": [
+        2,
+        3
+      ],
+      "oq_id": "OQ-sdk-178"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  },
+  "environment_differences": [],
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest",
+      "state": "published campaign, SDK v1 (store1)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-001",
+        "sdk/storefront-buyer-facing#KB-004",
+        "sdk/storefront-buyer-facing#KB-005",
+        "sdk/storefront-buyer-facing#KB-010",
+        "sdk/storefront-customization-storage#KB-014",
+        "sdk/storefront-customization-storage#KB-016",
+        "sdk/storefront-customization-storage#KB-017",
+        "sdk/storefront-customization-storage#KB-019",
+        "sdk/storefront-customization-storage#KB-022"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest",
+      "state": "published campaign, SDK v2 (store2)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-001",
+        "sdk/storefront-buyer-facing#KB-007",
+        "sdk/storefront-buyer-facing#KB-008",
+        "sdk/storefront-buyer-facing#KB-009",
+        "sdk/storefront-buyer-facing#KB-011",
+        "sdk/storefront-customization-storage#KB-014",
+        "sdk/storefront-customization-storage#KB-015",
+        "sdk/storefront-customization-storage#KB-016",
+        "sdk/storefront-customization-storage#KB-017",
+        "sdk/storefront-customization-storage#KB-018",
+        "sdk/storefront-customization-storage#KB-019",
+        "sdk/storefront-customization-storage#KB-020",
+        "sdk/storefront-customization-storage#KB-021",
+        "sdk/storefront-customization-storage#KB-022"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest",
+      "state": "client-side localStorage draft persistence (cả 2 store)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-014",
+        "sdk/storefront-customization-storage#KB-015",
+        "sdk/storefront-customization-storage#KB-016",
+        "sdk/storefront-customization-storage#KB-017",
+        "sdk/storefront-customization-storage#KB-019"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest",
+      "state": "post-ATC localStorage persistence (SDK v2 only)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-021"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest",
+      "state": "post-ATC localStorage persistence (SDK v1)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-021"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "api",
+      "role": "guest",
+      "state": "any, store1",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-013",
+        "sdk/storefront-buyer-facing#KB-005",
+        "sdk/storefront-customization-storage#KB-022"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "api",
+      "role": "guest",
+      "state": "any, store2, bao gồm API-OP-051 presence/absence tại ATC",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-013",
+        "sdk/storefront-buyer-facing#KB-008",
+        "sdk/storefront-customization-storage#KB-018",
+        "sdk/storefront-customization-storage#KB-022"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "api",
+      "role": "guest",
+      "state": "API-OP-051 full request/response body, auth, error-path (4xx/5xx)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-022"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest",
+      "state": "template 1 và 3 (cả 2 store), bao gồm cả 2-step grouped_clipart requirement",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-buyer-facing#KB-004",
+        "sdk/storefront-buyer-facing#KB-007",
+        "sdk/storefront-customization-storage#KB-018"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest",
+      "state": "field-remount pre-fill cho field type radio/clipart",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-020"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "[MỚI, CBS-008] localStorage 'teeinblue-customizations' sau khi personalize/Add-to-cart nhiều product (order 14 line item) — khoảng 10 entry, ghi đè cùng product",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-066"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "[MỚI, CBS-008] giới hạn entry chính xác, tiêu chí loại entry, áp dụng cho 'teeinblue-global-options' và từng bundle",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-066"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "[MỚI, CBS-006] form cá nhân hoá + Add to cart với artwork có Group ẩn (field required, condition layer con, 'Show this layer on first load')",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, KNOWN_DEFECT, Fail 2026-10-16, chưa chạy lại có ngày"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "[MỚI, CBS-006] preview / form với Group ẩn trên build sau merge đủ PR / release",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180",
+        "sdk/storefront-layer-visibility#KB-181"
+      ],
+      "basis": "shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "guest-buyer",
+      "state": "[MỚI, CBS-011] regression layer không điều kiện / layer Show trên SDK đã có code Hide",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-236"
+      ],
+      "basis": "chỉ quan sát trên SDK cũ 2026-10-14 (OBSERVED_CURRENT/LOW)"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront+api",
+      "role": "guest-buyer (store không thuộc explorer)",
+      "state": "[MỚI, CBS-013] campaign có Global Option: form, reload, preview, payload global-option-<id>, GO dùng chung nhiều layer, tự điền GO giữa campaign",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-buyer-facing#KB-359",
+        "sdk/storefront-customization-storage#KB-360",
+        "sdk/storefront-buyer-facing#KB-361",
+        "sdk/storefront-customization-storage#KB-362"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt ~06:00 UTC 2026-10-28 trước redeploy; chưa có oracle"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[MỚI, CBS-098] reload sau khi chỉnh position ảnh, chọn lại template",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-506"
+      ],
+      "basis": "chỉ quan sát TC-35, không oracle"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "storefront",
+      "role": "buyer tự sửa localStorage",
+      "state": "[MỚI, CBS-098] position sửa tay → Add to cart",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-507"
+      ],
+      "basis": "chỉ quan sát TC-30 ❌, không oracle"
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "layer": "order",
+      "role": "store owner",
+      "state": "[MỚI, CBS-098] order design với position sửa tay",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-507"
+      ],
+      "basis": "chưa kiểm"
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "type": "SUSPECTED_OBSERVATION_TENSION",
+      "status": "FOR_DIFF_ANALYZER",
+      "detail": "KB-019 (base, OBSERVED_CURRENT: sau reload DOM form reset về mặc định dù localStorage còn; 2026-09, store1/store2) vs KB-363 (mới, OBSERVED_CURRENT/LOW: campaign #3272 1 input text cấp đầu, không GO, reload vẫn giữ 'NOGO'; 2026-10-28 store không thuộc explorer). Có thể khác scope (field phụ thuộc template vs input cấp đầu) hoặc khác bản SDK. Profile không phân xử: state_transitions[9] và capability base giữ nguyên văn; KB-363 ghi riêng; câu hỏi ở unknown_areas[48].",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-019",
+        "sdk/storefront-campaign-media-api#KB-363"
+      ]
+    }
+  ],
+  "profile_relationships": [
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-02-storefront-clipart-selection",
+      "related_feature_key": "clipart-category-storefront-behavior",
+      "relationship": "shares_client_storage (cross-object: artwork — cùng key localStorage 'teeinblue-customizations')",
+      "note": "[MỚI, CBS-008] artwork KB-096 mô tả write timing và entry keyed theo productId của cùng key; KB-066 ở đây mô tả giới hạn khoảng 10 entry và ghi đè entry cùng product — không mâu thuẫn.",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-066"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-05-group-layer-effective-visibility",
+      "related_feature_key": "group-layer-effective-visibility",
+      "relationship": "applies_rule_owned_by (cross-object: artwork)",
+      "note": "[MỚI, CBS-006] Buyer preview storefront theo effective visibility của Group (KB-181, confirmed); form cá nhân hoá chưa theo (KB-179, KB-180, KNOWN_DEFECT). Quy tắc thuộc artwork (artwork KB-158).",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-179",
+        "sdk/storefront-layer-visibility#KB-180",
+        "sdk/storefront-layer-visibility#KB-181"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-02-artwork-personalization-global-option-link",
+      "related_feature_key": "artwork-personalization-global-option-link",
+      "relationship": "renders_global_option_linked_by (cross-object: global-option)",
+      "note": "[MỚI, CBS-013] Storefront render field Global Option, gửi một giá trị global-option-<id> cho GO dùng chung nhiều layer và tự điền GO giữa campaign (KB-358, KB-360..KB-362, quan sát) — cùng chiều với dedupe theo GO id và rule share-value ở global-option; shape artworks[].global_options khác nhau theo URL (KB-354, quan sát).",
+      "kb_refs": [
+        "sdk/storefront-campaign-media-api#KB-354",
+        "sdk/storefront-campaign-media-api#KB-358",
+        "sdk/storefront-customization-storage#KB-360",
+        "sdk/storefront-buyer-facing#KB-361",
+        "sdk/storefront-customization-storage#KB-362"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-ORDER-01",
+      "related_feature_key": "place-personalized-order-storefront",
+      "relationship": "feeds_customization_to (cross-object: order)",
+      "note": "[MỚI, CBS-013] Payload customization có global-option-<id> từ storefront campaign #3270 (KB-360, quan sát) là đầu vào của order có Global Option phía order (quan sát cùng lượt).",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-360"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_feature_id": "FEAT-14-template-switch-photo-sync",
+      "related_feature_key": "template-switch-photo-sync",
+      "relationship": "persists_and_submits_position_of",
+      "note": "[MỚI, CBS-098] Ảnh và position do sync khi đổi template tạo được giữ trong localStorage và hiện lại sau reload khi chọn lại template (KB-506, quan sát); position sửa tay đi nguyên vào payload customization (KB-507, quan sát).",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-506",
+        "sdk/storefront-customization-storage#KB-507"
+      ]
+    },
+    {
+      "feature_id": "FEAT-07-storefront-buyer-facing",
+      "related_object": "artwork",
+      "relationship": "same_pattern_as (cross-object: artwork)",
+      "note": "[MỚI, CBS-098] artwork KB-144 (text-multi-stroke, OBSERVED_CURRENT): cùng dạng server nhận payload personalization vượt giới hạn (cross_object_refs của KB-507).",
+      "kb_refs": [
+        "sdk/storefront-customization-storage#KB-507"
+      ]
+    }
+  ]
+}

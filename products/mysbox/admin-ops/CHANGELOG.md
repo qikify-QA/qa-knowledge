@@ -1,0 +1,2 @@
+# CHANGELOG — admin-ops
+- 2026-11-13 (restructure-2026-11-13) — Đổi cấu trúc theo contract §5 "Độ hạt object/feature": admin-panel/admin-login-and-roles → admin-ops/admin-login-and-roles; admin-panel/admin-activity-log → admin-ops/admin-activity-log; admin-panel/background-jobs-and-queue-monitoring → admin-ops/background-jobs-and-queue-monitoring; admin-panel/portal-release-version-control → admin-ops/portal-release-version-control. Giữ nguyên kb_id, statement, nguồn và test steps; OQ chuyển object được mint id mới kèm `supersedes`.

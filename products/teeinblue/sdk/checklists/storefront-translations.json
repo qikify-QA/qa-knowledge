@@ -1,0 +1,289 @@
+{
+  "feature_id": "FEAT-20-storefront-translations",
+  "feature_key": "storefront-translations",
+  "object_id": "sdk",
+  "checklist_version": "17",
+  "checks": [
+    {
+      "check_id": "CHK-039",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "[CBS-001] translations/<locale>.json không phản hồi trong 5 giây -> widget render bằng chữ gốc, trang và widget vẫn hoạt động, không crash",
+      "applicability": {
+        "role": "GUEST buyer",
+        "state": "locale vi đi đường API (1249 key); response translations/vi.json bị làm trễ > 5 giây (test dùng ~8 giây)",
+        "environment": "staging, build TIB-5352 (SDK app-v1.js Last-Modified 2026-10-07), chưa release production — KHÔNG dùng làm oracle production hay bundle app-v2.js",
+        "surface_or_device": "storefront desktop, shop staging non-Plus store TIB_USER_B_STORE_URL, campaign 2740, /vi-vn/"
+      },
+      "precondition": "Bundle SDK chứa 'translation_version'. Trình duyệt test có network interception (vd Playwright page.route) cho URL khớp '**/api/merchant/translations/vi.json*'. Nếu storefront bật password, vượt gate bằng credential từ biến môi trường TIB_STORE_PASSWORD.",
+      "steps": [
+        "Cài interception: giữ request translations/vi.json ~8 giây rồi mới trả response thật",
+        "Mở product page campaign 2740 dưới /vi-vn/; ghi thời điểm request translations/vi.json phát ra",
+        "Ở mốc 3 giây sau khi điều hướng, ghi nhãn các field của widget personalization",
+        "Ở mốc 6 giây và định kỳ tới ~20 giây, ghi nhãn các field; thao tác thử 1 field của widget",
+        "Ghi lại trang có crash/trắng hay không"
+      ],
+      "observation_point": "Nhãn field widget ở mốc 3s, 6s..20s; khả năng thao tác widget; trạng thái trang",
+      "expected_result": "Mốc 3s: widget chưa có nhãn của form. Từ mốc 6s trở đi: widget hiện chữ gốc 'QA5352 Your name', 'QA5352 Enter name', 'QA5352 Your photo'. Trang và widget vẫn hoạt động (thao tác được), không crash.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-translations#KB-053"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-055",
+        "sdk/storefront-translations#KB-056"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chỉ verify trên staging build TIB-5352, chưa release production (OQ-sdk-050). pageerror khi timeout tách riêng ở CHK-041, không là tiêu chí pass/fail của check này."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-040",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "[CBS-001] translations/<locale>.json trả 500 / 503 / network abort -> widget render chữ gốc, 1 request translations mỗi lần load (quan sát từ test case FAILED)",
+      "applicability": {
+        "role": "GUEST buyer",
+        "state": "locale vi đi đường API (1249 key); response translations/vi.json bị giả lập 500, 503 hoặc abort",
+        "environment": "staging, build TIB-5352, chưa release production",
+        "surface_or_device": "storefront desktop, shop staging non-Plus store TIB_USER_B_STORE_URL, campaign 2740, /vi-vn/"
+      },
+      "precondition": "Như CHK-039, interception cho '**/api/merchant/translations/vi.json*'.",
+      "steps": [
+        "Cài interception trả 500; mở /vi-vn/ product page campaign 2740; đếm request translations/vi.json và ghi nhãn widget sau khi trang ổn định",
+        "Lặp lại với 503",
+        "Lặp lại với network abort",
+        "Mỗi lần ghi thời điểm request phát ra so với lúc điều hướng"
+      ],
+      "observation_point": "Số request translations/vi.json mỗi lần load; nhãn widget",
+      "expected_result": "Baseline hiện tại (chưa xác nhận là thiết kế): cả 3 trường hợp chỉ có 1 request translations (~0,9 giây sau khi load) và widget render chữ gốc ('QA5352 Your name', 'QA5352 Enter name', 'QA5352 Your photo'). Lệch baseline là tín hiệu cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-translations#KB-054"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Khi translations API trả 500/503 hoặc bị abort, widget render chữ gốc có phải hành vi theo thiết kế không? Quan sát chỉ đến từ test case FAILED TC-TIB-4696 (fail ở kỳ vọng retry). (trùng OQ-sdk-051)",
+      "related_kb_ids": [
+        "sdk/storefront-translations#KB-054",
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-057"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-sdk-051"
+    },
+    {
+      "check_id": "CHK-041",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "[CBS-001] Console/pageerror khi translations API timeout: 1 pageerror 'signal is aborted without reason' (quan sát, CCR cấm coi là mong muốn)",
+      "applicability": {
+        "role": "GUEST buyer",
+        "state": "locale vi đi đường API; response translations/vi.json trễ > 5 giây",
+        "environment": "staging, build TIB-5352, chưa release production",
+        "surface_or_device": "storefront desktop, shop staging non-Plus store TIB_USER_B_STORE_URL, campaign 2740, /vi-vn/"
+      },
+      "precondition": "Như CHK-039; bật thu pageerror/console error của trình duyệt test.",
+      "steps": [
+        "Cài interception trễ ~8 giây cho translations/vi.json",
+        "Mở /vi-vn/ product page campaign 2740; chờ ~20 giây",
+        "Ghi lại toàn bộ pageerror và console error kèm nội dung"
+      ],
+      "observation_point": "Danh sách pageerror/console error trong lần load",
+      "expected_result": "Baseline hiện tại (KHÔNG phải hành vi mong muốn theo CCR 4.2): phát sinh đúng 1 pageerror 'signal is aborted without reason' trong khi trang/widget vẫn hoạt động. Ghi lại; không phán pass/fail cho tới khi Dev chốt.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-translations#KB-055"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "pageerror 'signal is aborted without reason' khi translations API timeout là lỗi cần sửa hay chấp nhận được? Checklist có nên assert 'không có console error' cho nhánh timeout? (trùng OQ-sdk-052)",
+      "related_kb_ids": [
+        "sdk/storefront-translations#KB-055",
+        "sdk/storefront-translations#KB-053",
+        "sdk/storefront-translations#KB-056"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nếu là lỗi: monitor lỗi JS của merchant ghi nhận lỗi giả mỗi khi API chậm."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-sdk-052"
+    },
+    {
+      "check_id": "CHK-042",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "[CBS-001] Response translations/<locale>.json về ngay dưới mốc 5 giây (~4–4,5s) -> widget hiện bản dịch hay chữ gốc? Mốc 5s chỉ suy từ bundle (headersTimeout 5000 ms)",
+      "applicability": {
+        "role": "GUEST buyer",
+        "state": "locale vi đi đường API; response translations/vi.json trễ ~4–4,5 giây",
+        "environment": "staging, build TIB-5352, chưa release production",
+        "surface_or_device": "storefront desktop, shop staging non-Plus store TIB_USER_B_STORE_URL, campaign 2740, /vi-vn/"
+      },
+      "precondition": "Như CHK-039.",
+      "steps": [
+        "Cài interception trễ ~4 giây cho translations/vi.json",
+        "Mở /vi-vn/ product page campaign 2740; ghi nhãn widget ở mốc 3s, 5s, 8s",
+        "Lặp lại với trễ ~4,5 giây",
+        "Ghi lại pageerror nếu có"
+      ],
+      "observation_point": "Nhãn widget ở các mốc; pageerror",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-translations#KB-056"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Mốc timeout 5s của fetch translations là headersTimeout (chờ header) như đọc từ bundle (KB-056, INFERRED)? Response về dưới 5s có luôn hiển thị bản dịch không, và header về trước 5s nhưng body chậm thì sao? Cần Dev xác nhận hoặc test PASS.",
+      "related_kb_ids": [
+        "sdk/storefront-translations#KB-056",
+        "sdk/storefront-translations#KB-053"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-sdk-055"
+    },
+    {
+      "check_id": "CHK-043",
+      "dimension": "STATE_DATA",
+      "layer": "storefront",
+      "title": "[CBS-001] Retry fetch translations khi API lỗi: không retry trong một lần load trang; ở cart, 'Edit design' lần 1/2/3 cho tổng 1/2/2 request (retry lazy, tối đa 2 fetch mỗi page session — quan sát)",
+      "applicability": {
+        "role": "GUEST buyer",
+        "state": "locale vi đi đường API; response translations/vi.json bị giả lập 500; cart có 1 item cá nhân hoá của campaign 2740",
+        "environment": "staging, build TIB-5352 (SDK app-v1.js Last-Modified 2026-10-07 — bản có logic retry lazy), chưa release production",
+        "surface_or_device": "storefront desktop, shop staging non-Plus store TIB_USER_B_STORE_URL, /vi-vn/ product page và /vi-vn/cart"
+      },
+      "precondition": "Như CHK-039; đã add-to-cart 1 item cá nhân hoá campaign 2740 (trước khi bật mock 500).",
+      "steps": [
+        "Bật interception trả 500 cho translations/vi.json; mở /vi-vn/ product page; chờ trang ổn định; đếm request translations/vi.json",
+        "Mở /vi-vn/cart (page session mới); đặt bộ đếm request translations/vi.json về 0 tại thời điểm load cart",
+        "Bấm 'Edit design' lần 1, đóng modal; ghi tổng request",
+        "Bấm 'Edit design' lần 2, đóng modal; ghi tổng request",
+        "Bấm 'Edit design' lần 3; ghi tổng request"
+      ],
+      "observation_point": "Số request translations/vi.json trong lần load product page; tổng request sau mỗi lần 'Edit design' trong cùng page session cart",
+      "expected_result": "Baseline hiện tại (chưa xác nhận là thiết kế): load product page -> 1 request, không retry. Ở cart: sau 'Edit design' lần 1 tổng 1 request; lần 2 tổng 2; lần 3 vẫn 2. Lệch baseline là tín hiệu cần điều tra; không dùng 'retry đúng 1 lần khi load' làm expected.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-translations#KB-057"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Thiết kế retry mong muốn khi fetch translations lỗi: retry ngay khi load (như TC-TIB-4696 kỳ vọng, đang FAILED) hay lazy ở lần gọi kế tiếp, tối đa 2 fetch mỗi page session (như staging quan sát)? (trùng OQ-sdk-053)",
+      "related_kb_ids": [
+        "sdk/storefront-translations#KB-057",
+        "sdk/storefront-translations#KB-054",
+        "sdk/storefront-translations#KB-053"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Checklist viết theo một trong hai cách hiểu retry đều có thể cho kết quả sai cho tới khi Dev chốt."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-sdk-053"
+    },
+    {
+      "check_id": "CHK-045",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "[CBS-001] Nhãn widget không có trong dictionary ('Select a color' của color picker photo layer) hiển thị chữ gốc, không rỗng — API path, inline path, ngôn ngữ chính và modal 'Edit design' ở cart",
+      "applicability": {
+        "role": "GUEST buyer",
+        "state": "campaign 2740 có photo layer với color picker; dictionary vi (1249 key), zh-TW (50 key), en (18 key) đều không chứa chuỗi 'Select a color'",
+        "environment": "staging, build TIB-5352 (SDK app-v1.js 2026-10-06), chưa release production — KHÔNG dùng làm oracle production hay bundle app-v2.js",
+        "surface_or_device": "storefront desktop, shop staging non-Plus store TIB_USER_B_STORE_URL, /vi-vn/, /zh-zh/, /en-vn/ và /vi-vn/cart"
+      },
+      "precondition": "Bundle SDK chứa 'translation_version'. Xác nhận 'Select a color' không có trong dictionary: GET translations/vi.json, zh-TW.json, en.json (và window.teeinblueShopTranslations của /zh-zh/). Cart có 1 item cá nhân hoá campaign 2740 cho bước cart.",
+      "steps": [
+        "Mở product page campaign 2740 dưới /vi-vn/; mở color picker của photo layer; ghi nhãn",
+        "Lặp lại dưới /zh-zh/ và /en-vn/",
+        "Mở /vi-vn/cart, bấm 'Edit design'; ghi nhãn color picker trong modal"
+      ],
+      "observation_point": "Text nhãn color picker của photo layer ở từng locale và trong modal cart",
+      "expected_result": "Ở cả /vi-vn/ (API path), /zh-zh/ (inline path), /en-vn/ và modal 'Edit design' ở cart (vi): nhãn hiển thị 'Select a color' (chữ gốc), không rỗng.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-translations#KB-058"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "sdk/storefront-translations#KB-058"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chỉ một chuỗi được test ('Select a color')."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-046",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "[CBS-001] Raw HTML /zh-zh/ (inline path) chỉ in window.teeinblueShopTranslations 1 lần dù có dấu hiệu 2 khối teeinblue (app embed + theme script) — cấu hình theme chưa xác nhận",
+      "applicability": {
+        "role": "GUEST buyer",
+        "state": "/zh-zh/ zh-TW 50 key (inline path); cấu hình theme 'enable for all pages' chưa kiểm",
+        "environment": "staging, build TIB-5352, chưa release production",
+        "surface_or_device": "storefront desktop, shop staging non-Plus store TIB_USER_B_STORE_URL, product page campaign 2740 /zh-zh/"
+      },
+      "precondition": "Bundle SDK chứa 'translation_version'. Nếu có quyền, mở theme editor của shop ghi lại trạng thái app embed teeinblue và tuỳ chọn 'enable for all pages' (để xác nhận điều kiện 2 khối).",
+      "steps": [
+        "Tải raw HTML product page campaign 2740 dưới /zh-zh/",
+        "Đếm số lần 'window.teeinblueShopTranslations =' và số lần một key mẫu (vd 'QA5352 Your name') xuất hiện",
+        "Đếm số lần 'window.teeinblueShop =', khối app embed 'product-personalizer', và cụm comment 'teeinblue scripts'",
+        "Ghi lại cấu hình theme (nếu xem được)"
+      ],
+      "observation_point": "Số lần xuất hiện của các marker trong raw HTML; cấu hình theme",
+      "expected_result": "Baseline 1 lần quan sát: 'window.teeinblueShopTranslations =' xuất hiện đúng 1 lần, key mẫu 1 lần; cùng HTML có 2 lần 'window.teeinblueShop =', khối app embed 'product-personalizer' và 4 cụm comment 'teeinblue scripts'. Dictionary in hơn 1 lần là tín hiệu cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "sdk/storefront-translations#KB-059"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Trang /zh-zh/ có thật sự render cả theme app extension và theme script của teeinblue (KB-060 chỉ suy từ dấu hiệu HTML, chưa mở theme editor)? Cần owner chấp nhận dấu hiệu HTML hoặc chạy lại với cấu hình theme đã xác nhận. (trùng OQ-sdk-054)",
+      "related_kb_ids": [
+        "sdk/storefront-translations#KB-059",
+        "sdk/storefront-translations#KB-060"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-sdk-054"
+    }
+  ],
+  "coverage_by_feature_and_risk": [],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-13",
+    "ccr_ref": "CBS-163"
+  }
+}

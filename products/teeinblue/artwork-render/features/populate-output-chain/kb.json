@@ -1,0 +1,607 @@
+[
+  {
+    "kb_id": "KB-118",
+    "topic": "Populate Content — token enumeration khi Source = Multiple Uploads (Maximum photos=3)",
+    "statement": "Khi seller bật 'Populate Content from another option' trên layer photo thường ('body'), chọn Source option = layer Multiple Uploads ('top', Maximum photos=3) (role owner/staff, env staging, artwork 4416), 'Available Value' picker hiển thị đúng 4 token verbatim: '{{input.1}}', '{{input.2}}', '{{input.3}}' (khớp số Maximum photos=3 của nguồn) và '{{output}}' (tooltip ghi chỉ khả dụng khi Output Type=Single Output). KHÔNG có token '{{input}}' trần nào được offer trong session này (Maximum photos=3, xem coverage_gaps cho case Maximum photos=1 chưa test). Chọn token '{{input.1}}' ghi literal text '{{input.1}}' vào Values field.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com / staging-api.teeinblue.com)",
+      "role": "owner/staff — account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, user_id=<explorer>)",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-25",
+      "ccr_ref": "CBS-003"
+    }
+  },
+  {
+    "kb_id": "KB-120",
+    "topic": "Populate Content — giá trị gốc (pre-effect) lan truyền tới layer đích NGAY LẬP TỨC, không chờ Generate của layer nguồn (xác nhận cross-layer: portal config + API schema + storefront runtime)",
+    "statement": "Khi seller cấu hình layer đích 'body' (Populate Content, Source='top', Value='{{input.1}}') và Save & Close artwork (role owner/staff, env staging), POST /api/artworks (status 201) lưu đúng field retrieval_value_enabled=true, retrieval_layer='layer-703775' (id của layer nguồn 'top'), retrieval_value='{{input.1}}'. Sau đó, ở surface storefront (Live Preview widget của CÙNG artwork 4416, staff-authenticated proxy cho buyer — KHÔNG phải phiên guest thật, xem caveat trong scope), khi tester upload ảnh vào layer nguồn 'top' nhưng CHƯA bấm 'Generate image', layer đích 'body' và canvas chính cập nhật NGAY LẬP TỨC hiển thị đúng ảnh vừa upload, chưa qua effect nào — xác nhận nửa 'giá trị gốc lan truyền ngay' của cơ chế populate. Nửa còn lại (layer đích tự động trigger effect chain riêng của nó lên giá trị được populate, theo mô tả TIB-5302) KHÔNG xác nhận được trong run này vì layer 'body' của fixture không có effect nào được cấu hình — xem coverage_gaps.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "HIGH",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com / staging-api.teeinblue.com)",
+      "role": "portal+API: owner/staff explorer (TIB_STAGING_EMAIL) (user_id=<explorer>); storefront: staff-authenticated Live Preview proxy cho buyer (KHÔNG phải guest session thật)",
+      "surface": "cross-layer"
+    },
+    "last_updated": {
+      "date": "2026-09-25",
+      "ccr_ref": "CBS-003"
+    }
+  },
+  {
+    "kb_id": "KB-850",
+    "topic": "Hai populated option dùng chung một lần gọi effect khi cùng ảnh và cùng toàn bộ thiết lập effect",
+    "statement": "Theo Jira TIB-5577 comment 55689 (Dev, 2026-10-27, trả lời Q2): khi buyer dùng cùng một ảnh cho các populated option trên storefront, hai option chỉ dùng chung một lần gọi effect khi toàn bộ thiết lập effect giống nhau: cùng effect type, cùng prompt sau khi đã điền biến, cùng template, cùng thiết lập remove background. Khác một trong các điểm này thì mỗi option một lần gọi riêng. Vai trò của kích thước layer trong điều kiện này không phát biểu ở đây (xem KB-851 cho Gen AI và cặp mâu thuẫn KB-852/KB-853).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront)",
+      "surface": "storefront, api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "shared-effect-call",
+      "TIB-5577"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-851",
+      "artwork-render/populate-output-chain#KB-852"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5577 comment 55689, Dev trả lời Q2, 2026-10-27",
+      "authored_on": "2026-10-27",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-851",
+    "topic": "Gen AI trên layer Direct upload / Cropper: khác kích thước layer thì gọi riêng, tính lượt riêng",
+    "statement": "Theo Jira TIB-5577 comment 55689 (Dev, 2026-10-27, trả lời Q2, vế kích thước layer): với effect Gen AI trên layer Direct upload hoặc Cropper, hai layer khác kích thước thì gọi effect riêng và tính lượt riêng cho mỗi lần gọi. Câu của dev phát biểu cho layer Direct upload / Cropper nói chung; item này chỉ ghi phạm vi Gen AI, phần effect không phải Gen AI đang mâu thuẫn (KB-852/KB-853).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront)",
+      "surface": "storefront, api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "shared-effect-call",
+      "gen-ai",
+      "layer-size",
+      "TIB-5577"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-850",
+      "artwork-render/populate-output-chain#KB-852"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5577 comment 55689, Dev trả lời Q2 (vế kích thước layer), 2026-10-27",
+      "authored_on": "2026-10-27",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-852",
+    "topic": "[UNRESOLVED] Effect không phải Gen AI trên Direct upload / Cropper: kích thước layer có tách lần gọi hay không — phía lời dev Q2",
+    "statement": "Theo Jira TIB-5577 comment 55689 (Dev, 2026-10-27, trả lời Q2), kích thước layer là một phần thiết lập effect với layer Direct upload / Cropper, và hai layer khác kích thước thì gọi riêng, tính lượt riêng; câu này không giới hạn loại effect, nên đọc theo nghĩa rộng thì cả effect không phải Gen AI (ví dụ gray_scale) trên hai layer Direct upload / Cropper khác kích thước cũng gọi riêng. Phát biểu này đang mâu thuẫn với quan sát ở KB-853 (cùng conflict_group), chưa ngã ngũ, không dùng làm oracle.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront)",
+      "surface": "storefront, api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "shared-effect-call",
+      "layer-size",
+      "conflict",
+      "TIB-5577"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-853",
+      "artwork-render/populate-output-chain#KB-851"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "populate-share-call-layer-size",
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5577 comment 55689, Dev trả lời Q2 (vế kích thước layer Direct upload / Cropper), 2026-10-27",
+      "authored_on": "2026-10-27",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-853",
+    "topic": "[UNRESOLVED] gray_scale trên hai layer Direct upload khác kích thước dùng chung một lần gọi — phía quan sát",
+    "statement": "Trong lượt chạy test case QA-3434 TC-64 (PASS, 2026-10-27, staging, AI chạy trên Chrome của QA, build SDK không ghi lại), khi buyer dùng cùng một ảnh cho ba layer Direct upload có effect gray_scale, hai layer kích thước 400×400 và một layer 400×300 (dữ liệu fixture), quan sát thấy chỉ có một lần gọi derive cho cả ba, request không mang thông tin kích thước layer, và cả ba hiện cùng một ảnh kết quả. Test case không có căn cứ expected có nguồn; quan sát này đang mâu thuẫn với KB-852 (cùng conflict_group), chưa ngã ngũ, không dùng làm oracle.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront)",
+      "surface": "storefront, api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "shared-effect-call",
+      "layer-size",
+      "gray-scale",
+      "conflict",
+      "QA-3434"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-852"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "populate-share-call-layer-size"
+  },
+  {
+    "kb_id": "KB-854",
+    "topic": "Option chained {{output}} bắt đầu từ ảnh đã xử lý của nguồn; effect nguồn chạy một lần cho mỗi ảnh",
+    "statement": "Theo dev doc \"Change & test cases — reuse source effects and carry crop/reposition to chained populate options\" v1 trên Jira TIB-5504 (comment 56020, Dev, 2026-10-29, sinh từ branch diff sdk + api; chưa có PO/Dev xác nhận đây là hành vi đúng), mục \"Chained {{output}} option reuses the source's processed photo\": option chained {{output}} có effect riêng bắt đầu từ ảnh đã xử lý xong của nguồn và chỉ chạy effect riêng của nó; effect của nguồn chạy một lần cho mỗi ảnh, dù có bao nhiêu option chained dùng nguồn đó.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront)",
+      "surface": "storefront, api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "chained-output",
+      "source-effects",
+      "TIB-5504"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-866",
+      "artwork-render/populate-output-chain#KB-855"
+    ]
+  },
+  {
+    "kb_id": "KB-855",
+    "topic": "Hai option chained {{output}} cùng nguồn chỉ dùng chung lần gọi effect riêng khi setup y hệt",
+    "statement": "Theo Jira TIB-5504 comment 56059 (Dev, 2026-10-29, trả lời Q7): hai option chained {{output}} cùng một nguồn chỉ dùng chung một lần gọi cho effect riêng khi setup của hai option y hệt nhau (cùng effect, cùng loại layer và kích thước layer, cùng effect của nguồn); khác bất kỳ điểm nào thì mỗi option một lần gọi.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront)",
+      "surface": "storefront, api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "chained-output",
+      "shared-effect-call",
+      "TIB-5504"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-850"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5504 comment 56059, Dev trả lời Q7, 2026-10-29",
+      "authored_on": "2026-10-29",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-856",
+    "topic": "[UNRESOLVED] Option Photo Reposition {{output}} đi theo vị trí nguồn khi tỷ lệ kết quả lệch ≤ 0.05 — phía lời dev Q5",
+    "statement": "Theo Jira TIB-5504 comment 56059 (Dev, 2026-10-29, trả lời Q5): option Photo Reposition {{output}} có effect riêng đi theo vị trí của nguồn khi tỷ lệ rộng/cao của ảnh kết quả lệch không quá 0.05 so với ảnh nguồn (ví dụ của dev: ảnh 4:3 = 1.33 thì đi theo trong khoảng 1.28–1.38); ngoài khoảng đó option giữ vị trí mặc định. Dev nêu B&W / gray scale đi theo, còn kết quả Gen AI 1:1 trên ảnh 4:3 giữ vị trí mặc định. Phát biểu này đang mâu thuẫn với quan sát ở KB-857 (cùng conflict_group), chưa ngã ngũ, không dùng làm oracle.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "chained-output",
+      "photo-reposition",
+      "conflict",
+      "TIB-5504"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-857"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "populate-reposition-follow-ratio",
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5504 comment 56059, Dev trả lời Q5, 2026-10-29",
+      "authored_on": "2026-10-29",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-857",
+    "topic": "[UNRESOLVED] Option Photo Reposition {{output}} không đi theo vị trí nguồn khi khung option khác tỷ lệ khung nguồn — phía quan sát",
+    "statement": "Trong lượt chạy test case QA-3441 TC-28 (FAIL, 2026-10-29, staging, AI chạy, build không ghi), khi khung layer option Photo Reposition {{output}} là 400×400 còn khung nguồn là 400×300, quan sát thấy option không đi theo vị trí nguồn kể cả khi tỷ lệ ảnh kết quả chỉ lệch 0.04 hoặc 0.05 so với ảnh nguồn; TC-26 PASS chỉ ở trường hợp hai khung cùng tỷ lệ, TC-27 tạm dừng, mốc 1.049/1.051 chưa chạy, bug chưa được file và dev chưa trả lời. Quan sát này đang mâu thuẫn với KB-856 (cùng conflict_group), chưa ngã ngũ, không dùng làm oracle.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "chained-output",
+      "photo-reposition",
+      "conflict",
+      "QA-3441"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-856"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "populate-reposition-follow-ratio"
+  },
+  {
+    "kb_id": "KB-858",
+    "topic": "Layer ảnh No personalization populate {{output}} từ nguồn Photo Cropper nhận ảnh đã crop",
+    "statement": "Theo Jira TIB-5504 comment 56059 (Dev, 2026-10-29, trả lời Q9, phần Crop): layer ảnh No personalization được populate {{output}} từ nguồn Photo Cropper nhận ảnh hiện tại của nguồn, tức ảnh đã crop. Dev ghi đây là hành vi theo code và chưa kiểm trên UI vì staging chưa có campaign nào dựng cấu hình này.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "chained-output",
+      "photo-cropper",
+      "no-personalization",
+      "TIB-5504"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-859",
+      "artwork-render/populate-output-chain#KB-867"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5504 comment 56059, Dev trả lời Q9 (Crop), 2026-10-29",
+      "authored_on": "2026-10-29",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-859",
+    "topic": "Layer ảnh No personalization populate {{output}} từ nguồn Photo Reposition: dữ liệu vị trí đi theo nguồn, order render dùng vị trí đó",
+    "statement": "Theo Jira TIB-5504 comment 56059 (Dev, 2026-10-29, trả lời Q9, phần Position): layer ảnh No personalization được populate {{output}} từ nguồn Photo Reposition có dữ liệu vị trí đi theo vị trí của nguồn, kể cả khi buyer di chuyển nguồn sau đó, và order render dùng vị trí này. Cách preview storefront hiển thị layer này là item riêng KB-860 (known defect).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront) và order design render",
+      "surface": "storefront, api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "chained-output",
+      "photo-reposition",
+      "no-personalization",
+      "order-render",
+      "TIB-5504"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-860",
+      "artwork-render/populate-output-chain#KB-858"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5504 comment 56059, Dev trả lời Q9 (Position), 2026-10-29",
+      "authored_on": "2026-10-29",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-860",
+    "topic": "Known defect: preview storefront không vẽ vị trí populate từ Photo Reposition, vẫn fit ảnh vào khung layer",
+    "statement": "Theo Jira TIB-5504 comment 56059 (Dev, 2026-10-29, trả lời Q9, phần Position), đây là lệch đã biết giữa preview và bản in, không do TIB-5504 thay đổi và nằm ngoài phạm vi ticket đó: với layer ảnh No personalization được populate {{output}} từ nguồn Photo Reposition, preview trên storefront không vẽ vị trí đi theo nguồn mà vẫn fit ảnh vào khung layer, trong khi order render dùng vị trí đó (KB-859). Đây là giới hạn đã biết, không phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront) và order design render",
+      "surface": "storefront, api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "chained-output",
+      "photo-reposition",
+      "storefront-preview",
+      "known-defect",
+      "TIB-5504"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-859"
+    ],
+    "status": "KNOWN_DEFECT"
+  },
+  {
+    "kb_id": "KB-861",
+    "topic": "Populate {{output}} chỉ hỗ trợ chain một cấp",
+    "statement": "Theo Jira TIB-5504 comment 56064 (Dev, 2026-10-29, trả lời RQ2): populate {{output}} theo TIB-5504 chỉ hỗ trợ và chỉ được test với chain một cấp. Portal vẫn cho cấu hình chain hai cấp, nhưng chain từ hai cấp trở lên không được thiết kế cho, không được hỗ trợ và nằm ngoài phạm vi TIB-5504; không có expected cho chain nhiều cấp.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "owner/staff (cấu hình portal) và buyer",
+      "surface": "portal, storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-091"
+    },
+    "tags": [
+      "populate-values",
+      "chained-output",
+      "chain-depth",
+      "scope-limit",
+      "TIB-5504"
+    ],
+    "related_kb_ids": [],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5504 comment 56064, Dev trả lời RQ2, 2026-10-29",
+      "authored_on": "2026-10-29",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-862",
+    "topic": "Effect riêng của nguồn lỗi: nguồn hiện lỗi, option {{output}} để trống, không bắt đầu",
+    "statement": "Theo Jira TIB-5504 comment 56064 (Dev, 2026-10-29, trả lời RQ3): khi effect riêng của nguồn lỗi, nguồn hiện lỗi của chính nó, còn option {{output}} để trống — option không bắt đầu chạy, nên không có lỗi riêng nào hiện trên option.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "chained-output",
+      "error-handling",
+      "TIB-5504"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-863",
+      "artwork-render/populate-output-chain#KB-864"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5504 comment 56064, Dev trả lời RQ3 (câu 1), 2026-10-29",
+      "authored_on": "2026-10-29",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-863",
+    "topic": "Nguồn thay ảnh mới mà lỗi: option {{output}} giữ kết quả của ảnh cũ",
+    "statement": "Theo Jira TIB-5504 comment 56064 (Dev, 2026-10-29, trả lời RQ3): khi nguồn đang thay ảnh cũ bằng ảnh mới và lần xử lý ảnh mới lỗi, option {{output}} giữ kết quả của ảnh cũ.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "chained-output",
+      "error-handling",
+      "TIB-5504"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-862"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5504 comment 56064, Dev trả lời RQ3 (câu 2), 2026-10-29",
+      "authored_on": "2026-10-29",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-864",
+    "topic": "Effect riêng của option chained {{output}} lỗi: lỗi và Try again hiện trên option nguồn, Add to Cart vẫn bị chặn",
+    "statement": "Theo Jira TIB-5504 comment 56064 (Dev, 2026-10-29, trả lời RQ3): khi effect riêng của option chained {{output}} lỗi, thông báo lỗi và nút Try again hiện trên option nguồn, và Add to Cart vẫn bị chặn.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "chained-output",
+      "error-handling",
+      "add-to-cart",
+      "TIB-5504"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-862"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5504 comment 56064, Dev trả lời RQ3 (câu 3), 2026-10-29",
+      "authored_on": "2026-10-29",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-865",
+    "topic": "Reload trang khi option chained {{output}} đang processing: chạy lại từ đầu bằng lần gọi mới",
+    "statement": "Theo Jira TIB-5504 comment 56064 (Dev, 2026-10-29, trả lời RQ4): khi buyer reload trang lúc option chained {{output}} đang processing, không có gì được resume; option chạy lại từ đầu bằng một lần gọi mới và không dùng kết quả của job cũ.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-07",
+      "ccr_ref": "CBS-091"
+    },
+    "tags": [
+      "populate-values",
+      "chained-output",
+      "reload",
+      "TIB-5504"
+    ],
+    "related_kb_ids": [],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5504 comment 56064, Dev trả lời RQ4, 2026-10-29",
+      "authored_on": "2026-10-29",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-866",
+    "topic": "Request của option chained {{output}} mang effect của nguồn ở phần riêng; server chỉ dùng khi nguồn chưa có kết quả full-size",
+    "statement": "Theo Jira TIB-5504 comment 56064 (Dev, 2026-10-29, trả lời RQ11): request xử lý effect của option chained {{output}} gửi effect của nguồn trong một field riêng, đặt cạnh effect riêng của option; server chỉ dùng effect của nguồn khi nguồn chưa có kết quả full-size, còn lại server bắt đầu từ kết quả của nguồn. Dev không nêu tên field hay endpoint; tên QA thấy trong network không phải hợp đồng API.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront client gọi server)",
+      "surface": "api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "chained-output",
+      "source-effects",
+      "api",
+      "TIB-5504"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-854"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5504 comment 56064, Dev trả lời RQ11, 2026-10-29",
+      "authored_on": "2026-10-29",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-867",
+    "topic": "Known defect: nguồn Photo Cropper thay ảnh thì option {{output}} bắt đầu ngay từ ảnh mới, không chờ crop và effect nguồn",
+    "statement": "Theo Jira TIB-5504 comment 56064 (Dev, 2026-10-29, đoạn Known issue dưới RQ3), đây là known issue không do TIB-5504 gây ra, có ticket riêng (dev không nêu key): chỉ với nguồn Photo Cropper, khi buyer thay ảnh, option {{output}} bắt đầu ngay từ ảnh mới mà không chờ crop và effect của nguồn; vì vậy effect của nguồn chạy hai lần, và nếu lỗi thì option hiện ảnh mới trong khi nguồn vẫn hiện ảnh cũ. Đây là giới hạn đã biết, không phải expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (storefront)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "populate-values",
+      "chained-output",
+      "photo-cropper",
+      "known-defect",
+      "TIB-5504"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-output-chain#KB-858"
+    ],
+    "status": "KNOWN_DEFECT"
+  }
+]

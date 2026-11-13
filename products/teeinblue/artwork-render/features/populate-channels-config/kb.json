@@ -1,0 +1,286 @@
+[
+  {
+    "kb_id": "KB-075",
+    "topic": "Populate Font bị khoá khi layer đang dùng Google Font, mở khoá ngay khi đổi sang Custom Fonts",
+    "statement": "Trong accordion POPULATE VALUES, toggle 'Populate Font from another option' bị disabled (label.vue-js-switch.disabled + input[disabled]) kèm cảnh báo nguyên văn 'Must change from Google Font to Custom Font to use this feature' khi layer đang ở Font type = Google Font. Ngay khi đổi Font type sang 'Custom Fonts' (CHƯA cần chọn font cụ thể), cảnh báo biến mất và toggle hết disabled ngay lập tức — nhưng toolbar hiện 'Empty fonts!!!' cho tới khi thực sự chọn 1 font qua '+ Select a font'.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com)",
+      "role": "store owner / staff account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, staff sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-10",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-076",
+    "topic": "retrieval_* — key CHỈ xuất hiện khi Populate được bật, shape khác nhau theo kênh",
+    "statement": "JSON layer chỉ có key retrieval_value_enabled/retrieval_layer/retrieval_value khi 'Populate Content' được bật (quan sát ở layer curve-text). retrieval_styles.<channel> (font/color/background/shape) là object {layer, enabled} riêng cho mỗi kênh Populate Font/Color/Background/Shape — layer word-cloud và paragraph trong sample này CHỈ có retrieval_styles (không có retrieval_value_enabled/layer/value vì chúng không bật Populate Content). Field 'Values:' hiển thị trên UI ({{font}}/{{color}}/{{shape}}) là input disabled và giá trị của nó KHÔNG được lưu trong JSON — mỗi channel trong retrieval_styles CHỈ lưu {layer, enabled}, không lưu 'value'.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com)",
+      "role": "store owner / staff account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, staff sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-10",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-077",
+    "topic": "dynamic-by-text / clipart-frame dùng chung tên key retrieval_layer + retrieval_value nhưng nguồn từ panel khác",
+    "statement": "Layer type dynamic-by-text và clipart-frame lưu retrieval_layer + retrieval_value (cùng tên key với Populate Content) nhưng KHÔNG có key retrieval_value_enabled, và 2 field này được set từ panel PERSONALIZATION SETTINGS ('Select a source text option' / 'Value to populate'), KHÔNG phải từ panel POPULATE VALUES như các layer type khác.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com)",
+      "role": "store owner / staff account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, staff sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-10",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-079",
+    "topic": "Word Cloud có panel POPULATE VALUES rút gọn, riêng biệt so với layer text khác",
+    "statement": "Layer type Word Cloud chỉ có 2 toggle trong POPULATE VALUES: 'Populate Content' và 'Populate Shape' (KHÔNG có Populate Font/Color/Background như các layer text khác). Nguồn hợp lệ cho 'Populate Shape' chỉ gồm 2 loại: clipart-category và group-clipart-categories; field 'Values:' là input disabled hiện {{shape}}.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com)",
+      "role": "store owner / staff account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, staff sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-10",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-080",
+    "topic": "'Populate to other layers' (chiều ngược) — Font bị khoá theo target, Color không bị khoá",
+    "statement": "Trên layer Font, panel 'Populate to other layers -> Select layers' liệt kê 9 target khả dụng; TẤT CẢ đều disabled kèm dòng cảnh báo 'Change this layer to Custom Fonts to populate font' khi target đó vẫn đang dùng Google Font — chỉ target đã đổi sang Custom Font mới enable. Trên layer Color, panel tương tự liệt kê 12 target và KHÔNG target nào bị disabled theo cơ chế này. Placeholder khi danh sách target rỗng: 'No compatible layer'.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com)",
+      "role": "store owner / staff account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, staff sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-10",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-082",
+    "topic": "Font category dropdown filter theo type=font_category, deleted_at is null, parent id is null — 2 category cũ của store bị soft-delete",
+    "statement": "Query danh sách font category của portal filter theo (type=font_category AND deleted_at IS NULL AND parent id IS NULL). Trên store TIB_STORE_URL_1 ở thời điểm 2 run này, 2 font category đã tạo trước đó (id 5997, 5998) đều có deleted_at khác null nên KHÔNG xuất hiện trong dropdown/treeselect chọn font category của layer Font, kể cả bấm 'Load all' hay search đúng tên — phải tạo category mới. Đây là trạng thái hiện tại của DỮ LIỆU STORE, không phải lỗi sản phẩm; quan sát nhất quán ở 2 run độc lập trong cùng ngày.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com)",
+      "role": "store owner / staff account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, staff sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-10",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-119",
+    "topic": "Populate Content — Source option dropdown chỉ offer Multiple Uploads, KHÔNG offer Text-to-Image, trong session này",
+    "statement": "Trong session cấu hình artwork 4416 (role owner/staff, env staging), Source option dropdown của Populate Content trên layer đích 'body' CHỈ liệt kê layer Multiple Uploads ('top'); layer Text to Image (AI) ('hair', Option Title 'AI Hair Style') KHÔNG xuất hiện trong danh sách. Đây là quan sát 1 lần duy nhất trong 1 cấu hình cụ thể — KHÔNG kết luận Text-to-Image không bao giờ được offer làm nguồn populate; cần re-test ở cấu hình/thời điểm khác để tổng quát hoá (xem coverage_gaps).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com / staging-api.teeinblue.com)",
+      "role": "owner/staff — account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, user_id=<explorer>)",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-25",
+      "ccr_ref": "CBS-003"
+    }
+  },
+  {
+    "kb_id": "KB-993",
+    "topic": "Rule QA FACT-063: text layer tĩnh (không gắn populate config) không đi qua populate resolver, vẽ content nguyên văn",
+    "statement": "Theo rule QA FACT-063 (kho QA, ghi nhận 2026-09-16; từ lượt chạy tự động QA-3361/QA-3362 trên staging ngày 2026-09-17), text layer thường không gắn populate/personalization config không đi qua populate resolver: content gõ {{7*7}} hay <b>bold</b> hiện đúng chuỗi đó trên canvas editor (không thành 49, không bold hoá), lưu literal và giữ nguyên sau Save & Close rồi mở lại. Rule QA ghi render server-side (Preview/mockup) cũng vẽ nguyên văn, nhưng lượt chạy chỉ xác nhận thumbnail sinh thành công (không đọc được chữ). Khác layer đã gắn populate config (KB-989). Chưa có nguyên văn Dev xác nhận.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner/staff)",
+      "surface": "portal (artwork editor canvas); render server-side Preview/mockup chỉ thấy sinh thumbnail",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-110"
+    },
+    "tags": [
+      "FACT-063",
+      "static-text-layer",
+      "literal-render",
+      "TIB-5355",
+      "QA-3361",
+      "QA-3362"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-value-tokens#KB-989"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-063",
+      "owner_role": "QA",
+      "recorded_on": "2026-09-16",
+      "locator": "repo QA apps/tib/knowledge/product_facts.md dòng 182 (FACT-063)"
+    }
+  },
+  {
+    "kb_id": "KB-997",
+    "topic": "Rule QA FACT-096: 'Populate X from another option' luôn trỏ tới một layer cụ thể, không trỏ trực tiếp tới Global Option",
+    "statement": "Theo rule QA FACT-096 (kho QA, QA đính chính 2026-10-15 khi duyệt QA-2844 TC-57..60), mỗi field 'Populate X from another option' trong panel POPULATE VALUES luôn trỏ tới một layer cụ thể, không bao giờ trỏ trực tiếp tới một Global Option; Global Option chỉ là container nhóm các layer. Khi viết case hay expected cho Populate Color/Background, nguồn phải là 'layer color/clipart-category tên Y' (Y có thể nằm dưới một Global Option), không phải 'Global Option X'. Chưa được PO/Dev xác nhận là thiết kế đã chốt; trạng thái ship không rõ.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (cấu hình populate)",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-115"
+    },
+    "tags": [
+      "FACT-096",
+      "populate-source",
+      "global-option",
+      "QA-2844"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-channels-config#KB-076",
+      "artwork-render/populate-channels-config#KB-998"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-096",
+      "owner_role": "QA",
+      "recorded_on": "2026-10-15",
+      "locator": "repo QA apps/tib/knowledge/product_facts.md dòng 232 (FACT-096)"
+    }
+  },
+  {
+    "kb_id": "KB-998",
+    "topic": "Rule QA FACT-096: dropdown nguồn của từng kênh Populate lọc theo type layer (Content: Single-line Text; Color: chỉ layer color; Background: chỉ clipart-category/group-clipart-categories)",
+    "statement": "Theo rule QA FACT-096 (kho QA, ghi nhận 2026-10-15 khi dựng fixture QA-2844 TC-57..60 trên staging), dropdown nguồn của mỗi kênh trong POPULATE VALUES lọc theo type của layer: Populate Content nhận layer Single-line Text, Paragraph không được liệt kê làm nguồn (vế này có thể đã lỗi thời sau TIB-5271); Populate Color chỉ liệt kê layer type color (color_picker_option / color_category_option), trỏ vào layer text thì dropdown hiện 'List is empty', dù set retrieval_styles.color.layer + enabled qua API vẫn lưu được field và UI khi đó hiện 'Select an option'; Populate Background chỉ nhận layer clipart-category / group-clipart-categories. Chưa được PO/Dev xác nhận; trạng thái ship không rõ.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (cấu hình populate)",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-115"
+    },
+    "tags": [
+      "FACT-096",
+      "populate-source",
+      "source-filter-by-type",
+      "TIB-5636",
+      "QA-2844",
+      "TIB-5271"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-channels-config#KB-076",
+      "artwork-render/populate-channels-config#KB-079",
+      "artwork-render/populate-channels-config#KB-119",
+      "artwork-render/populate-channels-config#KB-997"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-096",
+      "owner_role": "QA",
+      "recorded_on": "2026-10-15",
+      "locator": "repo QA apps/tib/knowledge/product_facts.md dòng 232 (FACT-096)"
+    }
+  },
+  {
+    "kb_id": "KB-999",
+    "topic": "Rule QA FACT-162: Populate Color không có field nào trỏ trực tiếp tới Shopify Color variant; fixture chỉ cần một layer Color option thường",
+    "statement": "Theo rule QA FACT-162 (kho QA, QA kiểm live staging 2026-10-23, QA-3416 BUG-05), 'Populate Color from another option' của shape/vector/text chỉ trỏ vào một layer Color (color-picker) trong cùng artwork, không có field nào trỏ trực tiếp tới Shopify Color variant. Vì vậy fixture cho case 'buyer chọn màu thì shape đổi màu đồng bộ trên storefront' chỉ cần một layer Color option thường, không cần product nhiều Color variant hay bulk price. Liên quan TIB-4726, chưa ship (ticket chưa Passed); chưa được PO/Dev xác nhận.",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (cấu hình populate)",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-115"
+    },
+    "tags": [
+      "FACT-162",
+      "populate-color",
+      "fixture",
+      "TIB-4726",
+      "QA-3416"
+    ],
+    "related_kb_ids": [
+      "artwork-render/populate-channels-config#KB-076",
+      "artwork-render/populate-channels-config#KB-998"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-162",
+      "owner_role": "QA",
+      "recorded_on": "2026-10-23",
+      "locator": "repo QA apps/tib/knowledge/product_facts.md dòng 502 (FACT-162)"
+    }
+  },
+  {
+    "kb_id": "KB-1000",
+    "topic": "Rule QA FACT-164: Dynamic Clipart by Text chọn clipart theo tên clipart khớp ký tự input, không theo tên file/asset",
+    "statement": "Theo rule QA FACT-164 (kho QA, QA ghi nhận 2026-10-26 ở review-gate QA-3418 RQ10; QA nói trong chat là chưa chắc cơ chế, mô tả theo hành vi đã thấy), layer Dynamic Clipart by Text chọn clipart hiển thị theo tên của clipart khớp với ký tự của text buyer nhập ({{char1}}, {{char2}}...), không theo tên file hay asset: category/option có clipart tên 'A' và buyer nhập text bắt đầu bằng 'A' thì layer hiện clipart 'A'. Expected cho case loại này nên viết theo 'tên clipart khớp ký tự', không giả định tên file kiểu char_A.svg. Chưa được PO/Dev xác nhận; chi tiết chuẩn hoá Unicode của so khớp chưa rõ (OQ-artwork-323).",
+    "knowledge_kind": "PROPOSED",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "buyer (nhập text)",
+      "surface": "storefront · portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-11",
+      "ccr_ref": "CBS-115"
+    },
+    "tags": [
+      "FACT-164",
+      "dynamic-clipart-by-text",
+      "clipart-name-match",
+      "TIB-5600",
+      "QA-3418"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/clipart-layer-config#KB-957",
+      "artwork-render/populate-channels-config#KB-077"
+    ],
+    "qa_rule_ref": {
+      "code": "FACT-164",
+      "owner_role": "QA",
+      "recorded_on": "2026-10-26",
+      "locator": "repo QA apps/tib/knowledge/product_facts.md dòng 504 (FACT-164)"
+    }
+  }
+]

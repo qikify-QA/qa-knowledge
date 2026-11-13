@@ -1,0 +1,454 @@
+{
+  "feature_id": "automation-wait-and-split-steps",
+  "feature_key": "automation-wait-and-split-steps",
+  "checklist_version": "v1",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Cấu hình Wait / delay hợp lệ và nhãn node",
+      "applicability": {
+        "role": "unspecified",
+        "state": "flow có trigger; chèn một Wait mới",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đăng nhập app workspace Mailtro trên staging bằng tài khoản Owner của một workspace test (tài liệu khảo sát bằng Owner; quy tắc role cho automation chưa chốt).",
+      "steps": [
+        "Click node Wait, ghi các ô và đơn vị.",
+        "Nhập Duration 3, Unit days.",
+        "Đổi sang Duration 1, Unit minutes."
+      ],
+      "observation_point": "Ô Duration, lựa chọn Unit, helper, badge và nhãn node Wait.",
+      "expected_result": "Theo hiện trạng staging (khảo sát 01/10/2026): panel có `Duration` (spinbutton) và `Unit` {`minutes`, `hours`, `days`}; helper \"Enter a whole number from 1 to {max} {unit}.\"; giá trị hợp lệ làm step Configured và node hiện thời lượng đã nhập. Lệch = cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "automations/automation-wait-and-split-steps#KB-102"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "regression_watch_kb_ids": [
+        "automations/automation-wait-and-split-steps#KB-106"
+      ],
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [
+        "RISK-automation-steps-01"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "Biên Duration của Wait theo days: 0, 1, 365, 366",
+      "applicability": {
+        "role": "unspecified",
+        "state": "flow có trigger và Wait",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đăng nhập app workspace Mailtro trên staging bằng tài khoản Owner của một workspace test (tài liệu khảo sát bằng Owner; quy tắc role cho automation chưa chốt).",
+      "steps": [
+        "Nhập Duration 0 (days).",
+        "Nhập 1.",
+        "Nhập 365.",
+        "Nhập 366.",
+        "Ghi helper, hint header, trạng thái Save ở từng giá trị."
+      ],
+      "observation_point": "Helper dưới ô, hint header, trạng thái Save.",
+      "expected_result": "Theo hiện trạng staging (khảo sát 01/10/2026): days tối đa 365; Duration 0 hiện helper và hint header \"A wait must be a whole number from 1 up to a year\" và `Save` disabled; 1 và 365 được nhận; giá trị vượt 365 days chưa được ghi riêng — ghi nhận, kỳ vọng tương tự trường hợp 0 theo helper. Lệch = cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "automations/automation-wait-and-split-steps#KB-102",
+          "automations/automation-wait-and-split-steps#KB-103"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "regression_watch_kb_ids": [
+        "automations/automation-wait-and-split-steps#KB-104"
+      ],
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [
+        "RISK-automation-steps-01"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Step sau Wait chạy sau đúng thời lượng chờ",
+      "applicability": {
+        "role": "unspecified",
+        "state": "flow Active: trigger → Wait 1 minutes → Update contact field",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đăng nhập app workspace Mailtro trên staging bằng tài khoản Owner của một workspace test (tài liệu khảo sát bằng Owner; quy tắc role cho automation chưa chốt).",
+      "steps": [
+        "Cho contact test vào flow, ghi thời điểm.",
+        "Xem Run detail: `Resumes at` và thời điểm step sau Wait chạy."
+      ],
+      "observation_point": "Khoảng thời gian giữa vào flow và step sau Wait.",
+      "expected_result": "Theo hiện trạng staging (test-run 27/09/2026): step sau Wait chạy sau mốc chờ, trễ khoảng 20–60 giây; flow không có Wait chạy ngay (dưới khoảng 19 giây). Lệch = cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "automations/automation-wait-and-split-steps#KB-107"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "regression_watch_kb_ids": [],
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [
+        "RISK-automation-steps-01"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Conditional split luôn có 2 nhánh True / False",
+      "applicability": {
+        "role": "unspecified",
+        "state": "flow có trigger",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đăng nhập app workspace Mailtro trên staging bằng tài khoản Owner của một workspace test (tài liệu khảo sát bằng Owner; quy tắc role cho automation chưa chốt).",
+      "steps": [
+        "Chèn một Conditional split.",
+        "Xem các nhánh dưới split trên canvas."
+      ],
+      "observation_point": "Số nhánh và nhãn nhánh.",
+      "expected_result": "Conditional split luôn có đúng 2 nhánh True và False.",
+      "oracle": {
+        "kb_ids": [
+          "automations/automation-wait-and-split-steps#KB-118"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "regression_watch_kb_ids": [],
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [
+        "RISK-automation-steps-02"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Dòng điều kiện của split: chọn biến trước, nhiều điều kiện với Match all / any",
+      "applicability": {
+        "role": "unspecified",
+        "state": "flow có trigger và Conditional split",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đăng nhập app workspace Mailtro trên staging bằng tài khoản Owner của một workspace test (tài liệu khảo sát bằng Owner; quy tắc role cho automation chưa chốt).",
+      "steps": [
+        "Click node split, xem dòng điều kiện đầu.",
+        "Thử chọn Operator / Value trước khi chọn biến.",
+        "Chọn biến, chọn operator, nhập value.",
+        "Bấm `Add condition` để có 2 dòng; xem combobox `Match`.",
+        "Bấm `Remove this condition` trên một dòng.",
+        "Xem menu biến và badge / nút + của từng nhánh."
+      ],
+      "observation_point": "Trạng thái Operator / Value, combobox Match, nhóm biến, badge nhánh.",
+      "expected_result": "Theo hiện trạng staging (khảo sát 01/10/2026; split nhiều điều kiện do QA lead chốt 18/09/2026, chưa có xác nhận PO/Dev): `Choose a variable` không prefill; Operator và Value disabled (\"Choose a variable first\") tới khi chọn biến; Value so với giá trị cố định hoặc biến; `Add condition` thêm dòng, từ 2 dòng xuất hiện `Match` {`all of these`, `any of these`}; `Remove this condition` xoá dòng; menu biến nhóm `Contact` gồm Email address · First name · Last name · Country code · SMS · Address · Created at và key thô của custom field; mỗi nhánh có badge True (emerald) / False (rose) với nút + phía dưới. Lệch = cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "automations/automation-wait-and-split-steps#KB-109",
+          "automations/automation-wait-and-split-steps#KB-110",
+          "automations/automation-wait-and-split-steps#KB-116",
+          "automations/automation-wait-and-split-steps#KB-119"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "regression_watch_kb_ids": [],
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [
+        "RISK-automation-steps-02"
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Operator của split cùng ngữ nghĩa với segment builder",
+      "applicability": {
+        "role": "unspecified",
+        "state": "tập contact test có giá trị Email address / First name khác nhau (rỗng, có tiền tố, có hậu tố)",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đăng nhập app workspace Mailtro trên staging bằng tài khoản Owner của một workspace test (tài liệu khảo sát bằng Owner; quy tắc role cho automation chưa chốt).",
+      "steps": [
+        "Với mỗi operator (vd Includes, Starts with, Is empty), dựng một segment với điều kiện đó và ghi tập contact khớp.",
+        "Dựng flow Active có split cùng điều kiện, cho các contact đó vào flow.",
+        "So contact đi nhánh True với tập contact của segment."
+      ],
+      "observation_point": "Tập contact đi nhánh True so với tập khớp của segment cùng điều kiện.",
+      "expected_result": "Với cùng biến, operator và giá trị, contact đi nhánh True đúng bằng tập contact khớp điều kiện đó ở segment builder.",
+      "oracle": {
+        "kb_ids": [
+          "automations/automation-wait-and-split-steps#KB-113"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "regression_watch_kb_ids": [],
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [
+        "RISK-automation-steps-02"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Danh sách operator theo kiểu biến text / ngày",
+      "applicability": {
+        "role": "unspecified",
+        "state": "flow có trigger và Conditional split",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đăng nhập app workspace Mailtro trên staging bằng tài khoản Owner của một workspace test (tài liệu khảo sát bằng Owner; quy tắc role cho automation chưa chốt).",
+      "steps": [
+        "Chọn biến Email address, mở Operator.",
+        "Chọn biến Created at, mở Operator, chọn `Between`."
+      ],
+      "observation_point": "Danh sách operator, cách nhập giá trị ngày.",
+      "expected_result": "Theo hiện trạng staging (khảo sát 01/10/2026): biến text có `Equal to` · `Not equal to` · `Includes` · `Does not include` · `Starts with` · `Ends with` · `Is empty` · `Is not empty`; biến ngày có `After` (mặc định) · `Before` · `Between` · `Is empty` · `Is not empty`, giá trị chọn bằng `Pick a date`, `Between` có 2 nút nối bằng \"and\" (không gõ text tự do). Lệch = cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "automations/automation-wait-and-split-steps#KB-111",
+          "automations/automation-wait-and-split-steps#KB-112"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "regression_watch_kb_ids": [
+        "automations/automation-wait-and-split-steps#KB-121"
+      ],
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [
+        "RISK-automation-steps-02"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Điều kiện split chỉ kiểm một lần khi contact tới step",
+      "applicability": {
+        "role": "unspecified",
+        "state": "flow Active: trigger → split (First name Equal to X) → Wait 5 minutes ở cả 2 nhánh",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đăng nhập app workspace Mailtro trên staging bằng tài khoản Owner của một workspace test (tài liệu khảo sát bằng Owner; quy tắc role cho automation chưa chốt).",
+      "steps": [
+        "Cho contact có First name = X vào flow; xác nhận đi nhánh True.",
+        "Trong lúc Waiting ở nhánh True, đổi First name sang giá trị khác.",
+        "Xem Run detail sau Wait."
+      ],
+      "observation_point": "Nhánh contact đi tiếp sau khi field đổi.",
+      "expected_result": "Theo hiện trạng staging (mô tả panel split khảo sát 01/10/2026): điều kiện chỉ kiểm một lần khi contact tới split, không theo dõi thay đổi sau đó; contact khớp đi True, còn lại đi False. Lệch = cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "automations/automation-wait-and-split-steps#KB-108"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "regression_watch_kb_ids": [],
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [
+        "RISK-automation-steps-02"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Split và Update contact field khi flow chưa có trigger",
+      "applicability": {
+        "role": "unspecified",
+        "state": "automation mới chưa chọn trigger",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đăng nhập app workspace Mailtro trên staging bằng tài khoản Owner của một workspace test (tài liệu khảo sát bằng Owner; quy tắc role cho automation chưa chốt).",
+      "steps": [
+        "Chèn Conditional split, click node.",
+        "Chèn Update contact field, click node."
+      ],
+      "observation_point": "Nội dung panel của hai node.",
+      "expected_result": "Theo hiện trạng staging (khảo sát 01/10/2026): panel split hiện \"Choose a trigger first — which fields a split can compare depends on what starts the flow.\"; Update contact field thay ô chọn field bằng \"Choose a trigger first. Which contact fields you can pick depends on what starts the flow.\" Lệch = cần điều tra.",
+      "oracle": {
+        "kb_ids": [
+          "automations/automation-wait-and-split-steps#KB-117",
+          "automations/automation-update-contact-field-step#KB-128"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "regression_watch_kb_ids": [],
+      "status": "READY",
+      "open_question_draft": null,
+      "risk_refs": [
+        "RISK-automation-steps-02",
+        "RISK-automation-steps-05"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE"
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Split không có step ở cả hai nhánh",
+      "applicability": {
+        "role": "unspecified",
+        "state": "flow có trigger và split cấu hình đủ, không có step dưới True lẫn False",
+        "environment": "documented",
+        "theme_or_device": null
+      },
+      "precondition": "Đăng nhập app workspace Mailtro trên staging bằng tài khoản Owner của một workspace test (tài liệu khảo sát bằng Owner; quy tắc role cho automation chưa chốt).",
+      "steps": [
+        "Cấu hình điều kiện split, để trống cả 2 nhánh.",
+        "Xem hint header và trạng thái Save."
+      ],
+      "observation_point": "Hint header, Save.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "automations/automation-wait-and-split-steps#KB-120"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "regression_watch_kb_ids": [],
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Split không có step dưới cả nhánh True lẫn False có bị chặn Save không — hint \"A split needs at least one step under True or False\" là quy tắc chính thức hay chỉ là copy?",
+      "risk_refs": [
+        "RISK-automation-steps-02"
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-automations-022",
+      "observation_guidance": "Chưa có căn cứ để phán pass/fail — chưa chốt split rỗng có bị chặn chính thức không. Ghi nhận hint và trạng thái Save."
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "automation-steps",
+      "risk_ref": "RISK-automation-steps-01",
+      "risk_description": "Wait / delay: giá trị thời lượng ngoài biên được nhận, hoặc step sau Wait chạy sai thời điểm.",
+      "priority": "P2",
+      "covered_by_checks": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-003",
+        "CHK-004"
+      ],
+      "kb_ids": [
+        "automations/automation-wait-and-split-steps#KB-102",
+        "automations/automation-wait-and-split-steps#KB-106",
+        "automations/automation-wait-and-split-steps#KB-103",
+        "automations/automation-wait-and-split-steps#KB-104",
+        "automations/automation-wait-and-split-steps#KB-105",
+        "automations/automation-wait-and-split-steps#KB-107"
+      ],
+      "coverage_status": "PARTIAL"
+    },
+    {
+      "feature_id": "automation-steps",
+      "risk_ref": "RISK-automation-steps-02",
+      "risk_description": "Conditional split: điều kiện / operator / nhánh True-False định tuyến contact sai.",
+      "priority": "P2",
+      "covered_by_checks": [
+        "CHK-005",
+        "CHK-006",
+        "CHK-007",
+        "CHK-008",
+        "CHK-009",
+        "CHK-010",
+        "CHK-011"
+      ],
+      "kb_ids": [
+        "automations/automation-wait-and-split-steps#KB-118",
+        "automations/automation-wait-and-split-steps#KB-109",
+        "automations/automation-wait-and-split-steps#KB-110",
+        "automations/automation-wait-and-split-steps#KB-116",
+        "automations/automation-wait-and-split-steps#KB-119",
+        "automations/automation-wait-and-split-steps#KB-113",
+        "automations/automation-wait-and-split-steps#KB-111",
+        "automations/automation-wait-and-split-steps#KB-112",
+        "automations/automation-wait-and-split-steps#KB-121",
+        "automations/automation-wait-and-split-steps#KB-108",
+        "automations/automation-wait-and-split-steps#KB-117",
+        "automations/automation-update-contact-field-step#KB-128",
+        "automations/automation-wait-and-split-steps#KB-120"
+      ],
+      "coverage_status": "PARTIAL"
+    },
+    {
+      "feature_id": "automation-steps",
+      "risk_ref": "RISK-automation-steps-05",
+      "risk_description": "Update contact field ghi dữ liệu sai vào contact (không validate kiểu, khoảng trắng, field bị xoá).",
+      "priority": "P1",
+      "covered_by_checks": [
+        "CHK-010",
+        "CHK-020",
+        "CHK-021",
+        "CHK-022",
+        "CHK-023",
+        "CHK-024",
+        "CHK-025"
+      ],
+      "kb_ids": [
+        "automations/automation-wait-and-split-steps#KB-117",
+        "automations/automation-update-contact-field-step#KB-128",
+        "automations/automation-update-contact-field-step#KB-123",
+        "automations/automation-update-contact-field-step#KB-124",
+        "automations/automation-update-contact-field-step#KB-125",
+        "automations/automation-update-contact-field-step#KB-129",
+        "automations/automation-update-contact-field-step#KB-135",
+        "automations/automation-update-contact-field-step#KB-126",
+        "automations/automation-update-contact-field-step#KB-127",
+        "automations/automation-update-contact-field-step#KB-130",
+        "automations/automation-update-contact-field-step#KB-131",
+        "automations/automation-update-contact-field-step#KB-132",
+        "automations/automation-update-contact-field-step#KB-133",
+        "automations/automation-update-contact-field-step#KB-134",
+        "automations/automation-update-contact-field-step#KB-136"
+      ],
+      "coverage_status": "PARTIAL"
+    }
+  ],
+  "excluded_dimensions": [],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
+}

@@ -1,0 +1,1816 @@
+{
+  "feature_id": "FEAT-01-text-layer-config",
+  "feature_key": "text-layer-config",
+  "name": "Cấu hình layer nhóm TEXT (kể cả multi-stroke)",
+  "user_goal": "Store owner tạo viền nhiều lớp cho layer Paragraph trên artwork Artwork 2.0 (tối đa 3 vòng, mỗi vòng có màu và độ dày riêng, xếp từ mép chữ ra ngoài), sắp xếp/xoá/bật tắt các vòng, và nhận được design in (PNG order design) có cùng hình với preview trong Artwork Editor; dữ liệu stroke được giữ đúng qua Save, mở lại và khi đổi loại layer. Toàn bộ là quan sát trên staging trước khi 7 PR TIB-5580 merge (2026-10-22); ship production chưa xác nhận; chưa có xác nhận PO/business.",
+  "user_goal_kb_refs": [
+    "artwork-layer-config/text-layer-config#KB-129",
+    "artwork-layer-config/text-layer-config#KB-130",
+    "artwork-layer-config/text-layer-config#KB-131",
+    "artwork-layer-config/text-layer-config#KB-133",
+    "artwork-layer-config/text-layer-config#KB-135",
+    "artwork-layer-config/text-layer-config#KB-136",
+    "artwork-layer-config/text-layer-config#KB-013",
+    "artwork-layer-config/text-layer-config#KB-014",
+    "artwork-layer-config/text-layer-config#KB-015",
+    "artwork-layer-config/text-layer-config#KB-016"
+  ],
+  "stable_since_version": null,
+  "stable_since_version_note": "Chưa có version ổn định: mọi nguồn chạy trên staging trước khi 7 PR TIB-5580 merge (2026-10-22); ship production chưa xác nhận.",
+  "actors": [
+    {
+      "role": "merchant-owner (store owner/staff, instance 520 store không thuộc explorer)",
+      "permission_observed": "Mở popover Stroke của Paragraph/Text trong Artwork Editor 2.0, thêm/xoá/kéo đổi thứ tự lớp stroke, bật/tắt stroke, convert loại layer, Save (PUT /api/artworks/{id} trả 200), tạo order Bogus để lấy PNG order design.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129",
+        "artwork-layer-config/text-layer-config#KB-131",
+        "artwork-layer-config/text-layer-config#KB-132",
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-135",
+        "artwork-layer-config/text-layer-config#KB-136",
+        "artwork-layer-config/text-layer-config#KB-137"
+      ]
+    },
+    {
+      "role": "guest buyer (storefront personalization)",
+      "permission_observed": "Gửi payload personalization tới POST /api/merchant/shopify/customization (kể cả payload có stroke_layers tự chèn) và nhận 201.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-144"
+      ]
+    },
+    {
+      "role": "store owner / staff (sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "permission_observed": "Truy cập đầy đủ field/accordion riêng của các layer type nhóm TEXT",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-002",
+        "artwork-editor/_object-level#KB-004"
+      ]
+    },
+    {
+      "role": "[MỚI, CBS-008] merchant-owner (store owner/staff, instance 520) — dựng layer Curve Text trong Artwork Editor (Artwork 2.0)",
+      "permission_observed": "Dựng và lưu được layer Curve Text; không thấy tuỳ chọn căn lề text cho layer này (quan sát 1 lần). Không quan sát khác biệt quyền.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-157"
+      ]
+    },
+    {
+      "role": "[MỚI, CBS-079] buyer (storefront)",
+      "permission_observed": "KB-416 ghi scope role 'buyer'; KB không có quan sát về quyền.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-416"
+      ]
+    }
+  ],
+  "entry_points": [
+    {
+      "path": "Artwork Editor 2.0 → chọn layer Paragraph (new-schema) → popover Stroke (stack editor, nút 'Add stroke', handle kéo, toggle Enable stroke)",
+      "precondition": "Artwork new-schema (Artwork 2.0); layer Paragraph. Nguồn hiện có đều trên staging trước khi 7 PR TIB-5580 merge (2026-10-22); ship production chưa xác nhận",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129",
+        "artwork-layer-config/text-layer-config#KB-131",
+        "artwork-layer-config/text-layer-config#KB-132",
+        "artwork-layer-config/text-layer-config#KB-135",
+        "artwork-layer-config/text-layer-config#KB-251"
+      ]
+    },
+    {
+      "path": "Artwork Editor 2.0 → chọn layer Text 1 dòng → popover Stroke (stack editor)",
+      "precondition": "Layer Text 1 dòng (multi-stroke có từ TIB-5417)",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-143"
+      ]
+    },
+    {
+      "path": "Artwork Editor → convert layer (Paragraph ↔ Single-line Text, Paragraph → Curve Text / Warp Text)",
+      "precondition": "Layer Paragraph đang có stack nhiều lớp stroke",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-136",
+        "artwork-layer-config/text-layer-config#KB-137"
+      ]
+    },
+    {
+      "path": "Order Bogus từ campaign dùng artwork → PNG order design do API sinh",
+      "precondition": "Artwork đã Save với stroke nhiều lớp; buyer đặt order trên storefront",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-134",
+        "artwork-layer-config/text-layer-config#KB-135",
+        "artwork-layer-config/text-layer-config#KB-139",
+        "artwork-layer-config/text-layer-config#KB-143",
+        "artwork-layer-config/text-layer-config#KB-144",
+        "artwork-layer-config/text-layer-config#KB-251"
+      ]
+    },
+    {
+      "path": "Storefront personalization → POST /api/merchant/shopify/customization",
+      "precondition": "Campaign dùng artwork có paragraph nhiều lớp stroke",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-144"
+      ]
+    },
+    {
+      "path": "artwork editor — thêm/chọn 1 layer type thuộc nhóm TEXT, mở config panel",
+      "precondition": "artwork editor có ≥1 layer thuộc nhóm TEXT",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-002",
+        "artwork-editor/_object-level#KB-004",
+        "artwork-editor/_object-level#KB-005"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-079] Storefront — campaign có paragraph vừa là buyer field vừa được populate",
+      "precondition": "Campaign có layer paragraph vừa là buyer field vừa được populate từ một field nguồn",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-416"
+      ]
+    },
+    {
+      "path": "[MỚI, CBS-126] portal — artwork editor → chọn layer Warp Text → nút Warp trên toolbar (sau TIB-5325: popover Warp mode → Advanced editor) → popup Warp (dialog) có canvas preview và panel Points",
+      "precondition": "Artwork có ≥1 layer Warp Text; đọc payload warp_text qua network khi render",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1066",
+        "artwork-layer-config/text-layer-config#KB-1068",
+        "artwork-layer-config/text-layer-config#KB-1069"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "Dựng stack stroke nhiều lớp cho Paragraph",
+      "description": "Paragraph mới tạo có stroke mặc định tắt; bật lên có 1 row (#FF0000 / 1px). Popover Stroke là stack editor ('Stroke 1 sits closest to the text… Up to 3'): thêm được lớp 2 và 3, mỗi lớp có màu và width riêng; ở 3 row nút 'Add stroke' bị disable và click cưỡng bức không tạo row thứ 4. Save lưu stroke_layers đúng số entry, đúng thứ tự row, width không làm tròn, màu hex chữ thường; reload giữ nguyên. (Quan sát.)",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129",
+        "artwork-layer-config/text-layer-config#KB-132"
+      ]
+    },
+    {
+      "name": "Sắp xếp, xoá và bật/tắt các lớp stroke mà không mất dữ liệu",
+      "description": "Xoá row giữa còn 2 row và vành tương ứng biến mất; kéo handle đổi thứ tự thì vành sát mép chữ đổi theo row đứng đầu; Save + reload giữ thứ tự mới. Tắt Enable stroke: preview chỉ còn fill, PUT lưu stroke_enabled=false nhưng stroke_layers giữ đủ entry; bật lại khôi phục đúng các row và giá trị cũ. (Quan sát.)",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-131",
+        "artwork-layer-config/text-layer-config#KB-135"
+      ]
+    },
+    {
+      "name": "Giữ tương thích với field stroke đơn (stroke_color / stroke_width)",
+      "description": "stroke_color/stroke_width luôn bằng lớp trong cùng của stack (không nhảy theo lớp ngoài, đổi theo khi lớp trong cùng đổi). Paragraph chỉ có stroke legacy (không có stroke_layers) giữ nguyên hình trong editor; mở popover hiện stack 1 row bằng giá trị legacy, Save sinh stroke_layers 1 entry. (Quan sát.)",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-132",
+        "artwork-layer-config/text-layer-config#KB-140"
+      ]
+    },
+    {
+      "name": "Render nhiều lớp stroke trên preview Artwork Editor và PNG order design",
+      "description": "Các vành xếp từ mép chữ ra ngoài theo thứ tự row, giống nhau trên mọi dòng; width của mỗi lớp là độ dày riêng của vòng đó (không cộng dồn). Fill của mọi dòng nằm trên các vành, không dòng nào bị vành dòng khác che. Góc vành bo tròn. PNG order design khớp preview editor (đánh giá bằng mắt); paragraph autoscale không bị cắt vành ngoài cùng ở 4 mép; stroke tắt thì PNG không có viền. Paragraph có shadow: quan sát thấy 1 khối shadow cho cả paragraph, không lặp theo dòng, ở preview editor và PNG (hai case Blocked). Toàn bộ là quan sát.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-130",
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-134",
+        "artwork-layer-config/text-layer-config#KB-135",
+        "artwork-layer-config/text-layer-config#KB-139",
+        "artwork-layer-config/text-layer-config#KB-251"
+      ]
+    },
+    {
+      "name": "Giữ hoặc gộp stack khi đổi loại layer",
+      "description": "Paragraph ↔ Single-line Text giữ nguyên stack (số lớp, thứ tự, giá trị; type lưu 'text'/'paragraph'). Paragraph → Curve Text hoặc Warp Text gộp về 1 stroke bằng lớp trong cùng, hai lớp ngoài bị bỏ, layer không còn stroke_layers. (Quan sát; ý định sản phẩm chưa xác nhận.)",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-136",
+        "artwork-layer-config/text-layer-config#KB-137"
+      ]
+    },
+    {
+      "name": "Layer Paragraph linked thừa hưởng stack của paragraph gốc",
+      "description": "Layer linked không có nút Stroke riêng; payload PUT của layer linked mang cùng stack (số lớp, thứ tự, màu) với layer gốc; trên preview editor các vành của layer linked mảnh hơn theo tỉ lệ kích thước (đánh giá bằng mắt).",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-138"
+      ]
+    },
+    {
+      "name": "Phạm vi loại layer có stack nhiều lớp",
+      "description": "Text 1 dòng vẫn có stack 3 lớp như trước (regression TIB-5417 không đổi). Custom Shape text (shape-text) và Paragraph trên artwork legacy-schema (Artwork 1.0) giữ popover 1 stroke, không có stack, không có stroke_layers. (Quan sát; ý định loại Custom Shape / Artwork 1.0 chưa được PO/business xác nhận.)",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-141",
+        "artwork-layer-config/text-layer-config#KB-142",
+        "artwork-layer-config/text-layer-config#KB-143"
+      ]
+    },
+    {
+      "name": "Personalization của buyer không làm đổi stack stroke khi render order",
+      "description": "Payload personalization có stroke_layers do buyer chèn (4 entry, width \"abc\") được API nhận 201 và echo nguyên phần chèn; localStorage teeinblue-customizations không chứa phần chèn và PNG order design chỉ dùng stack của artwork. Server nên từ chối hay chỉ bỏ qua chưa được phân xử (BUG-357).",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-144"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-149] Stroke 1 cặp của curve / spiral / shape / warp text: render file design và dữ liệu lưu",
+      "description": "CONFIRMED_EXPECTED (Dev TIB-5699 comment 56557, 2026-11-05): 4 loại layer này render PNG / SVG theo cặp stroke_color / stroke_width, bỏ qua stroke_layers cũ, giống preview SDK (KB-1094); save artwork (portal và MCP write tool) xoá stroke_layers khỏi 4 loại, kể cả layer vừa convert sang, giữ cặp; Text / Paragraph giữ list; không backfill (KB-1095). Đổi stroke nhiều lần mỗi PNG theo giá trị mới nhất là quan sát test case (KB-1097).",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1094",
+        "artwork-layer-config/text-layer-config#KB-1095",
+        "artwork-layer-config/text-layer-config#KB-1097"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-149] Regression stack 2 lớp của Text / Paragraph sau TIB-5699",
+      "description": "OBSERVED_CURRENT/LOW (TC-TIB-8986 staging): Text và Paragraph 2 lớp stroke vẫn render 2 vòng trong PNG / SVG, giữ 2 row sau đổi text + Save + mở lại, PUT gửi 2 entry stroke_layers.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1096"
+      ]
+    },
+    {
+      "name": "Baseline types không có deviation ghi nhận: Single-line Text (text), Curve Text (curve-text)",
+      "description": "2 layer type này KHÔNG xuất hiện trong bất kỳ danh sách ngoại lệ nào của các boundary item KB-002/004/005/008/010/011/012 (v2, ở FEAT-01-editor-layer-workspace) — theo baseline chung (5 icon, đủ 4 accordion PERSONALIZATION SETTINGS/CONDITIONAL SETTING/EXTRA/POPULATE VALUES, có Custom class + Group name). CHƯA có per-type DOM dump riêng xác nhận field cụ thể bên trong DESIGN SETTINGS/PERSONALIZATION SETTINGS của 2 type này (không nằm trong 29 KB item mới KB-013..041).",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-002",
+        "artwork-editor/_object-level#KB-004",
+        "artwork-editor/_object-level#KB-005",
+        "artwork-editor/_object-level#KB-008",
+        "artwork-editor/_object-level#KB-010",
+        "artwork-editor/_object-level#KB-011",
+        "artwork-editor/_object-level#KB-012"
+      ]
+    },
+    {
+      "name": "Other › Warp Text (warp-text) — thiếu field 'Right to Left text'",
+      "description": "DESIGN SETTINGS của warp-text chỉ có 2 field: 'Default text (only for preview):' và 'Enable prefix/suffix' — KHÔNG có field 'Right to Left text' mà Single-line Text/Curve Text/Paragraph Normal đều có. Phần PERSONALIZATION SETTINGS/CONDITIONAL SETTING/EXTRA còn lại giống layout chung của nhóm TEXT (label 'Text option:' thay vì 'Personalization for this layer:'). Theo bundle-registry (INFERRED, code): field `right_to_left_enabled` không nằm trong registry `tz['warp-text']`, khớp với quan sát DOM.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-013"
+      ]
+    },
+    {
+      "name": "Other › Spiral Text (spiral-text) — field Inner radius/Text direction riêng",
+      "description": "spiral-text có DESIGN SETTINGS riêng: 'Default spiral text (only for preview):', 'Inner radius (enter number from 20):', 'Text direction: Begin at inner/Begin at outer' — không type nào khác trong 35 type có 'Inner radius'/'Text direction' theo dạng này. PERSONALIZATION SETTINGS dùng label 'Type of text path:' (khác 'Personalization for this layer:' của Single-line/Curve/Warp). Theo bundle-registry: field `inner_radius` và `direction` CHỈ thuộc spiral-text (registry §3 'design field -> layer types'); `path_type` (giá trị 'spiral') dùng chung với shape-text (giá trị 'shape_text').",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-014"
+      ]
+    },
+    {
+      "name": "Paragraph › Normal (paragraph) — field Remove line breaks/Vertical offset riêng",
+      "description": "paragraph có DESIGN SETTINGS riêng field 'Remove line breaks' (không thấy ở Single-line Text/Curve Text/Warp Text/Custom Shape). EXTRA của paragraph có thêm field 'Vertical offset in order design:' (Custom Shape/shape-text cũng có field này, nhưng 4 text-layer khác — text/curve-text/warp-text/spiral-text — KHÔNG có). Theo bundle-registry: `vertical_offset` chỉ thuộc `paragraph`,`shape-text` (registry §3); `remove_line_breaks_enabled` không có trong bundle-descriptor gắn layer type cụ thể trong evidence hiện tại — CHƯA XÁC NHẬN được key JSON, ghi vào unknowns.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-015"
+      ]
+    },
+    {
+      "name": "Paragraph › Custom Shape (shape-text) — field 'Select a shape' riêng",
+      "description": "shape-text có DESIGN SETTINGS riêng field 'Select a shape:' (không có ở Paragraph Normal hay bất kỳ text-layer khác) — theo bundle-registry field JSON tương ứng là `url` (radio_image, registry §3 chỉ ở paragraph/shape-text) hoặc `shape_url` (bundle-descriptor). shape-text KHÔNG có field 'Remove line breaks' (khác paragraph, KB-015) nhưng CÓ 'Vertical offset in order design:' giống paragraph.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-016"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-008] Curve Text (curve-text) — không có tuỳ chọn căn lề text, layer lưu align center",
+      "description": "OBSERVED_CURRENT/LOW, quan sát 1 lần (staging, instance 520, Artwork 2.0, 2026-10-22) khi dựng layer Curve Text trong Artwork Editor: không có tuỳ chọn căn lề text (trái/giữa/phải), layer được lưu với align center, nên không dựng được Curve Text căn phải. Chưa rõ là thiết kế hay thiếu tính năng; chưa đối chiếu với nút 'Align' trên canvas toolbar khi chọn layer curve-text (KB-042 của editor-layer-workspace — có thể là căn vị trí layer, không phải căn lề text).",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-157"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-079] Paragraph vừa là buyer field vừa được populate — trạng thái rỗng, chỉ khoảng trắng, xoá nội dung field nguồn — chỉ quan sát",
+      "description": "OBSERVED_CURRENT/LOW, một lượt Testlane task TIB-198 tháng 10/2026 (TC-TIB-5719, TC-TIB-5725, TC-TIB-5760; staging, record không ghi ngày chạy và build), mỗi nhánh một case: paragraph rỗng không render trong design, preview hiện default text; chỉ nhập khoảng trắng thì preview và design đều trống; xoá nội dung field nguồn populate thì value bị ghi đè thành rỗng và preview về default text. Chưa có người xác nhận đây là hành vi đúng, không dùng làm oracle, xem unknown_areas.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-416"
+      ]
+    },
+    {
+      "name": "[MỚI, CBS-126] Other › Warp Text — payload điểm warp và Mirror trong popup Warp",
+      "description": "Change note dev TIB-5325 (OBSERVED_CURRENT/LOW): TIB-5325 không đổi payload endpoint render warp text; chữ nằm ngoài vùng 1000x1000 bị cắt trong ảnh render. Chỉ rule QA (PROPOSED, không làm oracle): points trong payload là mảng phẳng 20 số nguyên toạ độ tuyệt đối, resize không đổi points/width/height (KB-1066); popup Warp cũ có Mirror X/Y là 2 nút icon cạnh Free (KB-1068); bật Mirror X không tự lật điểm, kéo một điểm thì điểm đối xứng x' = 2×centerX − x, y theo điểm vừa kéo (KB-1069).",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1067",
+        "artwork-layer-config/text-layer-config#KB-1066",
+        "artwork-layer-config/text-layer-config#KB-1068",
+        "artwork-layer-config/text-layer-config#KB-1069"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "Paragraph mới tạo, Enable stroke tắt",
+      "to": "stroke bật, stack có 1 row #FF0000 / 1px",
+      "trigger": "bật Enable stroke trong popover Stroke",
+      "condition": "Paragraph Normal trên artwork new-schema",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-132"
+      ]
+    },
+    {
+      "from": "stack có 1 hoặc 2 row",
+      "to": "stack có thêm 1 row",
+      "trigger": "click 'Add stroke'",
+      "condition": "số row < 3",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129"
+      ]
+    },
+    {
+      "from": "stack có 3 row",
+      "to": "không đổi (nút 'Add stroke' disable, click cưỡng bức không tạo row thứ 4)",
+      "trigger": "click 'Add stroke'",
+      "condition": "số row = 3 (quan sát ở UI; PUT trực tiếp chưa thử)",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129"
+      ]
+    },
+    {
+      "from": "stack 3 row đã lưu",
+      "to": "stack 2 row, vành tương ứng biến mất; Save lưu 2 entry",
+      "trigger": "xoá row giữa rồi Save",
+      "condition": "—",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-131"
+      ]
+    },
+    {
+      "from": "stack theo thứ tự A",
+      "to": "stack theo thứ tự mới; vành sát chữ là row đứng đầu mới; stroke_color/stroke_width theo lớp trong cùng mới",
+      "trigger": "kéo handle đổi thứ tự rồi Save",
+      "condition": "—",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-131",
+        "artwork-layer-config/text-layer-config#KB-132"
+      ]
+    },
+    {
+      "from": "stroke bật, stack N lớp",
+      "to": "stroke_enabled=false, stroke_layers giữ đủ N entry; preview và PNG không có vành",
+      "trigger": "tắt Enable stroke rồi Save",
+      "condition": "—",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-135"
+      ]
+    },
+    {
+      "from": "stroke_enabled=false, stroke_layers N entry",
+      "to": "popover hiện lại đúng N row theo thứ tự và giá trị cũ, preview có lại N vành",
+      "trigger": "bật lại Enable stroke",
+      "condition": "—",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-135"
+      ]
+    },
+    {
+      "from": "Paragraph với stack N lớp",
+      "to": "Single-line Text (type 'text') giữ nguyên stack N lớp",
+      "trigger": "convert sang Single-line Text rồi Save",
+      "condition": "chiều ngược Text → Normal Paragraph cũng giữ stack",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-136"
+      ]
+    },
+    {
+      "from": "Paragraph với stack N lớp",
+      "to": "Curve Text / Warp Text với 1 stroke bằng lớp trong cùng, không còn stroke_layers",
+      "trigger": "convert sang Curve Text hoặc Warp Text rồi Save",
+      "condition": "mới quan sát Curve và Warp",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-137"
+      ]
+    },
+    {
+      "from": "Paragraph chỉ có stroke legacy (stroke_color/stroke_width, không có stroke_layers)",
+      "to": "stroke_layers 1 entry bằng giá trị legacy",
+      "trigger": "mở popover Stroke rồi Save",
+      "condition": "artwork new-schema",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-140"
+      ]
+    },
+    {
+      "from": "[MỚI, CBS-079] paragraph vừa là buyer field vừa được populate, field nguồn populate có nội dung",
+      "to": "value của paragraph bị ghi đè thành rỗng, preview về default text",
+      "trigger": "xoá nội dung field nguồn populate",
+      "condition": "OBSERVED_CURRENT/LOW, một case (TC-TIB-5760), staging; không làm oracle",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-416"
+      ]
+    }
+  ],
+  "confirmed_rules": [
+    {
+      "rule": "Layer curve text, spiral text, shape text, warp text (artwork schema 2): file design order PNG và SVG vẽ stroke theo cặp stroke_color / stroke_width đang đặt trong editor, bỏ qua stroke_layers cũ nếu layer còn giữ, như preview SDK.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner + buyer, portal · storefront preview · api render",
+      "shipped": "SHIPPED",
+      "caveats": "Một citation. Production chỉ phần kiểm bằng máy pass, ảnh PNG / preview chưa có người xem duyệt; layer đã giữ sẵn stroke_layers cũ chỉ được Dev kiểm bằng unit test.",
+      "confirmation_ref": "Jira TIB-5699 comment 56557 (Dev), 2026-11-05",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1094"
+      ]
+    },
+    {
+      "rule": "Mỗi lần save artwork (portal PUT/POST và MCP write tool), server xoá stroke_layers khỏi layer curve / spiral / shape / warp text, kể cả layer vừa convert sang một trong 4 loại; giữ cặp stroke_color / stroke_width; Text và Paragraph giữ stroke_layers; row chưa save lại không bị backfill.",
+      "knowledge_kind": "CONFIRMED_EXPECTED",
+      "confidence": "MEDIUM",
+      "confirmation_source_type": "po_dev_confirm",
+      "scope": "staging, merchant-owner, portal Save / Convert to another layer · api",
+      "shipped": "SHIPPED",
+      "caveats": "Một citation. Convert Text 2 lớp sang Curve / Warp còn 1 stroke, PNG + SVG 1 stroke là quan sát TC-TIB-8983, 8985 (chỉ staging).",
+      "confirmation_ref": "Jira TIB-5699 comment 56557 (Dev), 2026-11-05",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1095"
+      ]
+    }
+  ],
+  "confirmed_rules_note": "Chỉ KB-1094, KB-1095 (CBS-149, Dev TIB-5699 comment 56557) là CONFIRMED_EXPECTED. Các item còn lại là quan sát staging (trước khi 7 PR TIB-5580 merge 2026-10-22, hoặc test case TIB-5699 không ghi build), chưa có PO/business xác nhận.",
+  "observed_behavior": [
+    {
+      "statement": "Popover Stroke của Paragraph new-schema là stack tối đa 3 lớp; ở 3 row nút 'Add stroke' disable, click cưỡng bức không tạo row thứ 4. PUT /api/artworks/{id} trả 200 với stroke_layers đúng số entry (2 hoặc 3), đúng thứ tự row, width giữ nguyên không làm tròn; màu các lớp ngoài lớp 1 lưu hex chữ thường (vd \"#00ff00\"); reload giữ đúng. Một artwork (#5177), 3 test case.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129"
+      ]
+    },
+    {
+      "statement": "Trên preview Artwork Editor, các vành xếp từ mép chữ ra ngoài theo thứ tự row (row 1 sát chữ), giống nhau trên mọi dòng; đổi width lớp giữa 4→8px chỉ làm vành lớp giữa dày thêm. Sau Save + reload popover hiện 4 / 8 / 4 (lưu đúng giá trị nhập, không cộng dồn). So sánh bằng mắt, không đo pixel.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-130"
+      ]
+    },
+    {
+      "statement": "Xoá lớp giữa và kéo đổi thứ tự lớp rồi Save: PUT trả 200 với stroke_layers theo thứ tự mới (2 entry); reload popover còn đúng 2 row theo thứ tự mới, preview giữ thứ tự đó. Một test case.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-131"
+      ]
+    },
+    {
+      "statement": "Paragraph mới tạo: stroke mặc định tắt, bật lên có 1 row #FF0000 / 1px; Save 1 lớp → stroke_layers 1 entry. stroke_color/stroke_width luôn bằng lớp trong cùng của stack (thấy ở mọi lần Save paragraph nhiều lớp trong lượt chạy). Dữ liệu lưu khi stroke còn tắt chưa quan sát.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-132"
+      ]
+    },
+    {
+      "statement": "Paragraph 3 dòng (line-height 1.0) mang 3 lớp stroke (4/4/4 và 8/8/8): trên preview editor fill của cả 3 dòng nằm trên các vành, vùng giáp dòng không có chữ bị vành dòng khác che; PNG order design (order Bogus #1092, #1093) có cùng kiểu hình, khớp preview editor theo đánh giá bằng mắt.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-133"
+      ]
+    },
+    {
+      "statement": "Stroke nhiều lớp có góc bo tròn (round) trên preview Artwork Editor và PNG order design (order Bogus #1097), cả góc ngoài và góc trong; popover không có tuỳ chọn kiểu stroke khác.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-134"
+      ]
+    },
+    {
+      "statement": "Tắt stroke paragraph: preview chỉ còn fill; PUT trả 200 với stroke_enabled=false và stroke_layers vẫn đủ 3 entry; PNG order design (order Bogus #1098) không có viền; bật lại hiện đúng 3 row cũ.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-135"
+      ]
+    },
+    {
+      "statement": "Convert Paragraph (3 lớp) → Single-line Text: PUT type \"text\" với stroke_layers 3 entry đúng thứ tự; convert ngược → type \"paragraph\", stroke_layers 3 entry, stroke_color/stroke_width bằng lớp 1. Một test case trên bản copy #5214.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-136"
+      ]
+    },
+    {
+      "statement": "Convert Paragraph (3 lớp, lớp trong cùng #FF0000/3) → Curve Text: popover về dạng 1 stroke, PUT type \"curve-text\", stroke_color #ff0000, stroke_width 3, không có stroke_layers; Warp Text cho kết quả tương tự (type \"warp-text\"). Hai lớp ngoài không còn trong dữ liệu lưu.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-137"
+      ]
+    },
+    {
+      "statement": "Paragraph linked (700px, font 70) không có nút Stroke riêng; sau khi đặt 3 lớp 6px trên paragraph gốc (1400px, font 140) và Save, payload PUT của cả hai layer mang cùng 3 lớp, cùng thứ tự và màu; trên preview editor vành của layer linked mảnh xấp xỉ một nửa (bằng mắt).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-138"
+      ]
+    },
+    {
+      "statement": "Paragraph bật autoscale mang 3 lớp 8px, buyer nhập text dài (~3 dòng, ~40 ký tự): PNG order design (order Bogus #1099) đủ 3 vành đúng thứ tự, scale theo chữ đã thu nhỏ, vành ngoài cùng không bị cắt ở 4 mép. Một test case.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-139"
+      ]
+    },
+    {
+      "statement": "Paragraph chỉ có stroke legacy (#FF0000, 3, không có stroke_layers): preview editor không đổi trước/sau khi mở popover; popover hiện stack 1 row #FF0000 / 3px; Save (bản copy #5212) → stroke_layers = [{#FF0000, 3}], stroke_color/stroke_width giữ #FF0000 / 3.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-140"
+      ]
+    },
+    {
+      "statement": "Custom Shape text (shape-text): popover vẫn dạng 1 stroke (Enable stroke + Stroke width + color picker), không có 'Add stroke'; PUT chỉ lưu stroke_color/stroke_width, không có stroke_layers; preview 1 vành.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-141"
+      ]
+    },
+    {
+      "statement": "Paragraph trên artwork Artwork 1.0 (#5187, bản copy của #2164): bật stroke hiện popover 1 stroke (width 1, #FF0000), không có stack và không có 'Add stroke'. Payload sau khi đổi width chưa kiểm vì artwork này không Save được (PUT 500, xem feature artwork-save-persist).",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-142"
+      ]
+    },
+    {
+      "statement": "Text 1 dòng (#5182) sau TIB-5580: stack 3 row, 'Add' disable ở 3 lớp, xoá/thêm/kéo đổi thứ tự hoạt động; PUT type \"text\", stroke_layers 3 entry, stroke_color/stroke_width bằng lớp trong cùng; PNG order design (order Bogus #1094) đủ 3 vành đúng thứ tự.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-143"
+      ]
+    },
+    {
+      "statement": "Buyer gửi POST /api/merchant/shopify/customization với stroke_layers tự chèn (một lần 4 entry, một lần width \"abc\"): API trả 201 cả hai lần và response echo nguyên phần chèn. localStorage teeinblue-customizations không chứa phần chèn; PNG order design (order Bogus #1100) chỉ có 3 vành theo artwork. Kết quả test ghi Failed, có BUG-357; việc server có lưu phần chèn chỉ suy từ echo.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-144"
+      ]
+    },
+    {
+      "statement": "Paragraph nhiều dòng bật shadow và mang nhiều lớp stroke (artwork #5178: 2 lớp, rồi 3 lớp 4px): preview Artwork Editor có 1 khối shadow cho cả paragraph nằm dưới các vành; PNG order design (order #1091, #1096) cũng vẽ 1 khối shadow cho cả paragraph, không lặp theo từng dòng, vành đúng thứ tự, fill trên cùng, khớp preview editor. Đối chiếu bằng mắt; hai test case ghi Blocked vì không so được đủ 3 renderer; chưa có nguồn xác nhận là hành vi đúng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-251"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-149] Text và Paragraph 2 lớp stroke vẫn render 2 vòng trong PNG và SVG trước / sau đổi text + Save; mở lại vẫn hiện 2 row, PUT gửi 2 entry stroke_layers. Một test case staging (TC-TIB-8986), không ghi build.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1096"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-149] Đổi stroke curve text nhiều lần (tăng, giảm width, đổi màu), Save và render lại sau mỗi lần: mỗi PNG theo stroke mới nhất của editor. Một test case staging (TC-TIB-8982), không ghi build.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": null,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1097"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-008] Layer Curve Text trong Artwork Editor (Artwork 2.0) không có tuỳ chọn căn lề text (trái/giữa/phải) và được lưu với align center; vì vậy không dựng được Curve Text căn phải. Quan sát 1 lần khi dựng fixture; chưa rõ là thiết kế hay thiếu tính năng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging, merchant-owner instance 520, Artwork 2.0, 2026-10-22, build hash không rõ",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-157"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-079] Trên campaign có paragraph vừa là buyer field vừa được populate, quan sát thấy: paragraph rỗng không render trong design, preview hiện default text; chỉ nhập khoảng trắng thì preview và design đều trống; xoá nội dung field nguồn populate thì value bị ghi đè thành rỗng và preview về default text. Chưa có người xác nhận đây là hành vi đúng.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "observed_count": 1,
+      "scope": "staging, buyer, storefront, lượt chạy task TIB-198 tháng 10/2026, record không ghi ngày chạy và build",
+      "shipped": "UNKNOWN",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-416"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-126] Theo change note Dev TIB-5325 (2026-10-09), endpoint render warp text vẫn nhận payload như cũ (không đổi GraphQL/env/schema); kéo điểm warp ra xa thì phần chữ nằm ngoài vùng 1000x1000 bị cắt trong ảnh render, giống khi chỉnh bằng dialog. Tài liệu dev mô tả code, chưa có xác nhận là hành vi mong muốn.",
+      "knowledge_kind": "OBSERVED_CURRENT",
+      "confidence": "LOW",
+      "scope": "staging, merchant-owner, api endpoint render warp text + portal artwork editor; TIB-5325 Done",
+      "shipped": "SHIPPED",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1067"
+      ]
+    }
+  ],
+  "observed_validations": [],
+  "observed_validations_note": "Không có KB item nào ghi message validation nguyên văn: giới hạn 3 lớp chỉ thể hiện bằng nút 'Add stroke' disable (KB-129); payload buyer chèn không bị validate (KB-144).",
+  "limitations": [
+    {
+      "statement": "Mọi quan sát trên staging (instance 520 / store không thuộc explorer), lượt chạy test 2026-10-21→22, build hash không rõ, trước khi 7 PR TIB-5580 merge (2026-10-22); ship production chưa xác nhận; SDK storefront staging chưa có PR sdk #2124. Build sau merge và production chưa được kiểm.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129",
+        "artwork-layer-config/text-layer-config#KB-130",
+        "artwork-layer-config/text-layer-config#KB-131",
+        "artwork-layer-config/text-layer-config#KB-132",
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-134",
+        "artwork-layer-config/text-layer-config#KB-135",
+        "artwork-layer-config/text-layer-config#KB-136",
+        "artwork-layer-config/text-layer-config#KB-137",
+        "artwork-layer-config/text-layer-config#KB-138",
+        "artwork-layer-config/text-layer-config#KB-139",
+        "artwork-layer-config/text-layer-config#KB-140",
+        "artwork-layer-config/text-layer-config#KB-141",
+        "artwork-layer-config/text-layer-config#KB-142",
+        "artwork-layer-config/text-layer-config#KB-143",
+        "artwork-layer-config/text-layer-config#KB-144",
+        "artwork-layer-config/text-layer-config#KB-251"
+      ]
+    },
+    {
+      "statement": "So sánh hình (thứ tự vành, độ dày, round, PNG khớp preview, scale linked, shadow) đều bằng mắt, không đo pixel.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-130",
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-134",
+        "artwork-layer-config/text-layer-config#KB-138",
+        "artwork-layer-config/text-layer-config#KB-251"
+      ]
+    },
+    {
+      "statement": "Preview storefront (SDK) và bản SVG (vectorize) không có trong bất kỳ quan sát nào của feature này.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-130",
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-134",
+        "artwork-layer-config/text-layer-config#KB-135",
+        "artwork-layer-config/text-layer-config#KB-138",
+        "artwork-layer-config/text-layer-config#KB-139",
+        "artwork-layer-config/text-layer-config#KB-140",
+        "artwork-layer-config/text-layer-config#KB-143",
+        "artwork-layer-config/text-layer-config#KB-251"
+      ]
+    },
+    {
+      "statement": "Phần lớn hành vi chỉ thấy trên 1 artwork / 1 test case.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129",
+        "artwork-layer-config/text-layer-config#KB-131",
+        "artwork-layer-config/text-layer-config#KB-136",
+        "artwork-layer-config/text-layer-config#KB-137",
+        "artwork-layer-config/text-layer-config#KB-139",
+        "artwork-layer-config/text-layer-config#KB-140"
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "role": "merchant-owner",
+      "capability": "cấu hình stack stroke, bật/tắt, convert layer, Save artwork",
+      "observed": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129",
+        "artwork-layer-config/text-layer-config#KB-131",
+        "artwork-layer-config/text-layer-config#KB-135",
+        "artwork-layer-config/text-layer-config#KB-136",
+        "artwork-layer-config/text-layer-config#KB-137"
+      ]
+    },
+    {
+      "role": "guest buyer",
+      "capability": "gửi payload personalization (kể cả stroke_layers tự chèn) — API trả 201",
+      "observed": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-144"
+      ]
+    },
+    {
+      "role": "store owner/staff",
+      "capability": "full access field riêng của các layer type nhóm TEXT",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-002",
+        "artwork-editor/_object-level#KB-004",
+        "artwork-editor/_object-level#KB-005",
+        "artwork-editor/_object-level#KB-008",
+        "artwork-editor/_object-level#KB-010",
+        "artwork-editor/_object-level#KB-011",
+        "artwork-editor/_object-level#KB-012",
+        "artwork-layer-config/text-layer-config#KB-013",
+        "artwork-layer-config/text-layer-config#KB-014",
+        "artwork-layer-config/text-layer-config#KB-015",
+        "artwork-layer-config/text-layer-config#KB-016"
+      ]
+    }
+  ],
+  "surface_mapping": {
+    "portal": [
+      {
+        "item": "Artwork Editor 2.0 → popover Stroke: stack editor (chú thích 'Stroke 1 sits closest to the text… Up to 3'), nút 'Add stroke' (disable ở 3 row), handle kéo đổi thứ tự, xoá row, toggle Enable stroke",
+        "kb_refs": [
+          "artwork-layer-config/text-layer-config#KB-129",
+          "artwork-layer-config/text-layer-config#KB-131",
+          "artwork-layer-config/text-layer-config#KB-132",
+          "artwork-layer-config/text-layer-config#KB-135",
+          "artwork-layer-config/text-layer-config#KB-143"
+        ]
+      },
+      {
+        "item": "Artwork Editor → preview canvas: thứ tự vành, độ dày từng vòng, fill trên vành, góc round, vành mảnh hơn ở layer linked, shadow 1 khối cho paragraph",
+        "kb_refs": [
+          "artwork-layer-config/text-layer-config#KB-130",
+          "artwork-layer-config/text-layer-config#KB-133",
+          "artwork-layer-config/text-layer-config#KB-134",
+          "artwork-layer-config/text-layer-config#KB-138",
+          "artwork-layer-config/text-layer-config#KB-251"
+        ]
+      },
+      {
+        "item": "Artwork Editor → convert layer (Single-line Text, Normal Paragraph, Curve Text, Warp Text)",
+        "kb_refs": [
+          "artwork-layer-config/text-layer-config#KB-136",
+          "artwork-layer-config/text-layer-config#KB-137"
+        ]
+      },
+      {
+        "item": "Popover Stroke dạng 1 stroke (Enable stroke + Stroke width + color picker) cho Custom Shape text và Paragraph trên Artwork 1.0",
+        "kb_refs": [
+          "artwork-layer-config/text-layer-config#KB-141",
+          "artwork-layer-config/text-layer-config#KB-142"
+        ]
+      }
+    ],
+    "storefront": [
+      {
+        "item": "localStorage teeinblue-customizations — không chứa stroke_layers do buyer chèn",
+        "kb_refs": [
+          "artwork-layer-config/text-layer-config#KB-144"
+        ]
+      },
+      {
+        "item": "[MỚI, CBS-149] Preview storefront (SDK) đọc cặp stroke của curve / spiral / shape / warp text; file design phải khớp",
+        "kb_refs": [
+          "artwork-layer-config/text-layer-config#KB-1094"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "item": "PUT /api/artworks/{id} — layer fields stroke_enabled, stroke_layers[], stroke_color, stroke_width; type paragraph/text/curve-text/warp-text/shape-text",
+        "kb_refs": [
+          "artwork-layer-config/text-layer-config#KB-129",
+          "artwork-layer-config/text-layer-config#KB-131",
+          "artwork-layer-config/text-layer-config#KB-132",
+          "artwork-layer-config/text-layer-config#KB-135",
+          "artwork-layer-config/text-layer-config#KB-136",
+          "artwork-layer-config/text-layer-config#KB-137",
+          "artwork-layer-config/text-layer-config#KB-138",
+          "artwork-layer-config/text-layer-config#KB-140",
+          "artwork-layer-config/text-layer-config#KB-141",
+          "artwork-layer-config/text-layer-config#KB-143"
+        ]
+      },
+      {
+        "item": "PNG order design (sinh bởi API cho order)",
+        "kb_refs": [
+          "artwork-layer-config/text-layer-config#KB-133",
+          "artwork-layer-config/text-layer-config#KB-134",
+          "artwork-layer-config/text-layer-config#KB-135",
+          "artwork-layer-config/text-layer-config#KB-139",
+          "artwork-layer-config/text-layer-config#KB-143",
+          "artwork-layer-config/text-layer-config#KB-144",
+          "artwork-layer-config/text-layer-config#KB-251"
+        ]
+      },
+      {
+        "item": "POST /api/merchant/shopify/customization — trả 201 và echo stroke_layers buyer chèn",
+        "kb_refs": [
+          "artwork-layer-config/text-layer-config#KB-144"
+        ]
+      },
+      {
+        "item": "[MỚI, CBS-149] Render order design PNG / SVG (vectorize) của curve / spiral / shape / warp text đọc cặp stroke_color / stroke_width; save (PUT/POST, MCP write tool) xoá stroke_layers khỏi 4 loại",
+        "kb_refs": [
+          "artwork-layer-config/text-layer-config#KB-1094",
+          "artwork-layer-config/text-layer-config#KB-1095",
+          "artwork-layer-config/text-layer-config#KB-1096",
+          "artwork-layer-config/text-layer-config#KB-1097"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "layer.stroke_layers: mảng có thứ tự, phần tử đầu là lớp sát chữ; mỗi phần tử có màu (hex, lớp ngoài thấy dạng chữ thường) và width (giữ nguyên giá trị nhập)",
+        "kb_refs": [
+          "artwork-layer-config/text-layer-config#KB-129",
+          "artwork-layer-config/text-layer-config#KB-130",
+          "artwork-layer-config/text-layer-config#KB-131"
+        ]
+      },
+      {
+        "item": "layer.stroke_color / layer.stroke_width: bằng lớp trong cùng của stroke_layers",
+        "kb_refs": [
+          "artwork-layer-config/text-layer-config#KB-132",
+          "artwork-layer-config/text-layer-config#KB-136",
+          "artwork-layer-config/text-layer-config#KB-140",
+          "artwork-layer-config/text-layer-config#KB-143"
+        ]
+      },
+      {
+        "item": "layer.stroke_enabled: false vẫn giữ stroke_layers",
+        "kb_refs": [
+          "artwork-layer-config/text-layer-config#KB-135"
+        ]
+      },
+      {
+        "item": "[MỚI, CBS-149] Layer curve / spiral / shape / warp text sau save: không có stroke_layers, chỉ cặp stroke_color / stroke_width; Text / Paragraph giữ stroke_layers; row cũ chưa save lại không đổi",
+        "kb_refs": [
+          "artwork-layer-config/text-layer-config#KB-1095",
+          "artwork-layer-config/text-layer-config#KB-1096"
+        ]
+      }
+    ],
+    "code": []
+  },
+  "dependencies": [
+    {
+      "statement": "stroke_layers chỉ persist qua PUT /api/artworks/{id} của feature artwork-save-persist; bản copy Artwork 1.0 #5187 không Save được (PUT 500) nên payload paragraph Artwork 1.0 chưa kiểm được.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129",
+        "artwork-layer-config/text-layer-config#KB-142",
+        "artwork/artwork-save-persist#KB-145"
+      ]
+    },
+    {
+      "statement": "Layer Paragraph linked (feature layer-duplicate-link-copy) mang cùng stack stroke_layers của layer gốc.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-138"
+      ]
+    },
+    {
+      "statement": "Hình in thực tế phụ thuộc renderer PNG order design của API; preview storefront phụ thuộc SDK storefront có code TIB-5580 (SDK staging lúc chạy test chưa có PR sdk #2124).",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-138",
+        "artwork-layer-config/text-layer-config#KB-139",
+        "artwork-layer-config/text-layer-config#KB-251"
+      ]
+    },
+    {
+      "statement": "[MỚI, CBS-149] Cùng bản sửa TIB-5699: linked copy của curve / warp render theo cặp stroke của gốc (FEAT-04-layer-duplicate-link-copy, KB-1098); MCP layer schema và MCP write tool bỏ stroke_layers trên 4 loại (FEAT-03-mcp-artwork-tools, KB-1099).",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1094",
+        "artwork-layer-config/text-layer-config#KB-1095"
+      ],
+      "cross_feature_kb_refs": [
+        "artwork-editor/layer-duplicate-link-copy#KB-1098",
+        "mcp/mcp-artwork-tools#KB-1099"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "Baseline icon/accordion/Custom class/Group name của cả 6 type do FEAT-01-editor-layer-workspace xác định.",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-002",
+        "artwork-editor/_object-level#KB-004",
+        "artwork-editor/_object-level#KB-005",
+        "artwork-editor/_object-level#KB-008",
+        "artwork-editor/_object-level#KB-010",
+        "artwork-editor/_object-level#KB-011",
+        "artwork-editor/_object-level#KB-012"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "Field-level JSON key của paragraph/shape-text (vertical_offset, url/shape_url) chưa cross-check trực tiếp qua PUT body thật — xem FEAT-07-artwork-save-persist (KB-053/055) để đối chiếu khi có sample.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-015",
+        "artwork-layer-config/text-layer-config#KB-016"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "[MỚI, CBS-079] Quan sát paragraph KB-416 phụ thuộc cấu hình populate của layer; cơ chế populate thuộc FEAT-05-populate-channels-config.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-416"
+      ]
+    },
+    {
+      "type": "feature",
+      "description": "[MỚI, CBS-126] Hành vi chỉnh điểm warp trực tiếp trên canvas và popover Warp mode (TIB-5325) liên quan KB-1067..KB-1069 nhưng chưa nạp vào context (ngoài CCR).",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1067",
+        "artwork-layer-config/text-layer-config#KB-1068",
+        "artwork-layer-config/text-layer-config#KB-1069"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "risk": "Toàn bộ hành vi là quan sát trên build staging trước khi 7 PR TIB-5580 merge (2026-10-22), chưa có PO/business xác nhận — không dùng làm expected result cứng; build sau merge / production (ship chưa xác nhận) có thể khác.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129",
+        "artwork-layer-config/text-layer-config#KB-130",
+        "artwork-layer-config/text-layer-config#KB-131",
+        "artwork-layer-config/text-layer-config#KB-132",
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-134",
+        "artwork-layer-config/text-layer-config#KB-135",
+        "artwork-layer-config/text-layer-config#KB-136",
+        "artwork-layer-config/text-layer-config#KB-137",
+        "artwork-layer-config/text-layer-config#KB-138",
+        "artwork-layer-config/text-layer-config#KB-139",
+        "artwork-layer-config/text-layer-config#KB-140",
+        "artwork-layer-config/text-layer-config#KB-141",
+        "artwork-layer-config/text-layer-config#KB-142",
+        "artwork-layer-config/text-layer-config#KB-143",
+        "artwork-layer-config/text-layer-config#KB-144",
+        "artwork-layer-config/text-layer-config#KB-251"
+      ]
+    },
+    {
+      "risk": "Giới hạn 3 lớp mới thấy ở UI; nếu API không validate thì artwork có thể lưu >3 lớp hoặc width không phải số qua đường khác ngoài editor.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129"
+      ]
+    },
+    {
+      "risk": "API personalization nhận 201 và echo stroke_layers buyer chèn (BUG-357); nếu phần chèn được lưu thì có thể dùng ở bước render khác chưa kiểm (storefront, SVG).",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-144"
+      ]
+    },
+    {
+      "risk": "Status trên Testlane của một số test case không khớp actualResult ('passed' trong khi actualResult ghi Blocked; TC-TIB-6338 'skipped' trong khi actualResult ghi Fail); case shadow paragraph ghi Blocked — không dùng status Testlane làm bằng chứng pass.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-138",
+        "artwork-layer-config/text-layer-config#KB-139",
+        "artwork-layer-config/text-layer-config#KB-142",
+        "artwork-layer-config/text-layer-config#KB-144",
+        "artwork-layer-config/text-layer-config#KB-251"
+      ]
+    },
+    {
+      "risk": "So sánh hình bằng mắt có thể bỏ sót chênh lệch nhỏ về bề dày vành hoặc shadow giữa preview và PNG.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-130",
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-138",
+        "artwork-layer-config/text-layer-config#KB-251"
+      ]
+    },
+    {
+      "risk": "remove_line_breaks_enabled (paragraph, KB-015) chưa xác nhận được key JSON tương ứng trong bundle-descriptor — chỉ quan sát trên UI.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-015"
+      ]
+    },
+    {
+      "risk": "Toàn bộ per-type item trong feature này có observed_count=1 (1 DOM dump duy nhất từ ) — confidence LOW, KHÔNG suy required/optional/enum chính thức.",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-002",
+        "artwork-editor/_object-level#KB-004",
+        "artwork-editor/_object-level#KB-005",
+        "artwork-editor/_object-level#KB-008",
+        "artwork-editor/_object-level#KB-010",
+        "artwork-editor/_object-level#KB-011",
+        "artwork-editor/_object-level#KB-012",
+        "artwork-layer-config/text-layer-config#KB-013",
+        "artwork-layer-config/text-layer-config#KB-014",
+        "artwork-layer-config/text-layer-config#KB-015",
+        "artwork-layer-config/text-layer-config#KB-016"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-008] KB-157 (Curve Text không có căn lề text) chỉ quan sát 1 lần khi dựng fixture, chưa có dev/PO xác nhận — không viết check 'Curve Text phải không có tuỳ chọn căn lề'; nếu sau này Curve Text có căn lề, quan sát render Curve Text rainbow chỉ ở căn giữa (FEAT-21) không còn đủ bao phủ.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-157"
+      ]
+    },
+    {
+      "risk": "[MỚI, CBS-079] KB-416 chỉ có một lượt, mỗi nhánh một case, record không có build và ngày chạy, shipped UNKNOWN; expected trong mô tả ticket khác kết quả. Không viết check coi ba nhánh này là expected tới khi có xác nhận.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-416"
+      ]
+    },
+    {
+      "risk": "[CBS-126] Schema points và Mirror của Warp Text chỉ có rule QA (KB-1066, KB-1068, KB-1069: PROPOSED, không làm oracle) và change note dev (KB-1067: OBSERVED_CURRENT). Lượt chạy QA-3378 chỉ có tick [AI], không build, đo trước lần TIB-5325 re-open; popup Warp cũ có thể đã đổi sau Warp mode. Expected của record Testlane TC-TIB-4215 ghi y 'không đổi theo điểm vừa kéo', lệch với số đo; TC-TIB-4195 (TC-14) dựa trên giới hạn mirror mà change note dev nay ghi đã làm xong.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1066",
+        "artwork-layer-config/text-layer-config#KB-1067",
+        "artwork-layer-config/text-layer-config#KB-1068",
+        "artwork-layer-config/text-layer-config#KB-1069"
+      ]
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-30",
+    "source_observed_on": "2026-10-21/2026-10-22"
+  },
+  "unknown_areas": [
+    {
+      "question": "Stack stroke của Paragraph (tối đa 3 lớp, width là độ dày riêng từng vòng, xếp từ mép chữ ra ngoài theo thứ tự row, xoá/đổi thứ tự giữ dữ liệu) có phải hành vi đúng theo PO/business, và có giữ nguyên trên build TIB-5580 khi ship không?",
+      "why_it_matters": "Mới là quan sát một lượt chạy test staging trước khi 7 PR TIB-5580 merge (2026-10-22), ship production chưa xác nhận; checklist không có oracle xác nhận cho các check cốt lõi của feature.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129",
+        "artwork-layer-config/text-layer-config#KB-130",
+        "artwork-layer-config/text-layer-config#KB-131"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-047"
+    },
+    {
+      "question": "Gửi thẳng PUT /api/artworks/{id} cho Paragraph với stroke_layers có entry thứ 4, hoặc width không phải số, thì server từ chối, cắt bớt hay lưu nguyên?",
+      "why_it_matters": "Giới hạn 3 lớp chỉ thấy ở UI (nút 'Add stroke' disable); không có oracle cho validate phía server của artwork.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-048"
+    },
+    {
+      "question": "Paragraph mới tạo khi stroke còn tắt có lưu sẵn entry stroke_layers không, và mặc định (tắt; bật lên 1 row #FF0000 / 1px; stroke_color/stroke_width bằng lớp trong cùng) có phải hành vi đúng?",
+      "why_it_matters": "Dữ liệu lưu khi stroke tắt chưa quan sát; check dữ liệu mặc định của paragraph mới không có oracle.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-132"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-049"
+    },
+    {
+      "question": "Preview storefront (SDK) hiển thị Paragraph nhiều lớp stroke thế nào (thứ tự vành, round, autoscale, layer linked) khi SDK staging có code TIB-5580?",
+      "why_it_matters": "SDK storefront staging lúc chạy test chưa có PR sdk #2124 (chưa có code TIB-5580) nên mọi phần storefront của các test case bị Blocked; buyer thấy preview storefront trước khi đặt hàng.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-138",
+        "artwork-layer-config/text-layer-config#KB-139",
+        "artwork-layer-config/text-layer-config#KB-251"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-artwork-layer-config-050"
+    },
+    {
+      "question": "Bản SVG (vectorize) của order design có đúng thứ tự vành, góc round, không vẽ vành khi stroke tắt, không cắt vành khi autoscale — cho Paragraph và Text 1 dòng?",
+      "why_it_matters": "Không có đường tải SVG order design trên portal staging; SVG là một đầu ra in nhưng hoàn toàn chưa được kiểm.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-134",
+        "artwork-layer-config/text-layer-config#KB-135",
+        "artwork-layer-config/text-layer-config#KB-139",
+        "artwork-layer-config/text-layer-config#KB-143"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-artwork-layer-config-051"
+    },
+    {
+      "question": "PNG order design khớp preview Artwork Editor (fill trên mọi vành, góc round, autoscale không cắt vành) có phải hành vi đúng, và mức chênh lệch bề dày vành nào là chấp nhận được khi đo pixel?",
+      "why_it_matters": "Kết luận render đều dựa trên so sánh bằng mắt, chưa có xác nhận PO/business; check render không có ngưỡng đo khách quan.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-130",
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-134",
+        "artwork-layer-config/text-layer-config#KB-139"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-052"
+    },
+    {
+      "question": "Tắt stroke giữ nguyên stroke_layers (stroke_enabled=false) và bật lại khôi phục các lớp cũ có phải hành vi đúng?",
+      "why_it_matters": "Quyết định check 'tắt rồi bật lại' kỳ vọng khôi phục hay reset; chưa có xác nhận.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-135"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-053"
+    },
+    {
+      "question": "Convert Paragraph nhiều lớp sang Spiral Text và các loại layer khác ngoài Curve/Warp Text cho kết quả gì, và việc gộp về lớp trong cùng (bỏ lớp ngoài) có phải hành vi đúng?",
+      "why_it_matters": "Mới quan sát Curve và Warp; người dùng mất lớp ngoài khi convert, cần biết đó là thiết kế hay lỗi.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-136",
+        "artwork-layer-config/text-layer-config#KB-137"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-054"
+    },
+    {
+      "question": "Vành của Paragraph linked scale chính xác theo tỉ lệ kích thước (đo được) không, và PNG order design của layer linked có đúng như preview editor không?",
+      "why_it_matters": "Tỉ lệ mới đánh giá bằng mắt trên preview editor; PNG của layer linked chưa kiểm.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-138"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-055"
+    },
+    {
+      "question": "Việc Custom Shape text và Paragraph trên Artwork 1.0 chỉ có 1 stroke (không có stack) là quyết định sản phẩm đã duyệt chưa, và Paragraph Artwork 1.0 sau khi đổi width lưu payload thế nào?",
+      "why_it_matters": "Phạm vi loại trừ mới là quan sát hiện tại; payload Paragraph Artwork 1.0 chưa kiểm được vì fixture không Save được.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-140",
+        "artwork-layer-config/text-layer-config#KB-141",
+        "artwork-layer-config/text-layer-config#KB-142"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-056"
+    },
+    {
+      "question": "Multi-stroke của Text 1 dòng (TIB-5417) có giữ nguyên trong editor, API và PNG trên build TIB-5580 khi ship không?",
+      "why_it_matters": "Regression mới kiểm trên build staging trước khi 7 PR TIB-5580 merge (2026-10-22), ship production chưa xác nhận; cần kiểm lại sau merge/ship.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-143"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-057"
+    },
+    {
+      "question": "Server phải từ chối/loại bỏ stroke_layers sai do buyer gửi kèm personalization (4 entry, width không phải số), hay chấp nhận nhưng bỏ qua khi render là đủ?",
+      "why_it_matters": "API hiện trả 201 và echo phần chèn (BUG-357); chưa ai phân xử nên check của luồng này không có expected result.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-144"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-058"
+    },
+    {
+      "question": "Server có thực sự lưu stroke_layers do buyer chèn vào customization, hay chỉ echo trong response?",
+      "why_it_matters": "Việc lưu chỉ suy từ response echo; nếu được lưu, phần chèn có thể ảnh hưởng đầu ra khác (storefront, SVG) chưa kiểm.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-144"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-059"
+    },
+    {
+      "question": "Ai đã đổi status Testlane của task TIB-220 sau lượt chạy, và status hay actualResult mới là kết quả đúng của các test case lệch ('passed' trong khi actualResult ghi Blocked; TC-TIB-6338 'skipped' trong khi actualResult ghi Fail)?",
+      "why_it_matters": "Các test case này không dùng được làm nguồn xác nhận cho tới khi status và actualResult khớp.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-138",
+        "artwork-layer-config/text-layer-config#KB-139",
+        "artwork-layer-config/text-layer-config#KB-142",
+        "artwork-layer-config/text-layer-config#KB-144"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-artwork-layer-config-060"
+    },
+    {
+      "question": "Toàn bộ hành vi stroke nhiều lớp (editor, PUT, PNG order design, convert, toggle, legacy, Custom Shape, Text 1 dòng, shadow) có giữ nguyên trên build sau khi 7 PR TIB-5580 merge (2026-10-22) và trên production không — TIB-5580 đã thực sự ship chưa?",
+      "why_it_matters": "Mọi quan sát đều chạy trên staging trước merge với build hash không rõ; chưa có lượt chạy lại nào sau merge hay trên production, nên mọi oracle hiện tại chỉ đúng cho build trước merge.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129",
+        "artwork-layer-config/text-layer-config#KB-130",
+        "artwork-layer-config/text-layer-config#KB-131",
+        "artwork-layer-config/text-layer-config#KB-132",
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-134",
+        "artwork-layer-config/text-layer-config#KB-135",
+        "artwork-layer-config/text-layer-config#KB-136",
+        "artwork-layer-config/text-layer-config#KB-137",
+        "artwork-layer-config/text-layer-config#KB-138",
+        "artwork-layer-config/text-layer-config#KB-139",
+        "artwork-layer-config/text-layer-config#KB-140",
+        "artwork-layer-config/text-layer-config#KB-141",
+        "artwork-layer-config/text-layer-config#KB-142",
+        "artwork-layer-config/text-layer-config#KB-143",
+        "artwork-layer-config/text-layer-config#KB-144",
+        "artwork-layer-config/text-layer-config#KB-251"
+      ],
+      "oq_type": "OPEN_ISSUE",
+      "oq_id": "OQ-artwork-layer-config-076"
+    },
+    {
+      "question": "Shadow của Paragraph có nhiều lớp stroke: vẽ 1 khối shadow cho cả paragraph (không lặp theo dòng, nằm dưới các vành) ở preview Artwork Editor và PNG order design có phải hành vi đúng, và có giữ nguyên ở preview storefront và SVG vectorize không?",
+      "why_it_matters": "Check shadow paragraph (CHK-027) chưa có oracle xác nhận: hiện chỉ có BASELINE từ quan sát KB-251 (OBSERVED_CURRENT/LOW) — quan sát bằng mắt trên 2 order trong lượt test staging trước merge, hai test case Blocked; cần xác nhận trước khi dùng làm expected result.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-251"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-077"
+    },
+    {
+      "question": "Các test case PASS trên staging (trước merge) xác nhận cùng hành vi của KB-129..132, 134..137, 140, 141, 143; PO chưa quyết nâng thành expected",
+      "why_it_matters": "Cho tới khi PO quyết, các hành vi này vẫn chỉ là OBSERVED_CURRENT/LOW trong profile; checklist không được dùng chúng làm expected result cứng.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129",
+        "artwork-layer-config/text-layer-config#KB-130",
+        "artwork-layer-config/text-layer-config#KB-131",
+        "artwork-layer-config/text-layer-config#KB-132",
+        "artwork-layer-config/text-layer-config#KB-134",
+        "artwork-layer-config/text-layer-config#KB-135",
+        "artwork-layer-config/text-layer-config#KB-136",
+        "artwork-layer-config/text-layer-config#KB-137",
+        "artwork-layer-config/text-layer-config#KB-140",
+        "artwork-layer-config/text-layer-config#KB-141",
+        "artwork-layer-config/text-layer-config#KB-143"
+      ],
+      "oq_type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-075"
+    },
+    {
+      "question": "[MỚI, CBS-149] Trên production, ảnh render PNG và preview của curve / spiral / shape / warp text sau TIB-5699 có khớp stroke editor khi người xem duyệt không? Production 2026-11-11 chỉ phần kiểm bằng máy pass (NOT-RUN phần duyệt ảnh ở mức task); KB-1096, KB-1097 và vế convert của KB-1095 chỉ chạy staging (linked copy KB-1098 cũng chỉ staging).",
+      "why_it_matters": "CHK-028..031 chưa có bằng chứng production cho phần hình; không ghi được kết quả production cho các check này.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1094",
+        "artwork-layer-config/text-layer-config#KB-1095",
+        "artwork-layer-config/text-layer-config#KB-1096",
+        "artwork-layer-config/text-layer-config#KB-1097"
+      ],
+      "oq_id": "OQ-artwork-layer-config-201"
+    },
+    {
+      "question": "[MỚI, CBS-149] Spiral text trên SVG design: width 5 cho stroke-width=\"3\", trong khi các loại khác stroke-width = width × 0.875 — đây là hành vi đúng hay lệch? Chưa có trả lời của Dev.",
+      "why_it_matters": "Quyết định expected cho độ dày stroke spiral text trong SVG ở CHK-028; hiện chỉ ghi quan sát, không phán.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1094"
+      ],
+      "oq_id": "OQ-artwork-layer-config-202"
+    },
+    {
+      "question": "[MỚI, CBS-149] Layer curve / spiral / shape / warp text đã giữ sẵn stroke_layers cũ (tình huống gốc của TIB-5699) có render theo cặp và bị xoá list khi save lại không? Dev ghi \"Not for QA (covered by unit tests)\", dặn không sửa data bằng tay; QA chưa dựng được fixture.",
+      "why_it_matters": "Đúng tình huống lỗi của khách nhưng chưa có QA verify; checklist chỉ kiểm layer mới đặt stroke.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1094",
+        "artwork-layer-config/text-layer-config#KB-1095"
+      ],
+      "oq_id": "OQ-artwork-layer-config-203"
+    },
+    {
+      "question": "[MỚI, CBS-149] Warp text bật stroke mà stroke_width rỗng hoặc 0: preview SDK không vẽ stroke, còn render api vẽ width mặc định 1 (Dev tự nêu ở Open questions của TIB-5699 comment 56557, giữ nguyên hành vi, hỏi có tách ticket không). Đây là lệch chấp nhận hay bug cần ticket riêng?",
+      "why_it_matters": "Vế 'design khớp preview' của KB-1094 không áp cho trường hợp này; CHK-028 phải đặt width khác mặc định để tránh.",
+      "level": "feature",
+      "oq_type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1094"
+      ],
+      "oq_id": "OQ-artwork-layer-config-204"
+    },
+    {
+      "question": "Key JSON thật của field 'Remove line breaks' (paragraph) — bundle-registry hiện tại không liệt kê field này gắn với layer type cụ thể.",
+      "why_it_matters": "Không thể viết assertion API/DB cho field này tới khi xác nhận được key."
+    },
+    {
+      "question": "Single-line Text và Curve Text — 2 type baseline của nhóm TEXT — chưa có per-type DOM dump riêng để xác nhận field DESIGN SETTINGS cụ thể (chỉ biết chúng KHÔNG bị liệt là ngoại lệ ở các boundary item).",
+      "why_it_matters": "Nếu sau này 2 type này có field riêng cần sửa, hiện chưa có KB item nào để trace/edit trực tiếp — cần 1 lần dump riêng."
+    },
+    {
+      "question": "Hành vi runtime storefront (SDK) của các field/layer type trong nhóm này — 0 evidence, ngoài phạm vi 3 run bootstrap (thuộc storefront-explorer).",
+      "why_it_matters": "coverage_gaps #1 của KB gốc; không thể viết test case storefront cho các field này tới khi có evidence riêng."
+    },
+    {
+      "question": "Hành vi với role khác owner / cross-tenant cho các field/layer type trong nhóm này — chưa test, chỉ 1 role/1 tenant trong cả 3 run.",
+      "why_it_matters": "coverage_gaps #3 của KB gốc."
+    },
+    {
+      "question": "[MỚI, CBS-008] Layer Curve Text không có tuỳ chọn căn lề text (lưu align center) là thiết kế có chủ đích hay là tính năng còn thiếu?",
+      "why_it_matters": "Quyết định checklist coi việc thiếu căn lề là đúng hay là gap; ảnh hưởng phạm vi kiểm render Curve Text rainbow (hiện chỉ kiểm được căn giữa).",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-157"
+      ],
+      "oq_id": "OQ-artwork-layer-config-066"
+    },
+    {
+      "question": "[MỚI, CBS-008] Nút 'Align' trên canvas toolbar khi chọn layer curve-text (KB-042 của editor-layer-workspace) là căn vị trí layer trên canvas hay căn lề text?",
+      "why_it_matters": "Nếu 'Align' là căn lề text, KB-157 ('không có tuỳ chọn căn lề') có thể sai và Curve Text căn phải dựng được; nếu là căn vị trí layer, hai item không mâu thuẫn.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-157"
+      ],
+      "oq_id": "OQ-artwork-layer-config-067"
+    },
+    {
+      "question": "[MỚI, CBS-079] Paragraph rỗng không render trong design, chỉ khoảng trắng thì preview và design trống, xoá nội dung field nguồn populate thì preview về default text. Đây có phải hành vi đúng không?",
+      "why_it_matters": "TC-TIB-5719, 5725, 5760 passed với các kết quả trên nhưng record không có build, không ghi ngày chạy; theo CCR, mô tả TIB-5538 ghi \"should fall back to its default text\", khác kết quả. Checklist chưa có oracle. Cần PO hoặc Dev xác nhận nguyên văn, có ngày, cho cả ba nhánh; hoặc test case PASS có ngày chạy và build.",
+      "type": "NEEDS_CONFIRMATION",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-416"
+      ],
+      "oq_id": "OQ-artwork-layer-config-079"
+    },
+    {
+      "question": "[MỚI, CBS-126] points trong payload warp_text có đúng là mảng phẳng 20 số nguyên toạ độ pixel tuyệt đối trong [0,width]×[0,height] với width=height=1000, và resize layer không đổi points/width/height (rule QA FACT-042)? Change note dev chỉ nói payload không đổi và vùng 1000x1000.",
+      "why_it_matters": "KB-1066 PROPOSED; CHK-011 chưa có oracle.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1066",
+        "artwork-layer-config/text-layer-config#KB-1067"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-196"
+    },
+    {
+      "question": "[MỚI, CBS-126] Sau TIB-5325, dialog Advanced editor (popup Warp cũ) còn hai nút icon Mirror X/Y cạnh Free không, hay đã thay bằng lựa chọn Vertical/Horizontal của Warp mode (rule QA FACT-137)?",
+      "why_it_matters": "KB-1068 PROPOSED; CHK-012 chưa có oracle; locator của test case Mirror có thể đã lỗi thời.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1068"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-197"
+    },
+    {
+      "question": "[MỚI, CBS-126] Khi mirror theo trục dọc (Mirror X cũ hoặc Warp mode Vertical), điểm đối xứng có nhận x' = 2×centerX − x và y bằng y của điểm vừa kéo, và bật mirror không tự lật điểm sẵn có (rule QA FACT-138)?",
+      "why_it_matters": "KB-1069 PROPOSED; CHK-013 chưa có oracle; expected của TC-TIB-4215 ghi 'y không đổi theo điểm vừa kéo' lệch số đo.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1069"
+      ],
+      "type": "NEEDS_CONFIRMATION",
+      "oq_id": "OQ-artwork-layer-config-198"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-12",
+    "ccr_ref": "CBS-149"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "stack 1–3 lớp, Add disable ở 3, xoá/đổi thứ tự, bật/tắt",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129",
+        "artwork-layer-config/text-layer-config#KB-131",
+        "artwork-layer-config/text-layer-config#KB-132",
+        "artwork-layer-config/text-layer-config#KB-135"
+      ],
+      "basis": "quan sát OBSERVED_CURRENT/LOW, build trước khi 7 PR TIB-5580 merge"
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "PUT lưu stroke_layers / stroke_enabled / mirror stroke_color-stroke_width qua editor",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129",
+        "artwork-layer-config/text-layer-config#KB-131",
+        "artwork-layer-config/text-layer-config#KB-132",
+        "artwork-layer-config/text-layer-config#KB-135",
+        "artwork-layer-config/text-layer-config#KB-140"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "PUT trực tiếp stroke_layers 4 entry / width không phải số",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "preview Artwork Editor: thứ tự vành, width riêng, fill trên, round, linked scale",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-130",
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-134",
+        "artwork-layer-config/text-layer-config#KB-138"
+      ],
+      "basis": "so sánh bằng mắt"
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "api",
+      "role": "guest buyer",
+      "state": "PNG order design: nhiều lớp, round, stroke tắt, autoscale, Text 1 dòng",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-134",
+        "artwork-layer-config/text-layer-config#KB-135",
+        "artwork-layer-config/text-layer-config#KB-139",
+        "artwork-layer-config/text-layer-config#KB-143"
+      ],
+      "basis": "so sánh bằng mắt"
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "Paragraph có shadow + nhiều lớp stroke: preview editor và PNG order design",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-251"
+      ],
+      "basis": "chỉ quan sát OBSERVED_CURRENT/LOW, hai case Blocked"
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "api",
+      "role": "guest buyer",
+      "state": "PNG order design của layer Paragraph linked",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-138"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "storefront",
+      "role": "guest buyer",
+      "state": "preview storefront (SDK) Paragraph nhiều lớp, kể cả shadow",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-138",
+        "artwork-layer-config/text-layer-config#KB-139",
+        "artwork-layer-config/text-layer-config#KB-251"
+      ],
+      "basis": "SDK staging chưa có PR sdk #2124"
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "api",
+      "role": "guest buyer",
+      "state": "SVG vectorize order design (kể cả shadow)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-133",
+        "artwork-layer-config/text-layer-config#KB-134",
+        "artwork-layer-config/text-layer-config#KB-135",
+        "artwork-layer-config/text-layer-config#KB-139",
+        "artwork-layer-config/text-layer-config#KB-143",
+        "artwork-layer-config/text-layer-config#KB-251"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "convert Paragraph ↔ Text, → Curve/Warp",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-136",
+        "artwork-layer-config/text-layer-config#KB-137"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "convert Paragraph → Spiral Text / loại khác",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-137"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "portal+api",
+      "role": "merchant-owner",
+      "state": "Custom Shape text, Paragraph Artwork 1.0 (UI), stroke legacy",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-140",
+        "artwork-layer-config/text-layer-config#KB-141",
+        "artwork-layer-config/text-layer-config#KB-142"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "payload Paragraph Artwork 1.0 sau đổi width",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-142",
+        "artwork/artwork-save-persist#KB-145"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "api+storefront",
+      "role": "guest buyer",
+      "state": "personalization có stroke_layers chèn",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-144"
+      ],
+      "basis": "kết quả Failed, BUG-357"
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "portal",
+      "role": "staff hạn chế / cross-tenant",
+      "state": "toàn bộ",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "any",
+      "role": "any",
+      "state": "build staging sau khi 7 PR TIB-5580 merge (2026-10-22)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129",
+        "artwork-layer-config/text-layer-config#KB-251"
+      ],
+      "basis": "mọi nguồn chạy trước merge"
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "any",
+      "role": "any",
+      "state": "build TIB-5580 đã ship",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129"
+      ],
+      "basis": "ship production chưa xác nhận; production không được kiểm"
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "api",
+      "role": "merchant-owner + buyer",
+      "state": "[CBS-149] curve / spiral / shape / warp text mới đặt stroke: render PNG / SVG, save xoá stroke_layers, convert Text → Curve / Warp",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1094",
+        "artwork-layer-config/text-layer-config#KB-1095",
+        "artwork-layer-config/text-layer-config#KB-1097"
+      ],
+      "basis": "Dev comment 56557 + test case PASS staging 2026-11-10 (không ghi build)"
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "api",
+      "role": "merchant-owner + buyer",
+      "state": "[CBS-149] ảnh render PNG / preview sau TIB-5699 do người xem duyệt",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1094"
+      ],
+      "basis": "production 2026-11-11 chỉ phần kiểm bằng máy pass"
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "data",
+      "role": "merchant-owner",
+      "state": "[CBS-149] layer 4 loại đã giữ sẵn stroke_layers cũ",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1094",
+        "artwork-layer-config/text-layer-config#KB-1095"
+      ],
+      "basis": "Dev: Not for QA (unit test); QA không dựng fixture"
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "api",
+      "role": "merchant-owner + buyer",
+      "state": "[CBS-149] regression Text / Paragraph 2 lớp stroke sau TIB-5699",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1096"
+      ],
+      "basis": "một test case PASS staging 2026-11-10 (OBSERVED_CURRENT/LOW)"
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "portal",
+      "role": "owner",
+      "state": "layer type nhóm TEXT",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "code",
+      "role": "owner",
+      "state": "bundle-registry cross-check (một phần)",
+      "environment": "staging",
+      "covered": true
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "api",
+      "role": "owner",
+      "state": "field-level request/response mapping",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "storefront",
+      "role": "owner",
+      "state": "layer type nhóm TEXT",
+      "environment": "staging",
+      "covered": false
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-008] Curve Text — tuỳ chọn căn lề text (Artwork 2.0)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-157"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-008] đối chiếu nút 'Align' canvas toolbar với căn lề text của Curve Text",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-157"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[MỚI, CBS-079] paragraph vừa là buyer field vừa được populate: rỗng, chỉ khoảng trắng, xoá nội dung field nguồn",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-416"
+      ],
+      "basis": "OBSERVED_CURRENT/LOW, 1 lượt tháng 10/2026; chưa có oracle"
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "storefront",
+      "role": "buyer",
+      "state": "[MỚI, CBS-079] paragraph vừa là buyer field vừa được populate",
+      "environment": "production",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-416"
+      ],
+      "basis": "shipped UNKNOWN"
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "api",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-126] payload render warp_text: dạng points, ảnh hưởng resize",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1066",
+        "artwork-layer-config/text-layer-config#KB-1067"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-126] popup Warp cũ: nút Mirror X/Y, kéo điểm khi Mirror X bật (đo trước TIB-5325 re-open)",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1068",
+        "artwork-layer-config/text-layer-config#KB-1069"
+      ]
+    },
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "layer": "portal",
+      "role": "merchant-owner",
+      "state": "[MỚI, CBS-126] popover Warp mode Free/Vertical/Horizontal và kéo điểm trên canvas (TIB-5325)",
+      "environment": "staging",
+      "covered": false,
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-1067"
+      ]
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "feature_id": "FEAT-01-text-layer-config",
+      "type": "CROSS_FEATURE_KB_REF_IN_BASE",
+      "detail": "Nội dung có sẵn (actors, entry_points, capabilities[0], permissions, dependencies[0], risks[1]) tham chiếu KB-002, KB-004, KB-005, KB-008, KB-010, KB-011, KB-012 — item thuộc FEAT-01-editor-layer-workspace, không nằm trong kb.json của feature này. Giữ nguyên văn; không thêm tham chiếu mới tới các item đó.",
+      "kb_refs": [
+        "artwork-editor/_object-level#KB-002",
+        "artwork-editor/_object-level#KB-004",
+        "artwork-editor/_object-level#KB-005",
+        "artwork-editor/_object-level#KB-008",
+        "artwork-editor/_object-level#KB-010",
+        "artwork-editor/_object-level#KB-011",
+        "artwork-editor/_object-level#KB-012"
+      ]
+    }
+  ],
+  "profile_relationships": [
+    {
+      "from_feature_id": "FEAT-01-text-layer-config",
+      "to_feature_id": "FEAT-07-artwork-save-persist",
+      "relation": "depends_on",
+      "note": "stroke_layers, stroke_enabled, stroke_color/stroke_width chỉ persist qua PUT /api/artworks/{id}; Paragraph Artwork 1.0 chưa kiểm được payload vì bản copy #5187 không Save được (PUT 500).",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-129",
+        "artwork-layer-config/text-layer-config#KB-142",
+        "artwork/artwork-save-persist#KB-145"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-text-layer-config",
+      "to_feature_id": "FEAT-04-layer-duplicate-link-copy",
+      "relation": "corroborates",
+      "note": "Layer Paragraph linked không có nút Stroke riêng và mang cùng stack stroke_layers của layer gốc trong PUT — một phần câu hỏi về shape JSON của layer linked ở tầng API (chỉ cho stroke).",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-138"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-text-layer-config",
+      "to_feature_id": "FEAT-01-text-layer-config",
+      "relation": "extends",
+      "note": "Stroke nhiều lớp là cấu hình của các text layer (Paragraph, Single-line Text); Curve Text, Warp Text, Custom Shape text chỉ có 1 stroke.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-136",
+        "artwork-layer-config/text-layer-config#KB-137",
+        "artwork-layer-config/text-layer-config#KB-141",
+        "artwork-layer-config/text-layer-config#KB-143"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-text-layer-config",
+      "to_feature_id": "FEAT-01-editor-layer-workspace",
+      "relation": "depends_on (baseline mechanism)",
+      "note": "Icon buttons/tồn tại accordion/Custom class/Group name baseline do FEAT-04 xác định; feature này chỉ mô tả nội dung field riêng."
+    },
+    {
+      "from_feature_id": "FEAT-01-text-layer-config",
+      "to_feature_id": "FEAT-06-print-design-render",
+      "relation": "constrains (Curve Text không có căn lề text)",
+      "note": "[MỚI, CBS-008] Vì Curve Text không có tuỳ chọn căn lề (KB-157), render Curve Text rainbow ở FEAT-21 chỉ quan sát được ở căn giữa (KB-156).",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-157"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-text-layer-config",
+      "to_feature_id": "FEAT-01-editor-layer-workspace",
+      "relation": "related (canvas toolbar 'Align' khi chọn curve-text)",
+      "note": "[MỚI, CBS-008] KB-042 (canvas toolbar của layer nhóm text có Align) chưa được đối chiếu với KB-157; chưa rõ 'Align' là căn vị trí layer hay căn lề text.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-157"
+      ]
+    },
+    {
+      "from_feature_id": "FEAT-01-text-layer-config",
+      "to_feature_id": "FEAT-05-populate-channels-config",
+      "relation": "related (paragraph vừa là buyer field vừa được populate)",
+      "note": "[MỚI, CBS-079] KB-416 quan sát hành vi preview và design của paragraph được populate; cơ chế populate thuộc FEAT-11, quan sát này không thêm item vào FEAT-11.",
+      "kb_refs": [
+        "artwork-layer-config/text-layer-config#KB-416"
+      ]
+    }
+  ]
+}

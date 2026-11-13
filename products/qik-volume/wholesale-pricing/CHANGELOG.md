@@ -1,0 +1,2 @@
+# CHANGELOG — wholesale-pricing
+- 2026-11-13 (restructure-2026-11-13) — Đổi cấu trúc theo contract §5 "Độ hạt object/feature": discount-offers/wholesale-pricing-offer → wholesale-pricing/wholesale-appearance-and-schedule; discount-offers/wholesale-pricing-offer → wholesale-pricing/wholesale-storefront-composer; discount-offers/wholesale-pricing-offer → wholesale-pricing/wholesale-tier-setup. Giữ nguyên kb_id, statement, nguồn và test steps; OQ chuyển object được mint id mới kèm `supersedes`.

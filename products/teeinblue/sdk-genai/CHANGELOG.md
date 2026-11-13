@@ -1,0 +1,2 @@
+# CHANGELOG — sdk-genai
+- 2026-11-13 (restructure-2026-11-13) — Đổi cấu trúc theo contract §5 "Độ hạt object/feature": sdk/genai-model-settings → sdk-genai/genai-model-settings; sdk/genai-personalization-runtime → sdk-genai/genai-personalization-runtime; sdk/photo-genai-image-filter-runtime → sdk-genai/photo-genai-image-filter-runtime. Giữ nguyên kb_id, statement, nguồn và test steps; OQ chuyển object được mint id mới kèm `supersedes`.

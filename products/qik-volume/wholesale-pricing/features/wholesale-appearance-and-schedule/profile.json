@@ -1,0 +1,491 @@
+{
+  "feature_id": "FEAT-01-wholesale-appearance-and-schedule",
+  "feature_key": "wholesale-appearance-and-schedule",
+  "name": "Wholesale: giao diện, layout bảng, combination và lịch",
+  "user_goal": "Merchant tuỳ biến giao diện card/table, đặt lịch chạy và combination cho offer Wholesale.",
+  "user_goal_kb_refs": [],
+  "stable_since_version": "1",
+  "actors": [],
+  "entry_points": [],
+  "capabilities": [
+    {
+      "name": "Tuỳ biến appearance storefront (layout/màu/typography/badge)",
+      "description": "Layout carousel (card preset + table layout QVD-156); Card border radius slider; 4 color picker (Primary/Secondary/Accent/Badge background); Typography 4 group (Heading/Body/Badge/Normal text); Badge settings group riêng (text/position/border-radius) hiển thị trên product image ở collection/recommendation, tách biệt khỏi checkbox 'Show discount badge' của Tier settings.",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-tier-setup#KB-WPO-015",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-026",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-027",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-028",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-029",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-030",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-032",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-034",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-035",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-036"
+      ],
+      "observed_kb_refs": [
+        "KB-WPO-079",
+        "KB-WPO-082",
+        "object:KB-031"
+      ],
+      "refresh_note": "Staging: Layout 2 thumbnail (card grid mặc định / table), radius 12px, màu #000000/#000000/#FFFFFF/#D75E60, Badge 'BULK SAVING' Top left 6px — khớp base; Typography explorer ghi 3 nhóm Heading Bold 20 / Body Regular 14 / Badge Regular 10, không khẳng định vắng 'Normal text' (NOT_EVALUATED). CONFLICT CONF-discount-offers-R1018-06: header bảng layout table 'QUANTITY | DISCOUNT | ITEM PRICE' (staging) vs 'Quantity | Discount | Unit price' (base KB-WPO-059) — UNRESOLVED.",
+      "status": "UNRESOLVED",
+      "conflict_groups": [
+        "CONF-discount-offers-R1018-06"
+      ]
+    },
+    {
+      "name": "Kiểm soát combination với discount type khác (order/product/shipping)",
+      "description": "3 checkbox Order discount/Product discount/Shipping discount đều checked by default trên offer mới tạo.",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-038"
+      ],
+      "observed_kb_refs": [
+        "object:KB-012"
+      ],
+      "refresh_note": "Staging corroborate: 3 checkbox checked, kèm dropdown 'One per product (best value wins)' (control mới, tài liệu không nhắc)."
+    },
+    {
+      "name": "Lên lịch campaign (start/end date)",
+      "description": "Start date/time bắt buộc; end date/time optional phía sau toggle 'Enable end date' — cùng shape với Quantity Break (QVD-26) và Multibuy (QVD-109).",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-040"
+      ],
+      "observed_kb_refs": [
+        "object:KB-013",
+        "KB-WPO-086"
+      ],
+      "refresh_note": "Staging: quan sát trực tiếp trên form Wholesale — offer start ngày mai → 'Scheduled'; discount Shopify tạo ACTIVE rồi vài giây sau SCHEDULED; trước giờ start storefront không widget, không discount."
+    },
+    {
+      "name": "Live price/tier feedback khi buyer thay đổi quantity",
+      "description": "PDP tier card (card layout) hoặc tier table row (table layout, QVD-156) highlight tier đang active, display-only (không clickable, khác Quantity Break). Per-unit price cạnh mỗi variant value, và subtotal (với original subtotal gạch ngang khi có discount), đều update live theo active tier.",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-045",
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-046",
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-052",
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-053",
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-054",
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-055",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-058",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-059",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-060",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-075"
+      ],
+      "observed_kb_refs": [
+        "KB-WPO-083",
+        "KB-WPO-082",
+        "KB-WPO-087"
+      ],
+      "refresh_note": "Staging corroborate trên product chỉ thuộc Wholesale (card '11-20 Items' highlight, giá dòng $27.00/Item, Subtotal gốc gạch, 'Reset selection'). POSSIBLE_DIVERGENCE: product cũng thuộc Quantity Break + layout table → bảng không đánh dấu hàng active, 'Subtotal' hiện giá gốc. Header bảng thuộc CONF-discount-offers-R1018-06.",
+      "status": "UNRESOLVED",
+      "conflict_groups": [
+        "CONF-discount-offers-R1018-06"
+      ]
+    }
+  ],
+  "state_transitions": [
+    {
+      "from": "card layout (default)",
+      "to": "table layout (QVD-156)",
+      "trigger": "merchant chọn preset thứ 2 trong Appearance & Style > Layout carousel và lưu",
+      "condition": null,
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-058",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-075"
+      ],
+      "observed_kb_refs": [
+        "KB-WPO-082"
+      ],
+      "refresh_note": "Staging: preview đổi ngay khi chọn (trước khi lưu); lưu → wholesale_layout layout-1 → layout-2; PDP mở sau đó render bảng; cập nhật live không reload không đo được."
+    }
+  ],
+  "confirmed_rules": [],
+  "confirmed_rule_annotations": [],
+  "observed_behavior": [
+    {
+      "behavior": "Form 'Wholesale pricing (B2B)' mới: 'TIER PRICING' / 'VARIANTS'; trigger 5 radio + Exclude; Percentage mặc định; [x] Show discount badge; bảng 3 tier 1–10/0, 11–20/10, 21–30/20; hint 'With last tier, leave \"Max quantity\" field empty to set for unlimited'; không có Display settings và Maximum discount uses; Appearance khớp base (radius 12px, #000000/#000000/#FFFFFF/#D75E60, Heading Bold 20 / Body Regular 14 / Badge Regular 10, 'BULK SAVING' Top left 6px), Custom CSS khoá.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-079"
+      ]
+    },
+    {
+      "behavior": "Đổi Layout card → table: preview đổi ngay (trước khi lưu); lưu layout-1 → layout-2; PDP sau đó render bảng 'TIER PRICING' header 'QUANTITY' | 'DISCOUNT' | 'ITEM PRICE'; VARIANTS/stepper không đổi.",
+      "basis": "OBSERVED_CURRENT",
+      "environment": "staging",
+      "observed_count": 1,
+      "confidence": "LOW",
+      "status": "UNRESOLVED",
+      "conflict_group": "CONF-discount-offers-R1018-06",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-082"
+      ]
+    }
+  ],
+  "observed_validations": [
+    {
+      "input": "Xoá Max quantity của tier cuối",
+      "message_verbatim": "With last tier, leave \"Max quantity\" field empty to set for unlimited",
+      "condition": "Hint luôn hiện dưới bảng tier; lưu với Max trống được chấp nhận (max_quantity null).",
+      "blocking": false,
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-079",
+        "wholesale-pricing/wholesale-tier-setup#KB-WPO-080"
+      ]
+    },
+    {
+      "input": "Mở Appearance & style → Custom CSS trên form Wholesale",
+      "message_verbatim": "contact our support team to enable",
+      "condition": "Field khoá (chỉ ghi phần chữ explorer trích).",
+      "blocking": true,
+      "observed_count": 1,
+      "rule_confidence": "LOW",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-079"
+      ]
+    }
+  ],
+  "permissions": [],
+  "surface_mapping": {
+    "portal": [
+      "Portal > Discount Offers > Wholesale Pricing Offer > General information & discount setup",
+      "Portal > Discount Offers > Wholesale Pricing Offer > Product targeting",
+      "Portal > Discount Offers > Wholesale Pricing Offer > Tier settings",
+      "Portal > Discount Offers > Wholesale Pricing Offer > Appearance & Style",
+      "Portal > Discount Offers > Wholesale Pricing Offer > Combination",
+      "Portal > Discount Offers > Wholesale Pricing Offer > Campaign scheduling",
+      {
+        "item": "Form /offers/setting/wholesale: Tier pricing title, Variant title, trigger + Exclude, tier table + hint Max trống, Layout card/table (preview đổi trước khi lưu), Combination, Campaign scheduling; không có Display settings / Maximum discount uses — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-079",
+          "wholesale-pricing/wholesale-tier-setup#KB-WPO-080",
+          "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-082",
+          "discount-offers/offer-create-and-manage#KB-009"
+        ]
+      },
+      {
+        "item": "Manage offers: status 'Scheduled' (badge warning, action Deactivate), modal Delete — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-create-and-manage#KB-016",
+          "discount-offers/offer-create-and-manage#KB-017",
+          "wholesale-pricing/wholesale-storefront-composer#KB-WPO-086"
+        ]
+      }
+    ],
+    "storefront": [
+      "PDP — tier card (card layout, display-only) hoặc tier table (table layout QVD-156), highlight tier active",
+      "PDP — multi-variant quantity-composition rows (variant type cuối = quantity stepper per value) + badge counter + live subtotal + 'Reset selection' link",
+      "Variant Selection Drawer (slide-in) — mô tả trong spec/ticket QVD-143; KHÔNG được confirm tồn tại trong live rendering trên test-vl-1 — xem DCONF-001, không coi đây là UI đã xác nhận",
+      {
+        "item": "Composer inline thay selector variant + giá theme (desktop + mobile), 3 card hoặc bảng 'TIER PRICING' header QUANTITY/DISCOUNT/ITEM PRICE, ATC theme disable khi quantity 0 — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "wholesale-pricing/wholesale-storefront-composer#KB-WPO-083",
+          "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-082",
+          "wholesale-pricing/wholesale-storefront-composer#KB-WPO-085"
+        ]
+      },
+      {
+        "item": "Cart: line property ẩn _qvl-wholesale-id (product chỉ thuộc Wholesale), mã QIKIFY-xxxxxx theo tổng số lượng các variant line — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "wholesale-pricing/wholesale-storefront-composer#KB-WPO-084"
+        ]
+      },
+      {
+        "item": "Collection/search: badge 'BULK SAVING' góc trên-trái — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "discount-offers/offer-storefront-events#KB-031",
+          "wholesale-pricing/wholesale-storefront-composer#KB-WPO-086"
+        ]
+      },
+      {
+        "item": "HTML PDP nhúng cấu hình offer kể cả offer Scheduled (starts_at), SDK log 'Time not right or already got offered <id>' — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "wholesale-pricing/wholesale-storefront-composer#KB-WPO-086",
+          "discount-offers/offer-storefront-events#KB-029"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "item": "Backend app <QVL_API_BASE>: POST /api/offers, GET /api/offers/{id}, PUT /api/offers/{id}, DELETE /api/offers/{id}; status SCHEDULED, starts_at — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "wholesale-pricing/wholesale-tier-setup#KB-WPO-080",
+          "wholesale-pricing/wholesale-tier-setup#KB-WPO-081",
+          "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-082",
+          "wholesale-pricing/wholesale-storefront-composer#KB-WPO-086",
+          "discount-offers/offer-create-and-manage#KB-015",
+          "discount-offers/offer-create-and-manage#KB-032"
+        ]
+      },
+      {
+        "item": "Shopify Admin GraphQL qua app proxy: discountAutomaticAppCreate (ACTIVE, startsAt = lúc lưu) → discountAutomaticAppUpdate (SCHEDULED, startsAt ngày mai); discountAutomaticDelete — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "wholesale-pricing/wholesale-storefront-composer#KB-WPO-086",
+          "discount-offers/offer-create-and-manage#KB-015"
+        ]
+      },
+      {
+        "item": "Storefront cart: POST /cart/add.js?qvl-discount (composer, nhiều item), đổi số lượng, đọc cart — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "wholesale-pricing/wholesale-storefront-composer#KB-WPO-084",
+          "wholesale-pricing/wholesale-tier-setup#KB-WPO-080",
+          "wholesale-pricing/wholesale-storefront-composer#KB-WPO-087"
+        ]
+      },
+      {
+        "item": "POST <QVL_API_BASE>/api/events (view theo widget; offer Scheduled không gửi view) và tải trang PDP — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "wholesale-pricing/wholesale-storefront-composer#KB-WPO-083",
+          "wholesale-pricing/wholesale-storefront-composer#KB-WPO-086",
+          "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-082",
+          "discount-offers/offer-storefront-events#KB-023"
+        ]
+      }
+    ],
+    "data": [
+      {
+        "item": "Offer lưu: max_quantity null (tier cuối Max trống), discount tier lưu dạng chuỗi khi sửa, wholesale_layout layout-1/layout-2, status SCHEDULED + starts_at — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "wholesale-pricing/wholesale-tier-setup#KB-WPO-080",
+          "wholesale-pricing/wholesale-tier-setup#KB-WPO-081",
+          "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-082",
+          "wholesale-pricing/wholesale-storefront-composer#KB-WPO-086"
+        ]
+      },
+      {
+        "item": "Line item property _qvl-wholesale-id (composer, product chỉ thuộc Wholesale) / _qvl-volume-id (composer trên product cũng thuộc Quantity Break) — staging",
+        "basis": "OBSERVED_CURRENT",
+        "kb_refs": [
+          "wholesale-pricing/wholesale-storefront-composer#KB-WPO-084",
+          "wholesale-pricing/wholesale-storefront-composer#KB-WPO-085",
+          "discount-offers/offer-overlap-and-stacking#KB-026"
+        ]
+      }
+    ],
+    "code": [
+      "Config flag ENABLE_WHOLESALE_QTY_ENFORCE_OPTION (QVD-180, per-store pilot, không phải general setting) — KB-WPO-066"
+    ]
+  },
+  "dependencies": [],
+  "risks": [
+    {
+      "risk": "UNRESOLVED (DCONF-001) — tài liệu tự mâu thuẫn: §Storefront nói Variant Selection Drawer không tồn tại (rendering inline), §Table layout lại nói cùng table render 'inside the Variant Selection Drawer'. Không giả định phía nào đúng khi viết test oracle cho storefront.",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-043",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-061"
+      ],
+      "observed_kb_refs": [
+        "KB-WPO-083"
+      ],
+      "refresh_note": "Staging inline desktop + mobile trên theme khác Dawn — không loại trừ drawer ở theme/config khác."
+    },
+    {
+      "risk": "Campaign scheduling (start/end date) CHƯA được re-verify live riêng cho Wholesale — suy ra từ hành vi tương tự của Quantity Break/Multibuy, không phải quan sát trực tiếp trên feature này.",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-041"
+      ],
+      "observed_kb_refs": [
+        "KB-WPO-086",
+        "object:KB-013"
+      ],
+      "refresh_note": "Staging đã quan sát trực tiếp trên form Wholesale (offer Scheduled); nhánh sau start/end chưa."
+    },
+    {
+      "risk": "Naming 'Normal text' (Typography group) khác 'Label' ở Quantity Break — chưa re-verify độc lập; nhất quán với giả định color field set là offer-type-specific, không share.",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-033"
+      ],
+      "observed_kb_refs": [
+        "KB-WPO-079"
+      ],
+      "refresh_note": "Staging: explorer ghi 3 nhóm, không xác nhận có/không 'Normal text'."
+    },
+    {
+      "risk": "Việc chuyển Layout (card <-> table) trong Portal áp dụng live trên storefront không cần reload là CLAIM từ ticket AC, CHƯA được independently verify.",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-062"
+      ],
+      "observed_kb_refs": [
+        "KB-WPO-082"
+      ],
+      "refresh_note": "Staging: không đo được (PDP mở sau khi đã lưu)."
+    },
+    {
+      "risk": "Mục mới: header cột 3 bảng layout table khác tài liệu (CONF-discount-offers-R1018-06) — test case header không có oracle.",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-059",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-082"
+      ],
+      "knowledge_kind": "OBSERVED_CURRENT"
+    }
+  ],
+  "freshness": {
+    "observed_at": "2026-10-18",
+    "base_observed_at": "2026-10-01"
+  },
+  "unknown_areas": [
+    {
+      "question": "'Variant Selection Drawer' (slide-in) có thực sự tồn tại cho Wholesale Pricing Offer trên bản đã ship, hay inline-on-PDP (đã quan sát trên test-vl-1) là hành vi chuẩn/cuối cùng?",
+      "why_it_matters": "Ảnh hưởng trực tiếp oracle storefront: test case viết theo spec (drawer) sẽ FAIL nếu hành vi thật là inline, và ngược lại — DCONF-001 chưa hoà giải.",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-042",
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-043",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-061"
+      ],
+      "refresh_note": "Staging: inline desktop + mobile (theme 'Generated Data Theme') — không phân định.",
+      "refresh_kb_refs": [
+        "KB-WPO-083"
+      ]
+    },
+    {
+      "question": "Việc chuyển Layout (card <-> table) trong Portal có áp dụng live trên storefront không cần reload trang như ticket AC claim không?",
+      "why_it_matters": "Ảnh hưởng trực tiếp oracle cho Table layout (QVD-156) nhưng tài liệu tự ghi 'not yet independently verified'.",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-062"
+      ],
+      "refresh_note": "Staging: preview portal đổi ngay; storefront sau khi lưu hiện bảng; live không reload không đo được.",
+      "refresh_kb_refs": [
+        "KB-WPO-082"
+      ]
+    },
+    {
+      "question": "Composer Wholesale trên product overlap (layout table) hiện Subtotal giá gốc và không đánh dấu hàng active — hành vi đúng khi offer khác thắng ở cart hay lỗi hiển thị?",
+      "why_it_matters": "Tài liệu nói hàng active highlight và subtotal gạch giá gốc khi có discount; staging lệch khi overlap.",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-087",
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-054",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-060"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-043"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-wholesale-pricing-011"
+    },
+    {
+      "question": "Offer Wholesale Scheduled khi tới giờ start có tự chuyển Running và widget/discount xuất hiện; khi tới end date chuyển Expired thì sao?",
+      "why_it_matters": "Offer Scheduled bị xoá trước giờ start; chuyển trạng thái theo thời gian NOT_COVERED.",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-086",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-040",
+        "discount-offers/offer-create-and-manage#KB-016"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-044"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-wholesale-pricing-019"
+    },
+    {
+      "question": "Composer product 1 option khi Wholesale đứng riêng, và layout table ở số lượng có giảm khi product chỉ thuộc Wholesale, hiển thị thế nào?",
+      "why_it_matters": "Hai trường hợp chỉ quan sát trên product overlap (1 option) hoặc ở 2 đơn vị tier 0% (table).",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-085",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-082"
+      ],
+      "relates_to_existing_oq": [
+        "OQ-discount-offers-040",
+        "OQ-discount-offers-041"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-wholesale-pricing-020"
+    },
+    {
+      "question": "Typography của form Wholesale có nhóm 'Normal text' (KB-WPO-032) không?",
+      "why_it_matters": "Explorer chỉ ghi 3 nhóm Heading/Body/Badge, không khẳng định vắng — test case Typography chưa có quan sát đủ.",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-032",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-079"
+      ],
+      "new_in_run": true,
+      "oq_id": "OQ-wholesale-pricing-021"
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  },
+  "coverage_matrix": [
+    {
+      "feature_id": "FEAT-03-wholesale-tier-setup",
+      "layer": "portal",
+      "role": "merchant",
+      "state": "form mặc định, Max trống, sửa tier, đổi layout, offer Scheduled, xoá",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-079",
+        "wholesale-pricing/wholesale-tier-setup#KB-WPO-080",
+        "wholesale-pricing/wholesale-tier-setup#KB-WPO-081",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-082",
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-086",
+        "discount-offers/offer-create-and-manage#KB-017"
+      ]
+    },
+    {
+      "feature_id": "FEAT-03-wholesale-tier-setup",
+      "layer": "storefront",
+      "role": "buyer (guest)",
+      "state": "composer inline (card/table), desktop + mobile, product 1 và 2 option, Add to cart nhiều variant",
+      "environment": "staging",
+      "covered": true,
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-082",
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-083",
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-084",
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-085"
+      ]
+    }
+  ],
+  "profile_conflicts": [
+    {
+      "feature_id": "FEAT-03-wholesale-tier-setup",
+      "conflict_id": "DCONF-001",
+      "topic": "Variant Selection Drawer tồn tại hay không trên storefront của Wholesale Pricing Offer",
+      "resolution": "UNRESOLVED",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-042",
+        "wholesale-pricing/wholesale-storefront-composer#KB-WPO-043",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-061"
+      ],
+      "observation_notes": [
+        {
+          "kb_ref": "KB-WPO-083",
+          "note": "Staging 2026-10-18: composer inline desktop + mobile trên theme 'Generated Data Theme' — nghiêng phía KB-WPO-043 nhưng không loại trừ drawer ở theme/config khác; không phân định."
+        }
+      ],
+      "label_note": "Nhãn DCONF-001 cũng được base dùng cho một conflict khác ở quantity-break (banner vs gating embed)."
+    },
+    {
+      "feature_id": "FEAT-03-wholesale-tier-setup",
+      "conflict_group": "CONF-discount-offers-R1018-06",
+      "topic": "Header cột thứ 3 của bảng Wholesale layout table trên PDP",
+      "side_a": "Base KB-WPO-059 (CONFIRMED_EXPECTED, test_case): header Quantity | Discount | Unit price.",
+      "side_b": "Staging KB-WPO-082 (OBSERVED_CURRENT): header 'QUANTITY' | 'DISCOUNT' | 'ITEM PRICE' (preview portal lẫn PDP), giá dạng '$25.50 /Item'.",
+      "kb_refs": [
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-059",
+        "wholesale-pricing/wholesale-appearance-and-schedule#KB-WPO-082"
+      ],
+      "resolution": "UNRESOLVED",
+      "requires_human_decision": true
+    }
+  ],
+  "profile_relationships": []
+}

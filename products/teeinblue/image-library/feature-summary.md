@@ -1,5 +1,5 @@
 # Object: Image Library (product: teeinblue) — Feature Summary
-**Published context version:** 5
+**Published context version:** 6
 
 - **Object:** hai thư viện ảnh dùng chung của merchant: **image layer library** (ảnh cho layer Static Image của artwork) và **mockup layer library** (ảnh mockup gán cho product base). Đây là hai tập dữ liệu riêng, category cũng riêng; chúng chỉ dùng chung cơ chế upload, polling trạng thái xử lý và dialog xác nhận (KB-005, KB-006, KB-008, KB-009).
 - **Không có trang Image Library độc lập:** sidebar và router của portal không có mục hay route nào cho thư viện ảnh (KB-001). Nút "TIB Library" trên danh sách Artworks là thư viện **artwork template** công khai, không thuộc object này (KB-002). Điểm vào thật (KB-003):
@@ -8,8 +8,8 @@
 - **Environment quan sát:** staging, role merchant-owner. Đa số knowledge là `OBSERVED_CURRENT` (một item `INFERRED`). `CONFIRMED_EXPECTED`: KB-064 (mockup, spec-hub) và KB-065, KB-067 (giới hạn 128 MP, Dev TIB-5709). Phần lớn check là BASELINE hoặc NONE và đang chờ xác nhận (xem `open-questions.md`).
 - **Tham chiếu chéo (không chép lại):**
   - `product-base/features/mockup-attachment`: luồng gán mockup vào product base, card mockup sau khi gán, lịch sử bug upload.
-  - `artwork/features/editor-layer-workspace`: popup chọn layer type.
-  - `artwork/features/layer-config-image`: cấu hình layer ảnh sau khi thêm.
+  - `artwork-editor/features/editor-layer-workspace`: popup chọn layer type.
+  - `artwork-layer-config/features/photo-upload-layer-config`: cấu hình layer ảnh sau khi thêm.
 - **Upload dùng chung (KB-006, KB-007):** client xin presigned URL, PUT file thẳng lên object storage (host này chưa được xác nhận là host hợp lệ của môi trường, nên các item liên quan không làm oracle), gọi `by-temporary-file`, rồi tự poll khoảng mỗi 2 giây tới khi ảnh xử lý xong.
 - **Validation file:**
   - `.svg` và `.txt` bị chặn ngay ở client với "You can't upload files of this type." (KB-008).

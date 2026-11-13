@@ -1,0 +1,319 @@
+[
+  {
+    "kb_id": "KB-180",
+    "topic": "Field của layer con trong Group ẩn vẫn xuất hiện trong form storefront (condition thoả / layer con khác) — BUG-321, known defect",
+    "statement": "Trên staging (instance 520 / store không thuộc explorer), lượt chạy test của agent ngày 2026-10-16 (Testlane task TIB-211, Jira TIB-5584; build hash không rõ; production chưa xác nhận), trên form cá nhân hoá SDK của storefront với artwork có Group ẩn, quan sát thấy: khi condition buyer-side của một layer con được thoả thì field của layer đó xuất hiện trong form dù Group cha đang ẩn (TC-TIB-6067 Fail); một layer con khác trong cùng Group ẩn vẫn có field trong form (TC-TIB-6066, cùng lỗi BUG-321); layer con bật 'Show this layer on first load' dưới Group ẩn không hiện ở lần load đầu, nhưng layer đó còn gắn condition nên chưa tách được hiệu ứng của Group ẩn với hiệu ứng của condition. TC-TIB-6067 có ghi chú '=>> Do bị cache' nhưng không có lần chạy lại có ngày; TC-TIB-6065 actualResult rỗng. Hành vi mong đợi theo QA plan của dev (condition trỏ vào layer ẩn hiệu dụng không bao giờ pass) không được nạp làm expected.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "guest (buyer)",
+      "surface": "storefront (condition + form SDK)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "group-layer",
+      "effective-visibility",
+      "TIB-5584",
+      "condition",
+      "form-field",
+      "first-load",
+      "known-defect",
+      "BUG-321"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-customization-storage#KB-179"
+    ],
+    "status": "KNOWN_DEFECT",
+    "cross_object_refs": [
+      {
+        "object_id": "artwork",
+        "relation": "rule_owned_by",
+        "note": "Quy tắc effective visibility của Group (layer chỉ render khi cờ của nó và mọi Group tổ tiên đều ON) thuộc artwork, feature group-layer-effective-visibility (KB-158)."
+      },
+      {
+        "object_id": "artwork",
+        "relation": "related_feature",
+        "note": "Condition buyer-side cấu hình ở object artwork, feature conditional-setting-config."
+      }
+    ]
+  },
+  {
+    "kb_id": "KB-181",
+    "topic": "Buyer preview storefront theo effective visibility: Group ẩn (con giữ cờ ON) thì preview chỉ còn layer ngoài Group",
+    "statement": "Theo Testlane TC-TIB-6068 PASS (Testlane task TIB-211, Jira TIB-5584; staging instance 520 (store không thuộc explorer), chạy 2026-10-16 trên build staging @ 2026-10-16 13:54 sau lần giao QA cuối 2026-10-15 18:39, build hash không rõ; production chưa xác nhận), buyer preview SDK trên storefront theo effective visibility của Group: với artwork có Group ẩn (các con giữ cờ ON), preview chỉ hiển thị layer ngoài Group, khớp canvas Artwork Editor.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "guest (buyer)",
+      "surface": "storefront (buyer preview SDK)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-30",
+      "ccr_ref": "CBS-006"
+    },
+    "tags": [
+      "group-layer",
+      "effective-visibility",
+      "TIB-5584",
+      "buyer-preview"
+    ],
+    "related_kb_ids": [],
+    "cross_object_refs": [
+      {
+        "object_id": "artwork",
+        "relation": "rule_owned_by",
+        "note": "Quy tắc effective visibility của Group (layer chỉ render khi cờ của nó và mọi Group tổ tiên đều ON) thuộc artwork, feature group-layer-effective-visibility (KB-158)."
+      }
+    ],
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "Testlane TC-TIB-6068 PASS (task TIB-211, Jira TIB-5584), staging @ 2026-10-16 13:54 (sau lần TIB-5584 giao QA cuối 2026-10-15 18:39; release/build hash không rõ), chạy 2026-10-16",
+      "authored_on": "2026-10-16",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-231",
+    "topic": "Storefront: layer Hide và option của nó ẩn khi điều kiện khớp, hiện khi không; OR/AND; cập nhật ngay; ngược chiều Show",
+    "statement": "Theo Testlane TC-TIB-7323, TC-TIB-7324, TC-TIB-7325, TC-TIB-7326, TC-TIB-7327, TC-TIB-7328, TC-TIB-7329, TC-TIB-7330 PASS (task TIB-231, Jira TIB-5558), staging @ 2026-10-28 retest, SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT (ETag 85d63a84fa4e7e4dbbeee8c688efab70; sau lần TIB-5558 giao QA cuối 2026-10-13 12:00; build hash không rõ), chạy 2026-10-28 (2026-10-28; test chạy trước khi 6 PR của TIB-5558 merge ngày 2026-10-29; production chưa xác nhận), trên storefront (form cá nhân hoá và live preview SDK), layer có action Hide và field (option) của nó ẩn khi điều kiện khớp và hiện khi không khớp: với 1 điều kiện, chọn giá trị khớp thì field và node layer trên preview đều biến mất, chọn giá trị không khớp thì cả hai hiện và chữ nhập vào hiển thị đúng trên preview; với match OR chỉ cần một điều kiện khớp là ẩn, không điều kiện nào khớp thì hiện; với match AND chỉ ẩn khi mọi điều kiện khớp, khớp 1/2 vẫn hiện. Đổi giá trị nguồn (Cat → Dog → Cat) cập nhật ẩn/hiện ngay trên cùng trang, không reload. Với cùng điều kiện, layer Hide và layer Show cho kết quả ngược nhau ở cả hai giá trị nguồn. Khi layer đang ẩn, payload POST /api/merchant/shopify/customization không mang dữ liệu của layer đó.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "guest-buyer (storefront store không thuộc explorer)",
+      "surface": "storefront (form + live preview, SDK app-v2.js) · api (POST /api/merchant/shopify/customization)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5558",
+      "conditional-setting",
+      "hide-action",
+      "storefront",
+      "sdk-v2",
+      "match-and-or",
+      "live-update"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-customization-storage#KB-022"
+    ],
+    "cross_object_refs": [
+      {
+        "object_id": "artwork",
+        "relation": "rule_owned_by",
+        "note": "Cấu hình action Show/Hide, điều kiện, match type và toggle first load đặt ở object artwork, feature conditional-setting-config (KB-221, KB-222)."
+      }
+    ],
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "Testlane TC-TIB-7323, TC-TIB-7324, TC-TIB-7325, TC-TIB-7326, TC-TIB-7327, TC-TIB-7328, TC-TIB-7329, TC-TIB-7330 PASS (task TIB-231, Jira TIB-5558), staging @ 2026-10-28 retest, SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT (ETag 85d63a84fa4e7e4dbbeee8c688efab70; sau lần TIB-5558 giao QA cuối 2026-10-13 12:00; build hash không rõ), chạy 2026-10-28",
+      "authored_on": "2026-10-28",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-232",
+    "topic": "Hide + 'Hide this layer on first load' bật: layer ẩn trên artwork khi chưa trả lời, option vẫn hiện; OR/AND khi trả lời một phần",
+    "statement": "Theo Testlane TC-TIB-7331, TC-TIB-7332, TC-TIB-7333 PASS (task TIB-231, Jira TIB-5558), staging @ 2026-10-28 retest, SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT (ETag 85d63a84fa4e7e4dbbeee8c688efab70; sau lần TIB-5558 giao QA cuối 2026-10-13 12:00; build hash không rõ), chạy 2026-10-28 (2026-10-28; test chạy trước khi 6 PR của TIB-5558 merge ngày 2026-10-29; production chưa xác nhận), trên storefront, khi layer action Hide bật 'Hide this layer on first load' và buyer chưa chọn gì, layer không được vẽ trên artwork preview nhưng field (option) của layer vẫn hiện trên form; với match OR, layer vẫn ẩn khi mới có một nguồn được trả lời giá trị không khớp và chỉ hiện khi mọi nguồn đều đã được trả lời không khớp; với match AND, layer hiện ngay khi một nguồn được trả lời giá trị không khớp dù nguồn còn lại chưa trả lời. Field của layer hiện xuyên suốt trên form.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "guest-buyer (storefront store không thuộc explorer)",
+      "surface": "storefront (first load + form)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5558",
+      "conditional-setting",
+      "hide-action",
+      "storefront",
+      "first-load-toggle",
+      "match-and-or"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-layer-visibility#KB-231",
+      "sdk/storefront-layer-visibility#KB-233"
+    ],
+    "cross_object_refs": [
+      {
+        "object_id": "artwork",
+        "relation": "rule_owned_by",
+        "note": "Cấu hình action Show/Hide, điều kiện, match type và toggle first load đặt ở object artwork, feature conditional-setting-config (KB-221, KB-222)."
+      },
+      {
+        "object_id": "artwork",
+        "relation": "related_feature",
+        "note": "Với action Hide, show_by_default của dependency mang nghĩa 'Hide this layer on first load' (feature layer-condition-value-binding)."
+      }
+    ],
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "Testlane TC-TIB-7331, TC-TIB-7332, TC-TIB-7333 PASS (task TIB-231, Jira TIB-5558), staging @ 2026-10-28 retest, SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT (ETag 85d63a84fa4e7e4dbbeee8c688efab70; sau lần TIB-5558 giao QA cuối 2026-10-13 12:00; build hash không rõ), chạy 2026-10-28",
+      "authored_on": "2026-10-28",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-233",
+    "topic": "'Hide this layer on first load' tắt, nguồn chưa trả lời: layer Hide hiện; option của layer hiện ở cả hai trường hợp (theo dev doc)",
+    "statement": "Theo dev doc Jira TIB-5558 comment #54404 (2026-10-13), \"Change & test cases — Add Hide layer option in Conditional Setting\" mục \"Hiding layers by condition (storefront) → Before the buyer answers (source option still empty)\" (v1, tự sinh từ branch diff sdk/api/portal), trước khi buyer trả lời (option nguồn còn trống), nếu 'Hide this layer on first load' tắt thì layer action Hide được hiện; option cá nhân hoá của chính layer đó hiện trong cả hai trường hợp bật và tắt. Trường hợp tắt chưa có test case nào kiểm; trường hợp bật đã có test case riêng (xem KB-232). Đây là mô tả của tài liệu dev viết ngày 2026-10-13, trước khi code còn thay đổi tới lúc 6 PR merge ngày 2026-10-29; chưa có test case nào kiểm hành vi này trên build cuối; production chưa xác nhận.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "guest-buyer (storefront store không thuộc explorer)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5558",
+      "conditional-setting",
+      "hide-action",
+      "storefront",
+      "first-load-toggle",
+      "dev-doc-unverified"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-layer-visibility#KB-232"
+    ],
+    "cross_object_refs": [
+      {
+        "object_id": "artwork",
+        "relation": "rule_owned_by",
+        "note": "Cấu hình action Show/Hide, điều kiện, match type và toggle first load đặt ở object artwork, feature conditional-setting-config (KB-221, KB-222)."
+      }
+    ]
+  },
+  {
+    "kb_id": "KB-234",
+    "topic": "Toggle layer và Additional Option làm nguồn điều kiện cho layer Hide, đúng chiều; payload customization chỉ gửi layer đang hiện",
+    "statement": "Theo Testlane TC-TIB-7336, TC-TIB-7337 PASS (task TIB-231, Jira TIB-5558), staging @ 2026-10-28 retest, SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT (ETag 85d63a84fa4e7e4dbbeee8c688efab70; sau lần TIB-5558 giao QA cuối 2026-10-13 12:00; build hash không rõ), chạy 2026-10-28 (2026-10-28; test chạy trước khi 6 PR của TIB-5558 merge ngày 2026-10-29; production chưa xác nhận), trên storefront, layer Toggle và Additional Option dùng được làm nguồn điều kiện cho layer action Hide và chạy đúng chiều: bật toggle (khớp điều kiện) thì field và layer ẩn, tắt toggle thì hiện lại, form và preview khớp nhau; Additional Option có giá trị khớp (Gift wrap = Yes) thì field và layer ẩn, giá trị không khớp (No) thì hiện. Khi Add to cart, payload POST /api/merchant/shopify/customization chỉ chứa layer đang hiện kèm giá trị của nguồn.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "guest-buyer (storefront store không thuộc explorer)",
+      "surface": "storefront · api (POST customization)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5558",
+      "conditional-setting",
+      "hide-action",
+      "storefront",
+      "toggle-source",
+      "additional-option-source"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-layer-visibility#KB-231"
+    ],
+    "cross_object_refs": [
+      {
+        "object_id": "artwork",
+        "relation": "rule_owned_by",
+        "note": "Cấu hình action Show/Hide, điều kiện, match type và toggle first load đặt ở object artwork, feature conditional-setting-config (KB-221, KB-222)."
+      },
+      {
+        "object_id": "artwork",
+        "relation": "related_feature",
+        "note": "Danh sách layer type làm nguồn điều kiện được (gồm toggle, additional-option) thuộc artwork, feature conditional-setting-config (KB-064)."
+      }
+    ],
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "Testlane TC-TIB-7336, TC-TIB-7337 PASS (task TIB-231, Jira TIB-5558), staging @ 2026-10-28 retest, SDK app-v2.js Last-Modified 2026-10-28 03:01:11 GMT (ETag 85d63a84fa4e7e4dbbeee8c688efab70; sau lần TIB-5558 giao QA cuối 2026-10-13 12:00; build hash không rõ), chạy 2026-10-28",
+      "authored_on": "2026-10-28",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-235",
+    "topic": "Nguồn đang bị ẩn = điều kiện không khớp; linked layer đi theo layer gốc; điều kiện 2 cấp lan theo (theo dev doc, chưa kiểm)",
+    "statement": "Theo dev doc Jira TIB-5558 comment #54404 (2026-10-13), \"Change & test cases — Add Hide layer option in Conditional Setting\" mục \"Hiding layers by condition (storefront)\" (v1, tự sinh từ branch diff sdk/api/portal), một điều kiện có option nguồn đang bị ẩn (bị tắt bởi toggle show/hide của nó, hoặc bị ẩn bởi chính điều kiện của nó) được tính là không khớp, nên layer action Hide chỉ phụ thuộc vào các option đang bị ẩn sẽ được hiện; linked layer đi theo trạng thái hiển thị cuối cùng của layer mà nó link tới; với điều kiện 2 cấp (layer B action Show điều kiện 'A is X', A là một layer Hide), khi A bị ẩn bởi điều kiện của nó thì B cũng bị ẩn. Đây là mô tả của tài liệu dev viết ngày 2026-10-13, trước khi code còn thay đổi tới lúc 6 PR merge ngày 2026-10-29; chưa có test case nào kiểm hành vi này trên build cuối; production chưa xác nhận.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "guest-buyer (storefront store không thuộc explorer)",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5558",
+      "conditional-setting",
+      "hide-action",
+      "storefront",
+      "hidden-source",
+      "linked-layer",
+      "nested-condition",
+      "dev-doc-unverified"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-layer-visibility#KB-231"
+    ],
+    "cross_object_refs": [
+      {
+        "object_id": "artwork",
+        "relation": "rule_owned_by",
+        "note": "Cấu hình action Show/Hide, điều kiện, match type và toggle first load đặt ở object artwork, feature conditional-setting-config (KB-221, KB-222)."
+      }
+    ]
+  },
+  {
+    "kb_id": "KB-237",
+    "topic": "SDK app-v2.js có Cache-Control max-age=14400; lần load đầu nhận bản SDK cũ đã cache, trên bản cũ chiều ẩn/hiện của layer Hide bị đảo (quan sát 1 lượt)",
+    "statement": "Trên staging (store store không thuộc explorer), lượt chạy test của agent ngày 2026-10-28 (Testlane TC-TIB-7323, TC-TIB-7324, task TIB-231, Jira TIB-5558; production chưa xác nhận) ghi nhận: response của SDK app-v2.js bản Last-Modified 2026-10-28 03:01:11 GMT có header Cache-Control max-age=14400; ở lần load trang đầu tiên, trước khi xoá cache, trình duyệt vẫn nhận bản SDK cũ (Last-Modified 2026-10-14, chưa có code Hide) đã bị cache; trên bản SDK cũ đó, ở lượt chạy đầu, chiều ẩn/hiện của layer action Hide bị đảo (BUG-429), và lỗi này không tái hiện sau khi trang nhận SDK bản 03:01:11 GMT. Đây là quan sát một lượt; thời gian storefront còn chạy SDK cũ sau khi deploy và cách khắc phục chưa được xác nhận — không phải quy tắc.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "guest-buyer (storefront store không thuộc explorer)",
+      "surface": "storefront (SDK app-v2.js, cache trình duyệt)",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5558",
+      "conditional-setting",
+      "hide-action",
+      "storefront",
+      "sdk-cache",
+      "BUG-429",
+      "unconfirmed"
+    ],
+    "related_kb_ids": [
+      "sdk/storefront-layer-visibility#KB-231",
+      "sdk/storefront-buyer-facing#KB-040"
+    ]
+  }
+]

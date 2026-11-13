@@ -1,0 +1,2671 @@
+{
+  "feature_id": "FEAT-02-photo-upload-layer-config",
+  "feature_key": "photo-upload-layer-config",
+  "object_id": "artwork-layer-config",
+  "checklist_version": "18",
+  "checks": [
+    {
+      "check_id": "CHK-001",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Artwork editor, Clipart Category, Contour cut size 1 / 2 / 3: không còn lỗi TIB-5592 (khung vuông theo bounding box ở size 1, ám màu ở size nhỏ)",
+      "applicability": {
+        "role": "merchant-owner — account explore (TIB_STAGING_EMAIL), store explorer",
+        "state": "PB-FIXTURE, layer CC1, Enable photo border ON, Type Contour cut",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor, desktop, zoom 100%"
+      },
+      "precondition": "Fixture PB-FIXTURE trên store explorer (xác minh account theo playbook trước khi thao tác và sau mỗi lần login lại): artwork throwaway có layer CC1 (Clipart Category, link một clipart category của store explorer; clipart mặc định là PNG có hình không chữ nhật với vùng trong suốt trong bounding box, vd ngôi sao). Trên CC1 mở popup Border: Enable photo border ON, Type Contour cut, một màu viền tương phản với clipart và nền (giá trị fixture, không assert màu), Add a thin line OFF, Display border on 'Mockup Preview & Order Design' (hoặc lựa chọn gồm cả mockup và order design trên build đang test; ghi lại). Save artwork.",
+      "steps": [
+        "Mở PB-FIXTURE trong Artwork editor, zoom 100%; chọn CC1, mở popup Border, đặt Border size = 1.",
+        "Ghi viền có thành khung vuông / chữ nhật theo bounding box của layer không; ghi màu viền có phủ lên phần hình clipart hay vùng trong suốt trong bounding box không. Chụp màn hình.",
+        "Lặp lại với Border size = 2 và 3."
+      ],
+      "observation_point": "Hình viền so với bounding box của CC1 ở size 1; màu viền trên phần hình clipart và vùng trong suốt trong bounding box ở size 1, 2, 3.",
+      "expected_result": "Size 1: viền không thành khung vuông theo bounding box của layer. Size 1, 2, 3: không có lỗi ám màu viền ở size nhỏ. Check không assert hình dáng, độ dày hay thứ tự lớp của viền (xem CHK-002).",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-912"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-912",
+        "artwork-layer-config/photo-upload-layer-config#KB-910",
+        "artwork-layer-config/photo-upload-layer-config#KB-911",
+        "artwork-layer-config/photo-upload-layer-config#KB-915"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle một citation Dev (TIB-5592 comment 55072), MEDIUM.",
+        "Lỗi viền trên canvas là thứ merchant duyệt trước khi bán; viền sai lan sang mọi bề mặt dùng chung code client (KB-912)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-002",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Hình vẽ cụ thể của viền Contour cut trong Artwork editor: theo outline phần đục, chỉ vòng ngoài, ảnh viền dưới clipart, độ dày theo size — baseline quan sát",
+      "applicability": {
+        "role": "merchant-owner — account explore (TIB_STAGING_EMAIL), store explorer",
+        "state": "PB-FIXTURE, layer CC1, Contour cut",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor, desktop, zoom 100% và 200%"
+      },
+      "precondition": "PB-FIXTURE như CHK-001.",
+      "steps": [
+        "Chọn CC1, Border size = 1, zoom 100%; ghi viền đi theo outline phần đục của clipart hay theo hình khác.",
+        "Ghi viền chỉ là vòng ngoài hình hay có phần nằm trong hình; trong danh sách lớp / DOM của canvas ghi ảnh viền nằm trên hay dưới ảnh clipart.",
+        "Đặt size 2 rồi 3 ở zoom 200%; đo và ghi độ dày viền của từng size."
+      ],
+      "observation_point": "Đường viền so với outline phần đục; vị trí lớp ảnh viền so với ảnh clipart; độ dày viền ở size 1, 2, 3.",
+      "expected_result": "Baseline quan sát (QA-3414 TC-01, TC-02 ngày 2026-10-19, một layer Clipart Category, zoom 50%, không phải expected): size 1 viền đi theo outline phần đục của clipart; size 1–3 màu viền chỉ thành vòng ngoài hình; ảnh viền nằm dưới ảnh clipart; ở zoom 50% size 2 và 3 cho cùng một vòng. Lệch baseline là cần điều tra, không tự kết luận bug; không assert độ dày size 2 khác size 3.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-910",
+          "artwork-layer-config/photo-upload-layer-config#KB-911"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Viền Contour cut đi theo outline phần đục của clipart ở mọi size, chỉ vẽ vòng ngoài hình, ảnh viền nằm dưới clipart — có phải cách vẽ đúng không? Size 2 và 3 phải khác nhau thế nào về độ dày?",
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-910",
+        "artwork-layer-config/photo-upload-layer-config#KB-911",
+        "artwork-layer-config/photo-upload-layer-config#KB-912"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Quan sát một lượt, AI do máy chạy, không ghi build; số đo pixel không phải giá trị chuẩn."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-layer-config-097"
+    },
+    {
+      "check_id": "CHK-003",
+      "dimension": "INTEGRATION",
+      "layer": "storefront",
+      "title": "Storefront live preview (mockup) và cart Edit design: viền Contour cut không còn lỗi TIB-5592",
+      "applicability": {
+        "role": "buyer (guest) trên storefront của store explorer",
+        "state": "campaign PB-CAMP dùng PB-FIXTURE, CC1 Contour cut",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "storefront product page (live preview mockup) và cart → Edit design, desktop"
+      },
+      "precondition": "PB-FIXTURE như CHK-001 với CC1 Border size = 1, Save artwork. Campaign throwaway PB-CAMP trên store explorer gắn PB-FIXTURE, đã publish ra storefront của store explorer. Chụp sẵn ảnh viền CC1 trong editor để đối chiếu vị trí.",
+      "steps": [
+        "Mở product page của PB-CAMP; mở live preview mockup; ghi viền của CC1 có thành khung vuông theo bounding box không và màu viền có ám lên hình không. Chụp màn hình.",
+        "Add to cart; trong cart bấm Edit design; ghi lại hai điểm như bước 1.",
+        "Trên Artwork editor đổi CC1 sang size 2 rồi 3 (Save artwork mỗi lần), tải lại product page, lặp lại bước 1 và 2."
+      ],
+      "observation_point": "Viền CC1 ở live preview mockup và ở cart Edit design, size 1, 2, 3.",
+      "expected_result": "Ở cả live preview mockup và cart Edit design: size 1 viền không thành khung vuông theo bounding box của layer; size 1–3 không có lỗi ám màu viền ở size nhỏ. Check không assert hình viền giống hệt editor ngoài hai điểm này.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-912"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-912",
+        "artwork-layer-config/photo-upload-layer-config#KB-910"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Bề mặt chưa được QA kiểm sau fix; oracle chỉ từ lời Dev, MEDIUM.",
+        "Buyer thấy viền sai trước khi đặt hàng."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-004",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "Portal View/Edit customization của order: viền Contour cut không còn lỗi TIB-5592",
+      "applicability": {
+        "role": "merchant-owner — account explore (TIB_STAGING_EMAIL), store explorer",
+        "state": "order test từ PB-CAMP, CC1 Contour cut size 1",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal order detail → View / Edit customization, desktop"
+      },
+      "precondition": "PB-CAMP như CHK-003; một order test đặt trên storefront của store explorer bằng gateway test của store (CC1 Border size = 1 lúc đặt).",
+      "steps": [
+        "Mở order test trên portal; mở View customization của item; ghi viền CC1 có thành khung vuông theo bounding box không và màu viền có ám lên hình không. Chụp màn hình.",
+        "Mở Edit customization; ghi lại hai điểm như bước 1; đóng không lưu."
+      ],
+      "observation_point": "Viền CC1 ở View customization và Edit customization của order item.",
+      "expected_result": "Ở cả View và Edit customization: size 1 viền không thành khung vuông theo bounding box của layer; không có lỗi ám màu viền ở size nhỏ.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-912"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-912"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Bề mặt chưa được QA kiểm sau fix; oracle chỉ từ lời Dev, MEDIUM.",
+        "Không bấm lưu ở Edit customization để không đổi dữ liệu order."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-005",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Server render (file Order Design, mockup render) có Photo Border và không có lỗi khung vuông theo bounding box ở size 1",
+      "applicability": {
+        "role": "merchant-owner (xử lý đơn) — account explore (TIB_STAGING_EMAIL), store explorer",
+        "state": "order test từ PB-CAMP, CC1 Contour cut size 1, Display border on gồm Order Design",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "file Order Design và mockup render do server sinh cho order"
+      },
+      "precondition": "Order test như CHK-004; chờ Order Design generate xong.",
+      "steps": [
+        "Tải file Order Design của item; ghi CC1 có viền không và viền có thành khung vuông theo bounding box của layer không.",
+        "Mở mockup render do server sinh cho order item (nơi xem theo build đang test; ghi lại); ghi lại hai điểm như bước 1.",
+        "Ghi khác biệt nhìn thấy so với viền trên editor / live preview (chỉ ghi, không assert)."
+      ],
+      "observation_point": "Viền CC1 trên file Order Design và mockup render server.",
+      "expected_result": "File Order Design và mockup render có Photo Border cho CC1; viền ở size 1 không thành khung vuông theo bounding box của layer. Check không assert hình viền server giống client (hai code vẽ khác nhau).",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-913"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-913",
+        "artwork-layer-config/photo-upload-layer-config#KB-912",
+        "artwork-layer-config/photo-upload-layer-config#KB-916"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "P1: file Order Design đi tới nhà in; viền sai là in sai sản phẩm (mất tiền).",
+        "Client và server vẽ bằng hai code khác nhau: phải kiểm riêng, không suy từ editor.",
+        "Không phân xử quan hệ photo_border với preset shape-cut của Print Effects (layer-print-effects)."
+      ],
+      "priority": "P1",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-006",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Loại layer Dynamic clipart (dynamic_by_text), Clipart group, Static image trong Artwork editor: Contour cut không còn lỗi TIB-5592",
+      "applicability": {
+        "role": "merchant-owner — account explore (TIB_STAGING_EMAIL), store explorer",
+        "state": "PB-FIXTURE thêm layer DC1, CG1, SI1, Contour cut",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor, desktop, zoom 100%"
+      },
+      "precondition": "Thêm vào PB-FIXTURE: DC1 (Dynamic clipart by text), CG1 (Group of clipart categories), SI1 (Static image) — mỗi layer hiển thị một PNG có hình không chữ nhật với vùng trong suốt trong bounding box, lấy từ asset của store explorer. Nếu layer không có Photo Border trên toolbar, ghi lại và bỏ qua layer đó (rule ẩn Photo Border thuộc editor-layer-workspace).",
+      "steps": [
+        "Với từng layer DC1, CG1, SI1: mở popup Border, Enable photo border ON, Contour cut, Border size = 1; ghi viền có thành khung vuông theo bounding box không và màu viền có ám lên hình không. Chụp màn hình.",
+        "Lặp lại với size 2 và 3."
+      ],
+      "observation_point": "Viền của DC1, CG1, SI1 ở size 1, 2, 3.",
+      "expected_result": "Với mỗi layer có Photo Border: size 1 viền không thành khung vuông theo bounding box; size 1–3 không có lỗi ám màu viền ở size nhỏ.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-915",
+          "artwork-layer-config/photo-upload-layer-config#KB-912"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-915",
+        "artwork-layer-config/photo-upload-layer-config#KB-912"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Loại layer chưa được QA kiểm sau fix; oracle chỉ từ lời Dev, MEDIUM.",
+        "Linked clipart tách sang CHK-008 vì chưa rõ phạm vi."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-007",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "Photo Upload của buyer, Contour cut: viền trên live preview không còn lỗi TIB-5592",
+      "applicability": {
+        "role": "buyer (guest) trên storefront của store explorer; merchant-owner cấu hình",
+        "state": "PB-CAMP có layer PU1 (Photo Upload) bật Photo Border Contour cut",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "storefront product page (live preview mockup), desktop"
+      },
+      "precondition": "Thêm vào PB-FIXTURE layer PU1 (Photo Upload); popup Border: Enable photo border ON, Contour cut, Border size = 1, Save artwork; PB-CAMP như CHK-003. Ảnh upload: file PNG throwaway có hình không chữ nhật với vùng trong suốt. Nếu ảnh sau upload không còn vùng trong suốt, ghi lại; check không kết luận được về khung vuông.",
+      "steps": [
+        "Mở product page của PB-CAMP; upload PNG vào PU1; ghi viền có thành khung vuông theo bounding box của ảnh không và màu viền có ám lên ảnh không. Chụp màn hình.",
+        "Trên Artwork editor đổi PU1 sang size 2 rồi 3 (Save artwork mỗi lần), tải lại product page, upload lại và lặp bước 1."
+      ],
+      "observation_point": "Viền quanh ảnh buyer upload ở live preview, size 1, 2, 3.",
+      "expected_result": "Size 1 viền không thành khung vuông theo bounding box của ảnh (khi ảnh còn vùng trong suốt); size 1–3 không có lỗi ám màu viền ở size nhỏ.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-915",
+          "artwork-layer-config/photo-upload-layer-config#KB-912"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-915",
+        "artwork-layer-config/photo-upload-layer-config#KB-912",
+        "artwork-layer-config/photo-upload-layer-config#KB-017"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Chưa được QA kiểm; oracle chỉ từ lời Dev, MEDIUM.",
+        "Ảnh của buyer đi thẳng vào order: viền sai ở preview dẫn tới khiếu nại."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-008",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Gap: 'Linked clipart' với Photo Border — Photo Border có trên layer nào và viền vẽ ra sao — chưa có oracle",
+      "applicability": {
+        "role": "merchant-owner — account explore (TIB_STAGING_EMAIL), store explorer",
+        "state": "PB-FIXTURE thêm LK1 tạo bằng Duplicate & Link options từ CC1",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor, desktop"
+      },
+      "precondition": "Thêm vào PB-FIXTURE layer LK1 tạo bằng Duplicate & Link options từ CC1; CC1 bật Contour cut size 1.",
+      "steps": [
+        "Chọn chỉ LK1; ghi Photo Border có trên toolbar không.",
+        "Chọn chỉ CC1 (layer nguồn); ghi LK1 có hiện viền không và viền có thành khung vuông theo bounding box không.",
+        "Nếu LK1 có Photo Border riêng: bật Contour cut size 1 trên LK1 và ghi lại như bước 2."
+      ],
+      "observation_point": "Có Photo Border trên toolbar khi chọn LK1; viền hiển thị trên LK1.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "'Linked clipart' Dev liệt kê trong các loại layer dùng chung hàm vẽ viền có phải layer customization type Linked (Photo Border bị ẩn khi selection có layer Linked) không? Nếu cùng loại, Photo Border áp cho Linked qua layer nguồn hay chính layer Linked?",
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-915",
+        "artwork-editor/editor-layer-workspace#KB-429",
+        "artwork-editor/layer-duplicate-link-copy#KB-045"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không suy ra mâu thuẫn giữa KB-915 và rule ẩn Photo Border của editor-layer-workspace; chỉ ghi lại."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-layer-config-102"
+    },
+    {
+      "check_id": "CHK-009",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Gap: Border Type Custom shape ở size nhỏ sau fix TIB-5592 — chỉ ghi lại, chưa có oracle về hình vẽ",
+      "applicability": {
+        "role": "merchant-owner — account explore (TIB_STAGING_EMAIL), store explorer",
+        "state": "PB-FIXTURE, CC1 Type Custom shape",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor, desktop, zoom 100%"
+      },
+      "precondition": "PB-FIXTURE như CHK-001; trên CC1 đổi Type sang Custom shape, chọn một shape có sẵn trên build đang test (ghi lại shape đã chọn).",
+      "steps": [
+        "Đặt Border size = 1, 2, 3; với mỗi size ghi hình viền so với shape đã chọn và màu viền có phủ lên phần hình clipart không. Chụp màn hình."
+      ],
+      "observation_point": "Viền Custom shape trên CC1 ở size 1, 2, 3.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Border kiểu Custom shape dùng chung hàm vẽ đã fix: ở size nhỏ (1–3) viền Custom shape phải hiển thị thế nào, và triệu chứng lỗi TIB-5592 (khung vuông, ám màu) có áp cho Custom shape không?",
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-915",
+        "artwork-render/print-design-render#KB-425"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-912 mô tả triệu chứng lỗi cho Contour cut; không suy sang Custom shape. Vẽ border custom_shape từ mask thuộc layer-print-effects CHK-011."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-layer-config-103"
+    },
+    {
+      "check_id": "CHK-010",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "Ô Border size: nhận 0 (min), bước tăng / giảm 1, không bị chặn ở giá trị lớn (không có max)",
+      "applicability": {
+        "role": "merchant-owner — account explore (TIB_STAGING_EMAIL), store explorer",
+        "state": "PB-FIXTURE, CC1, popup Border mở",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor → popup Border, desktop"
+      },
+      "precondition": "PB-FIXTURE như CHK-001.",
+      "steps": [
+        "Nhập 0 vào ô Border size, rời ô; ghi giá trị hiển thị.",
+        "Từ 0 bấm nút tăng (hoặc phím mũi tên lên) 3 lần; ghi giá trị sau mỗi lần. Bấm giảm 1 lần; ghi giá trị.",
+        "Nhập 1000, rời ô; ghi giá trị hiển thị và có báo lỗi / kẹp giá trị không."
+      ],
+      "observation_point": "Giá trị hiển thị trong ô Border size sau mỗi bước.",
+      "expected_result": "0 được nhận và giữ nguyên. Mỗi lần tăng / giảm đổi giá trị 1 đơn vị (0 → 1 → 2 → 3 → 2). 1000 được giữ, không bị kẹp về một max. Check không assert kết quả vẽ ở size 0 (CHK-012) hay ở giá trị lớn (CHK-013), không assert xử lý số thập phân.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-914"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-914",
+        "artwork-layer-config/photo-upload-layer-config#KB-918"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Giới hạn input theo lời Dev, chưa kiểm runtime (max, step), MEDIUM."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-011",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "Ô Border size không nhận giá trị nhỏ hơn 0",
+      "applicability": {
+        "role": "merchant-owner — account explore (TIB_STAGING_EMAIL), store explorer",
+        "state": "PB-FIXTURE, CC1, popup Border mở",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor → popup Border, desktop"
+      },
+      "precondition": "PB-FIXTURE như CHK-001; Border size đang là 1.",
+      "steps": [
+        "Nhập -1 vào ô Border size, rời ô; ghi giá trị hiển thị và cách ô xử lý (kẹp, trả giá trị cũ, báo lỗi).",
+        "Đặt 0, bấm nút giảm (hoặc phím mũi tên xuống) 1 lần; ghi giá trị hiển thị."
+      ],
+      "observation_point": "Giá trị hiển thị trong ô Border size sau mỗi bước.",
+      "expected_result": "Sau cả hai bước, giá trị Border size không nhỏ hơn 0. Check không assert cách chặn (kẹp về 0, trả giá trị cũ hay báo lỗi).",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-914"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-914"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Giới hạn input theo lời Dev, chưa kiểm runtime, MEDIUM."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-012",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "Gap: Border size = 0 vẽ gì ở editor, storefront live preview và file Order Design — chưa có expected, chỉ ghi lại",
+      "applicability": {
+        "role": "merchant-owner — account explore (TIB_STAGING_EMAIL), store explorer; buyer (guest) cho bước storefront",
+        "state": "PB-FIXTURE, CC1 Contour cut size 0",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor; storefront live preview; file Order Design"
+      },
+      "precondition": "PB-FIXTURE như CHK-001; PB-CAMP như CHK-003. Chụp sẵn CC1 ở size 1 và size 10 trong editor để so độ dày.",
+      "steps": [
+        "Trên CC1 đặt Border size = 0, Contour cut; ghi canvas có vẽ viền không và độ dày so với ảnh size 1 / size 10. Chụp màn hình.",
+        "Save artwork; mở live preview của PB-CAMP; ghi lại như bước 1.",
+        "Đặt một order test (gateway test của store explorer); tải file Order Design; ghi lại như bước 1.",
+        "Sau khi chạy, trả CC1 về size 1 và Save artwork để không ảnh hưởng check khác."
+      ],
+      "observation_point": "Có viền hay không và độ dày viền ở size 0 trên từng bề mặt. Một lượt quan sát trước (QA-3414 TC-03 ngày 2026-10-19, editor, AI do máy chạy, chưa chạy lại; không phải expected, không phải bug đã xác nhận): ô nhận 0 và canvas vẽ viền dày như size 10.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Border size = 0 (min hợp lệ của ô) phải vẽ gì — không có viền hay giá trị khác? Một lượt quan sát trong Artwork editor thấy size 0 vẽ viền dày như size 10; đây có phải lỗi không? Storefront và Order Design ở size 0 phải ra sao?",
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-918",
+        "artwork-layer-config/photo-upload-layer-config#KB-914"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không assert 'size 0 không có viền' và không dùng 'viền dày như size 10' làm baseline: expected chưa có nguồn thẩm quyền, KB-918 không phải KNOWN_DEFECT.",
+        "Nếu size 0 vẽ viền dày trên Order Design, file in khác ý merchant (mất tiền); chưa xác nhận.",
+        "QA có bug draft chưa submit; không tự tạo issue."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-layer-config-101"
+    },
+    {
+      "check_id": "CHK-013",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "Gap: Border size số thập phân và giá trị lớn (100) — ô xử lý và kết quả vẽ — chưa có oracle",
+      "applicability": {
+        "role": "merchant-owner — account explore (TIB_STAGING_EMAIL), store explorer",
+        "state": "PB-FIXTURE, CC1 Contour cut",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor → popup Border và canvas, desktop"
+      },
+      "precondition": "PB-FIXTURE như CHK-001.",
+      "steps": [
+        "Nhập 1.5 vào ô Border size, rời ô; ghi giá trị hiển thị (giữ, làm tròn, chặn) và viền trên canvas.",
+        "Nhập 100, rời ô; ghi viền trên canvas (có vẽ, độ dày, có tràn / che layer khác không) và editor có chậm / lỗi không. Chụp màn hình.",
+        "Trả CC1 về size 1, Save artwork."
+      ],
+      "observation_point": "Giá trị ô sau khi nhập số thập phân; viền trên canvas ở 1.5 và 100.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Ô Border size xử lý số thập phân thế nào (step = 1 có nghĩa là chặn hay làm tròn)? Không có max thì ở giá trị lớn (vd 100) viền phải vẽ ra sao?",
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-914"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-914 chỉ nêu min / step / không max; không suy ra xử lý số thập phân hay kết quả vẽ."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-layer-config-104"
+    },
+    {
+      "check_id": "CHK-014",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Thiết lập Border đọc lại đúng sau Save & Close + reload; API artwork trả field photo_border — baseline quan sát",
+      "applicability": {
+        "role": "merchant-owner — account explore (TIB_STAGING_EMAIL), store explorer",
+        "state": "PB-FIXTURE, CC1",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor, desktop + response API artwork (network)"
+      },
+      "precondition": "PB-FIXTURE như CHK-001; network capture bật.",
+      "steps": [
+        "Trên CC1 đặt: Enable photo border ON, Contour cut, màu fixture, Border size 1, Add a thin line OFF, Display border on 'Mockup Preview & Order Design'. Save & Close.",
+        "Reload artwork; mở popup Border của CC1; ghi từng giá trị.",
+        "Trong response API artwork khi mở lại artwork, tìm layer CC1; ghi object Photo Border (tên field, key, giá trị)."
+      ],
+      "observation_point": "Giá trị popup Border sau reload; object Photo Border của CC1 trong response API.",
+      "expected_result": "Baseline quan sát (QA-3414 TC-04 ngày 2026-10-19, một mẫu, không phải expected): popup đọc lại đúng các giá trị đã lưu; API trả field photo_border gồm key size, type, color, display, line, enabled, với type contour_cut và display mockup_order. Lệch baseline là cần điều tra, không tự kết luận bug.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-916"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Thiết lập Border đọc lại sau Save & Close + reload và shape field photo_border (size, type, color, display, line, enabled; type contour_cut, display mockup_order = 'Mockup Preview & Order Design') có phải contract lưu chuẩn không?",
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-916",
+        "artwork-editor/editor-layer-workspace#KB-427"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mất thiết lập Border sau lưu làm file Order Design thiếu viền; chỉ là quan sát một mẫu."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-layer-config-099"
+    },
+    {
+      "check_id": "CHK-015",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "Gap: giá trị type / display / line của photo_border cho Custom shape, từng lựa chọn Display border on và Add a thin line ON — chỉ ghi lại",
+      "applicability": {
+        "role": "merchant-owner — account explore (TIB_STAGING_EMAIL), store explorer",
+        "state": "PB-FIXTURE, CC1",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor + response API artwork (network)"
+      },
+      "precondition": "PB-FIXTURE như CHK-001; network capture bật.",
+      "steps": [
+        "Với từng lựa chọn của Display border on trên build đang test: chọn, Save & Close, reload; ghi nhãn lựa chọn và giá trị display trong object Photo Border của CC1.",
+        "Đổi Type sang Custom shape, Save & Close, reload; ghi giá trị type (và key liên quan shape nếu có).",
+        "Bật Add a thin line, Save & Close, reload; ghi giá trị line. Sau cùng trả CC1 về thiết lập của CHK-001 và Save."
+      ],
+      "observation_point": "Giá trị type, display, line trong response API theo từng lựa chọn UI; popup đọc lại sau reload.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Tập giá trị đầy đủ của type và display trong field photo_border là gì (ứng với Custom shape và từng lựa chọn Display border on), line ứng với Add a thin line ra sao?",
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-916"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "KB-916 chỉ có một mẫu (contour_cut, mockup_order); không suy ra enum."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-layer-config-099"
+    },
+    {
+      "check_id": "CHK-016",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Layer đơn: Undo / Redo khi đổi Border size 3 → 1 trả cả giá trị lẫn hình vẽ — baseline quan sát",
+      "applicability": {
+        "role": "merchant-owner — account explore (TIB_STAGING_EMAIL), store explorer",
+        "state": "PB-FIXTURE, chỉ chọn CC1 (không multi-select)",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor, desktop"
+      },
+      "precondition": "PB-FIXTURE như CHK-001; CC1 Contour cut Border size = 3. Đổi size bằng cách bôi đen ô và gõ một phím '1' (một thao tác), để không lẫn với undo theo từng phím của editor-layer-workspace.",
+      "steps": [
+        "Chọn chỉ CC1; đổi Border size 3 → 1; ghi giá trị và viền trên canvas.",
+        "Bấm Undo một lần; ghi giá trị ô và viền.",
+        "Bấm Redo một lần; ghi giá trị ô và viền."
+      ],
+      "observation_point": "Giá trị ô Border size và viền trên canvas sau Undo, Redo.",
+      "expected_result": "Baseline quan sát (QA-3414 TC-27 ngày 2026-10-19, layer đơn, không phải expected): Undo trả cả giá trị lẫn hình vẽ của size 3; Redo trả size 1. Lệch baseline là cần điều tra, không tự kết luận bug.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-917"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Undo / Redo khi đổi Border size của một layer trả cả giá trị lẫn hình vẽ viền — có phải hành vi đúng không?",
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-917",
+        "artwork-editor/editor-layer-workspace#KB-428"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Undo khi multi-select và undo theo phím thuộc editor-layer-workspace CHK-021; không lặp ở đây."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-layer-config-100"
+    },
+    {
+      "check_id": "CHK-017",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "Duplicate layer giữ thiết lập Border — baseline quan sát; Border của bản copy sau Save chỉ ghi lại",
+      "applicability": {
+        "role": "merchant-owner — account explore (TIB_STAGING_EMAIL), store explorer",
+        "state": "PB-FIXTURE, CC1 có thiết lập Border",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork editor, desktop + response API artwork (network)"
+      },
+      "precondition": "PB-FIXTURE như CHK-001; CC1 Contour cut, Border size 2, màu fixture.",
+      "steps": [
+        "Duplicate CC1 (lệnh Duplicate thường, không phải Duplicate & Link); mở popup Border của bản copy; ghi từng giá trị và viền trên canvas của cả hai layer.",
+        "Save artwork, reload; mở popup Border của bản copy; ghi từng giá trị và object Photo Border của bản copy trong response API.",
+        "Xoá bản copy, Save artwork."
+      ],
+      "observation_point": "Thiết lập Border và viền của bản copy trước Save; thiết lập Border của bản copy sau Save + reload.",
+      "expected_result": "Baseline quan sát (QA-3414 TC-27 ngày 2026-10-19, không phải expected): trước Save, bản Duplicate giữ nguyên thiết lập Border và cả hai layer vẽ viền theo outline. Kết quả sau Save chưa có quan sát, chỉ ghi lại. Lệch baseline là cần điều tra, không tự kết luận bug.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-917"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Duplicate layer giữ nguyên thiết lập Border — có phải hành vi đúng không, và Border của bản copy có được giữ sau Save artwork không?",
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-917"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Lượt quan sát gốc Cancel bản copy, chưa kiểm sau Save."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "oq_id": "OQ-artwork-layer-config-100"
+    },
+    {
+      "check_id": "CHK-018",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Static Image (static-photo) — theo baseline chung NHƯNG là 1/2 type KHÔNG có field 'Custom class:'",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "layer type Static Image (data-type static-photo)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có 1 layer Static Image.",
+      "steps": [
+        "Thêm layer Static Image.",
+        "Mở config panel.",
+        "Kiểm tra icon row + 4 accordion + field Custom class/Group name."
+      ],
+      "observation_point": "Field 'Custom class:' có xuất hiện trong PERSONALIZATION SETTINGS/EXTRA không.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "artwork-editor/_object-level#KB-011",
+          "artwork-editor/_object-level#KB-002",
+          "artwork-editor/_object-level#KB-004",
+          "artwork-editor/_object-level#KB-005",
+          "artwork-editor/_object-level#KB-008",
+          "artwork-editor/_object-level#KB-012"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [
+        "CONF-006"
+      ],
+      "observation_guidance": "5 icon chuẩn, đủ 4 accordion, có Group name NHƯNG KHÔNG có field 'Custom class:' — 1/2 ngoại lệ của boundary KB-011 (v2). LƯU Ý: bundle-registry (code, INFERRED) cho số liệu khác (CONF-006) — không coi 1 trong 2 nguồn là chính thức.",
+      "oq_id": "OQ-artwork-layer-config-153",
+      "previous_check_id": {
+        "feature_key": "layer-config-image",
+        "check_id": "CHK-001"
+      }
+    },
+    {
+      "check_id": "CHK-019",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Clipart Category › 1 Clipart category (clipart-category) — theo baseline chung, không có deviation riêng ghi nhận",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "layer type Clipart Category › 1 Clipart category (data-type clipart-category)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có 1 layer Clipart Category › 1 Clipart category.",
+      "steps": [
+        "Thêm layer.",
+        "Mở config panel.",
+        "Kiểm tra icon row + 4 accordion + Custom class/Group name."
+      ],
+      "observation_point": "Icon row, accordion, field Custom class/Group name.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "artwork-editor/_object-level#KB-002",
+          "artwork-editor/_object-level#KB-004",
+          "artwork-editor/_object-level#KB-005",
+          "artwork-editor/_object-level#KB-008",
+          "artwork-editor/_object-level#KB-010",
+          "artwork-editor/_object-level#KB-011",
+          "artwork-editor/_object-level#KB-012"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [
+        "STALE vs v3 evidence: CHK-013..019/024..028 (run ) mô tả chi tiết hơn NHIỀU cho cùng layer type này, bao gồm phát hiện Custom class KHÔNG tìm thấy (CONF-CTX20260921-03-01) mâu thuẫn trực tiếp với 'có Custom class' ghi ở expected_result này. KHÔNG tự sửa check này — xem CHK-028 cho NEEDS_CONFIRMATION tương ứng, và giao knowledge-diff-analyzer xử lý chính thức."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [
+        "CONF-CTX20260921-03-01"
+      ],
+      "observation_guidance": "Theo baseline chung: 5 icon, đủ 4 accordion, có Custom class + Group name — không nằm trong danh sách ngoại lệ nào.",
+      "oq_id": "OQ-artwork-layer-config-154",
+      "previous_check_id": {
+        "feature_key": "layer-config-image",
+        "check_id": "CHK-002"
+      }
+    },
+    {
+      "check_id": "CHK-020",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Clipart Category › Group of clipart categories (group-clipart-categories) — theo baseline chung, không có deviation riêng ghi nhận",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "layer type Clipart Category › Group of clipart categories (data-type group-clipart-categories)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có 1 layer Clipart Category › Group of clipart categories.",
+      "steps": [
+        "Thêm layer.",
+        "Mở config panel.",
+        "Kiểm tra icon row + 4 accordion + Custom class/Group name."
+      ],
+      "observation_point": "Icon row, accordion, field Custom class/Group name.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [
+          "artwork-editor/_object-level#KB-002",
+          "artwork-editor/_object-level#KB-004",
+          "artwork-editor/_object-level#KB-005",
+          "artwork-editor/_object-level#KB-008",
+          "artwork-editor/_object-level#KB-010",
+          "artwork-editor/_object-level#KB-011",
+          "artwork-editor/_object-level#KB-012"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [
+        "STALE vs v3 evidence: đường DUY NHẤT vào config panel của layer type này là Bulk Edit (KB-003, CHK-015) — check này chưa từng verify đường vào panel, chỉ giả định 'mở config panel' chung chung. Xem CHK-015/020/022 cho field inventory chi tiết hơn."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "observation_guidance": "Theo baseline chung: 5 icon, đủ 4 accordion, có Custom class + Group name — không nằm trong danh sách ngoại lệ nào.",
+      "oq_id": "OQ-artwork-layer-config-155",
+      "previous_check_id": {
+        "feature_key": "layer-config-image",
+        "check_id": "CHK-003"
+      }
+    },
+    {
+      "check_id": "CHK-021",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "Photo Upload › Single Upload (photo) — field 'Upload editor'/'Direct upload style'/'Set minimum size' riêng",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "layer type Photo Upload › Single Upload (data-type photo)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có 1 layer Photo Upload › Single Upload.",
+      "steps": [
+        "Thêm layer.",
+        "Mở PERSONALIZATION SETTINGS.",
+        "Kiểm tra field Upload editor/Direct upload style/Set minimum size/Image effects."
+      ],
+      "observation_point": "Danh sách field trong PERSONALIZATION SETTINGS.",
+      "expected_result": "Có 'Upload editor: Direct upload no editor/Photo Cropper/Photo Reposition', 'Direct upload style: Contain/Fill', 'Set minimum size', 'Image effects: Add new' — field riêng của photo, không dùng chung enum này với vector-upload (KB-023, chỉ 1 option).",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-017"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [
+        "[MỚI, ] Bổ sung, KHÔNG mâu thuẫn: CHK-032..034 mô tả chi tiết vai trò populate-destination của layer type này (thứ tự accordion, API retrieval_value_enabled/retrieval_layer/retrieval_value) khi Populate Content được cấu hình từ layer khác trỏ tới. Xem thêm FEAT-05-populate-channels-config cho cơ chế đầy đủ."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [],
+      "previous_check_id": {
+        "feature_key": "layer-config-image",
+        "check_id": "CHK-004"
+      }
+    },
+    {
+      "check_id": "CHK-022",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "Text to Image (AI) vs Multiple Uploads — key JSON GenAI provider (text_to_image_provider vs multi_image_provider) chưa xác nhận qua PUT thật",
+      "applicability": {
+        "role": "store owner / staff",
+        "state": "layer type Text to Image (AI) (data-type text-to-image) và Photo Upload › Multiple Uploads (data-type multiple-uploads)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Có sample PUT body thật cho cả 2 type sau khi chọn GenAI service.",
+      "steps": [
+        "Chọn GenAI service cho cả 2 type.",
+        "Save & Close.",
+        "Đọc PUT body, xác định key JSON thật của từng type."
+      ],
+      "observation_point": "Key JSON field GenAI service của text-to-image so với multiple-uploads.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [
+        "[MỚI, ] Một phần đã được xác nhận độc lập ở CHK-039 (POST /api/artworks, multi_image_provider='gemini') và CHK-047 (text_to_image_provider='gemini') — nhưng 2 quan sát này từ 2 request POST riêng biệt (mỗi type 1 sample), CHƯA đối chiếu trực tiếp trong CÙNG 1 flow save như câu hỏi gốc của check này đặt ra. open_question GIỮ NGUYÊN."
+      ],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-054",
+      "oq_id": "OQ-artwork-layer-config-157",
+      "previous_check_id": {
+        "feature_key": "layer-config-image",
+        "check_id": "CHK-008"
+      }
+    },
+    {
+      "check_id": "CHK-023",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[NEW v3, STRUCTURAL] Config panel Clipart Category (single/group) CHỈ mở được qua menu layer '...' > 'Bulk edit' — các đường khác KHÔNG dẫn tới panel",
+      "applicability": {
+        "role": "owner",
+        "state": "layer Clipart Category (single hoặc group) đã add trong artwork editor",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có ≥1 layer Clipart Category (single hoặc group) đã add. CẦN fixture mới (artwork:4339 đã ARCHIVED).",
+      "steps": [
+        "Thử double-click layer — quan sát (chỉ đổi tên layer, không mở panel).",
+        "Thử right-click layer — quan sát (không có context menu).",
+        "Thử click canvas SVG của layer — quan sát.",
+        "Thử gear icon artwork-level — quan sát (grid/snap, không liên quan).",
+        "Thử 'Preview Options' — quan sát (template/print variant, không liên quan).",
+        "Cuối cùng mở menu layer '...' > 'Bulk edit' — quan sát panel config có mở không."
+      ],
+      "observation_point": "Panel cấu hình (Personalization/Populate/Design/Conditional/Extra) có mở ở bất kỳ bước nào ngoài Bulk Edit không.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Trên build cuối, panel cấu hình layer Clipart Category (single/group) còn chỉ mở được qua menu layer '...' > 'Bulk edit' (KB-085, bootstrap 2026-09-21) không, hay đã có panel single-layer riêng; mục Bulk edit nằm ở menu More (…) như KB-908 (TC-01 2026-10-30)? KB-043 ghi action bar không có menu '...'. Cùng OQ CONFLICT OQ-artwork-286 (editor-layer-workspace), không mở OQ riêng.",
+      "related_kb_ids": [
+        "artwork-layer-config/clipart-layer-config#KB-085",
+        "artwork-editor/editor-layer-workspace#KB-908",
+        "artwork-editor/editor-layer-workspace#KB-043"
+      ],
+      "risk_refs": [
+        "Nếu automation script cũ dựa trên double-click/right-click để mở config panel cho layer type này sẽ fail — cần dùng đúng đường Bulk Edit.",
+        "[CBS-092] Mất oracle vì KB-085 là phía base của CONF-CBS-092-01 (supersede.md STEP 7). CHK-016, CHK-018, CHK-020, CHK-022 mở panel qua Bulk Edit như precondition; oracle của chúng không đổi."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": [
+        "CONF-CBS-092-01"
+      ],
+      "oq_id": "OQ-artwork-editor-043",
+      "observation_guidance": "Không có oracle: KB-085 đang UNRESOLVED (CONF-CBS-092-01, cùng KB-043 đối với KB-908). Mô tả cũ của KB-085 để đối chiếu, không phải expected: chỉ 'Bulk edit' mở được panel cấu hình; 5 cách còn lại không dẫn tới panel single-layer riêng nào — 1 sample duy nhất (observed_count=1), không loại trừ có đường khác chưa thử. Ghi lại kết quả kèm build và ngày chạy, kể cả tên menu chứa mục Bulk edit (theo KB-908 là More (…)), không phán pass hay fail.",
+      "previous_check_id": {
+        "feature_key": "layer-config-image",
+        "check_id": "CHK-015"
+      }
+    },
+    {
+      "check_id": "CHK-024",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[NEW v3, NEEDS_CONFIRMATION] 'Select a group of clipart categories' có thực sự hỗ trợ multi-category hay chỉ 1 category nested children?",
+      "applicability": {
+        "role": "owner",
+        "state": "field 'Select a group of clipart categories:' trong Bulk Edit layer group-clipart-categories",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "CẦN fixture mới với ≥2 category độc lập để thử chọn nhiều category cùng lúc.",
+      "steps": [
+        "Mở picker 'Select a group of clipart categories'.",
+        "Thử chọn nhiều hơn 1 category (nếu UI cho phép).",
+        "Nếu chỉ chọn được 1, kiểm tra category đó có 'Parent Category' field / nested children hay không."
+      ],
+      "observation_point": "UI có cho chọn nhiều category không, hay chỉ 1 category có cấu trúc nested.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-055",
+      "oq_id": "OQ-artwork-layer-config-159",
+      "previous_check_id": {
+        "feature_key": "layer-config-image",
+        "check_id": "CHK-021"
+      }
+    },
+    {
+      "check_id": "CHK-025",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[NEW v3, NEEDS_CONFIRMATION] Conflict CONF-CTX20260921-03-02 — nhánh PORTAL: lựa chọn tường minh 'default value' của merchant có NÊN ảnh hưởng canvas portal hay không?",
+      "applicability": {
+        "role": "owner",
+        "state": "layer clipart-category (single), sau khi merchant set default_value tường minh khác url",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Dựa trên quan sát CHK-024 (canvas portal chỉ dùng url, bỏ qua default_value). CẦN fixture mới, và cần authority (PO/Dev) xác nhận business rule dự kiến.",
+      "steps": [
+        "Tham chiếu quan sát CHK-024.",
+        "Đặt câu hỏi cho PO/Dev: layer.default_value có ý nghĩa gì trên canvas portal, nếu có?"
+      ],
+      "observation_point": "Business rule dự kiến cho layer.default_value trên canvas portal (chưa có, cần xác nhận).",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [
+        "CONF-CTX20260921-03-02"
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [
+        "CONF-CTX20260921-03-02"
+      ],
+      "oq_ref": "OQ-artwork-056",
+      "oq_id": "OQ-artwork-layer-config-161"
+    },
+    {
+      "check_id": "CHK-027",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[NEW v3, NEEDS_CONFIRMATION] Conflict CONF-API-CTX20260921-03-01 nhánh PORTAL: GET /api/layer-image-categories trả [] rỗng trong khi GraphQL clipart_categories trả 10 rows cùng user/session",
+      "applicability": {
+        "role": "owner",
+        "state": "mở tab 'Choose from clipart category' lúc add layer clipart-category",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "CẦN fixture mới + phối hợp db-explorer/api-explorer để chẩn đoán root cause (filter khác nhau trên endpoint REST vs GraphQL, hay data/cache issue riêng staging).",
+      "steps": [
+        "Mở tab 'Choose from clipart category' lúc add layer — ghi lại response GET /api/layer-image-categories?type=clipart.",
+        "Trong CÙNG session/user, gọi song song POST /api/graphql query clipart_categories(where: {type: clipart, deleted_at: null, parent id: null}, limit: 25).",
+        "So sánh số row trả về."
+      ],
+      "observation_point": "Số row trả về của 2 nguồn dữ liệu cho cùng user/session.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [
+        "CONF-API-CTX20260921-03-01"
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [
+        "CONF-API-CTX20260921-03-01"
+      ],
+      "oq_ref": "OQ-artwork-058",
+      "oq_id": "OQ-artwork-layer-config-163"
+    },
+    {
+      "check_id": "CHK-028",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "[NEW v3, NEEDS_CONFIRMATION] Conflict CONF-CTX20260921-03-01 — field 'Custom class:' (layer-level, Clipart Category›1) có tồn tại thật hay đã mất so với canonical v2?",
+      "applicability": {
+        "role": "owner",
+        "state": "layer clipart-category (single), Bulk Edit dialog (Design/Personalization/Extra) VÀ response POST/PUT /api/artworks",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "canonical v2 (published) khẳng định field 'Custom class:' tồn tại như baseline PERSONALIZATION SETTINGS cho layer type này. CẦN fixture mới để re-scan.",
+      "steps": [
+        "Mở Bulk Edit cho layer clipart-category (single).",
+        "Scroll hết cả 3 accordion Design/Personalization/Extra, tìm field 'Custom class:'.",
+        "Kiểm tra response POST/PUT /api/artworks cho layer này, tìm key 'custom_class'."
+      ],
+      "observation_point": "Field 'Custom class:' có xuất hiện ở UI (bất kỳ accordion nào) hoặc key 'custom_class' trong API response không.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [
+        "CONF-CTX20260921-03-01"
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [
+        "CONF-CTX20260921-03-01"
+      ],
+      "oq_ref": "OQ-artwork-059",
+      "oq_id": "OQ-artwork-layer-config-164"
+    },
+    {
+      "check_id": "CHK-030",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[NEW v3, NEEDS_CONFIRMATION] API field 'show_clipart_name' (null observed) có đúng backing field cho UI toggle 'Show option name on hover'?",
+      "applicability": {
+        "role": "owner",
+        "state": "Clipart Category form, toggle 'Show option name on hover' + response POST /api/clipart-categories",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "CẦN category mới để test bật/tắt toggle và quan sát response API tương ứng.",
+      "steps": [
+        "Bật toggle 'Show option name on hover', save category.",
+        "Đọc response API, quan sát giá trị field 'show_clipart_name'.",
+        "Tắt toggle, save lại, quan sát lại giá trị."
+      ],
+      "observation_point": "Giá trị field 'show_clipart_name' tương ứng trạng thái toggle ON/OFF.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "HYBRID",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-060",
+      "oq_id": "OQ-artwork-layer-config-165"
+    },
+    {
+      "check_id": "CHK-032",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[NEW v4,, CCR CBS-003] Photo Upload › Single Upload làm populate destination — accordion 'Populate Values' xếp ĐẦU TIÊN",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer photo thường ('body') được chọn làm ĐÍCH cho Populate Content (Source = layer khác)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có layer photo (Single Upload) và ≥1 layer nguồn khác (vd Multiple Uploads) đã cấu hình quan hệ Populate Content trỏ tới layer photo này. CẦN fixture (artwork 4416,, còn sống).",
+      "steps": [
+        "Mở config panel layer photo đã được cấu hình làm destination của Populate Content.",
+        "Liệt kê thứ tự accordion hiển thị từ trên xuống."
+      ],
+      "observation_point": "Thứ tự accordion: 'Populate Values' có xếp đầu tiên (collapsed) trước 'Personalization Settings', 'Conditional Setting', 'Extra' hay không.",
+      "expected_result": "Thứ tự quan sát được: 'Populate Values' (collapsed, ĐẦU TIÊN), rồi 'Personalization Settings', sau đó 'Conditional Setting', 'Extra' — 1 sample duy nhất (observed_count=1), KHÔNG tổng quát hoá thành rule UI cố định cho MỌI layer photo. Xem CHK-033 cho câu hỏi mở về điều kiện xảy ra.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-124"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-033",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[NEW v4, NEEDS_CONFIRMATION] Thứ tự accordion 'Populate Values đầu tiên' có cố định cho MỌI layer photo, hay chỉ khi Populate Values đã được cấu hình trước?",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer photo (Single Upload) — so sánh trạng thái CHƯA cấu hình Populate Values vs ĐÃ cấu hình",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Cần 2 layer photo: 1 CHƯA từng cấu hình Populate Values, 1 ĐÃ cấu hình (như CHK-032) để so sánh trực tiếp thứ tự accordion.",
+      "steps": [
+        "Mở config panel 1 layer photo CHƯA cấu hình Populate Values — ghi lại thứ tự accordion.",
+        "So sánh với thứ tự đã ghi ở CHK-032 (layer photo ĐÃ cấu hình làm destination)."
+      ],
+      "observation_point": "Thứ tự accordion có khác nhau giữa 2 trạng thái hay luôn cố định 'Populate Values' đầu tiên bất kể đã cấu hình hay chưa.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-061",
+      "oq_id": "OQ-artwork-layer-config-166"
+    },
+    {
+      "check_id": "CHK-034",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[NEW v4,, CCR CBS-003] Photo Upload › Single Upload làm populate destination — API field retrieval_value_enabled/retrieval_layer/retrieval_value",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "response POST /api/artworks sau khi save layer photo đã cấu hình làm destination của Populate Content",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Layer photo ('body') đã cấu hình Populate Content Source=layer khác (vd layer-703775) và Save. CẦN fixture (artwork 4416).",
+      "steps": [
+        "Save artwork có layer photo đã cấu hình populate destination.",
+        "Đọc response POST /api/artworks (status 201), tìm field base photo_editor/photo_replace và 3 field populate."
+      ],
+      "observation_point": "Giá trị field photo_editor, photo_replace, retrieval_value_enabled, retrieval_layer, retrieval_value trong response.",
+      "expected_result": "Field base: photo_editor='static', photo_replace=true. Khi populate bật: retrieval_value_enabled=true, retrieval_layer='layer-703775' (id layer nguồn), retrieval_value='{{input.1}}' — 1 sample duy nhất, không có OpenAPI spec đối chiếu. Cơ chế populate đầy đủ (cross-layer propagation) thuộc FEAT-05-populate-channels-config (KB-008), check này chỉ xác nhận field-level của layer photo với vai trò destination cụ thể.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-124"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-036",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[NEW v4, NEEDS_CONFIRMATION] Toggle 'Use Template Default Size' (ImagenHub, Multiple Uploads) — tác dụng khi bật ON chưa được test",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer Multiple Uploads, GenAI service = ImagenHub, toggle 'Use Template Default Size'",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Layer Multiple Uploads, GenAI service = ImagenHub đã chọn Template.",
+      "steps": [
+        "Bật toggle 'Use Template Default Size'.",
+        "Quan sát field/behavior thay đổi (nếu có).",
+        "Save & Close, quan sát API response."
+      ],
+      "observation_point": "Hành vi UI và giá trị API khi toggle ON so với OFF (mặc định).",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-062",
+      "oq_id": "OQ-artwork-layer-config-167"
+    },
+    {
+      "check_id": "CHK-038",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[NEW v4, NEEDS_CONFIRMATION] Rule 'prompt required' (Save & Close) — chỉ xác nhận với Gemini, chưa test OpenAI/Flux/ImagenHub (cả Multiple Uploads lẫn Text to Image)",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer Multiple Uploads hoặc Text to Image, GenAI service = OpenAI/Flux/ImagenHub, prompt/template để trống",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Cần test riêng từng provider còn lại (OpenAI, Flux, ImagenHub) cho cả 2 layer type.",
+      "steps": [
+        "Chọn GenAI service = OpenAI (hoặc Flux/ImagenHub).",
+        "Để trống field prompt/template tương ứng.",
+        "Click Save & Close.",
+        "Quan sát có bị chặn + toast lỗi hay không."
+      ],
+      "observation_point": "Save & Close có bị chặn và toast lỗi có xuất hiện cho từng provider còn lại không.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-063",
+      "oq_id": "OQ-artwork-layer-config-168"
+    },
+    {
+      "check_id": "CHK-040",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[NEW v4,, CCR CBS-003] Multiple Uploads làm populate source — 'Available Value' picker hiển thị đúng 4 token khi Maximum photos=3",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer Multiple Uploads ('top', Maximum photos=3) được dùng làm Source cho Populate Content của layer đích khác",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Layer Multiple Uploads (Maximum photos=3) đã tồn tại trong artwork. Layer đích khác mở picker 'Available Value' của Populate Content, chọn Source=layer Multiple Uploads này.",
+      "steps": [
+        "Mở config layer đích, bật Populate Content, chọn Source = layer Multiple Uploads (Maximum photos=3).",
+        "Mở picker 'Available Value', liệt kê token hiển thị."
+      ],
+      "observation_point": "Danh sách token hiển thị trong 'Available Value' picker.",
+      "expected_result": "Đúng 4 token: '{{input.1}}', '{{input.2}}', '{{input.3}}' (khớp Maximum photos=3) + '{{output}}' — token '{{input}}' trần KHÔNG xuất hiện ở Maximum photos=3. 1 sample duy nhất. Cơ chế populate đầy đủ (cross-layer propagation flagship) thuộc FEAT-05-populate-channels-config (KB-008), check này chỉ xác nhận vai trò làm SOURCE của layer type Multiple Uploads.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-output-chain#KB-118"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "conflict_refs": []
+    },
+    {
+      "check_id": "CHK-041",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[NEW v4, NEEDS_CONFIRMATION] Token '{{input}}' trần có xuất hiện khi Maximum photos=1 (chưa test)?",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer Multiple Uploads, Maximum photos=1, làm Source cho Populate Content",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Cần layer Multiple Uploads với Maximum photos=1 để so sánh với CHK-040 (Maximum photos=3).",
+      "steps": [
+        "Cấu hình layer Multiple Uploads với Maximum photos=1.",
+        "Mở picker 'Available Value' của layer đích, chọn Source=layer này.",
+        "Liệt kê token hiển thị."
+      ],
+      "observation_point": "Token hiển thị: '{{input}}' trần hay vẫn '{{input.1}}' indexed.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-064",
+      "oq_id": "OQ-artwork-layer-config-169"
+    },
+    {
+      "check_id": "CHK-043",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[NEW v4, NEEDS_CONFIRMATION] Cảnh báo unsupported-provider (Flux, Text to Image) — chỉ thử ở UI cấu hình, chưa thử lúc generate thật",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer Text to Image (AI), GenAI service = Flux",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Cần thực hiện generate thật (không chỉ cấu hình UI) với provider Flux trên layer Text to Image để quan sát cảnh báo (nếu có).",
+      "steps": [
+        "Cấu hình layer Text to Image, GenAI service = Flux, nhập prompt.",
+        "Save & Close.",
+        "Ở storefront/Live Preview, thực hiện generate thật.",
+        "Quan sát có cảnh báo unsupported-provider xuất hiện lúc generate hay không."
+      ],
+      "observation_point": "Cảnh báo unsupported-provider (nếu có) xuất hiện ở đâu: lúc cấu hình UI (portal) hay lúc generate thật (storefront runtime).",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-065",
+      "oq_id": "OQ-artwork-layer-config-170"
+    },
+    {
+      "check_id": "CHK-045",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[NEW v4, NEEDS_CONFIRMATION] '+ Variable' picker hiển thị option gì khi artwork CÓ ≥1 layer Text/Additional Option khác?",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer Text to Image (AI), artwork CÓ ≥1 layer Text hoặc Additional Option khác",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có ≥1 layer Text hoặc Additional Option ngoài layer Text to Image (AI).",
+      "steps": [
+        "Thêm ≥1 layer Text hoặc Additional Option vào artwork.",
+        "Mở config layer Text to Image (AI), click nút '+ Variable'.",
+        "Quan sát danh sách option hiển thị trong picker."
+      ],
+      "observation_point": "Danh sách option trong picker '+ Variable' khi có layer Text/Additional Option khác.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-066",
+      "oq_id": "OQ-artwork-layer-config-171"
+    },
+    {
+      "check_id": "CHK-048",
+      "dimension": "INTEGRATION",
+      "layer": "portal",
+      "title": "[NEW v4, NEEDS_CONFIRMATION] Text to Image (AI) có bao giờ được offer làm Populate Content source hay không — chỉ 1 sample phủ định",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer đích khác mở Source dropdown của Populate Content, artwork có layer Text to Image (AI)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Artwork có layer Text to Image (AI) và ≥1 layer khác có thể làm destination cho Populate Content. Thử lại sau khi save artwork hoặc với artwork khác (khác session/config so với sample gốc).",
+      "steps": [
+        "Mở config layer đích, bật Populate Content.",
+        "Mở Source option dropdown, kiểm tra layer Text to Image (AI) có được liệt kê làm nguồn không.",
+        "Lặp lại sau khi save artwork / với artwork khác để tăng số sample."
+      ],
+      "observation_point": "Layer Text to Image (AI) có xuất hiện trong Source option dropdown không, ở nhiều điều kiện khác nhau.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [
+          "artwork-render/populate-channels-config#KB-119"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-067",
+      "oq_id": "OQ-artwork-layer-config-172"
+    },
+    {
+      "check_id": "CHK-049",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[NEW v4, NEEDS_CONFIRMATION] Beta badge KHÔNG xuất hiện cho Text to Image (AI) — chỉ xác nhận trên 2 bề mặt staff-authenticated, chưa test storefront PDP/theme thật",
+      "applicability": {
+        "role": "owner/staff (portal + storefront proxy)",
+        "state": "layer-type picker + header Personalization Settings (portal); Live Preview widget panel (storefront, staff-authenticated proxy)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Có layer Text to Image (AI) đã add. Cần thêm test trên storefront PDP/theme Shopify thật (guest, chưa thực hiện).",
+      "steps": [
+        "Kiểm tra layer-type picker (portal) — tìm Beta badge/text gắn với Text to Image (AI).",
+        "Kiểm tra header Personalization Settings (portal) — tìm Beta badge/text.",
+        "Kiểm tra Live Preview widget panel (storefront, staff-authenticated) — tìm Beta badge/text.",
+        "[CHƯA LÀM] Kiểm tra storefront PDP/theme Shopify thật (guest) — cần thực hiện để đóng gap này."
+      ],
+      "observation_point": "Sự có mặt của Beta badge/text ở mỗi bề mặt.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-068",
+      "oq_id": "OQ-artwork-layer-config-173"
+    },
+    {
+      "check_id": "CHK-051",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[NEW v4, NEEDS_CONFIRMATION, GAP] TIB-5188 — thứ tự resize/crop và minimum-resolution validation của pipeline GenAI (Multiple Uploads) HOÀN TOÀN CHƯA TEST",
+      "applicability": {
+        "role": "owner/staff",
+        "state": "layer Multiple Uploads, toggle 'Set minimum size' = ON (chưa từng bật trong bất kỳ run nào tính tới nay)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Cần bật toggle 'Set minimum size' (hiện luôn để OFF trên mọi fixture đã dùng) và chuẩn bị ảnh input ở nhiều kích thước khác nhau (dưới/trên ngưỡng min) để test pipeline resize/crop + validation. code-config-explorer cũng BLOCKED (không có source repo) nên không đóng được bằng code evidence.",
+      "steps": [
+        "Bật toggle 'Set minimum size', đặt ngưỡng min cụ thể.",
+        "Upload ảnh input DƯỚI ngưỡng min — quan sát validation có chặn không, message gì.",
+        "Upload ảnh input TRÊN ngưỡng min — quan sát pipeline resize/crop có áp dụng trước khi generate không, và thứ tự (resize trước crop hay ngược lại)."
+      ],
+      "observation_point": "Hành vi validation khi ảnh dưới ngưỡng min; thứ tự resize/crop khi ảnh trên ngưỡng.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-070",
+      "oq_id": "OQ-artwork-layer-config-175"
+    },
+    {
+      "check_id": "CHK-052",
+      "dimension": "INTEGRATION",
+      "layer": "api",
+      "title": "[NEW v4, NEEDS_CONFIRMATION, GAP] TIB-5339 — so sánh sync vs async giữa route upload chính (presigned-S3) và route fallback (multipart) KHÔNG so sánh được",
+      "applicability": {
+        "role": "owner/staff (qua storefront runtime)",
+        "state": "upload ảnh cho layer Multiple Uploads/Photo, route chính lỗi -> route fallback multipart được thử tự động",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "Cần ảnh input KHÔNG bị client re-encode xuống dưới ngưỡng 10000 byte trước khi tới route (lần thử duy nhất trước đó cả 2 route đều fail cùng lý do này) để route fallback có cơ hội THÀNH CÔNG.",
+      "steps": [
+        "Chuẩn bị ảnh input đủ lớn, không bị client re-encode xuống dưới ngưỡng byte tối thiểu.",
+        "Kích hoạt lỗi route chính (presigned-S3) để trigger fallback multipart.",
+        "Nếu fallback multipart THÀNH CÔNG: quan sát downstream GenAI generate là sync hay async, so sánh với route chính khi thành công."
+      ],
+      "observation_point": "Route fallback multipart có thành công không; nếu thành công, downstream generate sync/async so với route chính.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-template-management#KB-046"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-071",
+      "oq_id": "OQ-artwork-layer-config-176"
+    },
+    {
+      "check_id": "CHK-053",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[NEW v4, NEEDS_CONFIRMATION, GAP] 'Duplicate & Share' (TIB-5326) — control không tìm thấy ở portal editor lẫn storefront Live Preview cho Multiple Uploads/Text to Image",
+      "applicability": {
+        "role": "owner/staff (portal) + staff-authenticated proxy (storefront)",
+        "state": "layer Multiple Uploads/Text to Image (AI), sau khi có ≥1 kết quả generated (nếu điều kiện trigger cần vậy)",
+        "environment": "staging",
+        "theme_or_device": ""
+      },
+      "precondition": "2 agent độc lập (portal-explorer, storefront-explorer) đã tìm nhưng KHÔNG thấy control 'Duplicate & Share' ở cả 2 bề mặt. Cần thử với điều kiện khác: nhiều biến thể generated, cart/order thật, plan cụ thể (chưa loại trừ).",
+      "steps": [
+        "Tạo nhiều biến thể generated cho layer Multiple Uploads/Text to Image (nếu có thể).",
+        "Thử với cart/order thật (nếu policy cho phép).",
+        "Kiểm tra với plan store khác (nếu có).",
+        "Tìm control 'Duplicate & Share' ở cả portal editor và storefront Live Preview trong từng điều kiện."
+      ],
+      "observation_point": "Control 'Duplicate & Share' có xuất hiện ở bất kỳ điều kiện nào thử thêm không.",
+      "expected_result": null,
+      "oracle": {
+        "kb_ids": [
+          "artwork/artwork-list-and-clone#KB-047"
+        ],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "NOT_SUITABLE",
+      "conflict_refs": [],
+      "oq_ref": "OQ-artwork-072",
+      "oq_id": "OQ-artwork-layer-config-177"
+    },
+    {
+      "check_id": "CHK-054",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-079] Chọn nhiều image layer khác ảnh trong limit: HD bật hàng loạt, không còn tooltip 'Selected layers use different images…'",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-420, KB-421 chưa chốt; ghi lại role đã dùng)",
+        "state": "≥2 image layer khác ảnh, chưa ở HD, số ảnh khác nhau không vượt limit, selection không có layer Linked",
+        "environment": "staging; ghi build và ngày chạy (KB-420, KB-421 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor, desktop"
+      },
+      "precondition": "Fixture throwaway như applicability.",
+      "steps": [
+        "Chọn các image layer khác ảnh",
+        "Rê chuột lên control HD; ghi tooltip nếu có",
+        "Bật HD một lần bấm",
+        "Chờ các lượt kiểm xong; ghi trạng thái HD của từng layer"
+      ],
+      "observation_point": "Tooltip của control HD; trạng thái HD của từng layer đang chọn",
+      "expected_result": "Không có tooltip 'Selected layers use different images…'. Một lần bấm bật HD cho mọi layer đang chọn. Check không assert số lượt kiểm hay thời gian chuyển của từng layer.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-420",
+          "artwork-layer-config/photo-upload-layer-config#KB-421"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-420",
+        "artwork-layer-config/photo-upload-layer-config#KB-421",
+        "artwork-editor/editor-layer-workspace#KB-429"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Oracle chỉ từ comment dev, chưa có test case PASS. Không dùng cho production khi shipped còn UNKNOWN."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-055",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-079] Batch HD ở limit và vượt limit: đúng limit bật được; vượt limit có toast info rồi toast lỗi 'Something went wrong!' nêu limit",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-421 chưa chốt; ghi lại role đã dùng)",
+        "state": "≥L+1 image layer khác ảnh, chưa ở HD, với L là limit đang đặt",
+        "environment": "staging; ghi build, ngày chạy và limit L (KB-421 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor, desktop"
+      },
+      "precondition": "Xác định L: mặc định 10 trừ khi đặt khác trên server staging; kiểm trên UI bằng cách chọn 11 ảnh khác nhau chưa HD, lỗi hiện limit. Nếu limit lớn hơn 10, tăng số ảnh tới khi có lỗi.",
+      "steps": [
+        "Chọn L+1 layer khác ảnh, chưa HD; bật HD; ghi thứ tự toast, tiêu đề và nội dung",
+        "Chọn đúng L layer khác ảnh, chưa HD; bật HD; ghi toast và trạng thái HD của từng layer"
+      ],
+      "observation_point": "Thứ tự, tiêu đề, nội dung toast; trạng thái HD của layer",
+      "expected_result": "L+1 ảnh: toast info hiện trước, rồi toast lỗi tiêu đề 'Something went wrong!', lỗi nêu limit. L ảnh: không có lỗi vượt limit, HD bật cho các layer đang chọn.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-421"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-421",
+        "artwork-layer-config/photo-upload-layer-config#KB-422"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Limit đặt khác được trên server staging: boundary cần biết giá trị đang đặt.",
+        "Oracle chỉ từ comment dev, chưa có test case PASS."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-056",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-079] POST /layer-images/create-master-large/batch: quá limit trả 422 kèm thông báo limit, không queue, không layer nào đổi; layer đã HD không tính — baseline theo comment tự sinh, chưa kiểm",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-422 chưa chốt; ghi lại role đã dùng)",
+        "state": "≥L+1 image layer khác ảnh chưa ở HD, và ≥1 layer đã ở HD, với L là limit đang đặt (MASTER_LARGE_BATCH_LIMIT, mặc định 10)",
+        "environment": "staging; ghi build, ngày chạy và limit L. Status 422 là nội dung nguồn, CHƯA quan sát trong lượt chạy nào (comment sinh từ branch diff, viết trước khi QA test). KB-422 shipped UNKNOWN, production chưa kiểm",
+        "surface_or_device": "api; route ghi đúng như nguồn, không thêm tiền tố /api"
+      },
+      "precondition": "Xác định L như CHK-055. Network capture bật.",
+      "steps": [
+        "Chọn L+1 layer khác ảnh, chưa HD; bật HD; ghi method, route, urls[], status, body của request",
+        "Chờ qua ít nhất 2 lượt kiểm 2 giây; ghi trạng thái HD của từng layer",
+        "Chọn L layer khác ảnh chưa HD cùng ≥1 layer đã HD; bật HD; ghi status và body",
+        "Nếu bước 1 không phát sinh request, ghi lại điều đó và gọi thẳng route với urls[] có L+1 ảnh; ghi status, body"
+      ],
+      "observation_point": "Method, route, urls[], status, body; trạng thái HD của layer sau request",
+      "expected_result": "Baseline theo comment dev tự sinh từ branch diff, chưa kiểm trên hệ thống, không phải expected đã xác nhận: L+1 ảnh: POST /layer-images/create-master-large/batch nhận urls[] trả 422 kèm thông báo limit; không queue gì, không layer nào đổi. L ảnh cùng layer đã HD: layer đã HD không tính, không có lỗi vượt limit. Lệch baseline là tín hiệu cần điều tra, không tự kết luận là bug.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-422"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Route POST /layer-images/create-master-large/batch, env MASTER_LARGE_BATCH_LIMIT (mặc định 10) và status 422 khi quá limit có đúng trên build hiện tại không? Nguồn là comment Jira TIB-5212 #54785 (2026-10-16) tự sinh từ branch diff, chưa kiểm trên hệ thống; comment #55717 không phát biểu lại các điểm này. Cần Dev xác nhận nguyên văn, có ngày; hoặc test case PASS có build.",
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-422",
+        "artwork-layer-config/photo-upload-layer-config#KB-421"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nguồn là comment sinh từ branch diff, viết trước khi QA test; route và 422 chưa có lượt quan sát nào. Comment #55717 của cùng dev không sửa mục này.",
+        "'Không queue gì' chỉ kiểm gián tiếp qua trạng thái layer."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-layer-config-084"
+    },
+    {
+      "check_id": "CHK-057",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-079] Undo của batch HD: mỗi lượt kiểm 2 giây có layer chuyển là 1 step, một Undo chỉ hoàn lượt mới nhất; tắt HD là 1 step",
+      "applicability": {
+        "role": "unspecified (scope.role của KB-421 chưa chốt; ghi lại role đã dùng)",
+        "state": "nhiều image layer khác ảnh, chưa ở HD, số ảnh trong limit",
+        "environment": "staging; ghi build và ngày chạy (KB-421 shipped UNKNOWN, production chưa kiểm)",
+        "surface_or_device": "portal Artwork Editor, desktop"
+      },
+      "precondition": "Fixture throwaway như applicability; đủ layer để việc chuyển HD trải qua hơn 1 lượt kiểm.",
+      "steps": [
+        "Bật HD; ghi layer nào chuyển ở từng lượt kiểm",
+        "Undo một lần; ghi trạng thái HD của từng layer",
+        "Với các layer còn ở HD, tắt HD; ghi trạng thái",
+        "Undo một lần; ghi trạng thái HD của từng layer"
+      ],
+      "observation_point": "Trạng thái HD của từng layer sau mỗi lần Undo",
+      "expected_result": "Mỗi lượt kiểm có ít nhất một layer chuyển là 1 step: một Undo chỉ hoàn các layer của lượt mới nhất, layer của lượt trước giữ HD. Tắt HD là 1 step: một Undo hoàn thao tác tắt.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-421"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-421",
+        "artwork-editor/editor-layer-workspace#KB-428"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Nếu mọi layer chuyển trong cùng 1 lượt thì không kiểm được vế 'chỉ hoàn lượt mới nhất'; ghi lại và tăng số layer.",
+        "Oracle chỉ từ comment dev, chưa có test case PASS."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-060",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-079] Gap: per-field warning và nút '+ variable' có nhận title của layer Global Option không — hai nguồn ngược chiều, không có expected",
+      "applicability": {
+        "role": "unspecified (chưa chốt; ghi lại role đã dùng)",
+        "state": "như CHK-059; thêm layer Text to Image hoặc Multiple Uploads dùng prompt có biến",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Artwork Editor, desktop"
+      },
+      "precondition": "Fixture như CHK-059.",
+      "steps": [
+        "Ghi per-field warning ở field ImagenHub template và field prompt có hiện cho biến trùng title Global Option không",
+        "Bấm nút '+ variable' trong prompt; ghi layer Global Option hiện theo title hay layer name",
+        "Ghi kết quả kèm build và ngày chạy; không phán pass hay fail"
+      ],
+      "observation_point": "Per-field warning; danh sách của nút '+ variable'",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Per-field warning và nút \"+ variable\" có nhận title của layer Global Option không? Comment dev Jira TIB-5465 #55232 viết cùng rule match áp cho per-field warning ở ImagenHub template field và prompt field; ghi chú QA (không có câu của dev) nói chúng không nhận title mà lấy layer name, và lỗi có cả trên prod. Cần Dev xác nhận nguyên văn, có ngày, hoặc kiểm trực tiếp.",
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-424",
+        "artwork-layer-config/gen-ai-layer-config#KB-115"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Không dùng KB-424 làm expected cho check này: vế per-field warning và nút '+ variable' nằm trong excluded_parts của claim."
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-artwork-layer-config-083"
+    },
+    {
+      "check_id": "CHK-061",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-095] Photo layer No personalization bật retrieval value được populated từ các nguồn photo, Photo Reposition, Multiple Uploads {{input.1}}, output effect",
+      "applicability": {
+        "role": "merchant-owner cấu hình layer; buyer trên storefront preview",
+        "state": "artwork có photo layer Personalization = 'No personalization', Populate Values bật retrieval value trỏ tới một layer nguồn; lần lượt 4 nguồn: output của photo, Photo Reposition, Multiple Uploads {{input.1}}, output của image effect",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "storefront SDK preview, desktop; đối chiếu order design phía API"
+      },
+      "precondition": "Fixture throwaway trên store explorer: layer đích có ảnh mặc định khác hẳn ảnh buyer sẽ upload để phân biệt.",
+      "steps": [
+        "Với nguồn thứ nhất, mở storefront preview, upload ảnh cho layer nguồn",
+        "Ghi ảnh hiển thị ở layer đích trên SDK preview",
+        "Đặt đơn test hoặc render order design; ghi ảnh ở layer đích",
+        "Lặp lại cho 3 nguồn còn lại"
+      ],
+      "observation_point": "Ảnh vẽ ở layer đích (ảnh mặc định hay ảnh từ customization_data) trên SDK preview và order design",
+      "expected_result": "Với cả 4 nguồn, khi retrieval value bật và customization_data có ảnh, layer đích được xử lý là populated: vẽ ảnh lấy từ customization_data của nguồn, không phải ảnh mặc định của layer.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-930"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-930",
+        "artwork-layer-config/photo-upload-layer-config#KB-017",
+        "artwork-render/populate-output-chain#KB-858",
+        "artwork-render/populate-output-chain#KB-859"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Fit/placement của ảnh populated không thuộc oracle check này (KB-931 quan sát, KB-936 KNOWN_DEFECT)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-062",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-095] Photo layer No personalization với nguồn {{input}} trần cũng được populated (nguồn Dev xác nhận, QA chưa kiểm)",
+      "applicability": {
+        "role": "merchant-owner cấu hình layer; buyer trên storefront preview",
+        "state": "photo layer No personalization, retrieval value bật với giá trị {{input}} trần",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "storefront SDK preview, desktop; đối chiếu order design phía API"
+      },
+      "precondition": "Cần một layer nguồn mà picker Available Value cho chọn {{input}} trần (xem CHK-041: chưa biết token này hiện khi nào). Không tìm được nguồn nào cho {{input}} trần thì ghi lại và dừng, không suy kết quả.",
+      "steps": [
+        "Cấu hình retrieval value của layer đích = {{input}}; Save",
+        "Trên storefront preview, cung cấp ảnh cho layer nguồn",
+        "Ghi ảnh ở layer đích trên SDK preview và trên order design"
+      ],
+      "observation_point": "Ảnh vẽ ở layer đích",
+      "expected_result": "Layer đích được xử lý là populated như các nguồn khác: vẽ ảnh trong customization_data, không phải ảnh mặc định; transformer không phân biệt nguồn.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-930"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-930"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Vế {{input}} trần chưa có lượt chạy nào (coverage gap KB-930); kết quả lần chạy đầu cần ghi build để bổ sung bằng chứng."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-063",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-095] Artwork thumbnail: photo layer No personalization dùng ảnh mặc định bị kéo giãn (fill); thumbnail chỉ đổi khi save lại artwork",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "artwork có photo layer No personalization với ảnh mặc định khác tỉ lệ box của layer",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal danh sách artwork, desktop"
+      },
+      "precondition": "Ảnh mặc định có tỉ lệ khác rõ với box (vd ảnh vuông trong box ngang) để thấy fill.",
+      "steps": [
+        "Ghi thumbnail hiện tại của artwork trong danh sách artwork",
+        "Mở artwork, không đổi gì, đóng không save; ghi thumbnail",
+        "Mở artwork, Save; quay lại danh sách; ghi thumbnail"
+      ],
+      "observation_point": "Ảnh của layer trên thumbnail: ảnh nào, có bị kéo giãn đúng box không; thời điểm thumbnail đổi",
+      "expected_result": "Sau Save, thumbnail render với customization_data rỗng: layer dùng ảnh mặc định, kéo giãn đúng box (fill). Thumbnail chỉ đổi sau khi save lại artwork, không đổi khi chỉ mở rồi đóng.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-934"
+        ],
+        "oracle_strength": "STRONG"
+      },
+      "status": "READY",
+      "open_question_draft": null,
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-934",
+        "artwork-layer-config/clipart-layer-config#KB-090",
+        "artwork-render/print-design-render#KB-933"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Thumbnail chụp trước fix TIB-5521 mới thấy được chiều 'chưa đổi'; artwork tạo sau fix chỉ kiểm được chiều sau Save."
+      ],
+      "priority": "P3",
+      "automation_suitability": "HYBRID"
+    },
+    {
+      "check_id": "CHK-064",
+      "dimension": "CORE",
+      "layer": "storefront",
+      "title": "[CBS-095, NEEDS_CONFIRMATION] Photo layer No personalization có bỏ qua Direct upload style (ảnh mặc định fill, ảnh populated contain) ở mọi nơi hiển thị không",
+      "applicability": {
+        "role": "merchant-owner (Mockup Editor, Campaign Editor); buyer (storefront preview, order design)",
+        "state": "photo layer No personalization, retrieval value bật; Direct upload style lần lượt Fill, Contain, không đặt",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal Mockup Editor, Campaign Editor; storefront SDK preview; order design"
+      },
+      "precondition": "Ảnh mặc định và ảnh buyer có tỉ lệ khác box.",
+      "steps": [
+        "Với từng giá trị Direct upload style, Save",
+        "Ghi cách vẽ ảnh mặc định (chưa populated) ở 4 nơi",
+        "Populate bằng ảnh buyer; ghi cách vẽ ảnh populated ở 4 nơi",
+        "Ghi kết quả kèm build; không phán pass hay fail"
+      ],
+      "observation_point": "Ảnh kéo giãn đúng box hay giữ tỉ lệ; khác nhau giữa các giá trị Direct upload style không. Hiện trạng đã quan sát (không phải expected): ảnh mặc định fill, ảnh populated contain, style không ảnh hưởng (KB-931).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Photo layer No personalization bỏ qua Direct upload style (ảnh mặc định fill, populated contain) ở Mockup Editor, Campaign Editor, storefront preview và order design chỉ là quan sát QA-3402 (AI chạy 2026-10-26, căn cứ expected không rõ). Đây có phải fit rule đúng? Cần PO/Dev xác nhận nguyên văn có ngày trên TIB-5521, hoặc test case Testlane PASS có căn cứ expected và build.",
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-931",
+        "artwork-layer-config/photo-upload-layer-config#KB-017",
+        "artwork-render/print-design-render#KB-932"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Số đo pixel trong QA-3402 là một lượt chạy, không dùng làm giá trị chuẩn."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-layer-config-107"
+    },
+    {
+      "check_id": "CHK-065",
+      "dimension": "NEGATIVE",
+      "layer": "storefront",
+      "title": "[CBS-095, NEEDS_CONFIRMATION] Photo layer No personalization không có ảnh mặc định và không có retrieval value: SDK preview vẽ gì",
+      "applicability": {
+        "role": "buyer (storefront); merchant-owner (Campaign Editor)",
+        "state": "photo layer No personalization, không ảnh mặc định, retrieval value tắt",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "storefront SDK preview; portal Campaign Editor"
+      },
+      "precondition": "Fixture throwaway như applicability. Order design cùng điều kiện thuộc no-personalization-photo-render CHK-004.",
+      "steps": [
+        "Mở storefront preview; ghi vùng của layer",
+        "Mở Campaign Editor; ghi vùng của layer",
+        "Ghi lỗi console nếu có; không phán pass hay fail"
+      ],
+      "observation_point": "Vùng layer trên SDK preview và Campaign Editor. Hiện trạng dev mô tả (không phải expected): không vẽ gì (KB-937).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Layer No personalization không có ảnh mặc định và không có retrieval value thì SDK preview không vẽ gì (Dev 55639 RQ6 mô tả hiện trạng có từ trước). Đây có phải expected không? Cần PO xác nhận nguyên văn có ngày.",
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-937",
+        "artwork-render/print-design-render#KB-938"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Cùng điều kiện làm job order design fail (KB-938, KNOWN_DEFECT)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-layer-config-109"
+    },
+    {
+      "check_id": "CHK-066",
+      "dimension": "REGRESSION",
+      "layer": "storefront",
+      "title": "[CBS-095, KNOWN_DEFECT watch] Placement position của photo layer No personalization đã populated: API áp, SDK preview không áp",
+      "applicability": {
+        "role": "buyer (storefront preview so với order design)",
+        "state": "photo layer No personalization đã populated qua retrieval value, có placement position khác mặc định",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "storefront SDK preview so với order design phía API"
+      },
+      "precondition": "Fixture throwaway; vị trí đặt lệch rõ để thấy khác biệt.",
+      "steps": [
+        "Populate layer trên storefront preview; chụp vị trí ảnh",
+        "Đặt đơn test; chụp vị trí ảnh trên order design",
+        "So vị trí giữa hai bên; ghi kết quả kèm build"
+      ],
+      "observation_point": "Vị trí ảnh của layer trên SDK preview và trên order design",
+      "known_defect_behavior": "Theo Dev (TIB-5521 55637 Q3, 2026-10-26): API áp placement position của layer populated, SDK preview thì không; có từ trước, TIB-5521 không đổi. QA TC-09 chưa tái hiện được lệch. Không assert preview khác design cho tới khi có người tái hiện.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "PO có chấp nhận khác biệt placement position giữa API và SDK preview của layer No personalization đã populated không? Cần PO trả lời Q3 trên TIB-5521, hoặc ai đó tái hiện lệch vị trí trên staging.",
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-930",
+        "artwork-render/populate-output-chain#KB-859",
+        "artwork-render/populate-output-chain#KB-860"
+      ],
+      "regression_watch_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-936"
+      ],
+      "risk_refs": [
+        "Preview khác order design làm buyer nhận sản phẩm khác ảnh đã xem."
+      ],
+      "priority": "P2",
+      "automation_suitability": "NOT_SUITABLE",
+      "oq_id": "OQ-artwork-layer-config-108"
+    },
+    {
+      "check_id": "CHK-073",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-095, NEEDS_CONFIRMATION] Field output size nào hiện theo từng model Gen AI (Multiple Uploads, Text to Image, GO Text to Image) và nằm ở đâu",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "lần lượt từng model của account: GPT gpt-image-2, gpt-image-1.5, gpt-image-2.5-flare, gpt-image-2.5-sunburst; Gemini nano_banana_pro, nano_banana_31; Flux 1, Flux 2; ImagenHub",
+        "environment": "staging; ghi build, ngày chạy và danh sách model có trên account",
+        "surface_or_device": "portal artwork editor (layer Multiple Uploads Single Output, Text to Image) và global option Text to Image"
+      },
+      "precondition": "Account explorer đổi được model (ghi cách đổi).",
+      "steps": [
+        "Với từng model, thêm layer mới; ghi tên field output size, danh sách option, option chọn sẵn và vị trí field so với Prompt / Example prompts",
+        "Ghi kết quả kèm build; không phán pass hay fail"
+      ],
+      "observation_point": "Tên field, option, option chọn sẵn, vị trí. Hiện trạng ảnh chụp 2026-10-27 (không phải expected): xem KB-943.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Danh sách field output size theo model và vị trí field (sau Prompt / Example prompts, lệch mô tả 'under the provider' của Dev summary 55645) chỉ là quan sát QA-3435 build không ghi; gpt-image-2.5-flare/sunburst chưa kiểm. Đây có phải danh sách và vị trí đúng? Cần Dev/PO xác nhận có ngày trên TIB-5561 hoặc test case có build.",
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-943",
+        "artwork-layer-config/gen-ai-layer-config#KB-940",
+        "artwork-layer-config/gen-ai-layer-config#KB-944"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Danh sách model đổi theo thời gian; check là kiểm kê, không phải assert."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-layer-config-111"
+    },
+    {
+      "check_id": "CHK-074",
+      "dimension": "CORE",
+      "layer": "portal",
+      "title": "[CBS-095, NEEDS_CONFIRMATION] Gen AI effect của layer Single upload (Photo): Resolution GPT/Gemini có option Default không, giá trị chọn sẵn là gì",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "layer Photo (Single upload) thêm Gen AI effect mới, lần lượt provider GPT và Gemini",
+        "environment": "staging; ghi build, ngày chạy và model của account",
+        "surface_or_device": "portal artwork editor"
+      },
+      "precondition": "Layer throwaway.",
+      "steps": [
+        "Thêm Gen AI effect GPT; ghi option của Resolution và option chọn sẵn",
+        "Lặp lại với Gemini",
+        "Ghi kết quả kèm build; không phán pass hay fail"
+      ],
+      "observation_point": "Option và giá trị chọn sẵn. Hiện trạng quan sát (không phải expected): 1K/2K/4K không có Default, GPT chọn sẵn 1K, Gemini 2K (KB-950).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Gen AI effect của Single upload có Resolution 1K/2K/4K không có Default, GPT chọn sẵn 1K, Gemini 2K (TC-11, build không ghi; Dev summary 55645 gọi là khác biệt có chủ đích). Đây có phải expected? Cần PO/Dev xác nhận có ngày hoặc test case có build.",
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-950",
+        "artwork-layer-config/gen-ai-layer-config#KB-939"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-layer-config-116"
+    },
+    {
+      "check_id": "CHK-075",
+      "dimension": "STATE_DATA",
+      "layer": "portal",
+      "title": "[CBS-095, NEEDS_CONFIRMATION] Giá trị output size đã chọn có được lưu, giữ sau reload và duplicate artwork, và được storefront generate dùng không",
+      "applicability": {
+        "role": "merchant-owner; client MCP cho bước duplicate; buyer cho bước generate",
+        "state": "layer Text to Image GPT chọn 4K; global option Text to Image chọn 2K",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal; layer JSON qua API; MCP duplicate artwork; storefront generate"
+      },
+      "precondition": "Fixture throwaway; client MCP có quyền trên store explorer.",
+      "steps": [
+        "Save; đọc gpt_resolution trong layer JSON (kiểu và giá trị)",
+        "Reload editor; ghi giá trị dropdown",
+        "Duplicate artwork qua MCP; mở bản sao; ghi giá trị",
+        "Reload global option; ghi giá trị",
+        "Generate trên storefront; ghi kích thước ảnh ra"
+      ],
+      "observation_point": "Giá trị, kiểu dữ liệu, sau reload/duplicate, kích thước ảnh. Hiện trạng quan sát (không phải expected): chuỗi '3840' cho 4K, giữ sau reload/duplicate, storefront dùng giá trị đó (KB-952).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Giá trị output size lưu dạng chuỗi trong layer JSON, giữ sau reload/duplicate, storefront generate dùng giá trị đó — chỉ là quan sát TC-08/09/27 (build không ghi, không có căn cứ expected cho lưu/reload/duplicate). Liên quan OQ-sdk-040. Cần Dev/PO xác nhận có ngày hoặc test case có build và căn cứ expected.",
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-952",
+        "artwork-layer-config/gen-ai-layer-config#KB-953"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Mất giá trị khi duplicate làm sản phẩm generate sai kích thước."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-layer-config-118"
+    },
+    {
+      "check_id": "CHK-076",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "[CBS-095, KNOWN_DEFECT watch] Sau khi chọn một resolution, option Default bị disable; GPT/Gemini phải tạo lại layer, Flux xoá cả 2 field",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "layer mới Multiple Uploads hoặc Text to Image ở Default; provider GPT, Gemini, Flux 2",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor"
+      },
+      "precondition": "Layer throwaway mỗi provider.",
+      "steps": [
+        "GPT/Gemini: chọn 2K; mở lại dropdown; thử chọn Default; ghi kết quả",
+        "Flux: nhập width/height; xoá cả 2 ô; Save; ghi kết quả và giá trị trong layer JSON",
+        "Ghi kết quả kèm build"
+      ],
+      "observation_point": "Option Default có chọn lại được không; trạng thái sau khi xoá 2 ô Flux",
+      "known_defect_behavior": "Theo Dev (TIB-5561 55697 Q5) và Dev summary 55645: sau khi chọn resolution, Default bị disable, không chọn lại được; GPT/Gemini muốn về output cũ chỉ còn cách tạo lại layer; Flux xoá cả 2 field thì về output cũ. PO chưa trả lời có chấp nhận cho release.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Sau khi chọn resolution không chọn lại Default được; GPT/Gemini phải tạo lại layer, Flux xoá cả 2 field. PO có chấp nhận cho release không; nếu không, ticket sửa?",
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-943",
+        "artwork-layer-config/gen-ai-layer-config#KB-944"
+      ],
+      "regression_watch_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-951"
+      ],
+      "risk_refs": [
+        "Nếu PO không chấp nhận, hành vi sẽ đổi; check theo dõi lúc đó."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-layer-config-117"
+    },
+    {
+      "check_id": "CHK-081",
+      "dimension": "NEGATIVE",
+      "layer": "api",
+      "title": "[CBS-095, NEEDS_CONFIRMATION] Đường portal/REST: server có check lại allowed values của output size không",
+      "applicability": {
+        "role": "client REST (session portal)",
+        "state": "layer Text to Image hoặc Multiple Uploads, provider GPT hoặc Gemini",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "REST save artwork"
+      },
+      "precondition": "Layer throwaway; network capture để lấy shape request save của portal.",
+      "steps": [
+        "Gửi save qua REST với gpt_resolution ngoài danh sách (vd 1500); ghi status và layer JSON sau save",
+        "Lặp lại với gemini_resolution ngoài danh sách",
+        "Mở layer trên portal; ghi dropdown hiển thị",
+        "Ghi kết quả kèm build; không phán pass hay fail"
+      ],
+      "observation_point": "Status; giá trị được lưu. Hiện trạng dev mô tả (không phải expected): server không check lại, giá trị lạ được lưu (KB-954).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Ở đường portal/REST server không check lại allowed values của output size (Dev 55697 Q7 mô tả hiện trạng; TC-31 thấy giá trị lạ qua REST được lưu). Đây là hành vi chấp nhận hay cần validate phía server? PO quyết, Dev xác nhận có ngày.",
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-954",
+        "artwork-layer-config/gen-ai-layer-config#KB-953"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Hệ quả khi SDK generate với giá trị ngoài danh sách chưa biết."
+      ],
+      "priority": "P2",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-layer-config-119"
+    },
+    {
+      "check_id": "CHK-082",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-095, NEEDS_CONFIRMATION] Flux > 4 MP trên portal: lỗi xuất hiện trước hay sau khi gửi Save, editor có giữ mở không",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "layer Multiple Uploads hoặc Text to Image, provider Flux 2, width 2000 height 2001",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor, network capture bật"
+      },
+      "precondition": "Layer throwaway.",
+      "steps": [
+        "Nhập 2000×2001; ghi có lỗi field nào trước khi Save không",
+        "Bấm Save; ghi request gửi đi, response, toast",
+        "Ghi editor còn mở hay đóng; không phán pass hay fail"
+      ],
+      "observation_point": "Thời điểm lỗi, request, trạng thái editor. Hiện trạng (không phải expected): không check trước save, lỗi về từ server, editor vẫn mở (KB-947).",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Portal không check 4 MP trước khi save, lỗi về từ server sau khi bấm Save và editor vẫn mở — chỉ từ Dev summary 55645 (Known limitation) và TC-15 (build không ghi). Đây có phải hành vi chấp nhận được? Cần PO/Dev xác nhận có ngày.",
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-947",
+        "artwork-layer-config/gen-ai-layer-config#KB-946",
+        "artwork-layer-config/gen-ai-layer-config#KB-948"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Việc server từ chối là STRONG ở CHK-078; check này chỉ về UX portal."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-layer-config-114"
+    },
+    {
+      "check_id": "CHK-083",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-095, NEEDS_CONFIRMATION] Ô Flux width/height nhận ký tự gì; Save ô rỗng; tên global option chứa HTML/template hiển thị thế nào",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "layer Multiple Uploads/Text to Image và global option Text to Image, provider Flux 2",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor và global option editor"
+      },
+      "precondition": "Fixture throwaway. Payload kiểm tên global option dùng chuỗi HTML/template vô hại tự soạn (không chép payload từ nguồn).",
+      "steps": [
+        "Nhập vào ô width: chữ cái; chuỗi có thẻ HTML; '2e3'; chữ số full-width; chuỗi 10 000 chữ số; ghi giá trị ô giữ lại",
+        "Để trống ô width; Save; ghi lỗi và request",
+        "Đặt tên global option là chuỗi HTML/template; ghi cách hiển thị tên ở danh sách và editor",
+        "Gây lỗi 4 MP trên trang global option; ghi toast có chứa tên global option không",
+        "Ghi kết quả kèm build; không phán pass hay fail"
+      ],
+      "observation_point": "Giá trị ô; lỗi khi rỗng; hiển thị tên; nội dung toast. Hiện trạng quan sát (không phải expected): KB-955.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Ô Flux width/height chỉ giữ số, Save ô rỗng báo required, tên GO chứa payload hiện nguyên chữ — chỉ là quan sát TC-33 (build không ghi, căn cứ expected không có). Đây có phải hành vi đúng? Cần Dev/PO xác nhận hoặc test case có build và căn cứ expected.",
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-955",
+        "artwork-layer-config/gen-ai-layer-config#KB-945"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Tên global option thực thi HTML/script là rủi ro bảo mật; nếu thấy thực thi, báo ngay cho operator."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-layer-config-120"
+    },
+    {
+      "check_id": "CHK-084",
+      "dimension": "REGRESSION",
+      "layer": "portal",
+      "title": "[CBS-095, KNOWN_DEFECT watch] Chữ thông báo khi Flux vượt 4 MP ở toast artwork, toast global option Text to Image và global option Single upload",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "Flux 2000×2001 trên layer artwork, global option Text to Image, global option Single upload",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor và global option editor"
+      },
+      "precondition": "Fixture throwaway ở cả 3 nơi.",
+      "steps": [
+        "Ở từng nơi, nhập 2000×2001; Save; chép nguyên văn thông báo",
+        "Ghi kết quả kèm build"
+      ],
+      "observation_point": "Nguyên văn thông báo ở 3 nơi",
+      "known_defect_behavior": "Quan sát QA-3435 TC-15..17, TC-19 (build không ghi): cả 3 nơi hiện \"Flux dimension (width * height) must be less than 4.000.000 px (4 Megapixel)\" dù biên là ≤ (KB-946). Dev đồng ý đổi sang dạng 'must not exceed …' nhưng chờ PO; chưa ship lúc test. RA QA-3435 ghi Single upload là 'must not exceed', trái TC-17. Không dùng chữ hiện tại hay chữ đề xuất làm oracle.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Thông báo 4 MP ghi 'must be less than' dù biên là ≤ (KB-946). Dev đồng ý đổi sang 'must not exceed …' nhưng PO chưa trả lời (QA hỏi ở 55728, 2026-10-27). PO chốt chữ; sau khi ship cần test case có build đọc lại chữ ở 3 nơi.",
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-946",
+        "artwork-layer-config/gen-ai-layer-config#KB-947"
+      ],
+      "regression_watch_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-948"
+      ],
+      "risk_refs": [
+        "Chữ sẽ đổi khi PO chốt; check không phán pass/fail theo chữ."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-layer-config-115"
+    },
+    {
+      "check_id": "CHK-086",
+      "dimension": "NEGATIVE",
+      "layer": "portal",
+      "title": "[CBS-095, NEEDS_CONFIRMATION] Cảnh báo thiếu API key trong danh sách effect: OpenAI/Flux/Gemini thiếu key, Gen AI Effect chưa có default provider, Remove background chưa chọn remover",
+      "applicability": {
+        "role": "merchant-owner",
+        "state": "account thiếu key OpenAI/Flux/Gemini; Default settings chưa có default provider; effect Remove background chưa chọn remover",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal editor layer Photo, Multiple uploads, Text to image; global option Photo, Text to image"
+      },
+      "precondition": "Trạng thái key/provider của account explorer cần đổi được và trả lại sau khi chạy; nếu không đổi được, ghi lại và dừng.",
+      "steps": [
+        "Ở từng editor, thêm Gen AI effect OpenAI, Flux, Gemini khi thiếu key; ghi cảnh báo trong danh sách effect",
+        "Thêm 'Gen AI Effect' khi chưa có default provider; ghi cảnh báo",
+        "Thêm Remove background, chưa chọn remover; ghi cảnh báo",
+        "So chữ cảnh báo với chữ cảnh báo Remove background trước đây; ghi kết quả kèm build; không phán pass hay fail"
+      ],
+      "observation_point": "Có cảnh báo không, ở đâu, nguyên văn. Mô tả theo dev doc tự sinh (không phải expected): KB-956.",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Cảnh báo thiếu API key trong danh sách effect của layer/GO editor mở rộng cho OpenAI/Flux/Gemini, Gen AI Effect khi chưa có default provider, Remove background khi chưa chọn remover — chỉ theo dev doc tự sinh từ branch diff (TIB-5470 53778). Đây có phải hành vi đúng trên build hiện tại? Cần PO/Dev xác nhận có ngày hoặc test case có build.",
+      "related_kb_ids": [
+        "artwork-layer-config/gen-ai-layer-config#KB-956",
+        "artwork-render/image-effects-run#KB-816"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Khác warning lúc chạy effect ở run-image-effects (KB-816)."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-layer-config-121"
+    },
+    {
+      "check_id": "CHK-088",
+      "dimension": "BOUNDARY",
+      "layer": "storefront",
+      "title": "[CBS-095, GAP] Dynamic Clipart by Text: so khớp text buyer với tên option clipart / group_name có chuẩn hoá Unicode NFC không; ASCII, hoa thường, text rỗng/khoảng trắng",
+      "applicability": {
+        "role": "merchant-owner cấu hình; buyer trên storefront",
+        "state": "layer Dynamic Clipart by Text, nguồn clipart và grouped_clipart; tên option lưu dạng NFD và dạng NFC (tiếng Việt có dấu)",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "storefront SDK preview"
+      },
+      "precondition": "Fixture throwaway với tên option có dấu ở hai dạng chuẩn hoá; ghi dạng byte của tên đã lưu.",
+      "steps": [
+        "Buyer gõ text NFC khớp tên lưu NFD; ghi option được chọn",
+        "Buyer gõ text NFD khớp tên lưu NFC; ghi lại",
+        "Gõ tên ASCII đúng; gõ khác hoa thường; gõ rỗng; gõ chỉ khoảng trắng; ghi lại",
+        "Ghi kết quả kèm build; không phán pass hay fail"
+      ],
+      "observation_point": "Option/category được chọn ở từng trường hợp",
+      "expected_result": "",
+      "oracle": {
+        "kb_ids": [],
+        "oracle_strength": "NONE"
+      },
+      "status": "NEEDS_CONFIRMATION",
+      "open_question_draft": "Layer Dynamic Clipart by Text có so khớp text buyer gõ với tên option clipart (origin_name/name) và group_name sau khi chuẩn hoá cả hai phía về Unicode NFC không (tên lưu NFD khớp text gõ NFC và ngược lại; nguồn clipart và grouped_clipart)? Sau chuẩn hoá, tên ASCII có khớp như cũ không, so khớp có phân biệt hoa thường không, text rỗng hoặc chỉ khoảng trắng có khớp clipart nào không? Chỉ có note kỹ thuật Dev TIB-5412 comment 51755, không ai xác nhận. Cần Dev/PO xác nhận có ngày, PR teeinblue-sdk #2036 kèm diff, hoặc test case có build. Liên quan OQ-artwork-290, OQ-asset-category-045.",
+      "related_kb_ids": [
+        "artwork-layer-config/clipart-layer-config#KB-006",
+        "artwork-layer-config/clipart-layer-config#KB-957"
+      ],
+      "regression_watch_kb_ids": [],
+      "gap": true,
+      "risk_refs": [
+        "Không có KB item; check chỉ ghi nhận. Nguồn: CBS-095 CLAIM-27, CLAIM-28 (S0)."
+      ],
+      "priority": "P3",
+      "automation_suitability": "SUITABLE",
+      "oq_id": "OQ-artwork-layer-config-123"
+    },
+    {
+      "check_id": "CHK-089",
+      "dimension": "BOUNDARY",
+      "layer": "portal",
+      "title": "[CBS-143] Layer photo personalization thường không có ảnh mặc định vẫn Save được",
+      "applicability": {
+        "role": "merchant-owner (store owner / staff) — account explore, store explorer",
+        "state": "layer Photo Upload 'Create a new option', không ảnh mặc định",
+        "environment": "staging; ghi build và ngày chạy",
+        "surface_or_device": "portal artwork editor + DevTools Network"
+      },
+      "precondition": "Store explorer (xác minh account theo playbook trước khi thao tác); artwork Artwork 2.0 throwaway dựng trên store explorer, không dùng artwork/campaign/store nêu trong CCR. Trạng thái layer không ảnh: thêm layer Photo Upload không ảnh mặc định rồi convert sang Static Image (chưa Save), hoặc đổi Personalization sang No personalization; editor không có thao tác xoá ảnh khỏi Static Image.",
+      "steps": [
+        "Thêm layer Photo Upload, giữ personalization thường, không đặt ảnh mặc định.",
+        "Bấm Save, ghi toast và body PUT (customization_type, url).",
+        "Đổi layer sang No personalization (không ảnh) rồi Save để đối chứng với CHK-027."
+      ],
+      "observation_point": "Toast, PUT /api/artworks/{id}, customization_type và url của layer",
+      "expected_result": "Baseline theo change note dev TIB-5446 (không phải expected đã chốt): artwork lưu được (PUT 200), layer customization_type normal, không có url; đổi sang No personalization thì Save bị chặn.",
+      "oracle": {
+        "kb_ids": [
+          "artwork-layer-config/photo-upload-layer-config#KB-1024"
+        ],
+        "oracle_strength": "BASELINE"
+      },
+      "status": "READY",
+      "related_kb_ids": [
+        "artwork-layer-config/photo-upload-layer-config#KB-1024",
+        "artwork/artwork-save-persist#KB-1017"
+      ],
+      "regression_watch_kb_ids": [],
+      "risk_refs": [
+        "Dev ghi là giới hạn đã biết; PO chưa chốt."
+      ],
+      "priority": "P2",
+      "automation_suitability": "HYBRID",
+      "oq_id": "OQ-artwork-layer-config-195"
+    }
+  ],
+  "coverage_by_feature_and_risk": [
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "item": "Capability: cấu hình Border cho một layer — ô Border size (KB-914, KB-918)",
+      "check_ids": [
+        "CHK-010",
+        "CHK-011",
+        "CHK-012",
+        "CHK-013"
+      ],
+      "oracle": "STRONG input min / step / không max (CHK-010, CHK-011); NONE kết quả vẽ size 0 (CHK-012), số thập phân và giá trị lớn (CHK-013)"
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "item": "Capability: viền Contour cut theo hình ở các bề mặt client (KB-910, KB-911, KB-912)",
+      "check_ids": [
+        "CHK-001",
+        "CHK-002",
+        "CHK-003",
+        "CHK-004"
+      ],
+      "oracle": "STRONG không còn lỗi TIB-5592 ở editor, storefront live preview, cart Edit design, Portal View/Edit customization (CHK-001, 003, 004); BASELINE hình vẽ cụ thể ở editor (CHK-002)"
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "item": "Capability: hàm vẽ dùng chung cho các loại layer và Custom shape (KB-915)",
+      "check_ids": [
+        "CHK-006",
+        "CHK-007",
+        "CHK-008",
+        "CHK-009"
+      ],
+      "oracle": "STRONG Dynamic clipart, Clipart group, Static image, Photo Upload (CHK-006, CHK-007); NONE Linked clipart (CHK-008), Custom shape (CHK-009)"
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "item": "Capability: viền trên file server render (KB-913)",
+      "check_ids": [
+        "CHK-005"
+      ],
+      "oracle": "STRONG, P1"
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "item": "Capability: lưu, hoàn tác và nhân bản thiết lập Border (KB-916, KB-917)",
+      "check_ids": [
+        "CHK-014",
+        "CHK-015",
+        "CHK-016",
+        "CHK-017"
+      ],
+      "oracle": "BASELINE + NEEDS_CONFIRMATION (CHK-014, 016, 017); NONE tập giá trị photo_border (CHK-015)"
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "item": "Risk P1: file Order Design đi tới nhà in — viền sai hoặc size 0 vẽ dày",
+      "check_ids": [
+        "CHK-005",
+        "CHK-012"
+      ],
+      "oracle": "STRONG (CHK-005); NONE size 0 (CHK-012)"
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "item": "Risk: client và server vẽ bằng hai code khác nhau",
+      "check_ids": [
+        "CHK-001",
+        "CHK-003",
+        "CHK-004",
+        "CHK-005"
+      ],
+      "oracle": "Kiểm riêng từng bề mặt; CHK-005 không assert giống client"
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "item": "Risk: 'Linked clipart' có thể trùng layer Linked bị ẩn Photo Border",
+      "check_ids": [
+        "CHK-008"
+      ],
+      "oracle": "NONE"
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "item": "Chưa có check: tác dụng của Display border on lên từng bề mặt, Enable photo border OFF, Border color, Add a thin line trên canvas / Order Design; production",
+      "check_ids": [],
+      "oracle": "Không có KB phát biểu; CHK-015 chỉ ghi giá trị lưu. Production chưa có bằng chứng, mọi check áp staging."
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "core_capability_coverage": "Capability base có check ở CHK-001..CHK-053; capability mới: batch HD (CHK-054..CHK-057), HD theo nơi ảnh nằm (CHK-058), Global Option trong warning ImagenHub (CHK-059, CHK-060)."
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "capability": "[CBS-079] Bật HD hàng loạt: limit, toast, API, undo step; tooltip cũ không còn (KB-420, KB-421, KB-422)",
+      "checks": [
+        "CHK-054",
+        "CHK-055",
+        "CHK-056",
+        "CHK-057"
+      ],
+      "covered": "STRONG trên staging cho CHK-054, CHK-055, CHK-057, nguồn dev, chưa có test case PASS. CHK-056 BASELINE + NEEDS_CONFIRMATION: route và status 422 chưa quan sát."
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "capability": "[CBS-079] Bật HD theo nơi ảnh của layer nằm (KB-423)",
+      "checks": [
+        "CHK-058"
+      ],
+      "covered": "STRONG trên staging; vế layer cũ cần fixture có thể không còn."
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "capability": "[CBS-079] Layer Global Option trong warning biến ImagenHub (KB-424)",
+      "checks": [
+        "CHK-059",
+        "CHK-060"
+      ],
+      "covered": "STRONG cho warning 'Some ImagenHub variables have no matching layer'; NONE cho per-field warning và nút '+ variable'."
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "risk": "[CBS-079] Limit batch HD đặt khác được trên server",
+      "checks": [
+        "CHK-055",
+        "CHK-056"
+      ],
+      "covered": "Xác định limit là điều kiện chạy của check."
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "risk": "[CBS-079] Production: KB-420..KB-424 shipped UNKNOWN",
+      "checks": [],
+      "covered": "không có check, mọi check mới chỉ áp cho staging"
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "risk": "[CBS-092] Đường mở panel cấu hình Clipart Category (KB-085) thuộc CONF-CBS-092-01 UNRESOLVED với KB-908",
+      "checks": [
+        "CHK-015"
+      ],
+      "covered": "NONE + NEEDS_CONFIRMATION, conflict_refs CONF-CBS-092-01. CHK-016, CHK-018, CHK-020, CHK-022 dùng Bulk Edit làm precondition, oracle không đổi. Hành vi modal Bulk edit thuộc FEAT-02-layer-bulk-edit."
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "capability": "[CBS-095] Photo layer No personalization: populated, thumbnail, fit rule, SDK preview rỗng, placement position (KB-930, 931, 934, 936, 937)",
+      "checks": [
+        "CHK-061",
+        "CHK-062",
+        "CHK-063",
+        "CHK-064",
+        "CHK-065",
+        "CHK-066"
+      ],
+      "covered": "STRONG cho populated (CHK-061, CHK-062; {{input}} trần chưa có lượt chạy) và thumbnail (CHK-063). NONE + NEEDS_CONFIRMATION cho fit rule, SDK preview rỗng; regression watch KNOWN_DEFECT KB-936 (CHK-066)."
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "capability": "[CBS-095] Field output size theo model Gen AI (KB-939..944, 949..952)",
+      "checks": [
+        "CHK-067",
+        "CHK-068",
+        "CHK-069",
+        "CHK-070",
+        "CHK-071",
+        "CHK-072",
+        "CHK-073",
+        "CHK-074",
+        "CHK-075",
+        "CHK-076"
+      ],
+      "covered": "STRONG cho Nano Banana 2.1, đổi model, đổi provider (CHK-067..CHK-072; CHK-067 có test case PASS). NONE cho kiểm kê field theo model, Single upload, lưu/reload/duplicate; regression watch KB-951 (CHK-076)."
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "capability": "[CBS-095] Validate output size và Flux width/height trên portal, REST, MCP (KB-945..948, 953..955)",
+      "checks": [
+        "CHK-077",
+        "CHK-078",
+        "CHK-079",
+        "CHK-080",
+        "CHK-081",
+        "CHK-082",
+        "CHK-083",
+        "CHK-084"
+      ],
+      "covered": "STRONG cho min 256/1 field portal, biên 4 MP mọi đường, 1 field qua API/MCP, allowed values qua MCP. NONE cho REST không check lại, UX lỗi 4 MP, ô Flux; regression watch chữ thông báo KB-948 (CHK-084)."
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "capability": "[CBS-095] Phạm vi Gen AI effect và cảnh báo thiếu API key (KB-942, KB-956)",
+      "checks": [
+        "CHK-085",
+        "CHK-086"
+      ],
+      "covered": "STRONG trên staging cho KB-942 (shipped UNKNOWN). NONE cho KB-956 (dev doc tự sinh)."
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "capability": "[CBS-095] Nguồn grouped_clipart qua retrieval_value (KB-957) và so khớp NFC (CLAIM-27/28, S0)",
+      "checks": [
+        "CHK-087",
+        "CHK-088"
+      ],
+      "covered": "CHK-087 STRONG nhưng NEEDS_CONFIRMATION vì chưa map manual/auto sang layer type. CHK-088 gap, NONE."
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "risk": "[CBS-095] 3 KNOWN_DEFECT (KB-936, KB-948, KB-951) và quan sát AI không ghi build (KB-931, 943, 947, 950, 952, 954, 955)",
+      "checks": [
+        "CHK-066",
+        "CHK-076",
+        "CHK-084",
+        "CHK-064",
+        "CHK-073",
+        "CHK-074",
+        "CHK-075",
+        "CHK-081",
+        "CHK-082",
+        "CHK-083"
+      ],
+      "covered": "Regression watch cho KNOWN_DEFECT; quan sát chỉ ở related_kb_ids, không làm oracle. Production chưa có check."
+    },
+    {
+      "feature_id": "FEAT-02-photo-upload-layer-config",
+      "capability": "[CBS-143] Photo personalization thường không ảnh mặc định (KB-1024)",
+      "checks": [
+        "CHK-089"
+      ],
+      "covered": "BASELINE"
+    }
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "PERMISSION",
+      "reason": "KB-910..918 không có phát biểu về quyền (role khác, chưa đăng nhập, cross-tenant); quyền sửa / lưu artwork thuộc feature editor và artwork save. Câu hỏi staff không có quyền sửa artwork nằm ở coverage_matrix của profile (covered false), shard không có OQ draft; không viết check không có observation."
+    },
+    {
+      "dimension": "REGRESSION",
+      "reason": "Feature mới, không có base đã publish để so; shard không có item status KNOWN_DEFECT nên không có regression watch (KB-918 không phải KNOWN_DEFECT). 'Server render không bị fix thay đổi' (KB-913) cần bản render trước fix để so, không có fixture; CHK-005 kiểm trạng thái hiện tại."
+    },
+    {
+      "dimension": "PERMISSION — phạm vi CBS-079",
+      "reason": "KB-420..KB-424 không có phát biểu về quyền. Câu hỏi role đang ở unknown_areas của profile; check mới ghi role unspecified và yêu cầu ghi lại role đã dùng."
+    },
+    {
+      "dimension": "REGRESSION — phạm vi CBS-079",
+      "reason": "KB-420..KB-424 có relation ADD, không đổi hành vi item base nào của feature. Shard không có item status KNOWN_DEFECT nên không có regression watch."
+    },
+    {
+      "dimension": "OUT_OF_SCOPE: endpoint import ảnh từ clipart",
+      "reason": "Vế endpoint nằm trong excluded_parts của KB-423, nguồn là ghi chú ngôi thứ ba; viết check sẽ phải tự đặt expected."
+    },
+    {
+      "dimension": "OUT_OF_SCOPE: ImagenHub cho Clipart layer, reference image và prompt của Text to Image, Multiple Outputs, Design format PDF",
+      "reason": "Các vế này là claim S0 hoặc excluded_parts, không có item trong shard để trace."
+    },
+    {
+      "dimension": "Mọi dimension — phạm vi CBS-092",
+      "reason": "Shard không có KB item mới cho feature này; chỉ KB-085 đổi trạng thái (UNRESOLVED ở CONF-CBS-092-01). Không thêm check; check mới về menu và modal nằm ở editor-layer-workspace CHK-024 và layer-bulk-edit."
+    },
+    {
+      "dimension": "PERMISSION — phạm vi CBS-095",
+      "reason": "KB-930..957 của feature không có phát biểu về role khác, chưa đăng nhập hay cross-tenant; check mới dùng merchant-owner/buyer/client MCP theo scope của KB."
+    },
+    {
+      "dimension": "REGRESSION so với base — phạm vi CBS-095",
+      "reason": "Mọi KB mới relation ADD, target_kb_ids rỗng, không đổi hành vi item base nào; REGRESSION chỉ dùng cho watch KNOWN_DEFECT (CHK-066, CHK-076, CHK-084)."
+    }
+  ],
+  "last_updated": {
+    "date": "2026-11-08",
+    "ccr_ref": "maintenance-2026-11-08"
+  }
+}

@@ -1,5 +1,5 @@
 # B2B Quote Request — yêu cầu báo giá từ storefront (widget/modal), quản lý & đàm phán quote, áp giá theo line item (permanent / one-time), PDF và lịch sử
-**Published context version:** 2
+**Published context version:** 3
 
 **Product:** Duos B2B · **Mode:** DOC_BOOTSTRAP · **Environment:** documented · **Published:** 2026-10-09
 

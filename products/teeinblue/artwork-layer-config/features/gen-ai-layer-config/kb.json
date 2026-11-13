@@ -1,0 +1,779 @@
+[
+  {
+    "kb_id": "KB-018",
+    "topic": "Photo Upload › Multiple Uploads (multiple-uploads) — thiếu POPULATE VALUES, có GenAI service riêng",
+    "statement": "multiple-uploads là 1/13 type KHÔNG có accordion POPULATE VALUES (xem boundary KB-010). PERSONALIZATION SETTINGS riêng: 'Output Type: Single Output/Multiple Outputs (coming soon)', 'Maximum photos*' (default quan sát được = 3, min 2 max 3 theo evidence capture), 'GenAI service*: Select a service/Gemini/OpenAI/Flux/ImagenHub' (field bắt buộc, validate 2 tầng — chọn service xong mới hiện field prompt bắt buộc kế tiếp, xem KB-051 v1-KB-018), 'Image effects after generating', 'Fit mode'. KHÔNG có field 'Mark this option as required' (khác photo/KB-017).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com)",
+      "role": "store owner / staff account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, staff sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-10",
+      "ccr_ref": "bootstrap"
+    }
+  },
+  {
+    "kb_id": "KB-019",
+    "topic": "Text to Image (AI) (text-to-image) — thiếu 'No personalization', GenAI service label khác multiple-uploads",
+    "statement": "text-to-image là 1/13 type KHÔNG có accordion POPULATE VALUES (KB-010) và KHÔNG có DESIGN SETTINGS. PERSONALIZATION SETTINGS liệt kê personalization type CHỈ có 'Create a new option'/'Use an existing global option' — KHÔNG có option 'No personalization' (khác đa số type text/image khác luôn có). Field 'GenAI service*' ở type này có nhãn option khác multiple-uploads: '[Gemini] Text to image'/'[OpenAI] Text to image'/'[Flux] Text to image'/'[ImagenHub] Text to image' (multiple-uploads chỉ ghi 'Gemini'/'OpenAI'/'Flux'/'ImagenHub' trơn) — 2 field cùng key `text_to_image_provider`/`multi_image_provider` khác nhau theo bundle-registry.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com)",
+      "role": "store owner / staff account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, staff sub=<explorer>, user_id=<explorer>, plan Blue (Test))",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-121"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-CBS003-01"
+  },
+  {
+    "kb_id": "KB-113",
+    "topic": "Multiple Uploads — GenAI service provider-conditional field (Gemini prompt vs ImagenHub template)",
+    "statement": "Khi seller chọn GenAI service = Gemini trên layer Multiple Uploads ở artwork editor (role owner/staff, env staging, artwork id=4416), quan sát thấy field 'Prompt the result you want...' (textarea) + nút '+ Variable' + link 'Example Prompts' xuất hiện. Khi chuyển GenAI service sang ImagenHub trên CÙNG layer, field prompt biến mất, thay bằng 'ImagenHub Template:' picker ('No template selected'/'Select template') kèm toggle 'Use Template Default Size' (mặc định OFF). Mỗi trạng thái chỉ quan sát 1 lần trong session này.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com / staging-api.teeinblue.com)",
+      "role": "owner/staff — account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, user_id=<explorer>)",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-25",
+      "ccr_ref": "CBS-003"
+    }
+  },
+  {
+    "kb_id": "KB-114",
+    "topic": "Text to Image (AI) — GenAI service provider-conditional field (Flux/Gemini prompt vs ImagenHub template, KHÔNG có toggle default-size)",
+    "statement": "Khi seller chọn GenAI service = '[Flux] Text to image' trên layer Text to Image (AI) ('hair') (role owner/staff, env staging), quan sát thấy field prompt textarea bình thường (placeholder 'Generate an image of...') kèm ghi chú 'The generated image uses this layer's ratio.' — KHÔNG có cảnh báo unsupported-provider nào xuất hiện trên UI cấu hình (chỉ 1 lần thử, KHÔNG tổng quát hoá; cảnh báo có thể chỉ xuất hiện ở thời điểm generate thật, xem coverage_gaps). Khi chọn '[ImagenHub] Text to image', field prompt biến mất, thay bằng 'ImagenHub Template:' picker kèm ghi chú 'The ImagenHub template decides the output ratio, so it may not match this layer's ratio.'; KHÔNG có toggle 'Use Template Default Size' ở layer type này (khác Multiple Uploads, xem KB-001).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com / staging-api.teeinblue.com)",
+      "role": "owner/staff — account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, user_id=<explorer>)",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-25",
+      "ccr_ref": "CBS-003"
+    }
+  },
+  {
+    "kb_id": "KB-115",
+    "topic": "Text to Image (AI) — '+ Variable' lấy từ Option Title của layer Text/Additional Option KHÁC, không phải token tự tham chiếu layer",
+    "statement": "Khi bấm nút '+ Variable' trong prompt Gemini của layer Text to Image (AI) ('hair') mà artwork chưa có layer Text/Additional Option nào khác (role owner/staff, env staging), quan sát thấy message inline: 'Add a Text or Additional Option layer to use variables in your prompt.' — cho thấy cơ chế variable trong prompt lấy Option Title từ layer Text/Additional Option KHÁC, không phải một token tĩnh tham chiếu chính layer này. Quan sát 1 lần.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com / staging-api.teeinblue.com)",
+      "role": "owner/staff — account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, user_id=<explorer>)",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-25",
+      "ccr_ref": "CBS-003"
+    }
+  },
+  {
+    "kb_id": "KB-116",
+    "topic": "Multiple Uploads — field prompt (multi_image_prompt) bị chặn tại Save & Close khi để trống và đã chọn GenAI service",
+    "statement": "Khi seller bấm 'Save & Close' trong artwork editor với layer Multiple Uploads ('top') đã chọn GenAI service (Gemini) nhưng field prompt còn để trống (role owner/staff, env staging), quan sát thấy toast đỏ chứa dòng 'top: - Prompt the result you want is required'. Đây là 1 lần quan sát duy nhất; không suy rộng thành rule tổng quát cho mọi provider.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com / staging-api.teeinblue.com)",
+      "role": "owner/staff — account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, user_id=<explorer>)",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-25",
+      "ccr_ref": "CBS-003"
+    }
+  },
+  {
+    "kb_id": "KB-117",
+    "topic": "Text to Image (AI) — field prompt (text_to_image_prompt) bị chặn tại Save & Close khi để trống và đã chọn GenAI service",
+    "statement": "Cùng sự kiện Save & Close với KB-004: toast đỏ còn chứa dòng 'hair: - Prompt the image you want is required' cho layer Text to Image (AI) ('hair') khi GenAI service đã chọn nhưng prompt trống (role owner/staff, env staging). Quan sát 1 lần duy nhất, cùng 1 evidence với KB-004 nhưng khác field/layer nên giữ tách biệt.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com / staging-api.teeinblue.com)",
+      "role": "owner/staff — account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, user_id=<explorer>)",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-09-25",
+      "ccr_ref": "CBS-003"
+    }
+  },
+  {
+    "kb_id": "KB-121",
+    "topic": "[CONFLICTED vs canon KB-019, mã CBS-003] Text to Image (AI) Personalization — 'No personalization' CÓ mặt trong quan sát 2026-09-25, canon KB-019 ghi CHỈ 2 lựa chọn",
+    "statement": "Canon KB-019 (object artwork, kb_version 3.0, đã publish trước đây) ghi nhận layer Text to Image (AI) chỉ có 2 lựa chọn personalization ('Create a new option'/'Use an existing global option'), KHÔNG có 'No personalization'. Quan sát lại ngày 2026-09-25 (role owner/staff, env staging, artwork 4416, layer 'hair') cho thấy CẢ BA lựa chọn đều hiện diện: 'No personalization', 'Create a new option' (mặc định/checked), 'Use an existing global option'. Hai phía GIỮ NGUYÊN, KHÔNG tự resolve ở bước normalize này — có thể là thay đổi hành vi thật kể từ lần verify KB-019 (không có build/version/deploy-date để phân biệt, CCR Phần 3 để trống 'không rõ'), hoặc KB-019 từng ghi sai. Gắn mã CCR CBS-003, xem conflicts[CONF-CBS003-01].",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com / staging-api.teeinblue.com)",
+      "role": "owner/staff — account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, user_id=<explorer>)",
+      "surface": "portal"
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-019"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-CBS003-01"
+  },
+  {
+    "kb_id": "KB-122",
+    "topic": "Multiple Uploads — xác nhận field name server-side (POST /api/artworks) lần đầu ở tầng API cho layer type này",
+    "statement": "POST /api/artworks (status 201, artwork id=4416) xác nhận verbatim field name cho layer type multiple-uploads: output_type='single', max_photos=3, multi_image_provider='gemini', multi_image_prompt=<text>. Đây là xác nhận LẦN ĐẦU ở tầng API cho layer type này trong KB (canon KB-018 trước đây chỉ có evidence UI-level). Không có OpenAPI spec để đối chiếu (TIB_OPENAPI_BASE 404) — chỉ 1 sample.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com / staging-api.teeinblue.com)",
+      "role": "owner/staff — account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, user_id=<explorer>)",
+      "surface": "api"
+    },
+    "last_updated": {
+      "date": "2026-09-25",
+      "ccr_ref": "CBS-003"
+    }
+  },
+  {
+    "kb_id": "KB-123",
+    "topic": "Text to Image (AI) — xác nhận field name server-side + phân kỳ schema (không có photo_editor/photo_replace, khác 2 type ảnh còn lại)",
+    "statement": "POST /api/artworks (status 201, artwork id=4416) xác nhận verbatim field name cho layer type text-to-image: text_to_image_provider='gemini', form_label=<Option Title>, text_to_image_prompt=<text>. Trong 3 layer type polymorphic được lấy mẫu (multiple-uploads, text-to-image, photo), text-to-image là type DUY NHẤT KHÔNG có field photo_editor/photo_replace — xác nhận schema request phân nhánh theo `type`, chỉ 1 sample, không có spec đối chiếu.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com / staging-api.teeinblue.com)",
+      "role": "owner/staff — account explorer (TIB_STAGING_EMAIL) (store TIB_STORE_URL_1, user_id=<explorer>)",
+      "surface": "api"
+    },
+    "last_updated": {
+      "date": "2026-09-25",
+      "ccr_ref": "CBS-003"
+    }
+  },
+  {
+    "kb_id": "KB-125",
+    "topic": "Text to Image (AI) — Beta badge KHÔNG xuất hiện, xác nhận độc lập ở cả portal config UI và storefront Live Preview widget",
+    "statement": "Không tìm thấy Beta badge/text nào gắn với layer Text to Image (AI) ở CẢ portal config UI (layer-type picker + header Personalization Settings, artwork editor) LẪN storefront Live Preview widget panel, trong cùng run ngày 2026-09-25 (env staging). Đây KHÔNG phải xác nhận trên storefront PDP/theme Shopify thật (chưa chạm tới được, xem coverage_gaps) — chỉ 2 bề mặt staff-authenticated đã kiểm, mỗi bề mặt 1 lần.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging (staging-portal.teeinblue.com / staging-api.teeinblue.com)",
+      "role": "portal: owner/staff explorer (TIB_STAGING_EMAIL); storefront: staff-authenticated Live Preview proxy cho buyer",
+      "surface": "cross-layer"
+    },
+    "last_updated": {
+      "date": "2026-09-25",
+      "ccr_ref": "CBS-003"
+    }
+  },
+  {
+    "kb_id": "KB-424",
+    "topic": "Warning \"Some ImagenHub variables have no matching layer\": layer Global Option match qua title của chính Global Option",
+    "statement": "Theo Jira TIB-5465 comment #55232 của dev (2026-10-21), ở warning \"Some ImagenHub variables have no matching layer\", layer Global Option được tính match qua title của chính Global Option.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "unspecified",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "imagenhub",
+      "global-option",
+      "template-variable",
+      "warning",
+      "TIB-5465",
+      "shipped-unknown"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-115"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5465 comment #55232 (dev), 2026-10-21",
+      "authored_on": "2026-10-21",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-939",
+    "topic": "Nano Banana 2.1: Gemini effect trên Photo layer và Photo global option chỉ có Resolution 1K/2K/4K",
+    "statement": "Theo Testlane TC-TIB-7905 (QA-3442 TC-04) PASS 2026-10-30 trên build index.BMgdZMSW.js, với căn cứ expected Jira TIB-5573 comment 55592 (Dev, 2026-10-26): khi account dùng Gemini model Nano Banana 2.1, Gemini effect trên Photo layer và Photo global option có field Resolution chỉ gồm 1K, 2K, 4K, không có 0.5K (512), giống Nano Banana Pro. Không suy rộng cho Clipart (KB-942).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff)",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5573",
+      "QA-3442",
+      "gen-ai",
+      "resolution",
+      "nano-banana-2.1"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/photo-upload-layer-config#KB-017",
+      "artwork-layer-config/gen-ai-layer-config#KB-942"
+    ],
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "Testlane TC-TIB-7905 (QA-3442 TC-04) PASS 2026-10-30, build index.BMgdZMSW.js; căn cứ expected Jira TIB-5573 comment 55592 (Dev), 2026-10-26",
+      "authored_on": "2026-10-30",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-940",
+    "topic": "Nano Banana 2.1: Text to Image và Multiple Uploads dùng Gemini có Resolution 1K/2K/4K, unset dùng default size của Google",
+    "statement": "Theo Jira TIB-5573 comment 56094 (Dev, Q2, 2026-10-30), khi account dùng Nano Banana 2.1, layer Text to Image và Multiple Uploads dùng Gemini có field Resolution 1K, 2K, 4K (không có 0.5K, giống Pro); để trống (unset) thì dùng default size của Google. Nhãn \"Default\" trên dropdown là placeholder của trạng thái unset, không phải 0.5K (quan sát QA-3442 TC-12, 2026-10-30).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal · storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5573",
+      "QA-3442",
+      "gen-ai",
+      "resolution",
+      "nano-banana-2.1"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-018",
+      "artwork-layer-config/gen-ai-layer-config#KB-019",
+      "artwork-layer-config/gen-ai-layer-config#KB-943"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5573 comment 56094 (Dev), 2026-10-30",
+      "authored_on": "2026-10-30",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-941",
+    "topic": "gemini_resolution 512 đã lưu khi chuyển sang Nano Banana 2.1: dropdown trống, generate 2K, giá trị giữ tới khi đổi và Save",
+    "statement": "Theo Jira TIB-5573 comment 56094 (Dev, Q4, 2026-10-30), khi Photo layer có gemini_resolution 512 đã lưu và account chuyển sang Nano Banana 2.1, dropdown Resolution trống (danh sách của 2.1 không có 0.5K và không có placeholder, nên không hiện 2K), generate dùng 2K, và giá trị 512 vẫn được lưu tới khi merchant chọn giá trị khác rồi Save.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (dropdown) + buyer (kết quả generate)",
+      "surface": "portal · storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5573",
+      "QA-3442",
+      "gen-ai",
+      "resolution",
+      "nano-banana-2.1"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-939"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5573 comment 56094 (Dev), 2026-10-30",
+      "authored_on": "2026-10-30",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-942",
+    "topic": "Gen AI effect: Artwork 2.0 chỉ Photo layer có, Clipart Category không có mục Gen AI effect là đúng",
+    "statement": "Theo Jira TIB-5573 comment 56104 (Dev, 2026-10-30, trả lời mục 2 của comment 56103), chỉ layer clipart của Artwork 1.0 có Gen AI effect; ở Artwork 2.0 (mọi artwork hiện tại) chỉ Photo layer có, nên layer Clipart Category không có mục Gen AI effect là đúng. Đây là so sánh Photo với Clipart, không suy rộng cho Multiple Uploads hay Text to Image (KB-018 vẫn có 'Image effects after generating'). Gen AI effect của clipart Artwork 1.0 chưa được thử; trạng thái ship chưa rõ.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal · storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5573",
+      "QA-3442",
+      "gen-ai",
+      "clipart"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/photo-upload-layer-config#KB-017",
+      "artwork-layer-config/gen-ai-layer-config#KB-018",
+      "artwork-layer-config/clipart-layer-config#KB-087",
+      "artwork-layer-config/gen-ai-layer-config#KB-939"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5573 comment 56104 (Dev), 2026-10-30",
+      "authored_on": "2026-10-30",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-943",
+    "topic": "Field output size theo model Gen AI trên Multiple Uploads / Text to Image / GO Text to Image (quan sát 2026-10-27)",
+    "statement": "Khi cấu hình layer Multiple Uploads (Single Output), layer Text to Image và global option Text to Image ở portal (staging), quan sát thấy trong QA-3435 TC-01, 03, 04, 05, 07, 08 (PASS 2026-10-27, kết quả AI do máy chạy, build không ghi lại) field output size hiện theo model Gen AI của account: GPT gpt-image-2 → \"Resolution\" Default / 1K (1024) / 2K (2048) / 4K (3840); Gemini nano_banana_pro → Default / 1K / 2K / 4K; nano_banana_31 → Default / 0.5K (512) / 1K / 2K / 4K; Flux 2 (Kontext 2) → \"Flux output width (px)\" và \"Flux output height (px)\" (ô số, để trống); không có field nào với Flux 1, GPT gpt-image-1.5, ImagenHub. Layer mới có \"Default\" chọn sẵn. Field nằm sau Prompt / Example prompts, không ngay dưới provider như Dev summary TIB-5561 comment 55645 (2026-10-26) mô tả. Danh sách model/option là ảnh chụp tại 2026-10-27; gpt-image-2.5-flare, gpt-image-2.5-sunburst chưa được kiểm. Không làm oracle.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff)",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5561",
+      "QA-3435",
+      "gen-ai",
+      "resolution",
+      "flux-size"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-018",
+      "artwork-layer-config/gen-ai-layer-config#KB-019",
+      "artwork-layer-config/gen-ai-layer-config#KB-114",
+      "artwork-layer-config/gen-ai-layer-config#KB-940"
+    ]
+  },
+  {
+    "kb_id": "KB-944",
+    "topic": "Field output size đi theo model hiện tại của account: GPT không resolution thì ẩn và bỏ qua; Gemini pro/31 dùng chung field; 0.5K dưới pro generate 2K",
+    "statement": "Theo Jira TIB-5561 comment 55697 (Dev, Q1, 2026-10-27), field output size đi theo model hiện tại của account: GPT trên model không có resolution thì field ẩn và giá trị đã lưu bị bỏ qua (size cố định như trước); Gemini nano_banana_pro và nano_banana_31 dùng chung một field nên giá trị đã lưu giữ nguyên và được dùng; giá trị 0.5K lưu dưới nano_banana_31 thì generate ở 2K khi account chuyển sang pro.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (cấu hình) + buyer (kết quả generate)",
+      "surface": "portal · storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5561",
+      "QA-3435",
+      "gen-ai",
+      "resolution"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-943",
+      "artwork-layer-config/gen-ai-layer-config#KB-949"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5561 comment 55697 (Dev), 2026-10-27",
+      "authored_on": "2026-10-27",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-945",
+    "topic": "Validate Flux width/height: không max riêng, diện tích ≤ 4,000,000; < 256 hoặc chỉ 1 field bị portal chặn; API/MCP 1 field bị bỏ qua",
+    "statement": "Theo Jira TIB-5561 comment 55697 (Dev, Q2, 2026-10-27), Flux output width/height trên layer Multiple Uploads / Text to Image validate giống Single upload: không có max riêng từng field, chỉ width × height ≤ 4,000,000 (15625 = 4,000,000 / 256); giá trị dưới 256 hoặc chỉ điền 1 field thì portal chặn khi Save bằng lỗi field và không gửi request; qua API/MCP chỉ điền 1 field thì được nhận nhưng bị bỏ qua, size lấy theo tỉ lệ layer. Phần API/MCP chưa được QA kiểm.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (portal) + client API/MCP",
+      "surface": "portal · api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5561",
+      "QA-3435",
+      "flux-size",
+      "validation"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-946",
+      "artwork-layer-config/gen-ai-layer-config#KB-953"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5561 comment 55697 (Dev), 2026-10-27",
+      "authored_on": "2026-10-27",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-946",
+    "topic": "Flux width × height > 4,000,000 bị server từ chối khi save artwork; biên ≤; check trên mọi đường save",
+    "statement": "Theo Jira TIB-5561 comment 55697 (Dev, Q4 và Q7, 2026-10-27), Flux output width × height của layer Multiple Uploads / Text to Image vượt 4,000,000 thì server từ chối khi save artwork; biên là ≤ (2000×2000 lưu được); giới hạn 4 MP được check trên mọi đường save (portal/REST và MCP). Chữ thông báo lỗi là item riêng KB-948.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner + client API/MCP",
+      "surface": "portal · api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5561",
+      "QA-3435",
+      "flux-size",
+      "validation"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-945",
+      "artwork-layer-config/gen-ai-layer-config#KB-947",
+      "artwork-layer-config/gen-ai-layer-config#KB-948"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5561 comment 55697 (Dev), 2026-10-27",
+      "authored_on": "2026-10-27",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-947",
+    "topic": "Portal không check 4 MP trước khi save; lỗi về từ server sau khi bấm Save, editor vẫn mở (hiện trạng)",
+    "statement": "Theo Dev summary Jira TIB-5561 comment 55645 (Known limitation, 2026-10-26) và quan sát QA-3435 TC-15 (PASS 2026-10-27, kết quả AI do máy chạy, build không ghi lại), portal không check giới hạn 4 MP của Flux width × height trước khi save: lỗi về từ server sau khi bấm Save (UI 2000×2001 hiện toast lỗi) và editor vẫn mở. Chưa có xác nhận đây là hành vi đúng; không làm oracle.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner + client API/MCP",
+      "surface": "portal · api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5561",
+      "QA-3435",
+      "flux-size",
+      "validation"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-946",
+      "artwork-layer-config/gen-ai-layer-config#KB-948"
+    ]
+  },
+  {
+    "kb_id": "KB-948",
+    "topic": "Chữ thông báo 4 MP 'must be less than' trái với biên ≤; đổi chữ chờ PO (known defect)",
+    "statement": "Khi Flux width × height vượt 4 MP, quan sát thấy trong QA-3435 TC-15..17 và TC-19 (2026-10-27, kết quả AI do máy chạy, build không ghi lại) thông báo trên cả 3 nơi (toast artwork, toast global option Text to Image, global option Single upload) là \"Flux dimension (width * height) must be less than 4.000.000 px (4 Megapixel)\", dù biên là ≤ (KB-946). Theo Jira TIB-5561 comment 55697 (Dev, Q4, 2026-10-27) đây là thông báo có sẵn của Single upload được dùng lại; Dev đồng ý đổi sang dạng \"must not exceed …\" nhưng chờ PO; QA hỏi PO ở comment 55728 (2026-10-27) và tới 2026-11-07 chưa có trả lời; chữ đề xuất chưa ship lúc test. Đây là lỗi chữ đã biết; không dùng chữ hiện tại hay chữ đề xuất làm oracle. RA QA-3435 ghi Single upload là \"must not exceed\" theo lịch sử QA-3181, trái quan sát TC-17; chưa chọn bên nào.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner",
+      "surface": "portal · api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5561",
+      "QA-3435",
+      "flux-size",
+      "known-defect",
+      "message-text"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-946",
+      "artwork-layer-config/gen-ai-layer-config#KB-947"
+    ],
+    "status": "KNOWN_DEFECT"
+  },
+  {
+    "kb_id": "KB-949",
+    "topic": "Đổi provider: giá trị ẩn của provider khác được giữ và bỏ qua, đổi lại thì hiện lại; Flux size ẩn không chặn save",
+    "statement": "Theo Jira TIB-5561 comment 55697 (Dev, Q10, 2026-10-27), khi đổi provider, portal giữ giá trị ẩn của provider khác và SDK chỉ gửi field của provider hiện tại, nên giá trị ẩn bị bỏ qua và đổi lại provider cũ thì giá trị cũ hiện lại; Flux size đang ẩn (kể cả > 4 MP) không chặn save.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (cấu hình) + buyer (request generate)",
+      "surface": "portal · storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5561",
+      "QA-3435",
+      "gen-ai",
+      "provider-switch"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-944",
+      "artwork-layer-config/gen-ai-layer-config#KB-946"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5561 comment 55697 (Dev), 2026-10-27",
+      "authored_on": "2026-10-27",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-950",
+    "topic": "Single upload Gen AI effect: Resolution GPT/Gemini 1K/2K/4K không có Default, GPT chọn sẵn 1K, Gemini 2K (quan sát)",
+    "statement": "Khi mở Gen AI effect của layer Single upload (Photo) ở portal (staging), quan sát thấy trong QA-3435 TC-11 (PASS 2026-10-27, kết quả AI do máy chạy, build không ghi lại) field Resolution của GPT và Gemini có 1K / 2K / 4K, không có \"Default\"; GPT chọn sẵn 1K, Gemini chọn sẵn 2K. Dev summary Jira TIB-5561 comment 55645 (2026-10-26) mô tả đây là khác biệt có chủ đích so với Multiple Uploads / Text to Image, nhưng chưa có xác nhận PO; không làm oracle.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff)",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5561",
+      "QA-3435",
+      "gen-ai",
+      "resolution",
+      "single-upload"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/photo-upload-layer-config#KB-017",
+      "artwork-layer-config/gen-ai-layer-config#KB-943"
+    ]
+  },
+  {
+    "kb_id": "KB-951",
+    "topic": "Sau khi chọn resolution không chọn lại Default được; GPT/Gemini phải tạo lại layer, Flux xoá cả 2 field (known limitation)",
+    "statement": "Theo Jira TIB-5561 comment 55697 (Dev, Q5, 2026-10-27) và Dev summary comment 55645 (Known limitation, 2026-10-26), ở field output size mới của TIB-5561, sau khi chọn một resolution thì option \"Default\" bị disable, không chọn lại được; với GPT/Gemini muốn quay lại output cũ chỉ còn cách tạo lại layer; với Flux xoá cả 2 field thì về output cũ (size theo tỉ lệ layer). QA-3435 TC-12 (2026-10-27, build không ghi lại) thấy giống vậy. PO chưa trả lời có chấp nhận cho release hay không (tới 2026-11-07). Đây là giới hạn đã biết, không phải expected; không làm oracle.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff)",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5561",
+      "QA-3435",
+      "gen-ai",
+      "resolution",
+      "known-defect"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-943",
+      "artwork-layer-config/gen-ai-layer-config#KB-950"
+    ],
+    "status": "KNOWN_DEFECT"
+  },
+  {
+    "kb_id": "KB-952",
+    "topic": "Giá trị output size đã chọn được lưu, giữ sau reload và duplicate, storefront generate dùng giá trị đó (quan sát)",
+    "statement": "Khi chọn output size rồi lưu ở portal (staging), quan sát thấy trong QA-3435 TC-08, 09, 27 (PASS 2026-10-27, kết quả AI do máy chạy, build không ghi lại): giá trị được lưu trong layer JSON dạng chuỗi (vd gpt_resolution \"3840\" cho 4K), giữ khi mở lại, giữ khi duplicate artwork qua MCP; global option Text to Image giữ 2K sau reload; storefront generate dùng giá trị đó (Text to Image GPT 2K, layer 900×600 cho ảnh 2048×1360 trong lượt chạy). Phần lưu/reload/duplicate không có căn cứ expected; kích thước là số đo một lượt chạy. Không làm oracle.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (lưu) + buyer (generate)",
+      "surface": "portal · storefront · api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5561",
+      "QA-3435",
+      "gen-ai",
+      "resolution",
+      "persistence"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-943",
+      "artwork-layer-config/gen-ai-layer-config#KB-944"
+    ]
+  },
+  {
+    "kb_id": "KB-953",
+    "topic": "Server check allowed values của gpt_resolution / gemini_resolution và Flux min 256 khi save qua MCP",
+    "statement": "Theo Jira TIB-5561 comment 55697 (Dev, Q7, 2026-10-27), giá trị cho phép (gpt_resolution 1024/2048/3840, gemini_resolution 512/1K/2K/4K) và Flux min 256 được server check khi save qua MCP, giống các field layer khác; allowed list gemini_resolution của Text to Image trên MCP được thêm trong branch của TIB-5561. Giới hạn 4 MP ở mọi đường save là KB-946.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "staging",
+      "role": "client API (REST) / MCP",
+      "surface": "api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5561",
+      "QA-3435",
+      "mcp",
+      "validation"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-945",
+      "artwork-layer-config/gen-ai-layer-config#KB-946",
+      "artwork-layer-config/gen-ai-layer-config#KB-954"
+    ],
+    "confirmation_source": {
+      "type": "po_dev_confirm",
+      "ref": "Jira TIB-5561 comment 55697 (Dev), 2026-10-27",
+      "authored_on": "2026-10-27",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-954",
+    "topic": "Đường portal/REST: server không check lại allowed values của output size (hiện trạng)",
+    "statement": "Theo Jira TIB-5561 comment 55697 (Dev, Q7, 2026-10-27), mô tả hiện trạng: ở đường portal/REST, giá trị output size chỉ bị giới hạn bởi dropdown và rule min 256 của portal, server không check lại allowed values; QA-3435 TC-31 (2026-10-27) thấy giá trị lạ gửi qua REST được lưu (một lượt chạy). Đây là hiện trạng dev mô tả, không phải rule PO chọn; không làm oracle cho việc REST thiếu validate.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "client API (REST) / MCP",
+      "surface": "api",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5561",
+      "QA-3435",
+      "rest",
+      "validation"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-953"
+    ]
+  },
+  {
+    "kb_id": "KB-955",
+    "topic": "Ô Flux width/height trên portal chỉ giữ số; Save ô rỗng báo required; tên GO chứa payload hiện nguyên chữ (quan sát)",
+    "statement": "Khi nhập ô Flux output width/height ở portal (staging), quan sát thấy trong QA-3435 TC-33 (PASS 2026-10-27, kết quả AI do máy chạy, build không ghi lại): ô chỉ giữ số (chuỗi chữ cái hoặc chuỗi chứa thẻ HTML → rỗng; \"2e3\" và chữ số full-width → 2000; chuỗi 10 000 chữ số → rỗng); Save với ô rỗng hiện lỗi field \"Flux output width (px) is required\" và không gửi request; tên global option chứa payload HTML/template hiện nguyên dạng chữ, không thực thi; toast 4 MP trên trang global option không chứa tên global option. Không có căn cứ expected; không làm oracle.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff)",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5561",
+      "QA-3435",
+      "flux-size",
+      "input-sanitization"
+    ],
+    "related_kb_ids": [
+      "artwork-layer-config/gen-ai-layer-config#KB-945",
+      "artwork-layer-config/gen-ai-layer-config#KB-948"
+    ]
+  },
+  {
+    "kb_id": "KB-956",
+    "topic": "Cảnh báo thiếu API key trong danh sách effect của layer/GO editor mở rộng cho OpenAI/Flux/Gemini, Gen AI Effect và Remove background chưa chọn remover (theo dev doc)",
+    "statement": "Theo dev doc \"Change & test cases\" v1 trên Jira TIB-5470 comment 53778 (giangnth, 2026-10-08, sửa 2026-10-12, sinh từ branch diff; chưa có PO/Dev xác nhận đây là hành vi đúng), cảnh báo thiếu API key trong danh sách effect (trước đây chỉ cho Remove background khi chọn remover bên thứ ba thiếu key, Cutout.pro, ImagenHub) nay còn áp cho Gen AI effect OpenAI, Flux, Gemini thiếu key, \"Gen AI Effect\" khi Default settings chưa có default provider, và Remove background khi chưa chọn remover nào; chữ thông báo không đổi. Áp cho danh sách effect trong editor của layer Photo, Multiple uploads, Text to image và global option Photo, Text to image. Khác KB-816 (warning lúc chạy effect ở run-image-effects). Không làm oracle.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant-owner (store owner / staff)",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    },
+    "tags": [
+      "TIB-5470",
+      "gen-ai",
+      "effects",
+      "missing-key"
+    ],
+    "related_kb_ids": [
+      "artwork-render/image-effects-run#KB-816",
+      "artwork-render/image-effects-run#KB-817",
+      "artwork-layer-config/photo-upload-layer-config#KB-017",
+      "artwork-layer-config/gen-ai-layer-config#KB-018"
+    ]
+  }
+]

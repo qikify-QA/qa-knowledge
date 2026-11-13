@@ -132,7 +132,7 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-notifications-006",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": null,
+  "feature_id": "email-sender-and-routing",
   "summary": "Phạm vi toàn object Notifications: tài liệu không nêu role/quyền nào của tài khoản merchant (owner hay staff có giới hạn quyền) được xem trang Notifications, bật/tắt switch, sửa template và cấu hình sender email; staging chỉ khảo sát bằng một tài khoản merchant staff. Với nhiều thông báo, người nhận chỉ ghi chung (phía Admin = nội bộ merchant, phía Customer = buyer) mà không nêu role buyer cụ thể. Cần PO xác nhận ma trận quyền trên trang Notifications và người nhận cụ thể của từng thông báo.",
   "kb_ids": [
     "KB-001",
@@ -162,7 +162,7 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
   ],
   "check_ids": [
     "notification-settings-and-templates:CHK-025",
-    "sender-reply-to:CHK-008"
+    "email-sender-and-routing:CHK-008"
   ]
 }
 ```
@@ -303,7 +303,7 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-notifications-013",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "sender-reply-to",
+  "feature_id": "email-sender-and-routing",
   "summary": "Dev BE quyết định ngày 01/04/2026 và PO chốt (Jira DUOS-370): sender email của merchant được đưa vào reply-to và field \"reply to\" riêng bị bỏ. Nhưng trên staging (khảo sát 08/10/2026, store staging Plus (Free plan)), editor template email \"Credit limit assigned to a company location\" vẫn có field \"Reply to email:\" riêng bên cạnh \"Sender name:\" và \"Sender email:\". Đây là UI chưa cập nhật theo quyết định, hay quyết định đã thay đổi? Header Reply-To của email gửi buyer hiện lấy từ field nào? Cần Dev/PO xác nhận.",
   "kb_ids": [
     "KB-033",
@@ -316,7 +316,7 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
     "Khi merchant chưa cấu hình sender email, email gửi buyer có header Reply-To không và trỏ về địa chỉ nào (email store, email chủ store, hay không có)?"
   ],
   "check_ids": [
-    "sender-reply-to:CHK-005"
+    "email-sender-and-routing:CHK-005"
   ]
 }
 ```
@@ -327,7 +327,7 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-notifications-014",
   "type": "OPEN_ISSUE",
-  "feature_id": "flow-email-triggers",
+  "feature_id": "email-sender-and-routing",
   "summary": "Shopify Flow chưa được mở trên staging: 4 trigger email (Member added to location, Role changes, Shopping list pending approval, Shopping list approved) và payload danh sách customer của trigger pending approval chỉ có nguồn Jira DUOS-371 + Dev 01/04/2026, chưa có quan sát nào trên Shopify Flow.",
   "kb_ids": [
     "KB-036",
@@ -346,7 +346,7 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-notifications-015",
   "type": "OPEN_ISSUE",
-  "feature_id": "flow-email-triggers",
+  "feature_id": "email-sender-and-routing",
   "summary": "Email báo đổi role có được gửi lặp lại khi Flow action assign role chạy lần 2 cho cùng member và cùng role không (tính idempotent)? Tài liệu chỉ trỏ sang danh sách câu hỏi mở không có trong bộ nguồn; không suy diễn. Hành vi Flow action thuộc nhóm Roles & permissions; cần nguồn bổ sung.",
   "kb_ids": [
     "KB-011",
@@ -357,7 +357,7 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
     "Email báo đổi role có được gửi lặp khi Flow action assign role chạy lần 2 cho cùng member và cùng role không?"
   ],
   "check_ids": [
-    "flow-email-triggers:CHK-005"
+    "email-sender-and-routing:CHK-005"
   ]
 }
 ```
@@ -368,7 +368,7 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-notifications-016",
   "type": "OPEN_ISSUE",
-  "feature_id": "merchant-transactional-emails",
+  "feature_id": "email-sender-and-routing",
   "summary": "Email transaction gửi merchant từ Qikify: nội dung template Install / Uninstall / Subscription change / Cancel subscription không có trong Jira DUOS-385, và trigger + điều kiện gửi email đổi Shopify plan (webhook nào, áp cho tier nào) không có trong Jira DUOS-386. Cần bổ sung nguồn trước khi viết kết quả mong đợi.",
   "kb_ids": [
     "KB-038",
@@ -383,7 +383,7 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
     "Email đổi Shopify plan được gửi khi nhận webhook nào và áp cho chuyển đổi giữa các Shopify plan nào?"
   ],
   "check_ids": [
-    "merchant-transactional-emails:CHK-002"
+    "email-sender-and-routing:CHK-002"
   ]
 }
 ```
@@ -464,10 +464,10 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-notifications-022",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "sender-reply-to",
+  "feature_id": "email-sender-and-routing",
   "summary": "Field \"Sender email:\" có validate định dạng email khi lưu không, và thông báo lỗi là gì?",
   "check_ids": [
-    "sender-reply-to:CHK-006"
+    "email-sender-and-routing:CHK-006"
   ]
 }
 ```
@@ -478,10 +478,10 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-notifications-023",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "sender-reply-to",
+  "feature_id": "email-sender-and-routing",
   "summary": "Field sender có mặt ở mọi template phía Customer hay chỉ một số template, cấu hình theo từng template hay dùng chung, và sender mặc định của app là địa chỉ nào?",
   "check_ids": [
-    "sender-reply-to:CHK-007"
+    "email-sender-and-routing:CHK-007"
   ],
   "related_questions": [
     "Field sender có mặt ở mọi template phía Customer hay chỉ ở một số template, và sender mặc định của app cụ thể là địa chỉ nào?"
@@ -495,10 +495,10 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-notifications-024",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "flow-email-triggers",
+  "feature_id": "email-sender-and-routing",
   "summary": "Trigger Member added to location, Role changes và Shopping list approved bắn khi nào chính xác (vd invite member có tính là added to location không) và payload gồm những field nào?",
   "check_ids": [
-    "flow-email-triggers:CHK-003"
+    "email-sender-and-routing:CHK-003"
   ]
 }
 ```
@@ -509,10 +509,10 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-notifications-025",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "flow-email-triggers",
+  "feature_id": "email-sender-and-routing",
   "summary": "Trigger Shopify Flow có bắn khi switch thông báo tương ứng trên trang Notifications đang tắt không (hai cơ chế độc lập hay phụ thuộc)?",
   "check_ids": [
-    "flow-email-triggers:CHK-004"
+    "email-sender-and-routing:CHK-004"
   ]
 }
 ```
@@ -523,10 +523,10 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-notifications-026",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "merchant-transactional-emails",
+  "feature_id": "email-sender-and-routing",
   "summary": "Theo Jira DUOS-385, Qikify gửi email transaction cho merchant khi Install và Uninstall, chia 2 nhóm Shopify plan (Advanced / Plus / Plus Sandbox và Basic / Grow / Partner test / Affiliate). Mô tả này có còn đúng không; nội dung email của mỗi nhóm khác nhau ở đâu và gửi tới địa chỉ nào của merchant?",
   "check_ids": [
-    "merchant-transactional-emails:CHK-001"
+    "email-sender-and-routing:CHK-001"
   ],
   "related_questions": [
     "Email transaction gửi tới địa chỉ nào của merchant (email store owner hay email khác)?"
@@ -540,10 +540,10 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
 {
   "oq_id": "OQ-notifications-027",
   "type": "NEEDS_CONFIRMATION",
-  "feature_id": "merchant-transactional-emails",
+  "feature_id": "email-sender-and-routing",
   "summary": "Theo Jira DUOS-386, email đổi Shopify plan dùng template \"[duos] shopify plan changes\" với param `{{store_owner}}`, `{{module_included}}`, `{{previous_plan}}`, `{{current_plan}}`. Mô tả này có còn đúng không; email được gửi khi nhận webhook nào và áp cho chuyển đổi giữa các Shopify plan nào?",
   "check_ids": [
-    "merchant-transactional-emails:CHK-003"
+    "email-sender-and-routing:CHK-003"
   ]
 }
 ```
@@ -555,10 +555,10 @@ Tổng: 28 mục. Sinh từ lần bootstrap đầu tiên (DOC_BOOTSTRAP) của D
   "oq_id": "OQ-notifications-028",
   "type": "OPEN_ISSUE",
   "feature_id": null,
-  "summary": "Bộ tài liệu nguồn (QA business rule, QA KB Duos, inventory staging) không có đặc tả API / data model cho các feature: sender-reply-to, merchant-transactional-emails. Cần Dev cung cấp endpoint, payload và dữ liệu lưu trữ liên quan nếu QA cần kiểm ở tầng API/DB.",
+  "summary": "Bộ tài liệu nguồn (QA business rule, QA KB Duos, inventory staging) không có đặc tả API / data model cho các feature: email-sender-and-routing, email-sender-and-routing. Cần Dev cung cấp endpoint, payload và dữ liệu lưu trữ liên quan nếu QA cần kiểm ở tầng API/DB.",
   "related_feature_ids": [
-    "sender-reply-to",
-    "merchant-transactional-emails"
+    "email-sender-and-routing",
+    "email-sender-and-routing"
   ]
 }
 ```

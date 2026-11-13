@@ -1,0 +1,561 @@
+[
+  {
+    "kb_id": "KB-001",
+    "topic": "Tổng quan Quantity Break: 3 reward-type dùng chung 1 tier engine",
+    "statement": "Theo tài liệu \"Quantity Break\" §Purpose/§Variants, Quantity Break thưởng khách mua nhiều hơn qua quy tắc tiered quantity/price (QVD-23); phần thưởng (reward) có thể là 1 trong 3 dạng — price break (giảm % hoặc số tiền cố định, template 'Quantity breaks for same product'), free gift thay cho giảm giá tiền (template 'Buy X, get Y free'), hoặc cùng tier áp lên 1 lượt mua subscription (template 'Volume discount for subscription'). Cả 3 template dùng chung 1 tier-settings engine (QVD-23) — chỉ khác cấu hình bên trong 1 tier; subscription có thêm purchase-option settings riêng. 'Quantity breaks for same product' là tier engine cơ bản mà 2 template còn lại xây dựng trên nền đó; card 'Volume discount for subscription' trên offer-type list mở ra cùng trang settings quantity-break, chỉ pre-enable sẵn toggle 'Subscriptions'.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "unspecified",
+      "surface": "unspecified",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-002",
+    "topic": "Trigger scope và reward type là 2 trục độc lập",
+    "statement": "Theo tài liệu \"Quantity Break\" §Purpose và \"Decision Log\" §'2026-09-03 — \"Same-product tiers\" variant name flagged as misleading', 'trigger scope' (phạm vi/số sản phẩm offer áp dụng) và 'reward type' (price break vs free gift vs subscription overlay) là 2 trục hoàn toàn độc lập trong Quantity Break — trigger được chọn độc lập với reward type, đây là thứ thực sự phân biệt 3 template. Một offer dùng reward template 'Quantity breaks for same product' KHÔNG bị giới hạn chỉ 1 sản phẩm — có thể dùng bất kỳ trong các loại trigger, kể cả trigger đa sản phẩm rộng như 'All products'. Tên cũ 'Same-product tiers' (tên của reward-type) đã từng bị hiểu nhầm là cũng giới hạn trigger về 1 sản phẩm duy nhất — thực tế không phải vậy.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "HIGH",
+    "scope": {
+      "environment": "documented",
+      "role": "unspecified",
+      "surface": "unspecified",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\" + \"Decision Log\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-003",
+    "topic": "Tên 3 template hiện tại của Quantity Break (ground truth, đã sửa 2 lần)",
+    "statement": "Theo tài liệu \"Decision Log\" (các entry ngày 2026-09-03) và \"Feature Map\" §'Feature Map — interactions between features', tên hiện tại (đúng chữ hiển thị live trên UI, xác nhận qua Playwright MCP 2026-09-03) của 3 template Quantity Break là: 'Quantity breaks for same product' (số nhiều 'breaks'), 'Buy X, get Y free' (không có phần bọc 'Free Gift ('), và 'Volume discount for subscription' (không có phần bọc 'Subscription ('). Lịch sử: 3 bài help-center cũ riêng biệt (Buy X Get Y Quantity Breaks for Same Product Offer Volume Discounts for Subscription Products) đã được QA xác nhận là cùng 1 cơ chế quantity-threshold áp dụng trong 3 ngữ cảnh khác nhau, nên được gộp (2026-08-27) thành 1 feature umbrella 'Quantity Break' với 3 subsection 'Variant', giữ nguyên tên cũ ('Same-product tiers'/'Buy X Get Y'/'Subscription products') ban đầu; tên này sau đó bị flag là gây hiểu nhầm (2026-09-03) nhưng CHƯA đổi ngay; cùng ngày 2026-09-03, tên được đổi lần 1 sang mô tả bằng lời rồi lại được đính chính lần 2 (thành tên live ở trên) sau khi đọc đúng text thật từ các template card trên màn hình 'Create offer'. Tên cũ được giữ lại như ghi chú 'KB called this X before' trong mỗi section cho ai còn theo link cũ. Màn hình tạo offer còn có 1 card thứ 6 'Product recommendations (Upselling)' nhưng đó là 1 promo cross-sell/cài app (nút 'Free to install'), không phải offer template — xác nhận Quantity Break chỉ có đúng 3 template, không hơn.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "HIGH",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "qa-volume-kb KB v1 — \"Decision Log\" + \"Feature Map\" (live-verified, store test-vl-1)",
+      "authored_on": "2026-08-27",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-004",
+    "topic": "Trigger Settings: đúng 5 radio option",
+    "statement": "Theo tài liệu \"Quantity Break\" §Trigger Settings (xác nhận qua kiểm tra Portal live 2026-09-03 trên 3 offer), UI Trigger Settings của Quantity Break có đúng 5 radio button (không phải 7 như một khung mô tả cũ): All products, Collections, Product tags, Specific products, và Custom trigger.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\" (live-verified, store test-vl-1)",
+      "authored_on": "2026-09-03",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-005",
+    "topic": "Trigger 'Specific products' thu hẹp được xuống variant",
+    "statement": "Theo tài liệu \"Quantity Break\" §Trigger Settings, trigger 'Specific products' cho phép thu hẹp xuống variant cụ thể trong 1 sản phẩm — xác nhận live qua ví dụ hiển thị '6 of 6 selected'.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-006",
+    "topic": "Modal Custom trigger: AND/OR + cấu trúc row + danh sách trigger-type",
+    "statement": "Theo tài liệu \"Quantity Break\" §Trigger Settings, modal 'Custom triggers' có radio 'Only display the offer when: All rules pass Any rule pass' kiểm soát cách nhiều trigger row kết hợp (AND/OR). Mỗi row gồm: 1 trigger-type dropdown, 1 comparison operator (ví dụ 'in'), và 1 value picker (Browse/select); thêm được nhiều row qua '+ Add trigger', hiển thị đếm dạng 'N trigger set'. Trigger-type dropdown có đúng list (theo ảnh chụp màn hình thực tế): Products, Product types, Product vendors, Product tags, Collections, Customer login, Customer tags, B2B Customer, Markets — danh sách này sửa lại 1 list cũ từng có 'new customer' (không có thật) và thiếu Product types/Customer tags/Markets.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-007",
+    "topic": "'Exclude products' là link riêng, không phải radio thứ 6/7",
+    "statement": "Theo tài liệu \"Quantity Break\" §Trigger Settings, 'Exclude' không phải radio thứ 6/7 — nó là 1 link/button riêng 'Exclude products' chỉ hiện dưới radio list khi chọn 'All products' hoặc 'Collections'; không hiện dưới Product tags, Specific products, hoặc Custom trigger. Click vào mở picker product/variant để loại trừ.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-008",
+    "topic": "Trigger 'Collections' chọn được nhiều collection",
+    "statement": "Theo tài liệu \"Quantity Break\" §Trigger Settings, trigger 'Collections' hiển thị ô tìm kiếm 'Select collections' + dòng tóm tắt 'N collection(s) selected'; không giới hạn chỉ 1 collection — merchant chọn được nhiều collection cho 1 offer.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-009",
+    "topic": "Exclude = loại trừ hoàn toàn (ẩn + không bao giờ giảm giá)",
+    "statement": "Theo tài liệu \"Quantity Break\" §Trigger Settings, exclude 1 product/variant trong Quantity Break làm cả 2 việc cùng lúc: offer không hiển thị cho product/variant đó, và nó cũng không bao giờ được áp discount dù quantity có đạt ngưỡng tier — là full exclusion, không chỉ filter discount-eligibility còn widget vẫn hiện.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "buyer",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-010",
+    "topic": "Quantity được pool theo per-product (không pool giữa các product khác nhau)",
+    "statement": "Theo tài liệu \"Quantity Break\" §Trigger Settings (QA confirmed 2026-09-03, áp dụng cho cả 7 loại trigger không riêng 'All products'), quantity trong Quantity Break được pool theo per-product — cộng dồn qua các variant của chính product đó trong cart — nhưng KHÔNG pool giữa các product khác nhau, dù 2 product đó cùng nằm trong 1 collection hay cùng thoả 1 trigger. Ví dụ minh hoạ (dữ liệu cart QA cung cấp, trigger 'All products', Tier 1 = 5 packs/10% off): product 'Test swatch' 3 variant Pink×3/Brown×2/'hướng dương'×3 pool thành 8 (≥5) → cả 3 line được giảm 10% trên giá riêng của từng line (Pink €35.00→€31.50, không phải giá blend chung); product khác 'Chuột swatch' ×4 (không pool với 'Test swatch') vẫn ở 0% vì dưới ngưỡng. Ví dụ giả định thứ 2 (Tier1=qty5/10%, Tier2=qty10/25%, Tier3=qty15/$70-off-mỗi-item): Product A/Medium×2 + Product A/Small×4 pool thành 6 (đạt Tier1) → cả 2 line Product A giảm 10%; Product B×4 không pool với Product A nên dưới Tier1 → 0%.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "buyer",
+      "surface": "storefront",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\" (live-verified, store test-vl-1)",
+      "authored_on": "2026-09-03",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-011",
+    "topic": "Cả 3 template card mở cùng 1 trang tier-settings; trigger độc lập với template",
+    "statement": "Theo tài liệu \"Quantity Break\" §Variants, click 'Create' trên bất kỳ 1 trong 3 template card mở ra cùng 1 trang tier settings; mỗi template chỉ pre-fill khác nhau ở phần reward (ví dụ subscription template pre-enable toggle 'Subscriptions'). Trigger Settings là setting độc lập — chọn template reward không giới hạn trigger có thể chọn và ngược lại.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-012",
+    "topic": "Field 'Discount type': dropdown 2 giá trị, default Percentage",
+    "statement": "Theo tài liệu \"Quantity Break\" §Quantity breaks for same product, field 'Discount type' là dropdown với đúng 2 label 'Percentage' 'Fixed Amount', default là Percentage.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-013",
+    "topic": "Validation 'Discount value (per item)' và các giá trị biên hợp lệ",
+    "statement": "Theo tài liệu \"Quantity Break\" §Quantity breaks for same product + §Edge Cases, 'Discount value (per item)' phải là số dương > 0; nếu là percentage thì bị cap ở ≤100%; label field ghi rõ 'per item' — rate tính theo mỗi unit, không phải 1 số tiền lump-sum chung. Các giá trị biên đã kiểm: 0% được cho phép (use case hợp lệ, ví dụ baseline tier 'buy 1 = no discount'); để trống (blank) hiển thị inline error 'field required'; đúng 100% được cho phép; 1 tier ở 100% off có gắn free gift vẫn hợp lệ — gift vẫn áp dụng cùng tier giảm 100%, không bị block (QA confirmed 2026-09-03).",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\" (live-verified, store test-vl-1)",
+      "authored_on": "2026-09-03",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-014",
+    "topic": "Validation field 'Quantity' của tier + guardrail tối thiểu 1 tier",
+    "statement": "Theo tài liệu \"Quantity Break\" §Quantity breaks for same product + §Edge Cases, field 'Quantity' của mỗi tier là bắt buộc, phải là số nguyên dương, và phải lớn hơn quantity của tier ngay trước nó — set giá trị ≤ tier trước sẽ hiển thị inline error message và focus vào field vi phạm (QA confirmed 2026-09-03), không phải auto-adjust. Guardrail: luôn phải còn ít nhất 1 tier — merchant không xoá được tier cuối cùng (nút Delete bị ẩn khi chỉ còn 1 tier, guardrail thực thi bằng cách bỏ affordance, không phải hiện lỗi sau khi thử xoá); nếu không có tier nào được cấu hình, không discount nào được áp dụng.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "test_case",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\" (live-verified, store test-vl-1)",
+      "authored_on": "2026-09-03",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-015",
+    "topic": "Field 'Label type': dropdown đúng 4 option",
+    "statement": "Theo tài liệu \"Quantity Break\" §Quantity breaks for same product, 'Label type' là dropdown với đúng 4 option (live-confirmed): Classic, Oval, Tag, Callout — sửa lại 1 cách gọi mơ hồ cũ ('label shape').",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-016",
+    "topic": "Field khác của tier: Label text, Image upload, 'Selected by default' (loại trừ nhau)",
+    "statement": "Theo tài liệu \"Quantity Break\" §Quantity breaks for same product, mỗi tier còn có field 'Label text', 1 field Image upload per-tier qua 'Choose File'/'Add image', và checkbox 'Selected by default'. Chỉ 1 tier được đánh dấu 'selected by default' tại 1 thời điểm — check nó ở 1 tier tự động uncheck mọi tier khác.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-017",
+    "topic": "Pre-populate 3 tier mẫu khi tạo offer mới",
+    "statement": "Theo tài liệu \"Quantity Break\" §Quantity breaks for same product, khi load lần đầu, offer được pre-populate với 3 tier mẫu: Tier 1 = qty1/0%/title '1 pack'; Tier 2 = qty2/10%/title '2 packs'/subtitle 'Buy 2 save 10% off'/label 'Flat' text 'Most popular'/badge 'Free shipping'/selected by default; Tier 3 = qty3/20%/title '3 packs'/subtitle 'Buy 3 save 20% off'/badge 'Free shipping'.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-discount-offers-R1018-03",
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-018",
+    "topic": "Trạng thái expand/collapse của tier (chỉ 1 tier mở tại 1 thời điểm)",
+    "statement": "Theo tài liệu \"Quantity Break\" §Quantity breaks for same product, Tier 1 expand sẵn mặc định, Tier 2-3 collapse; chỉ 1 tier được expand tại 1 thời điểm — click vào tier đang collapse (hoặc nút Edit) sẽ expand nó và tự collapse tier đang mở. Nút Collapse/Edit/Delete loại trừ nhau theo state: Collapse chỉ hiện khi đang expand; Edit/Delete chỉ hiện khi đang collapse.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-019",
+    "topic": "Nút '+ Add new tier': thêm tier mới + default + auto-collapse tier cũ",
+    "statement": "Theo tài liệu \"Quantity Break\" §Quantity breaks for same product, nút '+ Add new tier' thêm 1 tier mới phía dưới các tier hiện có, tự động expand, tự gán default (số tier kế tiếp, quantity = quantity tier trước + 1, field discount để trống), và tự collapse tier đang mở trước đó.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-020",
+    "topic": "Rule tier cao nhất áp cho TOÀN BỘ quantity mua (không progressive band)",
+    "statement": "Theo tài liệu \"Quantity Break\" §Quantity breaks for same product, các tier KHÔNG phải progressive/incremental band — rule là tìm tier cao nhất mà quantity mua đạt/vượt ngưỡng, rồi áp rate của tier đó cho TOÀN BỘ quantity mua, không bao giờ split theo band; áp dụng cả ở mức giữa và trên tier cao nhất. Ví dụ minh hoạ (Tier1=qty5/10%, Tier2=qty10/25%): mua 7 unit (đạt Tier1, chưa đạt Tier2) → cả 7 unit giảm 10%; mua 20 unit (vượt Tier2) → cả 20 unit giảm 25%; mua 4 unit (dưới Tier1) → không giảm.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "unspecified",
+      "surface": "unspecified",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-021",
+    "topic": "Validation UI: inline error real-time + success toast sau Save",
+    "statement": "Theo tài liệu \"Quantity Break\" §Quantity breaks for same product, validation của tier settings hiển thị lỗi inline real-time cho rule violation, và hiển thị success toast/inline message sau khi Save.",
+    "knowledge_kind": "CONFIRMED_EXPECTED",
+    "confidence": "MEDIUM",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "confirmation_source": {
+      "type": "spec_doc",
+      "ref": "qa-volume-kb KB v1 — \"Quantity Break\"",
+      "authored_on": "2026-10-01",
+      "derivation": "prose"
+    }
+  },
+  {
+    "kb_id": "KB-063",
+    "topic": "[KNOWN DEFECT] Giá trị discount âm không bị chặn khi nhập bàn phím/paste",
+    "statement": "Theo tài liệu \"Quantity Break\" §Edge Cases + \"Known Issues\" §'quantity-break — Negative discount value not blocked via keyboard/paste input', merchant có thể gõ hoặc paste trực tiếp một giá trị âm (ví dụ '-10') vào ô discount value của một tier, và giá trị này KHÔNG bị validation chặn — validation chỉ chặn giá trị âm khi dùng nút tăng/giảm bằng mũi tên (arrow-key increment/decrement) của ô đó, không chặn khi nhập văn bản trực tiếp. Ảnh hưởng thực tế lên giá hiển thị ở storefront CHƯA được xác minh ('not yet verified'). QA đã báo lỗi này cho Dev; Dev tìm hiểu nhưng báo không tìm được cách fix — đây không phải quyết định wontfix mà là đang bị kẹt/chưa giải quyết; khuyến nghị retest định kỳ thay vì coi là đã được chấp nhận vĩnh viễn.",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "documented",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "last_updated": {
+      "date": "2026-10-05",
+      "ccr_ref": "bootstrap"
+    },
+    "status": "KNOWN_DEFECT"
+  },
+  {
+    "kb_id": "KB-075",
+    "topic": "Form Quantity Break mới: Offer title mặc định, trigger mặc định All products, Exclude products chỉ dưới All products",
+    "statement": "Khi mở form 'Quantity breaks for same product' mới ở merchant/staging, quan sát thấy 'Offer title' = 'Buy more, save more'; 'Offer is triggered for' có 5 radio 'All products' (mặc định, checked) / 'Collections' / 'Product tags' / 'Specific products' / 'Custom trigger'; nút 'Exclude products' hiện dưới danh sách khi chọn 'All products' và biến mất khi chọn 'Specific products' (khi đó hiện '0 product selected' + 'Browse') (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "form-default",
+      "trigger"
+    ],
+    "related_kb_ids": [
+      "quantity-break/quantity-break-trigger-and-tiers#KB-004",
+      "quantity-break/quantity-break-trigger-and-tiers#KB-007"
+    ],
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    }
+  },
+  {
+    "kb_id": "KB-076",
+    "topic": "Tier mặc định form Quantity Break: tier 2 Label type 'Classic' (không có option 'Flat'), editor mở 1 tier một lúc",
+    "statement": "Khi mở form Quantity Break mới ở merchant/staging, quan sát thấy 3 tier mặc định trong editor dạng accordion mở một tier tại một thời điểm (mở '2 packs' thì '1 pack' đóng): Tier 1 — Quantity 1, Title '1 pack', Subtitle rỗng, Badge rỗng, Discount type 'Percentage' (options Percentage / Fixed Amount), Discount value (per item) 0 %, Label type 'Classic', Label text rỗng, Image 'Add image', [ ] Selected by default, link 'Add free gift'; Tier 2 — 2 / '2 packs' / 'Buy 2 save 10% off' / Badge 'Free shipping' / Percentage 10 / Label type 'Classic' / Label text 'Most popular' / [x] Selected by default; Tier 3 — 3 / '3 packs' / 'Buy 3 save 20% off' / Badge 'Free shipping' / Percentage 20 / 'Classic' / Label text rỗng. Dropdown Label type chỉ có 4 option Classic / Oval / Tag / Callout, không có 'Flat'. Có nút 'Add new tier' (2026-10-18).",
+    "knowledge_kind": "OBSERVED_CURRENT",
+    "confidence": "LOW",
+    "scope": {
+      "environment": "staging",
+      "role": "merchant",
+      "surface": "portal",
+      "brand": null
+    },
+    "tags": [
+      "staging-observed",
+      "form-default",
+      "tier"
+    ],
+    "related_kb_ids": [
+      "quantity-break/quantity-break-trigger-and-tiers#KB-017",
+      "quantity-break/quantity-break-trigger-and-tiers#KB-015",
+      "quantity-break/quantity-break-trigger-and-tiers#KB-012",
+      "quantity-break/quantity-break-trigger-and-tiers#KB-018"
+    ],
+    "status": "UNRESOLVED",
+    "conflict_group": "CONF-discount-offers-R1018-03",
+    "last_updated": {
+      "date": "2026-11-08",
+      "ccr_ref": "maintenance-2026-11-08"
+    }
+  }
+]
